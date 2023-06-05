@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Hopcroft-Tarjan algorithm for bi-connected components.
@@ -75,8 +75,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		};
 
 		// BitSet separatingVertex = new BitSet(n);
-<span class="fc" id="L78">		List&lt;IntList&gt; biccsVertices = new ArrayList&lt;&gt;();</span>
-		// List&lt;IntList&gt; biccsEdges = new ArrayList&lt;&gt;();
+<span class="fc" id="L78">		List&lt;IntList&gt; biccsVertices = new ObjectArrayList&lt;&gt;();</span>
+		// List&lt;IntList&gt; biccsEdges = new ObjectArrayList&lt;&gt;();
 
 <span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">			if (depths[root] != -1)</span>
@@ -272,4 +272,4 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	}
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

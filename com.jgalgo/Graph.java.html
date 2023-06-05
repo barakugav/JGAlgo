@@ -48,7 +48,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * &lt;p&gt;
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. For example.
  * {@link #vertices()} returns an {@link IntSet} of all the {@code int} IDs of the vertices of the graph. This allow for
- * a more efficient graph implementations, rather then creating objects for vertices and edges.
+ * a more efficient graph implementations, rather then creating objects for vertices and edges. Vertices and edges may
+ * be created by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose
+ * the {@code int} ID and will return it to the user. Alternativaly, the methods {@link #addVertex(int)} and
+ * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
  * &lt;p&gt;
  * Weights may be assigned to the graph vertices and/or edges. A &lt;i&gt;weight&lt;/i&gt; is some value such as {@code double}
  * primitive, {@code boolean} flag or an arbitrary Object. Multiple different weights can be added to the vertices
@@ -135,10 +138,28 @@ public interface Graph {
 
 	/**
 	 * Add a new vertex to the graph.
+	 * &lt;p&gt;
+	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
+	 * edges, and will return it as the new vertex ID.
 	 *
 	 * @return the new vertex identifier
 	 */
 	int addVertex();
+
+	/**
+	 * Add a new vertex to the graph with user chosen ID.
+	 * &lt;p&gt;
+	 * In contrast to {@link #addVertex()}, in which the implementation chooses ,the new vertex identifier, the user can
+	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
+	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
+	 * &lt;p&gt;
+	 * Note that vertices IDs must be non negative.
+	 *
+	 * @param  vertex                   a user chosen identifier for the new vertex
+	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
+	 *                                      vertices, or if its negative
+	 */
+	void addVertex(int vertex);
 
 	/**
 	 * Remove a vertex and all its edges from the graph.
@@ -191,12 +212,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L194" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L195">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L197">				return e;</span>
-<span class="fc" id="L198">		}</span>
-<span class="fc" id="L199">		return -1;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L216">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L218">				return e;</span>
+<span class="fc" id="L219">		}</span>
+<span class="fc" id="L220">		return -1;</span>
 	}
 
 	/**
@@ -211,6 +232,9 @@ public interface Graph {
 
 	/**
 	 * Add a new edge to the graph.
+	 * &lt;p&gt;
+	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
+	 * edges, and will return it as the new edge ID.
 	 *
 	 * @param  source                    a source vertex
 	 * @param  target                    a target vertex
@@ -218,6 +242,21 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	int addEdge(int source, int target);
+
+	/**
+	 * Add a new edge to the graph with user chosen ID.
+	 * &lt;p&gt;
+	 * In contrast to {@link #addEdge(int, int)}, in which the implementation chooses the new edge identifier, the user
+	 * can specified what {@code int} ID the new edge should be assigned. The set of graph edges must not contain
+	 * duplications, therefore the provided identifier must not be currently used as one of the graph edges IDs.
+	 *
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @param  edge                     a user chosen identifier for the new edge
+	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
+	 *                                      edges, or if its negative
+	 */
+	void addEdge(int source, int target, int edge);
 
 	/**
 	 * Remove an edge from the graph.
@@ -234,9 +273,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L237">		removeEdgesOutOf(vertex);</span>
-<span class="fc" id="L238">		removeEdgesInOf(vertex);</span>
-<span class="fc" id="L239">	}</span>
+<span class="fc" id="L276">		removeEdgesOutOf(vertex);</span>
+<span class="fc" id="L277">		removeEdgesInOf(vertex);</span>
+<span class="fc" id="L278">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -245,11 +284,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeEdgesOutOf(int source) {
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L249">			eit.nextInt();</span>
-<span class="fc" id="L250">			eit.remove();</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L288">			eit.nextInt();</span>
+<span class="fc" id="L289">			eit.remove();</span>
 		}
-<span class="fc" id="L252">	}</span>
+<span class="fc" id="L291">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -258,11 +297,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeEdgesInOf(int target) {
-<span class="fc bfc" id="L261" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L262">			eit.nextInt();</span>
-<span class="fc" id="L263">			eit.remove();</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L301">			eit.nextInt();</span>
+<span class="fc" id="L302">			eit.remove();</span>
 		}
-<span class="fc" id="L265">	}</span>
+<span class="fc" id="L304">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -312,14 +351,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L315">		int u = edgeSource(edge);</span>
-<span class="fc" id="L316">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L318">			return v;</span>
-<span class="pc bpc" id="L319" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L320">			return u;</span>
+<span class="fc" id="L354">		int u = edgeSource(edge);</span>
+<span class="fc" id="L355">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L357">			return v;</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L359">			return u;</span>
 		} else {
-<span class="nc" id="L322">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L361">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -382,7 +421,9 @@ public interface Graph {
 	 * @param  &lt;V&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type);
+	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
+<span class="fc" id="L425">		return addVerticesWeights(key, type, null);</span>
+	}
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph with default value.
@@ -481,7 +522,9 @@ public interface Graph {
 	 * @param  &lt;E&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type);
+	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
+<span class="fc" id="L526">		return addEdgesWeights(key, type, null);</span>
+	}
 
 	/**
 	 * Add a new weights container associated with the edges of this graph with default value.
@@ -617,7 +660,7 @@ public interface Graph {
 	 * @return an unmodifiable view of this graph
 	 */
 	default Graph unmodifiableView() {
-<span class="fc" id="L620">		return Graphs.unmodifiableView(this);</span>
+<span class="fc" id="L663">		return Graphs.unmodifiableView(this);</span>
 	}
 
 	/**
@@ -632,7 +675,7 @@ public interface Graph {
 	 * @return a reversed view of this graph
 	 */
 	default Graph reverseView() {
-<span class="fc" id="L635">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L678">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -643,7 +686,7 @@ public interface Graph {
 	 * @return a new builder that can build undirected graphs
 	 */
 	static Graph.Builder newBuilderUndirected() {
-<span class="fc" id="L646">		return new GraphImpl.Builder(false);</span>
+<span class="fc" id="L689">		return new GraphImpl.Builder(false);</span>
 	}
 
 	/**
@@ -654,7 +697,7 @@ public interface Graph {
 	 * @return a new builder that can build directed graphs
 	 */
 	static Graph.Builder newBuilderDirected() {
-<span class="fc" id="L657">		return new GraphImpl.Builder(true);</span>
+<span class="fc" id="L700">		return new GraphImpl.Builder(true);</span>
 	}
 
 	/**
@@ -724,14 +767,14 @@ public interface Graph {
 		 *
 		 * @author Barak Ugav
 		 */
-<span class="fc" id="L727">		static enum Hint {</span>
+<span class="fc" id="L770">		static enum Hint {</span>
 			/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L729">			FastEdgeRemoval,</span>
+<span class="fc" id="L772">			FastEdgeRemoval,</span>
 			/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L731">			FastEdgeLookup,</span>
+<span class="fc" id="L774">			FastEdgeLookup,</span>
 		}
 
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

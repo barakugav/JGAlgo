@@ -203,7 +203,7 @@ interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K
 
 			@Override
 			public HeapReferenceable build(Comparator cmp) {
-<span class="fc bfc" id="L206" title="All 4 branches covered.">				if (impl != null &amp;&amp; !&quot;HeapPairing&quot;.equals(impl)) {</span>
+<span class="pc bpc" id="L206" title="1 of 4 branches missed.">				if (impl != null &amp;&amp; !&quot;HeapPairing&quot;.equals(impl)) {</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">					if (HeapBinomial.class.getSimpleName().equals(impl))</span>
 <span class="fc" id="L208">						return new HeapBinomial(cmp);</span>
 <span class="pc bpc" id="L209" title="1 of 2 branches missed.">					if (HeapFibonacci.class.getSimpleName().equals(impl))</span>
@@ -341,4 +341,4 @@ interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

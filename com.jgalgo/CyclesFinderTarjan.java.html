@@ -16,12 +16,12 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Tarjan's algorithm for finding all cycles in a directed graph.
@@ -58,7 +58,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 <span class="fc" id="L58">		private final IntStack path = new IntArrayList();</span>
 <span class="fc" id="L59">		private final IntStack markedStack = new IntArrayList();</span>
 		private final BitSet isMarked;
-<span class="fc" id="L61">		private final List&lt;Path&gt; cycles = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L61">		private final List&lt;Path&gt; cycles = new ObjectArrayList&lt;&gt;();</span>
 
 <span class="fc" id="L63">		Worker(IndexGraph g) {</span>
 <span class="fc" id="L64">			this.g = g;</span>
@@ -110,4 +110,4 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

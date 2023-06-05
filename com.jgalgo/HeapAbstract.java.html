@@ -59,7 +59,7 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 	}
 
 	int compare(E e1, E e2) {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
 	}
 
 	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
@@ -159,4 +159,4 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

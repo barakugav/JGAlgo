@@ -16,72 +16,71 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
-<span class="fc" id="L26">class DynamicTreeBuilderImpl implements DynamicTree.Builder {</span>
+<span class="fc" id="L25">class DynamicTreeBuilderImpl implements DynamicTree.Builder {</span>
 
 	private double maxWeight;
 	private boolean maxWeightValid;
 	private boolean intWeights;
-<span class="fc" id="L31">	private final Set&lt;Class&lt;? extends DynamicTreeExtension&gt;&gt; extensions = new ObjectArraySet&lt;&gt;();</span>
+<span class="fc" id="L30">	private final Set&lt;Class&lt;? extends DynamicTreeExtension&gt;&gt; extensions = new ObjectArraySet&lt;&gt;();</span>
 
 	@Override
 	public DynamicTree build() {
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (!maxWeightValid)</span>
-<span class="nc" id="L36">			throw new IllegalStateException(&quot;Maximum set was not set. Call setMaxWeight(double)&quot;);</span>
-<span class="pc bpc" id="L37" title="2 of 6 branches missed.">		if (intWeights &amp;&amp; !(Integer.MIN_VALUE &lt;= maxWeight &amp;&amp; maxWeight &lt;= Integer.MAX_VALUE))</span>
-<span class="nc" id="L38">			throw new IllegalStateException(&quot;Maximum weight is too great for integer weights&quot;);</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		if (extensions.isEmpty()) {</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">			if (intWeights)</span>
-<span class="nc" id="L41">				return new DynamicTreeSplayInt((int) maxWeight);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (!maxWeightValid)</span>
+<span class="nc" id="L35">			throw new IllegalStateException(&quot;Maximum set was not set. Call setMaxWeight(double)&quot;);</span>
+<span class="pc bpc" id="L36" title="2 of 6 branches missed.">		if (intWeights &amp;&amp; !(Integer.MIN_VALUE &lt;= maxWeight &amp;&amp; maxWeight &lt;= Integer.MAX_VALUE))</span>
+<span class="nc" id="L37">			throw new IllegalStateException(&quot;Maximum weight is too great for integer weights&quot;);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (extensions.isEmpty()) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">			if (intWeights)</span>
+<span class="nc" id="L40">				return new DynamicTreeSplayInt((int) maxWeight);</span>
 			else
-<span class="nc" id="L43">				return new DynamicTreeSplay(maxWeight);</span>
+<span class="nc" id="L42">				return new DynamicTreeSplay(maxWeight);</span>
 		} else {
-<span class="fc" id="L45">			List&lt;DynamicTreeSplayExtension&gt; extensions = new ArrayList&lt;&gt;(this.extensions.size());</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">			for (Class&lt;? extends DynamicTreeExtension&gt; extClass : this.extensions) {</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">				if (extClass.equals(DynamicTreeExtension.TreeSize.class)) {</span>
-<span class="fc" id="L48">					extensions.add(new DynamicTreeSplayExtension.TreeSize());</span>
+<span class="fc" id="L44">			List&lt;DynamicTreeSplayExtension&gt; extensions = new ObjectArrayList&lt;&gt;(this.extensions.size());</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			for (Class&lt;? extends DynamicTreeExtension&gt; extClass : this.extensions) {</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">				if (extClass.equals(DynamicTreeExtension.TreeSize.class)) {</span>
+<span class="fc" id="L47">					extensions.add(new DynamicTreeSplayExtension.TreeSize());</span>
 				} else {
-<span class="nc" id="L50">					throw new IllegalArgumentException(&quot;unknown extension: &quot; + extClass);</span>
+<span class="nc" id="L49">					throw new IllegalArgumentException(&quot;unknown extension: &quot; + extClass);</span>
 				}
-<span class="fc" id="L52">			}</span>
+<span class="fc" id="L51">			}</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (intWeights)</span>
-<span class="fc" id="L55">				return new DynamicTreeSplayIntExtended((int) maxWeight, extensions);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (intWeights)</span>
+<span class="fc" id="L54">				return new DynamicTreeSplayIntExtended((int) maxWeight, extensions);</span>
 			else
-<span class="fc" id="L57">				return new DynamicTreeSplayExtended(maxWeight, extensions);</span>
+<span class="fc" id="L56">				return new DynamicTreeSplayExtended(maxWeight, extensions);</span>
 		}
 	}
 
 	@Override
 	public DynamicTree.Builder setMaxWeight(double maxWeight) {
-<span class="fc" id="L63">		this.maxWeight = maxWeight;</span>
-<span class="fc" id="L64">		maxWeightValid = true;</span>
-<span class="fc" id="L65">		return this;</span>
+<span class="fc" id="L62">		this.maxWeight = maxWeight;</span>
+<span class="fc" id="L63">		maxWeightValid = true;</span>
+<span class="fc" id="L64">		return this;</span>
 	}
 
 	@Override
 	public DynamicTree.Builder setIntWeights(boolean enable) {
-<span class="fc" id="L70">		intWeights = enable;</span>
-<span class="fc" id="L71">		return this;</span>
+<span class="fc" id="L69">		intWeights = enable;</span>
+<span class="fc" id="L70">		return this;</span>
 	}
 
 	@Override
 	public DynamicTree.Builder addExtension(Class&lt;? extends DynamicTreeExtension&gt; extensionType) {
-<span class="fc" id="L76">		extensions.add(Objects.requireNonNull(extensionType));</span>
-<span class="fc" id="L77">		return this;</span>
+<span class="fc" id="L75">		extensions.add(Objects.requireNonNull(extensionType));</span>
+<span class="fc" id="L76">		return this;</span>
 	}
 
 	@Override
 	public DynamicTree.Builder removeExtension(Class&lt;? extends DynamicTreeExtension&gt; extensionType) {
-<span class="nc" id="L82">		extensions.remove(Objects.requireNonNull(extensionType));</span>
-<span class="nc" id="L83">		return this;</span>
+<span class="nc" id="L81">		extensions.remove(Objects.requireNonNull(extensionType));</span>
+<span class="nc" id="L82">		return this;</span>
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

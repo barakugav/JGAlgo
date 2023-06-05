@@ -93,25 +93,25 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 	@Override
 	public boolean remove(Object e0) {
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L96">		E e = (E) e0;</span>
-<span class="nc" id="L97">		int s = size;</span>
-<span class="nc" id="L98">		E[] a = arr;</span>
+<span class="fc" id="L96">		E e = (E) e0;</span>
+<span class="fc" id="L97">		int s = size;</span>
+<span class="fc" id="L98">		E[] a = arr;</span>
 
 		int i;
-<span class="nc bnc" id="L101" title="All 2 branches missed.">		if (c == null) {</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">				if (Utils.cmpDefault(e, a[i]) == 0)</span>
-<span class="nc" id="L104">					break;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (Utils.cmpDefault(e, a[i]) == 0)</span>
+<span class="fc" id="L104">					break;</span>
 		} else {
-<span class="nc bnc" id="L106" title="All 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">				if (c.compare(e, a[i]) == 0)</span>
-<span class="nc" id="L108">					break;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				if (c.compare(e, a[i]) == 0)</span>
+<span class="fc" id="L108">					break;</span>
 		}
-<span class="nc bnc" id="L110" title="All 2 branches missed.">		if (i == s)</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (i == s)</span>
 <span class="nc" id="L111">			return false; /* not found */</span>
 
-<span class="nc" id="L113">		remove(i);</span>
-<span class="nc" id="L114">		return true;</span>
+<span class="fc" id="L113">		remove(i);</span>
+<span class="fc" id="L114">		return true;</span>
 	}
 
 	@Override
@@ -151,62 +151,62 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 
 	@Override
 	public void insertAll(Collection&lt;? extends E&gt; elms) {
-<span class="nc" id="L154">		int combinedSize = size + elms.size();</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">		if (arr.length &lt;= combinedSize)</span>
-<span class="nc" id="L156">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
+<span class="fc" id="L154">		int combinedSize = size + elms.size();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		if (arr.length &lt;= combinedSize)</span>
+<span class="fc" id="L156">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
 
-<span class="nc" id="L158">		int reconstructionCost = combinedSize;</span>
-<span class="nc" id="L159">		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);</span>
-<span class="nc bnc" id="L160" title="All 2 branches missed.">		if (reconstructionCost &gt;= addAllCost) {</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">			for (E e : elms)</span>
-<span class="nc" id="L162">				add(e);</span>
+<span class="fc" id="L158">		int reconstructionCost = combinedSize;</span>
+<span class="fc" id="L159">		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (reconstructionCost &gt;= addAllCost) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (E e : elms)</span>
+<span class="fc" id="L162">				add(e);</span>
 		} else {
-<span class="nc" id="L164">			E[] a = arr;</span>
-<span class="nc" id="L165">			int s = size;</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">			for (E e : elms)</span>
-<span class="nc" id="L167">				a[s++] = e;</span>
-<span class="nc" id="L168">			size = s;</span>
+<span class="fc" id="L164">			E[] a = arr;</span>
+<span class="fc" id="L165">			int s = size;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			for (E e : elms)</span>
+<span class="fc" id="L167">				a[s++] = e;</span>
+<span class="fc" id="L168">			size = s;</span>
 
-<span class="nc bnc" id="L170" title="All 2 branches missed.">			if (s &gt; 1) {</span>
-<span class="nc" id="L171">				int lastLayer = Utils.log2ceil(s + 1) - 1;</span>
-<span class="nc" id="L172">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
-<span class="nc" id="L174">					moveDown(parent, a[parent]);</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">			if (s &gt; 1) {</span>
+<span class="fc" id="L171">				int lastLayer = Utils.log2ceil(s + 1) - 1;</span>
+<span class="fc" id="L172">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
+<span class="fc" id="L174">					moveDown(parent, a[parent]);</span>
 			}
 		}
-<span class="nc" id="L177">	}</span>
+<span class="fc" id="L177">	}</span>
 
 	@Override
 	public boolean addAll(Collection&lt;? extends E&gt; other) {
-<span class="nc bnc" id="L181" title="All 2 branches missed.">		if (other.isEmpty())</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">		if (other.isEmpty())</span>
 <span class="nc" id="L182">			return false;</span>
-<span class="nc" id="L183">		insertAll(other);</span>
-<span class="nc" id="L184">		return true;</span>
+<span class="fc" id="L183">		insertAll(other);</span>
+<span class="fc" id="L184">		return true;</span>
 	}
 
 	@Override
 	public Iterator&lt;E&gt; iterator() {
-<span class="nc" id="L189">		return new It();</span>
+<span class="fc" id="L189">		return new It();</span>
 	}
 
 	private class It implements Iterator&lt;E&gt; {
 
 		int i;
 
-<span class="nc" id="L196">		It() {</span>
-<span class="nc" id="L197">			i = 0;</span>
-<span class="nc" id="L198">		}</span>
+<span class="fc" id="L196">		It() {</span>
+<span class="fc" id="L197">			i = 0;</span>
+<span class="fc" id="L198">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L202" title="All 2 branches missed.">			return i &lt; size;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">			return i &lt; size;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc bnc" id="L207" title="All 2 branches missed.">			if (i &gt;= size)</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">			if (i &gt;= size)</span>
 <span class="nc" id="L208">				throw new NoSuchElementException();</span>
-<span class="nc" id="L209">			return arr[i++];</span>
+<span class="fc" id="L209">			return arr[i++];</span>
 		}
 
 	}
@@ -214,18 +214,18 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 	private void moveUp(int i, E e) {
 <span class="fc" id="L215">		E[] a = arr;</span>
 
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
 				int p;
-<span class="nc bnc" id="L220" title="All 4 branches missed.">				if (i == 0 || Utils.cmpDefault(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
-<span class="nc" id="L221">					a[i] = e;</span>
-<span class="nc" id="L222">					return;</span>
+<span class="fc bfc" id="L220" title="All 4 branches covered.">				if (i == 0 || Utils.cmpDefault(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L221">					a[i] = e;</span>
+<span class="fc" id="L222">					return;</span>
 				}
 
 				/* e is smaller than parent, continue up */
-<span class="nc" id="L226">				a[i] = a[p];</span>
-<span class="nc" id="L227">				i = p;</span>
-<span class="nc" id="L228">			}</span>
+<span class="fc" id="L226">				a[i] = a[p];</span>
+<span class="fc" id="L227">				i = p;</span>
+<span class="fc" id="L228">			}</span>
 		} else {
 			for (;;) {
 				int p;
@@ -245,28 +245,28 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 <span class="fc" id="L245">		E[] a = arr;</span>
 <span class="fc" id="L246">		int s = size;</span>
 
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
-<span class="nc" id="L250">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
-<span class="nc bnc" id="L251" title="All 2 branches missed.">				if (c0i &gt;= s)</span>
-<span class="nc" id="L252">					break;</span>
+<span class="fc" id="L250">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L252">					break;</span>
 
-<span class="nc" id="L254">				E c01, c0 = a[c0i], c1;</span>
-<span class="nc bnc" id="L255" title="All 4 branches missed.">				if (c1i &lt; s &amp;&amp; Utils.cmpDefault(c1 = a[c1i], c0) &lt; 0) {</span>
-<span class="nc" id="L256">					c01i = c1i;</span>
-<span class="nc" id="L257">					c01 = c1;</span>
+<span class="fc" id="L254">				E c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L255" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; Utils.cmpDefault(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L256">					c01i = c1i;</span>
+<span class="fc" id="L257">					c01 = c1;</span>
 				} else {
-<span class="nc" id="L259">					c01i = c0i;</span>
-<span class="nc" id="L260">					c01 = c0;</span>
+<span class="fc" id="L259">					c01i = c0i;</span>
+<span class="fc" id="L260">					c01 = c0;</span>
 				}
 
-<span class="nc bnc" id="L263" title="All 2 branches missed.">				if (Utils.cmpDefault(e, c01) &lt;= 0)</span>
-<span class="nc" id="L264">					break;</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">				if (Utils.cmpDefault(e, c01) &lt;= 0)</span>
+<span class="fc" id="L264">					break;</span>
 
 				/* continue down */
-<span class="nc" id="L267">				a[i] = c01;</span>
-<span class="nc" id="L268">				i = c01i;</span>
-<span class="nc" id="L269">			}</span>
+<span class="fc" id="L267">				a[i] = c01;</span>
+<span class="fc" id="L268">				i = c01i;</span>
+<span class="fc" id="L269">			}</span>
 		} else {
 			for (;;) {
 <span class="fc" id="L272">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
@@ -294,4 +294,4 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 <span class="fc" id="L294">	}</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

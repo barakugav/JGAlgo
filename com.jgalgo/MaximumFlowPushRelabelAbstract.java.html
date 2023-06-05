@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 	@Override
 	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
 <span class="fc" id="L52">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
 <span class="fc" id="L53">			FlowNetwork.Int net = new FlowNetwork.Int() {</span>
 
@@ -75,11 +75,11 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 			};
 <span class="fc" id="L76">			return newWorkerInt(g, net, source, sink).computeMinimumCut();</span>
 		} else {
-<span class="nc" id="L78">			FlowNetwork net = new FlowNetwork() {</span>
+<span class="fc" id="L78">			FlowNetwork net = new FlowNetwork() {</span>
 
 				@Override
 				public double getCapacity(int edge) {
-<span class="nc" id="L82">					return w.weight(edge);</span>
+<span class="fc" id="L82">					return w.weight(edge);</span>
 				}
 
 				@Override
@@ -98,7 +98,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 				}
 
 			};
-<span class="nc" id="L101">			return newWorkerDouble(g, net, source, sink).computeMinimumCut();</span>
+<span class="fc" id="L101">			return newWorkerDouble(g, net, source, sink).computeMinimumCut();</span>
 		}
 	}
 
@@ -623,8 +623,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L623">				int e = eit.nextInt();</span>
 <span class="fc" id="L624">				int v = eit.target();</span>
 <span class="fc" id="L625">				int f = getResidualCapacity(e);</span>
-<span class="pc bpc" id="L626" title="1 of 4 branches missed.">				if (f &gt; 0 &amp;&amp; label[source] &gt; label[v]) {</span>
-<span class="pc bpc" id="L627" title="1 of 4 branches missed.">					if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc bfc" id="L626" title="All 4 branches covered.">				if (f &gt; 0 &amp;&amp; label[source] &gt; label[v]) {</span>
+<span class="fc bfc" id="L627" title="All 4 branches covered.">					if (v != sink &amp;&amp; !hasExcess(v))</span>
 <span class="fc" id="L628">						activate(v);</span>
 <span class="fc" id="L629">					push(e, f);</span>
 				}
@@ -752,4 +752,4 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

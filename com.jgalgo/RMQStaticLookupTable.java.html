@@ -42,8 +42,8 @@ class RMQStaticLookupTable implements RMQStatic {
 <span class="nc" id="L42">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
 <span class="fc" id="L43">		Objects.requireNonNull(c);</span>
 
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (n &lt;= DSu08.LIMIT)</span>
-<span class="nc" id="L46">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="fc" id="L46">			return new DSu08(c, (byte) n);</span>
 <span class="fc bfc" id="L47" title="All 2 branches covered.">		else if (n &lt;= DSu16.LIMIT)</span>
 <span class="fc" id="L48">			return new DSu16(c, (short) n);</span>
 <span class="pc bpc" id="L49" title="1 of 2 branches missed.">		else if (n &lt;= DSu32.LIMIT)</span>
@@ -66,27 +66,27 @@ class RMQStaticLookupTable implements RMQStatic {
 		private final byte[] arr;
 		private static final int LIMIT = 1 &lt;&lt; ((Byte.SIZE - 1) / 2);
 
-<span class="nc" id="L69">		DSu08(RMQStaticComparator c, byte n) {</span>
-<span class="nc" id="L70">			arr = new byte[arrSize(n)];</span>
-<span class="nc" id="L71">			this.n = n;</span>
+<span class="fc" id="L69">		DSu08(RMQStaticComparator c, byte n) {</span>
+<span class="fc" id="L70">			arr = new byte[arrSize(n)];</span>
+<span class="fc" id="L71">			this.n = n;</span>
 
-<span class="nc bnc" id="L73" title="All 2 branches missed.">			for (byte i = 0; i &lt; n - 1; i++)</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
-<span class="nc" id="L77">					byte m = arr[indexOf(n, i, j - 1)];</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L77">					byte m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="nc" id="L81">		}</span>
+<span class="fc" id="L81">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="nc bnc" id="L85" title="All 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="pc bpc" id="L85" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
 <span class="nc" id="L86">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">			if (i == j)</span>
-<span class="nc" id="L88">				return i;</span>
-<span class="nc" id="L89">			return arr[indexOf(n, i, j)];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L88">				return i;</span>
+<span class="fc" id="L89">			return arr[indexOf(n, i, j)];</span>
 		}
 	}
 
@@ -153,4 +153,4 @@ class RMQStaticLookupTable implements RMQStatic {
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

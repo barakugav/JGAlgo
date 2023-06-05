@@ -1279,7 +1279,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 		}
 	}
 
-	static abstract class Mapped&lt;E&gt; implements Weights&lt;E&gt; {
+	static abstract class Mapped&lt;E&gt; implements WeightsImpl&lt;E&gt; {
 
 		private final WeightsImpl.Index&lt;E&gt; weights;
 		final IndexIdMap indexMap;
@@ -1792,26 +1792,26 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="pc bpc" id="L1792" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
 <span class="fc" id="L1793">			return w;</span>
 
-<span class="pc bpc" id="L1795" title="1 of 2 branches missed.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
+<span class="fc bfc" id="L1795" title="All 2 branches covered.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
 			/* The weight function is some implementation of a mapped weights object */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-<span class="nc" id="L1798">			WeightsImpl&lt;?&gt; weights = (WeightsImpl&lt;?&gt;) w;</span>
-<span class="nc" id="L1799">			final boolean unmodifiable = weights instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
-<span class="nc bnc" id="L1800" title="All 2 branches missed.">			if (unmodifiable)</span>
+<span class="fc" id="L1798">			WeightsImpl&lt;?&gt; weights = (WeightsImpl&lt;?&gt;) w;</span>
+<span class="fc" id="L1799">			final boolean unmodifiable = weights instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
+<span class="pc bpc" id="L1800" title="1 of 2 branches missed.">			if (unmodifiable)</span>
 <span class="nc" id="L1801">				weights = ((WeightsImpl.Unmodifiable&lt;?&gt;) weights).weights;</span>
-<span class="nc bnc" id="L1802" title="All 2 branches missed.">			if (!(weights instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
+<span class="pc bpc" id="L1802" title="1 of 2 branches missed.">			if (!(weights instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
 <span class="nc" id="L1803">				throw new IllegalArgumentException(&quot;weights of index graph used with non index graph&quot;);</span>
-<span class="nc" id="L1804">			weights = ((WeightsImpl.Mapped&lt;?&gt;) weights).weights;</span>
-<span class="nc bnc" id="L1805" title="All 2 branches missed.">			if (unmodifiable)</span>
+<span class="fc" id="L1804">			weights = ((WeightsImpl.Mapped&lt;?&gt;) weights).weights;</span>
+<span class="pc bpc" id="L1805" title="1 of 2 branches missed.">			if (unmodifiable)</span>
 <span class="nc" id="L1806">				weights = weights.unmodifiableView();</span>
-<span class="nc" id="L1807">			return (WeightFunction) weights;</span>
+<span class="fc" id="L1807">			return (WeightFunction) weights;</span>
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-<span class="fc bfc" id="L1811" title="All 2 branches covered.">			if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L1812">				WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="fc" id="L1813">				WeightFunction.Int wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
-<span class="fc" id="L1814">				return wIntMapped;</span>
+<span class="pc bpc" id="L1811" title="1 of 2 branches missed.">			if (w instanceof WeightFunction.Int) {</span>
+<span class="nc" id="L1812">				WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="nc" id="L1813">				WeightFunction.Int wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
+<span class="nc" id="L1814">				return wIntMapped;</span>
 			} else {
 <span class="fc" id="L1816">				return idx -&gt; w.weight(map.indexToId(idx));</span>
 			}
@@ -1819,4 +1819,4 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -303,7 +303,7 @@ class HeapPairing {
 		@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 		@Override
 		public Iterator&lt;HeapReference&lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L306">			return (Iterator) new HeapPairing.Abstract.PreOrderIter&lt;&gt;(minRoot);</span>
+<span class="nc" id="L306">			return (Iterator) new HeapPairing.Abstract.PreOrderIter&lt;&gt;(minRoot);</span>
 		}
 
 <span class="fc" id="L309">		static abstract class INode&lt;K, V, Node extends INode&lt;K, V, Node&gt;&gt; implements HeapReference&lt;K, V&gt; {</span>
@@ -334,39 +334,39 @@ class HeapPairing {
 
 		static class PreOrderIter&lt;K, V, Node extends INode&lt;K, V, Node&gt;&gt; implements Iterator&lt;Node&gt; {
 
-<span class="fc" id="L337">			private final Stack&lt;Node&gt; path = new ObjectArrayList&lt;&gt;();</span>
+<span class="nc" id="L337">			private final Stack&lt;Node&gt; path = new ObjectArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L339">			PreOrderIter(Node p) {</span>
-<span class="fc bfc" id="L340" title="All 2 branches covered.">				if (p != null)</span>
-<span class="fc" id="L341">					path.push(p);</span>
-<span class="fc" id="L342">			}</span>
+<span class="nc" id="L339">			PreOrderIter(Node p) {</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">				if (p != null)</span>
+<span class="nc" id="L341">					path.push(p);</span>
+<span class="nc" id="L342">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L346" title="All 2 branches covered.">				return !path.isEmpty();</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">				return !path.isEmpty();</span>
 			}
 
 			@Override
 			public Node next() {
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">				if (!hasNext())</span>
 <span class="nc" id="L352">					throw new NoSuchElementException();</span>
-<span class="fc" id="L353">				final Node ret = path.top();</span>
+<span class="nc" id="L353">				final Node ret = path.top();</span>
 
 				Node next;
-<span class="fc bfc" id="L356" title="All 2 branches covered.">				if ((next = ret.child) != null) {</span>
-<span class="fc" id="L357">					path.push(next);</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">				if ((next = ret.child) != null) {</span>
+<span class="nc" id="L357">					path.push(next);</span>
 				} else {
 					Node p0;
 					do {
-<span class="fc" id="L361">						p0 = path.pop();</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">						if ((next = p0.next) != null) {</span>
-<span class="fc" id="L363">							path.push(next);</span>
-<span class="fc" id="L364">							break;</span>
+<span class="nc" id="L361">						p0 = path.pop();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">						if ((next = p0.next) != null) {</span>
+<span class="nc" id="L363">							path.push(next);</span>
+<span class="nc" id="L364">							break;</span>
 						}
-<span class="fc bfc" id="L366" title="All 2 branches covered.">					} while (!path.isEmpty());</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">					} while (!path.isEmpty());</span>
 				}
 
-<span class="fc" id="L369">				return ret;</span>
+<span class="nc" id="L369">				return ret;</span>
 			}
 
 		}
@@ -658,8 +658,8 @@ class HeapPairing {
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		WithIntKeys(Class&lt;? extends V&gt; valueType, Comparator&lt;? super Integer&gt; comparator) {
 <span class="fc" id="L660">			super(valueType, comparator);</span>
-<span class="fc bfc" id="L661" title="All 4 branches covered.">			intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator</span>
-<span class="fc" id="L662">					: (k1, k2) -&gt; comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));</span>
+<span class="pc bpc" id="L661" title="1 of 4 branches missed.">			intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator</span>
+<span class="pc" id="L662">					: (k1, k2) -&gt; comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));</span>
 <span class="fc bfc" id="L663" title="All 2 branches covered.">			if (valueType == int.class) {</span>
 <span class="fc" id="L664">				nodesFactory = (IntFunction) NodeIntegerInt::new;</span>
 <span class="pc bpc" id="L665" title="1 of 2 branches missed.">			} else if (valueType == void.class) {</span>
@@ -793,4 +793,4 @@ class HeapPairing {
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -67,6 +67,19 @@ public interface IndexGraph extends Graph {
 	IntSet edges();
 
 	/**
+	 * Unsupported operation.
+	 * &lt;p&gt;
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
+	 *
+	 * @throws UnsupportedOperationException always
+	 */
+	@Override
+	@Deprecated
+	default void addVertex(int vertex) {
+<span class="nc" id="L79">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * &lt;p&gt;
 	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
@@ -75,6 +88,19 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	void removeVertex(int vertex);
+
+	/**
+	 * Unsupported operation.
+	 * &lt;p&gt;
+	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
+	 *
+	 * @throws UnsupportedOperationException always
+	 */
+	@Override
+	@Deprecated
+	default void addEdge(int source, int target, int edge) {
+<span class="nc" id="L102">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -95,8 +121,8 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L98">		Graph.super.removeEdgesOf(vertex);</span>
-<span class="fc" id="L99">	}</span>
+<span class="fc" id="L124">		Graph.super.removeEdgesOf(vertex);</span>
+<span class="fc" id="L125">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -107,8 +133,8 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeEdgesOutOf(int source) {
-<span class="fc" id="L110">		Graph.super.removeEdgesOutOf(source);</span>
-<span class="fc" id="L111">	}</span>
+<span class="fc" id="L136">		Graph.super.removeEdgesOutOf(source);</span>
+<span class="fc" id="L137">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -122,8 +148,8 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeEdgesInOf(int target) {
-<span class="fc" id="L125">		Graph.super.removeEdgesInOf(target);</span>
-<span class="fc" id="L126">	}</span>
+<span class="fc" id="L151">		Graph.super.removeEdgesInOf(target);</span>
+<span class="fc" id="L152">	}</span>
 
 	/**
 	 * Get the ID strategy of the vertices of the graph.
@@ -154,12 +180,12 @@ public interface IndexGraph extends Graph {
 
 	@Override
 	default IndexGraph unmodifiableView() {
-<span class="nc" id="L157">		return Graphs.unmodifiableView(this);</span>
+<span class="nc" id="L183">		return Graphs.unmodifiableView(this);</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="nc" id="L162">		return Graphs.reverseView(this);</span>
+<span class="nc" id="L188">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -170,7 +196,7 @@ public interface IndexGraph extends Graph {
 	 * @return a new builder that can build undirected index graphs
 	 */
 	static IndexGraph.Builder newBuilderUndirected() {
-<span class="fc" id="L173">		return new IndexGraphBuilderImpl(false);</span>
+<span class="fc" id="L199">		return new IndexGraphBuilderImpl(false);</span>
 	}
 
 	/**
@@ -181,7 +207,7 @@ public interface IndexGraph extends Graph {
 	 * @return a new builder that can build directed index graphs
 	 */
 	static IndexGraph.Builder newBuilderDirected() {
-<span class="fc" id="L184">		return new IndexGraphBuilderImpl(true);</span>
+<span class="fc" id="L210">		return new IndexGraphBuilderImpl(true);</span>
 	}
 
 	/**
@@ -247,4 +273,4 @@ public interface IndexGraph extends Graph {
 	}
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
