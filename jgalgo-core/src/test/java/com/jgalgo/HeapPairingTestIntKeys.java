@@ -19,7 +19,7 @@ package com.jgalgo;
 import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
-public class HeapBinaryTest extends TestBase {
+public class HeapPairingTestIntKeys extends TestBase {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Heap.Builder<Integer> heapBuilder() {
@@ -27,7 +27,7 @@ public class HeapBinaryTest extends TestBase {
 
 			@Override
 			public Heap build(Comparator cmp) {
-				return new HeapBinary(cmp);
+				return heapReferenceableBuilder().build(cmp).asHeap();
 			}
 
 			@Override
@@ -42,34 +42,50 @@ public class HeapBinaryTest extends TestBase {
 		};
 	}
 
+	private static HeapReferenceable.Builder<Integer, Void> heapReferenceableBuilder() {
+		return HeapReferenceable.newBuilder().setOption("impl", "HeapPairing").<Integer>keysTypeObj().valuesTypeVoid();
+	}
+
 	@Test
 	public void testRandOpsDefaultCompare() {
-		final long seed = 0x28f9c6a5d5270049L;
+		final long seed = 0x7a98aed671bf0c81L;
 		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
-		final long seed = 0xb3c93b9771081239L;
+		final long seed = 0x3980b84440c200feL;
 		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
-		final long seed = 0x3df4bf23b32c1d8bL;
+		final long seed = 0x25467ce9958980c1L;
 		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldDefaultCompare() {
-		final long seed = 0xab3cf8bc3aeb0d18L;
+		final long seed = 0xc3cd155dfa9d97f6L;
 		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
-		final long seed = 0xff8e992c40b921d9L;
+		final long seed = 0x5d201c45681ae903L;
 		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
+	}
+
+	@Test
+	public void testDecreaseKeyDefaultCompare() {
+		final long seed = 0x90a80620c3ef1a43L;
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
+	}
+
+	@Test
+	public void testDecreaseKeyCustomCompare() {
+		final long seed = 0x4204a31e91374f21L;
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

@@ -21,6 +21,18 @@ import org.junit.jupiter.api.Test;
 public class ShortestPathSingleSourceDijkstraTest extends TestBase {
 
 	@Test
+	public void testRandGraphDirectedPositive() {
+		final long seed = 0xb387c17b735d1f85L;
+		ShortestPathSingleSourceTestUtils.testSSSPPositive(new ShortestPathSingleSourceDijkstra(), true, seed);
+	}
+
+	@Test
+	public void testSSSPUndirectedPositive() {
+		final long seed = 0x67693af00925a538L;
+		ShortestPathSingleSourceTestUtils.testSSSPPositive(new ShortestPathSingleSourceDijkstra(), false, seed);
+	}
+
+	@Test
 	public void testRandGraphDirectedPositiveInt() {
 		final long seed = 0x4c6096c679a03079L;
 		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(new ShortestPathSingleSourceDijkstra(), seed);

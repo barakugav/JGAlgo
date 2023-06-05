@@ -51,7 +51,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		ForkJoinPool pool = Utils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
-			ShortestPathSingleSource sssp = new ShortestPathSingleSourceCardinality();
+			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();
 			for (int source = 0; source < n; source++)
 				res.ssspResults[source] = sssp.computeCardinalityShortestPaths(g, source);
 
@@ -59,7 +59,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			/* parallel */
 			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
 			ThreadLocal<ShortestPathSingleSource> sssp =
-					ThreadLocal.withInitial(ShortestPathSingleSourceCardinality::new);
+					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().setCardinality(true).build());
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
 				tasks.add(Utils.recursiveAction(

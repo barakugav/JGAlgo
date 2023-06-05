@@ -25,14 +25,15 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("boxing")
 public class ArraysUtilsTest extends TestBase {
 
 	@Test
-	public void testGetKthElementRandArrayUnique() {
+	public void testIntGetKthElementRandArrayUnique() {
 		final long seed = 0xedf92ed1b59ae1e1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4096));
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = randPermutation(n, seedGen.nextSeed());
@@ -41,11 +42,24 @@ public class ArraysUtilsTest extends TestBase {
 	}
 
 	@Test
-	public void testGetKthElementRandArrayNonUnique() {
+	public void testObjGetKthElementRandArrayUnique() {
+		final long seed = 0x7f7871365f84b52eL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases =
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			Integer[] a = toIntegerArr(randPermutation(n, seedGen.nextSeed()));
+			testGetKthElement(a, seedGen.nextSeed());
+		});
+	}
+
+	@Test
+	public void testIntGetKthElementRandArrayNonUnique() {
 		final long seed = 0x97e45458f8daefd2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4096));
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
@@ -54,7 +68,20 @@ public class ArraysUtilsTest extends TestBase {
 	}
 
 	@Test
-	public void testGetKthElementRandArraySameElm() {
+	public void testObjGetKthElementRandArrayNonUnique() {
+		final long seed = 0x6ee2228e9064ab3eL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases =
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
+			testGetKthElement(a, seedGen.nextSeed());
+		});
+	}
+
+	@Test
+	public void testIntGetKthElementRandArraySameElm() {
 		final long seed = 0x77b8bdd802380333L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
@@ -67,31 +94,47 @@ public class ArraysUtilsTest extends TestBase {
 		});
 	}
 
-	private static void testGetKthElement(int[] a, long seed) {
-		Random rand = new Random(seed);
+	@Test
+	public void testObjGetKthElementRandArraySameElm() {
+		final long seed = 0x656f2a7fcad2e9e8L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases =
+				List.of(phase(1, 8), phase(1, 32), phase(1, 128), phase(1, 256), phase(1, 1024), phase(1, 3849));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			int[] a = new int[n];
+			Arrays.fill(a, 6);
+			testGetKthElement(toIntegerArr(a), seedGen.nextSeed());
+		});
+	}
 
-		Integer[] A = toIntegerArr(a);
-		int k = rand.nextInt(A.length);
-		int actual = ArraysUtils.getKthElement(A, k, null).intValue();
+	private static void testGetKthElement(int[] a, long seed) {
+		int k = new Random(seed).nextInt(a.length);
+		int actual = ArraysUtils.getKthElement(a, k, null);
 
 		java.util.Arrays.sort(a);
-		int expected = a[k];
+		assertEquals(a[k], actual);
+	}
 
-		assertEquals(expected, actual, "Unexpected K'th elemet");
+	private static void testGetKthElement(Integer[] a, long seed) {
+		int k = new Random(seed).nextInt(a.length);
+		int actual = ArraysUtils.getKthElement(a, k, null);
+
+		java.util.Arrays.sort(a);
+		assertEquals(a[k], actual);
 	}
 
 	@Test
-	public void testBucketPartition() {
+	public void testIntBucketPartition() {
 		final SeedGenerator seedGen = new SeedGenerator(0x90fc97e52265ff44L);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4096));
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
-			Integer[] A = toIntegerArr(a);
 			int bucketSize = rand.nextInt(n / 2) + 1;
-			ArraysUtils.bucketPartition(A, 0, n, null, bucketSize);
+			ArraysUtils.bucketPartition(a, 0, n, null, bucketSize);
 
 			java.util.Arrays.sort(a);
 			int bucketNum = (n - 1) / bucketSize + 1;
@@ -99,11 +142,87 @@ public class ArraysUtilsTest extends TestBase {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
-					assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
-							"Bucket element " + A[i] + " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1]
-									+ "]");
+					assertTrue(a[bucketBegin] <= a[i] && a[i] <= a[bucketEnd - 1], "Bucket element " + a[i]
+							+ " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1] + "]");
 				}
 			}
+		});
+	}
+
+	@Test
+	public void testObjBucketPartition() {
+		final SeedGenerator seedGen = new SeedGenerator(0x275079aa6f2fc7d7L);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases =
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
+			int bucketSize = rand.nextInt(n / 2) + 1;
+			ArraysUtils.bucketPartition(a, 0, n, null, bucketSize);
+
+			java.util.Arrays.sort(a);
+			int bucketNum = (n - 1) / bucketSize + 1;
+			for (int b = 0; b < bucketNum; b++) {
+				int bucketBegin = b * bucketSize;
+				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
+				for (int i = bucketBegin; i < bucketEnd; i++) {
+					assertTrue(a[bucketBegin] <= a[i] && a[i] <= a[bucketEnd - 1], "Bucket element " + a[i]
+							+ " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1] + "]");
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testIntPivotPartition() {
+		final SeedGenerator seedGen = new SeedGenerator(0x92f173634ff49309L);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases =
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
+			int pivot = a[rand.nextInt(a.length)];
+			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
+
+			int i = 0;
+			for (; i < n; i++)
+				if (!(a[i] < pivot))
+					break;
+			for (; i < n; i++)
+				if (!(a[i] == pivot))
+					break;
+			for (; i < n; i++)
+				if (!(a[i] > pivot))
+					break;
+			assertEquals(n, i);
+		});
+	}
+
+	@Test
+	public void testObjPivotPartition() {
+		final SeedGenerator seedGen = new SeedGenerator(0xd693bcfe6327104L);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases =
+				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
+			int pivot = a[rand.nextInt(a.length)];
+			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
+
+			int i = 0;
+			for (; i < n; i++)
+				if (!(a[i] < pivot))
+					break;
+			for (; i < n; i++)
+				if (!(a[i] == pivot))
+					break;
+			for (; i < n; i++)
+				if (!(a[i] > pivot))
+					break;
+			assertEquals(n, i);
 		});
 	}
 

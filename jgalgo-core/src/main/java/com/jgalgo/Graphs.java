@@ -109,11 +109,6 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
 			throw new UnsupportedOperationException();
@@ -130,11 +125,6 @@ public class Graphs {
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
 			return null;
-		}
-
-		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -595,7 +585,7 @@ public class Graphs {
 				public int peekNext() {
 					if (!hasNext())
 						throw new NoSuchElementException();
-					return getEdge(source, nextSource);
+					return getEdge(nextSource, target);
 				}
 
 				@Override
@@ -673,6 +663,8 @@ public class Graphs {
 		public EdgeSet getEdges(int source, int target) {
 			checkVertex(source);
 			checkVertex(target);
+			if (source == target)
+				return EdgeIterImpl.EmptyEdgeSet;
 			return new EdgeSetSourceTarget(source, target);
 		}
 
@@ -686,6 +678,24 @@ public class Graphs {
 		@Override
 		public void removeEdge(int edge) {
 			checkEdge(edge);
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdgesOf(int vertex) {
+			checkVertex(vertex);
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdgesOutOf(int vertex) {
+			checkVertex(vertex);
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdgesInOf(int vertex) {
+			checkVertex(vertex);
 			throw new UnsupportedOperationException();
 		}
 
@@ -908,11 +918,6 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
 			throw new UnsupportedOperationException();
@@ -932,11 +937,6 @@ public class Graphs {
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
 			return (WeightsT) ((WeightsImpl<E>) graph.getEdgesWeights(key)).unmodifiableView();
-		}
-
-		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -1220,19 +1220,9 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
-			return graph.addVerticesWeights(key, type);
-		}
-
-		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
 			return graph.addVerticesWeights(key, type, defVal);
-		}
-
-		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
-			return graph.addEdgesWeights(key, type);
 		}
 
 		@Override

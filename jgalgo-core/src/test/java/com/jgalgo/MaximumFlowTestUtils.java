@@ -102,7 +102,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, Boolean2ObjectFunction<Graph> graphImpl, long seed, boolean directed) {
+	static void testRandGraphsInt(MaximumFlow algo, Boolean2ObjectFunction<Graph> graphImpl, long seed,
+			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 3, 3), phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32),
@@ -110,6 +111,27 @@ public class MaximumFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
+			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
+			int source, sink;
+			for (int[] vs = g.vertices().toIntArray();;) {
+				source = vs[rand.nextInt(vs.length)];
+				sink = vs[rand.nextInt(vs.length)];
+				if (source != sink && Path.findPath(g, source, sink) != null)
+					break;
+			}
+
+			testNetworkInt(g, net, source, sink, algo);
+		});
+	}
+
+	static void testRandGraphsWithALotOfParallelEdges(MaximumFlow algo, long seed, boolean directed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases = List.of(phase(256, 3, 30), phase(256, 6, 150), phase(64, 10, 450), phase(64, 18, 1530));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(false)
+					.cycles(true).connected(false).build();
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
 			for (int[] vs = g.vertices().toIntArray();;) {
@@ -178,7 +200,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		for (int u : g.vertices()) {
 			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				int v =it.target();
+				int v = it.target();
 				capacities[vToIdx.idToIndex(u)][vToIdx.idToIndex(v)] += net.getCapacity(e);
 			}
 		}

@@ -21,9 +21,15 @@ import org.junit.jupiter.api.Test;
 public class MinimumMeanCycleDasdanGuptaTest extends TestBase {
 
 	@Test
-	public void testRandGraph() {
+	public void testRandGraphs() {
 		final long seed = 0x18400f641dec53f3L;
-		MinimumMeanCycleTestUtils.testMinimumMeanCycle(new MinimumMeanCycleDasdanGupta(), seed);
+		MinimumMeanCycleTestUtils.testRandGraphs(new MinimumMeanCycleDasdanGupta(), seed);
+	}
+
+	@Test
+	public void testRandGraphsSimilarWeights() {
+		final long seed = 0xfc10c67f9a606f41L;
+		MinimumMeanCycleTestUtils.testRandGraphsSimilarWeights(new MinimumMeanCycleDasdanGupta(), seed);
 	}
 
 }

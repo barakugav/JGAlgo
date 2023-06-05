@@ -41,8 +41,13 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 	}
 
 	@Test
-	public void testGetEdges() {
-		GraphImplTestUtils.testGetEdges(graphImpl());
+	public void testGetEdgesOutIn() {
+		GraphImplTestUtils.testGetEdgesOutIn(graphImpl());
+	}
+
+	@Test
+	public void testGetEdgesSourceTarget() {
+		GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl());
 	}
 
 	@Test

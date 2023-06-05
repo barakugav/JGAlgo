@@ -24,7 +24,7 @@ public class RMQStaticLookupTableTest extends TestBase {
 	public void testRegularNRange64to256() {
 		final long seed = 0xc7d2ec9ae1d4efd0L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (int n = 64; n <= 256; n++)
+		for (int n = 1; n <= 256; n++)
 			RMQStaticUtils.testRMQ(new RMQStaticLookupTable(), n, 1024, seedGen.nextSeed());
 	}
 

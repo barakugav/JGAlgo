@@ -41,6 +41,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -137,7 +139,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	}
 
-	static void testGetEdges(Boolean2ObjectFunction<Graph> graphImpl) {
+	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
 			Graph g = graphImpl.get(directed);
@@ -163,8 +165,13 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			for (int u : g.vertices()) {
-				assertEquals(edgesOut.get(u), new IntOpenHashSet(g.edgesOut(u)));
-				assertEquals(edgesOut.get(u), g.edgesOut(u));
+				if (directed) {
+					assertEquals(edgesOut.get(u), g.edgesOut(u));
+					assertEquals(edgesIn.get(u), g.edgesIn(u));
+				} else {
+					assertEquals(edgesOut.get(u), g.edgesOut(u));
+					assertEquals(edgesOut.get(u), g.edgesIn(u));
+				}
 			}
 			if (directed) {
 				for (int u : g.vertices()) {
@@ -173,7 +180,7 @@ class GraphImplTestUtils extends TestUtils {
 						assertEquals(u, eit.source());
 						assertEquals(g.edgeEndpoint(e, u), eit.target());
 					}
-					assertEquals(edgesOut.get(u), new IntOpenHashSet(g.edgesOut(u)));
+					assertEquals(edgesOut.get(u), g.edgesOut(u));
 					assertEquals(edgesOut.get(u), g.edgesOut(u));
 				}
 				for (int v : g.vertices()) {
@@ -188,7 +195,40 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 		}
+	}
 
+	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph> graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.get(directed);
+			for (int i = 0; i < n; i++)
+				g.addVertex();
+			int[] vs = g.vertices().toIntArray();
+
+			Object2ObjectMap<IntCollection, IntSet> edges = new Object2ObjectOpenHashMap<>();
+			final int edgeRepeat = g.getCapabilities().parallelEdges() ? 3 : 1;
+			for (int repeat = 0; repeat < edgeRepeat; repeat++) {
+				for (int uIdx = 0; uIdx < n; uIdx++) {
+					for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
+						int u = vs[uIdx], v = vs[vIdx];
+						if (u == v && !g.getCapabilities().selfEdges())
+							continue;
+						int e = g.addEdge(u, v);
+						IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
+						edges.computeIfAbsent(key, w -> new IntOpenHashSet()).add(e);
+					}
+				}
+			}
+			for (int uIdx = 0; uIdx < n; uIdx++) {
+				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
+					int u = vs[uIdx], v = vs[vIdx];
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
+					assertEquals(edges.get(key), g.getEdges(u, v));
+				}
+			}
+		}
 	}
 
 	static void testEdgeIter(Boolean2ObjectFunction<Graph> graphImpl) {
@@ -214,9 +254,14 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
+
+			/* edgesOut */
 			for (int u : g.vertices()) {
 				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+					int peekNext = ((EdgeIterImpl) eit).peekNext();
 					int e = eit.nextInt();
+					assertEquals(e, peekNext);
+
 					int v = eit.target();
 					if (directed) {
 						assertEquals(edges.get(e), IntList.of(eit.source(), eit.target()));
@@ -231,9 +276,14 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
+
+			/* edgesIn */
 			for (int v : g.vertices()) {
 				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
+					int peekNext = ((EdgeIterImpl) eit).peekNext();
 					int e = eit.nextInt();
+					assertEquals(e, peekNext);
+
 					int u = eit.source();
 					if (directed) {
 						assertEquals(edges.get(e), IntList.of(eit.source(), eit.target()));
@@ -245,6 +295,28 @@ class GraphImplTestUtils extends TestUtils {
 					if (directed) {
 						assertEquals(g.edgeSource(e), eit.source());
 						assertEquals(g.edgeTarget(e), eit.target());
+					}
+				}
+			}
+
+			/* getEdges */
+			for (int uIdx = 0; uIdx < n; uIdx++) {
+				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
+					int u = vs[uIdx], v = vs[vIdx];
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					for (EdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
+						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int e = eit.nextInt();
+						assertEquals(e, peekNext);
+
+						assertEquals(u, eit.source());
+						assertEquals(v, eit.target());
+						if (directed) {
+							assertEquals(edges.get(e), IntList.of(eit.source(), eit.target()));
+						} else {
+							assertEquals(edges.get(e), intSetOf(eit.source(), eit.target()));
+						}
 					}
 				}
 			}
@@ -761,14 +833,21 @@ class GraphImplTestUtils extends TestUtils {
 
 		Degree, DegreeIn, DegreeOut,
 
-		AddEdge, RemoveEdge, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter,
-		// RemoveEdgesMulti,
-		RemoveEdgesOfVertex, RemoveEdgesOfVertexUsingIter, RemoveEdgesInOfVertex, RemoveEdgesInOfVertexUsingIter, RemoveEdgesOutOfVertex, RemoveEdgesOutOfVertexUsingIter, ReverseEdge,
+		AddEdge,
+
+		RemoveEdge, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter, RemoveEdgeUsingOutEdgeSet, RemoveEdgeUsingInEdgeSet, RemoveEdgeUsingSourceTargetEdgeSet,
+
+		RemoveEdgesOfVertex, RemoveEdgesOfVertexUsingEdgeSet, RemoveEdgesOfVertexUsingIter,
+
+		RemoveEdgesInOfVertex, RemoveEdgesInOfVertexUsingEdgeSet, RemoveEdgesInOfVertexUsingIter,
+
+		RemoveEdgesOutOfVertex, RemoveEdgesOutOfVertexUsingEdgeSet, RemoveEdgesOutOfVertexUsingIter,
+
+		ReverseEdge,
 
 		// ClearEdges,
 
 		AddVertex, RemoveVertex,
-		// RemoveVertices,
 	}
 
 	private static class UniqueGenerator {
@@ -799,18 +878,23 @@ class GraphImplTestUtils extends TestUtils {
 		if (capabilities.edgeAdd())
 			opRand.add(GraphOp.AddEdge, 80);
 		if (capabilities.edgeRemove()) {
-			opRand.add(GraphOp.RemoveEdge, 4);
-			opRand.add(GraphOp.RemoveEdgeUsingOutIter, 4);
-			opRand.add(GraphOp.RemoveEdgeUsingInIter, 4);
-			// opRand.add(GraphOp.RemoveEdgesMulti, 1);
+			opRand.add(GraphOp.RemoveEdge, 3);
+			opRand.add(GraphOp.RemoveEdgeUsingOutIter, 2);
+			opRand.add(GraphOp.RemoveEdgeUsingInIter, 2);
+			opRand.add(GraphOp.RemoveEdgeUsingOutEdgeSet, 2);
+			opRand.add(GraphOp.RemoveEdgeUsingInEdgeSet, 2);
+			opRand.add(GraphOp.RemoveEdgeUsingSourceTargetEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesOfVertex, 1);
+			opRand.add(GraphOp.RemoveEdgesOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesOfVertexUsingIter, 1);
 			// opRand.add(GraphOp.ClearEdges, 1);
 		}
 		if (capabilities.edgeRemove() && capabilities.directed()) {
 			opRand.add(GraphOp.RemoveEdgesInOfVertex, 1);
+			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingIter, 1);
 			opRand.add(GraphOp.RemoveEdgesOutOfVertex, 1);
+			opRand.add(GraphOp.RemoveEdgesOutOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesOutOfVertexUsingIter, 1);
 		}
 		if (capabilities.directed())
@@ -923,6 +1007,55 @@ class GraphImplTestUtils extends TestUtils {
 					assertEquals(iterationExpected, iterationActual);
 					break;
 				}
+				case RemoveEdgeUsingOutEdgeSet: {
+					if (tracker.edgesNum() == 0)
+						continue;
+					GraphTracker.Edge edge = tracker.getRandEdge(rand);
+					GraphTracker.Vertex source = edge.u;
+					int e = getEdge.applyAsInt(edge);
+
+					EdgeSet edgeSet = g.edgesOut(source.id);
+					assertTrue(edgeSet.contains(e));
+
+					boolean removed = edgeSet.remove(e);
+					assertTrue(removed);
+
+					tracker.removeEdge(edge);
+					break;
+				}
+				case RemoveEdgeUsingInEdgeSet: {
+					if (tracker.edgesNum() == 0)
+						continue;
+					GraphTracker.Edge edge = tracker.getRandEdge(rand);
+					GraphTracker.Vertex target = edge.v;
+					int e = getEdge.applyAsInt(edge);
+
+					EdgeSet edgeSet = g.edgesIn(target.id);
+					assertTrue(edgeSet.contains(e));
+
+					boolean removed = edgeSet.remove(e);
+					assertTrue(removed);
+
+					tracker.removeEdge(edge);
+					break;
+				}
+				case RemoveEdgeUsingSourceTargetEdgeSet: {
+					if (tracker.edgesNum() == 0)
+						continue;
+					GraphTracker.Edge edge = tracker.getRandEdge(rand);
+					GraphTracker.Vertex source = edge.u;
+					GraphTracker.Vertex target = edge.v;
+					int e = getEdge.applyAsInt(edge);
+
+					EdgeSet edgeSet = g.getEdges(source.id, target.id);
+					assertTrue(edgeSet.contains(e));
+
+					boolean removed = edgeSet.remove(e);
+					assertTrue(removed);
+
+					tracker.removeEdge(edge);
+					break;
+				}
 				case RemoveEdgeUsingInIter: {
 					if (tracker.edgesNum() == 0)
 						continue;
@@ -956,25 +1089,22 @@ class GraphImplTestUtils extends TestUtils {
 					assertEquals(iterationExpected, iterationActual);
 					break;
 				}
-				// case RemoveEdgesMulti: {
-				// if (tracker.edgesNum() < 3)
-				// continue;
-				// Set<GraphTracker.Edge> edges = new ObjectOpenHashSet<>(3);
-				// while (edges.size() < 3)
-				// edges.add(tracker.getRandEdge(rand));
-				// IntSet edgesInt = new IntOpenHashSet(3);
-				// for (GraphTracker.Edge edge : edges)
-				// edgesInt.add(getEdge.applyAsInt(edge));
-				// g.removeEdges(edgesInt);
-				// for (GraphTracker.Edge edge : edges)
-				// tracker.removeEdge(edge);
-				// break;
-				// }
 				case RemoveEdgesOfVertex: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
 					g.removeEdgesOf(u.id);
+					tracker.removeEdgesOf(u);
+					break;
+				}
+				case RemoveEdgesOfVertexUsingEdgeSet: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.edgesOut(u.id).clear();
+					assertTrue(g.edgesOut(u.id).isEmpty());
+					g.edgesIn(u.id).clear();
+					assertTrue(g.edgesIn(u.id).isEmpty());
 					tracker.removeEdgesOf(u);
 					break;
 				}
@@ -1001,6 +1131,15 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.removeEdgesInOf(u);
 					break;
 				}
+				case RemoveEdgesInOfVertexUsingEdgeSet: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.edgesIn(u.id).clear();
+					assertTrue(g.edgesIn(u.id).isEmpty());
+					tracker.removeEdgesInOf(u);
+					break;
+				}
 				case RemoveEdgesInOfVertexUsingIter: {
 					if (tracker.verticesNum() == 0)
 						continue;
@@ -1017,6 +1156,15 @@ class GraphImplTestUtils extends TestUtils {
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
 					g.removeEdgesOutOf(u.id);
+					tracker.removeEdgesOutOf(u);
+					break;
+				}
+				case RemoveEdgesOutOfVertexUsingEdgeSet: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.edgesOut(u.id).clear();
+					assertTrue(g.edgesOut(u.id).isEmpty());
 					tracker.removeEdgesOutOf(u);
 					break;
 				}

@@ -34,7 +34,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDijkstra();
+	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();
+	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
 	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 	private static final Object EdgeWeightKey = new Utils.Obj("weight");
 
@@ -52,7 +53,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(ShortestPathSingleSource algo) {
-		ssspAlgo = Objects.requireNonNull(algo);
+		ssspPositive = Objects.requireNonNull(algo);
 	}
 
 	/**
@@ -140,12 +141,12 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		ShortestPathSingleSource.Result sp = new ShortestPathSingleSourceBellmanFord().computeShortestPaths(g, w, s);
+		ShortestPathSingleSource.Result sp = ssspNegative.computeShortestPaths(g, w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
 		for (;;) {
-			sp = ssspAlgo.computeShortestPaths(g, spWeightFunc, s);
+			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);
 			Path augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)

@@ -1279,7 +1279,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	static abstract class Mapped<E> implements Weights<E> {
+	static abstract class Mapped<E> implements WeightsImpl<E> {
 
 		private final WeightsImpl.Index<E> weights;
 		final IndexIdMap indexMap;

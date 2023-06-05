@@ -84,7 +84,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		}
 
 		double computeMaximumFlow() {
-			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(n).build();
+			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(/* >= */ n).expectedEdgesNum(n).build();
 			for (int v : g.vertices())
 				L.addVertex(v);
 

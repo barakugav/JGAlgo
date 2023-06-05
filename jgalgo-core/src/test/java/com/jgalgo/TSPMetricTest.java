@@ -30,7 +30,7 @@ public class TSPMetricTest extends TestBase {
 		final long seed = 0x6c019c0fba54c10fL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
-				List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(8, 64), phase(4, 128), phase(3, 256));
+				List.of(phase(512, 4), phase(64, 15), phase(32, 32), phase(8, 59), phase(4, 128), phase(3, 256));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());

@@ -421,7 +421,9 @@ public interface Graph {
 	 * @param  <V>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type);
+	default <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+		return addVerticesWeights(key, type, null);
+	}
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph with default value.
@@ -520,7 +522,9 @@ public interface Graph {
 	 * @param  <E>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type);
+	default <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+		return addEdgesWeights(key, type, null);
+	}
 
 	/**
 	 * Add a new weights container associated with the edges of this graph with default value.

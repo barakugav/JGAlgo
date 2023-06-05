@@ -20,13 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
+
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
 
-	static void testMinimumMeanCycle(MinimumMeanCycle algo, long seed) {
+	static void testRandGraphs(MinimumMeanCycle algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -34,6 +36,19 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+
+			verifyMinimumMeanCycle(algo, g, w);
+		});
+	}
+
+	static void testRandGraphsSimilarWeights(MinimumMeanCycle algo, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).build();
+			WeightFunction w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
 		});
@@ -64,7 +79,8 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 
 			for (Path c : Utils.iterable(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
-				assertTrue(cMeanWeight >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
+				final double EPS = 0.0001;
+				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
 			}
 		} else {
 			MinimumMeanCycle validationAlgo = algo instanceof MinimumMeanCycleHoward ? new MinimumMeanCycleDasdanGupta()

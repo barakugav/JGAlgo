@@ -79,7 +79,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 			capacitySum *= 16;
 
 			Graph.Builder builder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
-			Graph L = builder.expectedVerticesNum(n).build();
+			Graph L = builder.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).build();
 			for (int v : g.vertices())
 				L.addVertex(v);
 

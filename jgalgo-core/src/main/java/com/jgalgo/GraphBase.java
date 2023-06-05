@@ -32,16 +32,6 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
-		return addVerticesWeights(key, type, null);
-	}
-
-	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
-		return addEdgesWeights(key, type, null);
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append('{');

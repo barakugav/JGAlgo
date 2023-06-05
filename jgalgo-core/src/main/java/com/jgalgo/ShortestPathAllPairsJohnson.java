@@ -39,7 +39,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
 
-	private ShortestPathSingleSource negativeSssp = new ShortestPathSingleSourceBellmanFord();
+	private ShortestPathSingleSource negativeSssp =
+			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
 	private boolean parallel = JGAlgoConfig.parallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
@@ -102,14 +103,15 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		ForkJoinPool pool = Utils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
-			ShortestPathSingleSource sssp = new ShortestPathSingleSourceDijkstra();
+			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();
 			for (int source = 0; source < n; source++)
 				res.ssspResults[source] = sssp.computeShortestPaths(g, w, source);
 
 		} else {
 			/* parallel */
 			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
-			ThreadLocal<ShortestPathSingleSource> sssp = ThreadLocal.withInitial(ShortestPathSingleSourceDijkstra::new);
+			ThreadLocal<ShortestPathSingleSource> sssp =
+					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().build());
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
 				tasks.add(Utils.recursiveAction(
