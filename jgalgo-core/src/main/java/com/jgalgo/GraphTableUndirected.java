@@ -68,19 +68,19 @@ class GraphTableUndirected extends GraphTableAbstract {
 
 	@Override
 	public void removeEdgesOf(int source) {
-		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {
+		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
 	}
 
 	@Override
-	public void removeEdgesOutOf(int source) {
+	public void removeOutEdgesOf(int source) {
 		removeEdgesOf(source);
 	}
 
 	@Override
-	public void removeEdgesInOf(int target) {
+	public void removeInEdgesOf(int target) {
 		removeEdgesOf(target);
 	}
 
@@ -90,12 +90,12 @@ class GraphTableUndirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
@@ -124,11 +124,11 @@ class GraphTableUndirected extends GraphTableAbstract {
 	@Override
 	void vertexSwap(int v1, int v2) {
 		final int tempV = -2;
-		for (int e : edgesOut(v1))
+		for (int e : outEdges(v1))
 			replaceEdgeEndpoint(e, v1, tempV);
-		for (int e : edgesOut(v2))
+		for (int e : outEdges(v2))
 			replaceEdgeEndpoint(e, v2, v1);
-		for (int e : edgesOut(v1))
+		for (int e : outEdges(v1))
 			replaceEdgeEndpoint(e, tempV, v2);
 		super.vertexSwap(v1, v2);
 	}

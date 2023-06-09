@@ -58,7 +58,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
-			iters[u] = g.edgesOut(u).iterator();
+			iters[u] = g.outEdges(u).iterator();
 
 		IntArrayList tour = new IntArrayList(g.edges().size());
 		IntStack queue = new IntArrayList();
@@ -96,7 +96,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 
 	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+		for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			if (eit.target() != u)
 				d++;
@@ -109,8 +109,8 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
-			int outD = g.edgesOut(u).size();
-			int inD = g.edgesIn(u).size();
+			int outD = g.outEdges(u).size();
+			int inD = g.inEdges(u).size();
 			if (outD == inD)
 				continue;
 			if (outD == inD + 1) {
@@ -143,7 +143,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
-			iters[u] = g.edgesOut(u).iterator();
+			iters[u] = g.outEdges(u).iterator();
 
 		IntArrayList tour = new IntArrayList(g.edges().size());
 		IntStack queue = new IntArrayList();

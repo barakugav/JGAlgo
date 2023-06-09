@@ -304,12 +304,12 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 			double totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : gOrig.edgesOut(source))
+				for (int e : gOrig.outEdges(source))
 					totalFlow += net.getFlow(e);
-				for (int e : gOrig.edgesIn(source))
+				for (int e : gOrig.inEdges(source))
 					totalFlow -= net.getFlow(e);
 			} else {
-				for (int e : g.edgesOut(source))
+				for (int e : g.outEdges(source))
 					totalFlow += flow.getDouble(e);
 			}
 			return totalFlow;
@@ -325,12 +325,12 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 			int totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : gOrig.edgesOut(source))
+				for (int e : gOrig.outEdges(source))
 					totalFlow += net.getFlowInt(e);
-				for (int e : gOrig.edgesIn(source))
+				for (int e : gOrig.inEdges(source))
 					totalFlow -= net.getFlowInt(e);
 			} else {
-				for (int e : g.edgesOut(source))
+				for (int e : g.outEdges(source))
 					totalFlow += flow.getInt(e);
 			}
 			return totalFlow;

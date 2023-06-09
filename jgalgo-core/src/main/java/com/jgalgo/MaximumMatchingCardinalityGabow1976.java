@@ -90,7 +90,7 @@ class MaximumMatchingCardinalityGabow1976 extends MaximumMatchingCardinality {
 				final int u = queue.dequeueInt();
 				int uRoot = root[u];
 
-				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					final int e = eit.nextInt();
 					final int v = eit.target();
 					int vRoot = root[v];

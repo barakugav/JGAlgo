@@ -61,7 +61,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 				assert vRefs[U] == null;
 			for (int U = 1; U < cg.numberOfSuperVertices(); U++) {
 				double weightsSum = 0;
-				for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {
+				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 					int e = eit.nextInt();
 					assert eit.source() == U;
 					int V = eit.target();
@@ -87,7 +87,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 				if (heap.size() > 0) {
 					/* Not the last vertex */
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
-					for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {
+					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
 						assert eit.source() == U;
 						int V = eit.target();
@@ -101,7 +101,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 				} else {
 					/* Last vertex, no need to decrease keys */
 					/* Find the cut-of-the-phase and its weight */
-					for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {
+					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
 						assert eit.source() == U;
 						assert cut.get(eit.target());

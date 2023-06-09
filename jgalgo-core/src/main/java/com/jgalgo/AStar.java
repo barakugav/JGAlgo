@@ -98,7 +98,7 @@ class AStar implements ShortestPathWithHeuristic {
 			final double uDistance = distances.get(u);
 			assert uDistance != Double.POSITIVE_INFINITY;
 
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 

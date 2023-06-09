@@ -51,12 +51,12 @@ class GraphTableDirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
@@ -105,13 +105,13 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-		for (int e : edgesOut(v1))
+		for (int e : outEdges(v1))
 			replaceEdgeSource(e, v2);
-		for (int e : edgesOut(v2))
+		for (int e : outEdges(v2))
 			replaceEdgeSource(e, v1);
-		for (int e : edgesIn(v1))
+		for (int e : inEdges(v1))
 			replaceEdgeTarget(e, v2);
-		for (int e : edgesIn(v2))
+		for (int e : inEdges(v2))
 			replaceEdgeTarget(e, v1);
 		super.vertexSwap(v1, v2);
 	}

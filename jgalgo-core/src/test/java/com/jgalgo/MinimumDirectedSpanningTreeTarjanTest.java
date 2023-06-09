@@ -51,7 +51,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
 			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int u : g.vertices()) {
-				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					edgeRef.set(dg.addEdge(gToDg.get(u), gToDg.get(v)), e);

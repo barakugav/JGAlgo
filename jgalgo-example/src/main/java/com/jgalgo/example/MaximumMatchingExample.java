@@ -35,7 +35,7 @@ public class MaximumMatchingExample {
 		for (int u : g.vertices()) {
 
 			/* Find the matched edges adjacent to u */
-			IntSet uEdges = new IntOpenHashSet(g.edgesOut(u));
+			IntSet uEdges = new IntOpenHashSet(g.outEdges(u));
 			uEdges.removeIf(e -> !matching.containsEdge(e));
 
 			/* No vertex is allowed to have more than one matched edge */

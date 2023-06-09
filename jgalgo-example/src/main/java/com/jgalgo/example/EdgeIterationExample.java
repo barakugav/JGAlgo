@@ -41,26 +41,26 @@ public class EdgeIterationExample {
 		int e7 = g.addEdge(v5, v4);
 
 		/* Query the edges of some vertices */
-		/* The EdgeIter returned by edgesOut is an int iterator that yield edges identifiers */
-		IntSet v1Edges = new IntOpenHashSet(g.edgesOut(v1));
+		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
+		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));
 		assert v1Edges.equals(IntSet.of(e1, e3, e5));
 
-		IntSet v2Edges = new IntOpenHashSet(g.edgesOut(v2));
+		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));
 		assert v2Edges.equals(IntSet.of(e1, e2));
 
-		IntSet v3Edges = new IntOpenHashSet(g.edgesOut(v3));
+		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));
 		assert v3Edges.equals(IntSet.of(e2, e3, e6));
 
 		/* Print the out-edges of v5 */
 		System.out.println("The edges of v5:");
-		for (EdgeIter eit = g.edgesOut(v5).iterator(); eit.hasNext();) {
+		for (EdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
 			int u = eit.source();
 			int v = eit.target();
 
-			/* If the iterator was created using g.edgesOut(u).iterator(), EdgeIter.source() will always be u */
-			/* If the iterator was created using g.edgesIn(v).iterator(), EdgeIter.target() will always be v */
+			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
+			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
 			assert u == v5;
 			assert IntSet.of(e4, e7).contains(e);
 			System.out.println("\t" + e + "=(" + u + ", " + v + ")");

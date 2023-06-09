@@ -150,7 +150,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 				queue.enqueue(bestCycleVertex);
 				while (!queue.isEmpty()) {
 					int v = queue.dequeueInt();
-					for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
+					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int u = g.edgeSource(e);
 						if (policy[u] != e || visited.test(u))

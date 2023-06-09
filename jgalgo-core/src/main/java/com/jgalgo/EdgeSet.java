@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <pre> {@code
  * Graph g = ...;
  * int vertex = ...;
- * for (EdgeIter eit = g.edgesOut(vertex).iterator(); eit.hasNext();) {
+ * for (EdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
  * 	int e = eit.nextInt();
  * 	int u = eit.source();
  * 	int v = eit.target();

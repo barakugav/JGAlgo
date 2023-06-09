@@ -52,7 +52,7 @@ class GraphsUtils {
 		if (!g.getCapabilities().selfEdges())
 			return false;
 		for (int u : g.vertices()) {
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				if (u == eit.target())
 					return true;
@@ -68,7 +68,7 @@ class GraphsUtils {
 		int[] lastVisit = new int[n];
 		for (int u = 0; u < n; u++) {
 			final int visitIdx = u + 1;
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				if (lastVisit[v] == visitIdx)

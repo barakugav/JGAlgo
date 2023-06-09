@@ -92,7 +92,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					if (visited.get(v))
@@ -149,7 +149,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					if (visited.get(v))

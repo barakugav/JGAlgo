@@ -978,7 +978,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 		void insertGrowEventsFromVertex(int u) {
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (isEven(v))
@@ -1005,7 +1005,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 			assert isEven(u);
 			Blossom U = evens.findBlossom(u);
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				final int e = eit.nextInt();
 				int v = eit.target();
 				if (!isEven(v))

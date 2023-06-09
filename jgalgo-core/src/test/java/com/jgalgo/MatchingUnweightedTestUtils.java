@@ -66,7 +66,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		IndexIdMap vToIdx = g.indexGraphVerticesMap();
 		for (int u : g.vertices()) {
 			graph[vToIdx.idToIndex(u)] = new ObjectArrayList<>();
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				graph[vToIdx.idToIndex(u)].add(Integer.valueOf(vToIdx.idToIndex(v)));

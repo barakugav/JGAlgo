@@ -162,7 +162,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		for (int v = 0; v < n; v++)
 			heap[v] = heapBuilder.build(w);
 		for (int v = 0; v < n; v++)
-			for (int e : g.edgesIn(v))
+			for (int e : g.inEdges(v))
 				heap[v].insert(Integer.valueOf(e));
 
 		int[] parent = new int[VMaxNum];

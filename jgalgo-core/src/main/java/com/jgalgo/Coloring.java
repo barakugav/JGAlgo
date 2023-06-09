@@ -43,7 +43,7 @@ package com.jgalgo;
  * System.out.println("A valid coloring with " + colors.colorsNum() + " colors was found");
  * for (int u : g.vertices()) {
  * 	System.out.println("The color of vertex " + u + " is " + colors.colorOf(u));
- * 	for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+ * 	for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
  * 		eit.nextInt();
  * 		int v = eit.target();
  * 		assert colors.colorOf(u) != colors.colorOf(v);

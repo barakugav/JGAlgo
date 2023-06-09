@@ -34,7 +34,7 @@ public class ColoringExample {
 			System.out.println("The color of " + u + " is " + uColor);
 
 			/* For each edge (u,v), the endpoints u and v have different colors */
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				int vColor = colors.colorOf(v);

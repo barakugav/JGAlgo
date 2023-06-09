@@ -93,18 +93,18 @@ public class CompleteGraphTest extends TestBase {
 				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 
 				for (int u : g.vertices()) {
-					EdgeSet edgesOut = g.edgesOut(u);
-					assertEquals(n - 1, edgesOut.size());
+					EdgeSet outEdges = g.outEdges(u);
+					assertEquals(n - 1, outEdges.size());
 
 					IntSet expectedEdges = new IntOpenHashSet(n - 1);
 					for (int v = 0; v < n; v++)
 						if (u != v)
 							expectedEdges.add(g.getEdge(u, v));
 					assertEquals(n - 1, expectedEdges.size());
-					assertEquals(expectedEdges, edgesOut);
+					assertEquals(expectedEdges, outEdges);
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
-					for (EdgeIter eit = edgesOut.iterator(); eit.hasNext();) {
+					for (EdgeIter eit = outEdges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
@@ -117,18 +117,18 @@ public class CompleteGraphTest extends TestBase {
 					assertEquals(expectedEdges, iteratedEdges);
 				}
 				for (int v : g.vertices()) {
-					EdgeSet edgesIn = g.edgesIn(v);
-					assertEquals(n - 1, edgesIn.size());
+					EdgeSet inEdges = g.inEdges(v);
+					assertEquals(n - 1, inEdges.size());
 
 					IntSet expectedEdges = new IntOpenHashSet(n - 1);
 					for (int u = 0; u < n; u++)
 						if (v != u)
 							expectedEdges.add(g.getEdge(u, v));
 					assertEquals(n - 1, expectedEdges.size());
-					assertEquals(expectedEdges, edgesIn);
+					assertEquals(expectedEdges, inEdges);
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
-					for (EdgeIter eit = edgesIn.iterator(); eit.hasNext();) {
+					for (EdgeIter eit = inEdges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
@@ -199,8 +199,8 @@ public class CompleteGraphTest extends TestBase {
 				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				for (int v : g.vertices()) {
 					assertThrows(UnsupportedOperationException.class, () -> g.removeEdgesOf(v));
-					assertThrows(UnsupportedOperationException.class, () -> g.removeEdgesOutOf(v));
-					assertThrows(UnsupportedOperationException.class, () -> g.removeEdgesInOf(v));
+					assertThrows(UnsupportedOperationException.class, () -> g.removeOutEdgesOf(v));
+					assertThrows(UnsupportedOperationException.class, () -> g.removeInEdgesOf(v));
 				}
 			}
 		}

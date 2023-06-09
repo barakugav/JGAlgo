@@ -169,7 +169,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
-			for (int e : g.edgesOut(u))
+			for (int e : g.outEdges(u))
 				edgesTemp[edgesCount++] = e;
 
 			if (edgesCount <= k) {

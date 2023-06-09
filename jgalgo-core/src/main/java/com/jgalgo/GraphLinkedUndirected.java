@@ -101,13 +101,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -187,12 +187,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdgesOutOf(int source) {
+	public void removeOutEdgesOf(int source) {
 		removeEdgesOf(source);
 	}
 
 	@Override
-	public void removeEdgesInOf(int target) {
+	public void removeInEdgesOf(int target) {
 		removeEdgesOf(target);
 	}
 

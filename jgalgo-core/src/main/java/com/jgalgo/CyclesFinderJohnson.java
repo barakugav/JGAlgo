@@ -100,7 +100,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			assert scc.contains(u);
 			isBlocked.set(u);
 
-			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
+			for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				int v = it.target();
 				if (!scc.contains(v))
@@ -120,7 +120,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			if (cycleFound) {
 				unblock(u);
 			} else {
-				for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
+				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
 					it.nextInt();
 					int v = it.target();
 					if (!scc.contains(v))
@@ -158,7 +158,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			gSub.addVertex();
 		for (int uSub = 0; uSub < nSub; uSub++) {
 			int uFull = uSub + subToFull;
-			for (EdgeIter it = g.edgesOut(uFull).iterator(); it.hasNext();) {
+			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
 				it.nextInt();
 				int vSub = it.target() - subToFull;
 				if (vSub >= 0)

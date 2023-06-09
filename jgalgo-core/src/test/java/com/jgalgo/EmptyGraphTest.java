@@ -53,14 +53,14 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testEdgesOut() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.edgesOut(0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.edgesOut(0));
+		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.outEdges(0));
+		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.outEdges(0));
 	}
 
 	@Test
 	public void testEdgesIn() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.edgesIn(0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.edgesIn(0));
+		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.inEdges(0));
+		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.inEdges(0));
 	}
 
 	@Test

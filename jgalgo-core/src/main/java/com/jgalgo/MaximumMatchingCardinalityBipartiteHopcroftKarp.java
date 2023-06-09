@@ -108,7 +108,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 				if (depth >= unmatchedTDepth)
 					continue;
 
-				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					if (depths[v] < depth)
@@ -140,7 +140,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 
-				edges[0] = f.edgesOut(u).iterator();
+				edges[0] = f.outEdges(u).iterator();
 				visited.set(u);
 
 				for (int depth = 0; depth >= 0;) {
@@ -165,7 +165,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 						dfsPath[depth] = matchedEdge;
 						v = g.edgeEndpoint(matchedEdge, v);
 
-						edges[++depth] = f.edgesOut(v).iterator();
+						edges[++depth] = f.outEdges(v).iterator();
 					} else {
 						/*
 						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path

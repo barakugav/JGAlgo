@@ -100,13 +100,13 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
-		return new EdgeSetMapped(indexGraph.edgesOut(viMap.idToIndex(source)));
+	public EdgeSet outEdges(int source) {
+		return new EdgeSetMapped(indexGraph.outEdges(viMap.idToIndex(source)));
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
-		return new EdgeSetMapped(indexGraph.edgesIn(viMap.idToIndex(target)));
+	public EdgeSet inEdges(int target) {
+		return new EdgeSetMapped(indexGraph.inEdges(viMap.idToIndex(target)));
 	}
 
 	@Override
@@ -159,13 +159,13 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public void removeEdgesOutOf(int source) {
-		indexGraph.removeEdgesOutOf(viMap.idToIndex(source));
+	public void removeOutEdgesOf(int source) {
+		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));
 	}
 
 	@Override
-	public void removeEdgesInOf(int target) {
-		indexGraph.removeEdgesInOf(viMap.idToIndex(target));
+	public void removeInEdgesOf(int target) {
+		indexGraph.removeInEdgesOf(viMap.idToIndex(target));
 	}
 
 	@Override

@@ -58,12 +58,12 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesOut(int source) {
+		public EdgeSet outEdges(int source) {
 			throw new IndexOutOfBoundsException(source);
 		}
 
 		@Override
-		public EdgeSet edgesIn(int target) {
+		public EdgeSet inEdges(int target) {
 			throw new IndexOutOfBoundsException(target);
 		}
 
@@ -340,11 +340,11 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesOut(int source) {
+		public EdgeSet outEdges(int source) {
 			return new GraphBase.EdgeSetOutUndirected(source) {
 				@Override
 				public EdgeIter iterator() {
-					return edgesOutIter(source);
+					return outEdgesIter(source);
 				}
 
 				@Override
@@ -355,11 +355,11 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesIn(int target) {
+		public EdgeSet inEdges(int target) {
 			return new GraphBase.EdgeSetInUndirected(target) {
 				@Override
 				public EdgeIter iterator() {
-					return edgesInIter(target);
+					return inEdgesIter(target);
 				}
 
 				@Override
@@ -426,11 +426,11 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesOut(int source) {
+		public EdgeSet outEdges(int source) {
 			return new GraphBase.EdgeSetOutDirected(source) {
 				@Override
 				public EdgeIter iterator() {
-					return edgesOutIter(source);
+					return outEdgesIter(source);
 				}
 
 				@Override
@@ -441,11 +441,11 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesIn(int target) {
+		public EdgeSet inEdges(int target) {
 			return new GraphBase.EdgeSetInDirected(target) {
 				@Override
 				public EdgeIter iterator() {
-					return edgesInIter(target);
+					return inEdgesIter(target);
 				}
 
 				@Override
@@ -516,7 +516,7 @@ public class Graphs {
 			throw new UnsupportedOperationException();
 		}
 
-		EdgeIter edgesOutIter(int source) {
+		EdgeIter outEdgesIter(int source) {
 			checkVertex(source);
 			return new EdgeIterImpl() {
 				int nextTarget = 0;
@@ -558,7 +558,7 @@ public class Graphs {
 			};
 		}
 
-		EdgeIter edgesInIter(int target) {
+		EdgeIter inEdgesIter(int target) {
 			checkVertex(target);
 			return new EdgeIterImpl() {
 				int nextSource = 0;
@@ -688,13 +688,13 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgesOutOf(int vertex) {
+		public void removeOutEdgesOf(int vertex) {
 			checkVertex(vertex);
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void removeEdgesInOf(int vertex) {
+		public void removeInEdgesOf(int vertex) {
 			checkVertex(vertex);
 			throw new UnsupportedOperationException();
 		}
@@ -857,13 +857,13 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesOut(int source) {
-			return new UnmodifiableEdgeSet(graph.edgesOut(source));
+		public EdgeSet outEdges(int source) {
+			return new UnmodifiableEdgeSet(graph.outEdges(source));
 		}
 
 		@Override
-		public EdgeSet edgesIn(int target) {
-			return new UnmodifiableEdgeSet(graph.edgesIn(target));
+		public EdgeSet inEdges(int target) {
+			return new UnmodifiableEdgeSet(graph.inEdges(target));
 		}
 
 		@Override
@@ -1130,13 +1130,13 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeSet edgesOut(int source) {
-			return new ReversedEdgeSet(graph.edgesIn(source));
+		public EdgeSet outEdges(int source) {
+			return new ReversedEdgeSet(graph.inEdges(source));
 		}
 
 		@Override
-		public EdgeSet edgesIn(int target) {
-			return new ReversedEdgeSet(graph.edgesOut(target));
+		public EdgeSet inEdges(int target) {
+			return new ReversedEdgeSet(graph.outEdges(target));
 		}
 
 		@Override

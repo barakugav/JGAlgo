@@ -69,7 +69,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 		BitSet usedColors = new BitSet();
 		for (int u : order) {
 			usedColors.clear();
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				int c = res.colorOf(v);

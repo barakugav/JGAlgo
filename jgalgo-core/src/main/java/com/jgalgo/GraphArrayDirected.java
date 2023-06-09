@@ -129,13 +129,13 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -175,14 +175,14 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeEdgesOutOf(int source) {
+	public void removeOutEdgesOf(int source) {
 		checkVertex(source);
 		while (edgesOutNum.getInt(source) > 0)
 			removeEdge(edgesOut.get(source)[0]);
 	}
 
 	@Override
-	public void removeEdgesInOf(int target) {
+	public void removeInEdgesOf(int target) {
 		checkVertex(target);
 		while (edgesInNum.getInt(target) > 0)
 			removeEdge(edgesIn.get(target)[0]);

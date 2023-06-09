@@ -39,11 +39,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
  * <p>
  * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
- * <i>directed</i> namely an edge \(e(u, v)\) will be contained in {@code edgesOut(u)} and in {@code edgesIn(v)} and
- * will not be contained in {@code edgesOut(v)} and {@code edgesIn(u)}. In an undirected graph, the edges are
- * undirected, namely an edge \(e(u, v)\) will be contained in {@code edgesOut(u)}, {@code edgesIn(v)},
- * {@code edgesOut(v)} and in {@code edgesIn(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and
- * {@link #removeEdgesOutOf(int)} are equivalent for the same vertex. To check if a graph is directed or not, use the
+ * <i>directed</i> namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
+ * will not be contained in {@code outEdges(v)} and {@code inEdges(u)}. In an undirected graph, the edges are
+ * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
+ * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
+ * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex. To check if a graph is directed or not, use the
  * {@link #getCapabilities()} method.
  * <p>
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. For example.
@@ -175,13 +175,13 @@ public interface Graph {
 	 * In case the graph is undirected, the set will contain all edges whose {@code source} is one of their end points.
 	 * <p>
 	 * The Graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
-	 * using this method by {@code g.edgesOut(vertex).size()}.
+	 * using this method by {@code g.outEdges(vertex).size()}.
 	 *
 	 * @param  source                    a source vertex
 	 * @return                           all the edges whose source is {@code source}
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
-	EdgeSet edgesOut(int source);
+	EdgeSet outEdges(int source);
 
 	/**
 	 * Get the edges whose target is {@code target}.
@@ -189,13 +189,13 @@ public interface Graph {
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
 	 * <p>
 	 * The Graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
-	 * this method by {@code g.edgesIn(vertex).size()}.
+	 * this method by {@code g.inEdges(vertex).size()}.
 	 *
 	 * @param  target                    a target vertex
 	 * @return                           all the edges whose target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
-	EdgeSet edgesIn(int target);
+	EdgeSet inEdges(int target);
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
@@ -212,7 +212,7 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-		for (EdgeIter it = edgesOut(source).iterator(); it.hasNext();) {
+		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			if (it.target() == target)
 				return e;
@@ -273,8 +273,8 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-		removeEdgesOutOf(vertex);
-		removeEdgesInOf(vertex);
+		removeOutEdgesOf(vertex);
+		removeInEdgesOf(vertex);
 	}
 
 	/**
@@ -283,8 +283,8 @@ public interface Graph {
 	 * @param  source                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
-	default void removeEdgesOutOf(int source) {
-		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {
+	default void removeOutEdgesOf(int source) {
+		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -296,8 +296,8 @@ public interface Graph {
 	 * @param  target                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
-	default void removeEdgesInOf(int target) {
-		for (EdgeIter eit = edgesIn(target).iterator(); eit.hasNext();) {
+	default void removeInEdgesOf(int target) {
+		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}

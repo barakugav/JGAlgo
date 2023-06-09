@@ -96,13 +96,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -150,7 +150,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdgesOutOf(int source) {
+	public void removeOutEdgesOf(int source) {
 		checkVertex(source);
 		for (Node p = edgesOut.get(source), next; p != null; p = next) {
 			next = p.nextOut;
@@ -163,7 +163,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdgesInOf(int target) {
+	public void removeInEdgesOf(int target) {
 		checkVertex(target);
 		for (Node p = edgesIn.get(target), next; p != null; p = next) {
 			next = p.nextIn;

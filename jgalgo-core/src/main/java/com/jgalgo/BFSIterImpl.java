@@ -105,7 +105,7 @@ class BFSIterImpl {
 				firstVInLayer = -1;
 			}
 
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (visited.get(v))
@@ -142,7 +142,7 @@ class BFSIterImpl {
 				firstVInLayer = -1;
 			}
 
-			for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int u = eit.source();
 				if (visited.get(u))

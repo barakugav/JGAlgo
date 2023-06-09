@@ -53,7 +53,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 		// TODO DFS stack class
 
 		parent[0] = -1;
-		edgeIters[0] = tree.edgesOut(root).iterator();
+		edgeIters[0] = tree.outEdges(root).iterator();
 
 		int sequenceLength = 0;
 		dfs: for (int u = root, depth = 0;;) {
@@ -68,7 +68,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 					continue;
 				depth++;
 				parent[depth] = u;
-				edgeIters[depth] = tree.edgesOut(v).iterator();
+				edgeIters[depth] = tree.outEdges(v).iterator();
 				u = v;
 				continue dfs;
 			}

@@ -107,7 +107,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 					if (u == sink)
 						break bfs;
 					int lvl = level[u];
-					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
@@ -157,13 +157,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 							min = dt.findMinEdge(vToDt[source]);
 						} while (min != null && Math.abs(min.weight()) < EPS);
 
-					} else if (L.edgesOut(v).isEmpty()) {
+					} else if (L.outEdges(v).isEmpty()) {
 
 						/* Retreat */
 						debug.println("Retreat");
 						if (v == source)
 							break calcBlockFlow;
-						for (EdgeIter eit = L.edgesIn(v).iterator(); eit.hasNext();) {
+						for (EdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
 							int u = g.edgeSource(e);
 							if (edgeToParent[u] != e)
@@ -177,12 +177,12 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 							dt.cut(m.source());
 						}
-						L.removeEdgesInOf(v);
+						L.removeInEdgesOf(v);
 
 					} else {
 						/* Advance */
 						debug.println("Advance");
-						EdgeIter eit = L.edgesOut(v).iterator();
+						EdgeIter eit = L.outEdges(v).iterator();
 						int e = eit.nextInt();
 						int eSource = g.edgeSource(e);
 						int eTarget = g.edgeTarget(e);

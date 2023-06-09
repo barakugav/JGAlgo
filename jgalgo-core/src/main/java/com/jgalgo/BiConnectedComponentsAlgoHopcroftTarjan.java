@@ -84,7 +84,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			int depth = 0;
 			depths[root] = depth;
 			lowpoint[depth] = depth;
-			edgeIters[depth] = g.edgesOut(root).iterator();
+			edgeIters[depth] = g.outEdges(root).iterator();
 
 			int rootChildrenCount = 0;
 
@@ -102,7 +102,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 						depth++;
 						depths[v] = depth;
 						lowpoint[depth] = depth;
-						edgeIters[depth] = g.edgesOut(v).iterator();
+						edgeIters[depth] = g.outEdges(v).iterator();
 						u = v;
 						continue dfs;
 

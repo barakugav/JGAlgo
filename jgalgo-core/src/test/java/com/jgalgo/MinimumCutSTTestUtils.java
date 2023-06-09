@@ -77,7 +77,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 						cut.add(vertices.getInt(i));
 				int cutWeight = 0;
 				for (int u : cut) {
-					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (!cut.contains(v))
@@ -148,7 +148,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 						cut.add(vertices.getInt(i));
 				double cutWeight = 0;
 				for (int u : cut) {
-					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (!cut.contains(v))

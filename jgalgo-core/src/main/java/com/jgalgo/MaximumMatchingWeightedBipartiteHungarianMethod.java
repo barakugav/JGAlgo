@@ -158,7 +158,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 					if (!partition.getBool(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (int e : g.edgesOut(u))
+					for (int e : g.outEdges(u))
 						nextTightEdgeAdd(u, e);
 				}
 
@@ -203,7 +203,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (int e1 : g.edgesOut(v))
+						for (int e1 : g.outEdges(v))
 							nextTightEdgeAdd(v, e1);
 					}
 

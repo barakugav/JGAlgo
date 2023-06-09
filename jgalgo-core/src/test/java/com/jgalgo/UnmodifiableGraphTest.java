@@ -148,9 +148,9 @@ public class UnmodifiableGraphTest extends TestBase {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 
 				for (int u : gUnmod.vertices()) {
-					EdgeSet edges = gUnmod.edgesOut(u);
-					assertEquals(gOrig.edgesOut(u).size(), edges.size());
-					assertEquals(gOrig.edgesOut(u), edges);
+					EdgeSet edges = gUnmod.outEdges(u);
+					assertEquals(gOrig.outEdges(u).size(), edges.size());
+					assertEquals(gOrig.outEdges(u), edges);
 
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
@@ -164,9 +164,9 @@ public class UnmodifiableGraphTest extends TestBase {
 					}
 				}
 				for (int v : gUnmod.vertices()) {
-					EdgeSet edges = gUnmod.edgesIn(v);
-					assertEquals(gOrig.edgesIn(v).size(), edges.size());
-					assertEquals(gOrig.edgesIn(v), edges);
+					EdgeSet edges = gUnmod.inEdges(v);
+					assertEquals(gOrig.inEdges(v).size(), edges.size());
+					assertEquals(gOrig.inEdges(v), edges);
 
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
@@ -233,8 +233,8 @@ public class UnmodifiableGraphTest extends TestBase {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 				int v = gUnmod.vertices().iterator().nextInt();
 				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdgesOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdgesOutOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdgesInOf(v));
+				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeOutEdgesOf(v));
+				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeInEdgesOf(v));
 			}
 		}
 	}

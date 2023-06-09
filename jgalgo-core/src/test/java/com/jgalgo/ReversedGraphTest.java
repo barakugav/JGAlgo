@@ -176,9 +176,9 @@ public class ReversedGraphTest extends TestBase {
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				for (int u : gRev.vertices()) {
-					EdgeSet edges = gRev.edgesOut(u);
-					assertEquals(gOrig.edgesIn(u).size(), edges.size());
-					assertEquals(gOrig.edgesIn(u), edges);
+					EdgeSet edges = gRev.outEdges(u);
+					assertEquals(gOrig.inEdges(u).size(), edges.size());
+					assertEquals(gOrig.inEdges(u), edges);
 
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
@@ -192,9 +192,9 @@ public class ReversedGraphTest extends TestBase {
 					}
 				}
 				for (int v : gRev.vertices()) {
-					EdgeSet edges = gRev.edgesIn(v);
-					assertEquals(gOrig.edgesOut(v).size(), edges.size());
-					assertEquals(gOrig.edgesOut(v), edges);
+					EdgeSet edges = gRev.inEdges(v);
+					assertEquals(gOrig.outEdges(v).size(), edges.size());
+					assertEquals(gOrig.outEdges(v), edges);
 
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
@@ -263,10 +263,10 @@ public class ReversedGraphTest extends TestBase {
 				int v = gRev.vertices().iterator().nextInt();
 
 				gRev.removeEdgesOf(v);
-				assertTrue(gRev.edgesOut(v).isEmpty());
-				assertTrue(gRev.edgesIn(v).isEmpty());
-				assertTrue(gOrig.edgesOut(v).isEmpty());
-				assertTrue(gOrig.edgesIn(v).isEmpty());
+				assertTrue(gRev.outEdges(v).isEmpty());
+				assertTrue(gRev.inEdges(v).isEmpty());
+				assertTrue(gOrig.outEdges(v).isEmpty());
+				assertTrue(gOrig.inEdges(v).isEmpty());
 			}
 		}
 	}
@@ -281,9 +281,9 @@ public class ReversedGraphTest extends TestBase {
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 				int v = gRev.vertices().iterator().nextInt();
 
-				gRev.removeEdgesInOf(v);
-				assertTrue(gRev.edgesIn(v).isEmpty());
-				assertTrue(gOrig.edgesOut(v).isEmpty());
+				gRev.removeInEdgesOf(v);
+				assertTrue(gRev.inEdges(v).isEmpty());
+				assertTrue(gOrig.outEdges(v).isEmpty());
 			}
 		}
 	}
@@ -298,9 +298,9 @@ public class ReversedGraphTest extends TestBase {
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 				int v = gRev.vertices().iterator().nextInt();
 
-				gRev.removeEdgesOutOf(v);
-				assertTrue(gRev.edgesOut(v).isEmpty());
-				assertTrue(gOrig.edgesIn(v).isEmpty());
+				gRev.removeOutEdgesOf(v);
+				assertTrue(gRev.outEdges(v).isEmpty());
+				assertTrue(gOrig.inEdges(v).isEmpty());
 			}
 		}
 	}

@@ -105,7 +105,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 					if (u == sink)
 						break bfs;
 					int lvl = level[u];
-					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
@@ -124,7 +124,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 					IntStack path = new IntArrayList();
 					searchAugPath: for (;;) {
 						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());
-						EdgeIter eit = L.edgesOut(u).iterator();
+						EdgeIter eit = L.outEdges(u).iterator();
 						if (!eit.hasNext()) {
 							if (path.isEmpty()) {
 								// no path from source to sink

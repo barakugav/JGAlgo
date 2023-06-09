@@ -71,7 +71,7 @@ class ContractableGraph {
 		return vs.iterator(head[U]);
 	}
 
-	ContractableGraph.EdgeIter edgesOut(int U) {
+	ContractableGraph.EdgeIter outEdges(int U) {
 		checkSuperVertex(U);
 		return new ContractableGraph.EdgeIter() {
 
@@ -93,7 +93,7 @@ class ContractableGraph {
 				if (eit.hasNext())
 					return true;
 				for (; vit.hasNext();) {
-					eit = (com.jgalgo.EdgeIterImpl) g.edgesOut(vit.nextInt()).iterator();
+					eit = (com.jgalgo.EdgeIterImpl) g.outEdges(vit.nextInt()).iterator();
 					if (eitAdvance())
 						return true;
 				}
@@ -157,7 +157,7 @@ class ContractableGraph {
 
 			s.append(": [");
 			boolean firstEdge = true;
-			for (ContractableGraph.EdgeIter eit = edgesOut(U); eit.hasNext();) {
+			for (ContractableGraph.EdgeIter eit = outEdges(U); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (firstEdge) {
 					firstEdge = false;

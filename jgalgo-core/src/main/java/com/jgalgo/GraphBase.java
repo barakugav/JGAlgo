@@ -73,7 +73,7 @@ abstract class GraphBase implements Graph {
 
 			s.append(": [");
 			boolean firstEdge = true;
-			for (EdgeIter eit = edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (firstEdge)
@@ -130,7 +130,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public void clear() {
-			removeEdgesOutOf(source);
+			removeOutEdgesOf(source);
 		}
 	}
 
@@ -149,7 +149,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public void clear() {
-			removeEdgesInOf(target);
+			removeInEdgesOf(target);
 		}
 	}
 
@@ -168,7 +168,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public void clear() {
-			removeEdgesOutOf(source);
+			removeOutEdgesOf(source);
 		}
 	}
 
@@ -187,7 +187,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public void clear() {
-			removeEdgesInOf(target);
+			removeInEdgesOf(target);
 		}
 	}
 
@@ -246,7 +246,7 @@ abstract class GraphBase implements Graph {
 		EdgeIterSourceTarget(int source, int target) {
 			this.source = source;
 			this.target = target;
-			it = edgesOut(source).iterator();
+			it = outEdges(source).iterator();
 		}
 
 		@Override

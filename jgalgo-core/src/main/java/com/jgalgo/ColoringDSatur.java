@@ -67,7 +67,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
 		int maxDegree = 0;
 		for (int u = 0; u < n; u++)
-			maxDegree = Math.max(maxDegree, g.edgesOut(u).size());
+			maxDegree = Math.max(maxDegree, g.outEdges(u).size());
 		final int maxDegreeFactor = maxDegree + 1;
 		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
 		BiInt2IntFunction createKey =
@@ -79,7 +79,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		@SuppressWarnings("unchecked")
 		HeapReference<Integer, Integer>[] refs = new HeapReference[n];
 		for (int u = 0; u < n; u++) {
-			int key = createKey.apply(/* saturationDegree= */0, g.edgesOut(u).size());
+			int key = createKey.apply(/* saturationDegree= */0, g.outEdges(u).size());
 			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));
 			neighborColors[u] = new BitSet();
 		}
@@ -93,7 +93,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 			res.colors[u] = color;
 			res.colorsNum = Math.max(res.colorsNum, color + 1);
 
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				if (res.colorOf(v) == -1) { /* v is uncolored */

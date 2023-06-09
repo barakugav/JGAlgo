@@ -48,7 +48,7 @@ class DFSIterImpl implements DFSIter {
 		edgePathView = IntLists.unmodifiable(edgePath);
 
 		visited.set(source);
-		edgeIters.push(g.edgesOut(source).iterator());
+		edgeIters.push(g.outEdges(source).iterator());
 		isValid = true;
 	}
 
@@ -65,7 +65,7 @@ class DFSIterImpl implements DFSIter {
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				edgeIters.push(g.edgesOut(v).iterator());
+				edgeIters.push(g.outEdges(v).iterator());
 				edgePath.add(e);
 				return isValid = true;
 			}

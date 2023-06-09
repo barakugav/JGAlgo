@@ -27,8 +27,8 @@ package com.jgalgo;
  * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
  * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
  * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
- * going along {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
- * {@link Graph#edgesOut(int)}.
+ * going along {@link Graph#inEdges(int)} must be equal to the sum of flow units going along
+ * {@link Graph#outEdges(int)}.
  * <p>
  * A flow is most intuitively defined on directed graphs, as the flow on an edge is transferred from one vertex to
  * another in some direction, but we can define and solve flow problem on undirected graphs as well. Technically, the

@@ -65,7 +65,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 			double uDistance = res.distances[u];
 			if (uDistance == Double.POSITIVE_INFINITY)
 				continue;
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				double d = uDistance + w.weight(e);
@@ -93,7 +93,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 			int uDistance = res.distances[u];
 			if (uDistance == Integer.MAX_VALUE)
 				continue;
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				int d = uDistance + w.weightInt(e);
