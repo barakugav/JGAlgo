@@ -21,23 +21,23 @@ import java.util.NoSuchElementException;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndex {
 
-	private final WeightsImpl.Index.Obj<Node> edges;
-
-	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+	private Node[] edges;
+	private final DataContainer.Obj<Node> edgesContainer;
+	private static final Node[] EmptyNodeArr = new Node[0];
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(edgesIdStrat, null, Node.class);
-		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
+		edgesContainer = new DataContainer.Obj<>(edgesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		addInternalEdgesContainer(edgesContainer);
 	}
 
 	GraphLinkedAbstract(GraphLinkedAbstract g) {
 		super(g);
-		edges = new WeightsImpl.Index.Obj<>(edgesIdStrat, null, Node.class);
-		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
+		edgesContainer = new DataContainer.Obj<>(edgesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		addInternalEdgesContainer(edgesContainer);
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			edges.set(e, allocNode(e, g.edgeSource(e), g.edgeTarget(e)));
+			edges[e] = allocNode(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
 	@Override
@@ -54,21 +54,21 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 	}
 
 	Node getNode(int edge) {
-		Node n = edges.get(edge);
+		Node n = edges[edge];
 		assert n.id == edge;
 		return n;
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-		edges.clear(edge);
+		edgesContainer.clear(edges, edge);
 		super.removeEdgeImpl(edge);
 	}
 
 	Node addEdgeNode(int source, int target) {
 		int e = super.addEdge(source, target);
 		Node n = allocNode(e, source, target);
-		edges.set(e, n);
+		edges[e] = n;
 		return n;
 	}
 
@@ -79,7 +79,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 		Node n1 = getNode(e1), n2 = getNode(e2);
 		n1.id = e2;
 		n2.id = e1;
-		edges.swap(e1, e2);
+		edgesContainer.swap(edges, e1, e2);
 		super.edgeSwap(e1, e2);
 	}
 
@@ -96,12 +96,12 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 	}
 
 	Collection<Node> nodes() {
-		return edges.values();
+		return edgesContainer.values();
 	}
 
 	@Override
 	public void clearEdges() {
-		edges.clear();
+		edgesContainer.clear(edges);
 		super.clearEdges();
 	}
 

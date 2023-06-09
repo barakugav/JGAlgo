@@ -30,9 +30,10 @@ import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
  */
 class GraphLinkedUndirected extends GraphLinkedAbstract {
 
-	private final WeightsImpl.Index.Obj<Node> edges;
+	private Node[] edges;
+	private final DataContainer.Obj<Node> edgesContainer;
 
-	private static final Object WeightsKeyEdges = new Utils.Obj("edges");
+	private static final Node[] EmptyNodeArr = new Node[0];
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -49,15 +50,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		addInternalVerticesWeights(WeightsKeyEdges, edges);
+		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		addInternalVerticesContainer(edgesContainer);
 	}
 
 	GraphLinkedUndirected(GraphLinkedUndirected g) {
 		super(g);
 
-		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		addInternalVerticesWeights(WeightsKeyEdges, edges);
+		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		addInternalVerticesContainer(edgesContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -67,27 +68,27 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);
-		edges.clear(vertex);
+		edgesContainer.clear(edges, vertex);
 	}
 
 	@Override
 	void vertexSwap(int v1, int v2) {
 		final int tempV = -2;
-		for (Node p = edges.get(v1), next; p != null; p = next) {
+		for (Node p = edges[v1], next; p != null; p = next) {
 			next = p.next(v1);
 			if (p.source == v1)
 				p.source = tempV;
 			if (p.target == v1)
 				p.target = tempV;
 		}
-		for (Node p = edges.get(v2), next; p != null; p = next) {
+		for (Node p = edges[v2], next; p != null; p = next) {
 			next = p.next(v2);
 			if (p.source == v2)
 				p.source = v1;
 			if (p.target == v2)
 				p.target = v1;
 		}
-		for (Node p = edges.get(v1), next; p != null; p = next) {
+		for (Node p = edges[v1], next; p != null; p = next) {
 			next = p.next(tempV);
 			if (p.source == tempV)
 				p.source = v2;
@@ -95,7 +96,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 				p.target = v2;
 		}
 
-		edges.swap(v1, v2);
+		edgesContainer.swap(edges, v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -124,16 +125,16 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(Node e) {
 		int source = e.source, target = e.target;
 		Node next;
-		if ((next = edges.get(source)) != null) {
+		if ((next = edges[source]) != null) {
 			e.nextSet(source, next);
 			next.prevSet(source, e);
 		}
-		edges.set(source, e);
-		if ((next = edges.get(target)) != null) {
+		edges[source] = e;
+		if ((next = edges[target]) != null) {
 			e.nextSet(target, next);
 			next.prevSet(target, e);
 		}
-		edges.set(target, e);
+		edges[target] = e;
 	}
 
 	@Override
@@ -157,7 +158,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	void removeEdgeNodePointers(Node e, int w) {
 		Node next = e.next(w), prev = e.prev(w);
 		if (prev == null) {
-			edges.set(w, next);
+			edges[w] = next;
 		} else {
 			prev.nextSet(w, next);
 			e.prevSet(w, null);
@@ -171,7 +172,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 		checkVertex(source);
-		for (Node p = edges.get(source), next; p != null; p = next) {
+		for (Node p = edges[source], next; p != null; p = next) {
 			// update u list
 			next = p.next(source);
 			p.nextSet(source, null);
@@ -183,7 +184,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			edgeSwapBeforeRemove(p.id);
 			super.removeEdgeImpl(p.id);
 		}
-		edges.set(source, null);
+		edges[source] = null;
 	}
 
 	@Override
@@ -207,7 +208,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			Node p = (Node) p0;
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
-		edges.clear();
+		edgesContainer.clear(edges);
 		super.clearEdges();
 	}
 
@@ -272,7 +273,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterOut(source, edges.get(source));
+			return new EdgeIterOut(source, edges[source]);
 		}
 	}
 
@@ -283,7 +284,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterIn(target, edges.get(target));
+			return new EdgeIterIn(target, edges[target]);
 		}
 	}
 

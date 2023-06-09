@@ -30,11 +30,12 @@ import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
  */
 class GraphLinkedDirected extends GraphLinkedAbstract {
 
-	private final WeightsImpl.Index.Obj<Node> edgesIn;
-	private final WeightsImpl.Index.Obj<Node> edgesOut;
+	private Node[] edgesIn;
+	private Node[] edgesOut;
+	private final DataContainer.Obj<Node> edgesInContainer;
+	private final DataContainer.Obj<Node> edgesOutContainer;
 
-	private static final Object WeightsKeyEdgesOut = new Utils.Obj("edgesOut");
-	private static final Object WeightsKeyEdgesIn = new Utils.Obj("edgesIn");
+	private static final Node[] EmptyNodeArr = new Node[0];
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -52,19 +53,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edgesOut = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		edgesIn = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
-		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
+		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesOut = newArr);
+		addInternalVerticesContainer(edgesOutContainer);
+		addInternalVerticesContainer(edgesInContainer);
 	}
 
 	GraphLinkedDirected(GraphLinkedDirected g) {
 		super(g);
 
-		edgesOut = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		edgesIn = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
-		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
-		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
+		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesOut = newArr);
+		addInternalVerticesContainer(edgesOutContainer);
+		addInternalVerticesContainer(edgesInContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -74,23 +75,23 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);
-		edgesOut.clear(vertex);
-		edgesIn.clear(vertex);
+		edgesOutContainer.clear(edgesOut, vertex);
+		edgesInContainer.clear(edgesIn, vertex);
 	}
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)
+		for (Node p = edgesOut[v1]; p != null; p = p.nextOut)
 			p.source = v2;
-		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)
+		for (Node p = edgesIn[v1]; p != null; p = p.nextIn)
 			p.target = v2;
-		for (Node p = edgesOut.get(v2); p != null; p = p.nextOut)
+		for (Node p = edgesOut[v2]; p != null; p = p.nextOut)
 			p.source = v1;
-		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)
+		for (Node p = edgesIn[v2]; p != null; p = p.nextIn)
 			p.target = v1;
 
-		edgesOut.swap(v1, v2);
-		edgesIn.swap(v1, v2);
+		edgesOutContainer.swap(edgesOut, v1, v2);
+		edgesInContainer.swap(edgesIn, v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -117,18 +118,18 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(Node e) {
 		int u = e.source, v = e.target;
 		Node next;
-		next = edgesOut.get(u);
+		next = edgesOut[u];
 		if (next != null) {
 			next.prevOut = e;
 			e.nextOut = next;
 		}
-		edgesOut.set(u, e);
-		next = edgesIn.get(v);
+		edgesOut[u] = e;
+		next = edgesIn[v];
 		if (next != null) {
 			next.prevIn = e;
 			e.nextIn = next;
 		}
-		edgesIn.set(v, e);
+		edgesIn[v] = e;
 	}
 
 	@Override
@@ -152,33 +153,33 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void removeOutEdgesOf(int source) {
 		checkVertex(source);
-		for (Node p = edgesOut.get(source), next; p != null; p = next) {
+		for (Node p = edgesOut[source], next; p != null; p = next) {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeInNode(p);
 			edgeSwapBeforeRemove(p.id);
 			super.removeEdgeImpl(p.id);
 		}
-		edgesOut.set(source, null);
+		edgesOut[source] = null;
 	}
 
 	@Override
 	public void removeInEdgesOf(int target) {
 		checkVertex(target);
-		for (Node p = edgesIn.get(target), next; p != null; p = next) {
+		for (Node p = edgesIn[target], next; p != null; p = next) {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOutNode(p);
 			edgeSwapBeforeRemove(p.id);
 			super.removeEdgeImpl(p.id);
 		}
-		edgesIn.set(target, null);
+		edgesIn[target] = null;
 	}
 
 	private void removeEdgeOutNode(Node e) {
 		Node next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
-			edgesOut.set(e.source, next);
+			edgesOut[e.source] = next;
 		} else {
 			prev.nextOut = next;
 			e.prevOut = null;
@@ -192,7 +193,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void removeEdgeInNode(Node e) {
 		Node next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
-			edgesIn.set(e.target, next);
+			edgesIn[e.target] = next;
 		} else {
 			prev.nextIn = next;
 			e.prevIn = null;
@@ -222,8 +223,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			Node p = (Node) p0;
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
-		edgesOut.clear();
-		edgesIn.clear();
+		edgesOutContainer.clear(edgesOut);
+		edgesInContainer.clear(edgesIn);
 		super.clearEdges();
 	}
 
@@ -247,7 +248,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterOut(edgesOut.get(source));
+			return new EdgeIterOut(edgesOut[source]);
 		}
 	}
 
@@ -258,7 +259,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterIn(edgesIn.get(target));
+			return new EdgeIterIn(edgesIn[target]);
 		}
 	}
 

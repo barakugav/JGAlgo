@@ -19,6 +19,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntBigArrays;
 
 /**
  * An undirected graph implementation using arrays to store edge lists.
@@ -33,11 +34,10 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  */
 class GraphArrayUndirected extends GraphArrayAbstract {
 
-	private final WeightsImpl.Index.Obj<int[]> edges;
-	private final WeightsImpl.Index.Int edgesNum;
-
-	private static final Object WeightsKeyEdges = new Utils.Obj("edges");
-	private static final Object WeightsKeyEdgesNum = new Utils.Obj("edgesNum");
+	private int[][] edges;
+	private int[] edgesNum;
+	private final DataContainer.Obj<int[]> edgesContainer;
+	private final DataContainer.Int edgesNumContainer;
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -54,40 +54,41 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	 */
 	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesNum = new WeightsImpl.Index.Int(verticesIdStrat, 0);
+		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+				newArr -> edges = newArr);
+		edgesNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesNum = newArr);
 
-		addInternalVerticesWeights(WeightsKeyEdges, edges);
-		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
+		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
 	}
 
 	GraphArrayUndirected(GraphArrayUndirected g) {
 		super(g);
 		final int n = g.vertices().size();
 
-		edges = g.edges.copy(verticesIdStrat);
-		edgesNum = g.edgesNum.copy(verticesIdStrat);
-		addInternalVerticesWeights(WeightsKeyEdges, edges);
-		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
+		edgesContainer = g.edgesContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
+		edgesNumContainer = g.edgesNumContainer.copy(verticesIdStrat, newArr -> edgesNum = newArr);
+		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
 
 		for (int v = 0; v < n; v++)
-			edges.set(v, Arrays.copyOf(edges.get(v), edgesNum.getInt(v)));
+			edges[v] = Arrays.copyOf(edges[v], edgesNum[v]);
 	}
 
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);
-		edgesNum.clear(vertex);
+		edgesNumContainer.clear(edgesNum, vertex);
 		// Reuse allocated edges array for v
 		// edges.clear(v);
 	}
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-		int[] es1 = edges.get(v1);
-		int es1Len = edgesNum.getInt(v1);
-		int[] es2 = edges.get(v2);
-		int es2Len = edgesNum.getInt(v2);
+		int[] es1 = edges[v1];
+		int es1Len = edgesNum[v1];
+		int[] es2 = edges[v2];
+		int es2Len = edgesNum[v2];
 
 		final int tempV = -2;
 		for (int i = 0; i < es1Len; i++)
@@ -97,8 +98,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		for (int i = 0; i < es1Len; i++)
 			replaceEdgeEndpoint(es1[i], tempV, v2);
 
-		edges.swap(v1, v2);
-		edgesNum.swap(v1, v2);
+		edgesContainer.swap(edges, v1, v2);
+		edgesNumContainer.swap(edgesNum, v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -138,22 +139,22 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		assert e1 != e2;
 
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int[] u1es = edges.get(u1);
-		int i1 = edgeIndexOf(u1es, edgesNum.getInt(u1), e1);
+		int[] u1es = edges[u1];
+		int i1 = edgeIndexOf(u1es, edgesNum[u1], e1);
 		u1es[i1] = e2;
 		if (u1 != v1) {
-			int[] v1es = edges.get(v1);
-			int j1 = edgeIndexOf(v1es, edgesNum.getInt(v1), e1);
+			int[] v1es = edges[v1];
+			int j1 = edgeIndexOf(v1es, edgesNum[v1], e1);
 			v1es[j1] = e2;
 		}
 
 		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		int[] u2es = edges.get(u2);
-		int i2 = edgeIndexOf(u2es, edgesNum.getInt(u2), e2);
+		int[] u2es = edges[u2];
+		int i2 = edgeIndexOf(u2es, edgesNum[u2], e2);
 		u2es[i2] = e1;
 		if (u2 != v2) {
-			int[] v2es = edges.get(v2);
-			int j2 = edgeIndexOf(v2es, edgesNum.getInt(v2), e2);
+			int[] v2es = edges[v2];
+			int j2 = edgeIndexOf(v2es, edgesNum[v2], e2);
 			v2es[j2] = e1;
 		}
 
@@ -163,8 +164,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 		checkVertex(source);
-		while (edgesNum.getInt(source) > 0)
-			removeEdge(edges.get(source)[0]);
+		while (edgesNum[source] > 0)
+			removeEdge(edges[source][0]);
 	}
 
 	@Override
@@ -184,7 +185,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 	@Override
 	public void clearEdges() {
-		edgesNum.clear();
+		edgesNumContainer.clear(edgesNum);
 		super.clearEdges();
 	}
 
@@ -215,7 +216,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		@Override
 		public int size() {
-			return edgesNum.getInt(source);
+			return edgesNum[source];
 		}
 
 		@Override
@@ -225,7 +226,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterOut(source, edges.get(source), edgesNum.getInt(source));
+			return new EdgeIterOut(source, edges[source], edgesNum[source]);
 		}
 	}
 
@@ -236,7 +237,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		@Override
 		public int size() {
-			return edgesNum.getInt(target);
+			return edgesNum[target];
 		}
 
 		@Override
@@ -246,7 +247,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterIn(target, edges.get(target), edgesNum.getInt(target));
+			return new EdgeIterIn(target, edges[target], edgesNum[target]);
 		}
 	}
 

@@ -110,6 +110,15 @@
   <Match>
   <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
   <Or>
+      <Class name="com.jgalgo.DataContainer$Obj" />
+      <Class name="com.jgalgo.DataContainer$Int" />
+      <Class name="com.jgalgo.DataContainer$Long" />
+    </Or>
+    <Bug pattern="HE_EQUALS_NO_HASHCODE" />
+  </Match>
+  <Match>
+  <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+  <Or>
       <Class name="com.jgalgo.WeightsImpl$Index$Obj" />
       <Class name="com.jgalgo.WeightsImpl$Index$Byte" />
       <Class name="com.jgalgo.WeightsImpl$Index$Short" />

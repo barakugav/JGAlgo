@@ -22,50 +22,50 @@ import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
 abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
-	private final EdgeEndpointsContainer edgeEndpoints;
-
-	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+	private final DataContainer.Long edgeEndpointsContainer;
+	private long[] edgeEndpoints;
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);
-		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
+		edgeEndpointsContainer =
+				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 		super(g);
-		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);
-		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
+		edgeEndpointsContainer = g.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		edgeEndpoints.setEndpoints(e, source, target);
+		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
 		return e;
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-		edgeEndpoints.clear(edge);
+		edgeEndpointsContainer.clear(edgeEndpoints, edge);
 		super.removeEdgeImpl(edge);
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		edgeEndpoints.swap(e1, e2);
+		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);
 		super.edgeSwap(e1, e2);
 	}
 
-	static void addEdgeToList(WeightsImpl.Index.Obj<int[]> edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
-		int[] es = edges.get(w);
-		int num = edgesNum.getInt(w);
+	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
+		int[] es = edges[w];
+		int num = edgesNum[w];
 		if (es.length <= num) {
 			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));
-			edges.set(w, es);
+			edges[w] = es;
 		}
 		es[num] = e;
-		edgesNum.set(w, num + 1);
+		edgesNum[w] = num + 1;
 	}
 
 	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
@@ -75,26 +75,26 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 		return -1;
 	}
 
-	static void removeEdgeFromList(WeightsImpl.Index.Obj<int[]> edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
-		int[] es = edges.get(w);
-		int num = edgesNum.getInt(w);
+	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
+		int[] es = edges[w];
+		int num = edgesNum[w];
 		int i = edgeIndexOf(es, num, e);
 		es[i] = es[num - 1];
-		edgesNum.set(w, num - 1);
+		edgesNum[w] = num - 1;
 	}
 
 	@Override
-	public EdgeEndpointsContainer edgeEndpoints() {
+	public long[] edgeEndpoints() {
 		return edgeEndpoints;
 	}
 
 	void reverseEdge0(int edge) {
-		edgeEndpoints.reverseEdge(edge);
+		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);
 	}
 
 	@Override
 	public void clearEdges() {
-		edgeEndpoints.clear();
+		edgeEndpointsContainer.clear(edgeEndpoints);
 		super.clearEdges();
 	}
 

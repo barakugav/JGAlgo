@@ -30,6 +30,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -651,6 +652,15 @@ class Utils {
 		public String toString() {
 			return s;
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static final Consumer ConsumerNoOp = x -> {
+	};
+
+	@SuppressWarnings("unchecked")
+	static <T> Consumer<T> consumerNoOp() {
+		return ConsumerNoOp;
 	}
 
 }

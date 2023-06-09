@@ -15,32 +15,25 @@
  */
 package com.jgalgo;
 
-class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
+class EdgeEndpointsContainer {
 
 	private static final int None = -1;
+	static final long DefVal = sourceTarget2Endpoints(None, None);
 
-	EdgeEndpointsContainer(IdStrategyImpl idStrat) {
-		super(idStrat, sourceTarget2Endpoints(None, None));
+	static void setEndpoints(long[] edgeEndpoints, int edge, int source, int target) {
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);
 	}
 
-	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IdStrategyImpl idStrat) {
-		super(orig, idStrat);
+	static int edgeSource(long[] edgeEndpoints, int edge) {
+		return endpoints2Source(edgeEndpoints[edge]);
 	}
 
-	void setEndpoints(int edge, int source, int target) {
-		set(edge, sourceTarget2Endpoints(source, target));
+	static int edgeTarget(long[] edgeEndpoints, int edge) {
+		return endpoints2Target(edgeEndpoints[edge]);
 	}
 
-	int edgeSource(int edge) {
-		return endpoints2Source(getLong(edge));
-	}
-
-	int edgeTarget(int edge) {
-		return endpoints2Target(getLong(edge));
-	}
-
-	int edgeEndpoint(int edge, int endpoint) {
-		long endpoints = getLong(edge);
+	static int edgeEndpoint(long[] edgeEndpoints, int edge, int endpoint) {
+		long endpoints = edgeEndpoints[edge];
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
 		if (endpoint == u) {
@@ -53,40 +46,35 @@ class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
 		}
 	}
 
-	void reverseEdge(int edge) {
-		long endpoints = getLong(edge);
+	static void reverseEdge(long[] edgeEndpoints, int edge) {
+		long endpoints = edgeEndpoints[edge];
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
 		endpoints = sourceTarget2Endpoints(v, u);
-		set(edge, endpoints);
+		edgeEndpoints[edge] = endpoints;
 	}
 
-	void replaceEdgeSource(int edge, int newSource) {
-		long endpoints = getLong(edge);
+	static void replaceEdgeSource(long[] edgeEndpoints, int edge, int newSource) {
+		long endpoints = edgeEndpoints[edge];
 		int target = endpoints2Target(endpoints);
-		set(edge, sourceTarget2Endpoints(newSource, target));
+		edgeEndpoints[edge] = sourceTarget2Endpoints(newSource, target);
 	}
 
-	void replaceEdgeTarget(int edge, int newTarget) {
-		long endpoints = getLong(edge);
+	static void replaceEdgeTarget(long[] edgeEndpoints, int edge, int newTarget) {
+		long endpoints = edgeEndpoints[edge];
 		int source = endpoints2Source(endpoints);
-		set(edge, sourceTarget2Endpoints(source, newTarget));
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, newTarget);
 	}
 
-	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-		long endpoints = getLong(edge);
+	static void replaceEdgeEndpoint(long[] edgeEndpoints, int edge, int oldEndpoint, int newEndpoint) {
+		long endpoints = edgeEndpoints[edge];
 		int source = endpoints2Source(endpoints);
 		int target = endpoints2Target(endpoints);
 		if (source == oldEndpoint)
 			source = newEndpoint;
 		if (target == oldEndpoint)
 			target = newEndpoint;
-		set(edge, sourceTarget2Endpoints(source, target));
-	}
-
-	@Override
-	public EdgeEndpointsContainer copy(IdStrategyImpl idStrat) {
-		return new EdgeEndpointsContainer(this, idStrat);
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);
 	}
 
 	private static long sourceTarget2Endpoints(int source, int target) {
@@ -103,33 +91,33 @@ class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
 
 	static interface GraphWithEdgeEndpointsContainer extends IndexGraph {
 
-		EdgeEndpointsContainer edgeEndpoints();
+		long[] edgeEndpoints();
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
-			return edgeEndpoints().edgeEndpoint(edge, endpoint);
+			return EdgeEndpointsContainer.edgeEndpoint(edgeEndpoints(), edge, endpoint);
 		}
 
 		@Override
 		default int edgeSource(int edge) {
-			return edgeEndpoints().edgeSource(edge);
+			return EdgeEndpointsContainer.edgeSource(edgeEndpoints(), edge);
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
-			return edgeEndpoints().edgeTarget(edge);
+			return EdgeEndpointsContainer.edgeTarget(edgeEndpoints(), edge);
 		}
 
 		default void replaceEdgeSource(int edge, int newSource) {
-			edgeEndpoints().replaceEdgeSource(edge, newSource);
+			EdgeEndpointsContainer.replaceEdgeSource(edgeEndpoints(), edge, newSource);
 		}
 
 		default void replaceEdgeTarget(int edge, int newTarget) {
-			edgeEndpoints().replaceEdgeTarget(edge, newTarget);
+			EdgeEndpointsContainer.replaceEdgeTarget(edgeEndpoints(), edge, newTarget);
 		}
 
 		default void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-			edgeEndpoints().replaceEdgeEndpoint(edge, oldEndpoint, newEndpoint);
+			EdgeEndpointsContainer.replaceEdgeEndpoint(edgeEndpoints(), edge, oldEndpoint, newEndpoint);
 		}
 
 	}
