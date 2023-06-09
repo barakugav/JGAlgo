@@ -38,17 +38,25 @@ class ArgumentCheck {
 			throw new IllegalArgumentException(msg);
 	}
 
-	static void onlyPositiveWeights(Graph g, WeightFunction w) {
+	static void onlyPositiveEdgesWeights(Graph g, WeightFunction w) {
 		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wUbt = (WeightFunction.Int) w;
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			for (int e : g.edges())
-				if (wUbt.weightInt(e) < 0)
-					throw new IllegalArgumentException("only positive weights are supported");
+				onlyPositiveWeight(wInt.weightInt(e));
 		} else {
 			for (int e : g.edges())
-				if (w.weight(e) < 0)
-					throw new IllegalArgumentException("only positive weights are supported");
+				onlyPositiveWeight(w.weight(e));
 		}
+	}
+
+	static void onlyPositiveWeight(double w) {
+		if (w < 0)
+			throw new IllegalArgumentException("only positive weights are supported: " + w);
+	}
+
+	static void onlyPositiveWeight(int w) {
+		if (w < 0)
+			throw new IllegalArgumentException("only positive weights are supported: " + w);
 	}
 
 	static void sourceSinkNotTheSame(int source, int sink) {

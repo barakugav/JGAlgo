@@ -47,8 +47,11 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
+
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
+
 		int n = g.vertices().size();
 		Result res = new Result(g, source);
 		res.distances[source] = 0;

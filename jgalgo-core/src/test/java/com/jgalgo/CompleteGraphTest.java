@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -253,19 +252,17 @@ public class CompleteGraphTest extends TestBase {
 		}
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void testCapabilities() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
 				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				GraphCapabilities capabilities = g.getCapabilities();
-				assertFalse(capabilities.vertexAdd());
-				assertFalse(capabilities.vertexRemove());
-				assertFalse(capabilities.edgeAdd());
-				assertFalse(capabilities.edgeRemove());
+				assertFalse(capabilities.selfEdges());
+				assertFalse(capabilities.parallelEdges());
+				assertEquals(directed, capabilities.directed());
 			}
-			assertFalse(Graphs.EmptyGraphUndirected.getCapabilities().directed());
-			assertTrue(Graphs.EmptyGraphDirected.getCapabilities().directed());
 		}
 	}
 

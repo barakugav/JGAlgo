@@ -81,14 +81,6 @@ class GraphsUtils {
 
 	static class GraphCapabilitiesBuilder {
 
-		private boolean vertexAdd;
-		private boolean vertexAddValid;
-		private boolean vertexRemove;
-		private boolean vertexRemoveValid;
-		private boolean edgeAdd;
-		private boolean edgeAddValid;
-		private boolean edgeRemove;
-		private boolean edgeRemoveValid;
 		private boolean parallelEdges;
 		private boolean parallelEdgesValid;
 		private boolean selfEdges;
@@ -110,35 +102,9 @@ class GraphsUtils {
 		}
 
 		GraphCapabilities build() {
-			if (!vertexAddValid || !vertexRemoveValid || !edgeAddValid || !edgeRemoveValid || !parallelEdgesValid
-					|| !selfEdgesValid || !directedValid)
+			if (!parallelEdgesValid || !selfEdgesValid || !directedValid)
 				throw new IllegalStateException();
-			return new GraphCapabilitiesImpl(vertexAdd, vertexRemove, edgeAdd, edgeRemove, parallelEdges, selfEdges,
-					directed);
-		}
-
-		GraphCapabilitiesBuilder vertexAdd(boolean enable) {
-			vertexAdd = enable;
-			vertexAddValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder vertexRemove(boolean enable) {
-			vertexRemove = enable;
-			vertexRemoveValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder edgeAdd(boolean enable) {
-			edgeAdd = enable;
-			edgeAddValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder edgeRemove(boolean enable) {
-			edgeRemove = enable;
-			edgeRemoveValid = true;
-			return this;
+			return new GraphCapabilitiesImpl(parallelEdges, selfEdges, directed);
 		}
 
 		GraphCapabilitiesBuilder parallelEdges(boolean enable) {
@@ -163,43 +129,14 @@ class GraphsUtils {
 
 	private static class GraphCapabilitiesImpl implements GraphCapabilities {
 
-		private final boolean vertexAdd;
-		private final boolean vertexRemove;
-		private final boolean edgeAdd;
-		private final boolean edgeRemove;
 		private final boolean parallelEdges;
 		private final boolean selfEdges;
 		private final boolean directed;
 
-		GraphCapabilitiesImpl(boolean vertexAdd, boolean vertexRemove, boolean edgeAdd, boolean edgeRemove,
-				boolean parallelEdges, boolean selfEdges, boolean directed) {
-			this.vertexAdd = vertexAdd;
-			this.vertexRemove = vertexRemove;
-			this.edgeAdd = edgeAdd;
-			this.edgeRemove = edgeRemove;
+		GraphCapabilitiesImpl(boolean parallelEdges, boolean selfEdges, boolean directed) {
 			this.parallelEdges = parallelEdges;
 			this.selfEdges = selfEdges;
 			this.directed = directed;
-		}
-
-		@Override
-		public boolean vertexAdd() {
-			return vertexAdd;
-		}
-
-		@Override
-		public boolean vertexRemove() {
-			return vertexRemove;
-		}
-
-		@Override
-		public boolean edgeAdd() {
-			return edgeAdd;
-		}
-
-		@Override
-		public boolean edgeRemove() {
-			return edgeRemove;
 		}
 
 		@Override
@@ -216,6 +153,35 @@ class GraphsUtils {
 		public boolean directed() {
 			return directed;
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder s = new StringBuilder().append('<');
+			s.append(" parallelEdges=").append(parallelEdges ? 'v' : 'x');
+			s.append(" selfEdges=").append(selfEdges ? 'v' : 'x');
+			s.append(" directed=").append(directed ? 'v' : 'x');
+			return s.append('>').toString();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof GraphCapabilities))
+				return false;
+			GraphCapabilities o = (GraphCapabilities) other;
+			return parallelEdges == o.parallelEdges() && selfEdges == o.selfEdges() && directed == o.directed();
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 0;
+			/* we must use addition as the order shouldn't matter */
+			h += parallelEdges ? 1 : 0;
+			h += selfEdges ? 1 : 0;
+			h += directed ? 1 : 0;
+			return h;
+		}
 	}
 
 	static double weightSum(IntIterable collection, WeightFunction w) {
@@ -231,10 +197,10 @@ class GraphsUtils {
 		}
 
 		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int w0 = (WeightFunction.Int) w;
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			int sum = 0;
 			while (it.hasNext())
-				sum += w0.weightInt(it.nextInt());
+				sum += wInt.weightInt(it.nextInt());
 			return sum;
 
 		} else {

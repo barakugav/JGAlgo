@@ -475,7 +475,7 @@ public interface Graph {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set<Object> getVerticesWeightKeys();
+	Set<Object> getVerticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.

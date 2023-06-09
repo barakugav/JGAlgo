@@ -1818,4 +1818,50 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
+	static WeightFunction localEdgeWeightFunction(IndexGraph g, WeightFunction w) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction)
+			return w;
+		if (w instanceof WeightsImpl.Index)
+			return w;
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
+			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);
+			for (int e : g.edges())
+				wLocal.set(e, wInt.weightInt(e));
+			return wLocal;
+		} else {
+			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);
+			for (int e : g.edges())
+				wLocal.set(e, w.weight(e));
+			return wLocal;
+		}
+	}
+
+	static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction)
+			return w;
+		if (w instanceof WeightsImpl.Index)
+			return w;
+		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);
+		for (int e : g.edges())
+			wLocal.set(e, w.weightInt(e));
+		return wLocal;
+	}
+
+	static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
+			WeightFunction.Int wPotentialInt =
+					e -> wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];
+			return wPotentialInt;
+		} else {
+			WeightFunction w0 = w;
+			return e -> w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		}
+	}
+
+	static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
+		return e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+	}
+
 }

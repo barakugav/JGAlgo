@@ -173,7 +173,7 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 	}
 
 	@Override
-	public Set<Object> getVerticesWeightKeys() {
+	public Set<Object> getVerticesWeightsKeys() {
 		return verticesUserWeights.weightsKeys();
 	}
 

@@ -81,8 +81,6 @@ class AStar implements ShortestPathWithHeuristic {
 	}
 
 	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
-
-		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
@@ -103,7 +101,11 @@ class AStar implements ShortestPathWithHeuristic {
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				double distance = uDistance + w.weight(e);
+
+				double ew = w.weight(e);
+				ArgumentCheck.onlyPositiveWeight(ew);
+				double distance = uDistance + ew;
+
 				if (distance >= distances.get(v))
 					continue;
 				distances.put(v, distance);

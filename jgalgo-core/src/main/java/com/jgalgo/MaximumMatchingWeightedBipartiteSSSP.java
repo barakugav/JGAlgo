@@ -90,7 +90,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 		return new MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction w0, Weights.Bool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
 		IndexGraph g = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();
 		for (int v = 0; v < n; v++)
@@ -103,7 +103,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 				continue;
 			for (EdgeIter eit = gOrig.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				double weight = w0.weight(e);
+				double weight = wOrig.weight(e);
 				if (weight < 0)
 					continue; // no reason to match negative edges
 				int e0 = g.addEdge(u, eit.target());
@@ -137,7 +137,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 		}
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		WeightFunction spWeightFunc = WeightsImpl.potentialWeightFunc(g, w, potential);
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values

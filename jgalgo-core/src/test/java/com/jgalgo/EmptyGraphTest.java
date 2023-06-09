@@ -119,9 +119,9 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testWeights() {
-		assertEquals(Collections.emptySet(), Graphs.EmptyGraphUndirected.getVerticesWeightKeys());
+		assertEquals(Collections.emptySet(), Graphs.EmptyGraphUndirected.getVerticesWeightsKeys());
 		assertEquals(Collections.emptySet(), Graphs.EmptyGraphUndirected.getEdgesWeightsKeys());
-		assertEquals(Collections.emptySet(), Graphs.EmptyGraphDirected.getVerticesWeightKeys());
+		assertEquals(Collections.emptySet(), Graphs.EmptyGraphDirected.getVerticesWeightsKeys());
 		assertEquals(Collections.emptySet(), Graphs.EmptyGraphDirected.getEdgesWeightsKeys());
 		final Object weightsKey = new Object();
 		assertThrows(UnsupportedOperationException.class,
@@ -154,10 +154,8 @@ public class EmptyGraphTest extends TestBase {
 	public void testCapabilities() {
 		for (Graph g : List.of(Graphs.EmptyGraphUndirected, Graphs.EmptyGraphDirected)) {
 			GraphCapabilities capabilities = g.getCapabilities();
-			assertFalse(capabilities.vertexAdd());
-			assertFalse(capabilities.vertexRemove());
-			assertFalse(capabilities.edgeAdd());
-			assertFalse(capabilities.edgeRemove());
+			assertFalse(capabilities.selfEdges());
+			assertFalse(capabilities.parallelEdges());
 		}
 		assertFalse(Graphs.EmptyGraphUndirected.getCapabilities().directed());
 		assertTrue(Graphs.EmptyGraphDirected.getCapabilities().directed());

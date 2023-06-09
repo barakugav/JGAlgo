@@ -17,15 +17,14 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
 public class WeightsTest extends TestBase {
@@ -190,7 +189,8 @@ public class WeightsTest extends TestBase {
 				g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			}
 
-			Weights<E> weights = edgeWeightsAdder.apply(g, "edgeWeight");
+			Object wKey = "edgeWeight";
+			Weights<E> weights = edgeWeightsAdder.apply(g, wKey);
 			assertEquals(defaultWeight, weights.defaultWeight());
 
 			int[] edges = g.edges().toIntArray();
@@ -229,6 +229,16 @@ public class WeightsTest extends TestBase {
 					assertEquals(expected, actual);
 				}
 			}
+
+			Weights<E> weightsUnmod = g.unmodifiableView().getEdgesWeights(wKey);
+			for (int e : g.edges())
+				assertEquals(weights.get(e), weightsUnmod.get(e));
+			assertEquals(weights.defaultWeight(), weightsUnmod.defaultWeight());
+			assertThrows(UnsupportedOperationException.class, () -> {
+				IntIterator eit = g.edges().iterator();
+				int e1 = eit.nextInt(), e2 = eit.nextInt();
+				weightsUnmod.set(e1, weightsUnmod.get(e2));
+			});
 		}
 	}
 

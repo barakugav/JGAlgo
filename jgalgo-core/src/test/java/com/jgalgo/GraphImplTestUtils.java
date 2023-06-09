@@ -875,37 +875,31 @@ class GraphImplTestUtils extends TestUtils {
 		GraphCapabilities capabilities = g.getCapabilities();
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
-		if (capabilities.edgeAdd())
-			opRand.add(GraphOp.AddEdge, 80);
-		if (capabilities.edgeRemove()) {
-			opRand.add(GraphOp.RemoveEdge, 3);
-			opRand.add(GraphOp.RemoveEdgeUsingOutIter, 2);
-			opRand.add(GraphOp.RemoveEdgeUsingInIter, 2);
-			opRand.add(GraphOp.RemoveEdgeUsingOutEdgeSet, 2);
-			opRand.add(GraphOp.RemoveEdgeUsingInEdgeSet, 2);
-			opRand.add(GraphOp.RemoveEdgeUsingSourceTargetEdgeSet, 1);
-			opRand.add(GraphOp.RemoveEdgesOfVertex, 1);
-			opRand.add(GraphOp.RemoveEdgesOfVertexUsingEdgeSet, 1);
-			opRand.add(GraphOp.RemoveEdgesOfVertexUsingIter, 1);
-			// opRand.add(GraphOp.ClearEdges, 1);
-		}
-		if (capabilities.edgeRemove() && capabilities.directed()) {
+
+		opRand.add(GraphOp.AddVertex, 20);
+		opRand.add(GraphOp.RemoveVertex, 3);
+
+		opRand.add(GraphOp.AddEdge, 80);
+
+		opRand.add(GraphOp.RemoveEdge, 3);
+		opRand.add(GraphOp.RemoveEdgeUsingOutIter, 2);
+		opRand.add(GraphOp.RemoveEdgeUsingInIter, 2);
+		opRand.add(GraphOp.RemoveEdgeUsingOutEdgeSet, 2);
+		opRand.add(GraphOp.RemoveEdgeUsingInEdgeSet, 2);
+		opRand.add(GraphOp.RemoveEdgeUsingSourceTargetEdgeSet, 1);
+		opRand.add(GraphOp.RemoveEdgesOfVertex, 1);
+		opRand.add(GraphOp.RemoveEdgesOfVertexUsingEdgeSet, 1);
+		opRand.add(GraphOp.RemoveEdgesOfVertexUsingIter, 1);
+		// opRand.add(GraphOp.ClearEdges, 1);
+
+		if (capabilities.directed()) {
 			opRand.add(GraphOp.RemoveEdgesInOfVertex, 1);
 			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingIter, 1);
 			opRand.add(GraphOp.RemoveEdgesOutOfVertex, 1);
 			opRand.add(GraphOp.RemoveEdgesOutOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesOutOfVertexUsingIter, 1);
-		}
-		if (capabilities.directed())
 			opRand.add(GraphOp.ReverseEdge, 6);
-		if (capabilities.vertexAdd())
-			opRand.add(GraphOp.AddVertex, 20);
-		if (capabilities.vertexRemove()) {
-			if (!capabilities.edgeRemove())
-				throw new IllegalArgumentException("vertex removal can't be supported while edge removal is not");
-			opRand.add(GraphOp.RemoveVertex, 3);
-			// opRand.add(GraphOp.RemoveVertices, 1);
 		}
 
 		final Object dataKey = new Utils.Obj("data");

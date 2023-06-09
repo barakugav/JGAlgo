@@ -29,7 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  * depends on \(D\).
  * <p>
  * This algorithm should be used in case the maximal distance is known in advance, and its small. For example, its used
- * by {@link ShortestPathSingleSourceDial} as a subroutine, where the maximum distance is bounded by the number of layers.
+ * by {@link ShortestPathSingleSourceDial} as a subroutine, where the maximum distance is bounded by the number of
+ * layers.
  * <p>
  * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by Dial, Robert B. (1969).
  *
@@ -49,7 +50,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	 ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof WeightFunction.Int))
@@ -84,22 +85,24 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source, int maxDistance) {
-		ArgumentCheck.onlyPositiveWeights(g, w);
-
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source,
+			int maxDistance) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
 
 		for (int u = source;;) {
-			final int uDisntace = res.distances[u];
+			final int uDistance = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
-				int distance = uDisntace + w.weightInt(e);
+
+				int ew = w.weightInt(e);
+				ArgumentCheck.onlyPositiveWeight(ew);
+				int distance = uDistance + ew;
 
 				if (!heap.containsVertex(v)) {
 					heap.insert(v, distance);

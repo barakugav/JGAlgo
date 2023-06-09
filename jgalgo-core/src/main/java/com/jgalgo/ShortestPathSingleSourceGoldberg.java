@@ -79,11 +79,13 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			w = WeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
 		return computeShortestPaths0(g, (WeightFunction.Int) w, source);
 	}
 
 	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunction.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
+
 		for (int e : g.edges())
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
@@ -97,7 +99,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		WeightFunction.Int pw = e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		WeightFunction.Int pw = WeightsImpl.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);

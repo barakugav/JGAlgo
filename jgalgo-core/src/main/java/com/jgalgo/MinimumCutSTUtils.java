@@ -127,7 +127,7 @@ class MinimumCutSTUtils {
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, WeightFunction w) {
-		ArgumentCheck.onlyPositiveWeights(g, w);
+		ArgumentCheck.onlyPositiveEdgesWeights(g, w);
 		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);
 		FlowNetwork net = new FlowNetwork() {
 			@Override
@@ -160,6 +160,8 @@ class MinimumCutSTUtils {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
+				w = WeightsImpl.localEdgeWeightFunction(g, w);
+
 				Cut bestCut = null;
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;

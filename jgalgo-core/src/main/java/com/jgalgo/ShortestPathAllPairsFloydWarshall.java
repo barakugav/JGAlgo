@@ -38,6 +38,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
 		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 

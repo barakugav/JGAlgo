@@ -31,34 +31,6 @@ package com.jgalgo;
 public interface GraphCapabilities {
 
 	/**
-	 * Checks whether vertex additions are supported.
-	 *
-	 * @return {@code true} if the graph support vertex additions, else {@code false}.
-	 */
-	boolean vertexAdd();
-
-	/**
-	 * Checks whether vertex removals are supported.
-	 *
-	 * @return {@code true} if the graph support vertex removals, else {@code false}.
-	 */
-	boolean vertexRemove();
-
-	/**
-	 * Checks whether edge additions are supported.
-	 *
-	 * @return {@code true} if the graph support edge additions, else {@code false}.
-	 */
-	boolean edgeAdd();
-
-	/**
-	 * Checks whether edge removals are supported.
-	 *
-	 * @return {@code true} if the graph support edge removals, else {@code false}.
-	 */
-	boolean edgeRemove();
-
-	/**
 	 * Checks whether parallel edges are supported.
 	 * <p>
 	 * Parallel edges are multiple edges with identical source and target.

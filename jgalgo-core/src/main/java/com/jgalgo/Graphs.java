@@ -118,7 +118,7 @@ public class Graphs {
 		public void removeVerticesWeights(Object key) {}
 
 		@Override
-		public Set<Object> getVerticesWeightKeys() {
+		public Set<Object> getVerticesWeightsKeys() {
 			return Collections.emptySet();
 		}
 
@@ -173,8 +173,8 @@ public class Graphs {
 
 	private static class EmptyGraphUndirected extends EmptyGraph {
 
-		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(false)
-				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
+		private static final GraphCapabilities Capabilities =
+				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
 		public GraphCapabilities getCapabilities() {
@@ -185,8 +185,8 @@ public class Graphs {
 
 	private static class EmptyGraphDirected extends EmptyGraph {
 
-		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(false)
-				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
+		private static final GraphCapabilities Capabilities =
+				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
 		public GraphCapabilities getCapabilities() {
@@ -331,8 +331,8 @@ public class Graphs {
 			return Capabilities;
 		}
 
-		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(false)
-				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
+		private static final GraphCapabilities Capabilities =
+				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
 		public IndexGraph copy() {
@@ -417,8 +417,8 @@ public class Graphs {
 			return Capabilities;
 		}
 
-		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(false)
-				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
+		private static final GraphCapabilities Capabilities =
+				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
 		public IndexGraph copy() {
@@ -715,7 +715,7 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightKeys() {
+		public Set<Object> getVerticesWeightsKeys() {
 			return verticesWeights.weightsKeys();
 		}
 
@@ -929,8 +929,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightKeys() {
-			return graph.getVerticesWeightKeys();
+		public Set<Object> getVerticesWeightsKeys() {
+			return graph.getVerticesWeightsKeys();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -1185,8 +1185,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightKeys() {
-			return graph.getVerticesWeightKeys();
+		public Set<Object> getVerticesWeightsKeys() {
+			return graph.getVerticesWeightsKeys();
 		}
 
 		@Override

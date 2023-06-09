@@ -62,13 +62,13 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 					continue;
 				sourceSeen = true;
 			}
-			double uDisntace = res.distances[u];
-			if (uDisntace == Double.POSITIVE_INFINITY)
+			double uDistance = res.distances[u];
+			if (uDistance == Double.POSITIVE_INFINITY)
 				continue;
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				double d = uDisntace + w.weight(e);
+				double d = uDistance + w.weight(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;
 					res.backtrack[v] = e;
@@ -90,13 +90,13 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 					continue;
 				sourceSeen = true;
 			}
-			int uDisntace = res.distances[u];
-			if (uDisntace == Integer.MAX_VALUE)
+			int uDistance = res.distances[u];
+			if (uDistance == Integer.MAX_VALUE)
 				continue;
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				int d = uDisntace + w.weightInt(e);
+				int d = uDistance + w.weightInt(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;
 					res.backtrack[v] = e;

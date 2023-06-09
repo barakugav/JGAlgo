@@ -56,10 +56,11 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	 */
 	@Override
 	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
+		ArgumentCheck.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		ArgumentCheck.onlyDirected(g);
-		int n = g.vertices().size();
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		final int n = g.vertices().size();
 
 		boolean negWeight = false;
 		for (int e : g.edges()) {
@@ -81,16 +82,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		WeightFunction wPotential;
-		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wInt = (WeightFunction.Int) w;
-			WeightFunction.Int wPotentialInt =
-					e -> wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];
-			wPotential = wPotentialInt;
-		} else {
-			WeightFunction w0 = w;
-			wPotential = e -> w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
-		}
+		WeightFunction wPotential = WeightsImpl.potentialWeightFunc(g, w, potential);
 		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
 		return res;

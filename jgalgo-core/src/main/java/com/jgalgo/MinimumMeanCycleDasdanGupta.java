@@ -49,7 +49,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
 		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
@@ -71,7 +72,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		/* operate on each SCC separately */
 		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;
 		int bestCycleMeanWeightVertex = -1;
-		IntList bestCycleLengths = null;
+		final IntList bestCycleLengths = new IntArrayList();
+		IntList bestVertexCycleLengths = new IntArrayList();
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
 			final int ccSize = cc.getCcVertices(ccIdx).size();
 			if (ccSize < 2)
@@ -111,7 +113,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				if (!lastVisit[u])
 					continue;
 				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;
-				IntList bestVertexCycleLengths = new IntArrayList();
+				bestVertexCycleLengths.clear();
 				for (int k = 0; k < ccSize; k++) {
 					int len = ccSize - k;
 					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / len;
@@ -126,7 +128,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				if (bestCycleMeanWeight > bestVertexCycleMeanWeight) {
 					bestCycleMeanWeight = bestVertexCycleMeanWeight;
 					bestCycleMeanWeightVertex = u;
-					bestCycleLengths = new IntArrayList(bestVertexCycleLengths);
+					bestCycleLengths.clear();
+					bestCycleLengths.addAll(bestVertexCycleLengths);
 				}
 			}
 		}

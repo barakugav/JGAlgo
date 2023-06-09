@@ -211,8 +211,8 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public Set<Object> getVerticesWeightKeys() {
-		return indexGraph.getVerticesWeightKeys();
+	public Set<Object> getVerticesWeightsKeys() {
+		return indexGraph.getVerticesWeightsKeys();
 	}
 
 	@Override

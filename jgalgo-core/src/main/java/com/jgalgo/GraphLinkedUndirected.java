@@ -216,8 +216,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		return Capabilities;
 	}
 
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(false).build();
+	private static final GraphCapabilities Capabilities =
+			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(false).build();
 
 	@Override
 	public IndexGraph copy() {

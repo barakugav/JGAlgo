@@ -55,7 +55,8 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		w = WeightsImpl.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
 		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);

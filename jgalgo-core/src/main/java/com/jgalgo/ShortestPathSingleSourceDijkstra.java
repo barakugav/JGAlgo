@@ -64,7 +64,6 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (w instanceof WeightFunction.Int) {
 			return computeSsspInts(g, (WeightFunction.Int) w, source);
 		} else {
@@ -83,13 +82,15 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
-			final double uDisntace = res.distances[u];
+			final double uDistance = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
-				double distance = uDisntace + w.weight(e);
+				double ew = w.weight(e);
+				ArgumentCheck.onlyPositiveWeight(ew);
+				double distance = uDistance + ew;
 
 				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
@@ -123,13 +124,15 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
-			final int uDisntace = res.distances[u];
+			final int uDistance = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
-				int distance = uDisntace + w.weightInt(e);
+				int ew = w.weightInt(e);
+				ArgumentCheck.onlyPositiveWeight(ew);
+				int distance = uDistance + ew;
 
 				HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {

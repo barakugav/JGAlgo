@@ -456,7 +456,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
-			this.w = e -> w.weight(edgeVal.get(e).e);
+			WeightFunction wLocal = WeightsImpl.localEdgeWeightFunction(gOrig, w);
+			this.w = e -> wLocal.weight(edgeVal.get(e).e);
 
 			for (int e : gOrig.edges()) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);

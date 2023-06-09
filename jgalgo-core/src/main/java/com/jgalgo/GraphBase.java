@@ -36,7 +36,7 @@ abstract class GraphBase implements Graph {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
 
-		Set<Object> verticesWeightsKeys = getVerticesWeightKeys();
+		Set<Object> verticesWeightsKeys = getVerticesWeightsKeys();
 		Collection<Weights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (Object key : verticesWeightsKeys)
 			verticesWeights.add(getVerticesWeights(key));

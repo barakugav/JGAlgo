@@ -121,8 +121,8 @@ class GraphTableDirected extends GraphTableAbstract {
 		return Capabilities;
 	}
 
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
+	private static final GraphCapabilities Capabilities =
+			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
 
 	@Override
 	public IndexGraph copy() {
