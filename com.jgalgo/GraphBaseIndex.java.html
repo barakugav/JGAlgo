@@ -173,14 +173,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	@Override
-	public Set&lt;Object&gt; getVerticesWeightKeys() {
+	public Set&lt;Object&gt; getVerticesWeightsKeys() {
 <span class="fc" id="L177">		return verticesUserWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-<span class="nc" id="L182">		verticesUserWeights.removeWeights(key);</span>
-<span class="nc" id="L183">	}</span>
+<span class="fc" id="L182">		verticesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L183">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -195,8 +195,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-<span class="nc" id="L198">		edgesUserWeights.removeWeights(key);</span>
-<span class="nc" id="L199">	}</span>
+<span class="fc" id="L198">		edgesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L199">	}</span>
 
 	void addInternalVerticesWeights(Object key, WeightsImpl.Index&lt;?&gt; container) {
 <span class="fc" id="L202">		verticesInternalWeights.addWeights(key, container);</span>

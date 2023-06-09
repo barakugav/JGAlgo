@@ -200,8 +200,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L200">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L203">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)</span>
-<span class="fc" id="L204">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
+<span class="fc" id="L203">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L204">			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
 	public IndexGraph copy() {

@@ -138,8 +138,8 @@ class GraphTableUndirected extends GraphTableAbstract {
 <span class="fc" id="L138">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L141">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)</span>
-<span class="fc" id="L142">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();</span>
+<span class="fc" id="L141">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L142">			GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();</span>
 
 	@Override
 	public IndexGraph copy() {

@@ -141,7 +141,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		}
 <span class="fc" id="L142">	}</span>
 
-	private ContractedGraph contract(IndexGraph g, WeightFunction w0) {
+	private ContractedGraph contract(IndexGraph g, WeightFunction wOrig) {
 <span class="fc" id="L145">		addEdgesUntilStronglyConnected(g);</span>
 
 <span class="fc" id="L147">		int n = g.vertices().size();</span>
@@ -155,7 +155,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 <span class="fc" id="L155">		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);</span>
 <span class="fc" id="L156">		WeightFunction w = e -&gt; {</span>
 <span class="fc" id="L157">			int e0 = edgeRefs.getInt(e);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			return (e0 != HeavyEdge ? wOrig.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
 		};
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L161">		HeapReferenceable&lt;Integer, Void&gt;[] heap = new HeapReferenceable[VMaxNum];</span>

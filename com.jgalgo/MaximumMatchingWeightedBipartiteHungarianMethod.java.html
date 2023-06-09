@@ -121,7 +121,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 
 <span class="fc" id="L122">			this.g = g;</span>
 <span class="fc" id="L123">			this.partition = partition;</span>
-<span class="fc" id="L124">			this.w = w;</span>
+<span class="fc" id="L124">			this.w = WeightsImpl.localEdgeWeightFunction(g, w);</span>
 <span class="fc" id="L125">			int n = g.vertices().size();</span>
 
 <span class="fc" id="L127">			inTree = new BitSet(n);</span>

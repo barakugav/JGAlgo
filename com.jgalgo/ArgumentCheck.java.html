@@ -38,23 +38,31 @@ class ArgumentCheck {
 <span class="nc" id="L38">			throw new IllegalArgumentException(msg);</span>
 <span class="fc" id="L39">	}</span>
 
-	static void onlyPositiveWeights(Graph g, WeightFunction w) {
+	static void onlyPositiveEdgesWeights(Graph g, WeightFunction w) {
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L43">			WeightFunction.Int wUbt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L43">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
 <span class="fc bfc" id="L44" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">				if (wUbt.weightInt(e) &lt; 0)</span>
-<span class="nc" id="L46">					throw new IllegalArgumentException(&quot;only positive weights are supported&quot;);</span>
-<span class="fc" id="L47">		} else {</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">				if (w.weight(e) &lt; 0)</span>
-<span class="nc" id="L50">					throw new IllegalArgumentException(&quot;only positive weights are supported&quot;);</span>
+<span class="fc" id="L45">				onlyPositiveWeight(wInt.weightInt(e));</span>
+<span class="fc" id="L46">		} else {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L48">				onlyPositiveWeight(w.weight(e));</span>
 		}
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L50">	}</span>
+
+	static void onlyPositiveWeight(double w) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (w &lt; 0)</span>
+<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
+<span class="fc" id="L55">	}</span>
+
+	static void onlyPositiveWeight(int w) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (w &lt; 0)</span>
+<span class="nc" id="L59">			throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
+<span class="fc" id="L60">	}</span>
 
 	static void sourceSinkNotTheSame(int source, int sink) {
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (source == sink)</span>
-<span class="nc" id="L56">			throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex (&quot; + source + &quot;)&quot;);</span>
-<span class="fc" id="L57">	}</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (source == sink)</span>
+<span class="nc" id="L64">			throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex (&quot; + source + &quot;)&quot;);</span>
+<span class="fc" id="L65">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

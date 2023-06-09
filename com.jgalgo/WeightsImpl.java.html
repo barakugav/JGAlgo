@@ -73,25 +73,25 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	default WeightsImpl&lt;E&gt; unmodifiableView() {
-<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (this instanceof Unmodifiable&lt;?&gt;)</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (this instanceof Unmodifiable&lt;?&gt;)</span>
 <span class="nc" id="L77">			return this;</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">		if (this instanceof Weights.Byte)</span>
-<span class="nc" id="L79">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Byte((Weights.Byte) this);</span>
-<span class="nc bnc" id="L80" title="All 2 branches missed.">		if (this instanceof Weights.Short)</span>
-<span class="nc" id="L81">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Short((Weights.Short) this);</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">		if (this instanceof Weights.Int)</span>
-<span class="nc" id="L83">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Int((Weights.Int) this);</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">		if (this instanceof Weights.Long)</span>
-<span class="nc" id="L85">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Long((Weights.Long) this);</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">		if (this instanceof Weights.Float)</span>
-<span class="nc" id="L87">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Float((Weights.Float) this);</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">		if (this instanceof Weights.Double)</span>
-<span class="nc" id="L89">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Double((Weights.Double) this);</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">		if (this instanceof Weights.Bool)</span>
-<span class="nc" id="L91">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Bool((Weights.Bool) this);</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">		if (this instanceof Weights.Char)</span>
-<span class="nc" id="L93">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Char((Weights.Char) this);</span>
-<span class="nc" id="L94">		return new Unmodifiable.Obj&lt;&gt;(this);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (this instanceof Weights.Byte)</span>
+<span class="fc" id="L79">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Byte((Weights.Byte) this);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (this instanceof Weights.Short)</span>
+<span class="fc" id="L81">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Short((Weights.Short) this);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (this instanceof Weights.Int)</span>
+<span class="fc" id="L83">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Int((Weights.Int) this);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (this instanceof Weights.Long)</span>
+<span class="fc" id="L85">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Long((Weights.Long) this);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (this instanceof Weights.Float)</span>
+<span class="fc" id="L87">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Float((Weights.Float) this);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (this instanceof Weights.Double)</span>
+<span class="fc" id="L89">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Double((Weights.Double) this);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (this instanceof Weights.Bool)</span>
+<span class="fc" id="L91">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Bool((Weights.Bool) this);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (this instanceof Weights.Char)</span>
+<span class="fc" id="L93">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Char((Weights.Char) this);</span>
+<span class="fc" id="L94">		return new Unmodifiable.Obj&lt;&gt;(this);</span>
 	}
 
 	static interface Index&lt;E&gt; extends WeightsImpl&lt;E&gt; {
@@ -1241,8 +1241,8 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L1241">			}</span>
 
 			void removeWeights(Object key) {
-<span class="nc" id="L1244">				weights.remove(key);</span>
-<span class="nc" id="L1245">			}</span>
+<span class="fc" id="L1244">				weights.remove(key);</span>
+<span class="fc" id="L1245">			}</span>
 
 			@SuppressWarnings(&quot;unchecked&quot;)
 			&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getWeights(Object key) {
@@ -1549,241 +1549,241 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 		private final WeightsImpl&lt;E&gt; weights;
 
-<span class="nc" id="L1552">		Unmodifiable(Weights&lt;E&gt; w) {</span>
-<span class="nc" id="L1553">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
-<span class="nc" id="L1554">		}</span>
+<span class="fc" id="L1552">		Unmodifiable(Weights&lt;E&gt; w) {</span>
+<span class="fc" id="L1553">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
+<span class="fc" id="L1554">		}</span>
 
 		Weights&lt;E&gt; weights() {
-<span class="nc" id="L1557">			return weights;</span>
+<span class="fc" id="L1557">			return weights;</span>
 		}
 
 		static class Obj&lt;E&gt; extends Unmodifiable&lt;E&gt; {
 
 			Obj(Weights&lt;E&gt; w) {
-<span class="nc" id="L1563">				super(w);</span>
-<span class="nc" id="L1564">			}</span>
+<span class="fc" id="L1563">				super(w);</span>
+<span class="fc" id="L1564">			}</span>
 
 			@Override
 			public E get(int id) {
-<span class="nc" id="L1568">				return weights().get(id);</span>
+<span class="fc" id="L1568">				return weights().get(id);</span>
 			}
 
 			@Override
 			public void set(int id, E weight) {
-<span class="nc" id="L1573">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1573">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public E defaultWeight() {
-<span class="nc" id="L1578">				return weights().defaultWeight();</span>
+<span class="fc" id="L1578">				return weights().defaultWeight();</span>
 			}
 		}
 
 		static class Byte extends Unmodifiable&lt;java.lang.Byte&gt; implements Weights.Byte {
 			Byte(Weights.Byte w) {
-<span class="nc" id="L1584">				super(w);</span>
-<span class="nc" id="L1585">			}</span>
+<span class="fc" id="L1584">				super(w);</span>
+<span class="fc" id="L1585">			}</span>
 
 			@Override
 			Weights.Byte weights() {
-<span class="nc" id="L1589">				return (Weights.Byte) super.weights();</span>
+<span class="fc" id="L1589">				return (Weights.Byte) super.weights();</span>
 			}
 
 			@Override
 			public byte getByte(int id) {
-<span class="nc" id="L1594">				return weights().getByte(id);</span>
+<span class="fc" id="L1594">				return weights().getByte(id);</span>
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-<span class="nc" id="L1599">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1599">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="nc" id="L1604">				return weights().defaultWeightByte();</span>
+<span class="fc" id="L1604">				return weights().defaultWeightByte();</span>
 			}
 		}
 
 		static class Short extends Unmodifiable&lt;java.lang.Short&gt; implements Weights.Short {
 			Short(Weights.Short w) {
-<span class="nc" id="L1610">				super(w);</span>
-<span class="nc" id="L1611">			}</span>
+<span class="fc" id="L1610">				super(w);</span>
+<span class="fc" id="L1611">			}</span>
 
 			@Override
 			Weights.Short weights() {
-<span class="nc" id="L1615">				return (Weights.Short) super.weights();</span>
+<span class="fc" id="L1615">				return (Weights.Short) super.weights();</span>
 			}
 
 			@Override
 			public short getShort(int id) {
-<span class="nc" id="L1620">				return weights().getShort(id);</span>
+<span class="fc" id="L1620">				return weights().getShort(id);</span>
 			}
 
 			@Override
 			public void set(int id, short weight) {
-<span class="nc" id="L1625">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1625">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public short defaultWeightShort() {
-<span class="nc" id="L1630">				return weights().defaultWeightShort();</span>
+<span class="fc" id="L1630">				return weights().defaultWeightShort();</span>
 			}
 		}
 
 		static class Int extends Unmodifiable&lt;Integer&gt; implements Weights.Int {
 			Int(Weights.Int w) {
-<span class="nc" id="L1636">				super(w);</span>
-<span class="nc" id="L1637">			}</span>
+<span class="fc" id="L1636">				super(w);</span>
+<span class="fc" id="L1637">			}</span>
 
 			@Override
 			Weights.Int weights() {
-<span class="nc" id="L1641">				return (Weights.Int) super.weights();</span>
+<span class="fc" id="L1641">				return (Weights.Int) super.weights();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="nc" id="L1646">				return weights().getInt(id);</span>
+<span class="fc" id="L1646">				return weights().getInt(id);</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="nc" id="L1651">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1651">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public int defaultWeightInt() {
-<span class="nc" id="L1656">				return weights().defaultWeightInt();</span>
+<span class="fc" id="L1656">				return weights().defaultWeightInt();</span>
 			}
 		}
 
 		static class Long extends Unmodifiable&lt;java.lang.Long&gt; implements Weights.Long {
 			Long(Weights.Long w) {
-<span class="nc" id="L1662">				super(w);</span>
-<span class="nc" id="L1663">			}</span>
+<span class="fc" id="L1662">				super(w);</span>
+<span class="fc" id="L1663">			}</span>
 
 			@Override
 			Weights.Long weights() {
-<span class="nc" id="L1667">				return (Weights.Long) super.weights();</span>
+<span class="fc" id="L1667">				return (Weights.Long) super.weights();</span>
 			}
 
 			@Override
 			public long getLong(int id) {
-<span class="nc" id="L1672">				return weights().getLong(id);</span>
+<span class="fc" id="L1672">				return weights().getLong(id);</span>
 			}
 
 			@Override
 			public void set(int id, long weight) {
-<span class="nc" id="L1677">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1677">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public long defaultWeightLong() {
-<span class="nc" id="L1682">				return weights().defaultWeightLong();</span>
+<span class="fc" id="L1682">				return weights().defaultWeightLong();</span>
 			}
 		}
 
 		static class Float extends Unmodifiable&lt;java.lang.Float&gt; implements Weights.Float {
 			Float(Weights.Float w) {
-<span class="nc" id="L1688">				super(w);</span>
-<span class="nc" id="L1689">			}</span>
+<span class="fc" id="L1688">				super(w);</span>
+<span class="fc" id="L1689">			}</span>
 
 			@Override
 			Weights.Float weights() {
-<span class="nc" id="L1693">				return (Weights.Float) super.weights();</span>
+<span class="fc" id="L1693">				return (Weights.Float) super.weights();</span>
 			}
 
 			@Override
 			public float getFloat(int id) {
-<span class="nc" id="L1698">				return weights().getFloat(id);</span>
+<span class="fc" id="L1698">				return weights().getFloat(id);</span>
 			}
 
 			@Override
 			public void set(int id, float weight) {
-<span class="nc" id="L1703">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1703">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="nc" id="L1708">				return weights().defaultWeightFloat();</span>
+<span class="fc" id="L1708">				return weights().defaultWeightFloat();</span>
 			}
 		}
 
 		static class Double extends Unmodifiable&lt;java.lang.Double&gt; implements Weights.Double {
 			Double(Weights.Double w) {
-<span class="nc" id="L1714">				super(w);</span>
-<span class="nc" id="L1715">			}</span>
+<span class="fc" id="L1714">				super(w);</span>
+<span class="fc" id="L1715">			}</span>
 
 			@Override
 			Weights.Double weights() {
-<span class="nc" id="L1719">				return (Weights.Double) super.weights();</span>
+<span class="fc" id="L1719">				return (Weights.Double) super.weights();</span>
 			}
 
 			@Override
 			public double getDouble(int id) {
-<span class="nc" id="L1724">				return weights().getDouble(id);</span>
+<span class="fc" id="L1724">				return weights().getDouble(id);</span>
 			}
 
 			@Override
 			public void set(int id, double weight) {
-<span class="nc" id="L1729">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1729">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="nc" id="L1734">				return weights().defaultWeightDouble();</span>
+<span class="fc" id="L1734">				return weights().defaultWeightDouble();</span>
 			}
 		}
 
 		static class Bool extends Unmodifiable&lt;Boolean&gt; implements Weights.Bool {
 			Bool(Weights.Bool w) {
-<span class="nc" id="L1740">				super(w);</span>
-<span class="nc" id="L1741">			}</span>
+<span class="fc" id="L1740">				super(w);</span>
+<span class="fc" id="L1741">			}</span>
 
 			@Override
 			Weights.Bool weights() {
-<span class="nc" id="L1745">				return (Weights.Bool) super.weights();</span>
+<span class="fc" id="L1745">				return (Weights.Bool) super.weights();</span>
 			}
 
 			@Override
 			public boolean getBool(int id) {
-<span class="nc" id="L1750">				return weights().getBool(id);</span>
+<span class="fc" id="L1750">				return weights().getBool(id);</span>
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-<span class="nc" id="L1755">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1755">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="nc" id="L1760">				return weights().defaultWeightBool();</span>
+<span class="fc" id="L1760">				return weights().defaultWeightBool();</span>
 			}
 		}
 
 		static class Char extends Unmodifiable&lt;Character&gt; implements Weights.Char {
 			Char(Weights.Char w) {
-<span class="nc" id="L1766">				super(w);</span>
-<span class="nc" id="L1767">			}</span>
+<span class="fc" id="L1766">				super(w);</span>
+<span class="fc" id="L1767">			}</span>
 
 			@Override
 			Weights.Char weights() {
-<span class="nc" id="L1771">				return (Weights.Char) super.weights();</span>
+<span class="fc" id="L1771">				return (Weights.Char) super.weights();</span>
 			}
 
 			@Override
 			public char getChar(int id) {
-<span class="nc" id="L1776">				return weights().getChar(id);</span>
+<span class="fc" id="L1776">				return weights().getChar(id);</span>
 			}
 
 			@Override
 			public void set(int id, char weight) {
-<span class="nc" id="L1781">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L1781">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public char defaultWeightChar() {
-<span class="nc" id="L1786">				return weights().defaultWeightChar();</span>
+<span class="fc" id="L1786">				return weights().defaultWeightChar();</span>
 			}
 		}
 	}
@@ -1816,6 +1816,52 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L1816">				return idx -&gt; w.weight(map.indexToId(idx));</span>
 			}
 		}
+	}
+
+	static WeightFunction localEdgeWeightFunction(IndexGraph g, WeightFunction w) {
+<span class="pc bpc" id="L1822" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="fc" id="L1823">			return w;</span>
+<span class="fc bfc" id="L1824" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L1825">			return w;</span>
+<span class="fc bfc" id="L1826" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L1827">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L1828">			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L1829" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L1830">				wLocal.set(e, wInt.weightInt(e));</span>
+<span class="fc" id="L1831">			return wLocal;</span>
+		} else {
+<span class="fc" id="L1833">			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L1834" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L1835">				wLocal.set(e, w.weight(e));</span>
+<span class="fc" id="L1836">			return wLocal;</span>
+		}
+	}
+
+	static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
+<span class="nc bnc" id="L1841" title="All 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="nc" id="L1842">			return w;</span>
+<span class="nc bnc" id="L1843" title="All 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="nc" id="L1844">			return w;</span>
+<span class="nc" id="L1845">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L1846" title="All 2 branches missed.">		for (int e : g.edges())</span>
+<span class="nc" id="L1847">			wLocal.set(e, w.weightInt(e));</span>
+<span class="nc" id="L1848">		return wLocal;</span>
+	}
+
+	static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
+<span class="fc bfc" id="L1852" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L1853">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L1854">			WeightFunction.Int wPotentialInt =</span>
+<span class="fc" id="L1855">					e -&gt; wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L1856">			return wPotentialInt;</span>
+		} else {
+<span class="fc" id="L1858">			WeightFunction w0 = w;</span>
+<span class="fc" id="L1859">			return e -&gt; w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+		}
+	}
+
+	static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
+<span class="fc" id="L1864">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 }

@@ -96,7 +96,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 <span class="fc" id="L97">		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {</span>
 <span class="fc" id="L98">			this.tOrig = tOrig;</span>
-<span class="fc" id="L99">			this.w = w;</span>
+<span class="fc" id="L99">			this.w = WeightsImpl.localEdgeWeightFunction(tOrig, w);</span>
 
 <span class="fc bfc" id="L101" title="All 2 branches covered.">			if (useBitsLookupTables) {</span>
 <span class="fc" id="L102">				int n = tOrig.vertices().size();</span>

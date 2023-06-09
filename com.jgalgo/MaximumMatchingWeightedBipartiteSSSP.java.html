@@ -90,7 +90,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 <span class="fc" id="L90">		return new MatchingImpl(g, match);</span>
 	}
 
-	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction w0, Weights.Bool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
 <span class="fc" id="L94">		final int n = gOrig.vertices().size();</span>
 <span class="fc" id="L95">		IndexGraph g = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
@@ -103,7 +103,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 <span class="fc" id="L103">				continue;</span>
 <span class="fc bfc" id="L104" title="All 2 branches covered.">			for (EdgeIter eit = gOrig.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L105">				int e = eit.nextInt();</span>
-<span class="fc" id="L106">				double weight = w0.weight(e);</span>
+<span class="fc" id="L106">				double weight = wOrig.weight(e);</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				if (weight &lt; 0)</span>
 <span class="fc" id="L108">					continue; // no reason to match negative edges</span>
 <span class="fc" id="L109">				int e0 = g.addEdge(u, eit.target());</span>
@@ -137,7 +137,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 		}
 
 <span class="fc" id="L139">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L140">		WeightFunction spWeightFunc = e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L140">		WeightFunction spWeightFunc = WeightsImpl.potentialWeightFunc(g, w, potential);</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values

@@ -118,7 +118,7 @@ public class Graphs {
 <span class="nc" id="L118">		public void removeVerticesWeights(Object key) {}</span>
 
 		@Override
-		public Set&lt;Object&gt; getVerticesWeightKeys() {
+		public Set&lt;Object&gt; getVerticesWeightsKeys() {
 <span class="fc" id="L122">			return Collections.emptySet();</span>
 		}
 
@@ -173,8 +173,8 @@ public class Graphs {
 
 	private static class EmptyGraphUndirected extends EmptyGraph {
 
-<span class="fc" id="L176">		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(false)</span>
-<span class="fc" id="L177">				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();</span>
+<span class="fc" id="L176">		private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L177">				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();</span>
 
 		@Override
 		public GraphCapabilities getCapabilities() {
@@ -185,8 +185,8 @@ public class Graphs {
 
 	private static class EmptyGraphDirected extends EmptyGraph {
 
-<span class="fc" id="L188">		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(false)</span>
-<span class="fc" id="L189">				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();</span>
+<span class="fc" id="L188">		private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L189">				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();</span>
 
 		@Override
 		public GraphCapabilities getCapabilities() {
@@ -331,8 +331,8 @@ public class Graphs {
 <span class="fc" id="L331">			return Capabilities;</span>
 		}
 
-<span class="fc" id="L334">		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(false)</span>
-<span class="fc" id="L335">				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();</span>
+<span class="fc" id="L334">		private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L335">				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();</span>
 
 		@Override
 		public IndexGraph copy() {
@@ -417,8 +417,8 @@ public class Graphs {
 <span class="fc" id="L417">			return Capabilities;</span>
 		}
 
-<span class="fc" id="L420">		private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(false)</span>
-<span class="fc" id="L421">				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();</span>
+<span class="fc" id="L420">		private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L421">				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();</span>
 
 		@Override
 		public IndexGraph copy() {
@@ -715,7 +715,7 @@ public class Graphs {
 		}
 
 		@Override
-		public Set&lt;Object&gt; getVerticesWeightKeys() {
+		public Set&lt;Object&gt; getVerticesWeightsKeys() {
 <span class="nc" id="L719">			return verticesWeights.weightsKeys();</span>
 		}
 
@@ -843,17 +843,17 @@ public class Graphs {
 
 		@Override
 		public int addVertex() {
-<span class="nc" id="L846">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L846">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void addVertex(int vertex) {
-<span class="nc" id="L851">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L851">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
-<span class="nc" id="L856">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L856">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
@@ -868,27 +868,27 @@ public class Graphs {
 
 		@Override
 		public EdgeSet getEdges(int source, int target) {
-<span class="nc" id="L871">			return new UnmodifiableEdgeSet(graph.getEdges(source, target));</span>
+<span class="fc" id="L871">			return new UnmodifiableEdgeSet(graph.getEdges(source, target));</span>
 		}
 
 		@Override
 		public int addEdge(int source, int target) {
-<span class="nc" id="L876">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L876">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-<span class="nc" id="L881">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L881">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-<span class="nc" id="L886">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L886">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="nc" id="L891">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L891">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
@@ -903,60 +903,60 @@ public class Graphs {
 
 		@Override
 		public void clear() {
-<span class="nc" id="L906">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L906">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void clearEdges() {
-<span class="nc" id="L911">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L911">			throw new UnsupportedOperationException();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="nc" id="L917">			return (WeightsT) ((WeightsImpl&lt;V&gt;) graph.getVerticesWeights(key)).unmodifiableView();</span>
+<span class="fc" id="L917">			return (WeightsT) ((WeightsImpl&lt;V&gt;) graph.getVerticesWeights(key)).unmodifiableView();</span>
 		}
 
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type,
 				V defVal) {
-<span class="nc" id="L923">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L923">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-<span class="nc" id="L928">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L928">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
-		public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="nc" id="L933">			return graph.getVerticesWeightKeys();</span>
+		public Set&lt;Object&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L933">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="nc" id="L939">			return (WeightsT) ((WeightsImpl&lt;E&gt;) graph.getEdgesWeights(key)).unmodifiableView();</span>
+<span class="fc" id="L939">			return (WeightsT) ((WeightsImpl&lt;E&gt;) graph.getEdgesWeights(key)).unmodifiableView();</span>
 		}
 
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L944">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L944">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-<span class="nc" id="L949">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L949">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L954">			return graph.getEdgesWeightsKeys();</span>
+<span class="fc" id="L954">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public GraphCapabilities getCapabilities() {
-<span class="nc" id="L959">			return graph.getCapabilities();</span>
+<span class="fc" id="L959">			return graph.getCapabilities();</span>
 		}
 
 		@Override
@@ -966,7 +966,7 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-<span class="nc bnc" id="L969" title="All 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(graph.indexGraph());</span>
+<span class="pc bpc" id="L969" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(graph.indexGraph());</span>
 		}
 
 		@Override
@@ -987,8 +987,8 @@ public class Graphs {
 	private static class UnmodifiableIndexGraph extends UnmodifiableGraph implements IndexGraph {
 
 		UnmodifiableIndexGraph(IndexGraph g) {
-<span class="nc" id="L990">			super(g);</span>
-<span class="nc" id="L991">		}</span>
+<span class="fc" id="L990">			super(g);</span>
+<span class="fc" id="L991">		}</span>
 
 		@Override
 		IndexGraph graph() {
@@ -1034,7 +1034,7 @@ public class Graphs {
 
 		@Override
 		public boolean contains(int edge) {
-<span class="nc" id="L1037">			return set.contains(edge);</span>
+<span class="fc" id="L1037">			return set.contains(edge);</span>
 		}
 
 		@Override
@@ -1078,7 +1078,7 @@ public class Graphs {
 
 		@Override
 		public int peekNext() {
-<span class="nc" id="L1081">			return it.peekNext();</span>
+<span class="fc" id="L1081">			return it.peekNext();</span>
 		}
 	}
 
@@ -1089,7 +1089,7 @@ public class Graphs {
 	}
 
 	static IndexGraph unmodifiableView(IndexGraph g) {
-<span class="nc bnc" id="L1092" title="All 2 branches missed.">		return g instanceof UnmodifiableIndexGraph ? (UnmodifiableIndexGraph) g : new UnmodifiableIndexGraph(g);</span>
+<span class="pc bpc" id="L1092" title="1 of 2 branches missed.">		return g instanceof UnmodifiableIndexGraph ? (UnmodifiableIndexGraph) g : new UnmodifiableIndexGraph(g);</span>
 	}
 
 	private static class ReverseGraph implements Graph {
@@ -1121,8 +1121,8 @@ public class Graphs {
 
 		@Override
 		public void addVertex(int vertex) {
-<span class="nc" id="L1124">			graph.addVertex(vertex);</span>
-<span class="nc" id="L1125">		}</span>
+<span class="fc" id="L1124">			graph.addVertex(vertex);</span>
+<span class="fc" id="L1125">		}</span>
 
 		@Override
 		public void removeVertex(int vertex) {
@@ -1141,7 +1141,7 @@ public class Graphs {
 
 		@Override
 		public EdgeSet getEdges(int source, int target) {
-<span class="nc" id="L1144">			return new ReversedEdgeSet(graph.getEdges(target, source));</span>
+<span class="fc" id="L1144">			return new ReversedEdgeSet(graph.getEdges(target, source));</span>
 		}
 
 		@Override
@@ -1151,13 +1151,13 @@ public class Graphs {
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-<span class="nc" id="L1154">			graph.addEdge(source, target, edge);</span>
-<span class="nc" id="L1155">		}</span>
+<span class="fc" id="L1154">			graph.addEdge(source, target, edge);</span>
+<span class="fc" id="L1155">		}</span>
 
 		@Override
 		public void removeEdge(int edge) {
-<span class="nc" id="L1159">			graph.removeEdge(edge);</span>
-<span class="nc" id="L1160">		}</span>
+<span class="fc" id="L1159">			graph.removeEdge(edge);</span>
+<span class="fc" id="L1160">		}</span>
 
 		@Override
 		public int edgeSource(int edge) {
@@ -1171,63 +1171,63 @@ public class Graphs {
 
 		@Override
 		public void clear() {
-<span class="nc" id="L1174">			graph.clear();</span>
-<span class="nc" id="L1175">		}</span>
+<span class="fc" id="L1174">			graph.clear();</span>
+<span class="fc" id="L1175">		}</span>
 
 		@Override
 		public void clearEdges() {
-<span class="nc" id="L1179">			graph.clearEdges();</span>
-<span class="nc" id="L1180">		}</span>
+<span class="fc" id="L1179">			graph.clearEdges();</span>
+<span class="fc" id="L1180">		}</span>
 
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="nc" id="L1184">			return graph.getVerticesWeights(key);</span>
+<span class="fc" id="L1184">			return graph.getVerticesWeights(key);</span>
 		}
 
 		@Override
-		public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="nc" id="L1189">			return graph.getVerticesWeightKeys();</span>
+		public Set&lt;Object&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L1189">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-<span class="nc" id="L1194">			graph.removeVerticesWeights(key);</span>
-<span class="nc" id="L1195">		}</span>
+<span class="fc" id="L1194">			graph.removeVerticesWeights(key);</span>
+<span class="fc" id="L1195">		}</span>
 
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="nc" id="L1199">			return graph.getEdgesWeights(key);</span>
+<span class="fc" id="L1199">			return graph.getEdgesWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L1204">			return graph.getEdgesWeightsKeys();</span>
+<span class="fc" id="L1204">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-<span class="nc" id="L1209">			graph.removeEdgesWeights(key);</span>
-<span class="nc" id="L1210">		}</span>
+<span class="fc" id="L1209">			graph.removeEdgesWeights(key);</span>
+<span class="fc" id="L1210">		}</span>
 
 		@Override
 		public GraphCapabilities getCapabilities() {
-<span class="nc" id="L1214">			return graph.getCapabilities();</span>
+<span class="fc" id="L1214">			return graph.getCapabilities();</span>
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="nc" id="L1219">			graph.reverseEdge(edge);</span>
-<span class="nc" id="L1220">		}</span>
+<span class="fc" id="L1219">			graph.reverseEdge(edge);</span>
+<span class="fc" id="L1220">		}</span>
 
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type,
 				V defVal) {
-<span class="nc" id="L1225">			return graph.addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L1225">			return graph.addVerticesWeights(key, type, defVal);</span>
 		}
 
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L1230">			return graph.addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L1230">			return graph.addEdgesWeights(key, type, defVal);</span>
 		}
 
 		@Override
@@ -1302,7 +1302,7 @@ public class Graphs {
 
 		@Override
 		public boolean contains(int edge) {
-<span class="nc" id="L1305">			return set.contains(edge);</span>
+<span class="fc" id="L1305">			return set.contains(edge);</span>
 		}
 
 		@Override
@@ -1346,7 +1346,7 @@ public class Graphs {
 
 		@Override
 		public int peekNext() {
-<span class="nc" id="L1349">			return it.peekNext();</span>
+<span class="fc" id="L1349">			return it.peekNext();</span>
 		}
 
 		@Override
@@ -1361,8 +1361,8 @@ public class Graphs {
 
 		@Override
 		public void remove() {
-<span class="nc" id="L1364">			it.remove();</span>
-<span class="nc" id="L1365">		}</span>
+<span class="fc" id="L1364">			it.remove();</span>
+<span class="fc" id="L1365">		}</span>
 	}
 
 	static Graph reverseView(Graph g) {

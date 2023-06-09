@@ -127,7 +127,7 @@ class MinimumCutSTUtils {
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, WeightFunction w) {
-<span class="fc" id="L130">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
+<span class="fc" id="L130">		ArgumentCheck.onlyPositiveEdgesWeights(g, w);</span>
 <span class="fc" id="L131">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
 <span class="fc" id="L132">		FlowNetwork net = new FlowNetwork() {</span>
 			@Override
@@ -160,19 +160,21 @@ class MinimumCutSTUtils {
 <span class="fc" id="L160">				final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L161" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
 <span class="nc" id="L162">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
-<span class="fc" id="L163">				Cut bestCut = null;</span>
-<span class="fc" id="L164">				double bestCutWeight = Double.MAX_VALUE;</span>
-<span class="fc" id="L165">				final int source = 0;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
-<span class="fc" id="L167">					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);</span>
-<span class="fc" id="L168">					double cutWeight = cut.weight(w);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
-<span class="fc" id="L170">						bestCutWeight = cutWeight;</span>
-<span class="fc" id="L171">						bestCut = cut;</span>
+<span class="fc" id="L163">				w = WeightsImpl.localEdgeWeightFunction(g, w);</span>
+
+<span class="fc" id="L165">				Cut bestCut = null;</span>
+<span class="fc" id="L166">				double bestCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L167">				final int source = 0;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
+<span class="fc" id="L169">					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);</span>
+<span class="fc" id="L170">					double cutWeight = cut.weight(w);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
+<span class="fc" id="L172">						bestCutWeight = cutWeight;</span>
+<span class="fc" id="L173">						bestCut = cut;</span>
 					}
 				}
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">				assert bestCut != null;</span>
-<span class="fc" id="L175">				return bestCut;</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				assert bestCut != null;</span>
+<span class="fc" id="L177">				return bestCut;</span>
 			}
 		};
 	}

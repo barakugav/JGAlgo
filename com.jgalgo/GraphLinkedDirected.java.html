@@ -232,8 +232,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L232">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L235">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
-<span class="fc" id="L236">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
+<span class="fc" id="L235">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L236">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
 	public IndexGraph copy() {

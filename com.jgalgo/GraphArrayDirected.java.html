@@ -220,8 +220,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L220">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L223">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
-<span class="fc" id="L224">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
+<span class="fc" id="L223">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L224">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
 	public IndexGraph copy() {

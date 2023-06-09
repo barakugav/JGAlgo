@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L36">		StringBuilder s = new StringBuilder();</span>
 <span class="fc" id="L37">		s.append('{');</span>
 
-<span class="fc" id="L39">		Set&lt;Object&gt; verticesWeightsKeys = getVerticesWeightKeys();</span>
+<span class="fc" id="L39">		Set&lt;Object&gt; verticesWeightsKeys = getVerticesWeightsKeys();</span>
 <span class="fc" id="L40">		Collection&lt;Weights&lt;?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
 <span class="pc bpc" id="L41" title="1 of 2 branches missed.">		for (Object key : verticesWeightsKeys)</span>
 <span class="nc" id="L42">			verticesWeights.add(getVerticesWeights(key));</span>
@@ -222,7 +222,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Override
 		public boolean contains(int edge) {
 <span class="fc" id="L224">			int s = edgeSource(edge), t = edgeTarget(edge);</span>
-<span class="pc bpc" id="L225" title="6 of 8 branches missed.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
+<span class="pc bpc" id="L225" title="3 of 8 branches missed.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
 		}
 	}
 

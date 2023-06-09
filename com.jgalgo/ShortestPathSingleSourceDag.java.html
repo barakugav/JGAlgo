@@ -62,13 +62,13 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="nc" id="L62">					continue;</span>
 <span class="nc" id="L63">				sourceSeen = true;</span>
 			}
-<span class="nc" id="L65">			double uDisntace = res.distances[u];</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">			if (uDisntace == Double.POSITIVE_INFINITY)</span>
+<span class="nc" id="L65">			double uDistance = res.distances[u];</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
 <span class="nc" id="L67">				continue;</span>
 <span class="nc bnc" id="L68" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L69">				int e = eit.nextInt();</span>
 <span class="nc" id="L70">				int v = eit.target();</span>
-<span class="nc" id="L71">				double d = uDisntace + w.weight(e);</span>
+<span class="nc" id="L71">				double d = uDistance + w.weight(e);</span>
 <span class="nc bnc" id="L72" title="All 2 branches missed.">				if (d &lt; res.distances[v]) {</span>
 <span class="nc" id="L73">					res.distances[v] = d;</span>
 <span class="nc" id="L74">					res.backtrack[v] = e;</span>
@@ -90,13 +90,13 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="fc" id="L90">					continue;</span>
 <span class="fc" id="L91">				sourceSeen = true;</span>
 			}
-<span class="fc" id="L93">			int uDisntace = res.distances[u];</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (uDisntace == Integer.MAX_VALUE)</span>
+<span class="fc" id="L93">			int uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (uDistance == Integer.MAX_VALUE)</span>
 <span class="fc" id="L95">				continue;</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L97">				int e = eit.nextInt();</span>
 <span class="fc" id="L98">				int v = eit.target();</span>
-<span class="fc" id="L99">				int d = uDisntace + w.weightInt(e);</span>
+<span class="fc" id="L99">				int d = uDistance + w.weightInt(e);</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
 <span class="fc" id="L101">					res.distances[v] = d;</span>
 <span class="fc" id="L102">					res.backtrack[v] = e;</span>

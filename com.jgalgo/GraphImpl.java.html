@@ -211,14 +211,14 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="fc" id="L215">		return indexGraph.getVerticesWeightKeys();</span>
+	public Set&lt;Object&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L215">		return indexGraph.getVerticesWeightsKeys();</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-<span class="nc" id="L220">		indexGraph.removeVerticesWeights(key);</span>
-<span class="nc" id="L221">	}</span>
+<span class="fc" id="L220">		indexGraph.removeVerticesWeights(key);</span>
+<span class="fc" id="L221">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -249,8 +249,8 @@ abstract class GraphImpl extends GraphBase {
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-<span class="nc" id="L252">		indexGraph.removeEdgesWeights(key);</span>
-<span class="nc" id="L253">	}</span>
+<span class="fc" id="L252">		indexGraph.removeEdgesWeights(key);</span>
+<span class="fc" id="L253">	}</span>
 
 	class EdgeSetMapped extends AbstractIntSet implements EdgeSet {
 
