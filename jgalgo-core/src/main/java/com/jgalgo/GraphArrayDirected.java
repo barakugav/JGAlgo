@@ -239,6 +239,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return size() == 0;
+		}
+
+		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterOut(source, edgesOut.get(source), edgesOutNum.getInt(source));
 		}
@@ -252,6 +257,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		@Override
 		public int size() {
 			return edgesInNum.getInt(target);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return size() == 0;
 		}
 
 		@Override

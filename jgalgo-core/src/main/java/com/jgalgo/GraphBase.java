@@ -32,6 +32,61 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
+	public boolean equals(Object other) {
+		if (other == this)
+			return true;
+		if (!(other instanceof Graph))
+			return false;
+		Graph o = (Graph) other;
+
+		if (getCapabilities().directed() != o.getCapabilities().directed())
+			return false;
+		if (!vertices().equals(o.vertices()))
+			return false;
+		if (!edges().equals(o.edges()))
+			return false;
+		if (getCapabilities().directed()) {
+			for (int e : edges())
+				if (edgeSource(e) != o.edgeSource(e) || edgeTarget(e) != o.edgeTarget(e))
+					return false;
+		} else {
+			for (int e : edges()) {
+				int s1 = edgeSource(e), t1 = edgeTarget(e);
+				int s2 = o.edgeSource(e), t2 = o.edgeTarget(e);
+				if (!(s1 == s2 && t1 == t2) && !(s1 == t2 && t1 == s2))
+					return false;
+			}
+		}
+
+		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))
+			return false;
+		for (Object key : getVerticesWeightsKeys())
+			if (!getVerticesWeights(key).equals(o.getVerticesWeights(key)))
+				return false;
+		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))
+			return false;
+		for (Object key : getEdgesWeightsKeys())
+			if (!getEdgesWeights(key).equals(o.getEdgesWeights(key)))
+				return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int h = Boolean.hashCode(getCapabilities().directed());
+		h += vertices().hashCode();
+		h += edges().hashCode();
+		for (int e : edges())
+			h += edgeSource(e) + edgeTarget(e);
+		for (Object key : getVerticesWeightsKeys())
+			h += getVerticesWeights(key).hashCode();
+		for (Object key : getEdgesWeightsKeys())
+			h += getEdgesWeights(key).hashCode();
+		return h;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append('{');

@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 public class Graphs {
 	private Graphs() {}
 
-	private abstract static class EmptyGraph implements IndexGraph {
+	private abstract static class EmptyGraph extends GraphBase implements IndexGraph {
 
 		private final IdStrategy verticesIdStrat = new IdStrategyImpl.Empty();
 		private final IdStrategy edgesIdStrat = new IdStrategyImpl.Empty();
@@ -341,6 +341,7 @@ public class Graphs {
 
 		@Override
 		public EdgeSet outEdges(int source) {
+			checkVertex(source);
 			return new GraphBase.EdgeSetOutUndirected(source) {
 				@Override
 				public EdgeIter iterator() {
@@ -349,13 +350,19 @@ public class Graphs {
 
 				@Override
 				public int size() {
-					return n - 1;
+					return n <= 1 ? 0 : n - 1;
+				}
+
+				@Override
+				public boolean isEmpty() {
+					return size() == 0;
 				}
 			};
 		}
 
 		@Override
 		public EdgeSet inEdges(int target) {
+			checkVertex(target);
 			return new GraphBase.EdgeSetInUndirected(target) {
 				@Override
 				public EdgeIter iterator() {
@@ -364,7 +371,12 @@ public class Graphs {
 
 				@Override
 				public int size() {
-					return n - 1;
+					return n <= 1 ? 0 : n - 1;
+				}
+
+				@Override
+				public boolean isEmpty() {
+					return size() == 0;
 				}
 			};
 		}
@@ -427,6 +439,7 @@ public class Graphs {
 
 		@Override
 		public EdgeSet outEdges(int source) {
+			checkVertex(source);
 			return new GraphBase.EdgeSetOutDirected(source) {
 				@Override
 				public EdgeIter iterator() {
@@ -435,13 +448,19 @@ public class Graphs {
 
 				@Override
 				public int size() {
-					return n - 1;
+					return n <= 1 ? 0 : n - 1;
+				}
+
+				@Override
+				public boolean isEmpty() {
+					return size() == 0;
 				}
 			};
 		}
 
 		@Override
 		public EdgeSet inEdges(int target) {
+			checkVertex(target);
 			return new GraphBase.EdgeSetInDirected(target) {
 				@Override
 				public EdgeIter iterator() {
@@ -450,7 +469,12 @@ public class Graphs {
 
 				@Override
 				public int size() {
-					return n - 1;
+					return n <= 1 ? 0 : n - 1;
+				}
+
+				@Override
+				public boolean isEmpty() {
+					return size() == 0;
 				}
 			};
 		}
@@ -823,7 +847,7 @@ public class Graphs {
 		return new CompleteGraphDirected(numberOfVertices);
 	}
 
-	private static class UnmodifiableGraph implements Graph {
+	private static class UnmodifiableGraph extends GraphBase {
 
 		private final Graph graph;
 
@@ -1092,7 +1116,7 @@ public class Graphs {
 		return g instanceof UnmodifiableIndexGraph ? (UnmodifiableIndexGraph) g : new UnmodifiableIndexGraph(g);
 	}
 
-	private static class ReverseGraph implements Graph {
+	private static class ReverseGraph extends GraphBase {
 
 		private final Graph graph;
 

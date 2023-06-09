@@ -46,23 +46,7 @@ abstract class IdStrategyImpl implements IdStrategy {
 			if (initSize < 0)
 				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 			size = initSize;
-			idSet = new AbstractIntSet() {
-
-				@Override
-				public int size() {
-					return size;
-				}
-
-				@Override
-				public boolean contains(int key) {
-					return key >= 0 && key < size;
-				}
-
-				@Override
-				public IntIterator iterator() {
-					return new Utils.RangeIter(size);
-				}
-			};
+			idSet = new IdSet();
 		}
 
 		int newIdx() {
@@ -147,6 +131,39 @@ abstract class IdStrategyImpl implements IdStrategy {
 
 		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
 			idAddRemoveListeners.remove(listener);
+		}
+
+		private class IdSet extends AbstractIntSet {
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public boolean contains(int key) {
+				return key >= 0 && key < size;
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return new Utils.RangeIter(size);
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (this == other)
+					return true;
+				if (!(other instanceof IdSet))
+					return super.equals(other);
+				IdSet o = (IdSet) other;
+				return size == o.size();
+			}
+
+			@Override
+			public int hashCode() {
+				return size * (size - 1) / 2;
+			}
 		}
 	}
 
