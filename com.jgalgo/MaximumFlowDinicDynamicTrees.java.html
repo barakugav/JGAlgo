@@ -107,7 +107,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 <span class="fc bfc" id="L107" title="All 2 branches covered.">					if (u == sink)</span>
 <span class="fc" id="L108">						break bfs;</span>
 <span class="fc" id="L109">					int lvl = level[u];</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L111">						int e = eit.nextInt();</span>
 <span class="fc" id="L112">						int v = eit.target();</span>
 <span class="fc bfc" id="L113" title="All 4 branches covered.">						if (flow.getDouble(e) &gt;= capacity.getDouble(e) || level[v] &lt;= lvl)</span>
@@ -157,13 +157,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 <span class="fc" id="L157">							min = dt.findMinEdge(vToDt[source]);</span>
 <span class="fc bfc" id="L158" title="All 4 branches covered.">						} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
 
-<span class="fc bfc" id="L160" title="All 2 branches covered.">					} else if (L.edgesOut(v).isEmpty()) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">					} else if (L.outEdges(v).isEmpty()) {</span>
 
 						/* Retreat */
 <span class="fc" id="L163">						debug.println(&quot;Retreat&quot;);</span>
 <span class="fc bfc" id="L164" title="All 2 branches covered.">						if (v == source)</span>
 <span class="fc" id="L165">							break calcBlockFlow;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">						for (EdgeIter eit = L.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">						for (EdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L167">							int e = eit.nextInt();</span>
 <span class="fc" id="L168">							int u = g.edgeSource(e);</span>
 <span class="fc bfc" id="L169" title="All 2 branches covered.">							if (edgeToParent[u] != e)</span>
@@ -177,12 +177,12 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 <span class="fc" id="L178">							dt.cut(m.source());</span>
 <span class="fc" id="L179">						}</span>
-<span class="fc" id="L180">						L.removeEdgesInOf(v);</span>
+<span class="fc" id="L180">						L.removeInEdgesOf(v);</span>
 
 					} else {
 						/* Advance */
 <span class="fc" id="L184">						debug.println(&quot;Advance&quot;);</span>
-<span class="fc" id="L185">						EdgeIter eit = L.edgesOut(v).iterator();</span>
+<span class="fc" id="L185">						EdgeIter eit = L.outEdges(v).iterator();</span>
 <span class="fc" id="L186">						int e = eit.nextInt();</span>
 <span class="fc" id="L187">						int eSource = g.edgeSource(e);</span>
 <span class="fc" id="L188">						int eTarget = g.edgeTarget(e);</span>

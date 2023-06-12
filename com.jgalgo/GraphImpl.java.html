@@ -100,13 +100,13 @@ abstract class GraphImpl extends GraphBase {
 <span class="fc" id="L100">	}</span>
 
 	@Override
-	public EdgeSet edgesOut(int source) {
-<span class="fc" id="L104">		return new EdgeSetMapped(indexGraph.edgesOut(viMap.idToIndex(source)));</span>
+	public EdgeSet outEdges(int source) {
+<span class="fc" id="L104">		return new EdgeSetMapped(indexGraph.outEdges(viMap.idToIndex(source)));</span>
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
-<span class="fc" id="L109">		return new EdgeSetMapped(indexGraph.edgesIn(viMap.idToIndex(target)));</span>
+	public EdgeSet inEdges(int target) {
+<span class="fc" id="L109">		return new EdgeSetMapped(indexGraph.inEdges(viMap.idToIndex(target)));</span>
 	}
 
 	@Override
@@ -159,13 +159,13 @@ abstract class GraphImpl extends GraphBase {
 <span class="fc" id="L159">	}</span>
 
 	@Override
-	public void removeEdgesOutOf(int source) {
-<span class="fc" id="L163">		indexGraph.removeEdgesOutOf(viMap.idToIndex(source));</span>
+	public void removeOutEdgesOf(int source) {
+<span class="fc" id="L163">		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));</span>
 <span class="fc" id="L164">	}</span>
 
 	@Override
-	public void removeEdgesInOf(int target) {
-<span class="fc" id="L168">		indexGraph.removeEdgesInOf(viMap.idToIndex(target));</span>
+	public void removeInEdgesOf(int target) {
+<span class="fc" id="L168">		indexGraph.removeInEdgesOf(viMap.idToIndex(target));</span>
 <span class="fc" id="L169">	}</span>
 
 	@Override

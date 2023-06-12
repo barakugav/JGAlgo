@@ -201,13 +201,13 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L201">				values = new AbstractObjectList&lt;&gt;() {</span>
 					@Override
 					public int size() {
-<span class="fc" id="L204">						return WeightsImpl.Index.Obj.super.size();</span>
+<span class="nc" id="L204">						return WeightsImpl.Index.Obj.super.size();</span>
 					}
 
 					@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 					@Override
 					public ObjectListIterator&lt;E&gt; iterator() {
-<span class="fc" id="L210">						return (ObjectListIterator) ObjectIterators.wrap(weights, 0, size());</span>
+<span class="nc" id="L210">						return (ObjectListIterator) ObjectIterators.wrap(weights, 0, size());</span>
 					}
 
 					@SuppressWarnings(&quot;unchecked&quot;)
@@ -265,12 +265,12 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 			@Override
 			public void clear() {
-<span class="fc" id="L268">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L269">			}</span>
+<span class="nc" id="L268">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L269">			}</span>
 
 			@Override
 			public Collection&lt;E&gt; values() {
-<span class="fc" id="L273">				return values;</span>
+<span class="nc" id="L273">				return values;</span>
 			}
 
 			@Override
@@ -629,7 +629,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 			private long[] weights;
 			private final long defaultWeight;
-<span class="fc" id="L632">			private final LongCollection values = new AbstractLongList() {</span>
+<span class="pc" id="L632">			private final LongCollection values = new AbstractLongList() {</span>
 
 				@Override
 				public int size() {
@@ -656,13 +656,13 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L656">			}</span>
 
 			Long(WeightsImpl.Index.Long orig, IdStrategyImpl idStrat) {
-<span class="fc" id="L659">				super(idStrat);</span>
-<span class="pc bpc" id="L660" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L659">				super(idStrat);</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L661">					throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L663">				weights = Arrays.copyOf(orig.weights, idStrat.size());</span>
-<span class="fc" id="L664">				defaultWeight = orig.defaultWeight;</span>
-<span class="fc" id="L665">			}</span>
+<span class="nc" id="L663">				weights = Arrays.copyOf(orig.weights, idStrat.size());</span>
+<span class="nc" id="L664">				defaultWeight = orig.defaultWeight;</span>
+<span class="nc" id="L665">			}</span>
 
 			@Override
 			public long getLong(int idx) {
@@ -709,8 +709,8 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 			@Override
 			public void clear() {
-<span class="fc" id="L712">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L713">			}</span>
+<span class="nc" id="L712">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L713">			}</span>
 
 			@Override
 			public LongCollection values() {
@@ -1281,266 +1281,721 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 	static abstract class Mapped&lt;E&gt; implements WeightsImpl&lt;E&gt; {
 
-		private final WeightsImpl.Index&lt;E&gt; weights;
+		private final WeightsImpl.Index.Abstract&lt;E&gt; weights;
 		final IndexIdMap indexMap;
 
-<span class="fc" id="L1287">		private Mapped(Weights&lt;E&gt; weights, IndexIdMap indexMap) {</span>
-<span class="fc" id="L1288">			this.weights = (WeightsImpl.Index&lt;E&gt;) Objects.requireNonNull(weights);</span>
+<span class="fc" id="L1287">		private Mapped(WeightsImpl.Index&lt;E&gt; weights, IndexIdMap indexMap) {</span>
+<span class="fc" id="L1288">			this.weights = (WeightsImpl.Index.Abstract&lt;E&gt;) Objects.requireNonNull(weights);</span>
 <span class="fc" id="L1289">			this.indexMap = indexMap;</span>
 <span class="fc" id="L1290">		}</span>
 
-		Weights&lt;E&gt; weights() {
+		WeightsImpl.Index.Abstract&lt;E&gt; weights() {
 <span class="fc" id="L1293">			return weights;</span>
 		}
 
 		static WeightsImpl.Mapped&lt;?&gt; newInstance(WeightsImpl.Index&lt;?&gt; weights, IndexIdMap indexMap) {
-<span class="fc bfc" id="L1297" title="All 2 branches covered.">			if (weights instanceof Weights.Byte) {</span>
-<span class="fc" id="L1298">				return new WeightsImpl.Mapped.Byte((Weights.Byte) weights, indexMap);</span>
-<span class="fc bfc" id="L1299" title="All 2 branches covered.">			} else if (weights instanceof Weights.Short) {</span>
-<span class="fc" id="L1300">				return new WeightsImpl.Mapped.Short((Weights.Short) weights, indexMap);</span>
-<span class="fc bfc" id="L1301" title="All 2 branches covered.">			} else if (weights instanceof Weights.Int) {</span>
-<span class="fc" id="L1302">				return new WeightsImpl.Mapped.Int((Weights.Int) weights, indexMap);</span>
-<span class="fc bfc" id="L1303" title="All 2 branches covered.">			} else if (weights instanceof Weights.Long) {</span>
-<span class="fc" id="L1304">				return new WeightsImpl.Mapped.Long((Weights.Long) weights, indexMap);</span>
-<span class="fc bfc" id="L1305" title="All 2 branches covered.">			} else if (weights instanceof Weights.Float) {</span>
-<span class="fc" id="L1306">				return new WeightsImpl.Mapped.Float((Weights.Float) weights, indexMap);</span>
-<span class="fc bfc" id="L1307" title="All 2 branches covered.">			} else if (weights instanceof Weights.Double) {</span>
-<span class="fc" id="L1308">				return new WeightsImpl.Mapped.Double((Weights.Double) weights, indexMap);</span>
-<span class="fc bfc" id="L1309" title="All 2 branches covered.">			} else if (weights instanceof Weights.Bool) {</span>
-<span class="fc" id="L1310">				return new WeightsImpl.Mapped.Bool((Weights.Bool) weights, indexMap);</span>
-<span class="fc bfc" id="L1311" title="All 2 branches covered.">			} else if (weights instanceof Weights.Char) {</span>
-<span class="fc" id="L1312">				return new WeightsImpl.Mapped.Char((Weights.Char) weights, indexMap);</span>
+<span class="fc bfc" id="L1297" title="All 2 branches covered.">			if (weights instanceof WeightsImpl.Index.Byte) {</span>
+<span class="fc" id="L1298">				return new WeightsImpl.Mapped.Byte((WeightsImpl.Index.Byte) weights, indexMap);</span>
+<span class="fc bfc" id="L1299" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Short) {</span>
+<span class="fc" id="L1300">				return new WeightsImpl.Mapped.Short((WeightsImpl.Index.Short) weights, indexMap);</span>
+<span class="fc bfc" id="L1301" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Int) {</span>
+<span class="fc" id="L1302">				return new WeightsImpl.Mapped.Int((WeightsImpl.Index.Int) weights, indexMap);</span>
+<span class="fc bfc" id="L1303" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Long) {</span>
+<span class="fc" id="L1304">				return new WeightsImpl.Mapped.Long((WeightsImpl.Index.Long) weights, indexMap);</span>
+<span class="fc bfc" id="L1305" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Float) {</span>
+<span class="fc" id="L1306">				return new WeightsImpl.Mapped.Float((WeightsImpl.Index.Float) weights, indexMap);</span>
+<span class="fc bfc" id="L1307" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Double) {</span>
+<span class="fc" id="L1308">				return new WeightsImpl.Mapped.Double((WeightsImpl.Index.Double) weights, indexMap);</span>
+<span class="fc bfc" id="L1309" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Bool) {</span>
+<span class="fc" id="L1310">				return new WeightsImpl.Mapped.Bool((WeightsImpl.Index.Bool) weights, indexMap);</span>
+<span class="fc bfc" id="L1311" title="All 2 branches covered.">			} else if (weights instanceof WeightsImpl.Index.Char) {</span>
+<span class="fc" id="L1312">				return new WeightsImpl.Mapped.Char((WeightsImpl.Index.Char) weights, indexMap);</span>
 			} else {
 <span class="fc" id="L1314">				return new WeightsImpl.Mapped.Obj&lt;&gt;(weights, indexMap);</span>
 			}
 		}
 
 		static class Obj&lt;E&gt; extends Mapped&lt;E&gt; {
-			Obj(Weights&lt;E&gt; weights, IndexIdMap indexMap) {
+			Obj(WeightsImpl.Index&lt;E&gt; weights, IndexIdMap indexMap) {
 <span class="fc" id="L1320">				super(weights, indexMap);</span>
 <span class="fc" id="L1321">			}</span>
 
 			@Override
+			public WeightsImpl.Index.Obj&lt;E&gt; weights() {
+<span class="fc" id="L1325">				return (WeightsImpl.Index.Obj&lt;E&gt;) super.weights();</span>
+			}
+
+			@Override
 			public E get(int id) {
-<span class="fc" id="L1325">				return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1330">				return weights().get(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, E val) {
-<span class="fc" id="L1330">				weights().set(indexMap.idToIndex(id), val);</span>
-<span class="fc" id="L1331">			}</span>
+<span class="fc" id="L1335">				weights().set(indexMap.idToIndex(id), val);</span>
+<span class="fc" id="L1336">			}</span>
 
 			@Override
 			public E defaultWeight() {
-<span class="fc" id="L1335">				return weights().defaultWeight();</span>
+<span class="fc" id="L1340">				return weights().defaultWeight();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1345" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1346">					return true;</span>
+<span class="nc bnc" id="L1347" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
+<span class="nc" id="L1348">					return false;</span>
+<span class="nc" id="L1349">				WeightsImpl.Mapped&lt;?&gt; o = (WeightsImpl.Mapped&lt;?&gt;) other;</span>
+
+<span class="nc" id="L1351">				WeightsImpl.Index.Obj&lt;E&gt; w = weights();</span>
+<span class="nc" id="L1352">				int size = w.size();</span>
+<span class="nc bnc" id="L1353" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1354">					return false;</span>
+				try {
+<span class="nc bnc" id="L1356" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1357" title="All 2 branches missed.">						if (Objects.equals(w.get(idx), o.get(indexMap.indexToId(idx))))</span>
+<span class="nc" id="L1358">							return false;</span>
+<span class="nc" id="L1359">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1360">					return false;</span>
+<span class="nc" id="L1361">				}</span>
+<span class="nc" id="L1362">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1367">				int h = 0;</span>
+<span class="nc" id="L1368">				WeightsImpl.Index.Obj&lt;E&gt; w = weights();</span>
+<span class="nc" id="L1369">				int size = w.size();</span>
+<span class="nc bnc" id="L1370" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1372">					h += Objects.hashCode(w.get(idx));</span>
+<span class="nc" id="L1373">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1378">				WeightsImpl.Index.Obj&lt;E&gt; w = weights();</span>
+<span class="nc" id="L1379">				int size = w.size();</span>
+<span class="nc bnc" id="L1380" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1381">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1382">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1383">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1384">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1385">					s.append(id).append('=').append(w.get(idx));</span>
+<span class="nc bnc" id="L1386" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1387">						break;</span>
+<span class="nc" id="L1388">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1390">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Byte extends Mapped&lt;java.lang.Byte&gt; implements Weights.Byte {
-			Byte(Weights.Byte weights, IndexIdMap indexMap) {
-<span class="fc" id="L1341">				super(weights, indexMap);</span>
-<span class="fc" id="L1342">			}</span>
+			Byte(WeightsImpl.Index.Byte weights, IndexIdMap indexMap) {
+<span class="fc" id="L1396">				super(weights, indexMap);</span>
+<span class="fc" id="L1397">			}</span>
 
 			@Override
-			public Weights.Byte weights() {
-<span class="fc" id="L1346">				return (Weights.Byte) super.weights();</span>
+			public WeightsImpl.Index.Byte weights() {
+<span class="fc" id="L1401">				return (WeightsImpl.Index.Byte) super.weights();</span>
 			}
 
 			@Override
 			public byte getByte(int id) {
-<span class="fc" id="L1351">				return weights().getByte(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1406">				return weights().getByte(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-<span class="fc" id="L1356">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1357">			}</span>
+<span class="fc" id="L1411">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1412">			}</span>
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="fc" id="L1361">				return weights().defaultWeightByte();</span>
+<span class="fc" id="L1416">				return weights().defaultWeightByte();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1421" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1422">					return true;</span>
+<span class="nc bnc" id="L1423" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Byte))</span>
+<span class="nc" id="L1424">					return false;</span>
+<span class="nc" id="L1425">				WeightsImpl.Mapped.Byte o = (WeightsImpl.Mapped.Byte) other;</span>
+
+<span class="nc" id="L1427">				WeightsImpl.Index.Byte w = weights();</span>
+<span class="nc" id="L1428">				int size = w.size();</span>
+<span class="nc bnc" id="L1429" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1430">					return false;</span>
+				try {
+<span class="nc bnc" id="L1432" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1433" title="All 2 branches missed.">						if (w.getByte(idx) != o.getByte(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1434">							return false;</span>
+<span class="nc" id="L1435">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1436">					return false;</span>
+<span class="nc" id="L1437">				}</span>
+<span class="nc" id="L1438">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1443">				int h = 0;</span>
+<span class="nc" id="L1444">				WeightsImpl.Index.Byte w = weights();</span>
+<span class="nc" id="L1445">				int size = w.size();</span>
+<span class="nc bnc" id="L1446" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1448">					h += w.getByte(idx);</span>
+<span class="nc" id="L1449">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1454">				WeightsImpl.Index.Byte w = weights();</span>
+<span class="nc" id="L1455">				int size = w.size();</span>
+<span class="nc bnc" id="L1456" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1457">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1458">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1459">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1460">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1461">					s.append(id).append('=').append(w.getByte(idx));</span>
+<span class="nc bnc" id="L1462" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1463">						break;</span>
+<span class="nc" id="L1464">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1466">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Short extends Mapped&lt;java.lang.Short&gt; implements Weights.Short {
-			Short(Weights.Short container, IndexIdMap indexMap) {
-<span class="fc" id="L1367">				super(container, indexMap);</span>
-<span class="fc" id="L1368">			}</span>
+			Short(WeightsImpl.Index.Short container, IndexIdMap indexMap) {
+<span class="fc" id="L1472">				super(container, indexMap);</span>
+<span class="fc" id="L1473">			}</span>
 
 			@Override
-			public Weights.Short weights() {
-<span class="fc" id="L1372">				return (Weights.Short) super.weights();</span>
+			public WeightsImpl.Index.Short weights() {
+<span class="fc" id="L1477">				return (WeightsImpl.Index.Short) super.weights();</span>
 			}
 
 			@Override
 			public short getShort(int id) {
-<span class="fc" id="L1377">				return weights().getShort(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1482">				return weights().getShort(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, short weight) {
-<span class="fc" id="L1382">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1383">			}</span>
+<span class="fc" id="L1487">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1488">			}</span>
 
 			@Override
 			public short defaultWeightShort() {
-<span class="fc" id="L1387">				return weights().defaultWeightShort();</span>
+<span class="fc" id="L1492">				return weights().defaultWeightShort();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1497" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1498">					return true;</span>
+<span class="nc bnc" id="L1499" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Short))</span>
+<span class="nc" id="L1500">					return false;</span>
+<span class="nc" id="L1501">				WeightsImpl.Mapped.Short o = (WeightsImpl.Mapped.Short) other;</span>
+
+<span class="nc" id="L1503">				WeightsImpl.Index.Short w = weights();</span>
+<span class="nc" id="L1504">				int size = w.size();</span>
+<span class="nc bnc" id="L1505" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1506">					return false;</span>
+				try {
+<span class="nc bnc" id="L1508" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1509" title="All 2 branches missed.">						if (w.getShort(idx) != o.getShort(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1510">							return false;</span>
+<span class="nc" id="L1511">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1512">					return false;</span>
+<span class="nc" id="L1513">				}</span>
+<span class="nc" id="L1514">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1519">				int h = 0;</span>
+<span class="nc" id="L1520">				WeightsImpl.Index.Short w = weights();</span>
+<span class="nc" id="L1521">				int size = w.size();</span>
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1524">					h += w.getShort(idx);</span>
+<span class="nc" id="L1525">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1530">				WeightsImpl.Index.Short w = weights();</span>
+<span class="nc" id="L1531">				int size = w.size();</span>
+<span class="nc bnc" id="L1532" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1533">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1534">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1535">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1536">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1537">					s.append(id).append('=').append(w.getShort(idx));</span>
+<span class="nc bnc" id="L1538" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1539">						break;</span>
+<span class="nc" id="L1540">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1542">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Int extends Mapped&lt;Integer&gt; implements Weights.Int {
-			Int(Weights.Int container, IndexIdMap indexMap) {
-<span class="fc" id="L1393">				super(container, indexMap);</span>
-<span class="fc" id="L1394">			}</span>
+			Int(WeightsImpl.Index.Int container, IndexIdMap indexMap) {
+<span class="fc" id="L1548">				super(container, indexMap);</span>
+<span class="fc" id="L1549">			}</span>
 
 			@Override
-			public Weights.Int weights() {
-<span class="fc" id="L1398">				return (Weights.Int) super.weights();</span>
+			public WeightsImpl.Index.Int weights() {
+<span class="fc" id="L1553">				return (WeightsImpl.Index.Int) super.weights();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="fc" id="L1403">				return weights().getInt(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1558">				return weights().getInt(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="fc" id="L1408">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1409">			}</span>
+<span class="fc" id="L1563">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1564">			}</span>
 
 			@Override
 			public int defaultWeightInt() {
-<span class="fc" id="L1413">				return weights().defaultWeightInt();</span>
+<span class="fc" id="L1568">				return weights().defaultWeightInt();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1573" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1574">					return true;</span>
+<span class="nc bnc" id="L1575" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Int))</span>
+<span class="nc" id="L1576">					return false;</span>
+<span class="nc" id="L1577">				WeightsImpl.Mapped.Int o = (WeightsImpl.Mapped.Int) other;</span>
+
+<span class="nc" id="L1579">				WeightsImpl.Index.Int w = weights();</span>
+<span class="nc" id="L1580">				int size = w.size();</span>
+<span class="nc bnc" id="L1581" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1582">					return false;</span>
+				try {
+<span class="nc bnc" id="L1584" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1585" title="All 2 branches missed.">						if (w.getInt(idx) != o.getInt(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1586">							return false;</span>
+<span class="nc" id="L1587">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1588">					return false;</span>
+<span class="nc" id="L1589">				}</span>
+<span class="nc" id="L1590">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1595">				int h = 0;</span>
+<span class="nc" id="L1596">				WeightsImpl.Index.Int w = weights();</span>
+<span class="nc" id="L1597">				int size = w.size();</span>
+<span class="nc bnc" id="L1598" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1600">					h += w.getInt(idx);</span>
+<span class="nc" id="L1601">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1606">				WeightsImpl.Index.Int w = weights();</span>
+<span class="nc" id="L1607">				int size = w.size();</span>
+<span class="nc bnc" id="L1608" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1609">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1610">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1611">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1612">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1613">					s.append(id).append('=').append(w.getInt(idx));</span>
+<span class="nc bnc" id="L1614" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1615">						break;</span>
+<span class="nc" id="L1616">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1618">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Long extends Mapped&lt;java.lang.Long&gt; implements Weights.Long {
-			Long(Weights.Long container, IndexIdMap indexMap) {
-<span class="fc" id="L1419">				super(container, indexMap);</span>
-<span class="fc" id="L1420">			}</span>
+			Long(WeightsImpl.Index.Long container, IndexIdMap indexMap) {
+<span class="fc" id="L1624">				super(container, indexMap);</span>
+<span class="fc" id="L1625">			}</span>
 
 			@Override
-			public Weights.Long weights() {
-<span class="fc" id="L1424">				return (Weights.Long) super.weights();</span>
+			public WeightsImpl.Index.Long weights() {
+<span class="fc" id="L1629">				return (WeightsImpl.Index.Long) super.weights();</span>
 			}
 
 			@Override
 			public long getLong(int id) {
-<span class="fc" id="L1429">				return weights().getLong(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1634">				return weights().getLong(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, long weight) {
-<span class="fc" id="L1434">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1435">			}</span>
+<span class="fc" id="L1639">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1640">			}</span>
 
 			@Override
 			public long defaultWeightLong() {
-<span class="fc" id="L1439">				return weights().defaultWeightLong();</span>
+<span class="fc" id="L1644">				return weights().defaultWeightLong();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1649" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1650">					return true;</span>
+<span class="nc bnc" id="L1651" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Long))</span>
+<span class="nc" id="L1652">					return false;</span>
+<span class="nc" id="L1653">				WeightsImpl.Mapped.Long o = (WeightsImpl.Mapped.Long) other;</span>
+
+<span class="nc" id="L1655">				WeightsImpl.Index.Long w = weights();</span>
+<span class="nc" id="L1656">				int size = w.size();</span>
+<span class="nc bnc" id="L1657" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1658">					return false;</span>
+				try {
+<span class="nc bnc" id="L1660" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1661" title="All 2 branches missed.">						if (w.getLong(idx) != o.getLong(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1662">							return false;</span>
+<span class="nc" id="L1663">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1664">					return false;</span>
+<span class="nc" id="L1665">				}</span>
+<span class="nc" id="L1666">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1671">				int h = 0;</span>
+<span class="nc" id="L1672">				WeightsImpl.Index.Long w = weights();</span>
+<span class="nc" id="L1673">				int size = w.size();</span>
+<span class="nc bnc" id="L1674" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1676">					h += java.lang.Long.hashCode(w.getLong(idx));</span>
+<span class="nc" id="L1677">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1682">				WeightsImpl.Index.Long w = weights();</span>
+<span class="nc" id="L1683">				int size = w.size();</span>
+<span class="nc bnc" id="L1684" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1685">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1686">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1687">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1688">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1689">					s.append(id).append('=').append(w.getLong(idx));</span>
+<span class="nc bnc" id="L1690" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1691">						break;</span>
+<span class="nc" id="L1692">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1694">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Float extends Mapped&lt;java.lang.Float&gt; implements Weights.Float {
-			Float(Weights.Float container, IndexIdMap indexMap) {
-<span class="fc" id="L1445">				super(container, indexMap);</span>
-<span class="fc" id="L1446">			}</span>
+			Float(WeightsImpl.Index.Float container, IndexIdMap indexMap) {
+<span class="fc" id="L1700">				super(container, indexMap);</span>
+<span class="fc" id="L1701">			}</span>
 
 			@Override
-			public Weights.Float weights() {
-<span class="fc" id="L1450">				return (Weights.Float) super.weights();</span>
+			public WeightsImpl.Index.Float weights() {
+<span class="fc" id="L1705">				return (WeightsImpl.Index.Float) super.weights();</span>
 			}
 
 			@Override
 			public float getFloat(int id) {
-<span class="fc" id="L1455">				return weights().getFloat(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1710">				return weights().getFloat(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, float weight) {
-<span class="fc" id="L1460">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1461">			}</span>
+<span class="fc" id="L1715">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1716">			}</span>
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="fc" id="L1465">				return weights().defaultWeightFloat();</span>
+<span class="fc" id="L1720">				return weights().defaultWeightFloat();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1725" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1726">					return true;</span>
+<span class="nc bnc" id="L1727" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Float))</span>
+<span class="nc" id="L1728">					return false;</span>
+<span class="nc" id="L1729">				WeightsImpl.Mapped.Float o = (WeightsImpl.Mapped.Float) other;</span>
+
+<span class="nc" id="L1731">				WeightsImpl.Index.Float w = weights();</span>
+<span class="nc" id="L1732">				int size = w.size();</span>
+<span class="nc bnc" id="L1733" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1734">					return false;</span>
+				try {
+<span class="nc bnc" id="L1736" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1737" title="All 2 branches missed.">						if (w.getFloat(idx) != o.getFloat(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1738">							return false;</span>
+<span class="nc" id="L1739">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1740">					return false;</span>
+<span class="nc" id="L1741">				}</span>
+<span class="nc" id="L1742">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1747">				int h = 0;</span>
+<span class="nc" id="L1748">				WeightsImpl.Index.Float w = weights();</span>
+<span class="nc" id="L1749">				int size = w.size();</span>
+<span class="nc bnc" id="L1750" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1752">					h += java.lang.Float.hashCode(w.getFloat(idx));</span>
+<span class="nc" id="L1753">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1758">				WeightsImpl.Index.Float w = weights();</span>
+<span class="nc" id="L1759">				int size = w.size();</span>
+<span class="nc bnc" id="L1760" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1761">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1762">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1763">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1764">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1765">					s.append(id).append('=').append(w.getFloat(idx));</span>
+<span class="nc bnc" id="L1766" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1767">						break;</span>
+<span class="nc" id="L1768">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1770">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Double extends Mapped&lt;java.lang.Double&gt; implements Weights.Double {
-			Double(Weights.Double container, IndexIdMap indexMap) {
-<span class="fc" id="L1471">				super(container, indexMap);</span>
-<span class="fc" id="L1472">			}</span>
+			Double(WeightsImpl.Index.Double container, IndexIdMap indexMap) {
+<span class="fc" id="L1776">				super(container, indexMap);</span>
+<span class="fc" id="L1777">			}</span>
 
 			@Override
-			Weights.Double weights() {
-<span class="fc" id="L1476">				return (Weights.Double) super.weights();</span>
+			WeightsImpl.Index.Double weights() {
+<span class="fc" id="L1781">				return (WeightsImpl.Index.Double) super.weights();</span>
 			}
 
 			@Override
 			public double getDouble(int id) {
-<span class="fc" id="L1481">				return weights().getDouble(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1786">				return weights().getDouble(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, double weight) {
-<span class="fc" id="L1486">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1487">			}</span>
+<span class="fc" id="L1791">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1792">			}</span>
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="fc" id="L1491">				return weights().defaultWeightDouble();</span>
+<span class="fc" id="L1796">				return weights().defaultWeightDouble();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1801" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1802">					return true;</span>
+<span class="nc bnc" id="L1803" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Double))</span>
+<span class="nc" id="L1804">					return false;</span>
+<span class="nc" id="L1805">				WeightsImpl.Mapped.Double o = (WeightsImpl.Mapped.Double) other;</span>
+
+<span class="nc" id="L1807">				WeightsImpl.Index.Double w = weights();</span>
+<span class="nc" id="L1808">				int size = w.size();</span>
+<span class="nc bnc" id="L1809" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1810">					return false;</span>
+				try {
+<span class="nc bnc" id="L1812" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1813" title="All 2 branches missed.">						if (w.getDouble(idx) != o.getDouble(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1814">							return false;</span>
+<span class="nc" id="L1815">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1816">					return false;</span>
+<span class="nc" id="L1817">				}</span>
+<span class="nc" id="L1818">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1823">				int h = 0;</span>
+<span class="nc" id="L1824">				WeightsImpl.Index.Double w = weights();</span>
+<span class="nc" id="L1825">				int size = w.size();</span>
+<span class="nc bnc" id="L1826" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1828">					h += java.lang.Double.hashCode(w.getDouble(idx));</span>
+<span class="nc" id="L1829">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1834">				WeightsImpl.Index.Double w = weights();</span>
+<span class="nc" id="L1835">				int size = w.size();</span>
+<span class="nc bnc" id="L1836" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1837">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1838">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1839">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1840">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1841">					s.append(id).append('=').append(w.getDouble(idx));</span>
+<span class="nc bnc" id="L1842" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1843">						break;</span>
+<span class="nc" id="L1844">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1846">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Bool extends Mapped&lt;Boolean&gt; implements Weights.Bool {
-			Bool(Weights.Bool container, IndexIdMap indexMap) {
-<span class="fc" id="L1497">				super(container, indexMap);</span>
-<span class="fc" id="L1498">			}</span>
+			Bool(WeightsImpl.Index.Bool container, IndexIdMap indexMap) {
+<span class="fc" id="L1852">				super(container, indexMap);</span>
+<span class="fc" id="L1853">			}</span>
 
 			@Override
-			Weights.Bool weights() {
-<span class="fc" id="L1502">				return (Weights.Bool) super.weights();</span>
+			WeightsImpl.Index.Bool weights() {
+<span class="fc" id="L1857">				return (WeightsImpl.Index.Bool) super.weights();</span>
 			}
 
 			@Override
 			public boolean getBool(int id) {
-<span class="fc" id="L1507">				return weights().getBool(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1862">				return weights().getBool(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-<span class="fc" id="L1512">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1513">			}</span>
+<span class="fc" id="L1867">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1868">			}</span>
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="fc" id="L1517">				return weights().defaultWeightBool();</span>
+<span class="fc" id="L1872">				return weights().defaultWeightBool();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1877" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1878">					return true;</span>
+<span class="nc bnc" id="L1879" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Bool))</span>
+<span class="nc" id="L1880">					return false;</span>
+<span class="nc" id="L1881">				WeightsImpl.Mapped.Bool o = (WeightsImpl.Mapped.Bool) other;</span>
+
+<span class="nc" id="L1883">				WeightsImpl.Index.Bool w = weights();</span>
+<span class="nc" id="L1884">				int size = w.size();</span>
+<span class="nc bnc" id="L1885" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1886">					return false;</span>
+				try {
+<span class="nc bnc" id="L1888" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1889" title="All 2 branches missed.">						if (w.getBool(idx) != o.getBool(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1890">							return false;</span>
+<span class="nc" id="L1891">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1892">					return false;</span>
+<span class="nc" id="L1893">				}</span>
+<span class="nc" id="L1894">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1899">				int h = 0;</span>
+<span class="nc" id="L1900">				WeightsImpl.Index.Bool w = weights();</span>
+<span class="nc" id="L1901">				int size = w.size();</span>
+<span class="nc bnc" id="L1902" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1904">					h += Boolean.hashCode(w.getBool(idx));</span>
+<span class="nc" id="L1905">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1910">				WeightsImpl.Index.Bool w = weights();</span>
+<span class="nc" id="L1911">				int size = w.size();</span>
+<span class="nc bnc" id="L1912" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1913">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1914">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1915">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1916">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1917">					s.append(id).append('=').append(w.getBool(idx));</span>
+<span class="nc bnc" id="L1918" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1919">						break;</span>
+<span class="nc" id="L1920">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1922">				return s.append(']').toString();</span>
 			}
 		}
 
 		static class Char extends Mapped&lt;Character&gt; implements Weights.Char {
-			Char(Weights.Char container, IndexIdMap indexMap) {
-<span class="fc" id="L1523">				super(container, indexMap);</span>
-<span class="fc" id="L1524">			}</span>
+			Char(WeightsImpl.Index.Char container, IndexIdMap indexMap) {
+<span class="fc" id="L1928">				super(container, indexMap);</span>
+<span class="fc" id="L1929">			}</span>
 
 			@Override
-			Weights.Char weights() {
-<span class="fc" id="L1528">				return (Weights.Char) super.weights();</span>
+			WeightsImpl.Index.Char weights() {
+<span class="fc" id="L1933">				return (WeightsImpl.Index.Char) super.weights();</span>
 			}
 
 			@Override
 			public char getChar(int id) {
-<span class="fc" id="L1533">				return weights().getChar(indexMap.idToIndex(id));</span>
+<span class="fc" id="L1938">				return weights().getChar(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, char weight) {
-<span class="fc" id="L1538">				weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L1539">			}</span>
+<span class="fc" id="L1943">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1944">			}</span>
 
 			@Override
 			public char defaultWeightChar() {
-<span class="fc" id="L1543">				return weights().defaultWeightChar();</span>
+<span class="fc" id="L1948">				return weights().defaultWeightChar();</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1953" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L1954">					return true;</span>
+<span class="nc bnc" id="L1955" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Mapped.Char))</span>
+<span class="nc" id="L1956">					return false;</span>
+<span class="nc" id="L1957">				WeightsImpl.Mapped.Char o = (WeightsImpl.Mapped.Char) other;</span>
+
+<span class="nc" id="L1959">				WeightsImpl.Index.Char w = weights();</span>
+<span class="nc" id="L1960">				int size = w.size();</span>
+<span class="nc bnc" id="L1961" title="All 2 branches missed.">				if (size != o.weights().size())</span>
+<span class="nc" id="L1962">					return false;</span>
+				try {
+<span class="nc bnc" id="L1964" title="All 2 branches missed.">					for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="nc bnc" id="L1965" title="All 2 branches missed.">						if (w.getChar(idx) != o.getChar(indexMap.indexToId(idx)))</span>
+<span class="nc" id="L1966">							return false;</span>
+<span class="nc" id="L1967">				} catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L1968">					return false;</span>
+<span class="nc" id="L1969">				}</span>
+<span class="nc" id="L1970">				return true;</span>
+			}
+
+			@Override
+			public int hashCode() {
+<span class="nc" id="L1975">				int h = 0;</span>
+<span class="nc" id="L1976">				WeightsImpl.Index.Char w = weights();</span>
+<span class="nc" id="L1977">				int size = w.size();</span>
+<span class="nc bnc" id="L1978" title="All 2 branches missed.">				for (int idx = 0; idx &lt; size; idx++)</span>
+					/* we must use addition, order shouldn't matter */
+<span class="nc" id="L1980">					h += w.getChar(idx);</span>
+<span class="nc" id="L1981">				return h;</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L1986">				WeightsImpl.Index.Char w = weights();</span>
+<span class="nc" id="L1987">				int size = w.size();</span>
+<span class="nc bnc" id="L1988" title="All 2 branches missed.">				if (size == 0)</span>
+<span class="nc" id="L1989">					return &quot;[]&quot;;</span>
+<span class="nc" id="L1990">				StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L1991">				for (int idx = 0;; idx++) {</span>
+<span class="nc" id="L1992">					int id = indexMap.indexToId(idx);</span>
+<span class="nc" id="L1993">					s.append(id).append('=').append(w.getChar(idx));</span>
+<span class="nc bnc" id="L1994" title="All 2 branches missed.">					if (idx == size - 1)</span>
+<span class="nc" id="L1995">						break;</span>
+<span class="nc" id="L1996">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L1998">				return s.append(']').toString();</span>
 			}
 		}
 	}
@@ -1549,319 +2004,319 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 		private final WeightsImpl&lt;E&gt; weights;
 
-<span class="fc" id="L1552">		Unmodifiable(Weights&lt;E&gt; w) {</span>
-<span class="fc" id="L1553">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
-<span class="fc" id="L1554">		}</span>
+<span class="fc" id="L2007">		Unmodifiable(Weights&lt;E&gt; w) {</span>
+<span class="fc" id="L2008">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
+<span class="fc" id="L2009">		}</span>
 
 		Weights&lt;E&gt; weights() {
-<span class="fc" id="L1557">			return weights;</span>
+<span class="fc" id="L2012">			return weights;</span>
 		}
 
 		static class Obj&lt;E&gt; extends Unmodifiable&lt;E&gt; {
 
 			Obj(Weights&lt;E&gt; w) {
-<span class="fc" id="L1563">				super(w);</span>
-<span class="fc" id="L1564">			}</span>
+<span class="fc" id="L2018">				super(w);</span>
+<span class="fc" id="L2019">			}</span>
 
 			@Override
 			public E get(int id) {
-<span class="fc" id="L1568">				return weights().get(id);</span>
+<span class="fc" id="L2023">				return weights().get(id);</span>
 			}
 
 			@Override
 			public void set(int id, E weight) {
-<span class="fc" id="L1573">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2028">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public E defaultWeight() {
-<span class="fc" id="L1578">				return weights().defaultWeight();</span>
+<span class="fc" id="L2033">				return weights().defaultWeight();</span>
 			}
 		}
 
 		static class Byte extends Unmodifiable&lt;java.lang.Byte&gt; implements Weights.Byte {
 			Byte(Weights.Byte w) {
-<span class="fc" id="L1584">				super(w);</span>
-<span class="fc" id="L1585">			}</span>
+<span class="fc" id="L2039">				super(w);</span>
+<span class="fc" id="L2040">			}</span>
 
 			@Override
 			Weights.Byte weights() {
-<span class="fc" id="L1589">				return (Weights.Byte) super.weights();</span>
+<span class="fc" id="L2044">				return (Weights.Byte) super.weights();</span>
 			}
 
 			@Override
 			public byte getByte(int id) {
-<span class="fc" id="L1594">				return weights().getByte(id);</span>
+<span class="fc" id="L2049">				return weights().getByte(id);</span>
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-<span class="fc" id="L1599">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2054">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="fc" id="L1604">				return weights().defaultWeightByte();</span>
+<span class="fc" id="L2059">				return weights().defaultWeightByte();</span>
 			}
 		}
 
 		static class Short extends Unmodifiable&lt;java.lang.Short&gt; implements Weights.Short {
 			Short(Weights.Short w) {
-<span class="fc" id="L1610">				super(w);</span>
-<span class="fc" id="L1611">			}</span>
+<span class="fc" id="L2065">				super(w);</span>
+<span class="fc" id="L2066">			}</span>
 
 			@Override
 			Weights.Short weights() {
-<span class="fc" id="L1615">				return (Weights.Short) super.weights();</span>
+<span class="fc" id="L2070">				return (Weights.Short) super.weights();</span>
 			}
 
 			@Override
 			public short getShort(int id) {
-<span class="fc" id="L1620">				return weights().getShort(id);</span>
+<span class="fc" id="L2075">				return weights().getShort(id);</span>
 			}
 
 			@Override
 			public void set(int id, short weight) {
-<span class="fc" id="L1625">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2080">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public short defaultWeightShort() {
-<span class="fc" id="L1630">				return weights().defaultWeightShort();</span>
+<span class="fc" id="L2085">				return weights().defaultWeightShort();</span>
 			}
 		}
 
 		static class Int extends Unmodifiable&lt;Integer&gt; implements Weights.Int {
 			Int(Weights.Int w) {
-<span class="fc" id="L1636">				super(w);</span>
-<span class="fc" id="L1637">			}</span>
+<span class="fc" id="L2091">				super(w);</span>
+<span class="fc" id="L2092">			}</span>
 
 			@Override
 			Weights.Int weights() {
-<span class="fc" id="L1641">				return (Weights.Int) super.weights();</span>
+<span class="fc" id="L2096">				return (Weights.Int) super.weights();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="fc" id="L1646">				return weights().getInt(id);</span>
+<span class="fc" id="L2101">				return weights().getInt(id);</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="fc" id="L1651">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2106">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public int defaultWeightInt() {
-<span class="fc" id="L1656">				return weights().defaultWeightInt();</span>
+<span class="fc" id="L2111">				return weights().defaultWeightInt();</span>
 			}
 		}
 
 		static class Long extends Unmodifiable&lt;java.lang.Long&gt; implements Weights.Long {
 			Long(Weights.Long w) {
-<span class="fc" id="L1662">				super(w);</span>
-<span class="fc" id="L1663">			}</span>
+<span class="fc" id="L2117">				super(w);</span>
+<span class="fc" id="L2118">			}</span>
 
 			@Override
 			Weights.Long weights() {
-<span class="fc" id="L1667">				return (Weights.Long) super.weights();</span>
+<span class="fc" id="L2122">				return (Weights.Long) super.weights();</span>
 			}
 
 			@Override
 			public long getLong(int id) {
-<span class="fc" id="L1672">				return weights().getLong(id);</span>
+<span class="fc" id="L2127">				return weights().getLong(id);</span>
 			}
 
 			@Override
 			public void set(int id, long weight) {
-<span class="fc" id="L1677">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2132">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public long defaultWeightLong() {
-<span class="fc" id="L1682">				return weights().defaultWeightLong();</span>
+<span class="fc" id="L2137">				return weights().defaultWeightLong();</span>
 			}
 		}
 
 		static class Float extends Unmodifiable&lt;java.lang.Float&gt; implements Weights.Float {
 			Float(Weights.Float w) {
-<span class="fc" id="L1688">				super(w);</span>
-<span class="fc" id="L1689">			}</span>
+<span class="fc" id="L2143">				super(w);</span>
+<span class="fc" id="L2144">			}</span>
 
 			@Override
 			Weights.Float weights() {
-<span class="fc" id="L1693">				return (Weights.Float) super.weights();</span>
+<span class="fc" id="L2148">				return (Weights.Float) super.weights();</span>
 			}
 
 			@Override
 			public float getFloat(int id) {
-<span class="fc" id="L1698">				return weights().getFloat(id);</span>
+<span class="fc" id="L2153">				return weights().getFloat(id);</span>
 			}
 
 			@Override
 			public void set(int id, float weight) {
-<span class="fc" id="L1703">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2158">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="fc" id="L1708">				return weights().defaultWeightFloat();</span>
+<span class="fc" id="L2163">				return weights().defaultWeightFloat();</span>
 			}
 		}
 
 		static class Double extends Unmodifiable&lt;java.lang.Double&gt; implements Weights.Double {
 			Double(Weights.Double w) {
-<span class="fc" id="L1714">				super(w);</span>
-<span class="fc" id="L1715">			}</span>
+<span class="fc" id="L2169">				super(w);</span>
+<span class="fc" id="L2170">			}</span>
 
 			@Override
 			Weights.Double weights() {
-<span class="fc" id="L1719">				return (Weights.Double) super.weights();</span>
+<span class="fc" id="L2174">				return (Weights.Double) super.weights();</span>
 			}
 
 			@Override
 			public double getDouble(int id) {
-<span class="fc" id="L1724">				return weights().getDouble(id);</span>
+<span class="fc" id="L2179">				return weights().getDouble(id);</span>
 			}
 
 			@Override
 			public void set(int id, double weight) {
-<span class="fc" id="L1729">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2184">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="fc" id="L1734">				return weights().defaultWeightDouble();</span>
+<span class="fc" id="L2189">				return weights().defaultWeightDouble();</span>
 			}
 		}
 
 		static class Bool extends Unmodifiable&lt;Boolean&gt; implements Weights.Bool {
 			Bool(Weights.Bool w) {
-<span class="fc" id="L1740">				super(w);</span>
-<span class="fc" id="L1741">			}</span>
+<span class="fc" id="L2195">				super(w);</span>
+<span class="fc" id="L2196">			}</span>
 
 			@Override
 			Weights.Bool weights() {
-<span class="fc" id="L1745">				return (Weights.Bool) super.weights();</span>
+<span class="fc" id="L2200">				return (Weights.Bool) super.weights();</span>
 			}
 
 			@Override
 			public boolean getBool(int id) {
-<span class="fc" id="L1750">				return weights().getBool(id);</span>
+<span class="fc" id="L2205">				return weights().getBool(id);</span>
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-<span class="fc" id="L1755">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2210">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="fc" id="L1760">				return weights().defaultWeightBool();</span>
+<span class="fc" id="L2215">				return weights().defaultWeightBool();</span>
 			}
 		}
 
 		static class Char extends Unmodifiable&lt;Character&gt; implements Weights.Char {
 			Char(Weights.Char w) {
-<span class="fc" id="L1766">				super(w);</span>
-<span class="fc" id="L1767">			}</span>
+<span class="fc" id="L2221">				super(w);</span>
+<span class="fc" id="L2222">			}</span>
 
 			@Override
 			Weights.Char weights() {
-<span class="fc" id="L1771">				return (Weights.Char) super.weights();</span>
+<span class="fc" id="L2226">				return (Weights.Char) super.weights();</span>
 			}
 
 			@Override
 			public char getChar(int id) {
-<span class="fc" id="L1776">				return weights().getChar(id);</span>
+<span class="fc" id="L2231">				return weights().getChar(id);</span>
 			}
 
 			@Override
 			public void set(int id, char weight) {
-<span class="fc" id="L1781">				throw new UnsupportedOperationException();</span>
+<span class="fc" id="L2236">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public char defaultWeightChar() {
-<span class="fc" id="L1786">				return weights().defaultWeightChar();</span>
+<span class="fc" id="L2241">				return weights().defaultWeightChar();</span>
 			}
 		}
 	}
 
 	static WeightFunction indexWeightFuncFromIdWeightFunc(WeightFunction w, IndexIdMap map) {
-<span class="pc bpc" id="L1792" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
-<span class="fc" id="L1793">			return w;</span>
+<span class="pc bpc" id="L2247" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
+<span class="fc" id="L2248">			return w;</span>
 
-<span class="fc bfc" id="L1795" title="All 2 branches covered.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
+<span class="fc bfc" id="L2250" title="All 2 branches covered.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
 			/* The weight function is some implementation of a mapped weights object */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-<span class="fc" id="L1798">			WeightsImpl&lt;?&gt; weights = (WeightsImpl&lt;?&gt;) w;</span>
-<span class="fc" id="L1799">			final boolean unmodifiable = weights instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
-<span class="pc bpc" id="L1800" title="1 of 2 branches missed.">			if (unmodifiable)</span>
-<span class="nc" id="L1801">				weights = ((WeightsImpl.Unmodifiable&lt;?&gt;) weights).weights;</span>
-<span class="pc bpc" id="L1802" title="1 of 2 branches missed.">			if (!(weights instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
-<span class="nc" id="L1803">				throw new IllegalArgumentException(&quot;weights of index graph used with non index graph&quot;);</span>
-<span class="fc" id="L1804">			weights = ((WeightsImpl.Mapped&lt;?&gt;) weights).weights;</span>
-<span class="pc bpc" id="L1805" title="1 of 2 branches missed.">			if (unmodifiable)</span>
-<span class="nc" id="L1806">				weights = weights.unmodifiableView();</span>
-<span class="fc" id="L1807">			return (WeightFunction) weights;</span>
+<span class="fc" id="L2253">			WeightsImpl&lt;?&gt; weights = (WeightsImpl&lt;?&gt;) w;</span>
+<span class="fc" id="L2254">			final boolean unmodifiable = weights instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
+<span class="pc bpc" id="L2255" title="1 of 2 branches missed.">			if (unmodifiable)</span>
+<span class="nc" id="L2256">				weights = ((WeightsImpl.Unmodifiable&lt;?&gt;) weights).weights;</span>
+<span class="pc bpc" id="L2257" title="1 of 2 branches missed.">			if (!(weights instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
+<span class="nc" id="L2258">				throw new IllegalArgumentException(&quot;weights of index graph used with non index graph&quot;);</span>
+<span class="fc" id="L2259">			weights = ((WeightsImpl.Mapped&lt;?&gt;) weights).weights;</span>
+<span class="pc bpc" id="L2260" title="1 of 2 branches missed.">			if (unmodifiable)</span>
+<span class="nc" id="L2261">				weights = weights.unmodifiableView();</span>
+<span class="fc" id="L2262">			return (WeightFunction) weights;</span>
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-<span class="pc bpc" id="L1811" title="1 of 2 branches missed.">			if (w instanceof WeightFunction.Int) {</span>
-<span class="nc" id="L1812">				WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="nc" id="L1813">				WeightFunction.Int wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
-<span class="nc" id="L1814">				return wIntMapped;</span>
+<span class="pc bpc" id="L2266" title="1 of 2 branches missed.">			if (w instanceof WeightFunction.Int) {</span>
+<span class="nc" id="L2267">				WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="nc" id="L2268">				WeightFunction.Int wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
+<span class="nc" id="L2269">				return wIntMapped;</span>
 			} else {
-<span class="fc" id="L1816">				return idx -&gt; w.weight(map.indexToId(idx));</span>
+<span class="fc" id="L2271">				return idx -&gt; w.weight(map.indexToId(idx));</span>
 			}
 		}
 	}
 
 	static WeightFunction localEdgeWeightFunction(IndexGraph g, WeightFunction w) {
-<span class="pc bpc" id="L1822" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
-<span class="fc" id="L1823">			return w;</span>
-<span class="fc bfc" id="L1824" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="fc" id="L1825">			return w;</span>
-<span class="fc bfc" id="L1826" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L1827">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="fc" id="L1828">			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc bfc" id="L1829" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="fc" id="L1830">				wLocal.set(e, wInt.weightInt(e));</span>
-<span class="fc" id="L1831">			return wLocal;</span>
+<span class="pc bpc" id="L2277" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="fc" id="L2278">			return w;</span>
+<span class="fc bfc" id="L2279" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L2280">			return w;</span>
+<span class="fc bfc" id="L2281" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L2282">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L2283">			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L2284" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L2285">				wLocal.set(e, wInt.weightInt(e));</span>
+<span class="fc" id="L2286">			return wLocal;</span>
 		} else {
-<span class="fc" id="L1833">			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L1834" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="fc" id="L1835">				wLocal.set(e, w.weight(e));</span>
-<span class="fc" id="L1836">			return wLocal;</span>
+<span class="fc" id="L2288">			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L2289" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L2290">				wLocal.set(e, w.weight(e));</span>
+<span class="fc" id="L2291">			return wLocal;</span>
 		}
 	}
 
 	static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
-<span class="nc bnc" id="L1841" title="All 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
-<span class="nc" id="L1842">			return w;</span>
-<span class="nc bnc" id="L1843" title="All 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="nc" id="L1844">			return w;</span>
-<span class="nc" id="L1845">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
-<span class="nc bnc" id="L1846" title="All 2 branches missed.">		for (int e : g.edges())</span>
-<span class="nc" id="L1847">			wLocal.set(e, w.weightInt(e));</span>
-<span class="nc" id="L1848">		return wLocal;</span>
+<span class="nc bnc" id="L2296" title="All 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="nc" id="L2297">			return w;</span>
+<span class="nc bnc" id="L2298" title="All 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="nc" id="L2299">			return w;</span>
+<span class="nc" id="L2300">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L2301" title="All 2 branches missed.">		for (int e : g.edges())</span>
+<span class="nc" id="L2302">			wLocal.set(e, w.weightInt(e));</span>
+<span class="nc" id="L2303">		return wLocal;</span>
 	}
 
 	static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
-<span class="fc bfc" id="L1852" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L1853">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="fc" id="L1854">			WeightFunction.Int wPotentialInt =</span>
-<span class="fc" id="L1855">					e -&gt; wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];</span>
-<span class="fc" id="L1856">			return wPotentialInt;</span>
+<span class="fc bfc" id="L2307" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L2308">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L2309">			WeightFunction.Int wPotentialInt =</span>
+<span class="fc" id="L2310">					e -&gt; wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L2311">			return wPotentialInt;</span>
 		} else {
-<span class="fc" id="L1858">			WeightFunction w0 = w;</span>
-<span class="fc" id="L1859">			return e -&gt; w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L2313">			WeightFunction w0 = w;</span>
+<span class="fc" id="L2314">			return e -&gt; w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 		}
 	}
 
 	static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
-<span class="fc" id="L1864">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L2319">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 }

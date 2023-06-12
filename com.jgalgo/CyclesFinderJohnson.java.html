@@ -100,7 +100,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="pc bpc" id="L100" title="1 of 2 branches missed.">			assert scc.contains(u);</span>
 <span class="fc" id="L101">			isBlocked.set(u);</span>
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L104">				int e = it.nextInt();</span>
 <span class="fc" id="L105">				int v = it.target();</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">				if (!scc.contains(v))</span>
@@ -120,7 +120,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc bfc" id="L120" title="All 2 branches covered.">			if (cycleFound) {</span>
 <span class="fc" id="L121">				unblock(u);</span>
 			} else {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L124">					it.nextInt();</span>
 <span class="fc" id="L125">					int v = it.target();</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">					if (!scc.contains(v))</span>
@@ -158,7 +158,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc" id="L158">			gSub.addVertex();</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
 <span class="fc" id="L160">			int uFull = uSub + subToFull;</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(uFull).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L162">				it.nextInt();</span>
 <span class="fc" id="L163">				int vSub = it.target() - subToFull;</span>
 <span class="fc bfc" id="L164" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>

@@ -20,7 +20,7 @@ package com.jgalgo;
  * Calculate the maximum flow in a flow network.
  * &lt;p&gt;
  * A maximum flow is firstly a valid flow, namely for each vertex except the source and sink the sum of flow units going
- * along {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along {@link Graph#edgesOut(int)}. In
+ * along {@link Graph#inEdges(int)} must be equal to the sum of flow units going along {@link Graph#outEdges(int)}. In
  * addition, a maximum flow maximize the number of flow units originated at the source and reaching the sink, which is
  * equivalent to the sum of flows going out(in) of the source(sink) subtracted by the sum of flows going in(out) to the
  * source(sink).

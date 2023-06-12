@@ -136,7 +136,7 @@ public class Trees {
 <span class="fc" id="L136">				int u = stack.popInt();</span>
 <span class="fc" id="L137">				visitedCount++;</span>
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L140">					eit.nextInt();</span>
 <span class="fc" id="L141">					int v = eit.target();</span>
 <span class="pc bpc" id="L142" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>

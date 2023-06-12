@@ -104,7 +104,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 			/* Init all vertices iterators */
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L107">				vertexData(u).edgeIter = (EdgeIterImpl) g.edgesOut(u).iterator();</span>
+<span class="fc" id="L107">				vertexData(u).edgeIter = (EdgeIterImpl) g.outEdges(u).iterator();</span>
 <span class="fc" id="L108">		}</span>
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
@@ -133,7 +133,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 <span class="fc bfc" id="L133" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
 <span class="fc" id="L134">				int v = queue.dequeueInt();</span>
 <span class="fc" id="L135">				int vLabel = vertexData[v].label;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L137">					int e = eit.nextInt();</span>
 <span class="fc bfc" id="L138" title="All 2 branches covered.">					if (!isResidual(e))</span>
 <span class="fc" id="L139">						continue;</span>
@@ -206,7 +206,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 				/* Finished iterating over all vertex edges */
 <span class="fc bfc" id="L207" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 <span class="fc" id="L208">					U.label++;</span>
-<span class="fc" id="L209">					U.edgeIter = (EdgeIterImpl) g.edgesOut(U.v).iterator();</span>
+<span class="fc" id="L209">					U.edgeIter = (EdgeIterImpl) g.outEdges(U.v).iterator();</span>
 <span class="fc" id="L210">					cutAllChildren(U);</span>
 				}
 
@@ -356,7 +356,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L359" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L360">				int e = eit.nextInt();</span>
 <span class="fc" id="L361">				double f = capacity.getDouble(e) - flow.getDouble(e);</span>
 <span class="pc bpc" id="L362" title="1 of 2 branches missed.">				if (f &gt; 0) {</span>
@@ -485,7 +485,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L488" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L488" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L489">				int e = eit.nextInt();</span>
 <span class="fc" id="L490">				int f = capacity.getInt(e) - flow.getInt(e);</span>
 <span class="fc bfc" id="L491" title="All 2 branches covered.">				if (f &gt; 0) {</span>

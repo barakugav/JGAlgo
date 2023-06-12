@@ -108,7 +108,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 <span class="fc bfc" id="L108" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
 <span class="fc" id="L109">					continue;</span>
 
-<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L112">					int e = eit.nextInt();</span>
 <span class="fc" id="L113">					int v = eit.target();</span>
 <span class="fc bfc" id="L114" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
@@ -140,7 +140,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 <span class="fc bfc" id="L140" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
 <span class="fc" id="L141">					continue;</span>
 
-<span class="fc" id="L143">				edges[0] = f.edgesOut(u).iterator();</span>
+<span class="fc" id="L143">				edges[0] = f.outEdges(u).iterator();</span>
 <span class="fc" id="L144">				visited.set(u);</span>
 
 <span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
@@ -165,7 +165,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 <span class="fc" id="L165">						dfsPath[depth] = matchedEdge;</span>
 <span class="fc" id="L166">						v = g.edgeEndpoint(matchedEdge, v);</span>
 
-<span class="fc" id="L168">						edges[++depth] = f.edgesOut(v).iterator();</span>
+<span class="fc" id="L168">						edges[++depth] = f.outEdges(v).iterator();</span>
 <span class="fc" id="L169">					} else {</span>
 						/*
 						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path

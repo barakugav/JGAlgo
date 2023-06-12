@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L98">				int tree = vTree[u];</span>
 
-<span class="fc bfc" id="L100" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L101">					int e = eit.nextInt();</span>
 <span class="fc" id="L102">					int v = eit.target();</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">					if (tree == vTree[v])</span>

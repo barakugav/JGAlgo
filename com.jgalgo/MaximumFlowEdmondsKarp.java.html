@@ -74,7 +74,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 <span class="fc" id="L74">				queue.enqueue(source);</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">				bfs: while (!queue.isEmpty()) {</span>
 <span class="fc" id="L76">					int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L78">						int e = eit.nextInt();</span>
 <span class="fc" id="L79">						int v = eit.target();</span>
 

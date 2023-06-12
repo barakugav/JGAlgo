@@ -158,7 +158,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 <span class="fc bfc" id="L158" title="All 4 branches covered.">					if (!partition.getBool(u) || matched[u] != EdgeNone)</span>
 <span class="fc" id="L159">						continue;</span>
 <span class="fc" id="L160">					vertexAddedToTree(u);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">					for (int e : g.edgesOut(u))</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">					for (int e : g.outEdges(u))</span>
 <span class="fc" id="L162">						nextTightEdgeAdd(u, e);</span>
 				}
 
@@ -203,7 +203,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 <span class="fc" id="L203">						parent[v] = matchedEdge;</span>
 <span class="fc" id="L204">						vertexAddedToTree(v);</span>
 
-<span class="fc bfc" id="L206" title="All 2 branches covered.">						for (int e1 : g.edgesOut(v))</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">						for (int e1 : g.outEdges(v))</span>
 <span class="fc" id="L207">							nextTightEdgeAdd(v, e1);</span>
 <span class="fc" id="L208">					}</span>
 

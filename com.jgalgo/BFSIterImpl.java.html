@@ -105,7 +105,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L105">				firstVInLayer = -1;</span>
 			}
 
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L109">				int e = eit.nextInt();</span>
 <span class="fc" id="L110">				int v = eit.target();</span>
 <span class="fc bfc" id="L111" title="All 2 branches covered.">				if (visited.get(v))</span>
@@ -142,7 +142,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L142">				firstVInLayer = -1;</span>
 			}
 
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L146">				int e = eit.nextInt();</span>
 <span class="fc" id="L147">				int u = eit.source();</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">				if (visited.get(u))</span>

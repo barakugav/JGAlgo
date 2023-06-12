@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 
 <span class="fc" id="L95">		for (int u = source;;) {</span>
 <span class="fc" id="L96">			final int uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L98">				int e = eit.nextInt();</span>
 <span class="fc" id="L99">				int v = eit.target();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>

@@ -69,7 +69,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 <span class="fc" id="L69">		BitSet usedColors = new BitSet();</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int u : order) {</span>
 <span class="fc" id="L71">			usedColors.clear();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L73">				eit.nextInt();</span>
 <span class="fc" id="L74">				int v = eit.target();</span>
 <span class="fc" id="L75">				int c = res.colorOf(v);</span>

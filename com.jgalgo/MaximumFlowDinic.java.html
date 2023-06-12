@@ -105,7 +105,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 <span class="fc bfc" id="L105" title="All 2 branches covered.">					if (u == sink)</span>
 <span class="fc" id="L106">						break bfs;</span>
 <span class="fc" id="L107">					int lvl = level[u];</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L109">						int e = eit.nextInt();</span>
 <span class="fc" id="L110">						int v = eit.target();</span>
 <span class="fc bfc" id="L111" title="All 4 branches covered.">						if (flow.getDouble(e) &gt;= capacity.getDouble(e) || level[v] &lt;= lvl)</span>
@@ -124,7 +124,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 <span class="fc" id="L124">					IntStack path = new IntArrayList();</span>
 					searchAugPath: for (;;) {
 <span class="fc bfc" id="L126" title="All 2 branches covered.">						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());</span>
-<span class="fc" id="L127">						EdgeIter eit = L.edgesOut(u).iterator();</span>
+<span class="fc" id="L127">						EdgeIter eit = L.outEdges(u).iterator();</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">						if (!eit.hasNext()) {</span>
 <span class="fc bfc" id="L129" title="All 2 branches covered.">							if (path.isEmpty()) {</span>
 								// no path from source to sink

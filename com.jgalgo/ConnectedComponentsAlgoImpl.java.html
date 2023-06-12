@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L54" title="All 2 branches covered.">			if (comp[root] != -1)</span>
 <span class="fc" id="L55">				continue;</span>
 <span class="fc" id="L56">			dfsPath[0] = root;</span>
-<span class="fc" id="L57">			edges[0] = g.edgesOut(root).iterator();</span>
+<span class="fc" id="L57">			edges[0] = g.outEdges(root).iterator();</span>
 <span class="fc" id="L58">			c[root] = cNext++;</span>
 <span class="fc" id="L59">			s.push(root);</span>
 <span class="fc" id="L60">			p.push(root);</span>
@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L69">						p.push(v);</span>
 
 <span class="fc" id="L71">						dfsPath[++depth] = v;</span>
-<span class="fc" id="L72">						edges[depth] = g.edgesOut(v).iterator();</span>
+<span class="fc" id="L72">						edges[depth] = g.outEdges(v).iterator();</span>
 <span class="fc" id="L73">						continue dfs;</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
@@ -111,7 +111,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L111" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
 <span class="fc" id="L112">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L115">					eit.nextInt();</span>
 <span class="fc" id="L116">					int v = eit.target();</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">					if (comp[v] != -1) {</span>

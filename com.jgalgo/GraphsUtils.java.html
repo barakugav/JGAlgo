@@ -52,7 +52,7 @@ class GraphsUtils {
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
 <span class="nc" id="L53">			return false;</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L56">				eit.nextInt();</span>
 <span class="pc bpc" id="L57" title="1 of 2 branches missed.">				if (u == eit.target())</span>
 <span class="nc" id="L58">					return true;</span>
@@ -68,7 +68,7 @@ class GraphsUtils {
 <span class="fc" id="L68">		int[] lastVisit = new int[n];</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L70">			final int visitIdx = u + 1;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L72">				eit.nextInt();</span>
 <span class="fc" id="L73">				int v = eit.target();</span>
 <span class="pc bpc" id="L74" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>

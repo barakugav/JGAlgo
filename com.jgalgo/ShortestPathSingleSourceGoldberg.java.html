@@ -173,7 +173,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L173">					G.addVertex();</span>
 <span class="fc bfc" id="L174" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L175">					int U = connectivityRes.getVertexCc(u);</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">					for (EdgeIter eit = gNeg.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">					for (EdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L177">						int e = eit.nextInt();</span>
 <span class="fc" id="L178">						int v = eit.target();</span>
 <span class="fc" id="L179">						int V = connectivityRes.getVertexCc(v);</span>

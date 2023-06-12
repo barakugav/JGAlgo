@@ -61,7 +61,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="pc bpc" id="L61" title="1 of 2 branches missed.">				assert vRefs[U] == null;</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
 <span class="fc" id="L63">				double weightsSum = 0;</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L65">					int e = eit.nextInt();</span>
 <span class="pc bpc" id="L66" title="1 of 2 branches missed.">					assert eit.source() == U;</span>
 <span class="fc" id="L67">					int V = eit.target();</span>
@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc bfc" id="L87" title="All 2 branches covered.">				if (heap.size() &gt; 0) {</span>
 					/* Not the last vertex */
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
-<span class="fc bfc" id="L90" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L91">						int e = eit.nextInt();</span>
 <span class="pc bpc" id="L92" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
 <span class="fc" id="L93">						int V = eit.target();</span>
@@ -101,7 +101,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 				} else {
 					/* Last vertex, no need to decrease keys */
 					/* Find the cut-of-the-phase and its weight */
-<span class="fc bfc" id="L104" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.edgesOut(U); eit.hasNext();) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L105">						int e = eit.nextInt();</span>
 <span class="pc bpc" id="L106" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
 <span class="pc bpc" id="L107" title="1 of 2 branches missed.">						assert cut.get(eit.target());</span>

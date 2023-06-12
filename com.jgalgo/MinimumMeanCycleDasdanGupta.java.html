@@ -93,7 +93,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc bfc" id="L93" title="All 2 branches covered.">					if (!visit[u])</span>
 <span class="fc" id="L94">						continue;</span>
 <span class="fc" id="L95">					visit[u] = false;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L97">						int e = eit.nextInt();</span>
 <span class="fc" id="L98">						int v = eit.target();</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">						if (cc.getVertexCc(v) != ccIdx)</span>

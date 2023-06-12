@@ -123,7 +123,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 					// decrease edges keys if a better one is found
 <span class="fc bfc" id="L124" title="All 2 branches covered.">					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {</span>
 						// for each vertex in the super vertex, iterate over all edges
-<span class="fc bfc" id="L126" title="All 2 branches covered.">						for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L127">							int e = eit.nextInt();</span>
 <span class="fc" id="L128">							int v = V[eit.target()];</span>
 

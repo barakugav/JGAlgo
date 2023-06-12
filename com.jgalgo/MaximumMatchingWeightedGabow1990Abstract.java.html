@@ -978,7 +978,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		void insertGrowEventsFromVertex(int u) {
 <span class="fc" id="L980">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L981" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L981" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L982">				int e = eit.nextInt();</span>
 <span class="fc" id="L983">				int v = eit.target();</span>
 <span class="fc bfc" id="L984" title="All 2 branches covered.">				if (isEven(v))</span>
@@ -1005,7 +1005,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bpc" id="L1005" title="1 of 2 branches missed.">			assert isEven(u);</span>
 <span class="fc" id="L1006">			Blossom U = evens.findBlossom(u);</span>
 <span class="fc" id="L1007">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L1008" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1008" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1009">				final int e = eit.nextInt();</span>
 <span class="fc" id="L1010">				int v = eit.target();</span>
 <span class="fc bfc" id="L1011" title="All 2 branches covered.">				if (!isEven(v))</span>

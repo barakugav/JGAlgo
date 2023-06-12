@@ -65,7 +65,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="nc" id="L65">			double uDistance = res.distances[u];</span>
 <span class="nc bnc" id="L66" title="All 2 branches missed.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
 <span class="nc" id="L67">				continue;</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L69">				int e = eit.nextInt();</span>
 <span class="nc" id="L70">				int v = eit.target();</span>
 <span class="nc" id="L71">				double d = uDistance + w.weight(e);</span>
@@ -93,7 +93,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="fc" id="L93">			int uDistance = res.distances[u];</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">			if (uDistance == Integer.MAX_VALUE)</span>
 <span class="fc" id="L95">				continue;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L97">				int e = eit.nextInt();</span>
 <span class="fc" id="L98">				int v = eit.target();</span>
 <span class="fc" id="L99">				int d = uDistance + w.weightInt(e);</span>

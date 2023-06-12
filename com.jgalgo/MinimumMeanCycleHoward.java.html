@@ -150,7 +150,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L150">				queue.enqueue(bestCycleVertex);</span>
 <span class="fc bfc" id="L151" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
 <span class="fc" id="L152">					int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L154">						int e = eit.nextInt();</span>
 <span class="fc" id="L155">						int u = g.edgeSource(e);</span>
 <span class="pc bpc" id="L156" title="1 of 4 branches missed.">						if (policy[u] != e || visited.test(u))</span>

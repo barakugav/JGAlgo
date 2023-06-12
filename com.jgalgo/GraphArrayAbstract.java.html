@@ -22,50 +22,50 @@ import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
 abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
-	private final EdgeEndpointsContainer edgeEndpoints;
-
-<span class="fc" id="L27">	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj(&quot;edgeEndpoints&quot;);</span>
+	private final DataContainer.Long edgeEndpointsContainer;
+	private long[] edgeEndpoints;
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L30">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L31">		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);</span>
-<span class="fc" id="L32">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L30">		edgeEndpointsContainer =</span>
+<span class="fc" id="L31">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L32">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L33">	}</span>
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 <span class="fc" id="L36">		super(g);</span>
-<span class="fc" id="L37">		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);</span>
-<span class="fc" id="L38">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L37">		edgeEndpointsContainer = g.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L38">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L39">	}</span>
 
 	@Override
 	public int addEdge(int source, int target) {
 <span class="fc" id="L43">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L44">		edgeEndpoints.setEndpoints(e, source, target);</span>
+<span class="fc" id="L44">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
 <span class="fc" id="L45">		return e;</span>
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-<span class="fc" id="L50">		edgeEndpoints.clear(edge);</span>
+<span class="fc" id="L50">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
 <span class="fc" id="L51">		super.removeEdgeImpl(edge);</span>
 <span class="fc" id="L52">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L56">		edgeEndpoints.swap(e1, e2);</span>
+<span class="fc" id="L56">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
 <span class="fc" id="L57">		super.edgeSwap(e1, e2);</span>
 <span class="fc" id="L58">	}</span>
 
-	static void addEdgeToList(WeightsImpl.Index.Obj&lt;int[]&gt; edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
-<span class="fc" id="L61">		int[] es = edges.get(w);</span>
-<span class="fc" id="L62">		int num = edgesNum.getInt(w);</span>
+	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
+<span class="fc" id="L61">		int[] es = edges[w];</span>
+<span class="fc" id="L62">		int num = edgesNum[w];</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
 <span class="fc" id="L64">			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));</span>
-<span class="fc" id="L65">			edges.set(w, es);</span>
+<span class="fc" id="L65">			edges[w] = es;</span>
 		}
 <span class="fc" id="L67">		es[num] = e;</span>
-<span class="fc" id="L68">		edgesNum.set(w, num + 1);</span>
+<span class="fc" id="L68">		edgesNum[w] = num + 1;</span>
 <span class="fc" id="L69">	}</span>
 
 	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
@@ -75,26 +75,26 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 <span class="nc" id="L75">		return -1;</span>
 	}
 
-	static void removeEdgeFromList(WeightsImpl.Index.Obj&lt;int[]&gt; edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
-<span class="fc" id="L79">		int[] es = edges.get(w);</span>
-<span class="fc" id="L80">		int num = edgesNum.getInt(w);</span>
+	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
+<span class="fc" id="L79">		int[] es = edges[w];</span>
+<span class="fc" id="L80">		int num = edgesNum[w];</span>
 <span class="fc" id="L81">		int i = edgeIndexOf(es, num, e);</span>
 <span class="fc" id="L82">		es[i] = es[num - 1];</span>
-<span class="fc" id="L83">		edgesNum.set(w, num - 1);</span>
+<span class="fc" id="L83">		edgesNum[w] = num - 1;</span>
 <span class="fc" id="L84">	}</span>
 
 	@Override
-	public EdgeEndpointsContainer edgeEndpoints() {
+	public long[] edgeEndpoints() {
 <span class="fc" id="L88">		return edgeEndpoints;</span>
 	}
 
 	void reverseEdge0(int edge) {
-<span class="fc" id="L92">		edgeEndpoints.reverseEdge(edge);</span>
+<span class="fc" id="L92">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
 <span class="fc" id="L93">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L97">		edgeEndpoints.clear();</span>
+<span class="fc" id="L97">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
 <span class="fc" id="L98">		super.clearEdges();</span>
 <span class="fc" id="L99">	}</span>
 

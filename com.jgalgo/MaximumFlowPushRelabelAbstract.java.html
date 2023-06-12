@@ -163,7 +163,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L163" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
 <span class="fc" id="L164">				int v = queue.dequeueInt();</span>
 <span class="fc" id="L165">				int vLabel = label[v];</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L167">					int e = eit.nextInt();</span>
 <span class="fc bfc" id="L168" title="All 2 branches covered.">					if (!isResidual(e))</span>
 <span class="fc" id="L169">						continue;</span>
@@ -183,7 +183,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
-<span class="fc" id="L186">			edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();</span>
+<span class="fc" id="L186">			edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();</span>
 <span class="fc bfc" id="L187" title="All 2 branches covered.">			if (hasExcess(u))</span>
 <span class="fc" id="L188">				addToLayerActive(u, newLabel);</span>
 			else
@@ -319,7 +319,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 			// reuse edgeIters array
 <span class="fc bfc" id="L321" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L322">				edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();</span>
+<span class="fc" id="L322">				edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();</span>
 
 <span class="fc bfc" id="L324" title="All 2 branches covered.">			for (int root = 0; root &lt; n; root++) {</span>
 <span class="pc bpc" id="L325" title="1 of 8 branches missed.">				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)</span>
@@ -416,7 +416,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L416">			queue.enqueue(sink);</span>
 <span class="fc bfc" id="L417" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
 <span class="fc" id="L418">				int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L420">					int e = eit.nextInt();</span>
 <span class="fc bfc" id="L421" title="All 2 branches covered.">					if (!isResidual(e))</span>
 <span class="fc" id="L422">						continue;</span>
@@ -466,7 +466,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L469" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L470">				int e = eit.nextInt();</span>
 <span class="fc" id="L471">				int v = eit.target();</span>
 <span class="fc" id="L472">				double f = getResidualCapacity(e);</span>
@@ -523,7 +523,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L523">					relabel(u, label[u] + 1);</span>
 <span class="fc bfc" id="L524" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
 <span class="fc" id="L525">						break;</span>
-<span class="fc" id="L526">					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();</span>
+<span class="fc" id="L526">					it = edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();</span>
 <span class="pc bpc" id="L527" title="1 of 2 branches missed.">					assert it.hasNext();</span>
 				}
 <span class="fc" id="L529">			}</span>
@@ -559,7 +559,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 <span class="fc" id="L561">			for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L562" title="All 2 branches covered.">				for (int e : g.edgesOut(u)) {</span>
+<span class="fc bfc" id="L562" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
 <span class="fc bfc" id="L563" title="All 2 branches covered.">					if (!hasExcess(u))</span>
 <span class="fc" id="L564">						break;</span>
 <span class="fc" id="L565">					double f = flow.getDouble(e);</span>
@@ -619,7 +619,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L622" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L622" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L623">				int e = eit.nextInt();</span>
 <span class="fc" id="L624">				int v = eit.target();</span>
 <span class="fc" id="L625">				int f = getResidualCapacity(e);</span>
@@ -673,7 +673,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L673">					relabel(u, label[u] + 1);</span>
 <span class="fc bfc" id="L674" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
 <span class="fc" id="L675">						break;</span>
-<span class="fc" id="L676">					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();</span>
+<span class="fc" id="L676">					it = edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();</span>
 <span class="pc bpc" id="L677" title="1 of 2 branches missed.">					assert it.hasNext();</span>
 				}
 <span class="fc" id="L679">			}</span>
@@ -709,7 +709,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 <span class="fc" id="L711">			for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L712" title="All 2 branches covered.">				for (int e : g.edgesOut(u)) {</span>
+<span class="fc bfc" id="L712" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
 <span class="fc bfc" id="L713" title="All 2 branches covered.">					if (!hasExcess(u))</span>
 <span class="fc" id="L714">						break;</span>
 <span class="fc" id="L715">					int f = flow.getInt(e);</span>

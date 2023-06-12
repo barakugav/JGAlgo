@@ -92,7 +92,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 <span class="fc" id="L92">				verticesPtrs[u] = null;</span>
 
 				/* decrease edges keys if a better one is found */
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L96">					int e = eit.nextInt();</span>
 <span class="fc" id="L97">					int v = eit.target();</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">					if (visited.get(v))</span>
@@ -149,7 +149,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 <span class="fc" id="L149">				verticesPtrs[u] = null;</span>
 
 				/* decrease edges keys if a better one is found */
-<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L153">					int e = eit.nextInt();</span>
 <span class="fc" id="L154">					int v = eit.target();</span>
 <span class="fc bfc" id="L155" title="All 2 branches covered.">					if (visited.get(v))</span>

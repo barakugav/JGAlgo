@@ -124,7 +124,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 <span class="fc" id="L124">			refG.addVertex();</span>
 <span class="fc" id="L125">		Weights.Int edgeEef = refG.addEdgesWeights(&quot;edgeEef&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L128">				int e = eit.nextInt();</span>
 <span class="fc" id="L129">				int v = eit.target();</span>
 <span class="fc" id="L130">				int refE = refG.addEdge(u, v);</span>

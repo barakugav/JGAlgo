@@ -68,19 +68,19 @@ class GraphTableUndirected extends GraphTableAbstract {
 
 	@Override
 	public void removeEdgesOf(int source) {
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L72">			eit.nextInt();</span>
 <span class="fc" id="L73">			eit.remove();</span>
 		}
 <span class="fc" id="L75">	}</span>
 
 	@Override
-	public void removeEdgesOutOf(int source) {
+	public void removeOutEdgesOf(int source) {
 <span class="fc" id="L79">		removeEdgesOf(source);</span>
 <span class="fc" id="L80">	}</span>
 
 	@Override
-	public void removeEdgesInOf(int target) {
+	public void removeInEdgesOf(int target) {
 <span class="fc" id="L84">		removeEdgesOf(target);</span>
 <span class="fc" id="L85">	}</span>
 
@@ -90,12 +90,12 @@ class GraphTableUndirected extends GraphTableAbstract {
 <span class="nc" id="L90">	}</span>
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 <span class="fc" id="L94">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 <span class="fc" id="L99">		return new EdgeSetIn(target);</span>
 	}
 
@@ -124,11 +124,11 @@ class GraphTableUndirected extends GraphTableAbstract {
 	@Override
 	void vertexSwap(int v1, int v2) {
 <span class="fc" id="L126">		final int tempV = -2;</span>
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		for (int e : edgesOut(v1))</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		for (int e : outEdges(v1))</span>
 <span class="nc" id="L128">			replaceEdgeEndpoint(e, v1, tempV);</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int e : edgesOut(v2))</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int e : outEdges(v2))</span>
 <span class="fc" id="L130">			replaceEdgeEndpoint(e, v2, v1);</span>
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		for (int e : edgesOut(v1))</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		for (int e : outEdges(v1))</span>
 <span class="nc" id="L132">			replaceEdgeEndpoint(e, tempV, v2);</span>
 <span class="fc" id="L133">		super.vertexSwap(v1, v2);</span>
 <span class="fc" id="L134">	}</span>

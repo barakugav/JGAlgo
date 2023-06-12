@@ -304,12 +304,12 @@ import java.util.Objects;
 
 <span class="fc" id="L305">			double totalFlow = 0;</span>
 <span class="fc bfc" id="L306" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">				for (int e : gOrig.edgesOut(source))</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">				for (int e : gOrig.outEdges(source))</span>
 <span class="fc" id="L308">					totalFlow += net.getFlow(e);</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">				for (int e : gOrig.edgesIn(source))</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">				for (int e : gOrig.inEdges(source))</span>
 <span class="fc" id="L310">					totalFlow -= net.getFlow(e);</span>
 			} else {
-<span class="fc bfc" id="L312" title="All 2 branches covered.">				for (int e : g.edgesOut(source))</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">				for (int e : g.outEdges(source))</span>
 <span class="fc" id="L313">					totalFlow += flow.getDouble(e);</span>
 			}
 <span class="fc" id="L315">			return totalFlow;</span>
@@ -325,12 +325,12 @@ import java.util.Objects;
 
 <span class="fc" id="L326">			int totalFlow = 0;</span>
 <span class="fc bfc" id="L327" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">				for (int e : gOrig.edgesOut(source))</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">				for (int e : gOrig.outEdges(source))</span>
 <span class="fc" id="L329">					totalFlow += net.getFlowInt(e);</span>
-<span class="fc bfc" id="L330" title="All 2 branches covered.">				for (int e : gOrig.edgesIn(source))</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">				for (int e : gOrig.inEdges(source))</span>
 <span class="fc" id="L331">					totalFlow -= net.getFlowInt(e);</span>
 			} else {
-<span class="fc bfc" id="L333" title="All 2 branches covered.">				for (int e : g.edgesOut(source))</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">				for (int e : g.outEdges(source))</span>
 <span class="fc" id="L334">					totalFlow += flow.getInt(e);</span>
 			}
 <span class="fc" id="L336">			return totalFlow;</span>

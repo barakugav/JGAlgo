@@ -73,7 +73,7 @@ class MinimumCutSTUtils {
 <span class="fc bfc" id="L73" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
 <span class="fc" id="L74">						int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L76" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">						for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L77">							int e = it.nextInt();</span>
 <span class="fc" id="L78">							int v = it.target();</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">							if (visited.get(v))</span>
@@ -89,7 +89,7 @@ class MinimumCutSTUtils {
 						 * the in-edges and search for edges with non zero flow which imply an existent of an out edge
 						 * in the residual network
 						 */
-<span class="fc bfc" id="L92" title="All 2 branches covered.">						for (EdgeIter it = g.edgesIn(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">						for (EdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L93">							int e = it.nextInt();</span>
 <span class="fc" id="L94">							int v = it.source();</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">							if (visited.get(v))</span>
@@ -105,7 +105,7 @@ class MinimumCutSTUtils {
 <span class="fc bfc" id="L105" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
 <span class="fc" id="L106">						int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L108" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">						for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L109">							int e = it.nextInt();</span>
 <span class="fc" id="L110">							int v = it.target();</span>
 <span class="fc bfc" id="L111" title="All 2 branches covered.">							if (visited.get(v))</span>

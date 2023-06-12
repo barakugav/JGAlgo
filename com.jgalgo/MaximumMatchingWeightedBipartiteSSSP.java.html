@@ -101,7 +101,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 <span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
 <span class="fc" id="L103">				continue;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (EdgeIter eit = gOrig.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L105">				int e = eit.nextInt();</span>
 <span class="fc" id="L106">				double weight = wOrig.weight(e);</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				if (weight &lt; 0)</span>

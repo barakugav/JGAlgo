@@ -89,7 +89,7 @@ class CutImpl implements Cut {
 <span class="fc" id="L89">		computeCutBitmap();</span>
 <span class="fc" id="L90">		IntArrayList crossEdges0 = new IntArrayList();</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int u : Utils.iterable(cutBitmap)) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L93">				int e = eit.nextInt();</span>
 <span class="fc" id="L94">				int v = eit.target();</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">				if (!cutBitmap.get(v))</span>

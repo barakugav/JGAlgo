@@ -79,7 +79,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 <span class="fc" id="L79">			isMarked.set(u);</span>
 <span class="fc" id="L80">			markedStack.push(u);</span>
 
-<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L83">				int e = it.nextInt();</span>
 <span class="fc" id="L84">				int v = it.target();</span>
 <span class="fc bfc" id="L85" title="All 2 branches covered.">				if (v &lt; startV)</span>

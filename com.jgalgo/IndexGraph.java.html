@@ -132,8 +132,8 @@ public interface IndexGraph extends Graph {
 	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
 	 */
 	@Override
-	default void removeEdgesOutOf(int source) {
-<span class="fc" id="L136">		Graph.super.removeEdgesOutOf(source);</span>
+	default void removeOutEdgesOf(int source) {
+<span class="fc" id="L136">		Graph.super.removeOutEdgesOf(source);</span>
 <span class="fc" id="L137">	}</span>
 
 	/**
@@ -147,8 +147,8 @@ public interface IndexGraph extends Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	@Override
-	default void removeEdgesInOf(int target) {
-<span class="fc" id="L151">		Graph.super.removeEdgesInOf(target);</span>
+	default void removeInEdgesOf(int target) {
+<span class="fc" id="L151">		Graph.super.removeInEdgesOf(target);</span>
 <span class="fc" id="L152">	}</span>
 
 	/**

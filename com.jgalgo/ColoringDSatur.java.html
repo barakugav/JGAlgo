@@ -67,7 +67,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
 <span class="fc" id="L68">		int maxDegree = 0;</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L70">			maxDegree = Math.max(maxDegree, g.edgesOut(u).size());</span>
+<span class="fc" id="L70">			maxDegree = Math.max(maxDegree, g.outEdges(u).size());</span>
 <span class="fc" id="L71">		final int maxDegreeFactor = maxDegree + 1;</span>
 		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
 <span class="fc" id="L73">		BiInt2IntFunction createKey =</span>
@@ -79,7 +79,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L80">		HeapReference&lt;Integer, Integer&gt;[] refs = new HeapReference[n];</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L82">			int key = createKey.apply(/* saturationDegree= */0, g.edgesOut(u).size());</span>
+<span class="fc" id="L82">			int key = createKey.apply(/* saturationDegree= */0, g.outEdges(u).size());</span>
 <span class="fc" id="L83">			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));</span>
 <span class="fc" id="L84">			neighborColors[u] = new BitSet();</span>
 		}
@@ -93,7 +93,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 <span class="fc" id="L93">			res.colors[u] = color;</span>
 <span class="fc" id="L94">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L97">				eit.nextInt();</span>
 <span class="fc" id="L98">				int v = eit.target();</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>

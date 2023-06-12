@@ -51,12 +51,12 @@ class GraphTableDirected extends GraphTableAbstract {
 <span class="fc" id="L51">	}</span>
 
 	@Override
-	public EdgeSet edgesOut(int source) {
+	public EdgeSet outEdges(int source) {
 <span class="fc" id="L55">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet edgesIn(int target) {
+	public EdgeSet inEdges(int target) {
 <span class="fc" id="L60">		return new EdgeSetIn(target);</span>
 	}
 
@@ -105,13 +105,13 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		for (int e : edgesOut(v1))</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		for (int e : outEdges(v1))</span>
 <span class="nc" id="L109">			replaceEdgeSource(e, v2);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int e : edgesOut(v2))</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int e : outEdges(v2))</span>
 <span class="fc" id="L111">			replaceEdgeSource(e, v1);</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		for (int e : edgesIn(v1))</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		for (int e : inEdges(v1))</span>
 <span class="nc" id="L113">			replaceEdgeTarget(e, v2);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int e : edgesIn(v2))</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int e : inEdges(v2))</span>
 <span class="fc" id="L115">			replaceEdgeTarget(e, v1);</span>
 <span class="fc" id="L116">		super.vertexSwap(v1, v2);</span>
 <span class="fc" id="L117">	}</span>
