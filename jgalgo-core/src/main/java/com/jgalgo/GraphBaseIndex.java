@@ -19,18 +19,18 @@ package com.jgalgo;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
+abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {
 
-	final IdStrategyImpl.Index verticesIdStrat;
-	final IdStrategyImpl.Index edgesIdStrat;
+	final IdStrategy.Index verticesIdStrat;
+	final IdStrategy.Index edgesIdStrat;
 	private final DataContainer.Manager verticesInternalContainers;
 	private final DataContainer.Manager edgesInternalContainers;
 	private final WeightsImpl.Index.Manager verticesUserWeights;
 	private final WeightsImpl.Index.Manager edgesUserWeights;
 
 	GraphBaseIndex(int expectedVerticesNum, int expectedEdgesNum) {
-		verticesIdStrat = new IdStrategyImpl.Index(0);
-		edgesIdStrat = new IdStrategyImpl.Index(0);
+		verticesIdStrat = new IdStrategy.Index(0);
+		edgesIdStrat = new IdStrategy.Index(0);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);
@@ -208,8 +208,7 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		IdStrategyImpl idStrat = (IdStrategyImpl) getVerticesIdStrategy();
-		WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(verticesIdStrat, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
@@ -218,8 +217,7 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		IdStrategyImpl idStrat = (IdStrategyImpl) getEdgesIdStrategy();
-		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(edgesIdStrat, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;

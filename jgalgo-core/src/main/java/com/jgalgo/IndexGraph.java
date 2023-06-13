@@ -27,14 +27,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
  * a value/weight/flag with each vertex/edge. But it does come with a cost: to maintain the invariants, implementations
- * may need to rename existing vertices or edges along the graph lifetime. These renames are managed by a
- * {@link IdStrategy} that can be accessed using {@link #getVerticesIdStrategy()} or {@link #getEdgesIdStrategy()} which
- * allow for a subscription to these renames via
- * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+ * may need to rename existing vertices or edges during the graph lifetime. These renames can be subscribed to using
+ * {@link #addVertexSwapListener(IndexSwapListener)} and {@link #addEdgeSwapListener(IndexSwapListener)}.
  * <p>
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
  * created by its own using {@link IndexGraph.Builder}. In cases where no removal of vertices or edges is required, and
- * there is no need to use per-defined IDs, there is no drawback to use the {@link IndexGraph} as regular {@link Graph},
+ * there is no need to use pre-defined IDs, there is no drawback to use the {@link IndexGraph} as regular {@link Graph},
  * as it will provide the best performance.
  * <p>
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
@@ -44,7 +42,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
  * {@link Graph#indexGraphEdgesMap()}.
  *
- * @see    IdStrategy
  * @see    IndexIdMap
  * @author Barak Ugav
  */
@@ -82,9 +79,8 @@ public interface IndexGraph extends Graph {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIdStrategy()}. Theses renames can be subscribed using
-	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * After removing a vertex, the graph implementation may swap and rename vertices to maintain its invariants. Theses
+	 * renames can be subscribed using {@link #addVertexSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	void removeVertex(int vertex);
@@ -105,9 +101,8 @@ public interface IndexGraph extends Graph {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
-	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
+	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	void removeEdge(int edge);
@@ -115,9 +110,8 @@ public interface IndexGraph extends Graph {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
-	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
+	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeEdgesOf(int vertex) {
@@ -127,9 +121,8 @@ public interface IndexGraph extends Graph {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
-	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
+	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeOutEdgesOf(int source) {
@@ -139,12 +132,8 @@ public interface IndexGraph extends Graph {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
-	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
-	 *
-	 * @param  target                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
+	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeInEdgesOf(int target) {
@@ -152,28 +141,46 @@ public interface IndexGraph extends Graph {
 	}
 
 	/**
-	 * Get the ID strategy of the vertices of the graph.
+	 * Adds a listener that will be called each time a vertex swap is performed.
 	 * <p>
-	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}. To maintain this invariant
-	 * during the lifetime of the graph, an {@link IdStrategy} determine how to rename existing vertices when needed.
-	 * These renames can be subscribed using {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * An {@link IndexGraph} may rename vertices during its lifetime to maintain the invariant that all vertices are
+	 * identified by {@code 0,1,2,...,verticesNum-1}. This method can be used to track these changes, by registering a
+	 * listener that will be invoked each time such a rename is performed.
 	 *
-	 * @see    IdStrategy
-	 * @return the vertices IDs strategy
+	 * @param listener a swap listener that will be called each time a vertex swap is performed
 	 */
-	IdStrategy getVerticesIdStrategy();
+	void addVertexSwapListener(IndexSwapListener listener);
 
 	/**
-	 * Get the ID strategy of the edges of the graph.
+	 * Removes a vertex swap listener.
 	 * <p>
-	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this invariant during
-	 * the lifetime of the graph, an {@link IdStrategy} determine how to rename existing edges when needed. These
-	 * renames can be subscribed using {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 * After a listener was added using {@link #addVertexSwapListener(IndexSwapListener)}, this method removes may
+	 * remove it.
 	 *
-	 * @see    IdStrategy
-	 * @return the edges IDs strategy
+	 * @param listener a swap listener that should be removed
 	 */
-	IdStrategy getEdgesIdStrategy();
+	void removeVertexSwapListener(IndexSwapListener listener);
+
+	/**
+	 * Adds a listener that will be called each time a edge swap is performed.
+	 * <p>
+	 * An {@link IndexGraph} may rename edges during its lifetime to maintain the invariant that all edges are
+	 * identified by {@code 0,1,2,...,edgesNum-1}. This method can be used to track these changes, by registering a
+	 * listener that will be invoked each time such a rename is performed.
+	 *
+	 * @param listener a swap listener that will be called each time a edge swap is performed
+	 */
+	void addEdgeSwapListener(IndexSwapListener listener);
+
+	/**
+	 * Removes an edge swap listener.
+	 * <p>
+	 * After a listener was added using {@link #addEdgeSwapListener(IndexSwapListener)}, this method removes may remove
+	 * it.
+	 *
+	 * @param listener a swap listener that should be removed
+	 */
+	void removeEdgeSwapListener(IndexSwapListener listener);
 
 	@Override
 	IndexGraph copy();

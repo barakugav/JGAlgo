@@ -16,58 +16,206 @@
 
 package com.jgalgo;
 
-/**
- * A strategy used by {@link IndexGraph} to maintain IDs invariants.
- * <p>
- * An {@link IndexGraph} is a {@link Graph} in which the vertices and edges identifiers are <b>always</b>
- * {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}. This invariants allow for a great performance
- * boost, as a simple array or bitmap can be used to associate a value/weight/flag with each vertex/edge. But it does
- * come with a cost: to maintain the invariants, implementations may rename existing vertices or edges along the graph
- * lifetime. These renames are managed by a {@link IdStrategy} that can be accessed using
- * {@link IndexGraph#getVerticesIdStrategy()} or {@link IndexGraph#getEdgesIdStrategy()} which allow for a subscription
- * to these renames via {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
- *
- * @see    IndexGraph
- * @author Barak Ugav
- */
-public interface IdStrategy {
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+
+abstract class IdStrategy {
+
+	abstract int size();
+
+	abstract IntSet idSet();
+
+	abstract void addIdSwapListener(IndexSwapListener listener);
+
+	abstract void removeIdSwapListener(IndexSwapListener listener);
+
+	@Override
+	public String toString() {
+		return idSet().toString();
+	}
+
+	static class Index extends IdStrategy {
+
+		private int size;
+		private final IntSet idSet;
+		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
+		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
+
+		Index(int initSize) {
+			if (initSize < 0)
+				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
+			size = initSize;
+			idSet = new IdSet();
+		}
+
+		int newIdx() {
+			int id = size++;
+			notifyIdAdd(id);
+			return id;
+		}
+
+		void removeIdx(int idx) {
+			assert idx == size - 1;
+			assert size > 0;
+			notifyIdRemove(idx);
+			size--;
+		}
+
+		void clear() {
+			notifyIdsClear();
+			size = 0;
+		}
+
+		@Override
+		int size() {
+			return size;
+		}
+
+		@Override
+		IntSet idSet() {
+			return idSet;
+		}
+
+		int isSwapNeededBeforeRemove(int idx) {
+			checkIdx(idx);
+			return size - 1;
+		}
+
+		void idxSwap(int idx1, int idx2) {
+			notifyIDSwap(idx1, idx2);
+		}
+
+		IdStrategy.Index copy() {
+			return new IdStrategy.Index(size);
+		}
+
+		private void checkIdx(int idx) {
+			if (!(0 <= idx && idx < size))
+				throw new IndexOutOfBoundsException(idx);
+		}
+
+		void notifyIDSwap(int id1, int id2) {
+			for (IndexSwapListener listener : idSwapListeners)
+				listener.swap(id1, id2);
+		}
+
+		void notifyIdAdd(int id) {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idAdd(id);
+		}
+
+		void notifyIdRemove(int id) {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idRemove(id);
+		}
+
+		void notifyIdsClear() {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idsClear();
+		}
+
+		@Override
+		void addIdSwapListener(IndexSwapListener listener) {
+			idSwapListeners.add(Objects.requireNonNull(listener));
+		}
+
+		@Override
+		void removeIdSwapListener(IndexSwapListener listener) {
+			idSwapListeners.remove(listener);
+		}
+
+		void addIdAddRemoveListener(IdAddRemoveListener listener) {
+			idAddRemoveListeners.add(Objects.requireNonNull(listener));
+		}
+
+		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
+			idAddRemoveListeners.remove(listener);
+		}
+
+		private class IdSet extends AbstractIntSet {
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public boolean contains(int key) {
+				return key >= 0 && key < size;
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return new Utils.RangeIter(size);
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (this == other)
+					return true;
+				if (!(other instanceof IdSet))
+					return super.equals(other);
+				IdSet o = (IdSet) other;
+				return size == o.size();
+			}
+
+			@Override
+			public int hashCode() {
+				return size * (size - 1) / 2;
+			}
+		}
+	}
+
+	static class Empty extends IdStrategy {
+
+		@Override
+		int size() {
+			return 0;
+		}
+
+		@Override
+		IntSet idSet() {
+			return IntSets.emptySet();
+		}
+
+		@Override
+		void addIdSwapListener(IndexSwapListener listener) {
+			Objects.requireNonNull(listener);
+		}
+
+		@Override
+		void removeIdSwapListener(IndexSwapListener listener) {}
+	}
 
 	/**
-	 * Add a listener that will be notified each time the strategy chooses to swap two IDs.
-	 * <p>
-	 * The strategy implementation might swap IDs to maintain its invariants. These swaps can be subscribed using this
-	 * function, and the listener {@code IDSwapListener#idSwap(int, int)} will be called when a swap occur.
-	 *
-	 * @param listener an ID swap listener that will be called each time the strategy wap two IDs.
-	 */
-	public void addIdSwapListener(IdSwapListener listener);
-
-	/**
-	 * Remove an ID swap listener.
-	 *
-	 * @param listener the listener to remove
-	 * @see            #addIdSwapListener(IdSwapListener)
-	 */
-	public void removeIdSwapListener(IdSwapListener listener);
-
-	/**
-	 * A listener that will be notified each time a strategy chooses to swap two IDs.
-	 * <p>
-	 * The strategy implementation might swap IDs to maintain its invariants. These swaps can be subscribed using this
-	 * {@link IdStrategy#addIdSwapListener(IdSwapListener)}, and the listener will be called when a swap occur.
+	 * A listener that will be notified each time a strategy add or remove an id.
 	 *
 	 * @author Barak Ugav
 	 */
-	@FunctionalInterface
-	public static interface IdSwapListener {
+	static interface IdAddRemoveListener {
+		/**
+		 * A callback that is called when {@code id} is added by the strategy.
+		 *
+		 * @param id the new id
+		 */
+		void idAdd(int id);
 
 		/**
-		 * A callback that is called when {@code id1} and {@code id2} are swapped.
+		 * A callback that is called when {@code id} is removed by the strategy.
 		 *
-		 * @param id1 the first id
-		 * @param id2 the second id
+		 * @param id the removed id
 		 */
-		void idSwap(int id1, int id2);
+		void idRemove(int id);
+
+		/**
+		 * A callback that is called when all ids are removed from the strategy.
+		 */
+		void idsClear();
 	}
 
 }

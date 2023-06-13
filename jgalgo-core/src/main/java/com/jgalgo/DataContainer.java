@@ -40,9 +40,9 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
 abstract class DataContainer<E> {
 
-	final IdStrategyImpl idStrat;
+	final IdStrategy idStrat;
 
-	DataContainer(IdStrategyImpl idStrat) {
+	DataContainer(IdStrategy idStrat) {
 		this.idStrat = Objects.requireNonNull(idStrat);
 	}
 
@@ -71,7 +71,7 @@ abstract class DataContainer<E> {
 
 	private static abstract class Abstract<E> extends DataContainer<E> {
 
-		Abstract(IdStrategyImpl idStrat) {
+		Abstract(IdStrategy idStrat) {
 			super(idStrat);
 		}
 
@@ -86,7 +86,7 @@ abstract class DataContainer<E> {
 		private final ObjectCollection<E> values;
 		private final Consumer<E[]> onArrayAlloc;
 
-		Obj(IdStrategyImpl idStrat, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+		Obj(IdStrategy idStrat, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
 			super(idStrat);
 
 			defaultWeight = defVal;
@@ -169,7 +169,7 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		public DataContainer.Obj<E> copy(IdStrategyImpl idStrat, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+		public DataContainer.Obj<E> copy(IdStrategy idStrat, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Obj<E> copy = new DataContainer.Obj<>(idStrat, defaultWeight, emptyArr, onArrayAlloc);
@@ -196,7 +196,7 @@ abstract class DataContainer<E> {
 		private final IntCollection values;
 		private final Consumer<int[]> onArrayAlloc;
 
-		Int(IdStrategyImpl idStrat, int defVal, Consumer<int[]> onArrayAlloc) {
+		Int(IdStrategy idStrat, int defVal, Consumer<int[]> onArrayAlloc) {
 			super(idStrat);
 
 			weights = IntArrays.EMPTY_ARRAY;
@@ -282,7 +282,7 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		DataContainer.Int copy(IdStrategyImpl idStrat, Consumer<int[]> onArrayAlloc) {
+		DataContainer.Int copy(IdStrategy idStrat, Consumer<int[]> onArrayAlloc) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultWeight, onArrayAlloc);
@@ -326,7 +326,7 @@ abstract class DataContainer<E> {
 		};
 		private final Consumer<long[]> onArrayAlloc;
 
-		Long(IdStrategyImpl idStrat, long defVal, Consumer<long[]> onArrayAlloc) {
+		Long(IdStrategy idStrat, long defVal, Consumer<long[]> onArrayAlloc) {
 			super(idStrat);
 
 			weights = LongArrays.EMPTY_ARRAY;
@@ -335,7 +335,7 @@ abstract class DataContainer<E> {
 			onArrayAlloc.accept(weights);
 		}
 
-		Long(DataContainer.Long orig, IdStrategyImpl idStrat, Consumer<long[]> onArrayAlloc) {
+		Long(DataContainer.Long orig, IdStrategy idStrat, Consumer<long[]> onArrayAlloc) {
 			super(idStrat);
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
@@ -407,7 +407,7 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		DataContainer.Long copy(IdStrategyImpl idStrat, Consumer<long[]> onArrayAlloc) {
+		DataContainer.Long copy(IdStrategy idStrat, Consumer<long[]> onArrayAlloc) {
 			return new DataContainer.Long(this, idStrat, onArrayAlloc);
 		}
 

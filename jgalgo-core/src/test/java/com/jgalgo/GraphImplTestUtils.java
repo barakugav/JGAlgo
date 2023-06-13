@@ -625,7 +625,7 @@ class GraphImplTestUtils extends TestUtils {
 			this.dataKey = dataKey;
 
 			if (g instanceof IndexGraph) {
-				((IndexGraph) g).getVerticesIdStrategy().addIdSwapListener((id1, id2) -> {
+				((IndexGraph) g).addVertexSwapListener((id1, id2) -> {
 					Vertex v1 = getVertex(id1), v2 = getVertex(id2);
 					v1.id = id2;
 					v2.id = id1;

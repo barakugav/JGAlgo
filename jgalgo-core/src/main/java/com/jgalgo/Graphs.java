@@ -32,10 +32,10 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 public class Graphs {
 	private Graphs() {}
 
-	private abstract static class EmptyGraph extends GraphBase implements IndexGraph {
+	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {
 
-		private final IdStrategy verticesIdStrat = new IdStrategyImpl.Empty();
-		private final IdStrategy edgesIdStrat = new IdStrategyImpl.Empty();
+		private final IdStrategy verticesIdStrat = new IdStrategy.Empty();
+		private final IdStrategy edgesIdStrat = new IdStrategy.Empty();
 
 		@Override
 		public IntSet vertices() {
@@ -481,17 +481,17 @@ public class Graphs {
 
 	}
 
-	private static abstract class CompleteGraph extends GraphBase implements IndexGraph {
+	private static abstract class CompleteGraph extends GraphBase implements IndexGraphImpl {
 
 		final int n, m;
-		private final IdStrategyImpl verticesIdStrat;
-		private final IdStrategyImpl edgesIdStrat;
+		private final IdStrategy verticesIdStrat;
+		private final IdStrategy edgesIdStrat;
 		private final WeightsImpl.Index.Manager verticesWeights;
 		private final WeightsImpl.Index.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIdStrat = new IdStrategyImpl.Index(n);
-			edgesIdStrat = new IdStrategyImpl.Index(m);
+			verticesIdStrat = new IdStrategy.Index(n);
+			edgesIdStrat = new IdStrategy.Index(m);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -501,8 +501,8 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIdStrat = new IdStrategyImpl.Index(g.n);
-			edgesIdStrat = new IdStrategyImpl.Index(g.m);
+			verticesIdStrat = new IdStrategy.Index(g.n);
+			edgesIdStrat = new IdStrategy.Index(g.m);
 			this.n = g.n;
 			this.m = g.m;
 			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIdStrat);
@@ -756,8 +756,7 @@ public class Graphs {
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			IdStrategyImpl idStrat = (IdStrategyImpl) getVerticesIdStrategy();
-			WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+			WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(verticesIdStrat, type, defVal);
 			verticesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -766,8 +765,7 @@ public class Graphs {
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			IdStrategyImpl idStrat = (IdStrategyImpl) getEdgesIdStrategy();
-			WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+			WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(edgesIdStrat, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -1008,15 +1006,17 @@ public class Graphs {
 		}
 	}
 
-	private static class UnmodifiableIndexGraph extends UnmodifiableGraph implements IndexGraph {
+	private static class UnmodifiableIndexGraph extends UnmodifiableGraph implements IndexGraphImpl {
 
 		UnmodifiableIndexGraph(IndexGraph g) {
 			super(g);
+			if (!(g instanceof IndexGraphImpl))
+				throw new IllegalArgumentException("unknown graph implementation");
 		}
 
 		@Override
-		IndexGraph graph() {
-			return (IndexGraph) super.graph();
+		IndexGraphImpl graph() {
+			return (IndexGraphImpl) super.graph();
 		}
 
 		@Override
@@ -1037,13 +1037,13 @@ public class Graphs {
 		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-			IndexGraph.super.addVertex(vertex);
+			IndexGraphImpl.super.addVertex(vertex);
 		}
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-			IndexGraph.super.addEdge(source, target, edge);
+			IndexGraphImpl.super.addEdge(source, target, edge);
 		}
 
 	}
@@ -1276,15 +1276,17 @@ public class Graphs {
 
 	}
 
-	private static class ReverseIndexGraph extends ReverseGraph implements IndexGraph {
+	private static class ReverseIndexGraph extends ReverseGraph implements IndexGraphImpl {
 
 		ReverseIndexGraph(IndexGraph g) {
 			super(g);
+			if (!(g instanceof IndexGraphImpl))
+				throw new IllegalArgumentException("unknown graph implementation");
 		}
 
 		@Override
-		IndexGraph graph() {
-			return (IndexGraph) super.graph();
+		IndexGraphImpl graph() {
+			return (IndexGraphImpl) super.graph();
 		}
 
 		@Override
@@ -1305,13 +1307,13 @@ public class Graphs {
 		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-			IndexGraph.super.addVertex(vertex);
+			IndexGraphImpl.super.addVertex(vertex);
 		}
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-			IndexGraph.super.addEdge(source, target, edge);
+			IndexGraphImpl.super.addEdge(source, target, edge);
 		}
 
 	}
