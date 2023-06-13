@@ -8,3 +8,4 @@ bin/
 /.apt_generated/
 /.apt_generated_tests/
 /.vscode/
+**/__pycache__/
