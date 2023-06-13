@@ -67,9 +67,9 @@ package com.jgalgo;
  * {@link #get(int)} method for every edge (vertex) that was not explicitly set another value using
  * {@link #set(int, Object)}.
  * &lt;p&gt;
- * If the weights container is associated with the edges of the graph, and the {@link IdStrategy} of the edges performed
- * some swaps to maintain its invariant (see {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)})
- * the weights container will be updated to the edges ids automatically.
+ * If the weights container is associated with the edges of an index graph, and the graph implementation chooses to
+ * perform some swaps and renames to the edges, the weights container will update automatically (see
+ * {@link IndexGraph#addEdgeSwapListener(IndexSwapListener)}).
  *
  * @param  &lt;W&gt; the weights type
  * @author     Barak Ugav
@@ -611,7 +611,7 @@ public interface Weights&lt;W&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L614">		IdStrategyImpl idStrat = (IdStrategyImpl) g.indexGraph().getVerticesIdStrategy();</span>
+<span class="fc" id="L614">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();</span>
 <span class="fc" id="L615">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
 <span class="fc" id="L616">		weights.expand(idStrat.size());</span>
 <span class="fc bfc" id="L617" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
@@ -653,7 +653,7 @@ public interface Weights&lt;W&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L656">		IdStrategyImpl idStrat = (IdStrategyImpl) g.indexGraph().getEdgesIdStrategy();</span>
+<span class="fc" id="L656">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();</span>
 <span class="fc" id="L657">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
 <span class="fc" id="L658">		weights.expand(idStrat.size());</span>
 <span class="fc bfc" id="L659" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>

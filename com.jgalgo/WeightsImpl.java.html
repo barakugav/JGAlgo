@@ -110,9 +110,9 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 		Class&lt;E&gt; getTypeClass();
 
-		WeightsImpl.Index&lt;E&gt; copy(IdStrategyImpl idStrat);
+		WeightsImpl.Index&lt;E&gt; copy(IdStrategy idStrat);
 
-		static &lt;D&gt; WeightsImpl.Index&lt;D&gt; newInstance(IdStrategyImpl idStart, Class&lt;? super D&gt; type, D defVal) {
+		static &lt;D&gt; WeightsImpl.Index&lt;D&gt; newInstance(IdStrategy idStart, Class&lt;? super D&gt; type, D defVal) {
 			@SuppressWarnings(&quot;rawtypes&quot;)
 			WeightsImpl container;
 <span class="fc bfc" id="L118" title="All 2 branches covered.">			if (type == byte.class) {</span>
@@ -157,9 +157,9 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 		static abstract class Abstract&lt;E&gt; implements WeightsImpl.Index&lt;E&gt; {
 
-			final IdStrategyImpl idStrat;
+			final IdStrategy idStrat;
 
-<span class="fc" id="L162">			Abstract(IdStrategyImpl idStrat) {</span>
+<span class="fc" id="L162">			Abstract(IdStrategy idStrat) {</span>
 <span class="fc" id="L163">				this.idStrat = Objects.requireNonNull(idStrat);</span>
 <span class="fc" id="L164">			}</span>
 
@@ -190,7 +190,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final ObjectCollection&lt;E&gt; values;
 			private final Class&lt;E&gt; type;
 
-			Obj(IdStrategyImpl idStrat, E defVal, Class&lt;E&gt; type) {
+			Obj(IdStrategy idStrat, E defVal, Class&lt;E&gt; type) {
 <span class="fc" id="L194">				super(idStrat);</span>
 
 <span class="fc" id="L196">				defaultWeight = defVal;</span>
@@ -279,7 +279,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Obj&lt;E&gt; copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Obj&lt;E&gt; copy(IdStrategy idStrat) {
 <span class="pc bpc" id="L283" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L284">					throw new IllegalArgumentException();</span>
 <span class="fc" id="L285">				WeightsImpl.Index.Obj&lt;E&gt; copy = new WeightsImpl.Index.Obj&lt;&gt;(idStrat, defaultWeight, type);</span>
@@ -304,7 +304,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final byte defaultWeight;
 			private final ByteCollection values;
 
-			Byte(IdStrategyImpl idStrat, byte defVal) {
+			Byte(IdStrategy idStrat, byte defVal) {
 <span class="fc" id="L308">				super(idStrat);</span>
 
 <span class="fc" id="L310">				weights = ByteArrays.EMPTY_ARRAY;</span>
@@ -388,7 +388,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Byte copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Byte copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L392" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L393">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L394">				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);</span>
@@ -413,7 +413,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final short defaultWeight;
 			private final ShortCollection values;
 
-			Short(IdStrategyImpl idStrat, short defVal) {
+			Short(IdStrategy idStrat, short defVal) {
 <span class="fc" id="L417">				super(idStrat);</span>
 
 <span class="fc" id="L419">				weights = ShortArrays.EMPTY_ARRAY;</span>
@@ -497,7 +497,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Short copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Short copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L501" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L502">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L503">				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);</span>
@@ -522,7 +522,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final int defaultWeight;
 			private final IntCollection values;
 
-			Int(IdStrategyImpl idStrat, int defVal) {
+			Int(IdStrategy idStrat, int defVal) {
 <span class="fc" id="L526">				super(idStrat);</span>
 
 <span class="fc" id="L528">				weights = IntArrays.EMPTY_ARRAY;</span>
@@ -606,7 +606,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Int copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Int copy(IdStrategy idStrat) {
 <span class="pc bpc" id="L610" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L611">					throw new IllegalArgumentException();</span>
 <span class="fc" id="L612">				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);</span>
@@ -648,14 +648,14 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 				}
 			};
 
-			Long(IdStrategyImpl idStrat, long defVal) {
+			Long(IdStrategy idStrat, long defVal) {
 <span class="fc" id="L652">				super(idStrat);</span>
 
 <span class="fc" id="L654">				weights = LongArrays.EMPTY_ARRAY;</span>
 <span class="fc" id="L655">				defaultWeight = defVal;</span>
 <span class="fc" id="L656">			}</span>
 
-			Long(WeightsImpl.Index.Long orig, IdStrategyImpl idStrat) {
+			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
 <span class="nc" id="L659">				super(idStrat);</span>
 <span class="nc bnc" id="L660" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L661">					throw new IllegalArgumentException();</span>
@@ -723,7 +723,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Long copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Long copy(IdStrategy idStrat) {
 <span class="nc" id="L727">				return new WeightsImpl.Index.Long(this, idStrat);</span>
 			}
 
@@ -744,7 +744,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final float defaultWeight;
 			private final FloatCollection values;
 
-			Float(IdStrategyImpl idStrat, float defVal) {
+			Float(IdStrategy idStrat, float defVal) {
 <span class="fc" id="L748">				super(idStrat);</span>
 
 <span class="fc" id="L750">				weights = FloatArrays.EMPTY_ARRAY;</span>
@@ -828,7 +828,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Float copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Float copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L832" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L833">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L834">				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);</span>
@@ -853,7 +853,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final double defaultWeight;
 			private final DoubleCollection values;
 
-			Double(IdStrategyImpl idStrat, double defVal) {
+			Double(IdStrategy idStrat, double defVal) {
 <span class="fc" id="L857">				super(idStrat);</span>
 
 <span class="fc" id="L859">				weights = DoubleArrays.EMPTY_ARRAY;</span>
@@ -937,7 +937,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Double copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Double copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L941" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L942">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L943">				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);</span>
@@ -1016,13 +1016,13 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 				}
 			};
 
-			Bool(WeightsImpl.Index.Bool orig, IdStrategyImpl idStrat) {
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
 <span class="nc" id="L1020">				super(idStrat);</span>
 <span class="nc" id="L1021">				defaultWeight = orig.defaultWeight;</span>
 <span class="nc" id="L1022">				weights = (BitSet) orig.weights.clone();</span>
 <span class="nc" id="L1023">			}</span>
 
-			Bool(IdStrategyImpl idStrat, boolean defVal) {
+			Bool(IdStrategy idStrat, boolean defVal) {
 <span class="fc" id="L1026">				super(idStrat);</span>
 
 <span class="fc" id="L1028">				defaultWeight = defVal;</span>
@@ -1091,7 +1091,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Bool copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Bool copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L1095" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L1096">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L1097">				return new WeightsImpl.Index.Bool(this, idStrat);</span>
@@ -1114,7 +1114,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			private final char defaultWeight;
 			private final CharCollection values;
 
-			Char(IdStrategyImpl idStrat, char defVal) {
+			Char(IdStrategy idStrat, char defVal) {
 <span class="fc" id="L1118">				super(idStrat);</span>
 
 <span class="fc" id="L1120">				weights = CharArrays.EMPTY_ARRAY;</span>
@@ -1198,7 +1198,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			@Override
-			public WeightsImpl.Index.Char copy(IdStrategyImpl idStrat) {
+			public WeightsImpl.Index.Char copy(IdStrategy idStrat) {
 <span class="nc bnc" id="L1202" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L1203">					throw new IllegalArgumentException();</span>
 <span class="nc" id="L1204">				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);</span>
@@ -1226,7 +1226,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L1226">				weightsCapacity = initCapacity;</span>
 <span class="fc" id="L1227">			}</span>
 
-			Manager(Manager orig, IdStrategyImpl idStrat) {
+			Manager(Manager orig, IdStrategy idStrat) {
 <span class="fc" id="L1230">				this(idStrat.size());</span>
 <span class="fc bfc" id="L1231" title="All 2 branches covered.">				for (var entry : orig.weights.entrySet())</span>
 <span class="fc" id="L1232">					weights.put(entry.getKey(), entry.getValue().copy(idStrat));</span>

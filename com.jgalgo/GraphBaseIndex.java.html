@@ -19,18 +19,18 @@ package com.jgalgo;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="fc" id="L22">abstract class GraphBaseIndex extends GraphBase implements IndexGraph {</span>
+<span class="fc" id="L22">abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {</span>
 
-	final IdStrategyImpl.Index verticesIdStrat;
-	final IdStrategyImpl.Index edgesIdStrat;
+	final IdStrategy.Index verticesIdStrat;
+	final IdStrategy.Index edgesIdStrat;
 	private final DataContainer.Manager verticesInternalContainers;
 	private final DataContainer.Manager edgesInternalContainers;
 	private final WeightsImpl.Index.Manager verticesUserWeights;
 	private final WeightsImpl.Index.Manager edgesUserWeights;
 
 <span class="fc" id="L31">	GraphBaseIndex(int expectedVerticesNum, int expectedEdgesNum) {</span>
-<span class="fc" id="L32">		verticesIdStrat = new IdStrategyImpl.Index(0);</span>
-<span class="fc" id="L33">		edgesIdStrat = new IdStrategyImpl.Index(0);</span>
+<span class="fc" id="L32">		verticesIdStrat = new IdStrategy.Index(0);</span>
+<span class="fc" id="L33">		edgesIdStrat = new IdStrategy.Index(0);</span>
 <span class="fc" id="L34">		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);</span>
 <span class="fc" id="L35">		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);</span>
 <span class="fc" id="L36">		verticesUserWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);</span>
@@ -208,48 +208,46 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal) {
-<span class="fc" id="L211">		IdStrategyImpl idStrat = (IdStrategyImpl) getVerticesIdStrategy();</span>
-<span class="fc" id="L212">		WeightsImpl.Index&lt;V&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L213">		verticesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L211">		WeightsImpl.Index&lt;V&gt; weights = WeightsImpl.Index.newInstance(verticesIdStrat, type, defVal);</span>
+<span class="fc" id="L212">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L215">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L216">		return weights0;</span>
+<span class="fc" id="L214">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L215">		return weights0;</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L221">		IdStrategyImpl idStrat = (IdStrategyImpl) getEdgesIdStrategy();</span>
-<span class="fc" id="L222">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L223">		edgesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L220">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(edgesIdStrat, type, defVal);</span>
+<span class="fc" id="L221">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L225">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L226">		return weights0;</span>
+<span class="fc" id="L223">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L224">		return weights0;</span>
 	}
 
 	@Override
 	public IndexGraph indexGraph() {
-<span class="fc" id="L231">		return this;</span>
+<span class="fc" id="L229">		return this;</span>
 	}
 
 	@Override
 	public IndexIdMap indexGraphVerticesMap() {
-<span class="fc" id="L236">		return GraphsUtils.IndexGraphMapIdentify;</span>
+<span class="fc" id="L234">		return GraphsUtils.IndexGraphMapIdentify;</span>
 	}
 
 	@Override
 	public IndexIdMap indexGraphEdgesMap() {
-<span class="nc" id="L241">		return GraphsUtils.IndexGraphMapIdentify;</span>
+<span class="nc" id="L239">		return GraphsUtils.IndexGraphMapIdentify;</span>
 	}
 
 	void checkVertex(int vertex) {
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">		if (!vertices().contains(vertex))</span>
-<span class="nc" id="L246">			throw new IndexOutOfBoundsException(vertex);</span>
-<span class="fc" id="L247">	}</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">		if (!vertices().contains(vertex))</span>
+<span class="nc" id="L244">			throw new IndexOutOfBoundsException(vertex);</span>
+<span class="fc" id="L245">	}</span>
 
 	void checkEdge(int edge) {
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
-<span class="nc" id="L251">			throw new IndexOutOfBoundsException(edge);</span>
-<span class="fc" id="L252">	}</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
+<span class="nc" id="L249">			throw new IndexOutOfBoundsException(edge);</span>
+<span class="fc" id="L250">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

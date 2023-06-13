@@ -40,9 +40,9 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
 abstract class DataContainer&lt;E&gt; {
 
-	final IdStrategyImpl idStrat;
+	final IdStrategy idStrat;
 
-<span class="fc" id="L45">	DataContainer(IdStrategyImpl idStrat) {</span>
+<span class="fc" id="L45">	DataContainer(IdStrategy idStrat) {</span>
 <span class="fc" id="L46">		this.idStrat = Objects.requireNonNull(idStrat);</span>
 <span class="fc" id="L47">	}</span>
 
@@ -71,7 +71,7 @@ abstract class DataContainer&lt;E&gt; {
 
 	private static abstract class Abstract&lt;E&gt; extends DataContainer&lt;E&gt; {
 
-		Abstract(IdStrategyImpl idStrat) {
+		Abstract(IdStrategy idStrat) {
 <span class="fc" id="L75">			super(idStrat);</span>
 <span class="fc" id="L76">		}</span>
 
@@ -86,7 +86,7 @@ abstract class DataContainer&lt;E&gt; {
 		private final ObjectCollection&lt;E&gt; values;
 		private final Consumer&lt;E[]&gt; onArrayAlloc;
 
-		Obj(IdStrategyImpl idStrat, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+		Obj(IdStrategy idStrat, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
 <span class="fc" id="L90">			super(idStrat);</span>
 
 <span class="fc" id="L92">			defaultWeight = defVal;</span>
@@ -169,7 +169,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="fc" id="L169">			return values;</span>
 		}
 
-		public DataContainer.Obj&lt;E&gt; copy(IdStrategyImpl idStrat, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+		public DataContainer.Obj&lt;E&gt; copy(IdStrategy idStrat, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
 <span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L174">				throw new IllegalArgumentException();</span>
 <span class="fc" id="L175">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(idStrat, defaultWeight, emptyArr, onArrayAlloc);</span>
@@ -196,7 +196,7 @@ abstract class DataContainer&lt;E&gt; {
 		private final IntCollection values;
 		private final Consumer&lt;int[]&gt; onArrayAlloc;
 
-		Int(IdStrategyImpl idStrat, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
+		Int(IdStrategy idStrat, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
 <span class="fc" id="L200">			super(idStrat);</span>
 
 <span class="fc" id="L202">			weights = IntArrays.EMPTY_ARRAY;</span>
@@ -282,7 +282,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="nc" id="L282">			return values;</span>
 		}
 
-		DataContainer.Int copy(IdStrategyImpl idStrat, Consumer&lt;int[]&gt; onArrayAlloc) {
+		DataContainer.Int copy(IdStrategy idStrat, Consumer&lt;int[]&gt; onArrayAlloc) {
 <span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L287">				throw new IllegalArgumentException();</span>
 <span class="fc" id="L288">			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultWeight, onArrayAlloc);</span>
@@ -326,7 +326,7 @@ abstract class DataContainer&lt;E&gt; {
 		};
 		private final Consumer&lt;long[]&gt; onArrayAlloc;
 
-		Long(IdStrategyImpl idStrat, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
+		Long(IdStrategy idStrat, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
 <span class="fc" id="L330">			super(idStrat);</span>
 
 <span class="fc" id="L332">			weights = LongArrays.EMPTY_ARRAY;</span>
@@ -335,7 +335,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="fc" id="L335">			onArrayAlloc.accept(weights);</span>
 <span class="fc" id="L336">		}</span>
 
-		Long(DataContainer.Long orig, IdStrategyImpl idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
+		Long(DataContainer.Long orig, IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
 <span class="fc" id="L339">			super(idStrat);</span>
 <span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
 <span class="nc" id="L341">				throw new IllegalArgumentException();</span>
@@ -407,7 +407,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="nc" id="L407">			return values;</span>
 		}
 
-		DataContainer.Long copy(IdStrategyImpl idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
+		DataContainer.Long copy(IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
 <span class="fc" id="L411">			return new DataContainer.Long(this, idStrat, onArrayAlloc);</span>
 		}
 
