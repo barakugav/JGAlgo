@@ -23,5 +23,18 @@ jobs:
     - name: Build with Maven
       run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
+    - name: Create Results Directory
+      run: mkdir bench_results
+
     - name: Run JMH Benchmarks
-      run: java -jar jgalgo-bench/target/benchmarks.jar
+      run: java -jar jgalgo-bench/target/benchmarks.jar -rf csv -rff bench_results/bench_results.csv
+
+    - name: Zip Results
+      run: |
+        tar -czf bench_results.tar.gz bench_results
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jmh-benchmarks-results
+        path: bench_results.tar.gz
