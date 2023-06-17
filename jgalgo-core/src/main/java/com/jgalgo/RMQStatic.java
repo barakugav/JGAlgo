@@ -74,13 +74,13 @@ interface RMQStatic {
 			@Override
 			public RMQStatic build() {
 				if (impl != null) {
-					if (RMQStaticLookupTable.class.getSimpleName().equals(impl))
+					if ("LookupTable".equals(impl))
 						return new RMQStaticLookupTable();
-					if (RMQStaticPowerOf2Table.class.getSimpleName().equals(impl))
+					if ("PowerOf2Table".equals(impl))
 						return new RMQStaticPowerOf2Table();
-					if (RMQStaticCartesianTrees.class.getSimpleName().equals(impl))
+					if ("CartesianTrees".equals(impl))
 						return new RMQStaticCartesianTrees();
-					if (RMQStaticPlusMinusOne.class.getSimpleName().equals(impl))
+					if ("PlusMinusOne".equals(impl))
 						return new RMQStaticPlusMinusOne();
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}

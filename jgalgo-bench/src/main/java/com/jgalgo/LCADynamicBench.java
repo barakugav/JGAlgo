@@ -100,13 +100,13 @@ public class LCADynamicBench {
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "LowestCommonAncestorDynamicGabowLinear"),
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "GabowLinear"),
 				blackhole);
 	}
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "LowestCommonAncestorDynamicGabowSimple"),
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "GabowSimple"),
 				blackhole);
 	}
 

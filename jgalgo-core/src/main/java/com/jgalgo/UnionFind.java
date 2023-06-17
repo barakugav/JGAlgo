@@ -103,9 +103,9 @@ interface UnionFind {
 			@Override
 			public UnionFind build() {
 				if (impl != null) {
-					if (UnionFindArray.class.getSimpleName().equals(impl))
+					if ("array".equals(impl))
 						return new UnionFindArray(expectedSize);
-					if (UnionFindPtr.class.getSimpleName().equals(impl))
+					if ("ptr".equals(impl))
 						return new UnionFindPtr(expectedSize);
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}

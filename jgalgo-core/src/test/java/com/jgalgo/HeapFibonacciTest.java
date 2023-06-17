@@ -85,7 +85,7 @@ public class HeapFibonacciTest extends TestBase {
 	}
 
 	private static HeapReferenceable.Builder<Integer, Void> createRefHeapBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci").keysTypePrimitive(int.class)
+		return HeapReferenceable.newBuilder().setOption("impl", "fibonacci").keysTypePrimitive(int.class)
 				.valuesTypeVoid();
 	}
 

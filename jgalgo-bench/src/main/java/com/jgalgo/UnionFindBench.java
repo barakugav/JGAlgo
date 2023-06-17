@@ -119,12 +119,12 @@ public class UnionFindBench {
 
 	@Benchmark
 	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "UnionFindArray"), blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "array"), blackhole);
 	}
 
 	@Benchmark
 	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "UnionFindPtr"), blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "ptr"), blackhole);
 	}
 
 }

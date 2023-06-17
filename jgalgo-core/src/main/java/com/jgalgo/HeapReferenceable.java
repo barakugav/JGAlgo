@@ -203,11 +203,13 @@ interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>> {
 
 			@Override
 			public HeapReferenceable build(Comparator cmp) {
-				if (impl != null && !"HeapPairing".equals(impl)) {
-					if (HeapBinomial.class.getSimpleName().equals(impl))
+				if (impl != null) {
+					if ("binomial".equals(impl))
 						return new HeapBinomial(cmp);
-					if (HeapFibonacci.class.getSimpleName().equals(impl))
+					if ("fibonacci".equals(impl))
 						return new HeapFibonacci(cmp);
+					if ("pairing".equals(impl))
+						return HeapPairing.newHeap(keysType, valuesType, cmp);
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}
 				return HeapPairing.newHeap(keysType, valuesType, cmp);

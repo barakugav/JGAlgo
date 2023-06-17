@@ -84,30 +84,27 @@ public class MaximumMatchingWeightedBench {
 	}
 
 	private static MaximumMatching getAlgo(String name) {
-		MaximumMatching algo = MaximumMatching.newBuilder().setOption("impl", name).build();
-		if (!algo.getClass().getSimpleName().equals(name))
-			throw new IllegalArgumentException("implementation not found: " + name);
-		return algo;
+		return MaximumMatching.newBuilder().setOption("impl", name).build();
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990Simpler(Blackhole blackhole) {
-		benchMaximumMatchingWeighted(getAlgo("MaximumMatchingWeightedGabow1990Simpler"), blackhole);
+		benchMaximumMatchingWeighted(getAlgo("Gabow1990Simpler"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990(Blackhole blackhole) {
-		benchMaximumMatchingWeighted(getAlgo("MaximumMatchingWeightedGabow1990"), blackhole);
+		benchMaximumMatchingWeighted(getAlgo("Gabow1990"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990SimplerPerfect(Blackhole blackhole) {
-		benchMaximumMatchingWeightedPerfect(getAlgo("MaximumMatchingWeightedGabow1990Simpler"), blackhole);
+		benchMaximumMatchingWeightedPerfect(getAlgo("Gabow1990Simpler"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990Perfect(Blackhole blackhole) {
-		benchMaximumMatchingWeightedPerfect(getAlgo("MaximumMatchingWeightedGabow1990"), blackhole);
+		benchMaximumMatchingWeightedPerfect(getAlgo("Gabow1990"), blackhole);
 	}
 
 }

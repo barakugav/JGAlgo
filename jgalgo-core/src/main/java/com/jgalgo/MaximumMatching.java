@@ -77,15 +77,15 @@ public interface MaximumMatching {
 			@Override
 			public MaximumMatching build() {
 				if (impl != null) {
-					if (MaximumMatchingCardinalityBipartiteHopcroftKarp.class.getSimpleName().equals(impl))
+					if ("CardinalityBipartiteHopcroftKarp".equals(impl))
 						return new MaximumMatchingCardinalityBipartiteHopcroftKarp();
-					if (MaximumMatchingCardinalityGabow1976.class.getSimpleName().equals(impl))
+					if ("CardinalityGabow1976".equals(impl))
 						return new MaximumMatchingCardinalityGabow1976();
-					if (MaximumMatchingWeightedBipartiteHungarianMethod.class.getSimpleName().equals(impl))
+					if ("BipartiteHungarianMethod".equals(impl))
 						return new MaximumMatchingWeightedBipartiteHungarianMethod();
-					if (MaximumMatchingWeightedGabow1990.class.getSimpleName().equals(impl))
+					if ("Gabow1990".equals(impl))
 						return new MaximumMatchingWeightedGabow1990();
-					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))
+					if ("Gabow1990Simpler".equals(impl))
 						return new MaximumMatchingWeightedGabow1990Simpler();
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}

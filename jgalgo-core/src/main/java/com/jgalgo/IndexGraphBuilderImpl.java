@@ -40,7 +40,7 @@ class IndexGraphBuilderImpl implements IndexGraph.Builder {
 				directed ? GraphTableDirected::new : GraphTableUndirected::new;
 
 		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilder;
-		if (impl != null && !"GraphArray".equals(impl)) {
+		if (impl != null) {
 			if ("GraphArray".equals(impl))
 				baseBuilder = baseBuilderArray;
 			else if ("GraphLinked".equals(impl))

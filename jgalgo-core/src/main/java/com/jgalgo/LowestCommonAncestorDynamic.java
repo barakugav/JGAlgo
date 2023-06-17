@@ -125,9 +125,9 @@ public interface LowestCommonAncestorDynamic {
 			@Override
 			public LowestCommonAncestorDynamic build() {
 				if (impl != null) {
-					if (LowestCommonAncestorDynamicGabowLinear.class.getSimpleName().equals(impl))
+					if ("GabowLinear".equals(impl))
 						return new LowestCommonAncestorDynamicGabowLinear();
-					if (LowestCommonAncestorDynamicGabowSimple.class.getSimpleName().equals(impl))
+					if ("GabowSimple".equals(impl))
 						return new LowestCommonAncestorDynamicGabowSimple();
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}

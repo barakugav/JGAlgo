@@ -126,17 +126,17 @@ public class HeapBench {
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapPairing")), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "pairing")), blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci")), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "fibonacci")), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial")), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "binomial")), blackhole);
 	}
 
 	@Benchmark

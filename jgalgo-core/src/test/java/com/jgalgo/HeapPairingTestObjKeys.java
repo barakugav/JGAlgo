@@ -43,7 +43,7 @@ public class HeapPairingTestObjKeys extends TestBase {
 	}
 
 	private static HeapReferenceable.Builder<Integer, Void> heapReferenceableBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "HeapPairing").keysTypePrimitive(int.class)
+		return HeapReferenceable.newBuilder().setOption("impl", "pairing").keysTypePrimitive(int.class)
 				.valuesTypeVoid();
 	}
 

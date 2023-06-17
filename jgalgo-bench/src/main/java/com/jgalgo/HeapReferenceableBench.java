@@ -91,7 +91,7 @@ public class HeapReferenceableBench {
 
 	@Benchmark
 	public void Pairings(Blackhole blackhole) {
-		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapPairing"), blackhole);
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "pairing"), blackhole);
 	}
 
 	@Benchmark
@@ -101,7 +101,7 @@ public class HeapReferenceableBench {
 
 			@Override
 			public HeapReferenceable<Object, Object> build(Comparator<? super Object> cmp) {
-				return HeapReferenceable.newBuilder().setOption("impl", "HeapPairing").keysTypeObj().valuesTypeObj()
+				return HeapReferenceable.newBuilder().setOption("impl", "pairing").keysTypeObj().valuesTypeObj()
 						.build(cmp);
 			}
 
@@ -135,12 +135,12 @@ public class HeapReferenceableBench {
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci"), blackhole);
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "fibonacci"), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial"), blackhole);
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "binomial"), blackhole);
 	}
 
 	@Benchmark

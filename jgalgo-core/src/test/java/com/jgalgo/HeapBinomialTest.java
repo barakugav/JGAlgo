@@ -85,7 +85,7 @@ public class HeapBinomialTest extends TestBase {
 	}
 
 	private static HeapReferenceable.Builder<Integer, Void> createRefHeapBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial").keysTypePrimitive(int.class)
+		return HeapReferenceable.newBuilder().setOption("impl", "binomial").keysTypePrimitive(int.class)
 				.valuesTypeVoid();
 	}
 

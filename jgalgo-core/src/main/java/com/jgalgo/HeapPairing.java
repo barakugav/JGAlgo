@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -35,8 +34,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
  * amortized.
  * <p>
- * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
- * the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
+ * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
+ * \(O(m \log n)\) as the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
  * <p>
  * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default
  * choice for the general use case.
@@ -45,36 +44,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @author Barak Ugav
  */
 class HeapPairing {
-
-	// /**
-	// * Constructs a new, empty Pairing heap, ordered according to the natural ordering of its keys.
-	// * <p>
-	// * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys
-	// must
-	// * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any
-	// keys
-	// * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
-	// * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
-	// * {@code insert} call will throw a {@code ClassCastException}.
-	// */
-	// HeapPairing() {
-	// this(null);
-	// }
-
-	// /**
-	// * Constructs a new, empty Pairing heap, with keys ordered according to the specified comparator.
-	// * <p>
-	// * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
-	// * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
-	// * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
-	// * {@code insert} call will throw a {@code ClassCastException}.
-	// *
-	// * @param comparator the comparator that will be used to order this heap. If {@code null}, the
-	// * {@linkplain Comparable natural ordering} of the keys will be used.
-	// */
-	// HeapPairing(Comparator<? super K> comparator) {
-	// this(comparator, null);
-	// }
 
 	private HeapPairing() {}
 
@@ -95,8 +64,6 @@ class HeapPairing {
 
 		Node minRoot;
 		int size;
-		@SuppressWarnings("unchecked")
-		private Node[] tempHeapArray = (Node[]) new HeapPairing.Abstract.INode[4];
 		private final Class<? extends V> valueType;
 
 		Abstract(Class<? extends V> valueType, Comparator<? super K> c) {
@@ -173,31 +140,7 @@ class HeapPairing {
 			size--;
 		}
 
-		private void removeRoot() {
-			if (minRoot.child == null) {
-				minRoot = null;
-				return;
-			}
-
-			/* disassemble children */
-			Node[] heaps = tempHeapArray;
-			int heapsNum = 0;
-			for (Node p = minRoot.child, next;; p = next) {
-				if (heapsNum == heaps.length)
-					tempHeapArray = heaps = Arrays.copyOf(heaps, heaps.length * 2);
-				heaps[heapsNum++] = p;
-
-				p.prevOrParent = null;
-				next = p.next;
-				if (next == null)
-					break;
-				p.next = null;
-			}
-			minRoot.child = null;
-
-			/* meld all sub heaps */
-			minRoot = meld(heaps, heapsNum);
-		}
+		abstract void removeRoot();
 
 		@Override
 		public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
@@ -229,49 +172,8 @@ class HeapPairing {
 
 		abstract Node meldCustomCmp(Node n1, Node n2);
 
-		private Node meld(Node[] heaps, int heapsNum) {
-			if (c == null) {
-				/* meld pairs from left to right */
-				for (int i = 0; i < heapsNum / 2; i++) {
-					Node n1 = heaps[i * 2 + 0];
-					Node n2 = heaps[i * 2 + 1];
-					heaps[i] = meldDefaultCmp(n1, n2);
-				}
-				/* handle last heap in case heapNum is odd */
-				if (heapsNum % 2 != 0)
-					heaps[heapsNum / 2] = heaps[heapsNum - 1];
-				/* div by two ceil */
-				heapsNum = (heapsNum + 1) / 2;
-
-				/* meld all from right to left */
-				Node root = heaps[--heapsNum];
-				for (; heapsNum > 0; heapsNum--)
-					root = meldDefaultCmp(heaps[heapsNum - 1], root);
-				return root;
-			} else {
-				/* meld pairs from left to right */
-				for (int i = 0; i < heapsNum / 2; i++) {
-					Node n1 = heaps[i * 2 + 0];
-					Node n2 = heaps[i * 2 + 1];
-					heaps[i] = meldCustomCmp(n1, n2);
-				}
-				/* handle last heap in case heapNum is odd */
-				if (heapsNum % 2 != 0)
-					heaps[heapsNum / 2] = heaps[heapsNum - 1];
-				/* div by two ceil */
-				heapsNum = (heapsNum + 1) / 2;
-
-				/* meld all from right to left */
-				Node root = heaps[--heapsNum];
-				for (; heapsNum > 0; heapsNum--)
-					root = meldCustomCmp(heaps[heapsNum - 1], root);
-				return root;
-			}
-		}
-
 		@Override
 		public void clear() {
-			Arrays.fill(tempHeapArray, null); // help GC
 			if (minRoot == null) {
 				assert size == 0;
 				return;
@@ -394,6 +296,98 @@ class HeapPairing {
 			Node<K, V> n = nodesFactory.apply(key);
 			insertNode(n);
 			return n;
+		}
+
+		void removeRoot() {
+			if (minRoot.child == null) {
+				minRoot = null;
+				return;
+			}
+
+			if (c == null) {
+				/* meld pairs from left to right */
+				Node<K, V> tail;
+				for (Node<K, V> prev = minRoot, next = minRoot.child;;) {
+					Node<K, V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<K, V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldDefaultCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<K, V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<K, V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldDefaultCmp(root, other);
+				}
+			} else {
+
+				/* meld pairs from left to right */
+				Node<K, V> tail;
+				for (Node<K, V> prev = minRoot, next = minRoot.child;;) {
+					Node<K, V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<K, V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldCustomCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<K, V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<K, V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldCustomCmp(root, other);
+				}
+			}
 		}
 
 		@Override
@@ -538,6 +532,98 @@ class HeapPairing {
 			return n;
 		}
 
+		void removeRoot() {
+			if (minRoot.child == null) {
+				minRoot = null;
+				return;
+			}
+
+			if (c == null) {
+				/* meld pairs from left to right */
+				Node<V> tail;
+				for (Node<V> prev = minRoot, next = minRoot.child;;) {
+					Node<V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldDefaultCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldDefaultCmp(root, other);
+				}
+			} else {
+
+				/* meld pairs from left to right */
+				Node<V> tail;
+				for (Node<V> prev = minRoot, next = minRoot.child;;) {
+					Node<V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldCustomCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldCustomCmp(root, other);
+				}
+			}
+		}
+
 		@Override
 		public void decreaseKey(HeapReference<Double, V> ref, Double newKey) {
 			double newKeyDouble = newKey.doubleValue();
@@ -678,6 +764,98 @@ class HeapPairing {
 			Node<V> n = nodesFactory.apply(key.intValue());
 			insertNode(n);
 			return n;
+		}
+
+		void removeRoot() {
+			if (minRoot.child == null) {
+				minRoot = null;
+				return;
+			}
+
+			if (c == null) {
+				/* meld pairs from left to right */
+				Node<V> tail;
+				for (Node<V> prev = minRoot, next = minRoot.child;;) {
+					Node<V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldDefaultCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldDefaultCmp(root, other);
+				}
+			} else {
+
+				/* meld pairs from left to right */
+				Node<V> tail;
+				for (Node<V> prev = minRoot, next = minRoot.child;;) {
+					Node<V> n1 = next;
+					if (n1 == null) {
+						tail = prev;
+						break;
+					}
+
+					Node<V> n2 = n1.next;
+					if (n2 == null) {
+						n1.prevOrParent = prev;
+						tail = n1;
+						break;
+					}
+					next = n2.next;
+					n1.next = null;
+					n2.next = null;
+					n1.prevOrParent = null;
+					n2.prevOrParent = null;
+					n1 = meldCustomCmp(n1, n2);
+
+					n1.prevOrParent = prev;
+					prev = n1;
+				}
+				minRoot.child = null;
+
+				/* meld all from right to left */
+				Node<V> root = tail, prev = root.prevOrParent;
+				root.prevOrParent = null;
+				for (;;) {
+					Node<V> other = prev;
+					if (other == minRoot) {
+						minRoot = root;
+						break;
+					}
+					prev = other.prevOrParent;
+					other.prevOrParent = null;
+					root = meldCustomCmp(root, other);
+				}
+			}
 		}
 
 		@Override

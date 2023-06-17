@@ -78,17 +78,17 @@ public class RMQStaticBench {
 
 		@Benchmark
 		public void LookupTable(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "RMQStaticLookupTable"), blackhole);
+			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "LookupTable"), blackhole);
 		}
 
 		@Benchmark
 		public void PowerOf2Table(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "RMQStaticPowerOf2Table"), blackhole);
+			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "PowerOf2Table"), blackhole);
 		}
 
 		@Benchmark
 		public void CartesianTrees(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "RMQStaticCartesianTrees"), blackhole);
+			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "CartesianTrees"), blackhole);
 		}
 
 	}
@@ -127,7 +127,7 @@ public class RMQStaticBench {
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
 			Pair<Integer, RMQStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "RMQStaticPlusMinusOne").build();
+			RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "PlusMinusOne").build();
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
@@ -188,7 +188,7 @@ public class RMQStaticBench {
 				n = Integer.parseInt(argsMap.get("N"));
 
 				Pair<RMQStatic.DataStructure, int[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "RMQStaticLookupTable"), n);
+						createArray(RMQStatic.newBuilder().setOption("impl", "LookupTable"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
@@ -231,7 +231,7 @@ public class RMQStaticBench {
 				n = Integer.parseInt(argsMap.get("N"));
 
 				Pair<RMQStatic.DataStructure, int[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "RMQStaticPowerOf2Table"), n);
+						createArray(RMQStatic.newBuilder().setOption("impl", "PowerOf2Table"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
@@ -283,7 +283,7 @@ public class RMQStaticBench {
 				n = Integer.parseInt(argsMap.get("N"));
 
 				Pair<RMQStatic.DataStructure, int[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "RMQStaticPlusMinusOne"), n);
+						createArray(RMQStatic.newBuilder().setOption("impl", "PlusMinusOne"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
@@ -326,7 +326,7 @@ public class RMQStaticBench {
 				n = Integer.parseInt(argsMap.get("N"));
 
 				Pair<RMQStatic.DataStructure, int[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "RMQStaticCartesianTrees"), n);
+						createArray(RMQStatic.newBuilder().setOption("impl", "CartesianTrees"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
