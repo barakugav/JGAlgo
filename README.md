@@ -89,7 +89,7 @@ for (int e : ssspRes.getPath(v3)) {
 | MST Prim | $O(m + n \log n)$ | |
 | MST Yao | $O(m \log \log n + n \log n)$ | |
 | MST Fredman-Tarjan | $O(m \log^* n)$ | |
-| MST Karger-Klein-Tarjan randomized | $O(n + m)$ | expected  |
+| MST Karger-Klein-Tarjan randomized | $O(n + m)$ | expected |
 | MDST Tarjan directed graphs | $O(m \log n)$ | |
 | Tree path maxima (TMP) Hagerup | $O(n + m)$ | where $m$ is the number of queries |
 | Maximum matching bipartite unweighted Hopcroft-Karp | $O(m \sqrt{n})$ | |

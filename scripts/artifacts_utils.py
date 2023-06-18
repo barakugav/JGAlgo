@@ -1,7 +1,7 @@
 # breaking grequests breaks requests (https://github.com/spyoungtech/grequests/issues/103), workaround:
 from gevent import monkey
-def stub(*args, **kwargs):  # pylint: disable=unused-argument
-    pass
+def stub(*args, **kwargs): # pylint: disable=unused-argument
+	pass
 monkey.patch_all = stub
 import grequests
 

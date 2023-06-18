@@ -298,6 +298,7 @@ class HeapPairing {
 			return n;
 		}
 
+		@Override
 		void removeRoot() {
 			if (minRoot.child == null) {
 				minRoot = null;
@@ -532,6 +533,7 @@ class HeapPairing {
 			return n;
 		}
 
+		@Override
 		void removeRoot() {
 			if (minRoot.child == null) {
 				minRoot = null;
@@ -766,6 +768,7 @@ class HeapPairing {
 			return n;
 		}
 
+		@Override
 		void removeRoot() {
 			if (minRoot.child == null) {
 				minRoot = null;
