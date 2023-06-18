@@ -74,13 +74,13 @@ interface RMQStatic {
 			@Override
 			public RMQStatic build() {
 <span class="nc bnc" id="L76" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">					if (RMQStaticLookupTable.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">					if (&quot;LookupTable&quot;.equals(impl))</span>
 <span class="nc" id="L78">						return new RMQStaticLookupTable();</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">					if (RMQStaticPowerOf2Table.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">					if (&quot;PowerOf2Table&quot;.equals(impl))</span>
 <span class="nc" id="L80">						return new RMQStaticPowerOf2Table();</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">					if (RMQStaticCartesianTrees.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">					if (&quot;CartesianTrees&quot;.equals(impl))</span>
 <span class="nc" id="L82">						return new RMQStaticCartesianTrees();</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">					if (RMQStaticPlusMinusOne.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">					if (&quot;PlusMinusOne&quot;.equals(impl))</span>
 <span class="nc" id="L84">						return new RMQStaticPlusMinusOne();</span>
 <span class="nc" id="L85">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}

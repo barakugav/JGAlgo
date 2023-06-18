@@ -103,9 +103,9 @@ interface UnionFind {
 			@Override
 			public UnionFind build() {
 <span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">					if (UnionFindArray.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">					if (&quot;array&quot;.equals(impl))</span>
 <span class="nc" id="L107">						return new UnionFindArray(expectedSize);</span>
-<span class="nc bnc" id="L108" title="All 2 branches missed.">					if (UnionFindPtr.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">					if (&quot;ptr&quot;.equals(impl))</span>
 <span class="nc" id="L109">						return new UnionFindPtr(expectedSize);</span>
 <span class="nc" id="L110">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}

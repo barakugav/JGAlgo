@@ -77,15 +77,15 @@ public interface MaximumMatching {
 			@Override
 			public MaximumMatching build() {
 <span class="pc bpc" id="L79" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L80" title="All 2 branches missed.">					if (MaximumMatchingCardinalityBipartiteHopcroftKarp.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">					if (&quot;CardinalityBipartiteHopcroftKarp&quot;.equals(impl))</span>
 <span class="nc" id="L81">						return new MaximumMatchingCardinalityBipartiteHopcroftKarp();</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">					if (MaximumMatchingCardinalityGabow1976.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">					if (&quot;CardinalityGabow1976&quot;.equals(impl))</span>
 <span class="nc" id="L83">						return new MaximumMatchingCardinalityGabow1976();</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">					if (MaximumMatchingWeightedBipartiteHungarianMethod.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">					if (&quot;BipartiteHungarianMethod&quot;.equals(impl))</span>
 <span class="nc" id="L85">						return new MaximumMatchingWeightedBipartiteHungarianMethod();</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">					if (MaximumMatchingWeightedGabow1990.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">					if (&quot;Gabow1990&quot;.equals(impl))</span>
 <span class="nc" id="L87">						return new MaximumMatchingWeightedGabow1990();</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">					if (&quot;Gabow1990Simpler&quot;.equals(impl))</span>
 <span class="nc" id="L89">						return new MaximumMatchingWeightedGabow1990Simpler();</span>
 <span class="nc" id="L90">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}

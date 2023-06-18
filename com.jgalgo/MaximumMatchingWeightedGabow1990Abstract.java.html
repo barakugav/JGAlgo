@@ -866,7 +866,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		Blossom topBlossom(Blossom v) {
 <span class="pc bpc" id="L868" title="1 of 2 branches missed.">			assert v.isSingleton();</span>
-<span class="fc bfc" id="L869" title="All 2 branches covered.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
+<span class="pc bpc" id="L869" title="1 of 2 branches missed.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
 		}
 
 		Iterable&lt;Blossom&gt; allBlossoms() {

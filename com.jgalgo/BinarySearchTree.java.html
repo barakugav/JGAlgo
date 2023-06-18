@@ -174,9 +174,9 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 			@Override
 			public BinarySearchTree build(Comparator cmp) {
 <span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (SplayTree.class.getSimpleName().equals(impl))</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (&quot;SplayTree&quot;.equals(impl))</span>
 <span class="fc" id="L178">						return new SplayTree(cmp);</span>
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">					if (RedBlackTree.class.getSimpleName().equals(impl))</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">					if (&quot;RedBlackTree&quot;.equals(impl))</span>
 <span class="fc" id="L180">						return new RedBlackTree(cmp);</span>
 <span class="nc" id="L181">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}

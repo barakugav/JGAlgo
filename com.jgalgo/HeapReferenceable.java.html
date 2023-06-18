@@ -203,58 +203,60 @@ interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K
 
 			@Override
 			public HeapReferenceable build(Comparator cmp) {
-<span class="pc bpc" id="L206" title="1 of 4 branches missed.">				if (impl != null &amp;&amp; !&quot;HeapPairing&quot;.equals(impl)) {</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">					if (HeapBinomial.class.getSimpleName().equals(impl))</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				if (impl != null) {</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">					if (&quot;binomial&quot;.equals(impl))</span>
 <span class="fc" id="L208">						return new HeapBinomial(cmp);</span>
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">					if (HeapFibonacci.class.getSimpleName().equals(impl))</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">					if (&quot;fibonacci&quot;.equals(impl))</span>
 <span class="fc" id="L210">						return new HeapFibonacci(cmp);</span>
-<span class="nc" id="L211">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">					if (&quot;pairing&quot;.equals(impl))</span>
+<span class="nc" id="L212">						return HeapPairing.newHeap(keysType, valuesType, cmp);</span>
+<span class="nc" id="L213">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
-<span class="fc" id="L213">				return HeapPairing.newHeap(keysType, valuesType, cmp);</span>
+<span class="fc" id="L215">				return HeapPairing.newHeap(keysType, valuesType, cmp);</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder keysTypeObj() {
-<span class="fc" id="L218">				keysType = null;</span>
-<span class="fc" id="L219">				return this;</span>
+<span class="fc" id="L220">				keysType = null;</span>
+<span class="fc" id="L221">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
-<span class="pc bpc" id="L224" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L225">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="fc" id="L226">				keysType = primitiveType;</span>
-<span class="fc" id="L227">				return this;</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L227">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="fc" id="L228">				keysType = primitiveType;</span>
+<span class="fc" id="L229">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypeObj() {
-<span class="fc" id="L232">				valuesType = null;</span>
-<span class="fc" id="L233">				return this;</span>
+<span class="fc" id="L234">				valuesType = null;</span>
+<span class="fc" id="L235">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L239">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="fc" id="L240">				valuesType = primitiveType;</span>
-<span class="fc" id="L241">				return this;</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L241">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="fc" id="L242">				valuesType = primitiveType;</span>
+<span class="fc" id="L243">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypeVoid() {
-<span class="fc" id="L246">				valuesType = void.class;</span>
-<span class="fc" id="L247">				return this;</span>
+<span class="fc" id="L248">				valuesType = void.class;</span>
+<span class="fc" id="L249">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder setOption(String key, Object value) {
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
-<span class="fc" id="L253">					impl = (String) value;</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
+<span class="fc" id="L255">					impl = (String) value;</span>
 				} else {
-<span class="nc" id="L255">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L257">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="fc" id="L257">				return this;</span>
+<span class="fc" id="L259">				return this;</span>
 			}
 		};
 	}
@@ -286,7 +288,7 @@ interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K
 		 * @return the newly constructed heap
 		 */
 		default HeapReferenceable&lt;K, V&gt; build() {
-<span class="fc" id="L289">			return build(null);</span>
+<span class="fc" id="L291">			return build(null);</span>
 		}
 
 		/**

@@ -40,9 +40,9 @@ class IndexGraphBuilderImpl implements IndexGraph.Builder {
 <span class="fc bfc" id="L40" title="All 2 branches covered.">				directed ? GraphTableDirected::new : GraphTableUndirected::new;</span>
 
 		BiFunction&lt;Integer, Integer, ? extends GraphBaseIndex&gt; baseBuilder;
-<span class="fc bfc" id="L43" title="All 4 branches covered.">		if (impl != null &amp;&amp; !&quot;GraphArray&quot;.equals(impl)) {</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">			if (&quot;GraphArray&quot;.equals(impl))</span>
-<span class="nc" id="L45">				baseBuilder = baseBuilderArray;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (impl != null) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (&quot;GraphArray&quot;.equals(impl))</span>
+<span class="fc" id="L45">				baseBuilder = baseBuilderArray;</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">			else if (&quot;GraphLinked&quot;.equals(impl))</span>
 <span class="fc" id="L47">				baseBuilder = baseBuilderLinked;</span>
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(impl))</span>
