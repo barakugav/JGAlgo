@@ -5,7 +5,7 @@
   <groupId>com.jgalgo</groupId>
   <artifactId>jgalgo</artifactId>
   <name>JGAlgo - Parent</name>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.1.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>https://www.jgalgo.com/</url>
 
@@ -56,7 +56,8 @@
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
     <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
-    <nexus-staging-maven-plugin.version>3.0.1</nexus-staging-maven-plugin.version>
+    <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
   </properties>
 
   <modules>
@@ -108,11 +109,25 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${maven-javadoc-plugin}</version>
+          <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <show>protected</show>
             <source>${java.version}</source>
