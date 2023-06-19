@@ -11,7 +11,7 @@
 JGAlgo is a high-performance library for graph algorithms written in Java. It contains a wide collection of optimized algorithms and data structures for a range of problems on graphs. From calculating shortest paths and maximum flows to computing minimum spanning trees, maximum matchings, vertex covers, and minimum coloring.
 The library runs on Java 11 or higher, and it is installed using Maven.
 
-JGAlgo offer [unparalleled speed]((https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)) and efficiency by implementing algorithms with theoreticaly guaranteed running time, using the most efficient underlaying building blocks and data-structures. A few concrete reasons for the library efficiency are:
+JGAlgo offer [unparalleled speed](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml) and efficiency by implementing algorithms with theoretically guaranteed running time, using the most efficient underlying building blocks and data-structures. A few concrete reasons for the library efficiency are:
 - All underlying building blocks of the library are primitives
 - No costly hash maps are used, just plain primitive arrays, yielding smaller memory footprint and better cache hit rates
 - Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections
@@ -22,7 +22,7 @@ JGAlgo offer [unparalleled speed]((https://github.com/barakugav/JGAlgo/actions/w
 * [Documentation](https://barakugav.github.io/JGAlgo)
 * [Website](https://www.jgalgo.com/)
 
-If you are passionate about graph algorithms and data structure, join us develop the most performant compatitive graph library in Java! There are still many real-world problems not addressed by the library, and new algorithms invented every year.
+If you are passionate about graph algorithms and data structure, join us develop the most performant competitive graph library in Java! There are still many real-world problems not addressed by the library, and new algorithms invented every year.
 
 ### Quick Start
 
