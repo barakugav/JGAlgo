@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.jgalgo</groupId>
     <artifactId>jgalgo</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
   </parent>
   <artifactId>jgalgo-example</artifactId>
   <name>JGAlgo - Examples</name>
