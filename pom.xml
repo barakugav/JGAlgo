@@ -5,7 +5,7 @@
   <groupId>com.jgalgo</groupId>
   <artifactId>jgalgo</artifactId>
   <name>JGAlgo - Parent</name>
-  <version>0.1.1.1-SNAPSHOT</version>
+  <version>0.1.1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>https://www.jgalgo.com/</url>
 
@@ -78,80 +78,78 @@
   </distributionManagement>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>${maven-release-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nexus-staging-maven-plugin</artifactId>
-          <version>${nexus-staging-maven-plugin.version}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <serverId>ossrh</serverId>
-            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-          </configuration>
-        </plugin>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>${maven-release-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>${nexus-staging-maven-plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
 
-        <plugin>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>${maven-source-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar-no-fork</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>${maven-gpg-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>sign</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven-gpg-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${maven-javadoc-plugin.version}</version>
-          <configuration>
-            <show>protected</show>
-            <source>${java.version}</source>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
+        <configuration>
+          <show>protected</show>
+          <source>${java.version}</source>
 
-            <!-- Allow javascipts for Latex -->
-            <additionalJOption>--allow-script-in-comments</additionalJOption>
+          <!-- Allow javascipts for Latex -->
+          <additionalJOption>--allow-script-in-comments</additionalJOption>
 
-            <!-- Include MathJax to present Latex in our documentation -->
-            <header>
-              &lt;script type="text/javascript"
-              src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;&lt;/script&gt;
-            </header>
-          </configuration>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+          <!-- Include MathJax to present Latex in our documentation -->
+          <header>
+            &lt;script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;&lt;/script&gt;
+          </header>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
