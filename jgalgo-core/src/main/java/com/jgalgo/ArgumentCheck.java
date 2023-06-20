@@ -33,8 +33,13 @@ class ArgumentCheck {
 			throw new IllegalArgumentException("the graph is not bipartite");
 	}
 
-	static void noSelfLoops(Graph g, String msg) {
-		if (GraphsUtils.containsSelfLoops(g))
+	static void noSelfEdges(Graph g, String msg) {
+		if (GraphsUtils.containsSelfEdges(g))
+			throw new IllegalArgumentException(msg);
+	}
+
+	static void noParallelEdges(Graph g, String msg) {
+		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException(msg);
 	}
 

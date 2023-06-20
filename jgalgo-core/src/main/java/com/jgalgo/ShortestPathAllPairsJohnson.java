@@ -119,38 +119,23 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private Pair<double[], Path> calcPotential(IndexGraph g, WeightFunction w) {
 		int n = g.vertices().size();
-		IndexGraph refG = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 1).build();
-		for (int u = 0; u < n; u++)
-			refG.addVertex();
-		Weights.Int edgeEef = refG.addEdgesWeights("edgeEef", int.class, Integer.valueOf(-1));
-		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				int refE = refG.addEdge(u, v);
-				edgeEef.set(refE, e);
-			}
-		}
+		IndexGraph refG = g.copy();
 
 		/* Add fake vertex */
 		final int fakeV = refG.addVertex();
-		final int fakeEdge = -1;
-		for (int v = 0; v < n; v++)
-			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);
+		final int fakeEdgesThreshold = refG.edges().size();
+		for (int v = 0; v < n; v++) {
+			int e = refG.addEdge(fakeV, v);
+			assert e >= fakeEdgesThreshold;
+		}
 
 		WeightFunction refW;
 		if (w instanceof WeightFunction.Int) {
 			WeightFunction.Int wInt = (WeightFunction.Int) w;
-			WeightFunction.Int refWInt = e -> {
-				int ref = edgeEef.getInt(e);
-				return ref != fakeEdge ? wInt.weightInt(ref) : 0;
-			};
+			WeightFunction.Int refWInt = e -> e < fakeEdgesThreshold ? wInt.weightInt(e) : 0;
 			refW = refWInt;
 		} else {
-			refW = e -> {
-				int ref = edgeEef.getInt(e);
-				return ref != fakeEdge ? w.weight(ref) : 0;
-			};
+			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;
 		}
 		ShortestPathSingleSource.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
@@ -162,7 +147,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			Path negCycleRef = res.getNegativeCycle();
 			IntList negCycle = new IntArrayList(negCycleRef.size());
 			for (int e : negCycleRef)
-				negCycle.add(edgeEef.getInt(e));
+				negCycle.add(e);
 			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}
 	}

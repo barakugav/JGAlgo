@@ -36,9 +36,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
-	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
-	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Construct a new MDST algorithm object.
@@ -58,17 +56,19 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
-		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);
+		IndexGraph g0 = g.copy(); // we must copy because we add new vertices and edges
+		final int artificialEdgesThreshold = g0.edges().size();
 
 		// Connect new root to all vertices
-		int n = gRef.vertices().size(), r = gRef.addVertex();
-		for (int v = 0; v < n; v++)
-			edgeRefs.set(gRef.addEdge(r, v), HeavyEdge);
+		int n = g0.vertices().size(), r = g0.addVertex();
+		for (int v = 0; v < n; v++) {
+			int e = g0.addEdge(r, v);
+			assert e >= artificialEdgesThreshold;
+		}
 
 		// Calc MST on new graph
-		ContractedGraph contractedGraph = contract(gRef, w);
-		return expand(gRef, contractedGraph, r);
+		ContractedGraph contractedGraph = contract(g0, w, artificialEdgesThreshold);
+		return expand(g0, contractedGraph, r, artificialEdgesThreshold);
 	}
 
 	@Override
@@ -76,13 +76,17 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
+		IndexGraph g0 = g.copy(); // we must copy because we add new vertices and edges
+		final int artificialEdgesThreshold = g0.edges().size();
 
-		ContractedGraph contractedGraph = contract(gRef, w);
-		return expand(gRef, contractedGraph, root);
+		// TODO in case the original graph is already strongly connected, there is no need to copy
+
+		ContractedGraph contractedGraph = contract(g0, w, artificialEdgesThreshold);
+		return expand(g0, contractedGraph, root, artificialEdgesThreshold);
 	}
 
-	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root) {
+	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root,
+			int artificialEdgesThreshold) {
 		int[] inEdge = new int[cg.n];
 
 		IntStack roots = new IntArrayList();
@@ -109,17 +113,16 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			}
 		}
 
-		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
 		IntCollection mst = new IntArrayList(cg.n - 1);
 		for (int v = 0; v < cg.n; v++) {
-			int e = edgeRefs.getInt(inEdge[v]);
-			if (v != root && e != HeavyEdge)
+			int e = inEdge[v];
+			if (v != root && e < artificialEdgesThreshold)
 				mst.add(e);
 		}
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private void addEdgesUntilStronglyConnected(IndexGraph g) {
+	private void addEdgesUntilStronglyConnected(IndexGraph g, int artificialEdgesThreshold) {
 		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCcs();
 		if (N <= 1)
@@ -134,15 +137,20 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 				V2v[V] = v;
 		}
 
-		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
-		for (int V = 1; V < N; V++) {
-			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
-			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);
+		ccLoop: for (int V = 0; V < N; V++) {
+			int vNext = V < N - 1 ? V + 1 : 0;
+			for (EdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {
+				eit.nextInt();
+				if (connectivityRes.getVertexCc(eit.target()) == vNext)
+					continue ccLoop; /* V already connected to vNext */
+			}
+			int e = g.addEdge(V2v[V], V2v[vNext]);
+			assert e >= artificialEdgesThreshold;
 		}
 	}
 
-	private ContractedGraph contract(IndexGraph g, WeightFunction wOrig) {
-		addEdgesUntilStronglyConnected(g);
+	private ContractedGraph contract(IndexGraph g, WeightFunction wOrig, int artificialEdgesThreshold) {
+		addEdgesUntilStronglyConnected(g, artificialEdgesThreshold);
 
 		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
@@ -152,11 +160,8 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		for (int v = 0; v < n; v++)
 			ufIdxToV[uf.make()] = v;
 
-		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
-		WeightFunction w = e -> {
-			int e0 = edgeRefs.getInt(e);
-			return (e0 != HeavyEdge ? wOrig.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
-		};
+		WeightFunction w =
+				e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		@SuppressWarnings("unchecked")
 		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];
 		for (int v = 0; v < n; v++)

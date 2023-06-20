@@ -138,6 +138,7 @@ public class EmptyGraphTest extends TestBase {
 		assertNull(Graphs.EmptyGraphDirected.getEdgesWeights(weightsKey));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void testIndexGraph() {
 		assertEquals(Graphs.EmptyGraphUndirected, Graphs.EmptyGraphUndirected.indexGraph());

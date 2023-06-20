@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 abstract class GraphImpl extends GraphBase {
 
-	final GraphBaseIndex indexGraph;
+	final IndexGraphImpl indexGraph;
 	final IdIdxMapImpl viMap;
 	final IdIdxMapImpl eiMap;
 	private final WeakIdentityHashMap<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights =
@@ -34,21 +34,19 @@ abstract class GraphImpl extends GraphBase {
 	private final WeakIdentityHashMap<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights =
 			new WeakIdentityHashMap<>();
 
-	GraphImpl(GraphBaseIndex g, boolean rand) {
-		this.indexGraph = Objects.requireNonNull(g);
-		if (rand) {
-			viMap = new GraphImpl.IdIdxMapRand(g.verticesIdStrat);
-			eiMap = new GraphImpl.IdIdxMapRand(g.edgesIdStrat);
-		} else {
-			viMap = new GraphImpl.IdIdxMapCounter(g.verticesIdStrat);
-			eiMap = new GraphImpl.IdIdxMapCounter(g.edgesIdStrat);
-		}
+	GraphImpl(IndexGraph g) {
+		this.indexGraph = Objects.requireNonNull((IndexGraphImpl) g);
+		assert indexGraph.getVerticesIdStrategy().size() == 0;
+		assert indexGraph.getEdgesIdStrategy().size() == 0;
+		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy());
+		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy());
 	}
 
-	GraphImpl(GraphImpl orig) {
-		indexGraph = (GraphBaseIndex) orig.indexGraph.copy();
-		viMap = orig.viMap.copy(indexGraph.verticesIdStrat);
-		eiMap = orig.eiMap.copy(indexGraph.edgesIdStrat);
+	/* copy constructor */
+	GraphImpl(Graph orig, IndexGraph.Builder indexGraphBuilder) {
+		indexGraph = (IndexGraphImpl) indexGraphBuilder.buildCopyOf(orig.indexGraph());
+		viMap = IdIdxMapImpl.copyOf(orig.indexGraphVerticesMap(), indexGraph.getVerticesIdStrategy());
+		eiMap = IdIdxMapImpl.copyOf(orig.indexGraphEdgesMap(), indexGraph.getEdgesIdStrategy());
 	}
 
 	@Override
@@ -338,13 +336,16 @@ abstract class GraphImpl extends GraphBase {
 
 	private static class Directed extends GraphImpl {
 
-		Directed(GraphBaseIndex g, boolean rand) {
-			super(g, rand);
+		Directed(IndexGraph g) {
+			super(g);
 			ArgumentCheck.onlyDirected(g);
 		}
 
-		Directed(Directed g) {
-			super(g);
+		/* copy constructor */
+		Directed(Graph g, IndexGraph.Builder indexGraphBuilder) {
+			super(g, indexGraphBuilder);
+			ArgumentCheck.onlyDirected(g);
+			ArgumentCheck.onlyDirected(indexGraph);
 		}
 
 		@Override
@@ -352,32 +353,25 @@ abstract class GraphImpl extends GraphBase {
 			int eIdx = eiMap.idToIndex(edge);
 			indexGraph.reverseEdge(eIdx);
 		}
-
-		@Override
-		public Graph copy() {
-			return new Directed(this);
-		}
 	}
 
 	private static class Undirected extends GraphImpl {
 
-		Undirected(GraphBaseIndex g, boolean rand) {
-			super(g, rand);
+		Undirected(IndexGraph g) {
+			super(g);
 			ArgumentCheck.onlyUndirected(g);
 		}
 
-		Undirected(Undirected g) {
-			super(g);
+		/* copy constructor */
+		Undirected(Graph g, IndexGraph.Builder indexGraphBuilder) {
+			super(g, indexGraphBuilder);
+			ArgumentCheck.onlyUndirected(g);
+			ArgumentCheck.onlyUndirected(indexGraph);
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
 			// Do nothing
-		}
-
-		@Override
-		public Graph copy() {
-			return new Undirected(this);
 		}
 	}
 
@@ -388,7 +382,7 @@ abstract class GraphImpl extends GraphBase {
 		private final WeightsImpl.Index.Int idxToId;
 		private int userChosenId = -1;
 
-		IdIdxMapImpl(IdStrategy.Index idStrat) {
+		IdIdxMapImpl(IdStrategy idStrat) {
 			idToIdx = new Int2IntOpenHashMap();
 			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
@@ -396,15 +390,44 @@ abstract class GraphImpl extends GraphBase {
 			initListeners(idStrat);
 		}
 
-		IdIdxMapImpl(IdIdxMapImpl orig, IdStrategy.Index idStrat) {
-			idToIdx = new Int2IntOpenHashMap(orig.idToIdx);
-			idToIdx.defaultReturnValue(-1);
+		IdIdxMapImpl(IndexIdMap orig, IdStrategy idStrat) {
+			if (orig instanceof IdIdxMapImpl) {
+				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
+				idToIdx = new Int2IntOpenHashMap(orig0.idToIdx);
+				idToIdx.defaultReturnValue(-1);
+				idxToId = orig0.idxToId.copy(idStrat);
+			} else {
+				idToIdx = new Int2IntOpenHashMap(idStrat.size());
+				idToIdx.defaultReturnValue(-1);
+				idxToId = new WeightsImpl.Index.Int(idStrat, -1);
+				for (int idx : idStrat.indices()) {
+					int id = orig.indexToId(idx);
+					if (idxToId.getInt(idx) != -1)
+						throw new IllegalArgumentException("duplicate index: " + idx);
+					if (id < 0)
+						throw new IllegalArgumentException("negative id: " + id);
+					idxToId.set(idx, id);
+
+					int oldIdx = idToIdx.put(id, idx);
+					if (oldIdx != -1)
+						throw new IllegalArgumentException("duplicate id: " + id);
+				}
+			}
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = orig.idxToId.copy(idStrat);
 			initListeners(idStrat);
 		}
 
-		private void initListeners(IdStrategy.Index idStrat) {
+		static IdIdxMapImpl newInstance(IdStrategy idStrat) {
+			return JGAlgoConfig.GraphIdRandom ? new GraphImpl.IdIdxMapRand(idStrat)
+					: new GraphImpl.IdIdxMapCounter(idStrat);
+		}
+
+		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat) {
+			return JGAlgoConfig.GraphIdRandom ? new GraphImpl.IdIdxMapRand(orig, idStrat)
+					: new GraphImpl.IdIdxMapCounter(orig, idStrat);
+		}
+
+		private void initListeners(IdStrategy idStrat) {
 			idStrat.addIdSwapListener((idx1, idx2) -> {
 				int id1 = idxToId.getInt(idx1);
 				int id2 = idxToId.getInt(idx2);
@@ -467,22 +490,25 @@ abstract class GraphImpl extends GraphBase {
 			return idsView;
 		}
 
-		abstract GraphImpl.IdIdxMapImpl copy(IdStrategy.Index idStrat);
 	}
 
 	private static class IdIdxMapCounter extends IdIdxMapImpl {
 
 		private int counter;
 
-		IdIdxMapCounter(IdStrategy.Index idStrat) {
+		IdIdxMapCounter(IdStrategy idStrat) {
 			super(idStrat);
 			// We prefer non zero IDs because fastutil handle zero (null) keys separately
 			counter = 1;
 		}
 
-		IdIdxMapCounter(GraphImpl.IdIdxMapCounter orig, IdStrategy.Index idStrat) {
+		IdIdxMapCounter(IndexIdMap orig, IdStrategy idStrat) {
 			super(orig, idStrat);
-			this.counter = orig.counter;
+			if (orig instanceof IdIdxMapCounter) {
+				counter = ((IdIdxMapCounter) orig).counter;
+			} else {
+				counter = 1;
+			}
 		}
 
 		@Override
@@ -493,22 +519,17 @@ abstract class GraphImpl extends GraphBase {
 					return id;
 			}
 		}
-
-		@Override
-		GraphImpl.IdIdxMapCounter copy(IdStrategy.Index idStrat) {
-			return new GraphImpl.IdIdxMapCounter(this, idStrat);
-		}
 	}
 
 	private static class IdIdxMapRand extends IdIdxMapImpl {
 
 		private final Random rand = new Random();
 
-		IdIdxMapRand(IdStrategy.Index idStrat) {
+		IdIdxMapRand(IdStrategy idStrat) {
 			super(idStrat);
 		}
 
-		IdIdxMapRand(GraphImpl.IdIdxMapRand orig, IdStrategy.Index idStrat) {
+		IdIdxMapRand(IndexIdMap orig, IdStrategy idStrat) {
 			super(orig, idStrat);
 		}
 
@@ -521,11 +542,6 @@ abstract class GraphImpl extends GraphBase {
 					return id;
 			}
 		}
-
-		@Override
-		GraphImpl.IdIdxMapRand copy(IdStrategy.Index idStrat) {
-			return new GraphImpl.IdIdxMapRand(this, idStrat);
-		}
 	}
 
 	static class Builder implements Graph.Builder {
@@ -535,20 +551,44 @@ abstract class GraphImpl extends GraphBase {
 			this.builder = new IndexGraphBuilderImpl(directed);
 		}
 
+		Builder(Graph g) {
+			this.builder = new IndexGraphBuilderImpl(g.indexGraph());
+		}
+
 		@Override
 		public Graph build() {
-			GraphBaseIndex base = (GraphBaseIndex) builder.build();
-			final boolean rand = false; // TODO add option to global configuration class
+			IndexGraph base = builder.build();
 			if (base.getCapabilities().directed()) {
-				return new GraphImpl.Directed(base, rand);
+				return new GraphImpl.Directed(base);
 			} else {
-				return new GraphImpl.Undirected(base, rand);
+				return new GraphImpl.Undirected(base);
+			}
+		}
+
+		@Override
+		public Graph buildCopyOf(Graph g) {
+			if (g.getCapabilities().directed()) {
+				return new GraphImpl.Directed(g, builder);
+			} else {
+				return new GraphImpl.Undirected(g, builder);
 			}
 		}
 
 		@Override
 		public Graph.Builder setDirected(boolean directed) {
 			builder.setDirected(directed);
+			return this;
+		}
+
+		@Override
+		public Graph.Builder allowSelfEdges(boolean selfEdges) {
+			builder.allowSelfEdges(selfEdges);
+			return this;
+		}
+
+		@Override
+		public Graph.Builder allowParallelEdges(boolean parallelEdges) {
+			builder.allowParallelEdges(parallelEdges);
 			return this;
 		}
 

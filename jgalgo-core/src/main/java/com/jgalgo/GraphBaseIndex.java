@@ -37,28 +37,52 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {
 		edgesUserWeights = new WeightsImpl.Index.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseIndex(GraphBaseIndex g) {
-		verticesIdStrat = g.verticesIdStrat.copy();
-		edgesIdStrat = g.edgesIdStrat.copy();
+	GraphBaseIndex(IndexGraph g) {
+		if (getCapabilities().directed()) {
+			ArgumentCheck.onlyDirected(g);
+		} else {
+			ArgumentCheck.onlyUndirected(g);
+		}
+		if (!getCapabilities().selfEdges())
+			ArgumentCheck.noSelfEdges(g, "self edges are not supported");
+		if (!getCapabilities().parallelEdges())
+			ArgumentCheck.noParallelEdges(g, "parallel edges are not supported");
+
+		if (g instanceof GraphBaseIndex) {
+			GraphBaseIndex g0 = (GraphBaseIndex) g;
+			verticesIdStrat = g0.verticesIdStrat.copy();
+			edgesIdStrat = g0.edgesIdStrat.copy();
+
+			verticesUserWeights = new WeightsImpl.Index.Manager(g0.verticesUserWeights, verticesIdStrat);
+			edgesUserWeights = new WeightsImpl.Index.Manager(g0.edgesUserWeights, edgesIdStrat);
+		} else {
+			verticesIdStrat = new IdStrategy.Index(((IndexGraphImpl) g).getVerticesIdStrategy().size());
+			edgesIdStrat = new IdStrategy.Index(((IndexGraphImpl) g).getEdgesIdStrategy().size());
+
+			verticesUserWeights = new WeightsImpl.Index.Manager(verticesIdStrat.size());
+			for (Object key : g.getVerticesWeightsKeys())
+				verticesUserWeights.addWeights(key,
+						WeightsImpl.Index.copyOf(g.getVerticesWeights(key), verticesIdStrat));
+			edgesUserWeights = new WeightsImpl.Index.Manager(edgesIdStrat.size());
+			for (Object key : g.getEdgesWeightsKeys())
+				edgesUserWeights.addWeights(key, WeightsImpl.Index.copyOf(g.getEdgesWeights(key), edgesIdStrat));
+		}
 
 		/* internal data containers should be copied manually */
 		// verticesInternalContainers = g.verticesInternalContainers.copy(verticesIdStrategy);
 		// edgesInternalContainers = g.edgesInternalContainers.copy(edgesIdStrategy);
 		verticesInternalContainers = new DataContainer.Manager(verticesIdStrat.size());
 		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());
-
-		verticesUserWeights = new WeightsImpl.Index.Manager(g.verticesUserWeights, verticesIdStrat);
-		edgesUserWeights = new WeightsImpl.Index.Manager(g.edgesUserWeights, edgesIdStrat);
 	}
 
 	@Override
 	public final IntSet vertices() {
-		return verticesIdStrat.idSet();
+		return verticesIdStrat.indices();
 	}
 
 	@Override
 	public final IntSet edges() {
-		return edgesIdStrat.idSet();
+		return edgesIdStrat.indices();
 	}
 
 	@Override
@@ -222,21 +246,6 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
-	}
-
-	@Override
-	public IndexGraph indexGraph() {
-		return this;
-	}
-
-	@Override
-	public IndexIdMap indexGraphVerticesMap() {
-		return GraphsUtils.IndexGraphMapIdentify;
-	}
-
-	@Override
-	public IndexIdMap indexGraphEdgesMap() {
-		return GraphsUtils.IndexGraphMapIdentify;
 	}
 
 	void checkVertex(int vertex) {

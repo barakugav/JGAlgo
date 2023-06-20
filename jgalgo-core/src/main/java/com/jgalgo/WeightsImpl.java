@@ -155,6 +155,14 @@ interface WeightsImpl<E> extends Weights<E> {
 			return container0;
 		}
 
+		static WeightsImpl.Index<?> copyOf(Weights<?> weights, IdStrategy idStart) {
+			if (weights instanceof WeightsImpl.Unmodifiable<?>)
+				weights = ((WeightsImpl.Unmodifiable<?>) weights).weights;
+			if (!(weights instanceof WeightsImpl.Index<?>))
+				throw new IllegalArgumentException();
+			return ((WeightsImpl.Index<?>) weights).copy(idStart);
+		}
+
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
 
 			final IdStrategy idStrat;

@@ -46,7 +46,7 @@ class GraphTableUndirected extends GraphTableAbstract {
 		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphTableUndirected(GraphTableUndirected g) {
+	GraphTableUndirected(IndexGraph g) {
 		super(g);
 	}
 
@@ -140,11 +140,6 @@ class GraphTableUndirected extends GraphTableAbstract {
 
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
-
-	@Override
-	public IndexGraph copy() {
-		return new GraphTableUndirected(this);
-	}
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {

@@ -149,26 +149,6 @@ public class Graphs {
 		public IdStrategy getEdgesIdStrategy() {
 			return edgesIdStrat;
 		}
-
-		@Override
-		public IndexGraph indexGraph() {
-			return this;
-		}
-
-		@Override
-		public IndexIdMap indexGraphVerticesMap() {
-			return GraphsUtils.IndexGraphMapIdentify;
-		}
-
-		@Override
-		public IndexIdMap indexGraphEdgesMap() {
-			return GraphsUtils.IndexGraphMapIdentify;
-		}
-
-		@Override
-		public IndexGraph copy() {
-			return this;
-		}
 	}
 
 	private static class EmptyGraphUndirected extends EmptyGraph {
@@ -180,7 +160,6 @@ public class Graphs {
 		public GraphCapabilities getCapabilities() {
 			return Capabilities;
 		}
-
 	}
 
 	private static class EmptyGraphDirected extends EmptyGraph {
@@ -192,7 +171,6 @@ public class Graphs {
 		public GraphCapabilities getCapabilities() {
 			return Capabilities;
 		}
-
 	}
 
 	/**
@@ -335,11 +313,6 @@ public class Graphs {
 				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
-		public IndexGraph copy() {
-			return new CompleteGraphUndirected(this);
-		}
-
-		@Override
 		public EdgeSet outEdges(int source) {
 			checkVertex(source);
 			return new GraphBase.EdgeSetOutUndirected(source) {
@@ -433,11 +406,6 @@ public class Graphs {
 				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
 
 		@Override
-		public IndexGraph copy() {
-			return new CompleteGraphDirected(this);
-		}
-
-		@Override
 		public EdgeSet outEdges(int source) {
 			checkVertex(source);
 			return new GraphBase.EdgeSetOutDirected(source) {
@@ -511,12 +479,12 @@ public class Graphs {
 
 		@Override
 		public IntSet vertices() {
-			return verticesIdStrat.idSet();
+			return verticesIdStrat.indices();
 		}
 
 		@Override
 		public IntSet edges() {
-			return edgesIdStrat.idSet();
+			return edgesIdStrat.indices();
 		}
 
 		void checkVertex(int vertex) {
@@ -790,21 +758,6 @@ public class Graphs {
 		@Override
 		public IdStrategy getEdgesIdStrategy() {
 			return edgesIdStrat;
-		}
-
-		@Override
-		public IndexGraph indexGraph() {
-			return this;
-		}
-
-		@Override
-		public IndexIdMap indexGraphVerticesMap() {
-			return GraphsUtils.IndexGraphMapIdentify;
-		}
-
-		@Override
-		public IndexIdMap indexGraphEdgesMap() {
-			return GraphsUtils.IndexGraphMapIdentify;
 		}
 	}
 
@@ -1269,11 +1222,6 @@ public class Graphs {
 			return graph.indexGraphEdgesMap();
 		}
 
-		@Override
-		public Graph copy() {
-			return new ReverseGraph(graph.copy());
-		}
-
 	}
 
 	private static class ReverseIndexGraph extends ReverseGraph implements IndexGraphImpl {
@@ -1297,11 +1245,6 @@ public class Graphs {
 		@Override
 		public IdStrategy getEdgesIdStrategy() {
 			return graph().getEdgesIdStrategy();
-		}
-
-		@Override
-		public IndexGraph copy() {
-			return new ReverseIndexGraph(graph().copy());
 		}
 
 		@Override
@@ -1399,6 +1342,24 @@ public class Graphs {
 
 	static IndexGraph reverseView(IndexGraph g) {
 		return g instanceof ReverseGraph ? ((ReverseGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);
+	}
+
+	static String getIndexGraphImpl(IndexGraph g) {
+		for (;;) {
+			IndexGraph g0 = g;
+			if (g instanceof ReverseIndexGraph)
+				g = ((ReverseIndexGraph) g).graph();
+			if (g instanceof UnmodifiableIndexGraph)
+				g = ((UnmodifiableIndexGraph) g).graph();
+			if (g instanceof GraphArrayAbstract)
+				return "GraphArray";
+			if (g instanceof GraphLinkedAbstract)
+				return "GraphLinked";
+			if (g instanceof GraphTableAbstract)
+				return "GraphTable";
+			if (g == g0)
+				return null;
+		}
 	}
 
 }

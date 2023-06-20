@@ -44,7 +44,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		if (n == 0)
 			return null;
 		ArgumentCheck.onlyUndirected(g);
-		TSPMetricUtils.checkNoParallelEdges(g);
+		ArgumentCheck.noParallelEdges(g, "parallel edges are not supported");
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */

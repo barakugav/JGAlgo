@@ -38,13 +38,6 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private static final Node[] EmptyNodeArr = new Node[0];
 
 	/**
-	 * Create a new graph with no vertices and edges.
-	 */
-	GraphLinkedDirected() {
-		this(0, 0);
-	}
-
-	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
 	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
@@ -59,7 +52,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		addInternalVerticesContainer(edgesInContainer);
 	}
 
-	GraphLinkedDirected(GraphLinkedDirected g) {
+	GraphLinkedDirected(IndexGraph g) {
 		super(g);
 
 		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
@@ -235,11 +228,6 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();
-
-	@Override
-	public IndexGraph copy() {
-		return new GraphLinkedDirected(this);
-	}
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {

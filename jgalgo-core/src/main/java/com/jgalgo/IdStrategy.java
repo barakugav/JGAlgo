@@ -28,21 +28,25 @@ abstract class IdStrategy {
 
 	abstract int size();
 
-	abstract IntSet idSet();
+	abstract IntSet indices();
 
 	abstract void addIdSwapListener(IndexSwapListener listener);
 
 	abstract void removeIdSwapListener(IndexSwapListener listener);
 
+	abstract void addIdAddRemoveListener(IdAddRemoveListener listener);
+
+	abstract void removeIdAddRemoveListener(IdAddRemoveListener listener);
+
 	@Override
 	public String toString() {
-		return idSet().toString();
+		return indices().toString();
 	}
 
 	static class Index extends IdStrategy {
 
 		private int size;
-		private final IntSet idSet;
+		private final IntSet indices;
 		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
 		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
@@ -50,7 +54,7 @@ abstract class IdStrategy {
 			if (initSize < 0)
 				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 			size = initSize;
-			idSet = new IdSet();
+			indices = new IndicesSet();
 		}
 
 		int newIdx() {
@@ -77,8 +81,8 @@ abstract class IdStrategy {
 		}
 
 		@Override
-		IntSet idSet() {
-			return idSet;
+		IntSet indices() {
+			return indices;
 		}
 
 		int isSwapNeededBeforeRemove(int idx) {
@@ -129,15 +133,17 @@ abstract class IdStrategy {
 			idSwapListeners.remove(listener);
 		}
 
+		@Override
 		void addIdAddRemoveListener(IdAddRemoveListener listener) {
 			idAddRemoveListeners.add(Objects.requireNonNull(listener));
 		}
 
+		@Override
 		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
 			idAddRemoveListeners.remove(listener);
 		}
 
-		private class IdSet extends AbstractIntSet {
+		private class IndicesSet extends AbstractIntSet {
 
 			@Override
 			public int size() {
@@ -158,9 +164,9 @@ abstract class IdStrategy {
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
-				if (!(other instanceof IdSet))
+				if (!(other instanceof IndicesSet))
 					return super.equals(other);
-				IdSet o = (IdSet) other;
+				IndicesSet o = (IndicesSet) other;
 				return size == o.size();
 			}
 
@@ -179,7 +185,7 @@ abstract class IdStrategy {
 		}
 
 		@Override
-		IntSet idSet() {
+		IntSet indices() {
 			return IntSets.emptySet();
 		}
 
@@ -190,6 +196,14 @@ abstract class IdStrategy {
 
 		@Override
 		void removeIdSwapListener(IndexSwapListener listener) {}
+
+		@Override
+		void addIdAddRemoveListener(IdAddRemoveListener listener) {
+			Objects.requireNonNull(listener);
+		}
+
+		@Override
+		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}
 	}
 
 	/**

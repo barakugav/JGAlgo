@@ -35,4 +35,6 @@ public class JGAlgoConfig {
 		parallelByDefault = enable;
 	}
 
+	final static boolean GraphIdRandom = false;
+
 }

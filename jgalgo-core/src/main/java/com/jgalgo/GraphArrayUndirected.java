@@ -40,13 +40,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	private final DataContainer.Int edgesNumContainer;
 
 	/**
-	 * Create a new graph with no vertices and edges.
-	 */
-	GraphArrayUndirected() {
-		this(0, 0);
-	}
-
-	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
 	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
@@ -62,17 +55,39 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		addInternalVerticesContainer(edgesNumContainer);
 	}
 
-	GraphArrayUndirected(GraphArrayUndirected g) {
+	GraphArrayUndirected(IndexGraph g) {
 		super(g);
 		final int n = g.vertices().size();
 
-		edgesContainer = g.edgesContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
-		edgesNumContainer = g.edgesNumContainer.copy(verticesIdStrat, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
-		addInternalVerticesContainer(edgesNumContainer);
+		if (g instanceof GraphArrayUndirected) {
+			GraphArrayUndirected g0 = (GraphArrayUndirected) g;
+			edgesContainer =
+					g0.edgesContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
+			edgesNumContainer = g0.edgesNumContainer.copy(verticesIdStrat, newArr -> edgesNum = newArr);
+			addInternalVerticesContainer(edgesContainer);
+			addInternalVerticesContainer(edgesNumContainer);
 
-		for (int v = 0; v < n; v++)
-			edges[v] = Arrays.copyOf(edges[v], edgesNum[v]);
+			for (int v = 0; v < n; v++)
+				edges[v] = Arrays.copyOf(edges[v], edgesNum[v]);
+		} else {
+			edgesContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
+					IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
+			edgesNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesNum = newArr);
+
+			addInternalVerticesContainer(edgesContainer);
+			addInternalVerticesContainer(edgesNumContainer);
+
+			for (int v = 0; v < n; v++) {
+				EdgeSet edgeSet = g.outEdges(v);
+				int edgeSetSize = edgesNum[v] = edgeSet.size();
+				if (edgeSetSize != 0) {
+					int[] edgesArr = edges[v] = new int[edgeSetSize];
+					int i = 0;
+					for (int e : edgeSet)
+						edgesArr[i++] = e;
+				}
+			}
+		}
 	}
 
 	@Override
@@ -203,11 +218,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();
-
-	@Override
-	public IndexGraph copy() {
-		return new GraphArrayUndirected(this);
-	}
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {

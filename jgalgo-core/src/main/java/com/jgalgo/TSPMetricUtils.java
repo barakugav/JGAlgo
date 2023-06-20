@@ -90,11 +90,6 @@ class TSPMetricUtils {
 		return true;
 	}
 
-	static void checkNoParallelEdges(IndexGraph g) {
-		if (GraphsUtils.containsParallelEdges(g))
-			throw new IllegalArgumentException("Graph contains parallel edges");
-	}
-
 	static abstract class AbstractImpl implements TSPMetric {
 
 		@Override

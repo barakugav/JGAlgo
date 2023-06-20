@@ -41,20 +41,44 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphTableAbstract(GraphTableAbstract g) {
+	GraphTableAbstract(IndexGraph g) {
 		super(g);
-
 		final int n = g.vertices().size();
-		edges = g.edges.copy(verticesIdStrat, EmptyEdgesArr, Utils.consumerNoOp());
-		addInternalVerticesContainer(edges);
-		for (int u = 0; u < n; u++) {
-			DataContainer.Int uEdges = edges.get(u).copy(verticesIdStrat, Utils.consumerNoOp());
-			edges.set(u, uEdges);
-			addInternalVerticesContainer(uEdges);
-		}
 
-		edgeEndpointsContainer = g.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
+		if (g instanceof GraphTableAbstract) {
+			GraphTableAbstract g0 = (GraphTableAbstract) g;
+			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, Utils.consumerNoOp());
+			addInternalVerticesContainer(edges);
+			for (int v = 0; v < n; v++) {
+				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, Utils.consumerNoOp());
+				addInternalVerticesContainer(vEdges);
+				edges.set(v, vEdges);
+			}
+
+			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
+		} else {
+
+			edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());
+			addInternalVerticesContainer(edges);
+			for (int v = 0; v < n; v++) {
+				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());
+				addInternalVerticesContainer(vEdges);
+				edges.set(v, vEdges);
+
+				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					vEdges.set(eit.target(), e);
+				}
+			}
+
+			final int m = edgesIdStrat.size();
+			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
+					newArr -> edgeEndpoints = newArr);
+			for (int e = 0; e < m; e++)
+				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
+			addInternalEdgesContainer(edgeEndpointsContainer);
+		}
 	}
 
 	@Override

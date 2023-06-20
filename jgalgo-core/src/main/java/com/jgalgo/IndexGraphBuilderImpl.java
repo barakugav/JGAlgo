@@ -16,11 +16,12 @@
 package com.jgalgo;
 
 import java.util.EnumSet;
-import java.util.function.BiFunction;
 
 class IndexGraphBuilderImpl implements IndexGraph.Builder {
 
 	private boolean directed;
+	private boolean selfEdges;
+	private boolean parallelEdges;
 	private int expectedVerticesNum;
 	private int expectedEdgesNum;
 	private final EnumSet<Graph.Builder.Hint> hints = EnumSet.noneOf(Graph.Builder.Hint.class);
@@ -30,39 +31,139 @@ class IndexGraphBuilderImpl implements IndexGraph.Builder {
 		this.directed = directed;
 	}
 
+	IndexGraphBuilderImpl(IndexGraph g) {
+		GraphCapabilities capabilities = g.getCapabilities();
+		this.directed = capabilities.directed();
+		this.selfEdges = capabilities.selfEdges();
+		this.parallelEdges = capabilities.parallelEdges();
+		impl = Graphs.getIndexGraphImpl(g);
+	}
+
 	@Override
 	public IndexGraph build() {
-		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderArray =
-				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderLinked =
-				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderTable =
-				directed ? GraphTableDirected::new : GraphTableUndirected::new;
+		return chooseImpl().build(expectedVerticesNum, expectedEdgesNum);
+	}
 
-		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilder;
-		if (impl != null) {
-			if ("GraphArray".equals(impl))
-				baseBuilder = baseBuilderArray;
-			else if ("GraphLinked".equals(impl))
-				baseBuilder = baseBuilderLinked;
-			else if ("GraphTable".equals(impl))
-				baseBuilder = baseBuilderTable;
+	@Override
+	public IndexGraph buildCopyOf(IndexGraph g) {
+		return chooseImpl().buildCopyOf(g);
+	}
+
+	private static interface Impl {
+
+		IndexGraph build(int expectedVerticesNum, int expectedEdgesNum);
+
+		IndexGraph buildCopyOf(IndexGraph graph);
+
+	}
+
+	private Impl chooseImpl() {
+		Impl arrayImpl = directed ? new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphArrayDirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphArrayDirected(graph);
+			}
+		} : new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphArrayUndirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphArrayUndirected(graph);
+			}
+		};
+		Impl linkedImpl = directed ? new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphLinkedDirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphLinkedDirected(graph);
+			}
+		} : new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphLinkedUndirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphLinkedUndirected(graph);
+			}
+		};
+		Impl tableImpl = directed ? new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphTableDirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphTableDirected(graph);
+			}
+		} : new Impl() {
+
+			@Override
+			public IndexGraph build(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphTableUndirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph buildCopyOf(IndexGraph graph) {
+				return new GraphTableUndirected(graph);
+			}
+		};
+
+		Impl impl;
+		if (this.impl != null) {
+			if ("GraphArray".equals(this.impl))
+				impl = arrayImpl;
+			else if ("GraphLinked".equals(this.impl))
+				impl = linkedImpl;
+			else if ("GraphTable".equals(this.impl))
+				impl = tableImpl;
 			else
-				throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				throw new IllegalArgumentException("unknown 'impl' value: " + this.impl);
 		} else {
-			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
-				baseBuilder = baseBuilderTable;
-			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
-				baseBuilder = baseBuilderLinked;
+			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup) && !selfEdges && !parallelEdges)
+				impl = tableImpl;
+			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup) && !selfEdges)
+				impl = linkedImpl;
 			else
-				baseBuilder = baseBuilderArray;
+				impl = arrayImpl;
 		}
-		return baseBuilder.apply(Integer.valueOf(expectedVerticesNum), Integer.valueOf(expectedEdgesNum));
+		return impl;
 	}
 
 	@Override
 	public IndexGraph.Builder setDirected(boolean directed) {
 		this.directed = directed;
+		return this;
+	}
+
+	@Override
+	public IndexGraph.Builder allowSelfEdges(boolean selfEdges) {
+		this.selfEdges = selfEdges;
+		return this;
+	}
+
+	@Override
+	public IndexGraph.Builder allowParallelEdges(boolean parallelEdges) {
+		this.parallelEdges = parallelEdges;
 		return this;
 	}
 

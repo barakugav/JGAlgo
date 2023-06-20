@@ -36,13 +36,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private static final Node[] EmptyNodeArr = new Node[0];
 
 	/**
-	 * Create a new graph with no vertices and edges.
-	 */
-	GraphLinkedUndirected() {
-		this(0, 0);
-	}
-
-	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
 	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
@@ -54,7 +47,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		addInternalVerticesContainer(edgesContainer);
 	}
 
-	GraphLinkedUndirected(GraphLinkedUndirected g) {
+	GraphLinkedUndirected(IndexGraph g) {
 		super(g);
 
 		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
@@ -219,11 +212,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(false).build();
-
-	@Override
-	public IndexGraph copy() {
-		return new GraphLinkedUndirected(this);
-	}
 
 	private static class Node extends GraphLinkedAbstract.Node {
 

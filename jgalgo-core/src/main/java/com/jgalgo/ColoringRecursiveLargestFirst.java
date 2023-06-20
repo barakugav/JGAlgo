@@ -46,7 +46,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 	@Override
 	Coloring.Result computeColoring(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
-		ArgumentCheck.noSelfLoops(g, "no valid coloring in graphs with self loops");
+		ArgumentCheck.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
 		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
 		int n = g.vertices().size();

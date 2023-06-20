@@ -46,7 +46,7 @@ class GraphTableDirected extends GraphTableAbstract {
 		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphTableDirected(GraphTableDirected g) {
+	GraphTableDirected(IndexGraph g) {
 		super(g);
 	}
 
@@ -123,11 +123,6 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
-
-	@Override
-	public IndexGraph copy() {
-		return new GraphTableDirected(this);
-	}
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {

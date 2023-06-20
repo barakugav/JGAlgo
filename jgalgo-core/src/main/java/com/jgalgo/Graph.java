@@ -28,38 +28,39 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * assigned to vertices or edges, for example the length of a road might be a weight of an edge. Than, questions such as
  * "what is the shortest path between two cities?" might be answered using graph algorithms.
  * <p>
- * Each edge \(e=(u, v)\) in the graph has a <i>source</i>, \(u\), and a <i>target</i> \(v\). In undirected graphs the
- * 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and target as
- * interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the graph, we say the vertices \(u\) and \(v\) and
- * <i>neighbors</i>, or <i>adjacent</i>. The edges are usually stored in some list for each vertex, allowing efficient
- * iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we have both
- * <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex, respectively.
+ * Each edge \(e=(u, v)\) in the graph has a <i>source</i> vertex, \(u\), and a <i>target</i> vertex, \(v\). In
+ * undirected graphs the 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and
+ * target as interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the graph, we say the vertices \(u\) and
+ * \(v\) and <i>neighbors</i>, or <i>adjacent</i>. The edges are usually stored in some list for each vertex, allowing
+ * efficient iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we
+ * have both <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex,
+ * respectively.
  * <p>
  * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
  * <p>
  * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
- * <i>directed</i> namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
+ * <i>directed</i>, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
  * will not be contained in {@code outEdges(v)} and {@code inEdges(u)}. In an undirected graph, the edges are
  * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
  * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
- * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex. To check if a graph is directed or not, use the
- * {@link #getCapabilities()} method.
+ * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
+ * directed or not, use the {@link #getCapabilities()} method.
  * <p>
- * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. For example.
- * {@link #vertices()} returns an {@link IntSet} of all the {@code int} IDs of the vertices of the graph. This allow for
- * a more efficient graph implementations, rather then creating objects for vertices and edges. Vertices and edges may
- * be created by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose
- * the {@code int} ID and will return it to the user. Alternativaly, the methods {@link #addVertex(int)} and
+ * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
+ * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
+ * by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose the
+ * {@code int} ID and will return it to the user. Alternatively, the methods {@link #addVertex(int)} and
  * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
  * <p>
- * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as {@code double}
- * primitive, {@code boolean} flag or an arbitrary Object. Multiple different weights can be added to the vertices
- * and/or edges, each is identified by some key. When a new weights type is added to a graph, its added to all
- * vertices/edges with either user provided default weight value, or null (0 in case the weight type is primitive). The
- * weights are accessed via the {@link Weights} container, which can be used to get or set an vertex/edge weight, and
- * can be passed to algorithms as {@link WeightFunction} for example. See {@link #addVerticesWeights(Object, Class)} and
- * {@link #addEdgesWeights(Object, Class)}, or {@link Weights} for the full weights documentation.
+ * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as any primitive (for
+ * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
+ * the vertices and/or edges, each is identified by some key. When a new weights type is added to a graph, it is added
+ * to <i>all</i> the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in case
+ * the weight type is primitive). The weights are accessed via the {@link Weights} container, which can be used to get
+ * or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
+ * {@link #addVerticesWeights(Object, Class)} and {@link #addEdgesWeights(Object, Class)}, or {@link Weights} for the
+ * full weights documentation.
  * <p>
  * Each graph expose an <i>Index</i> view on itself via the {@link #indexGraph()} method. The returned
  * {@link IndexGraph} is a graph in which the identifiers of the vertices are always {@code (0,1,2, ...,verticesNum-1)},
@@ -644,11 +645,14 @@ public interface Graph {
 	/**
 	 * Create a copy of this graph.
 	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities.
+	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities. The
+	 * returned Graph will always be modifiable, with no side affects on the original graph.
 	 *
 	 * @return an identical copy of this graph
 	 */
-	Graph copy();
+	default Graph copy() {
+		return newBuilderFrom(this).buildCopyOf(this);
+	}
 
 	/**
 	 * Get an unmodifiable view of this graph.
@@ -701,6 +705,20 @@ public interface Graph {
 	}
 
 	/**
+	 * Create a new graph builder based on a given implementation.
+	 * <p>
+	 * The new builder will build graphs with the same capabilities as the given graph, possibly choosing to use a
+	 * similar implementation. The builder will NOT copy the graph itself (the vertices, edges and weights), for such
+	 * use case see {@link Graph#copy()} and {@link Graph.Builder#buildCopyOf(Graph)}.
+	 *
+	 * @param  g a graph from which the builder should copy its capabilities
+	 * @return   a new graph builder that will create graphs with the same capabilities of the given graph
+	 */
+	static Graph.Builder newBuilderFrom(Graph g) {
+		return new GraphImpl.Builder(g);
+	}
+
+	/**
 	 * A builder for {@link Graph} objects.
 	 *
 	 * @see    Graph#newBuilderDirected()
@@ -717,12 +735,45 @@ public interface Graph {
 		Graph build();
 
 		/**
+		 * Create a copy of a given graph.
+		 * <p>
+		 * An identical copy of the given graph will be created, with the same vertices, edges and weights. The returned
+		 * Graph will always be modifiable, with no side affects on the original graph.
+		 * <p>
+		 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the builder
+		 * configuration, rather than copied from the given graph. Note for example that if the builder chooses to use
+		 * an implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not
+		 * called with {@code true}), attempting to create a copy of a graph that does contains self edges will result
+		 * in an exception.
+		 *
+		 * @param  g the original graph to copy
+		 * @return   an identical copy of the given graph
+		 */
+		Graph buildCopyOf(Graph g);
+
+		/**
 		 * Determine if graphs built by this builder should be directed or not.
 		 *
 		 * @param  directed if {@code true}, graphs built by this builder will be directed
 		 * @return          this builder
 		 */
 		Graph.Builder setDirected(boolean directed);
+
+		/**
+		 * Determine if graphs built by this builder should be support self edges.
+		 *
+		 * @param  selfEdges if {@code true}, graphs built by this builder will support self edges
+		 * @return           this builder
+		 */
+		Graph.Builder allowSelfEdges(boolean selfEdges);
+
+		/**
+		 * Determine if graphs built by this builder should be support parallel edges.
+		 *
+		 * @param  parallelEdges if {@code true}, graphs built by this builder will support parallel edges
+		 * @return               this builder
+		 */
+		Graph.Builder allowParallelEdges(boolean parallelEdges);
 
 		/**
 		 * Set the expected number of vertices that will exist in the graph.

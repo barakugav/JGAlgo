@@ -32,10 +32,21 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphArrayAbstract(GraphArrayAbstract g) {
+	GraphArrayAbstract(IndexGraph g) {
 		super(g);
-		edgeEndpointsContainer = g.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
+		if (g instanceof GraphArrayAbstract) {
+			GraphArrayAbstract g0 = (GraphArrayAbstract) g;
+			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
+		} else {
+
+			final int m = edgesIdStrat.size();
+			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
+					newArr -> edgeEndpoints = newArr);
+			for (int e = 0; e < m; e++)
+				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
+			addInternalEdgesContainer(edgeEndpointsContainer);
+		}
 	}
 
 	@Override
