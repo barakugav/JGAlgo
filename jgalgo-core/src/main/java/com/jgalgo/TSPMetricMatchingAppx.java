@@ -56,21 +56,17 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 		int[] degree = GraphsUtils.calcDegree(g, mst);
-		IndexGraph mG = IndexGraph.newBuilderUndirected().build();
+		int mGn = 0;
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
-				mVtoV[mG.addVertex()] = u;
-		int mGn = mG.vertices().size();
+				mVtoV[mGn++] = u;
+		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
 		Weights.Double mGWeightsNeg = mG.addEdgesWeights(EdgeWeightKey, double.class);
-		Weights.Int mGEdgeRef = mG.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		for (int u = 0; u < mGn; u++) {
-			for (int v = u + 1; v < mGn; v++) {
-				int e = g.getEdge(mVtoV[u], mVtoV[v]);
-				int en = mG.addEdge(u, v);
-				mGWeightsNeg.set(en, -w.weight(g.getEdge(mVtoV[u], mVtoV[v])));
-				mGEdgeRef.set(en, e);
-			}
+		for (int e : mG.edges()) {
+			int u = mVtoV[mG.edgeSource(e)];
+			int v = mVtoV[mG.edgeTarget(e)];
+			mGWeightsNeg.set(e, -w.weight(g.getEdge(u, v)));
 		}
 
 		/* Calculate maximum matching between the odd vertices */
@@ -89,13 +85,12 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];
 			int g1Edge = g1.addEdge(u, v);
-			g1EdgeRef.set(g1Edge, mGEdgeRef.getInt(mGedge));
+			g1EdgeRef.set(g1Edge, g.getEdge(u, v));
 		}
 
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
-		mG.clear();
 		return cycle;
 	}
 
