@@ -36,6 +36,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final double EPS = 0.00001;
 
+	/* Although the paper suggest a value of 10, this seems only to slow us down */
+	private static final int SourceChoosingUnfoldingDepth = 0;
+
 	/**
 	 * Create a new minimum mean cycle algorithm.
 	 */
@@ -49,12 +52,42 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
-		final int n = g.vertices().size();
 		w = WeightsImpl.localEdgeWeightFunction(g, w);
+
+		Path cycle = computeMinimumMeanCycle0(g, w);
+
+		/* The regular algorithm doesn't handle self loops (and specifically skip CC with a single vertex) */
+		if (g.getCapabilities().selfEdges()) {
+			int bestSelfLoop = -1;
+			double bestSelfLoopWeight = Double.POSITIVE_INFINITY;
+			for (int e : g.edges()) {
+				if (g.edgeSource(e) != g.edgeTarget(e))
+					continue;
+				double ew = w.weight(e);
+				if (ew < bestSelfLoopWeight) {
+					bestSelfLoop = e;
+					bestSelfLoopWeight = ew;
+				}
+			}
+			if (bestSelfLoop != -1) {
+				double bestCycleWeight = cycle != null ? cycle.weight(w) : Double.POSITIVE_INFINITY;
+				if (bestCycleWeight > bestCycleWeight) {
+					int loopVertex = g.edgeSource(bestSelfLoop);
+					cycle = new PathImpl(g, loopVertex, loopVertex, IntList.of(bestSelfLoop));
+				}
+			}
+		}
+
+		return cycle;
+	}
+
+	private Path computeMinimumMeanCycle0(IndexGraph g, WeightFunction w) {
+		final int n = g.vertices().size();
 
 		/* find all SCC */
 		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
 		final int ccNum = cc.getNumberOfCcs();
+		SourceChooser sourceChooser = new SourceChooser(g, cc);
 
 		/* init distances and policy */
 		int maxCcSize = -1;
@@ -67,7 +100,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 			Arrays.fill(policy[k], 0, n, -1);
 		}
 		boolean[] visit1 = new boolean[n];
-		boolean[] visit2 = new boolean[n];;
+		boolean[] visit2 = new boolean[n];
 
 		/* operate on each SCC separately */
 		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;
@@ -77,10 +110,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
 			final int ccSize = cc.getCcVertices(ccIdx).size();
 			if (ccSize < 2)
-				continue; // TODO consider self loops
+				continue;
 
-			// TODO better source choice
-			int source = cc.getCcVertices(ccIdx).iterator().nextInt();
+			int source = sourceChooser.chooseSource(ccIdx);
 			boolean[] firstVisit = visit1;
 			d[0][source] = 0;
 			policy[0][source] = -1;
@@ -160,6 +192,68 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 			}
 		}
 		throw new IllegalStateException("shouldn't happend! implementation bug");
+	}
+
+	@SuppressWarnings("unused")
+	private static class SourceChooser {
+
+		final IndexGraph g;
+		final ConnectedComponentsAlgo.Result cc;
+		final int[] interCcDegree;
+		final int[] f;
+		final int[] l;
+
+		SourceChooser(IndexGraph g, ConnectedComponentsAlgo.Result cc) {
+			this.g = g;
+			this.cc = cc;
+
+			if (SourceChoosingUnfoldingDepth > 0) {
+				final int n = g.vertices().size();
+				interCcDegree = new int[n];
+				f = new int[n];
+				l = new int[n];
+				for (int u = 0; u < n; u++) {
+					final int uCc = cc.getVertexCc(u);
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						eit.nextInt();
+						int v = eit.target();
+						if (uCc == cc.getVertexCc(v))
+							interCcDegree[u]++;
+					}
+				}
+			} else {
+				interCcDegree = null;
+				f = null;
+				l = null;
+			}
+		}
+
+		int chooseSource(int ccIdx) {
+			int source = cc.getCcVertices(ccIdx).iterator().nextInt();
+			if (SourceChoosingUnfoldingDepth > 0) {
+				/* choose a source by unfolding the graph N layers from each possible source */
+				for (int v : cc.getCcVertices(ccIdx))
+					f[v] = l[v] = 0;
+				for (int i = 0; i < SourceChoosingUnfoldingDepth; i++) {
+					for (int u : cc.getCcVertices(ccIdx)) {
+						final int uCc = cc.getVertexCc(u);
+						l[u] = interCcDegree[u];
+						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							eit.nextInt();
+							int v = eit.target();
+							if (uCc == cc.getVertexCc(v))
+								l[u] += f[v];
+						}
+					}
+					for (int u : cc.getCcVertices(ccIdx))
+						f[u] = l[u];
+				}
+				for (int u : cc.getCcVertices(ccIdx))
+					if (l[source] > l[u])
+						source = u;
+			}
+			return source;
+		}
 	}
 
 }

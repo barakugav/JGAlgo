@@ -110,6 +110,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
+		w0 = WeightsImpl.localEdgeWeightFunction(g, w0);
 		int[] potential = new int[n];
 
 		BitSet connected = new BitSet(n);

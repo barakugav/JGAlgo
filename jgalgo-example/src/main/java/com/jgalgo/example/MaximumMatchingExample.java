@@ -43,7 +43,7 @@ public class MaximumMatchingExample {
 		}
 
 		System.out.println("The maximum matching in the graph has a size of " + matching.edges().size());
-		System.out.println("The maximum matching is: " + matching);
+		System.out.println("The maximum matching is: " + matching.edges());
 	}
 
 	public static Graph createGraph() {

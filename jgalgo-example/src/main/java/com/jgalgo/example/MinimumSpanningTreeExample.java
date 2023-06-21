@@ -69,7 +69,7 @@ public class MinimumSpanningTreeExample {
 		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);
 
 		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));
-		System.out.println("The minimum spanning tree of the graph has the following edges: " + mst);
+		System.out.println("The minimum spanning tree of the graph has the following edges: " + mst.edges());
 		System.out.println("The minimum spanning tree weight is " + mst.weight(w));
 	}
 
