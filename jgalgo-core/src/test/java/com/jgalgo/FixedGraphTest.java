@@ -29,13 +29,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class UnmodifiableGraphTest extends TestBase {
+public class FixedGraphTest extends TestBase {
 
 	private static final Object VerticesWeightsKey = new Utils.Obj("vWeights");
 	private static final Object EdgesWeightsKey = new Utils.Obj("eWeights");
 
 	private static Graph createGraph(boolean directed) {
-		final long seed = 0x97dc96ffefd7165bL;
+		final long seed = 0xa06bac17dc99556dL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
 		Graph g = Graph.newBuilderUndirected().setDirected(directed).build();
@@ -58,17 +58,31 @@ public class UnmodifiableGraphTest extends TestBase {
 		return g;
 	}
 
+	static Graph fixedCopy(Graph g) {
+		if (g instanceof IndexGraph)
+			return fixedCopy((IndexGraph) g);
+		return GraphImpl.fixedCopy(g);
+	}
+
+	static IndexGraph fixedCopy(IndexGraph g) {
+		if (g.getCapabilities().directed()) {
+			return new GraphCSRUnmappedDirected(g);
+		} else {
+			return new GraphCSRUnmappedUndirected(g);
+		}
+	}
+
 	@Test
 	public void testVertices() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
 
-				assertEquals(gOrig.vertices().size(), gUnmod.vertices().size());
-				assertEquals(gOrig.vertices(), gUnmod.vertices());
+				assertEquals(gOrig.vertices().size(), gFixed.vertices().size());
+				assertEquals(gOrig.vertices(), gFixed.vertices());
 			}
 		}
 	}
@@ -77,12 +91,12 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdges() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
-				assertEquals(gOrig.edges().size(), gUnmod.edges().size());
-				assertEquals(gOrig.edges(), gUnmod.edges());
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
+				assertEquals(gOrig.edges().size(), gFixed.edges().size());
+				assertEquals(gOrig.edges(), gFixed.edges());
 			}
 		}
 	}
@@ -91,23 +105,23 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testAddRemoveVertex() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
 
 				int nonExistingVertex;
 				for (int v = 0;; v++) {
-					if (!gUnmod.vertices().contains(v)) {
+					if (!gFixed.vertices().contains(v)) {
 						nonExistingVertex = v;
 						break;
 					}
 				}
 
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addVertex());
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addVertex(nonExistingVertex));
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.addVertex());
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.addVertex(nonExistingVertex));
 
-				int vertexToRemove = gUnmod.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeVertex(vertexToRemove));
+				int vertexToRemove = gFixed.vertices().iterator().nextInt();
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.removeVertex(vertexToRemove));
 			}
 		}
 	}
@@ -116,27 +130,27 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testAddRemoveEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
 
-				IntIterator vit = gUnmod.vertices().iterator();
+				IntIterator vit = gFixed.vertices().iterator();
 				int u = vit.nextInt();
 				int v = vit.nextInt();
 
 				int nonExistingEdge;
 				for (int e = 0;; e++) {
-					if (!gUnmod.edges().contains(e)) {
+					if (!gFixed.edges().contains(e)) {
 						nonExistingEdge = e;
 						break;
 					}
 				}
 
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addEdge(u, v));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addEdge(u, v, nonExistingEdge));
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.addEdge(u, v));
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.addEdge(u, v, nonExistingEdge));
 
-				int edgeToRemove = gUnmod.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdge(edgeToRemove));
+				int edgeToRemove = gFixed.edges().iterator().nextInt();
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.removeEdge(edgeToRemove));
 			}
 		}
 	}
@@ -144,15 +158,16 @@ public class UnmodifiableGraphTest extends TestBase {
 	@Test
 	public void testEdgesOutIn() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gOrig = createGraph(directed);
+				if (index)
+					gOrig = gOrig.indexGraph();
+				Graph gFixed = fixedCopy(gOrig);
 
-				for (int u : gUnmod.vertices()) {
-					EdgeSet edges = gUnmod.outEdges(u);
-					assertEquals(gOrig.outEdges(u).size(), edges.size());
+				for (int u : gFixed.vertices()) {
+					EdgeSet edges = gFixed.outEdges(u);
+					if (gOrig.outEdges(u).size() != edges.size())
+						assertEquals(gOrig.outEdges(u).size(), edges.size());
 					assertEquals(gOrig.outEdges(u), edges);
 
 					IntSet iteratedEdges = new IntOpenHashSet();
@@ -162,9 +177,10 @@ public class UnmodifiableGraphTest extends TestBase {
 						assertEquals(e, peekNext);
 
 						assertEquals(u, eit.source());
-						assertEquals(gOrig.edgeEndpoint(e, u), eit.target());
-						assertEquals(gUnmod.edgeEndpoint(e, u), eit.target());
-						assertEquals(u, gUnmod.edgeEndpoint(e, eit.target()));
+						if (gOrig.edgeEndpoint(e, u) != eit.target())
+							assertEquals(gOrig.edgeEndpoint(e, u), eit.target());
+						assertEquals(gFixed.edgeEndpoint(e, u), eit.target());
+						assertEquals(u, gFixed.edgeEndpoint(e, eit.target()));
 
 						iteratedEdges.add(e);
 					}
@@ -178,8 +194,8 @@ public class UnmodifiableGraphTest extends TestBase {
 						}
 					}
 				}
-				for (int v : gUnmod.vertices()) {
-					EdgeSet edges = gUnmod.inEdges(v);
+				for (int v : gFixed.vertices()) {
+					EdgeSet edges = gFixed.inEdges(v);
 					assertEquals(gOrig.inEdges(v).size(), edges.size());
 					assertEquals(gOrig.inEdges(v), edges);
 
@@ -191,8 +207,8 @@ public class UnmodifiableGraphTest extends TestBase {
 
 						assertEquals(v, eit.target());
 						assertEquals(gOrig.edgeEndpoint(e, v), eit.source());
-						assertEquals(gUnmod.edgeEndpoint(e, v), eit.source());
-						assertEquals(v, gUnmod.edgeEndpoint(e, eit.source()));
+						assertEquals(gFixed.edgeEndpoint(e, v), eit.source());
+						assertEquals(v, gFixed.edgeEndpoint(e, eit.source()));
 
 						iteratedEdges.add(e);
 					}
@@ -213,22 +229,22 @@ public class UnmodifiableGraphTest extends TestBase {
 	@Test
 	public void testEdgesSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gOrig = createGraph(directed);
+				if (index)
+					gOrig = gOrig.indexGraph();
+				Graph gFixed = fixedCopy(gOrig);
 
-				for (int u : gUnmod.vertices()) {
-					for (int v : gUnmod.vertices()) {
-						EdgeSet edges = gUnmod.getEdges(u, v);
+				for (int u : gFixed.vertices()) {
+					for (int v : gFixed.vertices()) {
+						EdgeSet edges = gFixed.getEdges(u, v);
 						assertEquals(gOrig.getEdges(u, v).size(), edges.size());
 						assertEquals(gOrig.getEdges(u, v), edges);
 
 						if (edges.isEmpty()) {
-							assertEquals(-1, gUnmod.getEdge(u, v));
+							assertEquals(-1, gFixed.getEdge(u, v));
 						} else {
-							int e = gUnmod.getEdge(u, v);
+							int e = gFixed.getEdge(u, v);
 							assertNotEquals(-1, e);
 							assertTrue(edges.contains(e));
 						}
@@ -242,8 +258,8 @@ public class UnmodifiableGraphTest extends TestBase {
 							assertEquals(v, eit.target());
 							assertEquals(gOrig.edgeEndpoint(e, u), v);
 							assertEquals(gOrig.edgeEndpoint(e, v), u);
-							assertEquals(u, gUnmod.edgeEndpoint(e, v));
-							assertEquals(v, gUnmod.edgeEndpoint(e, u));
+							assertEquals(u, gFixed.edgeEndpoint(e, v));
+							assertEquals(v, gFixed.edgeEndpoint(e, u));
 						}
 					}
 				}
@@ -255,13 +271,13 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testRemoveEdgesOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
-				int v = gUnmod.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdgesOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeOutEdgesOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeInEdgesOf(v));
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
+				int v = gFixed.vertices().iterator().nextInt();
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.removeEdgesOf(v));
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.removeOutEdgesOf(v));
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.removeInEdgesOf(v));
 			}
 		}
 	}
@@ -270,11 +286,11 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testReverseEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
-				int e = gUnmod.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.reverseEdge(e));
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
+				int e = gFixed.edges().iterator().nextInt();
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.reverseEdge(e));
 			}
 		}
 	}
@@ -282,14 +298,14 @@ public class UnmodifiableGraphTest extends TestBase {
 	@Test
 	public void testEdgeGetSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
-				for (int e : gUnmod.edges()) {
-					assertEquals(gOrig.edgeSource(e), gUnmod.edgeSource(e));
-					assertEquals(gOrig.edgeTarget(e), gUnmod.edgeTarget(e));
+				Graph gOrig = createGraph(directed);
+				if (index)
+					gOrig = gOrig.indexGraph();
+				Graph gFixed = fixedCopy(gOrig);
+				for (int e : gFixed.edges()) {
+					assertEquals(gOrig.edgeSource(e), gFixed.edgeSource(e));
+					assertEquals(gOrig.edgeTarget(e), gFixed.edgeTarget(e));
 				}
 			}
 		}
@@ -299,11 +315,11 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testClear() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.clear());
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.clearEdges());
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.clear());
+				assertThrows(UnsupportedOperationException.class, () -> gFixed.clearEdges());
 			}
 		}
 	}
@@ -311,25 +327,24 @@ public class UnmodifiableGraphTest extends TestBase {
 	@Test
 	public void testVerticesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
 			for (boolean index : BooleanList.of(false, true)) {
+				Graph gOrig0 = createGraph(directed);
+				Graph gFixed0 = fixedCopy(gOrig0);
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
 
-				assertEquals(gOrig.getVerticesWeightsKeys(), gUnmod.getVerticesWeightsKeys());
+				assertEquals(gOrig.getVerticesWeightsKeys(), gFixed.getVerticesWeightsKeys());
 				Weights.Int wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
-				Weights.Int wUnmod = gUnmod.getVerticesWeights(VerticesWeightsKey);
+				Weights.Int wFixed = gFixed.getVerticesWeights(VerticesWeightsKey);
 
-				for (int v : gUnmod.vertices())
-					assertEquals(wOrig.getInt(v), wUnmod.getInt(v));
-				assertEquals(wOrig.defaultWeightInt(), wUnmod.defaultWeightInt());
+				for (int v : gFixed.vertices())
+					assertEquals(wOrig.getInt(v), wFixed.getInt(v));
+				assertEquals(wOrig.defaultWeightInt(), wFixed.defaultWeightInt());
 
-				int vertex = gUnmod.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> wUnmod.set(vertex, 42));
-				assertThrows(UnsupportedOperationException.class,
-						() -> gUnmod.removeVerticesWeights(VerticesWeightsKey));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addVerticesWeights("key", Object.class));
+				int vertex = gFixed.vertices().iterator().nextInt();
+				wFixed.set(vertex, 42);
+				gFixed.removeVerticesWeights(VerticesWeightsKey);
+				gFixed.addVerticesWeights("key", Object.class);
 			}
 		}
 	}
@@ -337,24 +352,24 @@ public class UnmodifiableGraphTest extends TestBase {
 	@Test
 	public void testEdgesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gOrig = createGraph(directed);
+				if (index)
+					gOrig = gOrig.indexGraph();
+				Graph gFixed = fixedCopy(gOrig);
 
-				assertEquals(gOrig.getEdgesWeightsKeys(), gUnmod.getEdgesWeightsKeys());
+				assertEquals(gOrig.getEdgesWeightsKeys(), gFixed.getEdgesWeightsKeys());
 				Weights.Int wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
-				Weights.Int wUnmod = gUnmod.getEdgesWeights(EdgesWeightsKey);
+				Weights.Int wFixed = gFixed.getEdgesWeights(EdgesWeightsKey);
 
-				for (int e : gUnmod.edges())
-					assertEquals(wOrig.getInt(e), wUnmod.getInt(e));
-				assertEquals(wOrig.defaultWeightInt(), wUnmod.defaultWeightInt());
+				for (int e : gFixed.edges())
+					assertEquals(wOrig.getInt(e), wFixed.getInt(e));
+				assertEquals(wOrig.defaultWeightInt(), wFixed.defaultWeightInt());
 
-				int edge = gUnmod.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> wUnmod.set(edge, 42));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.removeEdgesWeights(EdgesWeightsKey));
-				assertThrows(UnsupportedOperationException.class, () -> gUnmod.addEdgesWeights("key", Object.class));
+				int edge = gFixed.edges().iterator().nextInt();
+				wFixed.set(edge, 42);
+				gFixed.removeEdgesWeights(EdgesWeightsKey);
+				gFixed.addEdgesWeights("key", Object.class);
 			}
 		}
 	}
@@ -364,17 +379,17 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gFixed0 = fixedCopy(gOrig0);
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
+				Graph gFixed = index ? gFixed0.indexGraph() : gFixed0;
 
 				GraphCapabilities capOrig = gOrig.getCapabilities();
-				GraphCapabilities capUnmod = gUnmod.getCapabilities();
+				GraphCapabilities capFixed = gFixed.getCapabilities();
 
-				assertEquals(capOrig.parallelEdges(), capUnmod.parallelEdges());
-				assertEquals(capOrig.selfEdges(), capUnmod.selfEdges());
-				assertEquals(capOrig.directed(), capUnmod.directed());
+				assertEquals(capOrig.parallelEdges(), capFixed.parallelEdges());
+				assertEquals(capOrig.selfEdges(), capFixed.selfEdges());
+				assertEquals(capOrig.directed(), capFixed.directed());
 			}
 		}
 	}

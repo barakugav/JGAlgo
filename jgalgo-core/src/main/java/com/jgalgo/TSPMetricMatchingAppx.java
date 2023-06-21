@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import java.util.Arrays;
+
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -29,9 +31,6 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
 	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
-
-	private static final Object EdgeWeightKey = new Utils.Obj("weight");
-	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Create a new TSP \(3/2\)-approximation algorithm.
@@ -62,7 +61,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
 		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
-		Weights.Double mGWeightsNeg = mG.addEdgesWeights(EdgeWeightKey, double.class);
+		Weights.Double mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);
 		for (int e : mG.edges()) {
 			int u = mVtoV[mG.edgeSource(e)];
 			int v = mVtoV[mG.edgeTarget(e)];
@@ -73,20 +72,27 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
-		for (int v = 0; v < n; v++)
-			g1.addVertex();
-		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		GraphBuilderFixedUnmapped g1Builder = GraphBuilderFixedUnmapped.newUndirected();
+		for (int v = 0; v < n; v++) {
+			int vFixed = g1Builder.addVertex();
+			assert vFixed == v;
+		}
+		int[] g1EdgeRef = new int[mst.size()];
 		for (int e : mst) {
-			int g1Edge = g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			g1EdgeRef.set(g1Edge, e);
+			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));
+			if (g1Edge == g1EdgeRef.length)
+				g1EdgeRef = Arrays.copyOf(g1EdgeRef, Math.max(2, 2 * g1EdgeRef.length));
+			g1EdgeRef[g1Edge] = e;
 		}
 		for (int mGedge : matching.edges()) {
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];
-			int g1Edge = g1.addEdge(u, v);
-			g1EdgeRef.set(g1Edge, g.getEdge(u, v));
+			int g1Edge = g1Builder.addEdge(u, v);
+			if (g1Edge == g1EdgeRef.length)
+				g1EdgeRef = Arrays.copyOf(g1EdgeRef, Math.max(2, 2 * g1EdgeRef.length));
+			g1EdgeRef[g1Edge] = g.getEdge(u, v);
 		}
+		IndexGraph g1 = g1Builder.build();
 
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 

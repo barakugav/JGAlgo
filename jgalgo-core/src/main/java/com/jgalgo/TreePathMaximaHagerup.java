@@ -19,8 +19,10 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.Utils.BiInt2IntFunction;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -79,13 +81,12 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 		private final WeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
-		private final IndexGraph tree = IndexGraph.newBuilderUndirected().build();
+		private final IndexGraph tree;
 		private int[] parents;
 		private int[] depths;
 		private int treeHeight;
 		/* Map an edge it 'tree' to an edge in 'tOrig' */
-		private final Weights.Int edgeRef = tree.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
+		private final int[] edgeRef;
 
 		private final LowestCommonAncestorStatic lcaAlgo = new LowestCommonAncestorStaticRMQ();
 		private int root;
@@ -120,11 +121,13 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				};
 				getNumberOfTrailingZeros = Integer::numberOfTrailingZeros;
 			}
+
+			Pair<IndexGraph, int[]> t = buildBoruvkaFullyBranchingTree();
+			tree = t.first();
+			edgeRef = t.second();
 		}
 
 		TreePathMaxima.Result calcTPM(TreePathMaxima.Queries queries) {
-			buildBoruvkaFullyBranchingTree();
-
 			int[] lcaQueries = splitQueriesIntoLCAQueries(queries);
 
 			int[] q = calcQueriesPerVertex(lcaQueries);
@@ -159,9 +162,9 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					}
 				}
 
-				res[i] = (va == -1 || (ua != -1 && w.weight(edgeRef.getInt(ua)) >= w.weight(edgeRef.getInt(va))))
-						? (ua != -1 ? edgeRef.getInt(ua) : -1)
-						: /* va != -1 */ edgeRef.getInt(va);
+				res[i] = (va == -1 || (ua != -1 && w.weight(edgeRef[ua]) >= w.weight(edgeRef[va])))
+						? (ua != -1 ? edgeRef[ua] : -1)
+						: /* va != -1 */ edgeRef[va];
 			}
 
 			return new TreePathMaximaUtils.ResultImpl(res);
@@ -182,7 +185,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				int u = tree.edgeEndpoint(edgeToChild, v);
 
 				a[v] = subseq(a[u], q[u], q[v]);
-				int j = binarySearch(a[v], w.weight(edgeRef.getInt(edgeToChild)), edgesFromRoot, edgeRef);
+				int j = binarySearch(a[v], w.weight(edgeRef[edgeToChild]), edgesFromRoot);
 				a[v] = repSuf(a[v], depth, j);
 
 				if (depth == treeHeight - 1) {
@@ -219,9 +222,9 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			return successor(au, qv);
 		}
 
-		private int binarySearch(int av, double weight, IntList edgesToRoot, Weights.Int edgeData) {
+		private int binarySearch(int av, double weight, IntList edgesToRoot) {
 			int avsize = getBitCount.applyAsInt(av);
-			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(getIthbit.apply(av, 0) - 1))) < weight)
+			if (avsize == 0 || w.weight(edgeRef[edgesToRoot.getInt(getIthbit.apply(av, 0) - 1)]) < weight)
 				return 0;
 
 			for (int from = 0, to = avsize;;) {
@@ -229,7 +232,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					return getIthbit.apply(av, from) + 1;
 				int mid = (from + to) / 2;
 				int avi = getIthbit.apply(av, mid);
-				if (w.weight(edgeData.getInt(edgesToRoot.getInt(avi - 1))) >= weight)
+				if (w.weight(edgeRef[edgesToRoot.getInt(avi - 1)]) >= weight)
 					from = mid;
 				else
 					to = mid;
@@ -242,7 +245,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			return av;
 		}
 
-		private void buildBoruvkaFullyBranchingTree() {
+		private Pair<IndexGraph, int[]> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices().size();
 			int[] minEdges = new int[n * 2];
 			double[] minEdgesWeight = new double[n];
@@ -254,12 +257,15 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			IntArrayList parents = new IntArrayList();
 			IntArrayList depths = new IntArrayList();
 
+			GraphBuilderFixedUnmapped treeBuilder = GraphBuilderFixedUnmapped.newUndirected();
+			int[] edgeRef = IntArrays.EMPTY_ARRAY;
+
 			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */
-			assert tree.vertices().isEmpty();
 			depths.ensureCapacity(depths.size() + n);
 			parents.ensureCapacity(parents.size() + n);
 			for (int v = 0; v < n; v++) {
-				vTv[v] = tree.addVertex();
+				int vFixed = vTv[v] = treeBuilder.addVertex();
+				assert v == vFixed;
 				depths.add(0);
 				parents.add(-1);
 			}
@@ -337,7 +343,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				depths.ensureCapacity(depths.size() + nNext);
 				parents.ensureCapacity(parents.size() + nNext);
 				for (int V = 0; V < nNext; V++) {
-					int nextV = tree.addVertex();
+					int nextV = treeBuilder.addVertex();
 					vTvNext[V] = nextV;
 
 					/*
@@ -354,9 +360,11 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				for (int u = 0; u < n; u++) {
 					int child = vTv[u];
 					int parent = vTvNext[vNext[u]];
-					int e = tree.addEdge(child, parent);
+					int e = treeBuilder.addEdge(child, parent);
 					int eOrig = minEdges[u * 2 + 0];
-					edgeRef.set(e, eOrig);
+					if (e == edgeRef.length)
+						edgeRef = Arrays.copyOf(edgeRef, Math.max(2, 2 * edgeRef.length));
+					edgeRef[e] = eOrig;
 
 					parents.set(child, parent);
 				}
@@ -394,9 +402,11 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			 */
 			this.parents = parents.elements();
 			this.depths = depths.elements();
-			n = tree.vertices().size();
+			n = treeBuilder.verticesNum();
 			for (int u = 0; u < n; u++)
 				this.depths[u] = treeHeight - this.depths[u] - 1;
+
+			return Pair.of(treeBuilder.build(), edgeRef);
 		}
 
 		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.Queries queries) {

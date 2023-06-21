@@ -277,9 +277,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		@Override
 		public int target() {
-			int u0 = edgeSource(lastEdge);
-			int v0 = edgeTarget(lastEdge);
-			return source == u0 ? v0 : u0;
+			return edgeEndpoint(lastEdge, source);
 		}
 	}
 

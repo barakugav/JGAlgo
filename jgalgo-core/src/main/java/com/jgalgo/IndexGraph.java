@@ -221,6 +221,15 @@ public interface IndexGraph extends Graph {
 		return newBuilderFrom(this).buildCopyOf(this);
 	}
 
+	// @Override
+	// default IndexGraph fixedCopy() {
+	// if (getCapabilities().directed()) {
+	// return new GraphCSRUnmappedDirected(this);
+	// } else {
+	// return new GraphCSRUnmappedUndirected(this);
+	// }
+	// }
+
 	@Override
 	default IndexGraph unmodifiableView() {
 		return Graphs.unmodifiableView(this);

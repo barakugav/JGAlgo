@@ -24,7 +24,7 @@ class TSPMetricUtils {
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, int[] edgeRef) {
 		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
@@ -42,7 +42,7 @@ class TSPMetricUtils {
 		BitSet visited = new BitSet(n);
 		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e0 = it.nextInt();
-			int e = edgeRef.getInt(e0);
+			int e = edgeRef[e0];
 			final int u = it.source();
 			if (firstVertex == -1)
 				firstVertex = u;

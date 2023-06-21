@@ -112,6 +112,8 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		WeightsImpl.Index<E> copy(IdStrategy idStrat);
 
+		WeightsImpl.Index<E> copyMapped(IdStrategy idStrat, int[] mapOldToNew);
+
 		static <D> WeightsImpl.Index<D> newInstance(IdStrategy idStart, Class<? super D> type, D defVal) {
 			@SuppressWarnings("rawtypes")
 			WeightsImpl container;
@@ -161,6 +163,14 @@ interface WeightsImpl<E> extends Weights<E> {
 			if (!(weights instanceof WeightsImpl.Index<?>))
 				throw new IllegalArgumentException();
 			return ((WeightsImpl.Index<?>) weights).copy(idStart);
+		}
+
+		static WeightsImpl.Index<?> copyOfMapped(Weights<?> weights, IdStrategy idStart, int[] mapOldToNew) {
+			if (weights instanceof WeightsImpl.Unmodifiable<?>)
+				weights = ((WeightsImpl.Unmodifiable<?>) weights).weights;
+			if (!(weights instanceof WeightsImpl.Index<?>))
+				throw new IllegalArgumentException();
+			return ((WeightsImpl.Index<?>) weights).copyMapped(idStart, mapOldToNew);
 		}
 
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
@@ -296,6 +306,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
+			public WeightsImpl.Index.Obj<E> copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Obj<E> copy = new WeightsImpl.Index.Obj<>(idStrat, defaultWeight, type);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
+				return copy;
+			}
+
+			@Override
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
@@ -401,6 +423,18 @@ interface WeightsImpl<E> extends Weights<E> {
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);
 				copy.weights = Arrays.copyOf(weights, idStrat.size());
+				return copy;
+			}
+
+			@Override
+			public WeightsImpl.Index.Byte copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
 				return copy;
 			}
 
@@ -514,6 +548,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
+			public WeightsImpl.Index.Short copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
+				return copy;
+			}
+
+			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -623,6 +669,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
+			public WeightsImpl.Index.Int copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
+				return copy;
+			}
+
+			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -661,15 +719,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 				weights = LongArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-			}
-
-			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
-				super(idStrat);
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-
-				weights = Arrays.copyOf(orig.weights, idStrat.size());
-				defaultWeight = orig.defaultWeight;
 			}
 
 			@Override
@@ -732,7 +781,23 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public WeightsImpl.Index.Long copy(IdStrategy idStrat) {
-				return new WeightsImpl.Index.Long(this, idStrat);
+				if (idStrat.size() != this.idStrat.size())
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Long copy = new WeightsImpl.Index.Long(idStrat, defaultWeight);
+				copy.weights = Arrays.copyOf(weights, idStrat.size());
+				return copy;
+			}
+
+			@Override
+			public WeightsImpl.Index.Long copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Long copy = new WeightsImpl.Index.Long(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
+				return copy;
 			}
 
 			@Override
@@ -845,6 +910,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
+			public WeightsImpl.Index.Float copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
+				return copy;
+			}
+
+			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -950,6 +1027,18 @@ interface WeightsImpl<E> extends Weights<E> {
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);
 				copy.weights = Arrays.copyOf(weights, idStrat.size());
+				return copy;
+			}
+
+			@Override
+			public WeightsImpl.Index.Double copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
 				return copy;
 			}
 
@@ -1106,6 +1195,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
+			public WeightsImpl.Index.Bool copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Bool copy = new WeightsImpl.Index.Bool(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights.set(mapOldToNew[i], weights.get(i));
+				return copy;
+			}
+
+			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -1211,6 +1312,18 @@ interface WeightsImpl<E> extends Weights<E> {
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);
 				copy.weights = Arrays.copyOf(weights, idStrat.size());
+				return copy;
+			}
+
+			@Override
+			public WeightsImpl.Index.Char copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
+				final int s = idStrat.size();
+				if (s != this.idStrat.size() || s != mapOldToNew.length)
+					throw new IllegalArgumentException();
+				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);
+				copy.expand(s);
+				for (int i = 0; i < s; i++)
+					copy.weights[mapOldToNew[i]] = weights[i];
 				return copy;
 			}
 

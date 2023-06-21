@@ -21,16 +21,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {
 
-	final IdStrategy.Index verticesIdStrat;
-	final IdStrategy.Index edgesIdStrat;
+	final IdStrategy.Default verticesIdStrat;
+	final IdStrategy.Default edgesIdStrat;
 	private final DataContainer.Manager verticesInternalContainers;
 	private final DataContainer.Manager edgesInternalContainers;
 	private final WeightsImpl.Index.Manager verticesUserWeights;
 	private final WeightsImpl.Index.Manager edgesUserWeights;
 
 	GraphBaseIndex(int expectedVerticesNum, int expectedEdgesNum) {
-		verticesIdStrat = new IdStrategy.Index(0);
-		edgesIdStrat = new IdStrategy.Index(0);
+		verticesIdStrat = new IdStrategy.Default(0);
+		edgesIdStrat = new IdStrategy.Default(0);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);
@@ -56,8 +56,8 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraphImpl {
 			verticesUserWeights = new WeightsImpl.Index.Manager(g0.verticesUserWeights, verticesIdStrat);
 			edgesUserWeights = new WeightsImpl.Index.Manager(g0.edgesUserWeights, edgesIdStrat);
 		} else {
-			verticesIdStrat = new IdStrategy.Index(((IndexGraphImpl) g).getVerticesIdStrategy().size());
-			edgesIdStrat = new IdStrategy.Index(((IndexGraphImpl) g).getEdgesIdStrategy().size());
+			verticesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getVerticesIdStrategy().size());
+			edgesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getEdgesIdStrategy().size());
 
 			verticesUserWeights = new WeightsImpl.Index.Manager(verticesIdStrat.size());
 			for (Object key : g.getVerticesWeightsKeys())

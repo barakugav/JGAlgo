@@ -79,67 +79,69 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 			return IntLists.emptyList();
 
 		/* Run Boruvka to reduce the number of vertices by a factor of 4 by contraction */
-		Pair<IndexGraph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
-		IndexGraph g0 = r.first();
-		IntCollection f0 = r.second();
-		Weights.Int g0Ref = g0.getEdgesWeights("edgeRef_g0");
+		MinimumSpanningTreeBoruvka.RunBoruvkaResult g0Res = boruvka.runBoruvka(g, w, 2);
+		IndexGraph g0 = g0Res.contractedG;
+		IntCollection f0 = g0Res.mstEdges;
+		int[] g0Ref = g0Res.edgeRef;
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */
-		IndexGraph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
-		Weights.Int g1Ref = g1.getEdgesWeights("edgeRef_g1");
-		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, "w_g1", g1Ref);
+		Pair<IndexGraph, int[]> g1Res = randSubgraph(g0, g0Ref);
+		IndexGraph g1 = g1Res.first();
+		int[] g1Ref = g1Res.second();
+		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
 		IntCollection f1Edges = computeMST(g1, g1W);
-		IndexGraph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
-		Weights.Int f1Ref = f1.getEdgesWeights("edgeRef_f1");
+		Pair<IndexGraph, int[]> f1Res = subGraph(g1, f1Edges, g1Ref);
+		IndexGraph f1 = f1Res.first();
+		int[] f1Ref = f1Res.second();
 
 		/* Find all the light edges in G0 with respect to the computed forest F1 */
-		IntCollection e2 = lightEdges(g0, e -> w.weight(g0Ref.getInt(e)), f1, e -> w.weight(f1Ref.getInt(e)));
-		IndexGraph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
-		Weights.Int g2Ref = g2.getEdgesWeights("edgeRef_g2");
-		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, "w_g2", g2Ref);
+		IntCollection e2 = lightEdges(g0, e -> w.weight(g0Ref[e]), f1, e -> w.weight(f1Ref[e]));
+		Pair<IndexGraph, int[]> g2Res = subGraph(g0, e2, g0Ref);
+		IndexGraph g2 = g2Res.first();
+		int[] g2Ref = g2Res.second();
+		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, g2Ref);
 
 		/* The result is F0 and F2 */
 		IntCollection f2 = computeMST(g2, g2W);
-		for (int eRef : f2) {
-			int e = g2Ref.getInt(eRef);
-			f0.add(e);
-		}
+		for (int eRef : f2)
+			f0.add(g2Ref[eRef]);
 		return f0;
 	}
 
-	static IndexGraph subGraph(IndexGraph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
+	static Pair<IndexGraph, int[]> subGraph(IndexGraph g, IntCollection edgeSet, int[] edgeRef) {
 		final int n = g.vertices().size();
-		IndexGraph subG =
-				IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();
-		for (int v = 0; v < n; v++)
-			subG.addVertex();
-		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
+		GraphBuilderFixedUnmapped subBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		for (int v = 0; v < n; v++) {
+			int vSub = subBuilder.addVertex();
+			assert v == vSub;
+		}
+		int[] edgeRefSub = new int[edgeSet.size()];
 		for (int e : edgeSet) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int eSub = subG.addEdge(u, v);
-			edgeRefSub.set(eSub, edgeRef.getInt(e));
+			int eSub = subBuilder.addEdge(u, v);
+			edgeRefSub[eSub] = edgeRef[e];
 		}
-		return subG;
+		IndexGraph subG = subBuilder.build();
+		return Pair.of(subG, edgeRefSub);
 	}
 
-	static Weights.Double assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, Object weightKey,
-			Weights.Int edgeRef) {
-		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);
+	static Weights.Double assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, int[] edgeRef) {
+		Weights.Double w2 = Weights.createExternalEdgesWeights(g, double.class);
 		for (int e : g.edges())
-			w2.set(e, w.weight(edgeRef.getInt(e)));
+			w2.set(e, w.weight(edgeRef[e]));
 		return w2;
 	}
 
-	private IndexGraph randSubgraph(IndexGraph g, Object edgeRefKey, Weights.Int edgeRef) {
+	private Pair<IndexGraph, int[]> randSubgraph(IndexGraph g, int[] edgeRef) {
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
 		for (int e : g.edges())
 			if (rand.nextBoolean())
 				edgeSet.add(e);
-		return subGraph(g, edgeSet, edgeRefKey, edgeRef);
+		return subGraph(g, edgeSet, edgeRef);
 	}
 
 	private IntCollection lightEdges(IndexGraph g, Int2DoubleFunction gw, IndexGraph f, Int2DoubleFunction fw) {

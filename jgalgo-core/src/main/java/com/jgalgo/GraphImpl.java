@@ -34,19 +34,77 @@ abstract class GraphImpl extends GraphBase {
 	private final WeakIdentityHashMap<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights =
 			new WeakIdentityHashMap<>();
 
+	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+		this.indexGraph = (IndexGraphImpl) indexGraph;
+		if (viMap == null) {
+			this.viMap = IdIdxMapImpl.newInstance(this.indexGraph.getVerticesIdStrategy());
+		} else {
+			this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy());
+		}
+		if (viMap == null) {
+			this.eiMap = IdIdxMapImpl.newInstance(this.indexGraph.getEdgesIdStrategy());
+		} else {
+			this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy());
+		}
+	}
+
 	GraphImpl(IndexGraph g) {
-		this.indexGraph = Objects.requireNonNull((IndexGraphImpl) g);
+		this(g, null, null);
 		assert indexGraph.getVerticesIdStrategy().size() == 0;
 		assert indexGraph.getEdgesIdStrategy().size() == 0;
-		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy());
-		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy());
 	}
 
 	/* copy constructor */
 	GraphImpl(Graph orig, IndexGraph.Builder indexGraphBuilder) {
-		indexGraph = (IndexGraphImpl) indexGraphBuilder.buildCopyOf(orig.indexGraph());
-		viMap = IdIdxMapImpl.copyOf(orig.indexGraphVerticesMap(), indexGraph.getVerticesIdStrategy());
-		eiMap = IdIdxMapImpl.copyOf(orig.indexGraphEdgesMap(), indexGraph.getEdgesIdStrategy());
+		this(indexGraphBuilder.buildCopyOf(orig.indexGraph()), orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap());
+	}
+
+	static Graph fixedCopy(Graph g) {
+		if (g.getCapabilities().directed()) {
+			GraphCSRRemappedDirected.Builder builder = new GraphCSRRemappedDirected.Builder();
+			IndexGraph ig = g.indexGraph();
+			final int n = ig.vertices().size();
+			final int m = ig.edges().size();
+
+			for (int u = 0; u < n; u++) {
+				int vCsr = builder.addVertex();
+				assert u == vCsr;
+			}
+			for (int e = 0; e < m; e++) {
+				int eCsr = builder.addEdge(ig.edgeSource(e), ig.edgeTarget(e));
+				assert e == eCsr;
+			}
+
+			GraphBuilderFixedRemapped.BuilderResult csrRes = builder.build();
+			GraphCSRRemappedDirected csr = (GraphCSRRemappedDirected) csrRes.graph;
+			int[] edgesOrigToCsr = csrRes.edgesInsertIdxToFixed;
+			int[] edgesCsrToOrig = csrRes.edgesFixedToInsertIdx;
+
+			for (Object key : g.getVerticesWeightsKeys())
+				csr.verticesUserWeights.addWeights(key,
+						WeightsImpl.Index.copyOf(ig.getVerticesWeights(key), csr.verticesIdStrat));
+			for (Object key : g.getEdgesWeightsKeys())
+				csr.edgesUserWeights.addWeights(key,
+						WeightsImpl.Index.copyOfMapped(ig.getEdgesWeights(key), csr.edgesIdStrat, edgesOrigToCsr));
+
+			IndexIdMap eiMapOrig = g.indexGraphEdgesMap();
+			IndexIdMap eiMap = new IndexIdMap() {
+
+				@Override
+				public int indexToId(int index) {
+					return eiMapOrig.indexToId(edgesCsrToOrig[index]);
+				}
+
+				@Override
+				public int idToIndex(int id) {
+					return edgesOrigToCsr[eiMapOrig.idToIndex(id)];
+				}
+			};
+			return new GraphImpl.Directed(csr, g.indexGraphVerticesMap(), eiMap);
+		} else {
+			IndexGraph csr = new GraphCSRUnmappedUndirected(g.indexGraph());
+			return new GraphImpl.Undirected(csr, g.indexGraphVerticesMap(), g.indexGraphEdgesMap());
+		}
 	}
 
 	@Override
@@ -336,15 +394,20 @@ abstract class GraphImpl extends GraphBase {
 
 	private static class Directed extends GraphImpl {
 
-		Directed(IndexGraph g) {
-			super(g);
-			ArgumentCheck.onlyDirected(g);
+		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+			super(indexGraph, viMap, eiMap);
+			ArgumentCheck.onlyDirected(indexGraph);
+		}
+
+		Directed(IndexGraph indexGraph) {
+			super(indexGraph);
+			ArgumentCheck.onlyDirected(indexGraph);
 		}
 
 		/* copy constructor */
-		Directed(Graph g, IndexGraph.Builder indexGraphBuilder) {
-			super(g, indexGraphBuilder);
-			ArgumentCheck.onlyDirected(g);
+		Directed(Graph orig, IndexGraph.Builder indexGraphBuilder) {
+			super(orig, indexGraphBuilder);
+			ArgumentCheck.onlyDirected(orig);
 			ArgumentCheck.onlyDirected(indexGraph);
 		}
 
@@ -357,21 +420,27 @@ abstract class GraphImpl extends GraphBase {
 
 	private static class Undirected extends GraphImpl {
 
-		Undirected(IndexGraph g) {
-			super(g);
-			ArgumentCheck.onlyUndirected(g);
+		Undirected(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+			super(indexGraph, viMap, eiMap);
+			ArgumentCheck.onlyUndirected(indexGraph);
+		}
+
+		Undirected(IndexGraph indexGraph) {
+			super(indexGraph);
+			ArgumentCheck.onlyUndirected(indexGraph);
 		}
 
 		/* copy constructor */
-		Undirected(Graph g, IndexGraph.Builder indexGraphBuilder) {
-			super(g, indexGraphBuilder);
-			ArgumentCheck.onlyUndirected(g);
+		Undirected(Graph orig, IndexGraph.Builder indexGraphBuilder) {
+			super(orig, indexGraphBuilder);
+			ArgumentCheck.onlyUndirected(orig);
 			ArgumentCheck.onlyUndirected(indexGraph);
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-			// Do nothing
+			int eIdx = eiMap.idToIndex(edge);
+			indexGraph.reverseEdge(eIdx);
 		}
 	}
 
@@ -400,6 +469,7 @@ abstract class GraphImpl extends GraphBase {
 				idToIdx = new Int2IntOpenHashMap(idStrat.size());
 				idToIdx.defaultReturnValue(-1);
 				idxToId = new WeightsImpl.Index.Int(idStrat, -1);
+				idxToId.expand(idStrat.size());
 				for (int idx : idStrat.indices()) {
 					int id = orig.indexToId(idx);
 					if (idxToId.getInt(idx) != -1)
@@ -557,11 +627,11 @@ abstract class GraphImpl extends GraphBase {
 
 		@Override
 		public Graph build() {
-			IndexGraph base = builder.build();
-			if (base.getCapabilities().directed()) {
-				return new GraphImpl.Directed(base);
+			IndexGraph indexGraph = builder.build();
+			if (indexGraph.getCapabilities().directed()) {
+				return new GraphImpl.Directed(indexGraph);
 			} else {
-				return new GraphImpl.Undirected(base);
+				return new GraphImpl.Undirected(indexGraph);
 			}
 		}
 

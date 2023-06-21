@@ -115,6 +115,7 @@ public class CompleteGraphTest extends TestBase {
 						iteratedEdges.add(e);
 					}
 					assertEquals(expectedEdges, iteratedEdges);
+					assertEquals(outEdges.size(), iteratedEdges.size());
 				}
 				for (int v : g.vertices()) {
 					EdgeSet inEdges = g.inEdges(v);
@@ -139,6 +140,7 @@ public class CompleteGraphTest extends TestBase {
 						iteratedEdges.add(e);
 					}
 					assertEquals(expectedEdges, iteratedEdges);
+					assertEquals(inEdges.size(), iteratedEdges.size());
 				}
 			}
 		}

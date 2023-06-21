@@ -38,7 +38,6 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 	// * increases the running time to O(n^3)
 	// */
 	// private static final boolean VALIDATE_METRIC = true;
-	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
@@ -61,15 +60,18 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
-		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
-		for (int v = 0; v < n; v++)
-			g1.addVertex();
-		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		GraphBuilderFixedUnmapped g1Builder = GraphBuilderFixedUnmapped.newUndirected();
+		for (int v = 0; v < n; v++) {
+			int vFixed = g1Builder.addVertex();
+			assert v == vFixed;
+		}
+		int[] edgeRef = new int[mst.size() * 2];
 		for (int e : mst) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			edgeRef.set(g1.addEdge(u, v), e);
-			edgeRef.set(g1.addEdge(u, v), e);
+			edgeRef[g1Builder.addEdge(u, v)] = e;
+			edgeRef[g1Builder.addEdge(u, v)] = e;
 		}
+		IndexGraph g1 = g1Builder.build();
 
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.size() == n;

@@ -119,15 +119,16 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private Pair<double[], Path> calcPotential(IndexGraph g, WeightFunction w) {
 		int n = g.vertices().size();
-		IndexGraph refG = g.copy();
 
 		/* Add fake vertex */
-		final int fakeV = refG.addVertex();
-		final int fakeEdgesThreshold = refG.edges().size();
+		GraphBuilderFixedUnmapped refgBuilder = GraphBuilderFixedUnmapped.newFrom(g);
+		final int fakeV = refgBuilder.addVertex();
+		final int fakeEdgesThreshold = refgBuilder.edgesNum();
 		for (int v = 0; v < n; v++) {
-			int e = refG.addEdge(fakeV, v);
+			int e = refgBuilder.addEdge(fakeV, v);
 			assert e >= fakeEdgesThreshold;
 		}
+		IndexGraph refG = refgBuilder.build();
 
 		WeightFunction refW;
 		if (w instanceof WeightFunction.Int) {

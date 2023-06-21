@@ -151,23 +151,25 @@ class TreePathMaximaUtils {
 	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
-		IndexGraph mst =
-				IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
-		for (int v = 0; v < n; v++)
-			mst.addVertex();
-		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
+		GraphBuilderFixedUnmapped mstBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		for (int v = 0; v < n; v++) {
+			int vFixed = mstBuilder.addVertex();
+			assert v == vFixed;
+		}
+		int[] edgeRef = new int[mstEdges.size()];
 		for (int e : mstEdges) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int ne = mst.addEdge(u, v);
-			edgeRef.set(ne, e);
+			int ne = mstBuilder.addEdge(u, v);
+			edgeRef[ne] = e;
 		}
+		IndexGraph mst = mstBuilder.build();
 		if (!Trees.isTree(mst))
 			return false;
 
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		for (int e : g.edges())
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
-		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
+		WeightFunction w0 = e -> w.weight(edgeRef[e]);
 		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;

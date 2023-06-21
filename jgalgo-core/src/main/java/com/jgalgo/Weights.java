@@ -613,7 +613,8 @@ public interface Weights<W> {
 			Class<? super E> type, E defVal) {
 		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();
 		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
-		weights.expand(idStrat.size());
+		if (idStrat.size() > 0)
+			weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {
@@ -655,7 +656,8 @@ public interface Weights<W> {
 			E defVal) {
 		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();
 		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
-		weights.expand(idStrat.size());
+		if (idStrat.size() > 0)
+			weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {

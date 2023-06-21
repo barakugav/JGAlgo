@@ -152,18 +152,22 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
-		IndexGraph gSub = IndexGraph.newBuilderDirected().expectedVerticesNum(nSub).build();
-		for (int i = 0; i < nSub; i++)
-			gSub.addVertex();
+
+		GraphBuilderFixedUnmapped gSubBuilder = GraphBuilderFixedUnmapped.newDirected();
+		for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
+			int uIdx = gSubBuilder.addVertex();
+			assert uIdx == uSubIdx;
+		}
 		for (int uSub = 0; uSub < nSub; uSub++) {
 			int uFull = uSub + subToFull;
 			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
 				it.nextInt();
 				int vSub = it.target() - subToFull;
 				if (vSub >= 0)
-					gSub.addEdge(uSub, vSub);
+					gSubBuilder.addEdge(uSub, vSub);
 			}
 		}
+		IndexGraph gSub = gSubBuilder.build();
 
 		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
 

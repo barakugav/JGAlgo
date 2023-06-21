@@ -17,8 +17,8 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -54,24 +54,41 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 
-	Pair<IndexGraph, IntCollection> runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds, Object edgeRefKey) {
+	static class RunBoruvkaResult {
+		final IndexGraph contractedG;
+		final IntCollection mstEdges;
+		final int[] edgeRef;
+
+		RunBoruvkaResult(IndexGraph contractedG, IntCollection mstEdges, int[] edgeRef) {
+			this.contractedG = contractedG;
+			this.mstEdges = mstEdges;
+			this.edgeRef = edgeRef;
+		}
+	}
+
+	RunBoruvkaResult runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		IndexGraph contractedG = IndexGraph.newBuilderUndirected().expectedVerticesNum(mstRes.treeNum).build();
-		for (int v = 0; v < mstRes.treeNum; v++)
-			contractedG.addVertex();
-		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
+		GraphBuilderFixedUnmapped contractedGBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		for (int v = 0; v < mstRes.treeNum; v++) {
+			int vFixed = contractedGBuilder.addVertex();
+			assert v == vFixed;
+		}
+		int[] edgeRef = IntArrays.EMPTY_ARRAY;
 		for (int e : g.edges()) {
 			int u = mstRes.vToTree[g.edgeSource(e)];
 			int v = mstRes.vToTree[g.edgeTarget(e)];
 			if (u == v)
 				continue;
-			int ne = contractedG.addEdge(u, v);
-			edgeRef.set(ne, e);
+			int ne = contractedGBuilder.addEdge(u, v);
+			if (ne == edgeRef.length)
+				edgeRef = Arrays.copyOf(edgeRef, Math.max(2, 2 * edgeRef.length));
+			edgeRef[ne] = e;
 		}
-		return Pair.of(contractedG, mstRes.mst);
+		IndexGraph contractedG = contractedGBuilder.build();
+		return new RunBoruvkaResult(contractedG, mstRes.mst, edgeRef);
 	}
 
 	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {

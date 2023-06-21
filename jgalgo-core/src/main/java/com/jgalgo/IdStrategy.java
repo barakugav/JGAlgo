@@ -43,18 +43,93 @@ abstract class IdStrategy {
 		return indices().toString();
 	}
 
-	static class Index extends IdStrategy {
+	static abstract class WithSize extends IdStrategy {
 
-		private int size;
+		int size;
 		private final IntSet indices;
-		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
-		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
-		Index(int initSize) {
+		WithSize(int initSize) {
 			if (initSize < 0)
 				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 			size = initSize;
 			indices = new IndicesSet();
+		}
+
+		@Override
+		int size() {
+			return size;
+		}
+
+		@Override
+		IntSet indices() {
+			return indices;
+		}
+
+		private class IndicesSet extends AbstractIntSet {
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public boolean contains(int key) {
+				return key >= 0 && key < size;
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return new Utils.RangeIter(size);
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (this == other)
+					return true;
+				if (!(other instanceof IndicesSet))
+					return super.equals(other);
+				IndicesSet o = (IndicesSet) other;
+				return size == o.size();
+			}
+
+			@Override
+			public int hashCode() {
+				return size * (size + 1) / 2;
+			}
+		}
+
+	}
+
+	static class FixedSize extends WithSize {
+
+		FixedSize(int initSize) {
+			super(initSize);
+		}
+
+		@Override
+		void addIdSwapListener(IndexSwapListener listener) {
+			Objects.requireNonNull(listener);
+		}
+
+		@Override
+		void removeIdSwapListener(IndexSwapListener listener) {}
+
+		@Override
+		void addIdAddRemoveListener(IdAddRemoveListener listener) {
+			Objects.requireNonNull(listener);
+		}
+
+		@Override
+		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}
+	}
+
+	static class Default extends IdStrategy.FixedSize {
+
+		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
+		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
+
+		Default(int initSize) {
+			super(initSize);
 		}
 
 		int newIdx() {
@@ -75,16 +150,6 @@ abstract class IdStrategy {
 			size = 0;
 		}
 
-		@Override
-		int size() {
-			return size;
-		}
-
-		@Override
-		IntSet indices() {
-			return indices;
-		}
-
 		int isSwapNeededBeforeRemove(int idx) {
 			checkIdx(idx);
 			return size - 1;
@@ -94,8 +159,8 @@ abstract class IdStrategy {
 			notifyIDSwap(idx1, idx2);
 		}
 
-		IdStrategy.Index copy() {
-			return new IdStrategy.Index(size);
+		IdStrategy.Default copy() {
+			return new IdStrategy.Default(size);
 		}
 
 		private void checkIdx(int idx) {
@@ -141,39 +206,6 @@ abstract class IdStrategy {
 		@Override
 		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
 			idAddRemoveListeners.remove(listener);
-		}
-
-		private class IndicesSet extends AbstractIntSet {
-
-			@Override
-			public int size() {
-				return size;
-			}
-
-			@Override
-			public boolean contains(int key) {
-				return key >= 0 && key < size;
-			}
-
-			@Override
-			public IntIterator iterator() {
-				return new Utils.RangeIter(size);
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof IndicesSet))
-					return super.equals(other);
-				IndicesSet o = (IndicesSet) other;
-				return size == o.size();
-			}
-
-			@Override
-			public int hashCode() {
-				return size * (size - 1) / 2;
-			}
 		}
 	}
 

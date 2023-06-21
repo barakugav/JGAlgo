@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 abstract class MaximumFlowAbstract implements MaximumFlow {
@@ -235,27 +234,58 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 			this.n = gOrig.vertices().size();
 			this.net = net;
 
-			g = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
-			for (int v = 0; v < n; v++)
-				g.addVertex();
-			edgeRef = new int[gOrig.edges().size() * 2];
-			twin = new int[gOrig.edges().size() * 2];
-			Arrays.fill(edgeRef, -1);
-			Arrays.fill(twin, -1);
+			final int mOrig = gOrig.edges().size();
+			int[] edgeRefTemp = new int[mOrig * 2];
+			int[] twinTemp = new int[mOrig * 2];
 
-			boolean directed = gOrig.getCapabilities().directed();
-			for (int e : gOrig.edges()) {
-				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-				if (u == v)
-					continue;
-				if (directed && (u == sink || v == source))
-					continue;
-				int e1 = g.addEdge(u, v);
-				int e2 = g.addEdge(v, u);
-				edgeRef[e1] = e;
-				edgeRef[e2] = e;
-				twin[e1] = e2;
-				twin[e2] = e1;
+			GraphCSRRemappedDirected.Builder gBuilder = new GraphCSRRemappedDirected.Builder();
+			if (gOrig.getCapabilities().directed()) {
+				for (int u = 0; u < n; u++) {
+					int vCsr = gBuilder.addVertex();
+					assert u == vCsr;
+					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.target();
+						if (u == v)
+							continue;
+						if (u == sink || v == source)
+							continue;
+						int e1Csr = gBuilder.addEdge(u, v);
+						int e2Csr = gBuilder.addEdge(v, u);
+						edgeRefTemp[e1Csr] = e;
+						edgeRefTemp[e2Csr] = e;
+						twinTemp[e1Csr] = e2Csr;
+						twinTemp[e2Csr] = e1Csr;
+					}
+				}
+			} else {
+				for (int u = 0; u < n; u++) {
+					int vCsr = gBuilder.addVertex();
+					assert u == vCsr;
+					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (gOrig.edgeSource(e) != u)
+							continue; // each edge will appear twice
+						int v = eit.target();
+						if (u == v)
+							continue;
+						int e1Csr = gBuilder.addEdge(u, v);
+						int e2Csr = gBuilder.addEdge(v, u);
+						edgeRefTemp[e1Csr] = e;
+						edgeRefTemp[e2Csr] = e;
+						twinTemp[e1Csr] = e2Csr;
+						twinTemp[e2Csr] = e1Csr;
+					}
+				}
+			}
+			GraphBuilderFixedRemapped.BuilderResult csrRes = gBuilder.build();
+			g = csrRes.graph;
+			final int m = g.edges().size();
+			edgeRef = new int[m];
+			twin = new int[m];
+			for (int eCsr = 0; eCsr < m; eCsr++) {
+				edgeRef[eCsr] = edgeRefTemp[csrRes.edgesFixedToInsertIdx[eCsr]];
+				twin[eCsr] = csrRes.edgesInsertIdxToFixed[twinTemp[csrRes.edgesFixedToInsertIdx[eCsr]]];
 			}
 		}
 

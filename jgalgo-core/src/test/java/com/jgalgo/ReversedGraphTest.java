@@ -30,6 +30,8 @@ import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ReversedGraphTest extends TestBase {
 
@@ -180,6 +182,7 @@ public class ReversedGraphTest extends TestBase {
 					assertEquals(gOrig.inEdges(u).size(), edges.size());
 					assertEquals(gOrig.inEdges(u), edges);
 
+					IntSet iteratedEdges = new IntOpenHashSet();
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
 						int e = eit.nextInt();
@@ -189,6 +192,17 @@ public class ReversedGraphTest extends TestBase {
 						assertEquals(gOrig.edgeEndpoint(e, u), eit.target());
 						assertEquals(gRev.edgeEndpoint(e, u), eit.target());
 						assertEquals(u, gRev.edgeEndpoint(e, eit.target()));
+
+						iteratedEdges.add(e);
+					}
+
+					assertEquals(edges.size(), iteratedEdges.size());
+					for (int e : gOrig.edges()) {
+						if (iteratedEdges.contains(e)) {
+							assertTrue(edges.contains(e));
+						} else {
+							assertFalse(edges.contains(e));
+						}
 					}
 				}
 				for (int v : gRev.vertices()) {
@@ -196,6 +210,7 @@ public class ReversedGraphTest extends TestBase {
 					assertEquals(gOrig.outEdges(v).size(), edges.size());
 					assertEquals(gOrig.outEdges(v), edges);
 
+					IntSet iteratedEdges = new IntOpenHashSet();
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
 						int peekNext = ((EdgeIterImpl) eit).peekNext();
 						int e = eit.nextInt();
@@ -205,6 +220,17 @@ public class ReversedGraphTest extends TestBase {
 						assertEquals(gOrig.edgeEndpoint(e, v), eit.source());
 						assertEquals(gRev.edgeEndpoint(e, v), eit.source());
 						assertEquals(v, gRev.edgeEndpoint(e, eit.source()));
+
+						iteratedEdges.add(e);
+					}
+
+					assertEquals(edges.size(), iteratedEdges.size());
+					for (int e : gOrig.edges()) {
+						if (iteratedEdges.contains(e)) {
+							assertTrue(edges.contains(e));
+						} else {
+							assertFalse(edges.contains(e));
+						}
 					}
 				}
 			}

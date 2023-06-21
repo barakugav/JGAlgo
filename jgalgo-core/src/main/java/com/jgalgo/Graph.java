@@ -645,14 +645,34 @@ public interface Graph {
 	/**
 	 * Create a copy of this graph.
 	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities. The
-	 * returned Graph will always be modifiable, with no side affects on the original graph.
+	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities
+	 * (inclusive). The returned Graph will always be modifiable, with no side affects on the original graph.
 	 *
 	 * @return an identical copy of this graph
 	 */
 	default Graph copy() {
 		return newBuilderFrom(this).buildCopyOf(this);
 	}
+
+	// /**
+	// * Create a fixed copy of this graph.
+	// * <p>
+	// * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities
+	// * (inclusive). The returned Graph will be <i>fixed</i>, meaning that the vertices and edges can not be changed
+	// * (added or removed), but the graph can not be called 'unmodifiable' because weights still can be altered, added
+	// or
+	// * removed to/from it.
+	// * <p>
+	// * A fixed representation of the graph may yield better performance for accessing and querying vertices and edges.
+	// * In cases where a graph is not going to change, it may be more efficient to first copy the graph to a fixed
+	// graph,
+	// * and than pass the fixed graph to algorithms.
+	// *
+	// * @return a fixed copy of this graph
+	// */
+	// default Graph fixedCopy() {
+	// return GraphImpl.fixedCopy(this);
+	// }
 
 	/**
 	 * Get an unmodifiable view of this graph.
@@ -707,12 +727,12 @@ public interface Graph {
 	/**
 	 * Create a new graph builder based on a given implementation.
 	 * <p>
-	 * The new builder will build graphs with the same capabilities as the given graph, possibly choosing to use a
-	 * similar implementation. The builder will NOT copy the graph itself (the vertices, edges and weights), for such
-	 * use case see {@link Graph#copy()} and {@link Graph.Builder#buildCopyOf(Graph)}.
+	 * The new builder will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
+	 * use a similar implementation. The builder will NOT copy the graph itself (the vertices, edges and weights), for
+	 * such use case see {@link Graph#copy()} and {@link Graph.Builder#buildCopyOf(Graph)}.
 	 *
-	 * @param  g a graph from which the builder should copy its capabilities
-	 * @return   a new graph builder that will create graphs with the same capabilities of the given graph
+	 * @param  g a graph from which the builder should copy its capabilities (inclusive)
+	 * @return   a new graph builder that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	static Graph.Builder newBuilderFrom(Graph g) {
 		return new GraphImpl.Builder(g);

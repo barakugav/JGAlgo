@@ -458,8 +458,8 @@ public class Graphs {
 		private final WeightsImpl.Index.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIdStrat = new IdStrategy.Index(n);
-			edgesIdStrat = new IdStrategy.Index(m);
+			verticesIdStrat = new IdStrategy.Default(n);
+			edgesIdStrat = new IdStrategy.Default(m);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -469,8 +469,8 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIdStrat = new IdStrategy.Index(g.n);
-			edgesIdStrat = new IdStrategy.Index(g.m);
+			verticesIdStrat = new IdStrategy.Default(g.n);
+			edgesIdStrat = new IdStrategy.Default(g.m);
 			this.n = g.n;
 			this.m = g.m;
 			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIdStrat);
