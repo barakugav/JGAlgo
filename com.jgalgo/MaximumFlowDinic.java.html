@@ -39,13 +39,10 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 <span class="fc" id="L40">	private Graph.Builder layerGraphBuilder = Graph.newBuilderDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
 
-<span class="fc" id="L42">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
-<span class="fc" id="L43">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
-
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L48">	MaximumFlowDinic() {}</span>
+<span class="fc" id="L45">	MaximumFlowDinic() {}</span>
 
 	/**
 	 * Set the graph implementation used by this algorithm for the layers graph.
@@ -57,8 +54,8 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
 	void setLayerGraphFactory(Graph.Builder builder) {
-<span class="nc" id="L60">		layerGraphBuilder = Objects.requireNonNull(builder);</span>
-<span class="nc" id="L61">	}</span>
+<span class="nc" id="L57">		layerGraphBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L58">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -67,113 +64,113 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 	 */
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L70">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
+<span class="fc" id="L67">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
 	}
 
-<span class="fc" id="L73">	private class Worker extends MaximumFlowAbstract.Worker {</span>
+<span class="fc" id="L70">	private class Worker extends MaximumFlowAbstract.Worker {</span>
 
-		final Weights.Double flow;
-		final Weights.Double capacity;
+		final double[] flow;
+		final double[] capacity;
 
-<span class="fc" id="L78">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L79">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L75">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L76">			super(gOrig, net, source, sink);</span>
 
-<span class="fc" id="L81">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
-<span class="fc" id="L82">			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
-<span class="fc" id="L83">			initCapacitiesAndFlows(flow, capacity);</span>
-<span class="fc" id="L84">		}</span>
+<span class="fc" id="L78">			flow = new double[g.edges().size()];</span>
+<span class="fc" id="L79">			capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L80">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L81">		}</span>
 
 		double computeMaximumFlow() {
-<span class="fc" id="L87">			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(/* &gt;= */ n).expectedEdgesNum(n).build();</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int v : g.vertices())</span>
-<span class="fc" id="L89">				L.addVertex(v);</span>
+<span class="fc" id="L84">			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(/* &gt;= */ n).expectedEdgesNum(n).build();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (int v : g.vertices())</span>
+<span class="fc" id="L86">				L.addVertex(v);</span>
 
-<span class="fc" id="L91">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L92">			int[] level = new int[n];</span>
+<span class="fc" id="L88">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L89">			int[] level = new int[n];</span>
 
 			for (;;) {
-<span class="fc" id="L95">				L.clearEdges();</span>
+<span class="fc" id="L92">				L.clearEdges();</span>
 
 				/* Calc the sub graph non saturated edges from source to sink using BFS */
-<span class="fc" id="L98">				final int unvisited = Integer.MAX_VALUE;</span>
-<span class="fc" id="L99">				Arrays.fill(level, unvisited);</span>
-<span class="fc" id="L100">				bfsQueue.clear();</span>
-<span class="fc" id="L101">				level[source] = 0;</span>
-<span class="fc" id="L102">				bfsQueue.enqueue(source);</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">				bfs: while (!bfsQueue.isEmpty()) {</span>
-<span class="fc" id="L104">					int u = bfsQueue.dequeueInt();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (u == sink)</span>
-<span class="fc" id="L106">						break bfs;</span>
-<span class="fc" id="L107">					int lvl = level[u];</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L109">						int e = eit.nextInt();</span>
-<span class="fc" id="L110">						int v = eit.target();</span>
-<span class="fc bfc" id="L111" title="All 4 branches covered.">						if (flow.getDouble(e) &gt;= capacity.getDouble(e) || level[v] &lt;= lvl)</span>
+<span class="fc" id="L95">				final int unvisited = Integer.MAX_VALUE;</span>
+<span class="fc" id="L96">				Arrays.fill(level, unvisited);</span>
+<span class="fc" id="L97">				bfsQueue.clear();</span>
+<span class="fc" id="L98">				level[source] = 0;</span>
+<span class="fc" id="L99">				bfsQueue.enqueue(source);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				bfs: while (!bfsQueue.isEmpty()) {</span>
+<span class="fc" id="L101">					int u = bfsQueue.dequeueInt();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (u == sink)</span>
+<span class="fc" id="L103">						break bfs;</span>
+<span class="fc" id="L104">					int lvl = level[u];</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L106">						int e = eit.nextInt();</span>
+<span class="fc" id="L107">						int v = eit.target();</span>
+<span class="fc bfc" id="L108" title="All 4 branches covered.">						if (flow[e] &gt;= capacity[e] || level[v] &lt;= lvl)</span>
+<span class="fc" id="L109">							continue;</span>
+<span class="fc" id="L110">						L.addEdge(u, v, e);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">						if (level[v] != unvisited)</span>
 <span class="fc" id="L112">							continue;</span>
-<span class="fc" id="L113">						L.addEdge(u, v, e);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">						if (level[v] != unvisited)</span>
-<span class="fc" id="L115">							continue;</span>
-<span class="fc" id="L116">						level[v] = lvl + 1;</span>
-<span class="fc" id="L117">						bfsQueue.enqueue(v);</span>
-<span class="fc" id="L118">					}</span>
-<span class="fc" id="L119">				}</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (level[sink] == unvisited)</span>
-<span class="fc" id="L121">					break; /* All paths to sink are saturated */</span>
+<span class="fc" id="L113">						level[v] = lvl + 1;</span>
+<span class="fc" id="L114">						bfsQueue.enqueue(v);</span>
+<span class="fc" id="L115">					}</span>
+<span class="fc" id="L116">				}</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (level[sink] == unvisited)</span>
+<span class="fc" id="L118">					break; /* All paths to sink are saturated */</span>
 
 				searchBlockingFlow: for (;;) {
-<span class="fc" id="L124">					IntStack path = new IntArrayList();</span>
+<span class="fc" id="L121">					IntStack path = new IntArrayList();</span>
 					searchAugPath: for (;;) {
-<span class="fc bfc" id="L126" title="All 2 branches covered.">						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());</span>
-<span class="fc" id="L127">						EdgeIter eit = L.outEdges(u).iterator();</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">						if (!eit.hasNext()) {</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">							if (path.isEmpty()) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());</span>
+<span class="fc" id="L124">						EdgeIter eit = L.outEdges(u).iterator();</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">						if (!eit.hasNext()) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">							if (path.isEmpty()) {</span>
 								// no path from source to sink
-<span class="fc" id="L131">								break searchBlockingFlow;</span>
+<span class="fc" id="L128">								break searchBlockingFlow;</span>
 							} else {
 								// retreat
-<span class="fc" id="L134">								int e = path.popInt();</span>
-<span class="fc" id="L135">								L.removeEdge(e);</span>
-<span class="fc" id="L136">								continue searchAugPath;</span>
+<span class="fc" id="L131">								int e = path.popInt();</span>
+<span class="fc" id="L132">								L.removeEdge(e);</span>
+<span class="fc" id="L133">								continue searchAugPath;</span>
 							}
 						}
 
-<span class="fc" id="L140">						int e = eit.nextInt();</span>
-<span class="fc" id="L141">						path.push(e);</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">						if (eit.target() == sink) {</span>
+<span class="fc" id="L137">						int e = eit.nextInt();</span>
+<span class="fc" id="L138">						path.push(e);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">						if (eit.target() == sink) {</span>
 							// augment
-<span class="fc" id="L144">							break searchAugPath;</span>
+<span class="fc" id="L141">							break searchAugPath;</span>
 						} else {
 							// advance
 						}
-<span class="fc" id="L148">					}</span>
+<span class="fc" id="L145">					}</span>
 
 					// augment the path we found
-<span class="fc" id="L151">					IntList pathList = (IntList) path;</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">					assert pathList.size() &gt; 0;</span>
+<span class="fc" id="L148">					IntList pathList = (IntList) path;</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">					assert pathList.size() &gt; 0;</span>
 
 					// find out what is the maximum flow we can pass
-<span class="fc" id="L155">					double f = Double.MAX_VALUE;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">					for (int e : pathList)</span>
-<span class="fc" id="L157">						f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));</span>
+<span class="fc" id="L152">					double f = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">					for (int e : pathList)</span>
+<span class="fc" id="L154">						f = Math.min(f, capacity[e] - flow[e]);</span>
 
 					// update flow of all edges on path
-<span class="fc bfc" id="L160" title="All 2 branches covered.">					for (int e : pathList) {</span>
-<span class="fc" id="L161">						int rev = twin.getInt(e);</span>
-<span class="fc" id="L162">						double newFlow = flow.getDouble(e) + f;</span>
-<span class="fc" id="L163">						double cap = capacity.getDouble(e);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">						if (newFlow &lt; cap) {</span>
-<span class="fc" id="L165">							flow.set(e, newFlow);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					for (int e : pathList) {</span>
+<span class="fc" id="L158">						int t = twin[e];</span>
+<span class="fc" id="L159">						double newFlow = flow[e] + f;</span>
+<span class="fc" id="L160">						double cap = capacity[e];</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">						if (newFlow &lt; cap) {</span>
+<span class="fc" id="L162">							flow[e] = newFlow;</span>
 						} else {
 							/* saturated, remove edge */
-<span class="fc" id="L168">							flow.set(e, cap);</span>
-<span class="fc" id="L169">							L.removeEdge(e);</span>
+<span class="fc" id="L165">							flow[e] = cap;</span>
+<span class="fc" id="L166">							L.removeEdge(e);</span>
 						}
-<span class="fc" id="L171">						flow.set(rev, flow.getDouble(rev) - f);</span>
-<span class="fc" id="L172">					}</span>
-<span class="fc" id="L173">				}</span>
-<span class="fc" id="L174">			}</span>
+<span class="fc" id="L168">						flow[t] -= f;</span>
+<span class="fc" id="L169">					}</span>
+<span class="fc" id="L170">				}</span>
+<span class="fc" id="L171">			}</span>
 
-<span class="fc" id="L176">			return constructResult(flow);</span>
+<span class="fc" id="L173">			return constructResult(flow);</span>
 		}
 
 	}

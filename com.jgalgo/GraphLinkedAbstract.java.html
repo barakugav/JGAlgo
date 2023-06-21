@@ -31,7 +31,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 <span class="fc" id="L31">		addInternalEdgesContainer(edgesContainer);</span>
 <span class="fc" id="L32">	}</span>
 
-	GraphLinkedAbstract(GraphLinkedAbstract g) {
+	GraphLinkedAbstract(IndexGraph g) {
 <span class="fc" id="L35">		super(g);</span>
 <span class="fc" id="L36">		edgesContainer = new DataContainer.Obj&lt;&gt;(edgesIdStrat, null, EmptyNodeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L37">		addInternalEdgesContainer(edgesContainer);</span>

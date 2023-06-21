@@ -613,11 +613,12 @@ public interface Weights&lt;W&gt; {
 			Class&lt;? super E&gt; type, E defVal) {
 <span class="fc" id="L614">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();</span>
 <span class="fc" id="L615">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L616">		weights.expand(idStrat.size());</span>
-<span class="fc bfc" id="L617" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L618">			return (WeightsT) weights;</span>
+<span class="pc bpc" id="L616" title="1 of 2 branches missed.">		if (idStrat.size() &gt; 0)</span>
+<span class="fc" id="L617">			weights.expand(idStrat.size());</span>
+<span class="fc bfc" id="L618" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L619">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L620">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L621">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -634,7 +635,7 @@ public interface Weights&lt;W&gt; {
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type) {
-<span class="fc" id="L637">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L638">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -653,13 +654,14 @@ public interface Weights&lt;W&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L656">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();</span>
-<span class="fc" id="L657">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L658">		weights.expand(idStrat.size());</span>
-<span class="fc bfc" id="L659" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L660">			return (WeightsT) weights;</span>
+<span class="fc" id="L657">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();</span>
+<span class="fc" id="L658">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
+<span class="fc bfc" id="L659" title="All 2 branches covered.">		if (idStrat.size() &gt; 0)</span>
+<span class="fc" id="L660">			weights.expand(idStrat.size());</span>
+<span class="fc bfc" id="L661" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L662">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L662">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L664">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());</span>
 		}
 	}
 
@@ -672,7 +674,7 @@ public interface Weights&lt;W&gt; {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-<span class="fc" id="L675">	public static final Object DefaultBipartiteWeightKey = new Utils.Obj(&quot;DefaultBipartiteVerticesWeightKey&quot;);</span>
+<span class="fc" id="L677">	public static final Object DefaultBipartiteWeightKey = new Utils.Obj(&quot;DefaultBipartiteVerticesWeightKey&quot;);</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

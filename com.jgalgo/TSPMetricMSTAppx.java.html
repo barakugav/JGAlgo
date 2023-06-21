@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
+<span class="fc" id="L33">public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {</span>
 
 <span class="fc" id="L35">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();</span>
 	// /*
@@ -38,45 +38,47 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 	// * increases the running time to O(n^3)
 	// */
 	// private static final boolean VALIDATE_METRIC = true;
-<span class="fc" id="L41">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-<span class="fc" id="L46">	public TSPMetricMSTAppx() {}</span>
+<span class="fc" id="L45">	public TSPMetricMSTAppx() {}</span>
 
 	@Override
 	Path computeShortestTour(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L50">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L52">			return null;</span>
-<span class="fc" id="L53">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L54">		TSPMetricUtils.checkNoParallelEdges(g);</span>
+<span class="fc" id="L49">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L51">			return null;</span>
+<span class="fc" id="L52">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L53">		ArgumentCheck.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// if (VALIDATE_METRIC)
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-<span class="fc" id="L59">		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
-<span class="nc" id="L61">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+<span class="fc" id="L58">		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
+<span class="nc" id="L60">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/* Build a graph with each MST edge duplicated */
-<span class="fc" id="L64">		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L66">			g1.addVertex();</span>
-<span class="fc" id="L67">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int e : mst) {</span>
-<span class="fc" id="L69">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L70">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L71">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L72">		}</span>
+<span class="fc" id="L63">		GraphBuilderFixedUnmapped g1Builder = GraphBuilderFixedUnmapped.newUndirected();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L65">			int vFixed = g1Builder.addVertex();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			assert v == vFixed;</span>
+		}
+<span class="fc" id="L68">		int[] edgeRef = new int[mst.size() * 2];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int e : mst) {</span>
+<span class="fc" id="L70">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L71">			edgeRef[g1Builder.addEdge(u, v)] = e;</span>
+<span class="fc" id="L72">			edgeRef[g1Builder.addEdge(u, v)] = e;</span>
+<span class="fc" id="L73">		}</span>
+<span class="fc" id="L74">		IndexGraph g1 = g1Builder.build();</span>
 
-<span class="fc" id="L74">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
+<span class="fc" id="L76">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
 
 		/* Convert cycle of edges to list of vertices */
-<span class="fc" id="L79">		return cycle;</span>
+<span class="fc" id="L81">		return cycle;</span>
 	}
 
 }

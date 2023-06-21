@@ -46,7 +46,7 @@ class GraphTableDirected extends GraphTableAbstract {
 <span class="fc" id="L46">		super(expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L47">	}</span>
 
-	GraphTableDirected(GraphTableDirected g) {
+	GraphTableDirected(IndexGraph g) {
 <span class="fc" id="L50">		super(g);</span>
 <span class="fc" id="L51">	}</span>
 
@@ -124,30 +124,25 @@ class GraphTableDirected extends GraphTableAbstract {
 <span class="fc" id="L124">	private static final GraphCapabilities Capabilities =</span>
 <span class="fc" id="L125">			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();</span>
 
-	@Override
-	public IndexGraph copy() {
-<span class="fc" id="L129">		return new GraphTableDirected(this);</span>
-	}
-
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
-<span class="fc" id="L133">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L134">			super(source);</span>
-<span class="fc" id="L135">		}</span>
+<span class="fc" id="L128">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L129">			super(source);</span>
+<span class="fc" id="L130">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L139">			return new EdgeIterOut(source);</span>
+<span class="fc" id="L134">			return new EdgeIterOut(source);</span>
 		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
-<span class="fc" id="L144">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L145">			super(target);</span>
-<span class="fc" id="L146">		}</span>
+<span class="fc" id="L139">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L140">			super(target);</span>
+<span class="fc" id="L141">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L150">			return new EdgeIterInDirected(target);</span>
+<span class="fc" id="L145">			return new EdgeIterInDirected(target);</span>
 		}
 	}
 

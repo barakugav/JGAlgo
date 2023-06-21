@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBuilderFixedRemapped.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphBuilderFixedRemapped.java</span></div><h1>GraphBuilderFixedRemapped.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+interface GraphBuilderFixedRemapped {
+
+	int addVertex();
+
+	int addEdge(int source, int target);
+
+	BuilderResult build();
+
+	static GraphBuilderFixedRemapped newDirected() {
+<span class="nc" id="L27">		return new GraphCSRRemappedDirected.Builder();</span>
+	}
+
+	// static GraphBuilderFixedRemmaped newUndirected() {
+	// return new GraphCSRRemappedUndirected.Builder();
+	// }
+
+	static class BuilderResult {
+		final IndexGraph graph;
+		final int[] edgesFixedToInsertIdx;
+		final int[] edgesInsertIdxToFixed;
+
+<span class="fc" id="L39">		BuilderResult(IndexGraph g, int[] edgesFixedToInsertIdx, int[] edgesInsertIdxToFixed) {</span>
+<span class="fc" id="L40">			this.graph = g;</span>
+<span class="fc" id="L41">			this.edgesFixedToInsertIdx = edgesFixedToInsertIdx;</span>
+<span class="fc" id="L42">			this.edgesInsertIdxToFixed = edgesInsertIdxToFixed;</span>
+<span class="fc" id="L43">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
