@@ -38,9 +38,6 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
-	static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
-	private static final Object FlowWeightKey = new Utils.Obj("flow");
-	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -59,14 +56,14 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 	private class Worker extends MaximumFlowAbstract.Worker {
 
-		final Weights.Double capacity;
-		final Weights.Double flow;
+		final double[] capacity;
+		final double[] flow;
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, double.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -110,7 +107,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
-						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
+						if (flow[e] >= capacity[e] || level[v] <= lvl)
 							continue;
 						L.addEdge(u, v, e);
 						if (level[v] != unvisited)
@@ -128,11 +125,11 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 					(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));
 
 				IntDoubleConsumer updateFlow = (e, weight) -> {
-					double currentFlow = flow.getDouble(e);
-					double f = capacity.getDouble(e) - currentFlow - weight;
-					int eTwin = twin.getInt(e);
-					flow.set(e, currentFlow + f);
-					flow.set(eTwin, flow.getDouble(eTwin) - f);
+					double currentFlow = flow[e];
+					double f = capacity[e] - currentFlow - weight;
+					int t = twin[e];
+					flow[e] = currentFlow + f;
+					flow[t] -= f;
 				};
 
 				calcBlockFlow: for (;;) {
@@ -186,7 +183,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 						int e = eit.nextInt();
 						int eSource = g.edgeSource(e);
 						int eTarget = g.edgeTarget(e);
-						dt.link(vToDt[eSource], vToDt[eTarget], capacity.getDouble(e) - flow.getDouble(e));
+						dt.link(vToDt[eSource], vToDt[eTarget], capacity[e] - flow[e]);
 						edgeToParent[eSource] = e;
 					}
 				}

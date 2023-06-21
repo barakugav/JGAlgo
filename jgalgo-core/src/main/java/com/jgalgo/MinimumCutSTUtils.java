@@ -126,9 +126,9 @@ class MinimumCutSTUtils {
 		};
 	}
 
-	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, WeightFunction w) {
+	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyPositiveEdgesWeights(g, w);
-		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);
+		double[] flow = new double[g.edges().size()];
 		FlowNetwork net = new FlowNetwork() {
 			@Override
 			public double getCapacity(int edge) {
@@ -142,12 +142,12 @@ class MinimumCutSTUtils {
 
 			@Override
 			public double getFlow(int edge) {
-				return flow.getDouble(edge);
+				return flow[edge];
 			}
 
 			@Override
 			public void setFlow(int edge, double f) {
-				flow.set(edge, f);
+				flow[edge] = f;
 			}
 		};
 		return net;

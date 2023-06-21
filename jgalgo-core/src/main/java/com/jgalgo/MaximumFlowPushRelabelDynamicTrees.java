@@ -46,9 +46,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
-	private static final Object FlowWeightKey = new Utils.Obj("flow");
-	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
-
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
@@ -315,16 +312,16 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 	private static class WorkerDouble extends AbstractWorker {
 
-		final Weights.Double capacity;
-		final Weights.Double flow;
+		final double[] capacity;
+		final double[] flow;
 
 		private static final double EPS = 0.0001;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, double.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -342,23 +339,23 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		}
 
 		private void pushFlow(int e, double f) {
-			int t = twin.getInt(e);
-			flow.set(e, flow.getDouble(e) + f);
-			flow.set(t, flow.getDouble(t) - f);
-			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
-			assert flow.getDouble(t) <= capacity.getDouble(t) + EPS;
+			int t = twin[e];
+			flow[e] += f;
+			flow[t] -= f;
+			assert flow[e] <= capacity[e] + EPS;
+			assert flow[t] <= capacity[t] + EPS;
 		}
 
 		@Override
 		void updateFlow(int e, double weight) {
-			pushFlow(e, capacity.getDouble(e) - flow.getDouble(e) - weight);
+			pushFlow(e, capacity[e] - flow[e] - weight);
 		}
 
 		@Override
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				double f = capacity.getDouble(e) - flow.getDouble(e);
+				double f = capacity[e] - flow[e];
 				if (f > 0) {
 					pushFlow(e, f);
 					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
@@ -376,7 +373,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		void pushAlongEdge(int e) {
 			Vertex U = vertexData(g.edgeSource(e));
 			Vertex V = vertexData(g.edgeTarget(e));
-			double eAccess = capacity.getDouble(e) - flow.getDouble(e);
+			double eAccess = capacity[e] - flow[e];
 			double f = Math.min(U.excess, eAccess);
 			pushFlow(e, f);
 			U.excess -= f;
@@ -420,7 +417,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		@Override
 		double getResidualCapacity(int e) {
-			return capacity.getDouble(e) - flow.getDouble(e);
+			return capacity[e] - flow[e];
 		}
 
 		@Override
@@ -445,14 +442,14 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 	private static class WorkerInt extends AbstractWorker {
 
-		final Weights.Int capacity;
-		final Weights.Int flow;
+		final int[] capacity;
+		final int[] flow;
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, int.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
+			flow = new int[g.edges().size()];
+			capacity = new int[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -471,23 +468,23 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		}
 
 		private void pushFlow(int e, int f) {
-			int t = twin.getInt(e);
-			flow.set(e, flow.getInt(e) + f);
-			flow.set(t, flow.getInt(t) - f);
-			assert flow.getInt(e) <= capacity.getInt(e);
-			assert flow.getInt(t) <= capacity.getInt(t);
+			int t = twin[e];
+			flow[e] += f;
+			flow[t] -= f;
+			assert flow[e] <= capacity[e];
+			assert flow[t] <= capacity[t];
 		}
 
 		@Override
 		void updateFlow(int e, double weight) {
-			pushFlow(e, capacity.getInt(e) - flow.getInt(e) - (int) weight);
+			pushFlow(e, capacity[e] - flow[e] - (int) weight);
 		}
 
 		@Override
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int f = capacity.getInt(e) - flow.getInt(e);
+				int f = capacity[e] - flow[e];
 				if (f > 0) {
 					pushFlow(e, f);
 					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
@@ -505,7 +502,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		void pushAlongEdge(int e) {
 			Vertex U = vertexData(g.edgeSource(e));
 			Vertex V = vertexData(g.edgeTarget(e));
-			int eAccess = capacity.getInt(e) - flow.getInt(e);
+			int eAccess = capacity[e] - flow[e];
 			int f = Math.min(U.excess, eAccess);
 			pushFlow(e, f);
 			U.excess -= f;
@@ -549,7 +546,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		@Override
 		double getResidualCapacity(int e) {
-			return capacity.getInt(e) - flow.getInt(e);
+			return capacity[e] - flow[e];
 		}
 
 		@Override

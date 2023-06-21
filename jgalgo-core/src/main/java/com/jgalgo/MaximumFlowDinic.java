@@ -39,9 +39,6 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 	private Graph.Builder layerGraphBuilder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
 
-	private static final Object FlowWeightKey = new Utils.Obj("flow");
-	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
-
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
@@ -72,14 +69,14 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 	private class Worker extends MaximumFlowAbstract.Worker {
 
-		final Weights.Double flow;
-		final Weights.Double capacity;
+		final double[] flow;
+		final double[] capacity;
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, double.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -108,7 +105,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
-						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
+						if (flow[e] >= capacity[e] || level[v] <= lvl)
 							continue;
 						L.addEdge(u, v, e);
 						if (level[v] != unvisited)
@@ -154,21 +151,21 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 					// find out what is the maximum flow we can pass
 					double f = Double.MAX_VALUE;
 					for (int e : pathList)
-						f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
+						f = Math.min(f, capacity[e] - flow[e]);
 
 					// update flow of all edges on path
 					for (int e : pathList) {
-						int rev = twin.getInt(e);
-						double newFlow = flow.getDouble(e) + f;
-						double cap = capacity.getDouble(e);
+						int t = twin[e];
+						double newFlow = flow[e] + f;
+						double cap = capacity[e];
 						if (newFlow < cap) {
-							flow.set(e, newFlow);
+							flow[e] = newFlow;
 						} else {
 							/* saturated, remove edge */
-							flow.set(e, cap);
+							flow[e] = cap;
 							L.removeEdge(e);
 						}
-						flow.set(rev, flow.getDouble(rev) - f);
+						flow[t] -= f;
 					}
 				}
 			}

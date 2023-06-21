@@ -109,13 +109,14 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	private Pair<int[], Path> calcPotential(IndexGraph g, WeightFunction.Int w0, int minWeight) {
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
+		final int m = g.edges().size();
 		int[] potential = new int[n];
 
 		BitSet connected = new BitSet(n);
 		int[] layerSize = new int[n + 1];
 
 		/* updated weight function including the potential */
-		Weights.Int w = Weights.createExternalEdgesWeights(g, int.class);
+		int[] w = new int[m];
 
 		/* gNeg is the graph g with only 0,-1 edges */
 		IndexGraph gNeg = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
@@ -150,13 +151,13 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
 				for (int e : g.edges())
-					w.set(e, calcWeightWithPotential(g, e, w0, potential, weightMask));
+					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);
 
 				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
 				for (int e : g.edges()) {
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					if (w.weightInt(e) <= 0)
+					if (w[e] <= 0)
 						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
 				}
 
@@ -177,7 +178,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 						int e = eit.nextInt();
 						int v = eit.target();
 						int V = connectivityRes.getVertexCc(v);
-						int weight = w.weightInt(gNegEdgeRefs.getInt(e));
+						int weight = w[gNegEdgeRefs.getInt(e)];
 						if (U != V) {
 							GWeights.set(G.addEdge(U, V), weight);
 
@@ -252,7 +253,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
 					for (int e : g.edges()) {
-						int weight = w.weightInt(e);
+						int weight = w[e];
 						if (weight > 0) {
 							int U = connectivityRes.getVertexCc(g.edgeSource(e));
 							int V = connectivityRes.getVertexCc(g.edgeTarget(e));

@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -33,7 +34,8 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 	}
 
 	private static Path computeTourUndirected(IndexGraph g) {
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		final int m = g.edges().size();
 
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
@@ -55,7 +57,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		if (end == -1)
 			end = 0;
 
-		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
+		BitSet usedEdges = new BitSet(m);
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();
@@ -70,12 +72,12 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 					if (!iter.hasNext())
 						break findCycle;
 					e = iter.nextInt();
-					if (!usedEdges.getBool(e)) {
+					if (!usedEdges.get(e)) {
 						v = iter.target();
 						break;
 					}
 				}
-				usedEdges.set(e, true);
+				usedEdges.set(e);
 				queue.push(e);
 				u = v;
 			}
@@ -89,7 +91,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		}
 
 		for (int e : g.edges())
-			if (!usedEdges.getBool(e))
+			if (!usedEdges.get(e))
 				throw new IllegalArgumentException("Graph is not connected");
 		return new PathImpl(g, start, end, tour);
 	}
@@ -105,7 +107,8 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 	}
 
 	private static Path computeTourDirected(IndexGraph g) {
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		final int m = g.edges().size();
 
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
@@ -140,7 +143,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		if (end == -1)
 			end = 0;
 
-		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
+		BitSet usedEdges = new BitSet(m);
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();
@@ -155,12 +158,12 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 					if (!iter.hasNext())
 						break findCycle;
 					e = iter.nextInt();
-					if (!usedEdges.getBool(e)) {
+					if (!usedEdges.get(e)) {
 						v = iter.target();
 						break;
 					}
 				}
-				usedEdges.set(e, true);
+				usedEdges.set(e);
 				queue.push(e);
 				u = v;
 			}
@@ -175,7 +178,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 		}
 
 		for (int e : g.edges())
-			if (!usedEdges.getBool(e))
+			if (!usedEdges.get(e))
 				throw new IllegalArgumentException("Graph is not connected");
 		IntArrays.reverse(tour.elements(), 0, tour.size());
 		return new PathImpl(g, start, end, tour);

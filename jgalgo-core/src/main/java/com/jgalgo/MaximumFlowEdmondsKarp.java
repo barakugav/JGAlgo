@@ -35,16 +35,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
-	private static final Object FlowWeightKey = new Utils.Obj("flow");
-	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
-
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
 	MaximumFlowEdmondsKarp() {}
 
 	@Override
-	 double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -103,16 +100,16 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 	private class WorkerDouble extends Worker {
 
-		final Weights.Double flow;
-		final Weights.Double capacity;
+		final double[] flow;
+		final double[] capacity;
 
 		private static final double EPS = 0.0001;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, double.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -133,15 +130,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
-				int e = backtrack[p], rev = twin.getInt(e);
-				flow.set(e, flow.getDouble(e) + f);
-				flow.set(rev, flow.getDouble(rev) - f);
+				int e = backtrack[p], t = twin[e];
+				flow[e] += f;
+				flow[t] -= f;
 				p = g.edgeSource(e);
 			}
 		}
 
 		double getResidualCapacity(int e) {
-			return capacity.getDouble(e) - flow.getDouble(e);
+			return capacity[e] - flow[e];
 		}
 
 		@Override
@@ -152,14 +149,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 	private class WorkerInt extends Worker {
 
-		final Weights.Int flow;
-		final Weights.Int capacity;
+		final int[] flow;
+		final int[] capacity;
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = g.addEdgesWeights(FlowWeightKey, int.class);
-			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
+			flow = new int[g.edges().size()];
+			capacity = new int[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
@@ -180,15 +177,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
-				int e = backtrack[p], rev = twin.getInt(e);
-				flow.set(e, flow.getInt(e) + f);
-				flow.set(rev, flow.getInt(rev) - f);
+				int e = backtrack[p], t = twin[e];
+				flow[e] += f;
+				flow[t] -= f;
 				p = g.edgeSource(e);
 			}
 		}
 
 		int getResidualCapacity(int e) {
-			return capacity.getInt(e) - flow.getInt(e);
+			return capacity[e] - flow[e];
 		}
 
 		@Override
