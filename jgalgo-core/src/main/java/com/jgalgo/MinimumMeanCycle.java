@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Algorithm that find the cycle with the minimum mean weight.
  * <p>

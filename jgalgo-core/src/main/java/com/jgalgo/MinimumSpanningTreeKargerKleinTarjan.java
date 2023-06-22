@@ -18,6 +18,10 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Random;
+import com.jgalgo.graph.GraphBuilderFixedUnmapped;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;

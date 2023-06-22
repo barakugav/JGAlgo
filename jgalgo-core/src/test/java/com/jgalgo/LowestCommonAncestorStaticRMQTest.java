@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 

@@ -15,6 +15,10 @@
  */
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
+
 class ArgumentCheck {
 	private ArgumentCheck() {}
 

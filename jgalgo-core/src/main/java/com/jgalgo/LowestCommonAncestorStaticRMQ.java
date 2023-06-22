@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 
 /**
  * Static LCA implementation using RMQ.

@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**

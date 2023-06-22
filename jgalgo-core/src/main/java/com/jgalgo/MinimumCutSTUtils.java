@@ -16,6 +16,13 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -35,7 +42,7 @@ class MinimumCutSTUtils {
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
 
@@ -160,7 +167,7 @@ class MinimumCutSTUtils {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
-				w = WeightsImpl.localEdgeWeightFunction(g, w);
+				w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 				Cut bestCut = null;
 				double bestCutWeight = Double.MAX_VALUE;

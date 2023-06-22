@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * Calculate the maximum flow in a flow network.
  * <p>

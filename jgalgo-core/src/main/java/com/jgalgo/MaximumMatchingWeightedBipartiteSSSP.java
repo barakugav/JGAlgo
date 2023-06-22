@@ -18,7 +18,11 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -35,7 +39,8 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();
-	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
+	private ShortestPathSingleSource ssspNegative =
+			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
 	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 	private static final Object EdgeWeightKey = new Utils.Obj("weight");
 
@@ -137,7 +142,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 		}
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = WeightsImpl.potentialWeightFunc(g, w, potential);
+		WeightFunction spWeightFunc = Utils.potentialWeightFunc(g, w, potential);
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values

@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
  * <p>

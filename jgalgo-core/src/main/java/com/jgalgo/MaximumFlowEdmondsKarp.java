@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**

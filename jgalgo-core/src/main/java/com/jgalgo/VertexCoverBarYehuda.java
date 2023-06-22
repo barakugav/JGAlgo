@@ -16,6 +16,8 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Bar Yehuda's vertex cover algorithm.

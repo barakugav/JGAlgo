@@ -19,6 +19,10 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.Utils.BiInt2IntFunction;
+import com.jgalgo.graph.GraphBuilderFixedUnmapped;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -97,7 +101,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {
 			this.tOrig = tOrig;
-			this.w = WeightsImpl.localEdgeWeightFunction(tOrig, w);
+			this.w = WeightFunctions.localEdgeWeightFunction(tOrig, w);
 
 			if (useBitsLookupTables) {
 				int n = tOrig.vertices().size();

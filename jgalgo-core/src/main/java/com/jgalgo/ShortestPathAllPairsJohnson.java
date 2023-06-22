@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import com.jgalgo.graph.GraphBuilderFixedUnmapped;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -59,7 +63,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		final int n = g.vertices().size();
 
 		boolean negWeight = false;
@@ -82,7 +86,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		WeightFunction wPotential = WeightsImpl.potentialWeightFunc(g, w, potential);
+		WeightFunction wPotential = Utils.potentialWeightFunc(g, w, potential);
 		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
 		return res;

@@ -19,6 +19,11 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
@@ -91,7 +96,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	 Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -121,7 +126,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 
 			this.g = g;
 			this.partition = partition;
-			this.w = WeightsImpl.localEdgeWeightFunction(g, w);
+			this.w = WeightFunctions.localEdgeWeightFunction(g, w);
 			int n = g.vertices().size();
 
 			inTree = new BitSet(n);

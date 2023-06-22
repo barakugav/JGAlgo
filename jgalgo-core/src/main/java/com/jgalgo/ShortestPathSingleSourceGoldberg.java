@@ -19,6 +19,11 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -79,7 +84,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			w = WeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		return computeShortestPaths0(g, (WeightFunction.Int) w, source);
 	}
 
@@ -99,7 +104,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		WeightFunction.Int pw = WeightsImpl.potentialWeightFunc(g, w, potential);
+		WeightFunction.Int pw = Utils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
@@ -110,7 +115,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		w0 = WeightsImpl.localEdgeWeightFunction(g, w0);
+		w0 = WeightFunctions.localEdgeWeightFunction(g, w0);
 		int[] potential = new int[n];
 
 		BitSet connected = new BitSet(n);

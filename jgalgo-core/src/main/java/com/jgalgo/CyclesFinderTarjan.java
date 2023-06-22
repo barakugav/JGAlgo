@@ -19,6 +19,8 @@ package com.jgalgo;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

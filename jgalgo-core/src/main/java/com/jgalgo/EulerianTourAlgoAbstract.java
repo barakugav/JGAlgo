@@ -15,6 +15,10 @@
  */
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+
 abstract class EulerianTourAlgoAbstract implements EulerianTourAlgo {
 
 	@Override

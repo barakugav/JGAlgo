@@ -25,7 +25,12 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphCapabilities;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;

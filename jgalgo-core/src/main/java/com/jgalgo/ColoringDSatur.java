@@ -18,6 +18,8 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import com.jgalgo.Utils.BiInt2IntFunction;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**

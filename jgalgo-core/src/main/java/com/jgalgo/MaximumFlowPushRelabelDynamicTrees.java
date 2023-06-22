@@ -19,6 +19,8 @@ package com.jgalgo;
 import java.util.BitSet;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.QueueFixSize;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;

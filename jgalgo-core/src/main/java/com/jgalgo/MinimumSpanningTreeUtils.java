@@ -17,6 +17,11 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -32,7 +37,7 @@ class MinimumSpanningTreeUtils {
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, w);
 			return new ResultFromIndexResult(indexResult, eiMap);
@@ -52,7 +57,7 @@ class MinimumSpanningTreeUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iRoot = viMap.idToIndex(root);
 
 			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, w, iRoot);
@@ -102,12 +107,12 @@ class MinimumSpanningTreeUtils {
 
 		@Override
 		public IntCollection edges() {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(res.edges(), eiMap);
+			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);
 		}
 
 		@Override
 		public double weight(WeightFunction w) {
-			return res.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));
+			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 		}
 
 	}

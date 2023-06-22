@@ -16,6 +16,10 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlgo {
@@ -59,12 +63,12 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 
 		@Override
 		public IntCollection getCcVertices(int ccIdx) {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcVertices(ccIdx), viMap);
+			return IndexIdMaps.indexToIdCollection(res.getCcVertices(ccIdx), viMap);
 		}
 
 		@Override
 		public IntCollection getCcEdges(int ccIdx) {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcEdges(ccIdx), eiMap);
+			return IndexIdMaps.indexToIdCollection(res.getCcEdges(ccIdx), eiMap);
 		}
 
 	}

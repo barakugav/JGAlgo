@@ -16,6 +16,12 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilderFixedUnmapped;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
@@ -34,7 +40,7 @@ class TreePathMaximaUtils {
 			IndexGraph iGraph = tree.indexGraph();
 			IndexIdMap viMap = tree.indexGraphVerticesMap();
 			IndexIdMap eiMap = tree.indexGraphEdgesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			queries = new IndexQueriesFromQueries(queries, viMap);
 
 			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, w, queries);

@@ -15,10 +15,10 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.Graph;
 import com.jgalgo.MinimumSpanningTree;
-import com.jgalgo.WeightFunction;
-import com.jgalgo.Weights;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class MinimumSpanningTreeExample {

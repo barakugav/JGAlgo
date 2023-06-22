@@ -17,7 +17,11 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
+import com.jgalgo.graph.GraphBuilderFixedUnmapped;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**

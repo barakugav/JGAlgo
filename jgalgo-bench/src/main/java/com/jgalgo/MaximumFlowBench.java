@@ -37,6 +37,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)

@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
  * vertices.

@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.EdgeIter;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 

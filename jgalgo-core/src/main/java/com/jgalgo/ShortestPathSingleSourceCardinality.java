@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Single Source Shortest Path for cardinality weight function.
  * <p>

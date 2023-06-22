@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 
 public class TSPMetricTest extends TestBase {
 

@@ -17,6 +17,12 @@
 package com.jgalgo;
 
 import java.util.function.IntToDoubleFunction;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -70,7 +76,7 @@ class AStar implements ShortestPathWithHeuristic {
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 

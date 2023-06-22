@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * Flow on graph edges, with capacities and flows values.
  * <p>

@@ -17,6 +17,12 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -100,7 +106,7 @@ class TSPMetricUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			Path indexPath = computeShortestTour(iGraph, w);
 			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);

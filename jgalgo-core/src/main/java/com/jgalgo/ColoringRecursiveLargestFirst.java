@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
 
 /**
  * The Recursive Largest First coloring algorithm.

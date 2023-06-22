@@ -16,6 +16,11 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
@@ -200,8 +205,8 @@ public interface TreePathMaxima {
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
-		mstEdges = new IndexIdMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);
+		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
 		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);
 	}
 

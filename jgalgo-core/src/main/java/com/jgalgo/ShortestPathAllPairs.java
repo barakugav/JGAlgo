@@ -16,11 +16,14 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
  * <p>
- * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more efficient to use a
- * APSP algorithm in the first place.
+ * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more
+ * efficient to use a APSP algorithm in the first place.
  *
  * @author Barak Ugav
  */

@@ -15,6 +15,8 @@
  */
 package com.jgalgo;
 
+import java.util.function.Supplier;
+
 /**
  * A global configuration class.
  *
@@ -33,6 +35,23 @@ public class JGAlgoConfig {
 	 */
 	public static void setParallelByDefault(boolean enable) {
 		parallelByDefault = enable;
+	}
+
+	/**
+	 * Get a supplier of an option value.
+	 *
+	 * @param  <O> the option value type
+	 * @param  key the option key
+	 * @return     supplier that can be used multiple times to retrieve the most updated option value
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked", "boxing" })
+	public static <O> Supplier<O> getOption(String key) {
+		switch (key) {
+			case "GraphIdRandom":
+				return (Supplier) (() -> GraphIdRandom);
+			default:
+				return null;
+		}
 	}
 
 	final static boolean GraphIdRandom = false;

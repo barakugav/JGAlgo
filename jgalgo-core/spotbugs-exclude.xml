@@ -108,48 +108,48 @@
     <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
   </Match>
   <Match>
-  <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
-  <Or>
-      <Class name="com.jgalgo.DataContainer$Obj" />
-      <Class name="com.jgalgo.DataContainer$Int" />
-      <Class name="com.jgalgo.DataContainer$Long" />
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.graph.DataContainer$Obj" />
+      <Class name="com.jgalgo.graph.DataContainer$Int" />
+      <Class name="com.jgalgo.graph.DataContainer$Long" />
     </Or>
     <Bug pattern="HE_EQUALS_NO_HASHCODE" />
   </Match>
   <Match>
-  <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
-  <Or>
-      <Class name="com.jgalgo.WeightsImpl$Index$Obj" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Byte" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Short" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Int" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Long" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Float" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Double" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Bool" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Char" />
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
     </Or>
     <Bug pattern="HE_EQUALS_NO_HASHCODE" />
   </Match>
   <Match>
-  <!-- the returned view is unmodifiable, its ok to expose it -->
-  <Or>
-      <Class name="com.jgalgo.WeightsImpl$Index$Obj" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Byte" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Short" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Int" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Long" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Float" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Double" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Bool" />
-      <Class name="com.jgalgo.WeightsImpl$Index$Char" />
+    <!-- the returned view is unmodifiable, its ok to expose it -->
+    <Or>
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
     </Or>
     <Method name="values" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- this is internal API, its ok to expose it -->
-    <Class name="com.jgalgo.WeightsImpl$Abstract" />
+    <Class name="com.jgalgo.graph.WeightsImpl$Abstract" />
     <Method name="container" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
@@ -168,8 +168,8 @@
   <Match>
     <!-- Implementation of WeakHashMap copied from java.util, should be fine -->
     <Or>
-      <Class name="com.jgalgo.WeakIdentityHashMap" />
-      <Class name="com.jgalgo.WeakIdentityHashMap$HashIterator" />
+      <Class name="com.jgalgo.graph.WeakIdentityHashMap" />
+      <Class name="com.jgalgo.graph.WeakIdentityHashMap$HashIterator" />
     </Or>
     <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
   </Match>

@@ -17,6 +17,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
 class ColoringUtils {
 

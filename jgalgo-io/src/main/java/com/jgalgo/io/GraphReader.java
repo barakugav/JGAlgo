@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.Graph;
 
 /**
  * A reader that reads Graphs from files/IO-reader.

@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.Iterator;
+import com.jgalgo.graph.Graph;
 
 /**
  * An algorithm that finds all cycles in a graph.

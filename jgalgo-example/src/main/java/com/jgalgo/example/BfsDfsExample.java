@@ -17,7 +17,7 @@ package com.jgalgo.example;
 
 import com.jgalgo.BFSIter;
 import com.jgalgo.DFSIter;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class BfsDfsExample {

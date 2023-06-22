@@ -17,7 +17,7 @@ package com.jgalgo.io;
 
 import java.io.Reader;
 import java.io.Writer;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.Graph;
 
 class FormatGEXF implements GraphFormat {
 

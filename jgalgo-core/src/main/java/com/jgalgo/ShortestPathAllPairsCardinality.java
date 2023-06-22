@@ -18,6 +18,8 @@ package com.jgalgo;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**

@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Random;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 
 public class ShortestPathSingleSourceTestUtils extends TestUtils {
 

@@ -17,6 +17,9 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).

@@ -16,6 +16,11 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 abstract class MaximumMatchingAbstract implements MaximumMatching {
@@ -41,7 +46,7 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 		Matching indexMatch = computeMaximumWeightedMatching(iGraph, w);
 		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);
@@ -55,7 +60,7 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 		Matching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, w);
 		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);
@@ -91,12 +96,12 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 
 		@Override
 		public IntCollection edges() {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(match.edges(), eiMap);
+			return IndexIdMaps.indexToIdCollection(match.edges(), eiMap);
 		}
 
 		@Override
 		public double weight(WeightFunction w) {
-			return match.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));
+			return match.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 		}
 
 	}

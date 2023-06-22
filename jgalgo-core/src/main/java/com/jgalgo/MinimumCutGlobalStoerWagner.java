@@ -16,6 +16,9 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -36,7 +39,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 		if (n < 2)
 			throw new IllegalArgumentException("There is no valid cut in a graph with less than two vertices");
 
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		ArgumentCheck.onlyPositiveEdgesWeights(g, w);
 
 		ContractableGraph cg = new ContractableGraph(g);

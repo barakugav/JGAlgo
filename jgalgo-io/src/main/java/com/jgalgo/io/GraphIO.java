@@ -18,7 +18,7 @@ package com.jgalgo.io;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;

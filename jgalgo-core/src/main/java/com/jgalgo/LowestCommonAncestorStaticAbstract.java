@@ -16,6 +16,9 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
 abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {
 

@@ -16,6 +16,7 @@
 package com.jgalgo;
 
 import java.util.NoSuchElementException;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class ContractableGraph {
@@ -76,7 +77,7 @@ class ContractableGraph {
 		return new ContractableGraph.EdgeIter() {
 
 			final IntIterator vit = superVertexVertices(U);
-			com.jgalgo.EdgeIter eit = com.jgalgo.Edges.EmptyEdgeIter;
+			com.jgalgo.graph.EdgeIter eit = com.jgalgo.graph.EdgeIter.emptyIterator();
 			int source = -1, target = -1;
 
 			boolean eitAdvance() {
@@ -179,7 +180,7 @@ class ContractableGraph {
 			throw new IndexOutOfBoundsException(U);
 	}
 
-	static interface EdgeIter extends com.jgalgo.EdgeIter {
+	static interface EdgeIter extends com.jgalgo.graph.EdgeIter {
 		int sourceOriginal();
 
 		int targetOriginal();

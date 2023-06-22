@@ -30,9 +30,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
@@ -106,28 +107,6 @@ class Utils {
 				return it;
 			}
 		};
-	}
-
-	static class RangeIter implements IntIterator {
-
-		private int idx;
-		private final int size;
-
-		RangeIter(int size) {
-			this.size = size;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return idx < size;
-		}
-
-		@Override
-		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return idx++;
-		}
 	}
 
 	static interface IterPeekable<E> extends Iterator<E> {
@@ -654,13 +633,12 @@ class Utils {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private static final Consumer ConsumerNoOp = x -> {
-	};
+	static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
+		return e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+	}
 
-	@SuppressWarnings("unchecked")
-	static <T> Consumer<T> consumerNoOp() {
-		return ConsumerNoOp;
+	static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
+		return e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 
 }

@@ -27,6 +27,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.jgalgo.MaximumMatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
 import com.jgalgo.Utils.NullList;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -456,7 +461,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
-			WeightFunction wLocal = WeightsImpl.localEdgeWeightFunction(gOrig, w);
+			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
 			this.w = e -> wLocal.weight(edgeVal.get(e).e);
 
 			for (int e : gOrig.edges()) {

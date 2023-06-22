@@ -17,7 +17,11 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.Objects;
-
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -34,7 +38,7 @@ class VertexCoverUtils {
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, viMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 
 			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);
 			return new ResultFromIndexResult(indexResult, viMap);
@@ -92,7 +96,7 @@ class VertexCoverUtils {
 
 		@Override
 		public IntCollection vertices() {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(res.vertices(), viMap);
+			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);
 		}
 
 		@Override
@@ -102,7 +106,7 @@ class VertexCoverUtils {
 
 		@Override
 		public double weight(WeightFunction w) {
-			return res.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, viMap));
+			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, viMap));
 		}
 
 	}

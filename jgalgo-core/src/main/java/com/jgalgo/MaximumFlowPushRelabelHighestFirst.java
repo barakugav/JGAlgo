@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
+
 /**
  * The push-relabel maximum flow algorithm with highest-first ordering.
  * <p>

@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphLinkedTest extends TestBase {

@@ -21,6 +21,11 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
@@ -104,7 +109,7 @@ public class Trees {
 			return isForest((IndexGraph) g, roots, allowVisitedRoot);
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
-		roots = new IndexIdMapUtils.IndexIteratorFromIterator(roots, viMap);
+		roots = IndexIdMaps.idToIndexIterator(roots, viMap);
 		return isForest(iGraph, roots, allowVisitedRoot);
 	}
 

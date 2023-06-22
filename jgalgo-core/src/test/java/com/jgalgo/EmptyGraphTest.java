@@ -23,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphCapabilities;
+import com.jgalgo.graph.Graphs;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
 public class EmptyGraphTest extends TestBase {

@@ -16,11 +16,20 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class GraphsUtils {
+/**
+ * Static methods class for {@linkplain Graph graphs}.
+ *
+ * @author Barak Ugav
+ */
+public class GraphsUtils {
 
 	private GraphsUtils() {}
 
@@ -33,7 +42,15 @@ class GraphsUtils {
 		return degree;
 	}
 
-	static boolean containsSelfEdges(Graph g) {
+	/**
+	 * Check whether a graph contain self edges.
+	 * <p>
+	 * A self edge is an edge whose source and target is the same vertex.
+	 *
+	 * @param  g a graph
+	 * @return   {@code true} if the graph contain at least one self edge, else {@code false}
+	 */
+	public static boolean containsSelfEdges(Graph g) {
 		if (!g.getCapabilities().selfEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
@@ -47,7 +64,15 @@ class GraphsUtils {
 		return false;
 	}
 
-	static boolean containsParallelEdges(Graph g) {
+	/**
+	 * Check whether a graph contain parallel edges.
+	 * <p>
+	 * Two parallel edges are edges that have the same source and target vertices.
+	 *
+	 * @param  g a graph
+	 * @return   {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
+	 */
+	public static boolean containsParallelEdges(Graph g) {
 		if (!g.getCapabilities().parallelEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
@@ -64,111 +89,6 @@ class GraphsUtils {
 			}
 		}
 		return false;
-	}
-
-	static class GraphCapabilitiesBuilder {
-
-		private boolean parallelEdges;
-		private boolean parallelEdgesValid;
-		private boolean selfEdges;
-		private boolean selfEdgesValid;
-		private boolean directed;
-		private boolean directedValid;
-
-		private GraphCapabilitiesBuilder(boolean directed) {
-			this.directed = directed;
-			directedValid = true;
-		}
-
-		static GraphCapabilitiesBuilder newUndirected() {
-			return new GraphCapabilitiesBuilder(false);
-		}
-
-		static GraphCapabilitiesBuilder newDirected() {
-			return new GraphCapabilitiesBuilder(true);
-		}
-
-		GraphCapabilities build() {
-			if (!parallelEdgesValid || !selfEdgesValid || !directedValid)
-				throw new IllegalStateException();
-			return new GraphCapabilitiesImpl(parallelEdges, selfEdges, directed);
-		}
-
-		GraphCapabilitiesBuilder parallelEdges(boolean enable) {
-			parallelEdges = enable;
-			parallelEdgesValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder selfEdges(boolean enable) {
-			selfEdges = enable;
-			selfEdgesValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder directed(boolean enable) {
-			directed = enable;
-			directedValid = true;
-			return this;
-		}
-
-	}
-
-	private static class GraphCapabilitiesImpl implements GraphCapabilities {
-
-		private final boolean parallelEdges;
-		private final boolean selfEdges;
-		private final boolean directed;
-
-		GraphCapabilitiesImpl(boolean parallelEdges, boolean selfEdges, boolean directed) {
-			this.parallelEdges = parallelEdges;
-			this.selfEdges = selfEdges;
-			this.directed = directed;
-		}
-
-		@Override
-		public boolean parallelEdges() {
-			return parallelEdges;
-		}
-
-		@Override
-		public boolean selfEdges() {
-			return selfEdges;
-		}
-
-		@Override
-		public boolean directed() {
-			return directed;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder s = new StringBuilder().append('<');
-			s.append(" parallelEdges=").append(parallelEdges ? 'v' : 'x');
-			s.append(" selfEdges=").append(selfEdges ? 'v' : 'x');
-			s.append(" directed=").append(directed ? 'v' : 'x');
-			return s.append('>').toString();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof GraphCapabilities))
-				return false;
-			GraphCapabilities o = (GraphCapabilities) other;
-			return parallelEdges == o.parallelEdges() && selfEdges == o.selfEdges() && directed == o.directed();
-		}
-
-		@Override
-		public int hashCode() {
-			int h = 0;
-			/* we must use addition as the order shouldn't matter */
-			h += parallelEdges ? 1 : 0;
-			h += selfEdges ? 1 : 0;
-			h += directed ? 1 : 0;
-			return h;
-		}
 	}
 
 	static double weightSum(IntIterable collection, WeightFunction w) {
@@ -195,20 +115,6 @@ class GraphsUtils {
 			while (it.hasNext())
 				sum += w.weight(it.nextInt());
 			return sum;
-		}
-	}
-
-	static final IndexIdMap IndexIdMapIdentify = new IndexGraphMapIdentify();
-
-	private static class IndexGraphMapIdentify implements IndexIdMap {
-		@Override
-		public int indexToId(int index) {
-			return index;
-		}
-
-		@Override
-		public int idToIndex(int id) {
-			return id;
 		}
 	}
 

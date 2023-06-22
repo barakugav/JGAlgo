@@ -18,6 +18,10 @@ package com.jgalgo;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -116,7 +120,7 @@ class DFSIterImpl implements DFSIter {
 
 		@Override
 		public IntList edgePath() {
-			return new IndexIdMapUtils.ListFromIndexList(it.edgePath(), eiMap);
+			return IndexIdMaps.indexToIdList(it.edgePath(), eiMap);
 		}
 
 	}

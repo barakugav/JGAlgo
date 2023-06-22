@@ -16,9 +16,9 @@
 
 package com.jgalgo.example;
 
-import com.jgalgo.Graph;
 import com.jgalgo.ShortestPathSingleSource;
-import com.jgalgo.Weights;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ShortestPathExample {

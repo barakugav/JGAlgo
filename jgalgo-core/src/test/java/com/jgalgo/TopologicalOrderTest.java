@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 

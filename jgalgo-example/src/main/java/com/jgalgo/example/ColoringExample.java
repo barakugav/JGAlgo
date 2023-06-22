@@ -16,8 +16,8 @@
 package com.jgalgo.example;
 
 import com.jgalgo.Coloring;
-import com.jgalgo.EdgeIter;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 
 public class ColoringExample {
 

@@ -21,6 +21,8 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

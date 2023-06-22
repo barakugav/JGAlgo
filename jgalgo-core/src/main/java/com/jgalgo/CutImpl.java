@@ -17,6 +17,11 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
@@ -125,17 +130,17 @@ class CutImpl implements Cut {
 
 		@Override
 		public IntCollection vertices() {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.vertices(), viMap);
+			return IndexIdMaps.indexToIdCollection(cut.vertices(), viMap);
 		}
 
 		@Override
 		public IntCollection edges() {
-			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.edges(), eiMap);
+			return IndexIdMaps.indexToIdCollection(cut.edges(), eiMap);
 		}
 
 		@Override
 		public double weight(WeightFunction w) {
-			return cut.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));
+			return cut.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 		}
 
 	}

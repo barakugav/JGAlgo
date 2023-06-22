@@ -19,6 +19,10 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**

@@ -15,9 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.Graph;
 import com.jgalgo.LowestCommonAncestorDynamic;
 import com.jgalgo.LowestCommonAncestorStatic;
+import com.jgalgo.graph.Graph;
 
 public class LowestCommonAncestorExample {
 

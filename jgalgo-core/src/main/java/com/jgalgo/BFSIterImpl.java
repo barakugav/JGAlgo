@@ -18,7 +18,9 @@ package com.jgalgo;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;

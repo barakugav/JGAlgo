@@ -17,6 +17,9 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -48,7 +51,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 

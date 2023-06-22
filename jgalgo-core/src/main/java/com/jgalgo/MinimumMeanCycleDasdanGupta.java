@@ -17,6 +17,10 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -52,7 +56,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		Path cycle = computeMinimumMeanCycle0(g, w);
 

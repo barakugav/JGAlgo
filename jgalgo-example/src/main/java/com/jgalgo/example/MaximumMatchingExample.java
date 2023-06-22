@@ -15,9 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.Graph;
 import com.jgalgo.Matching;
 import com.jgalgo.MaximumMatching;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 

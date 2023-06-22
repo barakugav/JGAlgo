@@ -18,6 +18,10 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -56,7 +60,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
 		final int n = g.vertices().size();
-		w = WeightsImpl.localEdgeWeightFunction(g, w);
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
 		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);

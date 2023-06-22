@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import com.jgalgo.Graph;
+import com.jgalgo.graph.Graph;
 
 /**
  * A writer that writes Graphs to files/IO-writer.

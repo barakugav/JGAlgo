@@ -16,6 +16,14 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilderFixedRemapped;
+import com.jgalgo.graph.GraphCSRRemappedDirected;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Weights;
 
 abstract class MaximumFlowAbstract implements MaximumFlow {
 
@@ -126,91 +134,71 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexIdMap eiMap) {
 		if (net instanceof EdgeWeightsFlowNetwork) {
 			EdgeWeightsFlowNetwork net0 = (EdgeWeightsFlowNetwork) net;
-			boolean mappedCapacity = net0.capacityWeights instanceof WeightsImpl.Mapped.Double;
-			boolean mappedFlow = net0.flowWeights instanceof WeightsImpl.Mapped.Double;
-			if (mappedCapacity && mappedFlow) {
-				/* The network is a composition of edge weights */
-				WeightsImpl.Mapped.Double capacityWeightsMapped = ((WeightsImpl.Mapped.Double) net0.capacityWeights);
-				WeightsImpl.Mapped.Double flowWeightsMapped = ((WeightsImpl.Mapped.Double) net0.flowWeights);
 
-				/* The weights are a mapped wrappers to index weights containers */
-				/* Get the underlying index weights containers */
-				Weights.Double capacityWeights = capacityWeightsMapped.weights();
-				Weights.Double flowWeights = flowWeightsMapped.weights();
-
-				/* Create a network from the underlying index weights containers */
-				return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
-			}
+			/* Create a network from the underlying index weights containers */
+			Weights.Double capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacityWeights, eiMap);
+			Weights.Double flowWeights = IndexIdMaps.idToIndexWeights(net0.flowWeights, eiMap);
+			return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
 
 		} else if (net instanceof EdgeWeightsFlowNetworkInt) {
 			EdgeWeightsFlowNetworkInt net0 = (EdgeWeightsFlowNetworkInt) net;
-			boolean mappedCapacity = net0.capacityWeights instanceof WeightsImpl.Mapped.Int;
-			boolean mappedFlow = net0.flowWeights instanceof WeightsImpl.Mapped.Int;
-			if (mappedCapacity && mappedFlow) {
-				/* The network is a composition of edge weights */
-				WeightsImpl.Mapped.Int capacityWeightsMapped = ((WeightsImpl.Mapped.Int) net0.capacityWeights);
-				WeightsImpl.Mapped.Int flowWeightsMapped = ((WeightsImpl.Mapped.Int) net0.flowWeights);
 
-				/* The weights are a mapped wrappers to index weights containers */
-				/* Get the underlying index weights containers */
-				Weights.Int capacityWeights = capacityWeightsMapped.weights();
-				Weights.Int flowWeights = flowWeightsMapped.weights();
-
-				/* Create a network from the underlying index weights containers */
-				return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
-			}
-		}
-
-		/* Unknown network implementation, create a mapped wrapper */
-
-		if (net instanceof FlowNetwork.Int) {
-			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-			return new FlowNetwork.Int() {
-
-				@Override
-				public int getCapacityInt(int edge) {
-					return netInt.getCapacityInt(eiMap.indexToId(edge));
-				}
-
-				@Override
-				public void setCapacity(int edge, int capacity) {
-					netInt.setCapacity(eiMap.indexToId(edge), capacity);
-				}
-
-				@Override
-				public int getFlowInt(int edge) {
-					return netInt.getFlowInt(eiMap.indexToId(edge));
-				}
-
-				@Override
-				public void setFlow(int edge, int flow) {
-					netInt.setFlow(eiMap.indexToId(edge), flow);
-				}
-
-			};
+			/* Create a network from the underlying index weights containers */
+			Weights.Int capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacityWeights, eiMap);
+			Weights.Int flowWeights = IndexIdMaps.idToIndexWeights(net0.flowWeights, eiMap);
+			return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
 		} else {
-			return new FlowNetwork() {
 
-				@Override
-				public double getCapacity(int edge) {
-					return net.getCapacity(eiMap.indexToId(edge));
-				}
+			/* Unknown network implementation, create a mapped wrapper */
+			if (net instanceof FlowNetwork.Int) {
+				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+				return new FlowNetwork.Int() {
 
-				@Override
-				public void setCapacity(int edge, double capacity) {
-					net.setCapacity(eiMap.indexToId(edge), capacity);
-				}
+					@Override
+					public int getCapacityInt(int edge) {
+						return netInt.getCapacityInt(eiMap.indexToId(edge));
+					}
 
-				@Override
-				public double getFlow(int edge) {
-					return net.getFlow(eiMap.indexToId(edge));
-				}
+					@Override
+					public void setCapacity(int edge, int capacity) {
+						netInt.setCapacity(eiMap.indexToId(edge), capacity);
+					}
 
-				@Override
-				public void setFlow(int edge, double flow) {
-					net.setFlow(eiMap.indexToId(edge), flow);
-				}
-			};
+					@Override
+					public int getFlowInt(int edge) {
+						return netInt.getFlowInt(eiMap.indexToId(edge));
+					}
+
+					@Override
+					public void setFlow(int edge, int flow) {
+						netInt.setFlow(eiMap.indexToId(edge), flow);
+					}
+
+				};
+			} else {
+				return new FlowNetwork() {
+
+					@Override
+					public double getCapacity(int edge) {
+						return net.getCapacity(eiMap.indexToId(edge));
+					}
+
+					@Override
+					public void setCapacity(int edge, double capacity) {
+						net.setCapacity(eiMap.indexToId(edge), capacity);
+					}
+
+					@Override
+					public double getFlow(int edge) {
+						return net.getFlow(eiMap.indexToId(edge));
+					}
+
+					@Override
+					public void setFlow(int edge, double flow) {
+						net.setFlow(eiMap.indexToId(edge), flow);
+					}
+				};
+			}
 		}
 	}
 

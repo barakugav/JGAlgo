@@ -18,6 +18,11 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -33,7 +38,7 @@ class ShortestPathAllPairsUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			ShortestPathAllPairs.Result indexResult = computeAllShortestPaths(iGraph, w);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);

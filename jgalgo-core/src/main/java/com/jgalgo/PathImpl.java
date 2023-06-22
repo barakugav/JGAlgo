@@ -17,6 +17,10 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -240,7 +244,7 @@ class PathImpl extends AbstractIntList implements Path {
 
 		@Override
 		public EdgeIter edgeIter() {
-			return new Edges.EdgeIterFromIndexEdgeIter(path.edgeIter(), viMap, eiMap);
+			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);
 		}
 	}
 

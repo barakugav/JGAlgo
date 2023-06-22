@@ -15,6 +15,9 @@
  */
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+
 abstract class MaximumMatchingWeighted extends MaximumMatchingAbstract {
 
 	/**
