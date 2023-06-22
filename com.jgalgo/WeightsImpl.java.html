@@ -2414,10 +2414,10 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 	}
 
 	static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
-<span class="nc bnc" id="L2417" title="All 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="pc bpc" id="L2417" title="2 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
 <span class="nc" id="L2418">			return w;</span>
-<span class="nc bnc" id="L2419" title="All 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="nc" id="L2420">			return w;</span>
+<span class="pc bpc" id="L2419" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L2420">			return w;</span>
 <span class="nc" id="L2421">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
 <span class="nc bnc" id="L2422" title="All 2 branches missed.">		for (int e : g.edges())</span>
 <span class="nc" id="L2423">			wLocal.set(e, w.weightInt(e));</span>
