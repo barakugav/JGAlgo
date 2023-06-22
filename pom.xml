@@ -63,6 +63,7 @@
 
   <modules>
     <module>jgalgo-core</module>
+    <module>jgalgo-io</module>
     <module>jgalgo-bench</module>
     <module>jgalgo-example</module>
   </modules>
