@@ -102,7 +102,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 	static abstract class Worker extends MaximumFlowAbstract.Worker {
 
 		final int[] label;
-		final EdgeIterImpl[] edgeIters;
+		final EdgeIter[] edgeIters;
 
 		private final BitSet relabelVisited;
 		private final IntPriorityQueue relabelQueue;
@@ -121,7 +121,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			super(gOrig, net, source, sink);
 
 			label = new int[n];
-			edgeIters = new EdgeIterImpl[n];
+			edgeIters = new EdgeIter[n];
 
 			relabelVisited = new BitSet(n);
 			relabelQueue = new IntArrayFIFOQueue();
@@ -180,7 +180,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
-			edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();
+			edgeIters[u] = g.outEdges(u).iterator();
 			if (hasExcess(u))
 				addToLayerActive(u, newLabel);
 			else
@@ -316,7 +316,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 			// reuse edgeIters array
 			for (int u = 0; u < n; u++)
-				edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();
+				edgeIters[u] = g.outEdges(u).iterator();
 
 			for (int root = 0; root < n; root++) {
 				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
@@ -491,7 +491,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		void discharge(int u) {
-			for (EdgeIterImpl it = edgeIters[u];;) {
+			for (EdgeIter it = edgeIters[u];;) {
 				int e = it.peekNext();
 				int v = g.edgeTarget(e);
 				double eAccess = getResidualCapacity(e);
@@ -520,7 +520,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();
+					it = edgeIters[u] = g.outEdges(u).iterator();
 					assert it.hasNext();
 				}
 			}
@@ -644,7 +644,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		void discharge(int u) {
-			for (EdgeIterImpl it = edgeIters[u];;) {
+			for (EdgeIter it = edgeIters[u];;) {
 				int e = it.peekNext();
 				int v = g.edgeTarget(e);
 				int eAccess = getResidualCapacity(e);
@@ -670,7 +670,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = (EdgeIterImpl) g.outEdges(u).iterator();
+					it = edgeIters[u] = g.outEdges(u).iterator();
 					assert it.hasNext();
 				}
 			}

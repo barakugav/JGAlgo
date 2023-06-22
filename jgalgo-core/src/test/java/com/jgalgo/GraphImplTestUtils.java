@@ -258,7 +258,7 @@ class GraphImplTestUtils extends TestUtils {
 			/* outEdges */
 			for (int u : g.vertices()) {
 				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int peekNext = ((EdgeIterImpl) eit).peekNext();
+					int peekNext = eit.peekNext();
 					int e = eit.nextInt();
 					assertEquals(e, peekNext);
 
@@ -280,7 +280,7 @@ class GraphImplTestUtils extends TestUtils {
 			/* inEdges */
 			for (int v : g.vertices()) {
 				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-					int peekNext = ((EdgeIterImpl) eit).peekNext();
+					int peekNext = eit.peekNext();
 					int e = eit.nextInt();
 					assertEquals(e, peekNext);
 
@@ -306,7 +306,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (u == v && !g.getCapabilities().selfEdges())
 						continue;
 					for (EdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
-						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int peekNext = eit.peekNext();
 						int e = eit.nextInt();
 						assertEquals(e, peekNext);
 

@@ -510,7 +510,7 @@ public class Graphs {
 
 		EdgeIter outEdgesIter(int source) {
 			checkVertex(source);
-			return new EdgeIterImpl() {
+			return new EdgeIter() {
 				int nextTarget = 0;
 				int target = -1;
 
@@ -552,7 +552,7 @@ public class Graphs {
 
 		EdgeIter inEdgesIter(int target) {
 			checkVertex(target);
-			return new EdgeIterImpl() {
+			return new EdgeIter() {
 				int nextSource = 0;
 				int source = -1;
 
@@ -613,7 +613,7 @@ public class Graphs {
 
 			@Override
 			public EdgeIter iterator() {
-				return new EdgeIterImpl() {
+				return new EdgeIter() {
 
 					boolean beforeNext = true;
 
@@ -656,7 +656,7 @@ public class Graphs {
 			checkVertex(source);
 			checkVertex(target);
 			if (source == target)
-				return EdgeIterImpl.EmptyEdgeSet;
+				return Edges.EmptyEdgeSet;
 			return new EdgeSetSourceTarget(source, target);
 		}
 
@@ -1026,11 +1026,11 @@ public class Graphs {
 
 	}
 
-	private static class UnmodifiableEdgeIter implements EdgeIterImpl {
-		private final EdgeIterImpl it;
+	private static class UnmodifiableEdgeIter implements EdgeIter {
+		private final EdgeIter it;
 
 		UnmodifiableEdgeIter(EdgeIter it) {
-			this.it = (EdgeIterImpl) Objects.requireNonNull(it);
+			this.it = Objects.requireNonNull(it);
 		}
 
 		@Override
@@ -1296,11 +1296,11 @@ public class Graphs {
 
 	}
 
-	private static class ReversedEdgeIter implements EdgeIterImpl {
-		final EdgeIterImpl it;
+	private static class ReversedEdgeIter implements EdgeIter {
+		final EdgeIter it;
 
 		ReversedEdgeIter(EdgeIter it) {
-			this.it = (EdgeIterImpl) it;
+			this.it = it;
 		}
 
 		@Override

@@ -132,7 +132,7 @@ class GraphCSRRemappedDirected extends GraphCSRBase {
 		}
 	}
 
-	private class EdgeIterOut implements EdgeIterImpl {
+	private class EdgeIterOut implements EdgeIter {
 		private final int source;
 		private int nextEdge;
 		private final int endIdx;

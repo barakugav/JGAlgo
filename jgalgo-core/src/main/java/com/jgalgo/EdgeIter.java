@@ -16,7 +16,7 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import java.util.NoSuchElementException;
 
 /**
  * Iterator used to iterate over edges of a vertex.
@@ -36,10 +36,21 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see EdgeSet
+ * @see    EdgeSet
  * @author Barak Ugav
  */
-public interface EdgeIter extends IntIterator {
+public interface EdgeIter extends Utils.IterPeekable.Int {
+
+	/**
+	 * Peek at the next edge of the iterator without advancing it.
+	 * <p>
+	 * Identical to {@link #nextInt()} but without advancing the iterator.
+	 *
+	 * @return                        the next edge of the iterator
+	 * @throws NoSuchElementException if there is no 'next' element
+	 */
+	@Override
+	int peekNext();
 
 	/**
 	 * Get the source vertex of the last returned edge.

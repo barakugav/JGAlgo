@@ -101,7 +101,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
-				vertexData(u).edgeIter = (EdgeIterImpl) g.outEdges(u).iterator();
+				vertexData(u).edgeIter = g.outEdges(u).iterator();
 		}
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
@@ -157,7 +157,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 				Vertex U = active.pop();
 				assert U.v != source && U.v != sink;
 				assert U.dtNode.getParent() == null;
-				EdgeIterImpl it = U.edgeIter;
+				EdgeIter it = U.edgeIter;
 				int uSize = dtTreeSize.getTreeSize(U.dtNode);
 
 				while (U.hasExcess() && it.hasNext()) {
@@ -203,7 +203,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 				/* Finished iterating over all vertex edges */
 				if (!it.hasNext()) {
 					U.label++;
-					U.edgeIter = (EdgeIterImpl) g.outEdges(U.v).iterator();
+					U.edgeIter = g.outEdges(U.v).iterator();
 					cutAllChildren(U);
 				}
 
@@ -292,7 +292,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 			final int v;
 			boolean isActive;
 			int label;
-			EdgeIterImpl edgeIter;
+			EdgeIter edgeIter;
 
 			final DynamicTree.Node dtNode;
 			int firstDtChild;

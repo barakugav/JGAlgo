@@ -292,7 +292,7 @@ abstract class GraphBase implements Graph {
 		}
 	}
 
-	private class EdgeIterSourceTarget implements EdgeIterImpl {
+	private class EdgeIterSourceTarget implements EdgeIter {
 
 		private final int source, target;
 		private final EdgeIter it;

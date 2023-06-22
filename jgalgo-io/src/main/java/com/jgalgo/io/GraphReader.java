@@ -29,6 +29,7 @@ import com.jgalgo.Graph;
  */
 public interface GraphReader {
 
+	// TODO add an example in the class documentation
 	// Graph g = GraphReader.newInstance("gml").readGraph("graph1.gml");
 
 	/**

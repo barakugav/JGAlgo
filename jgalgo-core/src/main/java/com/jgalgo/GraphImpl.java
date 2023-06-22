@@ -344,12 +344,12 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	class EdgeIterMapped implements EdgeIterImpl {
+	class EdgeIterMapped implements EdgeIter {
 
-		private final EdgeIterImpl it;
+		private final EdgeIter it;
 
 		EdgeIterMapped(EdgeIter it) {
-			this.it = (EdgeIterImpl) it;
+			this.it = it;
 		}
 
 		@Override

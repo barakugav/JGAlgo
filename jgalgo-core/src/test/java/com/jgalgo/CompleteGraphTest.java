@@ -19,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
-
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -105,7 +103,7 @@ public class CompleteGraphTest extends TestBase {
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
 					for (EdgeIter eit = outEdges.iterator(); eit.hasNext();) {
-						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int peekNext = eit.peekNext();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
 
@@ -130,7 +128,7 @@ public class CompleteGraphTest extends TestBase {
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
 					for (EdgeIter eit = inEdges.iterator(); eit.hasNext();) {
-						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int peekNext = eit.peekNext();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
 
@@ -178,7 +176,7 @@ public class CompleteGraphTest extends TestBase {
 
 						IntSet iteratedEdges = new IntOpenHashSet(1);
 						for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-							int peekNext = ((EdgeIterImpl) eit).peekNext();
+							int peekNext = eit.peekNext();
 							int e = eit.nextInt();
 							assertEquals(peekNext, e);
 

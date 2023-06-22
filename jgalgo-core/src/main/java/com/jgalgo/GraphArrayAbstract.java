@@ -109,7 +109,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 		super.clearEdges();
 	}
 
-	abstract class EdgeIt implements EdgeIterImpl {
+	abstract class EdgeIt implements EdgeIter {
 
 		private final int[] edges;
 		private int count;

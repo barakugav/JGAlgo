@@ -105,7 +105,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 		super.clearEdges();
 	}
 
-	abstract class EdgeItr implements EdgeIterImpl {
+	abstract class EdgeItr implements EdgeIter {
 
 		private Node next;
 		Node last;

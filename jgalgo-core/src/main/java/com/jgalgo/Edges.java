@@ -20,9 +20,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
+class Edges {
 
-	static final EdgeIterImpl EmptyEdgeIter = new EdgeIterImpl() {
+	static final EdgeIter EmptyEdgeIter = new EdgeIter() {
 
 		@Override
 		public boolean hasNext() {
@@ -73,13 +73,13 @@ interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 
 	}
 
-	static class EdgeIterFromIndexEdgeIter implements EdgeIterImpl {
-		private final EdgeIterImpl it;
+	static class EdgeIterFromIndexEdgeIter implements EdgeIter {
+		private final EdgeIter it;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
 		EdgeIterFromIndexEdgeIter(EdgeIter it, IndexIdMap viMap, IndexIdMap eiMap) {
-			this.it = (EdgeIterImpl) Objects.requireNonNull(it);
+			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}

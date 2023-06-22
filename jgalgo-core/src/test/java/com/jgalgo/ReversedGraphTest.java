@@ -184,7 +184,7 @@ public class ReversedGraphTest extends TestBase {
 
 					IntSet iteratedEdges = new IntOpenHashSet();
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int peekNext = eit.peekNext();
 						int e = eit.nextInt();
 						assertEquals(e, peekNext);
 
@@ -212,7 +212,7 @@ public class ReversedGraphTest extends TestBase {
 
 					IntSet iteratedEdges = new IntOpenHashSet();
 					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = ((EdgeIterImpl) eit).peekNext();
+						int peekNext = eit.peekNext();
 						int e = eit.nextInt();
 						assertEquals(e, peekNext);
 
@@ -261,7 +261,7 @@ public class ReversedGraphTest extends TestBase {
 						}
 
 						for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-							int peekNext = ((EdgeIterImpl) eit).peekNext();
+							int peekNext = eit.peekNext();
 							int e = eit.nextInt();
 							assertEquals(e, peekNext);
 

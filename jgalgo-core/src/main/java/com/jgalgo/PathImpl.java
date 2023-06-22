@@ -66,7 +66,7 @@ class PathImpl extends AbstractIntList implements Path {
 		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
 	}
 
-	private static class IterUndirected implements EdgeIterImpl {
+	private static class IterUndirected implements EdgeIter {
 
 		private final IndexGraph g;
 		private final IntListIterator it;
@@ -111,7 +111,7 @@ class PathImpl extends AbstractIntList implements Path {
 
 	}
 
-	private static class IterDirected implements EdgeIterImpl {
+	private static class IterDirected implements EdgeIter {
 
 		private final IndexGraph g;
 		private final IntListIterator it;
@@ -240,7 +240,7 @@ class PathImpl extends AbstractIntList implements Path {
 
 		@Override
 		public EdgeIter edgeIter() {
-			return new EdgeIterImpl.EdgeIterFromIndexEdgeIter(path.edgeIter(), viMap, eiMap);
+			return new Edges.EdgeIterFromIndexEdgeIter(path.edgeIter(), viMap, eiMap);
 		}
 	}
 

@@ -76,7 +76,7 @@ class ContractableGraph {
 		return new ContractableGraph.EdgeIter() {
 
 			final IntIterator vit = superVertexVertices(U);
-			com.jgalgo.EdgeIterImpl eit = com.jgalgo.EdgeIterImpl.EmptyEdgeIter;
+			com.jgalgo.EdgeIter eit = com.jgalgo.Edges.EmptyEdgeIter;
 			int source = -1, target = -1;
 
 			boolean eitAdvance() {
@@ -93,7 +93,7 @@ class ContractableGraph {
 				if (eit.hasNext())
 					return true;
 				for (; vit.hasNext();) {
-					eit = (com.jgalgo.EdgeIterImpl) g.outEdges(vit.nextInt()).iterator();
+					eit = g.outEdges(vit.nextInt()).iterator();
 					if (eitAdvance())
 						return true;
 				}
@@ -183,6 +183,11 @@ class ContractableGraph {
 		int sourceOriginal();
 
 		int targetOriginal();
+
+		@Override
+		default int peekNext() {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 }

@@ -124,7 +124,7 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 	public EdgeSet getEdges(int source, int target) {
 		int edge = edges.get(source).getInt(target);
 		if (edge == EdgeNone) {
-			return EdgeIterImpl.EmptyEdgeSet;
+			return Edges.EmptyEdgeSet;
 		} else {
 			return new EdgeSetSourceTarget(source, target, edge);
 		}
@@ -177,7 +177,7 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 		super.clearEdges();
 	}
 
-	class EdgeIterOut implements EdgeIterImpl {
+	class EdgeIterOut implements EdgeIter {
 
 		private final int source;
 		private int target;
@@ -240,7 +240,7 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 		}
 	}
 
-	class EdgeIterInUndirected implements EdgeIterImpl {
+	class EdgeIterInUndirected implements EdgeIter {
 
 		private int source;
 		private final int target;
@@ -303,7 +303,7 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 		}
 	}
 
-	class EdgeIterInDirected implements EdgeIterImpl {
+	class EdgeIterInDirected implements EdgeIter {
 
 		private int source;
 		private final int target;
@@ -405,8 +405,8 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 		@Override
 		public EdgeIter iterator() {
 			if (edge == EdgeNone)
-				return EdgeIterImpl.EmptyEdgeIter;
-			return new EdgeIterImpl() {
+				return Edges.EmptyEdgeIter;
+			return new EdgeIter() {
 
 				boolean beforeNext = true;
 
