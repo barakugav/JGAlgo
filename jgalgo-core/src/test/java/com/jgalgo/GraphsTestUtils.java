@@ -20,6 +20,7 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -37,7 +38,7 @@ public class GraphsTestUtils extends TestUtils {
 	private GraphsTestUtils() {}
 
 	static Boolean2ObjectFunction<Graph> defaultGraphImpl() {
-		return direct -> Graph.newBuilderUndirected().setDirected(direct).build();
+		return direct -> GraphFactory.newUndirected().setDirected(direct).newGraph();
 	}
 
 	public static class RandomGraphBuilder {

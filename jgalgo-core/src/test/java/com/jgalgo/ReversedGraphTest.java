@@ -20,15 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphCapabilities;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -44,7 +43,7 @@ public class ReversedGraphTest extends TestBase {
 		final long seed = 0x97dc96ffefd7165bL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		Graph g = Graph.newBuilderUndirected().setDirected(directed).build();
+		Graph g = GraphFactory.newUndirected().setDirected(directed).newGraph();
 
 		IntList vertices = new IntArrayList(n);
 		for (int i = 0; i < n; i++)

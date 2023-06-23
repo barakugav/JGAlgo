@@ -25,6 +25,7 @@ import java.util.function.IntSupplier;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -32,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class CyclesFinderTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesFinder cyclesFinder) {
-		IndexGraph g = IndexGraph.newBuilderDirected().build();
+		IndexGraph g = IndexGraphFactory.newDirected().newGraph();
 		int v0 = g.addVertex();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();

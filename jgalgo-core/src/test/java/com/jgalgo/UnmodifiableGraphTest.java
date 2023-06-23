@@ -26,6 +26,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphCapabilities;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -43,7 +44,7 @@ public class UnmodifiableGraphTest extends TestBase {
 		final long seed = 0x97dc96ffefd7165bL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		Graph g = Graph.newBuilderUndirected().setDirected(directed).build();
+		Graph g = GraphFactory.newUndirected().setDirected(directed).newGraph();
 
 		IntList vertices = new IntArrayList(n);
 		Weights.Int vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);

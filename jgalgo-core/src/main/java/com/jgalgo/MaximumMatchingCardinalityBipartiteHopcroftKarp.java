@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -90,7 +91,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		IndexGraph f = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).build();
+		IndexGraph f = IndexGraphFactory.newUndirected().expectedVerticesNum(n).newGraph();
 		for (int v = 0; v < n; v++)
 			f.addVertex();
 		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

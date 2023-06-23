@@ -29,7 +29,7 @@ import com.jgalgo.graph.Graph;
  * query time.
  *
  * <pre> {@code
- * Graph tree = Graph.newBuilderUndirected().build();
+ * Graph tree = GraphFactory.newUndirected().newGraph();
  * int rt = tree.addVertex();
  * int v1 = tree.addVertex();
  * int v2 = tree.addVertex();

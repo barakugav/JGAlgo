@@ -57,8 +57,8 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	/* copy constructor */
-	GraphImpl(Graph orig, IndexGraph.Builder indexGraphBuilder) {
-		this(indexGraphBuilder.buildCopyOf(orig.indexGraph()), orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap());
+	GraphImpl(Graph orig, IndexGraphFactory indexGraphFactory) {
+		this(indexGraphFactory.newCopyOf(orig.indexGraph()), orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap());
 	}
 
 	static Graph fixedCopy(Graph g) {
@@ -407,8 +407,8 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		/* copy constructor */
-		Directed(Graph orig, IndexGraph.Builder indexGraphBuilder) {
-			super(orig, indexGraphBuilder);
+		Directed(Graph orig, IndexGraphFactory indexGraphFactory) {
+			super(orig, indexGraphFactory);
 			ArgumentCheck.onlyDirected(orig);
 			ArgumentCheck.onlyDirected(indexGraph);
 		}
@@ -433,8 +433,8 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		/* copy constructor */
-		Undirected(Graph orig, IndexGraph.Builder indexGraphBuilder) {
-			super(orig, indexGraphBuilder);
+		Undirected(Graph orig, IndexGraphFactory indexGraphFactory) {
+			super(orig, indexGraphFactory);
 			ArgumentCheck.onlyUndirected(orig);
 			ArgumentCheck.onlyUndirected(indexGraph);
 		}
@@ -622,20 +622,20 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	static class Builder implements Graph.Builder {
-		private final IndexGraph.Builder builder;
+	static class Factory implements GraphFactory {
+		private final IndexGraphFactory factory;
 
-		Builder(boolean directed) {
-			this.builder = new IndexGraphBuilderImpl(directed);
+		Factory(boolean directed) {
+			this.factory = new IndexGraphFactoryImpl(directed);
 		}
 
-		Builder(Graph g) {
-			this.builder = new IndexGraphBuilderImpl(g.indexGraph());
+		Factory(Graph g) {
+			this.factory = new IndexGraphFactoryImpl(g.indexGraph());
 		}
 
 		@Override
-		public Graph build() {
-			IndexGraph indexGraph = builder.build();
+		public Graph newGraph() {
+			IndexGraph indexGraph = factory.newGraph();
 			if (indexGraph.getCapabilities().directed()) {
 				return new GraphImpl.Directed(indexGraph);
 			} else {
@@ -644,59 +644,59 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		public Graph buildCopyOf(Graph g) {
+		public Graph newCopyOf(Graph g) {
 			if (g.getCapabilities().directed()) {
-				return new GraphImpl.Directed(g, builder);
+				return new GraphImpl.Directed(g, factory);
 			} else {
-				return new GraphImpl.Undirected(g, builder);
+				return new GraphImpl.Undirected(g, factory);
 			}
 		}
 
 		@Override
-		public Graph.Builder setDirected(boolean directed) {
-			builder.setDirected(directed);
+		public GraphFactory setDirected(boolean directed) {
+			factory.setDirected(directed);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder allowSelfEdges(boolean selfEdges) {
-			builder.allowSelfEdges(selfEdges);
+		public GraphFactory allowSelfEdges(boolean selfEdges) {
+			factory.allowSelfEdges(selfEdges);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder allowParallelEdges(boolean parallelEdges) {
-			builder.allowParallelEdges(parallelEdges);
+		public GraphFactory allowParallelEdges(boolean parallelEdges) {
+			factory.allowParallelEdges(parallelEdges);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder expectedVerticesNum(int expectedVerticesNum) {
-			builder.expectedVerticesNum(expectedVerticesNum);
+		public GraphFactory expectedVerticesNum(int expectedVerticesNum) {
+			factory.expectedVerticesNum(expectedVerticesNum);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder expectedEdgesNum(int expectedEdgesNum) {
-			builder.expectedEdgesNum(expectedEdgesNum);
+		public GraphFactory expectedEdgesNum(int expectedEdgesNum) {
+			factory.expectedEdgesNum(expectedEdgesNum);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder addHint(Graph.Builder.Hint hint) {
-			builder.addHint(hint);
+		public GraphFactory addHint(GraphFactory.Hint hint) {
+			factory.addHint(hint);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder removeHint(Graph.Builder.Hint hint) {
-			builder.removeHint(hint);
+		public GraphFactory removeHint(GraphFactory.Hint hint) {
+			factory.removeHint(hint);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setOption(String key, Object value) {
-			builder.setOption(key, value);
+		public GraphFactory setOption(String key, Object value) {
+			factory.setOption(key, value);
 			return this;
 		}
 	}

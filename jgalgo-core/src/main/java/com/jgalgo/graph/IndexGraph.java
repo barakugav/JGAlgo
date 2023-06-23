@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {@link #addVertexSwapListener(IndexSwapListener)} and {@link #addEdgeSwapListener(IndexSwapListener)}.
  * <p>
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
- * created on its own using {@link IndexGraph.Builder}. In cases where no removal of vertices or edges is required, and
+ * created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is required, and
  * there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a regular
  * {@link Graph}, as it will expose an identical functionality while providing better performance.
  * <p>
@@ -218,7 +218,7 @@ public interface IndexGraph extends Graph {
 
 	@Override
 	default IndexGraph copy() {
-		return newBuilderFrom(this).buildCopyOf(this);
+		return IndexGraphFactory.newFrom(this).newCopyOf(this);
 	}
 
 	// @Override
@@ -238,137 +238,6 @@ public interface IndexGraph extends Graph {
 	@Override
 	default IndexGraph reverseView() {
 		return Graphs.reverseView(this);
-	}
-
-	/**
-	 * Create an undirected index graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new undirected index graph.
-	 *
-	 * @return a new builder that can build undirected index graphs
-	 */
-	static IndexGraph.Builder newBuilderUndirected() {
-		return new IndexGraphBuilderImpl(false);
-	}
-
-	/**
-	 * Create a directed index graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new directed index graph.
-	 *
-	 * @return a new builder that can build directed index graphs
-	 */
-	static IndexGraph.Builder newBuilderDirected() {
-		return new IndexGraphBuilderImpl(true);
-	}
-
-	/**
-	 * Create a new index graph builder based on a given implementation.
-	 * <p>
-	 * The new builder will build graphs with the same capabilities as the given graph, possibly choosing to use a
-	 * similar implementation. The builder will NOT copy the graph itself (the vertices, edges and weights), for such
-	 * use case see {@link IndexGraph#copy()} and {@link IndexGraph.Builder#buildCopyOf(IndexGraph)}.
-	 *
-	 * @param  g a graph from which the builder should copy its capabilities
-	 * @return   a new graph builder that will create graphs with the same capabilities of the given graph
-	 */
-	static IndexGraph.Builder newBuilderFrom(IndexGraph g) {
-		return new IndexGraphBuilderImpl(g);
-	}
-
-	/**
-	 * A builder for {@link IndexGraph} objects.
-	 *
-	 * @see    IndexGraph#newBuilderDirected()
-	 * @see    IndexGraph#newBuilderUndirected()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends BuilderAbstract<IndexGraph.Builder> {
-
-		/**
-		 * Create a new empty index graph.
-		 *
-		 * @return a new index graph with the builder options
-		 */
-		IndexGraph build();
-
-		/**
-		 * Create a copy of a given index graph.
-		 * <p>
-		 * An identical copy of the given graph will be created, with the same vertices, edges and weights. The returned
-		 * Graph will always be modifiable, with no side affects on the original graph.
-		 * <p>
-		 * Differing from {@link IndexGraph#copy()}, the capabilities of the new graph are determined by the builder
-		 * configuration, rather than copied from the given graph. Note for example that if the builder chooses to use
-		 * an implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not
-		 * called with {@code true}), attempting to create a copy of a graph that does contains self edges will result
-		 * in an exception.
-		 *
-		 * @param  g the original graph to copy
-		 * @return   an identical copy of the given graph
-		 */
-		IndexGraph buildCopyOf(IndexGraph g);
-
-		/**
-		 * Determine if graphs built by this builder should be directed or not.
-		 *
-		 * @param  directed if {@code true}, graphs built by this builder will be directed
-		 * @return          this builder
-		 */
-		IndexGraph.Builder setDirected(boolean directed);
-
-		/**
-		 * Determine if graphs built by this builder should be support self edges.
-		 *
-		 * @param  selfEdges if {@code true}, graphs built by this builder will support self edges
-		 * @return           this builder
-		 */
-		IndexGraph.Builder allowSelfEdges(boolean selfEdges);
-
-		/**
-		 * Determine if graphs built by this builder should be support parallel edges.
-		 *
-		 * @param  parallelEdges if {@code true}, graphs built by this builder will support parallel edges
-		 * @return               this builder
-		 */
-		IndexGraph.Builder allowParallelEdges(boolean parallelEdges);
-
-		/**
-		 * Set the expected number of vertices that will exist in the graph.
-		 *
-		 * @param  expectedVerticesNum the expected number of vertices in the graph
-		 * @return                     this builder
-		 */
-		IndexGraph.Builder expectedVerticesNum(int expectedVerticesNum);
-
-		/**
-		 * Set the expected number of edges that will exist in the graph.
-		 *
-		 * @param  expectedEdgesNum the expected number of edges in the graph
-		 * @return                  this builder
-		 */
-		IndexGraph.Builder expectedEdgesNum(int expectedEdgesNum);
-
-		/**
-		 * Add a hint to this builder.
-		 * <p>
-		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
-		 *
-		 * @param  hint the hint to add
-		 * @return      this builder
-		 */
-		IndexGraph.Builder addHint(Graph.Builder.Hint hint);
-
-		/**
-		 * Remove a hint from this builder.
-		 * <p>
-		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
-		 *
-		 * @param  hint the hint to remove
-		 * @return      this builder
-		 */
-		IndexGraph.Builder removeHint(Graph.Builder.Hint hint);
-
 	}
 
 }

@@ -29,6 +29,7 @@ import com.jgalgo.MaximumMatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
 import com.jgalgo.Utils.NullList;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
@@ -457,7 +458,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
-			this.g = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
+			this.g = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);

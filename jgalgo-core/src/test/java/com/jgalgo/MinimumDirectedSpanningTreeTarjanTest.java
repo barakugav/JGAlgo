@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -45,7 +46,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			if (g.getCapabilities().directed())
 				return algo.computeMinimumDirectedSpanningTree(g, w, 0);
 			int n = g.vertices().size();
-			Graph dg = Graph.newBuilderDirected().expectedVerticesNum(n).build();
+			Graph dg = GraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 

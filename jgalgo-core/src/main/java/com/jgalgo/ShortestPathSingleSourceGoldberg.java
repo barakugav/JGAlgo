@@ -21,6 +21,7 @@ import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
@@ -125,13 +126,13 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		int[] w = new int[m];
 
 		/* gNeg is the graph g with only 0,-1 edges */
-		IndexGraph gNeg = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
+		IndexGraph gNeg = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 		for (int v = 0; v < n; v++)
 			gNeg.addVertex();
 		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-		IndexGraph G = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();
+		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 

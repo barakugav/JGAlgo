@@ -19,6 +19,7 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -180,7 +181,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 		private Matching computeMaximumMatchingShuffled(Graph g, WeightFunction w, boolean perfect) {
 			final int n = g.vertices().size();
-			Graph shuffledG = Graph.newBuilderUndirected().build();
+			Graph shuffledG = GraphFactory.newUndirected().newGraph();
 			for (int i = 0; i < n; i++)
 				shuffledG.addVertex();
 

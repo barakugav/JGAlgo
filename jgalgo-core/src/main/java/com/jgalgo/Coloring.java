@@ -30,7 +30,7 @@ import com.jgalgo.graph.Graph;
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
  * <pre> {@code
- * Graph g = Graph.newBuilderUndirected().build();
+ * Graph g = GraphFactory.newUndirected().newGraph();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();

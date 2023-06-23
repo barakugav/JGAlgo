@@ -21,6 +21,7 @@ import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IntDoubleConsumer;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -78,8 +79,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 				capacitySum += net.getCapacity(e);
 			capacitySum *= 16;
 
-			Graph.Builder builder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
-			Graph L = builder.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).build();
+			GraphFactory factory = GraphFactory.newDirected().setOption("impl", "GraphLinked");
+			Graph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
 			for (int v : g.vertices())
 				L.addVertex(v);
 

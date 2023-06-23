@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Random;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -137,7 +138,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
-			Graph mst = Graph.newBuilderUndirected().build();
+			Graph mst = GraphFactory.newUndirected().newGraph();
 			Weights.Int g2MstVMap = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
 			for (int v : g.vertices()) {
 				int vMst = mst.addVertex();

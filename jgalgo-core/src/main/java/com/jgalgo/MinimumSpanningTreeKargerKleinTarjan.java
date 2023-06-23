@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Random;
 import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Pair;
@@ -236,7 +237,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
 				IndexGraph tree = trees[tIdx] =
-						MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newBuilderUndirected().build());
+						MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraphFactory.newUndirected().newGraph());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 				tpmQueries[tIdx] =

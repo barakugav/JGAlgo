@@ -18,12 +18,13 @@ package com.jgalgo.example;
 import com.jgalgo.LowestCommonAncestorDynamic;
 import com.jgalgo.LowestCommonAncestorStatic;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 
 public class LowestCommonAncestorExample {
 
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-		Graph tree = Graph.newBuilderUndirected().build();
+		Graph tree = GraphFactory.newUndirected().newGraph();
 		int rt = tree.addVertex();
 		int v1 = tree.addVertex();
 		int v2 = tree.addVertex();

@@ -18,14 +18,14 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphArrayTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> IndexGraph.newBuilderUndirected().setOption("impl", "GraphArray").setDirected(directed)
-				.build();
+		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
+				.newGraph();
 	}
 
 	@Test

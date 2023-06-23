@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -40,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MaximumFlowDinic extends MaximumFlowAbstract {
 
-	private Graph.Builder layerGraphBuilder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
+	private GraphFactory layerGraphFactory = GraphFactory.newDirected().setOption("impl", "GraphLinked");
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -54,10 +55,10 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 	 * graph implementation should be used, as linked graph implementation perform {@code remove} operations more
 	 * efficiently.
 	 *
-	 * @param builder a builder that provide instances of graphs for the layers graph
+	 * @param factory a factory that provide instances of graphs for the layers graph
 	 */
-	void setLayerGraphFactory(Graph.Builder builder) {
-		layerGraphBuilder = Objects.requireNonNull(builder);
+	void setLayerGraphFactory(GraphFactory factory) {
+		layerGraphFactory = Objects.requireNonNull(factory);
 	}
 
 	/**
@@ -84,7 +85,8 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		}
 
 		double computeMaximumFlow() {
-			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(/* >= */ n).expectedEdgesNum(n).build();
+			Graph L =
+					layerGraphFactory.setDirected(true).expectedVerticesNum(/* >= */ n).expectedEdgesNum(n).newGraph();
 			for (int v : g.vertices())
 				L.addVertex(v);
 

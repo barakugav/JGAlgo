@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newBuilderDirected().build();
+ * Graph g = GraphFactory.newDirected().newGraph();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see    Graph.Builder
+ * @see    GraphFactory
  * @see    GraphCapabilities
  * @see    IndexGraph
  * @author Barak Ugav
@@ -651,7 +651,7 @@ public interface Graph {
 	 * @return an identical copy of this graph
 	 */
 	default Graph copy() {
-		return newBuilderFrom(this).buildCopyOf(this);
+		return GraphFactory.newFrom(this).newCopyOf(this);
 	}
 
 	// /**
@@ -700,151 +700,6 @@ public interface Graph {
 	 */
 	default Graph reverseView() {
 		return Graphs.reverseView(this);
-	}
-
-	/**
-	 * Create an undirected graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new undirected graph.
-	 *
-	 * @return a new builder that can build undirected graphs
-	 */
-	static Graph.Builder newBuilderUndirected() {
-		return new GraphImpl.Builder(false);
-	}
-
-	/**
-	 * Create a directed graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new directed graph.
-	 *
-	 * @return a new builder that can build directed graphs
-	 */
-	static Graph.Builder newBuilderDirected() {
-		return new GraphImpl.Builder(true);
-	}
-
-	/**
-	 * Create a new graph builder based on a given implementation.
-	 * <p>
-	 * The new builder will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
-	 * use a similar implementation. The builder will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link Graph#copy()} and {@link Graph.Builder#buildCopyOf(Graph)}.
-	 *
-	 * @param  g a graph from which the builder should copy its capabilities (inclusive)
-	 * @return   a new graph builder that will create graphs with the same capabilities (inclusive) of the given graph
-	 */
-	static Graph.Builder newBuilderFrom(Graph g) {
-		return new GraphImpl.Builder(g);
-	}
-
-	/**
-	 * A builder for {@link Graph} objects.
-	 *
-	 * @see    Graph#newBuilderDirected()
-	 * @see    Graph#newBuilderUndirected()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends BuilderAbstract<Graph.Builder> {
-
-		/**
-		 * Create a new empty graph.
-		 *
-		 * @return a new graph with the builder options
-		 */
-		Graph build();
-
-		/**
-		 * Create a copy of a given graph.
-		 * <p>
-		 * An identical copy of the given graph will be created, with the same vertices, edges and weights. The returned
-		 * Graph will always be modifiable, with no side affects on the original graph.
-		 * <p>
-		 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the builder
-		 * configuration, rather than copied from the given graph. Note for example that if the builder chooses to use
-		 * an implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not
-		 * called with {@code true}), attempting to create a copy of a graph that does contains self edges will result
-		 * in an exception.
-		 *
-		 * @param  g the original graph to copy
-		 * @return   an identical copy of the given graph
-		 */
-		Graph buildCopyOf(Graph g);
-
-		/**
-		 * Determine if graphs built by this builder should be directed or not.
-		 *
-		 * @param  directed if {@code true}, graphs built by this builder will be directed
-		 * @return          this builder
-		 */
-		Graph.Builder setDirected(boolean directed);
-
-		/**
-		 * Determine if graphs built by this builder should be support self edges.
-		 *
-		 * @param  selfEdges if {@code true}, graphs built by this builder will support self edges
-		 * @return           this builder
-		 */
-		Graph.Builder allowSelfEdges(boolean selfEdges);
-
-		/**
-		 * Determine if graphs built by this builder should be support parallel edges.
-		 *
-		 * @param  parallelEdges if {@code true}, graphs built by this builder will support parallel edges
-		 * @return               this builder
-		 */
-		Graph.Builder allowParallelEdges(boolean parallelEdges);
-
-		/**
-		 * Set the expected number of vertices that will exist in the graph.
-		 *
-		 * @param  expectedVerticesNum the expected number of vertices in the graph
-		 * @return                     this builder
-		 */
-		Graph.Builder expectedVerticesNum(int expectedVerticesNum);
-
-		/**
-		 * Set the expected number of edges that will exist in the graph.
-		 *
-		 * @param  expectedEdgesNum the expected number of edges in the graph
-		 * @return                  this builder
-		 */
-		Graph.Builder expectedEdgesNum(int expectedEdgesNum);
-
-		/**
-		 * Add a hint to this builder.
-		 * <p>
-		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
-		 *
-		 * @param  hint the hint to add
-		 * @return      this builder
-		 */
-		Graph.Builder addHint(Graph.Builder.Hint hint);
-
-		/**
-		 * Remove a hint from this builder.
-		 * <p>
-		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
-		 *
-		 * @param  hint the hint to remove
-		 * @return      this builder
-		 */
-		Graph.Builder removeHint(Graph.Builder.Hint hint);
-
-		/**
-		 * Hints for a graph builder.
-		 * <p>
-		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
-		 *
-		 * @author Barak Ugav
-		 */
-		static enum Hint {
-			/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-			FastEdgeRemoval,
-			/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-			FastEdgeLookup,
-		}
-
 	}
 
 }

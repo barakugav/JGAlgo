@@ -21,6 +21,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -97,7 +98,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
 	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
-		IndexGraph g = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();
+		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
 		for (int v = 0; v < n; v++)
 			g.addVertex();
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

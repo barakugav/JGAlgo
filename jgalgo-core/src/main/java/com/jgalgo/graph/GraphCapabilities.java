@@ -22,7 +22,7 @@ package com.jgalgo.graph;
  * Each implementation of the {@link Graph} interface may are may not support some operations. Each graph provide its
  * capabilities using {@link Graph#getCapabilities()}.
  *
- * @see    Graph.Builder
+ * @see    GraphFactory
  * @see    GraphArrayUndirected
  * @see    GraphLinkedUndirected
  * @see    GraphTableUndirected
