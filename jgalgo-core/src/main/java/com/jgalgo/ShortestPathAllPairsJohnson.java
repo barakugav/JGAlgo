@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.Pair;
@@ -125,9 +125,9 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		int n = g.vertices().size();
 
 		/* Add fake vertex */
-		GraphBuilderFixedUnmapped refgBuilder = GraphBuilderFixedUnmapped.newFrom(g);
+		IndexGraphBuilder refgBuilder = IndexGraphBuilder.newFrom(g);
 		final int fakeV = refgBuilder.addVertex();
-		final int fakeEdgesThreshold = refgBuilder.edgesNum();
+		final int fakeEdgesThreshold = refgBuilder.edges().size();
 		for (int v = 0; v < n; v++) {
 			int e = refgBuilder.addEdge(fakeV, v);
 			assert e >= fakeEdgesThreshold;

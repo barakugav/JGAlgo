@@ -19,11 +19,11 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 
 	final int[] edgesOut;
 
-	GraphCSRUnmappedAbstract(Builder builder) {
-		super(builder);
-		edgesOut = builder.edgesOut;
+	GraphCSRUnmappedAbstract(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+		super(builder, processEdges);
+		edgesOut = processEdges.edgesOut;
 
-		final int m = builder.m;
+		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++) {
 			endpoints[e * 2 + 0] = builder.endpoints[e * 2 + 0];
 			endpoints[e * 2 + 1] = builder.endpoints[e * 2 + 1];

@@ -61,54 +61,6 @@ abstract class GraphImpl extends GraphBase {
 		this(indexGraphFactory.newCopyOf(orig.indexGraph()), orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap());
 	}
 
-	static Graph fixedCopy(Graph g) {
-		if (g.getCapabilities().directed()) {
-			GraphCSRRemappedDirected.Builder builder = new GraphCSRRemappedDirected.Builder();
-			IndexGraph ig = g.indexGraph();
-			final int n = ig.vertices().size();
-			final int m = ig.edges().size();
-
-			for (int u = 0; u < n; u++) {
-				int vCsr = builder.addVertex();
-				assert u == vCsr;
-			}
-			for (int e = 0; e < m; e++) {
-				int eCsr = builder.addEdge(ig.edgeSource(e), ig.edgeTarget(e));
-				assert e == eCsr;
-			}
-
-			GraphBuilderFixedRemapped.BuilderResult csrRes = builder.build();
-			GraphCSRRemappedDirected csr = (GraphCSRRemappedDirected) csrRes.graph;
-			int[] edgesOrigToCsr = csrRes.edgesInsertIdxToFixed;
-			int[] edgesCsrToOrig = csrRes.edgesFixedToInsertIdx;
-
-			for (Object key : g.getVerticesWeightsKeys())
-				csr.verticesUserWeights.addWeights(key,
-						WeightsImpl.Index.copyOf(ig.getVerticesWeights(key), csr.verticesIdStrat));
-			for (Object key : g.getEdgesWeightsKeys())
-				csr.edgesUserWeights.addWeights(key,
-						WeightsImpl.Index.copyOfMapped(ig.getEdgesWeights(key), csr.edgesIdStrat, edgesOrigToCsr));
-
-			IndexIdMap eiMapOrig = g.indexGraphEdgesMap();
-			IndexIdMap eiMap = new IndexIdMap() {
-
-				@Override
-				public int indexToId(int index) {
-					return eiMapOrig.indexToId(edgesCsrToOrig[index]);
-				}
-
-				@Override
-				public int idToIndex(int id) {
-					return edgesOrigToCsr[eiMapOrig.idToIndex(id)];
-				}
-			};
-			return new GraphImpl.Directed(csr, g.indexGraphVerticesMap(), eiMap);
-		} else {
-			IndexGraph csr = new GraphCSRUnmappedUndirected(g.indexGraph());
-			return new GraphImpl.Undirected(csr, g.indexGraphVerticesMap(), g.indexGraphEdgesMap());
-		}
-	}
-
 	@Override
 	public IndexGraph indexGraph() {
 		return indexGraph;
@@ -394,7 +346,7 @@ abstract class GraphImpl extends GraphBase {
 		return indexGraph.getCapabilities();
 	}
 
-	private static class Directed extends GraphImpl {
+	static class Directed extends GraphImpl {
 
 		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);
@@ -420,7 +372,7 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	private static class Undirected extends GraphImpl {
+	static class Undirected extends GraphImpl {
 
 		Undirected(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);

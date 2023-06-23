@@ -17,8 +17,8 @@ package com.jgalgo;
 
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
@@ -157,10 +157,10 @@ class TreePathMaximaUtils {
 	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
-		GraphBuilderFixedUnmapped mstBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		IndexGraphBuilder mstBuilder = IndexGraphBuilder.newUndirected();
 		for (int v = 0; v < n; v++) {
-			int vFixed = mstBuilder.addVertex();
-			assert v == vFixed;
+			int vBuilder = mstBuilder.addVertex();
+			assert v == vBuilder;
 		}
 		int[] edgeRef = new int[mstEdges.size()];
 		for (int e : mstEdges) {

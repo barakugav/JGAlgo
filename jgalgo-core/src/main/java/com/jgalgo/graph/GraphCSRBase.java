@@ -15,10 +15,8 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
@@ -32,14 +30,14 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 	final WeightsImpl.Index.Manager verticesUserWeights;
 	final WeightsImpl.Index.Manager edgesUserWeights;
 
-	GraphCSRBase(Builder builder) {
-		final int n = builder.n;
-		final int m = builder.m;
+	GraphCSRBase(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+		final int n = builder.vertices().size();
+		final int m = builder.edges().size();
 
 		verticesIdStrat = new IdStrategy.FixedSize(n);
 		edgesIdStrat = new IdStrategy.FixedSize(m);
 
-		edgesOutBegin = builder.edgesOutBegin;
+		edgesOutBegin = processEdges.edgesOutBegin;
 		endpoints = new int[m * 2];
 		assert edgesOutBegin.length == n + 1;
 
@@ -213,44 +211,24 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 		}
 	}
 
-	static abstract class Builder {
+	static class BuilderProcessEdges {
 
-		int n, m;
-		int[] endpoints = IntArrays.EMPTY_ARRAY;
 		int[] edgesOut;
 		int[] edgesOutBegin;
 
-		public int addVertex() {
-			return n++;
-		}
-
-		public int addEdge(int source, int target) {
-			int e = m++;
-			if (e * 2 == endpoints.length)
-				endpoints = Arrays.copyOf(endpoints, Math.max(2, 2 * endpoints.length));
-			endpoints[e * 2 + 0] = source;
-			endpoints[e * 2 + 1] = target;
-			return e;
-		}
-
-		public int verticesNum() {
-			return n;
-		}
-
-		public int edgesNum() {
-			return m;
-		}
-
 	}
 
-	static abstract class BuilderUndirected extends Builder {
+	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {
 
-		void processEdges() {
+		BuilderProcessEdgesUndirected(IndexGraphBuilderImpl builder) {
+			final int n = builder.vertices().size();
+			final int m = builder.edges().size();
+
 			/* Count how many out/in edges each vertex has */
 			edgesOutBegin = new int[n + 1];
 			for (int e = 0; e < m; e++) {
-				int u = endpoints[e * 2 + 0];
-				int v = endpoints[e * 2 + 1];
+				int u = builder.endpoints[e * 2 + 0];
+				int v = builder.endpoints[e * 2 + 1];
 				if (!(0 <= u && u < n))
 					throw new IndexOutOfBoundsException(u);
 				if (!(0 <= v && v < n))
@@ -279,8 +257,8 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 			}
 			edgesOutBegin[n] = outNumSum;
 			for (int e = 0; e < m; e++) {
-				int u = endpoints[e * 2 + 0];
-				int v = endpoints[e * 2 + 1];
+				int u = builder.endpoints[e * 2 + 0];
+				int v = builder.endpoints[e * 2 + 1];
 				int uOutIdx = edgesOutBegin[u]++;
 				edgesOut[uOutIdx] = e;
 				if (u != v) {
@@ -293,14 +271,18 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 				edgesOutBegin[v] = edgesOutBegin[v - 1];
 			edgesOutBegin[0] = 0;
 		}
+
 	}
 
-	static abstract class BuilderDirected extends Builder {
+	static class BuilderProcessEdgesDirected extends BuilderProcessEdges {
 
 		int[] edgesIn;
 		int[] edgesInBegin;
 
-		void processEdges() {
+		BuilderProcessEdgesDirected(IndexGraphBuilderImpl builder) {
+			final int n = builder.vertices().size();
+			final int m = builder.edges().size();
+
 			edgesOut = new int[m];
 			edgesOutBegin = new int[n + 1];
 			edgesIn = new int[m];
@@ -308,8 +290,8 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 
 			/* Count how many out/in edges each vertex has */
 			for (int e = 0; e < m; e++) {
-				int u = endpoints[e * 2 + 0];
-				int v = endpoints[e * 2 + 1];
+				int u = builder.endpoints[e * 2 + 0];
+				int v = builder.endpoints[e * 2 + 1];
 				if (!(0 <= u && u < n))
 					throw new IndexOutOfBoundsException(u);
 				if (!(0 <= v && v < n))
@@ -336,8 +318,8 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 			}
 			edgesOutBegin[n] = edgesInBegin[n] = m;
 			for (int e = 0; e < m; e++) {
-				int uOutIdx = edgesOutBegin[endpoints[e * 2 + 0]]++;
-				int vInIdx = edgesInBegin[endpoints[e * 2 + 1]]++;
+				int uOutIdx = edgesOutBegin[builder.endpoints[e * 2 + 0]]++;
+				int vInIdx = edgesInBegin[builder.endpoints[e * 2 + 1]]++;
 				edgesOut[uOutIdx] = e;
 				edgesIn[vInIdx] = e;
 			}
@@ -349,6 +331,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 			}
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
 		}
+
 	}
 
 }

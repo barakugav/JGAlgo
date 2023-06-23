@@ -20,8 +20,8 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -156,7 +156,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
 
-		GraphBuilderFixedUnmapped gSubBuilder = GraphBuilderFixedUnmapped.newDirected();
+		IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();
 		for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
 			int uIdx = gSubBuilder.addVertex();
 			assert uIdx == uSubIdx;
@@ -170,7 +170,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 					gSubBuilder.addEdge(uSub, vSub);
 			}
 		}
-		IndexGraph gSub = gSubBuilder.build();
+		IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
 		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
 

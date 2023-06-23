@@ -17,9 +17,9 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -78,10 +78,10 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		GraphBuilderFixedUnmapped g1Builder = GraphBuilderFixedUnmapped.newUndirected();
+		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
 		for (int v = 0; v < n; v++) {
-			int vFixed = g1Builder.addVertex();
-			assert vFixed == v;
+			int vBuilder = g1Builder.addVertex();
+			assert vBuilder == v;
 		}
 		int[] g1EdgeRef = new int[mst.size()];
 		for (int e : mst) {

@@ -19,8 +19,8 @@ import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
 class GraphCSRUnmappedUndirected extends GraphCSRUnmappedAbstract {
 
-	GraphCSRUnmappedUndirected(Builder builder) {
-		super(builder);
+	GraphCSRUnmappedUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
+		super(builder, processEdges);
 	}
 
 	GraphCSRUnmappedUndirected(IndexGraph g) {
@@ -125,15 +125,6 @@ class GraphCSRUnmappedUndirected extends GraphCSRUnmappedAbstract {
 		@Override
 		public int target() {
 			return target;
-		}
-	}
-
-	static class Builder extends GraphCSRBase.BuilderUndirected implements GraphBuilderFixedUnmapped {
-
-		@Override
-		public IndexGraph build() {
-			processEdges();
-			return new GraphCSRUnmappedUndirected(this);
 		}
 	}
 

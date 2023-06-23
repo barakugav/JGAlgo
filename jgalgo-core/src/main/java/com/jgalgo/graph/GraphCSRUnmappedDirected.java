@@ -22,10 +22,10 @@ class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCSRUnmappedDirected(BuilderDirected builder) {
-		super(builder);
-		edgesIn = builder.edgesIn;
-		edgesInBegin = builder.edgesInBegin;
+	GraphCSRUnmappedDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
+		super(builder, processEdges);
+		edgesIn = processEdges.edgesIn;
+		edgesInBegin = processEdges.edgesInBegin;
 	}
 
 	GraphCSRUnmappedDirected(IndexGraph g) {
@@ -142,14 +142,6 @@ class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
 		@Override
 		public int target() {
 			return target;
-		}
-	}
-
-	static class Builder extends GraphCSRBase.BuilderDirected implements GraphBuilderFixedUnmapped {
-		@Override
-		public IndexGraph build() {
-			processEdges();
-			return new GraphCSRUnmappedDirected(this);
 		}
 	}
 

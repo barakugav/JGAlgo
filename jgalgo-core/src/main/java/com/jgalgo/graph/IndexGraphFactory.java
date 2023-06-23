@@ -16,10 +16,15 @@
 package com.jgalgo.graph;
 
 /**
- * A factory for {@link IndexGraph} objects.
+ * A factory for {@linkplain IndexGraph Index graphs}.
+ * <p>
+ * The factory is used to construct <b>empty</b> index graphs. Differing from {@link IndexGraphBuilder} which allow to
+ * create graphs with some vertices and edges from the beginning of the graph lifetime.
  *
- * @see    IndexGraph#newBuilderDirected()
- * @see    IndexGraph#newBuilderUndirected()
+ * @see    IndexGraphFactory#newDirected()
+ * @see    IndexGraphFactory#newUndirected()
+ * @see    GraphFactory
+ * @see    IndexGraphBuilder
  * @author Barak Ugav
  */
 public interface IndexGraphFactory extends BuilderAbstract<IndexGraphFactory> {
@@ -135,7 +140,7 @@ public interface IndexGraphFactory extends BuilderAbstract<IndexGraphFactory> {
 	 * <p>
 	 * The new factory will build graphs with the same capabilities as the given graph, possibly choosing to use a
 	 * similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for such
-	 * use case see {@link IndexGraph#copy()} and {@link IndexGraphFactory#newCopyOf(IndexGraph)}.
+	 * use case see {@link IndexGraph#copy()} or {@link IndexGraphFactory#newCopyOf(IndexGraph)}.
 	 *
 	 * @param  g a graph from which the factory should copy its capabilities
 	 * @return   a new graph factory that will create graphs with the same capabilities of the given graph

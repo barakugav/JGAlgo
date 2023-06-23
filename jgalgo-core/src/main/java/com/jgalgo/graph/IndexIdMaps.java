@@ -271,9 +271,9 @@ public class IndexIdMaps {
 	/**
 	 * Create an IDs list from a list of indices.
 	 *
-	 * @param  indexCollection a list of indices
-	 * @param  map             index-id mapping
-	 * @return                 a list that contain IDs matching the indices contained in the original index-list
+	 * @param  indexList a list of indices
+	 * @param  map       index-id mapping
+	 * @return           a list that contain IDs matching the indices contained in the original index-list
 	 */
 	public static IntList indexToIdList(IntList indexList, IndexIdMap map) {
 		return new IndexToIdList(indexList, map);

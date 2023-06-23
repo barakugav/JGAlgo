@@ -16,38 +16,24 @@
 package com.jgalgo.graph;
 
 import java.util.NoSuchElementException;
-import java.util.function.BiConsumer;
+import java.util.Optional;
+import java.util.function.Consumer;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
-public class GraphCSRRemappedDirected extends GraphCSRBase {
-	public static class Builder extends GraphCSRBase.BuilderDirected implements GraphBuilderFixedRemapped {
-		@Override
-		public GraphBuilderFixedRemapped.BuilderResult build() {
-			processEdges();
-			var callbackData = new Object() {
-				int[] edgesCsrToOrig;
-				int[] edgesOrigToCsr;
-			};
-			GraphCSRRemappedDirected g = new GraphCSRRemappedDirected(this, (edgesCsrToOrig, edgesOrigToCsr) -> {
-				callbackData.edgesCsrToOrig = edgesCsrToOrig;
-				callbackData.edgesOrigToCsr = edgesOrigToCsr;
-			});
-			return new GraphBuilderFixedRemapped.BuilderResult(g, callbackData.edgesCsrToOrig,
-					callbackData.edgesOrigToCsr);
-		}
-	}
+class GraphCSRRemappedDirected extends GraphCSRBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private GraphCSRRemappedDirected(Builder builder, BiConsumer<int[], int[]> mappingCallback) {
-		super(builder);
-		final int n = builder.n;
-		final int m = builder.m;
+	private GraphCSRRemappedDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges,
+			Consumer<IndexGraphBuilder.ReIndexingMap> edgesMappingCallback) {
+		super(builder, processEdges);
+		final int n = builder.vertices().size();
+		final int m = builder.edges().size();
 
-		edgesIn = builder.edgesIn;
-		edgesInBegin = builder.edgesInBegin;
-		int[] edgesOut = builder.edgesOut;
+		edgesIn = processEdges.edgesIn;
+		edgesInBegin = processEdges.edgesInBegin;
+		int[] edgesOut = processEdges.edgesOut;
 		assert edgesOut.length == m;
 		assert edgesIn.length == m;
 		assert edgesInBegin.length == n + 1;
@@ -68,7 +54,20 @@ public class GraphCSRRemappedDirected extends GraphCSRBase {
 			endpoints[eCsr * 2 + 1] = builder.endpoints[eOrig * 2 + 1];
 		}
 
-		mappingCallback.accept(edgesCsrToOrig, edgesOrigToCsr);
+		IndexGraphBuilder.ReIndexingMap edgesMapping =
+				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+		edgesMappingCallback.accept(edgesMapping);
+	}
+
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
+		GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(builder);
+		var callbackData = new Object() {
+			IndexGraphBuilder.ReIndexingMap edgesMapping;
+		};
+		GraphCSRRemappedDirected g = new GraphCSRRemappedDirected(builder, processEdges,
+				edgesMapping -> callbackData.edgesMapping = edgesMapping);
+		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(),
+				Optional.of(callbackData.edgesMapping));
 	}
 
 	@Override

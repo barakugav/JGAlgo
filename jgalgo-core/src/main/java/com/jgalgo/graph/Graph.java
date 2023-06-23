@@ -602,7 +602,7 @@ public interface Graph {
 	 * <p>
 	 * The returned graph is a view, namely a graph that will contain the same vertices and edges (with different
 	 * {@code int} identifiers), and the same associated weights, that is automatically updated when the original graph
-	 * is updated and visa versa.
+	 * is updated and vice versa.
 	 * <p>
 	 * If this graph is an Index graph, this method returns this graph.
 	 *
@@ -654,26 +654,6 @@ public interface Graph {
 		return GraphFactory.newFrom(this).newCopyOf(this);
 	}
 
-	// /**
-	// * Create a fixed copy of this graph.
-	// * <p>
-	// * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities
-	// * (inclusive). The returned Graph will be <i>fixed</i>, meaning that the vertices and edges can not be changed
-	// * (added or removed), but the graph can not be called 'unmodifiable' because weights still can be altered, added
-	// or
-	// * removed to/from it.
-	// * <p>
-	// * A fixed representation of the graph may yield better performance for accessing and querying vertices and edges.
-	// * In cases where a graph is not going to change, it may be more efficient to first copy the graph to a fixed
-	// graph,
-	// * and than pass the fixed graph to algorithms.
-	// *
-	// * @return a fixed copy of this graph
-	// */
-	// default Graph fixedCopy() {
-	// return GraphImpl.fixedCopy(this);
-	// }
-
 	/**
 	 * Get an unmodifiable view of this graph.
 	 * <p>
@@ -691,7 +671,7 @@ public interface Graph {
 	 * Get a reversed view of this graph.
 	 * <p>
 	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
-	 * is automatically updated when the original graph is updated and visa versa. The view is reversed, namely each
+	 * is automatically updated when the original graph is updated and vice versa. The view is reversed, namely each
 	 * source and target vertices of each edge are swapped.
 	 * <p>
 	 * Note that modifying the returned view will change the original graph.

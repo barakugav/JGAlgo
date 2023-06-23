@@ -18,8 +18,8 @@ package com.jgalgo.graph;
 /**
  * A factory for {@link Graph} objects.
  *
- * @see    Graph#newBuilderDirected()
- * @see    Graph#newBuilderUndirected()
+ * @see    GraphFactory#newDirected()
+ * @see    GraphFactory#newUndirected()
  * @author Barak Ugav
  */
 public interface GraphFactory extends BuilderAbstract<GraphFactory> {
@@ -149,7 +149,7 @@ public interface GraphFactory extends BuilderAbstract<GraphFactory> {
 	 * <p>
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link Graph#copy()} and {@link GraphFactory#newCopyOf(Graph)}.
+	 * such use case see {@link Graph#copy()} or {@link GraphFactory#newCopyOf(Graph)}.
 	 *
 	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph

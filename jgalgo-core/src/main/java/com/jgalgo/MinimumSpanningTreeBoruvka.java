@@ -18,8 +18,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -75,10 +75,10 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		GraphBuilderFixedUnmapped contractedGBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.newUndirected();
 		for (int v = 0; v < mstRes.treeNum; v++) {
-			int vFixed = contractedGBuilder.addVertex();
-			assert v == vFixed;
+			int vBuilder = contractedGBuilder.addVertex();
+			assert v == vBuilder;
 		}
 		int[] edgeRef = IntArrays.EMPTY_ARRAY;
 		for (int e : g.edges()) {

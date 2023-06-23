@@ -18,8 +18,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Random;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
@@ -117,7 +117,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 	static Pair<IndexGraph, int[]> subGraph(IndexGraph g, IntCollection edgeSet, int[] edgeRef) {
 		final int n = g.vertices().size();
-		GraphBuilderFixedUnmapped subBuilder = GraphBuilderFixedUnmapped.newUndirected();
+		IndexGraphBuilder subBuilder = IndexGraphBuilder.newUndirected();
 		for (int v = 0; v < n; v++) {
 			int vSub = subBuilder.addVertex();
 			assert v == vSub;

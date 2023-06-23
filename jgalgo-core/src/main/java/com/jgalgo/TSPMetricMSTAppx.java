@@ -16,8 +16,8 @@
 
 package com.jgalgo;
 
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -63,10 +63,10 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
-		GraphBuilderFixedUnmapped g1Builder = GraphBuilderFixedUnmapped.newUndirected();
+		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
 		for (int v = 0; v < n; v++) {
-			int vFixed = g1Builder.addVertex();
-			assert v == vFixed;
+			int vBuilder = g1Builder.addVertex();
+			assert v == vBuilder;
 		}
 		int[] edgeRef = new int[mst.size() * 2];
 		for (int e : mst) {

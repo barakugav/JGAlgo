@@ -33,8 +33,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {
 
-		private final IdStrategy verticesIdStrat = new IdStrategy.Empty();
-		private final IdStrategy edgesIdStrat = new IdStrategy.Empty();
+		private final IdStrategy verticesIdStrat = IdStrategy.Empty;
+		private final IdStrategy edgesIdStrat = IdStrategy.Empty;
 
 		@Override
 		public IntSet vertices() {

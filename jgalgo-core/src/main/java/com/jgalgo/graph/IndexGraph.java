@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
  * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
  * algorithm expensive logic should operate on the returned Index graph and finally the result should be transformed
- * back to the regular graph IDs. The mapping from a regular graph IDs to indices and visa versa is exposed using
+ * back to the regular graph IDs. The mapping from a regular graph IDs to indices and vice versa is exposed using
  * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
  * {@link Graph#indexGraphEdgesMap()}.
  *
@@ -220,15 +220,6 @@ public interface IndexGraph extends Graph {
 	default IndexGraph copy() {
 		return IndexGraphFactory.newFrom(this).newCopyOf(this);
 	}
-
-	// @Override
-	// default IndexGraph fixedCopy() {
-	// if (getCapabilities().directed()) {
-	// return new GraphCSRUnmappedDirected(this);
-	// } else {
-	// return new GraphCSRUnmappedUndirected(this);
-	// }
-	// }
 
 	@Override
 	default IndexGraph unmodifiableView() {

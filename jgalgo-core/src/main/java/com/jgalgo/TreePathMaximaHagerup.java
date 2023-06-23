@@ -19,8 +19,8 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.Utils.BiInt2IntFunction;
-import com.jgalgo.graph.GraphBuilderFixedUnmapped;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.Pair;
@@ -261,15 +261,15 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			IntArrayList parents = new IntArrayList();
 			IntArrayList depths = new IntArrayList();
 
-			GraphBuilderFixedUnmapped treeBuilder = GraphBuilderFixedUnmapped.newUndirected();
+			IndexGraphBuilder treeBuilder = IndexGraphBuilder.newUndirected();
 			int[] edgeRef = IntArrays.EMPTY_ARRAY;
 
 			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */
 			depths.ensureCapacity(depths.size() + n);
 			parents.ensureCapacity(parents.size() + n);
 			for (int v = 0; v < n; v++) {
-				int vFixed = vTv[v] = treeBuilder.addVertex();
-				assert v == vFixed;
+				int vBuilder = vTv[v] = treeBuilder.addVertex();
+				assert v == vBuilder;
 				depths.add(0);
 				parents.add(-1);
 			}
@@ -406,7 +406,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			 */
 			this.parents = parents.elements();
 			this.depths = depths.elements();
-			n = treeBuilder.verticesNum();
+			n = treeBuilder.vertices().size();
 			for (int u = 0; u < n; u++)
 				this.depths[u] = treeHeight - this.depths[u] - 1;
 

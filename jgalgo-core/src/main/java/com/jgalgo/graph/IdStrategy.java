@@ -22,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 
 abstract class IdStrategy {
 
@@ -209,34 +208,7 @@ abstract class IdStrategy {
 		}
 	}
 
-	static class Empty extends IdStrategy {
-
-		@Override
-		int size() {
-			return 0;
-		}
-
-		@Override
-		IntSet indices() {
-			return IntSets.emptySet();
-		}
-
-		@Override
-		void addIdSwapListener(IndexSwapListener listener) {
-			Objects.requireNonNull(listener);
-		}
-
-		@Override
-		void removeIdSwapListener(IndexSwapListener listener) {}
-
-		@Override
-		void addIdAddRemoveListener(IdAddRemoveListener listener) {
-			Objects.requireNonNull(listener);
-		}
-
-		@Override
-		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}
-	}
+	static final IdStrategy Empty = new IdStrategy.FixedSize(0);
 
 	/**
 	 * A listener that will be notified each time a strategy add or remove an id.

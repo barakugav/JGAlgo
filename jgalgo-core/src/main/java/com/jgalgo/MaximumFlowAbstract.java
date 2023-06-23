@@ -18,9 +18,8 @@ package com.jgalgo;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilderFixedRemapped;
-import com.jgalgo.graph.GraphCSRRemappedDirected;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.Weights;
@@ -226,11 +225,11 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 			int[] edgeRefTemp = new int[mOrig * 2];
 			int[] twinTemp = new int[mOrig * 2];
 
-			GraphCSRRemappedDirected.Builder gBuilder = new GraphCSRRemappedDirected.Builder();
+			IndexGraphBuilder gBuilder = IndexGraphBuilder.newDirected();
 			if (gOrig.getCapabilities().directed()) {
 				for (int u = 0; u < n; u++) {
-					int vCsr = gBuilder.addVertex();
-					assert u == vCsr;
+					int vBuilder = gBuilder.addVertex();
+					assert u == vBuilder;
 					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
@@ -238,18 +237,18 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 							continue;
 						if (u == sink || v == source)
 							continue;
-						int e1Csr = gBuilder.addEdge(u, v);
-						int e2Csr = gBuilder.addEdge(v, u);
-						edgeRefTemp[e1Csr] = e;
-						edgeRefTemp[e2Csr] = e;
-						twinTemp[e1Csr] = e2Csr;
-						twinTemp[e2Csr] = e1Csr;
+						int e1Builder = gBuilder.addEdge(u, v);
+						int e2Builder = gBuilder.addEdge(v, u);
+						edgeRefTemp[e1Builder] = e;
+						edgeRefTemp[e2Builder] = e;
+						twinTemp[e1Builder] = e2Builder;
+						twinTemp[e2Builder] = e1Builder;
 					}
 				}
 			} else {
 				for (int u = 0; u < n; u++) {
-					int vCsr = gBuilder.addVertex();
-					assert u == vCsr;
+					int vBuilder = gBuilder.addVertex();
+					assert u == vBuilder;
 					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (gOrig.edgeSource(e) != u)
@@ -257,23 +256,26 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 						int v = eit.target();
 						if (u == v)
 							continue;
-						int e1Csr = gBuilder.addEdge(u, v);
-						int e2Csr = gBuilder.addEdge(v, u);
-						edgeRefTemp[e1Csr] = e;
-						edgeRefTemp[e2Csr] = e;
-						twinTemp[e1Csr] = e2Csr;
-						twinTemp[e2Csr] = e1Csr;
+						int e1Builder = gBuilder.addEdge(u, v);
+						int e2Builder = gBuilder.addEdge(v, u);
+						edgeRefTemp[e1Builder] = e;
+						edgeRefTemp[e2Builder] = e;
+						twinTemp[e1Builder] = e2Builder;
+						twinTemp[e2Builder] = e1Builder;
 					}
 				}
 			}
-			GraphBuilderFixedRemapped.BuilderResult csrRes = gBuilder.build();
-			g = csrRes.graph;
+			IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);
+			g = reindexedGraph.graph();
 			final int m = g.edges().size();
 			edgeRef = new int[m];
 			twin = new int[m];
-			for (int eCsr = 0; eCsr < m; eCsr++) {
-				edgeRef[eCsr] = edgeRefTemp[csrRes.edgesFixedToInsertIdx[eCsr]];
-				twin[eCsr] = csrRes.edgesInsertIdxToFixed[twinTemp[csrRes.edgesFixedToInsertIdx[eCsr]]];
+			if (reindexedGraph.edgesReIndexing().isPresent()) {
+				IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
+				for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+					edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];
+					twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);
+				}
 			}
 		}
 
