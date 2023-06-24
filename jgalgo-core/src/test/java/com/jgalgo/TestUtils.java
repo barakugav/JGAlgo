@@ -135,11 +135,11 @@ public class TestUtils {
 		};
 	}
 
-	static double nextDouble(Random rand, double from, double to) {
+	public static double nextDouble(Random rand, double from, double to) {
 		return from + (to - from) * rand.nextDouble();
 	}
 
-	static int nextInt(Random rand, int from, int to) {
+	public static int nextInt(Random rand, int from, int to) {
 		return from + rand.nextInt(to - from);
 	}
 

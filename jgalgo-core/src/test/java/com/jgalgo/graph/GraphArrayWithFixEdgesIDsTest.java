@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.graph;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
-public class GraphArrayTest extends TestBase {
+public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
-	private static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
+	static Boolean2ObjectFunction<Graph> graphImpl() {
+		return directed -> GraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
 				.newGraph();
 	}
 
@@ -65,19 +64,19 @@ public class GraphArrayTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0x23321e37dfd99637L;
+		final long seed = 0x03af02c1eb2cf014L;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0xad0005187cebcd83L;
+		final long seed = 0xdf8fe47a0d7c622dL;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
 	}
 
 	@Test
 	public void testCopy() {
-		final long seed = 0xf26cb0540a4874e8L;
+		final long seed = 0x1b3449753f1f6e2dL;
 		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 

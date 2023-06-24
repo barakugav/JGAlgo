@@ -19,9 +19,8 @@ package com.jgalgo;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 
 public class ShortestPathSingleSourceDagTest extends TestBase {

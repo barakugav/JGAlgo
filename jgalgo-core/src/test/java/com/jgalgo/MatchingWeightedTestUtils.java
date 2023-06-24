@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -30,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-class MatchingWeightedTestUtils extends TestUtils {
+public class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {}
 
@@ -38,7 +39,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	static void randGraphsBipartiteWeighted(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void randGraphsBipartiteWeighted(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(2, 256, 256, 1200));

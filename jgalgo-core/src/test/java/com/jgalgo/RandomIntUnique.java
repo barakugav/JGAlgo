@@ -20,14 +20,14 @@ import java.util.Random;
 import java.util.Set;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-class RandomIntUnique {
+public class RandomIntUnique {
 
 	private final Random rand;
 	private final int min;
 	private final int max;
 	private final Set<Integer> usedVals;
 
-	RandomIntUnique(int min, int max, long seed) {
+	public RandomIntUnique(int min, int max, long seed) {
 		if (min >= max)
 			throw new IllegalArgumentException();
 
@@ -37,7 +37,7 @@ class RandomIntUnique {
 		usedVals = new ObjectOpenHashSet<>();
 	}
 
-	int next() {
+	public int next() {
 		if (usedVals.size() > 0.9 * (max - min))
 			throw new IllegalStateException();
 

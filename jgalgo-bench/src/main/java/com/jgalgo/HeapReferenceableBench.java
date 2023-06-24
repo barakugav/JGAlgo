@@ -35,7 +35,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;

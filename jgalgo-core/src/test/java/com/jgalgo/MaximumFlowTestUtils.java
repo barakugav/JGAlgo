@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
@@ -84,7 +84,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 		testRandGraphsInt(algo, GraphsTestUtils.defaultGraphImpl(), seed, directed);
 	}
 
-	static void testRandGraphs(MaximumFlow algo, Boolean2ObjectFunction<Graph> graphImpl, long seed, boolean directed) {
+	public static void testRandGraphs(MaximumFlow algo, Boolean2ObjectFunction<Graph> graphImpl, long seed,
+			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),

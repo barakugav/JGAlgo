@@ -18,10 +18,10 @@ package com.jgalgo;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -83,14 +83,11 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	@Test
 	public void testRandGraphDirected() {
 		final long seed = 0xdb81d5dd5fe0d5b3L;
-		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), seed);
+		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	private static void testRandGraph(MinimumDirectedSpanningTree algo, long seed) {
-		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(), seed);
-	}
-
-	static void testRandGraph(MinimumDirectedSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void testRandGraph(MinimumDirectedSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));

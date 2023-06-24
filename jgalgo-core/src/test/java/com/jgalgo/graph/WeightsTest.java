@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,8 +22,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;

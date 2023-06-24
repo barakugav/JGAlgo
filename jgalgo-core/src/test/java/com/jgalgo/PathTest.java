@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.Graph;
 
 public class PathTest extends TestBase {

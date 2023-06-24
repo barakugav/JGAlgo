@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.graph;
 
 import java.util.Random;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.RandomGraphBuilder;
+import com.jgalgo.RandomIntUnique;
+import com.jgalgo.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
-class GraphsTestUtils extends TestUtils {
+public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	static Boolean2ObjectFunction<Graph> defaultGraphImpl() {
+	public static Boolean2ObjectFunction<Graph> defaultGraphImpl() {
 		return direct -> GraphFactory.newUndirected().setDirected(direct).newGraph();
 	}
 
-	static Graph randTree(int n, long seed) {
+	public static Graph randTree(int n, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
 				.build();
 	}
 
-	static Graph randForest(int n, int m, long seed) {
+	public static Graph randForest(int n, int m, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
 				.build();
 	}
 
-	static Weights.Double assignRandWeights(Graph g, long seed) {
+	public static Weights.Double assignRandWeights(Graph g, long seed) {
 		return assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	static Weights.Double assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
+	public static Weights.Double assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
@@ -55,20 +55,20 @@ class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
-	static Weights.Int assignRandWeightsIntPos(Graph g, long seed) {
+	public static Weights.Int assignRandWeightsIntPos(Graph g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	static Weights.Int assignRandWeightsIntNeg(Graph g, long seed) {
+	public static Weights.Int assignRandWeightsIntNeg(Graph g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	static Weights.Int assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
+	public static Weights.Int assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
@@ -81,9 +81,13 @@ class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
-	static Graph randGraph(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false).cycles(true)
-				.connected(false).build();
+	public static Graph randGraph(int n, int m, long seed) {
+		return randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seed);
+	}
+
+	public static Graph randGraph(int n, int m, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
+				.selfEdges(false).cycles(true).connected(false).build();
 	}
 
 }

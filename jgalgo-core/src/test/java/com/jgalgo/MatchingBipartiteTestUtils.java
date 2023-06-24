@@ -19,15 +19,15 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Objects;
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-class MatchingBipartiteTestUtils extends TestUtils {
+public class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
@@ -40,7 +40,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	static void randBipartiteGraphs(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void randBipartiteGraphs(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));

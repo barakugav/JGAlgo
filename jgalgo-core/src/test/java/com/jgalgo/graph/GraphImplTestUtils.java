@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,13 +26,17 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.ToIntFunction;
-import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.EdgeSet;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphCapabilities;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.MatchingBipartiteTestUtils;
+import com.jgalgo.MatchingWeightedTestUtils;
+import com.jgalgo.MaximumFlow;
+import com.jgalgo.MaximumFlowTestUtils;
+import com.jgalgo.MaximumMatching;
+import com.jgalgo.MinimumDirectedSpanningTree;
+import com.jgalgo.MinimumDirectedSpanningTreeTarjanTest;
+import com.jgalgo.MinimumSpanningTree;
+import com.jgalgo.MinimumSpanningTreeTestUtils;
+import com.jgalgo.RandomGraphBuilder;
+import com.jgalgo.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -559,23 +563,25 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKruskal(), graphImpl, seed);
+		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newBuilder().build(), graphImpl, seed);
 	}
 
 	static void testDirectedMDST(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(new MinimumDirectedSpanningTreeTarjan(), graphImpl, seed);
+		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newBuilder().build(), graphImpl,
+				seed);
 	}
 
 	static void testDirectedMaxFlow(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), graphImpl, seed, /* directed= */ true);
+		MaximumFlowTestUtils.testRandGraphs(MaximumFlow.newBuilder().build(), graphImpl, seed, /* directed= */ true);
 	}
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingCardinalityGabow1976(), graphImpl, seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(
+				MaximumMatching.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteHungarianMethod(),
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MaximumMatching.newBuilder().setBipartite(true).build(),
 				graphImpl, seed);
 	}
 

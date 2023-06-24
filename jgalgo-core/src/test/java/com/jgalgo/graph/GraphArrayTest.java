@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.graph;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
-public class GraphLinkedTest extends TestBase {
+public class GraphArrayTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphLinked").setDirected(directed)
+		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
 				.newGraph();
 	}
 
@@ -65,49 +64,61 @@ public class GraphLinkedTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0x100115652062b424L;
+		final long seed = 0x23321e37dfd99637L;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0x914bb2f87efda719L;
+		final long seed = 0xad0005187cebcd83L;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
 	}
 
 	@Test
 	public void testCopy() {
-		final long seed = 0x6f2eabc8e7cd3a70L;
+		final long seed = 0xf26cb0540a4874e8L;
 		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedMST() {
-		final long seed = 0x757d2f9883276f90L;
+		final long seed = 0x6519a3d6cfdcaa15L;
 		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		final long seed = 0x96f07cf342fcb057L;
+		final long seed = 0x93159a7004fabaabL;
 		GraphImplTestUtils.testDirectedMDST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		final long seed = 0xb3775d0c2d4aa98aL;
+		final long seed = 0xb3bd816cf5395102L;
 		GraphImplTestUtils.testDirectedMaxFlow(graphImpl(), seed);
 	}
 
 	@Test
+	public void testUndirectedBipartiteMatching() {
+		final long seed = 0x40f90cfba5f21f7cL;
+		GraphImplTestUtils.testUndirectedBipartiteMatching(graphImpl(), seed);
+	}
+
+	@Test
+	public void testUndirectedBipartiteMatchingWeighted() {
+		final long seed = 0x6a1920e2c7e46291L;
+		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(graphImpl(), seed);
+	}
+
+	@Test
 	public void testRandOpsUndirected() {
-		final long seed = 0xbda54e345679e161L;
+		final long seed = 0xb49ae602bf9f9896L;
 		GraphImplTestUtils.testRandOps(graphImpl(), false, seed);
 	}
 
 	@Test
 	public void testRandOpsDirected() {
-		final long seed = 0x136a0df5ecaae5a2L;
+		final long seed = 0xf1d6fb75a6d8d711L;
 		GraphImplTestUtils.testRandOps(graphImpl(), true, seed);
 	}
 
