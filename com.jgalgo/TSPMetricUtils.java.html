@@ -17,93 +17,99 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="fc" id="L23">class TSPMetricUtils {</span>
+<span class="fc" id="L29">class TSPMetricUtils {</span>
 
 	private TSPMetricUtils() {}
 
 	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, int[] edgeRef) {
-<span class="fc" id="L28">		int n = g.vertices().size();</span>
+<span class="fc" id="L34">		int n = g.vertices().size();</span>
 
 		/* Assert degree is actually even in the new graph */
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">			assert g1.outEdges(u).size() % 2 == 0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">			assert g1.outEdges(u).size() % 2 == 0;</span>
 
 		/* Calculate Eulerian tour in the new graph */
-<span class="fc" id="L35">		Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g1);</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
+<span class="fc" id="L41">		Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g1);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
 
 		/* Use shortcuts to convert to a Hamiltonian cycle */
-<span class="fc" id="L40">		IntList cycle = new IntArrayList(n);</span>
-<span class="fc" id="L41">		int firstVertex = -1, lastVertex = -1;</span>
-<span class="fc" id="L42">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
-<span class="fc" id="L44">			int e0 = it.nextInt();</span>
-<span class="fc" id="L45">			int e = edgeRef[e0];</span>
-<span class="fc" id="L46">			final int u = it.source();</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">			if (firstVertex == -1)</span>
-<span class="fc" id="L48">				firstVertex = u;</span>
-<span class="fc" id="L49">			visited.set(u);</span>
-<span class="fc bfc" id="L50" title="All 4 branches covered.">			while (visited.get(it.target()) &amp;&amp; it.hasNext()) {</span>
-<span class="fc" id="L51">				it.nextInt();</span>
-<span class="fc" id="L52">				e = g.getEdge(u, it.target());</span>
+<span class="fc" id="L46">		IntList cycle = new IntArrayList(n);</span>
+<span class="fc" id="L47">		int firstVertex = -1, lastVertex = -1;</span>
+<span class="fc" id="L48">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
+<span class="fc" id="L50">			int e0 = it.nextInt();</span>
+<span class="fc" id="L51">			int e = edgeRef[e0];</span>
+<span class="fc" id="L52">			final int u = it.source();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (firstVertex == -1)</span>
+<span class="fc" id="L54">				firstVertex = u;</span>
+<span class="fc" id="L55">			visited.set(u);</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">			while (visited.get(it.target()) &amp;&amp; it.hasNext()) {</span>
+<span class="fc" id="L57">				it.nextInt();</span>
+<span class="fc" id="L58">				e = g.getEdge(u, it.target());</span>
 			}
-<span class="fc" id="L54">			cycle.add(e);</span>
-<span class="fc" id="L55">			lastVertex = it.target();</span>
-<span class="fc" id="L56">		}</span>
+<span class="fc" id="L60">			cycle.add(e);</span>
+<span class="fc" id="L61">			lastVertex = it.target();</span>
+<span class="fc" id="L62">		}</span>
 
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
-<span class="fc" id="L59">		Path cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle0);</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle0);</span>
-<span class="fc" id="L62">		return cycle0;</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
+<span class="fc" id="L65">		Path cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle0);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle0);</span>
+<span class="fc" id="L68">		return cycle0;</span>
 	}
 
 	private static boolean isValidCycle(IndexGraph g, Path path) {
-<span class="fc" id="L66">		EdgeIter it = path.edgeIter();</span>
-<span class="fc" id="L67">		it.nextInt();</span>
-<span class="fc" id="L68">		final int begin = it.source();</span>
+<span class="fc" id="L72">		EdgeIter it = path.edgeIter();</span>
+<span class="fc" id="L73">		it.nextInt();</span>
+<span class="fc" id="L74">		final int begin = it.source();</span>
 		for (;;) {
-<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (!it.hasNext())</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">				return it.target() == begin;</span>
-<span class="fc" id="L72">			int lastV = it.target();</span>
-<span class="fc" id="L73">			it.nextInt();</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">			if (lastV != it.source())</span>
-<span class="nc" id="L75">				return false;</span>
-<span class="fc" id="L76">		}</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (!it.hasNext())</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">				return it.target() == begin;</span>
+<span class="fc" id="L78">			int lastV = it.target();</span>
+<span class="fc" id="L79">			it.nextInt();</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">			if (lastV != it.source())</span>
+<span class="nc" id="L81">				return false;</span>
+<span class="fc" id="L82">		}</span>
 	}
 
 	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
-<span class="fc" id="L80">		final int n = g.vertices().size();</span>
-<span class="fc" id="L81">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int e : path) {</span>
-<span class="fc" id="L83">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L84">			visited.set(u);</span>
-<span class="fc" id="L85">			visited.set(v);</span>
-<span class="fc" id="L86">		}</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">			if (!visited.get(u))</span>
-<span class="nc" id="L89">				return false;</span>
-<span class="fc" id="L90">		return true;</span>
+<span class="fc" id="L86">		final int n = g.vertices().size();</span>
+<span class="fc" id="L87">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int e : path) {</span>
+<span class="fc" id="L89">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L90">			visited.set(u);</span>
+<span class="fc" id="L91">			visited.set(v);</span>
+<span class="fc" id="L92">		}</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">			if (!visited.get(u))</span>
+<span class="nc" id="L95">				return false;</span>
+<span class="fc" id="L96">		return true;</span>
 	}
 
-<span class="fc" id="L93">	static abstract class AbstractImpl implements TSPMetric {</span>
+<span class="fc" id="L99">	static abstract class AbstractImpl implements TSPMetric {</span>
 
 		@Override
 		public Path computeShortestTour(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L97" title="All 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L98">				return computeShortestTour((IndexGraph) g, w);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L104">				return computeShortestTour((IndexGraph) g, w);</span>
 
-<span class="nc" id="L100">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L101">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L102">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L103">			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+<span class="nc" id="L106">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L107">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L108">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L109">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="nc" id="L105">			Path indexPath = computeShortestTour(iGraph, w);</span>
-<span class="nc" id="L106">			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="nc" id="L111">			Path indexPath = computeShortestTour(iGraph, w);</span>
+<span class="nc" id="L112">			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
 		}
 
 		abstract Path computeShortestTour(IndexGraph g, WeightFunction w);

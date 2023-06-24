@@ -17,20 +17,23 @@ package com.jgalgo;
 
 import java.util.Iterator;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
-<span class="fc" id="L21">abstract class CyclesFinderAbstract implements CyclesFinder {</span>
+<span class="fc" id="L24">abstract class CyclesFinderAbstract implements CyclesFinder {</span>
 
 	@Override
 	public Iterator&lt;Path&gt; findAllCycles(Graph g) {
-<span class="fc bfc" id="L25" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L26">			return findAllCycles((IndexGraph) g);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L29">			return findAllCycles((IndexGraph) g);</span>
 
-<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L30">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L31">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L32">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L33">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
-<span class="fc" id="L32">		Iterator&lt;Path&gt; indexResult = findAllCycles(iGraph);</span>
-<span class="fc" id="L33">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L35">		Iterator&lt;Path&gt; indexResult = findAllCycles(iGraph);</span>
+<span class="fc" id="L36">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
 	}
 
 	abstract Iterator&lt;Path&gt; findAllCycles(IndexGraph g);
@@ -41,20 +44,20 @@ import java.util.Objects;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L44">		ResultFromIndexResult(Iterator&lt;Path&gt; res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L45">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L46">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L47">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L48">		}</span>
+<span class="fc" id="L47">		ResultFromIndexResult(Iterator&lt;Path&gt; res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L48">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L49">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L50">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L51">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L52">			return res.hasNext();</span>
+<span class="fc" id="L55">			return res.hasNext();</span>
 		}
 
 		@Override
 		public Path next() {
-<span class="fc" id="L57">			return PathImpl.pathFromIndexPath(res.next(), viMap, eiMap);</span>
+<span class="fc" id="L60">			return PathImpl.pathFromIndexPath(res.next(), viMap, eiMap);</span>
 		}
 
 	}

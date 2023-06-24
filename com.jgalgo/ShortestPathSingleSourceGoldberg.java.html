@@ -19,6 +19,12 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -42,17 +48,17 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.AbstractImpl
 		implements AlgorithmWithDiagnostics {
 
-<span class="fc" id="L45">	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newBuilder().build();</span>
-<span class="fc" id="L46">	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="fc" id="L47">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.newBuilder().setDag(true).build();</span>
-<span class="fc" id="L48">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
+<span class="fc" id="L51">	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newBuilder().build();</span>
+<span class="fc" id="L52">	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
+<span class="fc" id="L53">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.newBuilder().setDag(true).build();</span>
+<span class="fc" id="L54">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
 
-<span class="fc" id="L50">	private final Diagnostics diagnostics = new Diagnostics();</span>
+<span class="fc" id="L56">	private final Diagnostics diagnostics = new Diagnostics();</span>
 
 	/**
 	 * Construct a new SSSP algorithm.
 	 */
-<span class="fc" id="L55">	ShortestPathSingleSourceGoldberg() {}</span>
+<span class="fc" id="L61">	ShortestPathSingleSourceGoldberg() {}</span>
 
 	/**
 	 * Set the algorithm used for positive weights graphs.
@@ -63,8 +69,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 * @param algo a SSSP implementation for graphs with positive weight function
 	 */
 	void setPositiveSsspAlgo(ShortestPathSingleSource algo) {
-<span class="nc" id="L66">		positiveSsspAlgo = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L67">	}</span>
+<span class="nc" id="L72">		positiveSsspAlgo = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L73">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -74,60 +80,60 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-<span class="fc" id="L77">		ArgumentCheck.onlyDirected(g);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L79">			w = WeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (!(w instanceof WeightFunction.Int))</span>
-<span class="nc" id="L81">			throw new IllegalArgumentException(&quot;Only integer weights are supported&quot;);</span>
-<span class="fc" id="L82">		w = WeightsImpl.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L83">		return computeShortestPaths0(g, (WeightFunction.Int) w, source);</span>
+<span class="fc" id="L83">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L85">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (!(w instanceof WeightFunction.Int))</span>
+<span class="nc" id="L87">			throw new IllegalArgumentException(&quot;Only integer weights are supported&quot;);</span>
+<span class="fc" id="L88">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L89">		return computeShortestPaths0(g, (WeightFunction.Int) w, source);</span>
 	}
 
 	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunction.Int w, int source) {
-<span class="fc" id="L87">		int minWeight = Integer.MAX_VALUE;</span>
+<span class="fc" id="L93">		int minWeight = Integer.MAX_VALUE;</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L90">			minWeight = Math.min(minWeight, w.weightInt(e));</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (minWeight &gt;= 0)</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L96">			minWeight = Math.min(minWeight, w.weightInt(e));</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (minWeight &gt;= 0)</span>
 			// All weights are positive, use Dijkstra
-<span class="fc" id="L93">			return positiveSsspAlgo.computeShortestPaths(g, w, source);</span>
+<span class="fc" id="L99">			return positiveSsspAlgo.computeShortestPaths(g, w, source);</span>
 
 		/* calculate a potential function (or find a negative cycle) */
-<span class="fc" id="L96">		Pair&lt;int[], Path&gt; p = calcPotential(g, w, minWeight);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (p.second() != null)</span>
-<span class="fc" id="L98">			return Result.ofNegCycle(source, p.second());</span>
+<span class="fc" id="L102">		Pair&lt;int[], Path&gt; p = calcPotential(g, w, minWeight);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (p.second() != null)</span>
+<span class="fc" id="L104">			return Result.ofNegCycle(source, p.second());</span>
 
 		/* create a (positive) weight function using the potential */
-<span class="fc" id="L101">		int[] potential = p.first();</span>
-<span class="fc" id="L102">		WeightFunction.Int pw = WeightsImpl.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L107">		int[] potential = p.first();</span>
+<span class="fc" id="L108">		WeightFunction.Int pw = Utils.potentialWeightFunc(g, w, potential);</span>
 
 		/* run positive SSSP */
-<span class="fc" id="L105">		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);</span>
-<span class="fc" id="L106">		return Result.ofSuccess(source, potential, res);</span>
+<span class="fc" id="L111">		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);</span>
+<span class="fc" id="L112">		return Result.ofSuccess(source, potential, res);</span>
 	}
 
 	private Pair&lt;int[], Path&gt; calcPotential(IndexGraph g, WeightFunction.Int w0, int minWeight) {
-<span class="fc" id="L110">		diagnostics.runBegin();</span>
-<span class="fc" id="L111">		final int n = g.vertices().size();</span>
-<span class="fc" id="L112">		final int m = g.edges().size();</span>
-<span class="fc" id="L113">		w0 = WeightsImpl.localEdgeWeightFunction(g, w0);</span>
-<span class="fc" id="L114">		int[] potential = new int[n];</span>
+<span class="fc" id="L116">		diagnostics.runBegin();</span>
+<span class="fc" id="L117">		final int n = g.vertices().size();</span>
+<span class="fc" id="L118">		final int m = g.edges().size();</span>
+<span class="fc" id="L119">		w0 = WeightFunctions.localEdgeWeightFunction(g, w0);</span>
+<span class="fc" id="L120">		int[] potential = new int[n];</span>
 
-<span class="fc" id="L116">		BitSet connected = new BitSet(n);</span>
-<span class="fc" id="L117">		int[] layerSize = new int[n + 1];</span>
+<span class="fc" id="L122">		BitSet connected = new BitSet(n);</span>
+<span class="fc" id="L123">		int[] layerSize = new int[n + 1];</span>
 
 		/* updated weight function including the potential */
-<span class="fc" id="L120">		int[] w = new int[m];</span>
+<span class="fc" id="L126">		int[] w = new int[m];</span>
 
 		/* gNeg is the graph g with only 0,-1 edges */
-<span class="fc" id="L123">		IndexGraph gNeg = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L125">			gNeg.addVertex();</span>
-<span class="fc" id="L126">		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(&quot;edgeRef&quot;, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L129">		IndexGraph gNeg = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L131">			gNeg.addVertex();</span>
+<span class="fc" id="L132">		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(&quot;edgeRef&quot;, int.class, Integer.valueOf(-1));</span>
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-<span class="fc" id="L129">		IndexGraph G = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();</span>
-<span class="fc" id="L130">		Weights.Int GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L135">		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();</span>
+<span class="fc" id="L136">		Weights.Int GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
 		/**
@@ -135,162 +141,162 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		 * find the potential values, and most of the time is spent in the long-path flow. In these cases, we prefer the
 		 * big-layer flow.
 		 */
-<span class="fc" id="L138">		final double density = (double) g.edges().size() / n * (n + 1) / 2;</span>
-<span class="fc" id="L139">		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));</span>
+<span class="fc" id="L144">		final double density = (double) g.edges().size() / n * (n + 1) / 2;</span>
+<span class="fc" id="L145">		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));</span>
 
 		/* Run log(-minWeight) scaling iterations */
-<span class="fc" id="L142">		final int minWeightWordsize = Utils.log2(-minWeight);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (int weightMask = minWeightWordsize; weightMask &gt;= 0; weightMask--) {</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (weightMask != minWeightWordsize)</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L146">					potential[v] *= 2;</span>
-<span class="fc" id="L147">			diagnostics.scalingIteration();</span>
+<span class="fc" id="L148">		final int minWeightWordsize = Utils.log2(-minWeight);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		for (int weightMask = minWeightWordsize; weightMask &gt;= 0; weightMask--) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			if (weightMask != minWeightWordsize)</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L152">					potential[v] *= 2;</span>
+<span class="fc" id="L153">			diagnostics.scalingIteration();</span>
 
 			/* updated potential function until there are no more negative vertices with current weight function */
 			/* we do at most \sqrt{n} such iterations */
 			for (;;) {
-<span class="fc" id="L152">				diagnostics.potentialIteration();</span>
+<span class="fc" id="L158">				diagnostics.potentialIteration();</span>
 				/* update current weight function according to latest potential */
-<span class="fc bfc" id="L154" title="All 2 branches covered.">				for (int e : g.edges())</span>
-<span class="fc" id="L155">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">				for (int e : g.edges())</span>
+<span class="fc" id="L161">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
 
 				/* populate gNeg with all 0,-1 edges */
-<span class="fc" id="L158">				gNeg.clearEdges();</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
-<span class="fc" id="L160">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">					if (w[e] &lt;= 0)</span>
-<span class="fc" id="L162">						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);</span>
-<span class="fc" id="L163">				}</span>
+<span class="fc" id="L164">				gNeg.clearEdges();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc" id="L166">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">					if (w[e] &lt;= 0)</span>
+<span class="fc" id="L168">						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);</span>
+<span class="fc" id="L169">				}</span>
 
 				/* Find all strong connectivity components in the graph */
-<span class="fc" id="L166">				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);</span>
-<span class="fc" id="L167">				final int N = connectivityRes.getNumberOfCcs();</span>
+<span class="fc" id="L172">				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);</span>
+<span class="fc" id="L173">				final int N = connectivityRes.getNumberOfCcs();</span>
 
 				/*
 				 * Contract each strong connectivity component and search for a negative edge within it, if found -
 				 * negative cycle found
 				 */
-<span class="fc" id="L173">				G.clear();</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
-<span class="fc" id="L175">					G.addVertex();</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L177">					int U = connectivityRes.getVertexCc(u);</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">					for (EdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L179">						int e = eit.nextInt();</span>
-<span class="fc" id="L180">						int v = eit.target();</span>
-<span class="fc" id="L181">						int V = connectivityRes.getVertexCc(v);</span>
-<span class="fc" id="L182">						int weight = w[gNegEdgeRefs.getInt(e)];</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">						if (U != V) {</span>
-<span class="fc" id="L184">							GWeights.set(G.addEdge(U, V), weight);</span>
+<span class="fc" id="L179">				G.clear();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
+<span class="fc" id="L181">					G.addVertex();</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L183">					int U = connectivityRes.getVertexCc(u);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">					for (EdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L185">						int e = eit.nextInt();</span>
+<span class="fc" id="L186">						int v = eit.target();</span>
+<span class="fc" id="L187">						int V = connectivityRes.getVertexCc(v);</span>
+<span class="fc" id="L188">						int weight = w[gNegEdgeRefs.getInt(e)];</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">						if (U != V) {</span>
+<span class="fc" id="L190">							GWeights.set(G.addEdge(U, V), weight);</span>
 
-<span class="fc bfc" id="L186" title="All 2 branches covered.">						} else if (weight &lt; 0) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">						} else if (weight &lt; 0) {</span>
 							// negative cycle
-<span class="fc" id="L188">							Path negCycle0 = Path.findPath(gNeg, v, u);</span>
-<span class="fc" id="L189">							IntList negCycle = new IntArrayList(negCycle0.size() + 1);</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">							for (int e2 : negCycle0)</span>
-<span class="fc" id="L191">								negCycle.add(gNegEdgeRefs.getInt(e2));</span>
-<span class="fc" id="L192">							negCycle.add(gNegEdgeRefs.getInt(e));</span>
-<span class="fc" id="L193">							return Pair.of(null, new PathImpl(g, v, v, negCycle));</span>
+<span class="fc" id="L194">							Path negCycle0 = Path.findPath(gNeg, v, u);</span>
+<span class="fc" id="L195">							IntList negCycle = new IntArrayList(negCycle0.size() + 1);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">							for (int e2 : negCycle0)</span>
+<span class="fc" id="L197">								negCycle.add(gNegEdgeRefs.getInt(e2));</span>
+<span class="fc" id="L198">							negCycle.add(gNegEdgeRefs.getInt(e));</span>
+<span class="fc" id="L199">							return Pair.of(null, new PathImpl(g, v, v, negCycle));</span>
 						}
-<span class="fc" id="L195">					}</span>
+<span class="fc" id="L201">					}</span>
 				}
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
-<span class="fc" id="L199">				int fakeS1 = G.addVertex();</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
-<span class="fc" id="L201">					GWeights.set(G.addEdge(fakeS1, U), 0);</span>
-<span class="fc" id="L202">				ShortestPathSingleSource.Result ssspRes = dagSssp.computeShortestPaths(G, GWeights, fakeS1);</span>
+<span class="fc" id="L205">				int fakeS1 = G.addVertex();</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
+<span class="fc" id="L207">					GWeights.set(G.addEdge(fakeS1, U), 0);</span>
+<span class="fc" id="L208">				ShortestPathSingleSource.Result ssspRes = dagSssp.computeShortestPaths(G, GWeights, fakeS1);</span>
 
 				// Divide super vertices into layers by distance
-<span class="fc" id="L205">				int layerNum = 0;</span>
-<span class="fc" id="L206">				int vertexInMaxLayer = -1;</span>
-<span class="fc" id="L207">				Arrays.fill(layerSize, 0, N, 0);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">				for (int V = 0; V &lt; N; V++) {</span>
-<span class="fc" id="L209">					int l = -(int) ssspRes.distance(V);</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">					if (l + 1 &gt; layerNum) {</span>
-<span class="fc" id="L211">						layerNum = l + 1;</span>
-<span class="fc" id="L212">						vertexInMaxLayer = V;</span>
+<span class="fc" id="L211">				int layerNum = 0;</span>
+<span class="fc" id="L212">				int vertexInMaxLayer = -1;</span>
+<span class="fc" id="L213">				Arrays.fill(layerSize, 0, N, 0);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				for (int V = 0; V &lt; N; V++) {</span>
+<span class="fc" id="L215">					int l = -(int) ssspRes.distance(V);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">					if (l + 1 &gt; layerNum) {</span>
+<span class="fc" id="L217">						layerNum = l + 1;</span>
+<span class="fc" id="L218">						vertexInMaxLayer = V;</span>
 					}
-<span class="fc" id="L214">					layerSize[l]++;</span>
+<span class="fc" id="L220">					layerSize[l]++;</span>
 				}
-<span class="fc bfc" id="L216" title="All 2 branches covered.">				if (layerNum == 1)</span>
-<span class="fc" id="L217">					break; // no negative vertices, done</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">				if (layerNum == 1)</span>
+<span class="fc" id="L223">					break; // no negative vertices, done</span>
 
 				// Find biggest layer
-<span class="fc" id="L220">				int biggestLayer = -1;</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">				for (int l = layerNum - 1; l &gt; 0; l--)</span>
-<span class="fc bfc" id="L222" title="All 4 branches covered.">					if (biggestLayer == -1 || layerSize[l] &gt; layerSize[biggestLayer])</span>
-<span class="fc" id="L223">						biggestLayer = l;</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">				if (layerSize[biggestLayer] &gt;= Math.sqrt(N) * alpha) {</span>
-<span class="fc" id="L225">					diagnostics.bigLayer();</span>
+<span class="fc" id="L226">				int biggestLayer = -1;</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				for (int l = layerNum - 1; l &gt; 0; l--)</span>
+<span class="fc bfc" id="L228" title="All 4 branches covered.">					if (biggestLayer == -1 || layerSize[l] &gt; layerSize[biggestLayer])</span>
+<span class="fc" id="L229">						biggestLayer = l;</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">				if (layerSize[biggestLayer] &gt;= Math.sqrt(N) * alpha) {</span>
+<span class="fc" id="L231">					diagnostics.bigLayer();</span>
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
-<span class="fc bfc" id="L227" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L228">						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">						if (l &gt;= biggestLayer)</span>
-<span class="fc" id="L230">							potential[v]--;</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L234">						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">						if (l &gt;= biggestLayer)</span>
+<span class="fc" id="L236">							potential[v]--;</span>
 					}
 				} else {
-<span class="fc" id="L233">					diagnostics.longPath();</span>
+<span class="fc" id="L239">					diagnostics.longPath();</span>
 					/*
 					 * No big layer is found, use path which has at least sqrt(|V|) vertices. Connect a fake vertex to
 					 * all vertices, with edge r-i to negative vertex v_i on the path and with edge r to all other
 					 * vertices
 					 */
-<span class="fc" id="L239">					int fakeS2 = G.addVertex();</span>
-<span class="fc" id="L240">					connected.clear();</span>
-<span class="fc" id="L241">					int assignedWeight = layerNum - 2;</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">					for (EdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {</span>
-<span class="fc" id="L243">						int e = it.nextInt();</span>
-<span class="fc" id="L244">						int ew = GWeights.weightInt(e);</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">						if (ew &lt; 0) {</span>
-<span class="fc" id="L246">							int V = it.target();</span>
-<span class="fc" id="L247">							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);</span>
-<span class="fc" id="L248">							connected.set(V);</span>
+<span class="fc" id="L245">					int fakeS2 = G.addVertex();</span>
+<span class="fc" id="L246">					connected.clear();</span>
+<span class="fc" id="L247">					int assignedWeight = layerNum - 2;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">					for (EdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {</span>
+<span class="fc" id="L249">						int e = it.nextInt();</span>
+<span class="fc" id="L250">						int ew = GWeights.weightInt(e);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">						if (ew &lt; 0) {</span>
+<span class="fc" id="L252">							int V = it.target();</span>
+<span class="fc" id="L253">							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);</span>
+<span class="fc" id="L254">							connected.set(V);</span>
 						}
-<span class="fc" id="L250">					}</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">					for (int V = 0; V &lt; N; V++)</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">						if (!connected.get(V))</span>
-<span class="fc" id="L253">							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);</span>
+<span class="fc" id="L256">					}</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">					for (int V = 0; V &lt; N; V++)</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">						if (!connected.get(V))</span>
+<span class="fc" id="L259">							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);</span>
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-<span class="fc bfc" id="L256" title="All 2 branches covered.">					for (int e : g.edges()) {</span>
-<span class="fc" id="L257">						int weight = w[e];</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">						if (weight &gt; 0) {</span>
-<span class="fc" id="L259">							int U = connectivityRes.getVertexCc(g.edgeSource(e));</span>
-<span class="fc" id="L260">							int V = connectivityRes.getVertexCc(g.edgeTarget(e));</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">							if (U != V)</span>
-<span class="fc" id="L262">								GWeights.set(G.addEdge(U, V), weight);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">					for (int e : g.edges()) {</span>
+<span class="fc" id="L263">						int weight = w[e];</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">						if (weight &gt; 0) {</span>
+<span class="fc" id="L265">							int U = connectivityRes.getVertexCc(g.edgeSource(e));</span>
+<span class="fc" id="L266">							int V = connectivityRes.getVertexCc(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">							if (U != V)</span>
+<span class="fc" id="L268">								GWeights.set(G.addEdge(U, V), weight);</span>
 						}
-<span class="fc" id="L264">					}</span>
+<span class="fc" id="L270">					}</span>
 
 					// Calc distance with abs weight function to update potential function
-<span class="fc bfc" id="L267" title="All 2 branches covered.">					for (int e : G.edges())</span>
-<span class="fc" id="L268">						GWeights.set(e, Math.abs(GWeights.getInt(e)));</span>
-<span class="fc" id="L269">					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L271">						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">					for (int e : G.edges())</span>
+<span class="fc" id="L274">						GWeights.set(e, Math.abs(GWeights.getInt(e)));</span>
+<span class="fc" id="L275">					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L277">						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));</span>
 				}
-<span class="fc" id="L273">			}</span>
+<span class="fc" id="L279">			}</span>
 		}
 
-<span class="fc" id="L276">		return Pair.of(potential, null);</span>
+<span class="fc" id="L282">		return Pair.of(potential, null);</span>
 	}
 
 	private static int calcWeightWithPotential(IndexGraph g, int e, WeightFunction.Int w, int[] potential,
 			int weightMask) {
-<span class="fc" id="L281">		int weight = w.weightInt(e);</span>
+<span class="fc" id="L287">		int weight = w.weightInt(e);</span>
 		// weight = ceil(weight / 2^weightMask)
-<span class="fc bfc" id="L283" title="All 2 branches covered.">		if (weightMask != 0) {</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">			if (weight &lt;= 0) {</span>
-<span class="fc" id="L285">				weight = -((-weight) &gt;&gt; weightMask);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (weightMask != 0) {</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">			if (weight &lt;= 0) {</span>
+<span class="fc" id="L291">				weight = -((-weight) &gt;&gt; weightMask);</span>
 			} else {
-<span class="fc" id="L287">				weight += 1 &lt;&lt; (weightMask - 1);</span>
-<span class="fc" id="L288">				weight = weight &gt;&gt; weightMask;</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">				if (weight == 0)</span>
-<span class="fc" id="L290">					weight = 1;</span>
+<span class="fc" id="L293">				weight += 1 &lt;&lt; (weightMask - 1);</span>
+<span class="fc" id="L294">				weight = weight &gt;&gt; weightMask;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">				if (weight == 0)</span>
+<span class="fc" id="L296">					weight = 1;</span>
 			}
 		}
-<span class="fc" id="L293">		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L299">		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	private static class Result implements ShortestPathSingleSource.Result {
@@ -300,57 +306,57 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		private final ShortestPathSingleSource.Result dijkstraRes;
 		private final Path cycle;
 
-<span class="fc" id="L303">		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, Path cycle) {</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">			this.sourcePotential = potential != null ? potential[source] : 0;</span>
-<span class="fc" id="L305">			this.potential = potential;</span>
-<span class="fc" id="L306">			this.dijkstraRes = dijkstraRes;</span>
-<span class="fc" id="L307">			this.cycle = cycle;</span>
-<span class="fc" id="L308">		}</span>
+<span class="fc" id="L309">		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, Path cycle) {</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">			this.sourcePotential = potential != null ? potential[source] : 0;</span>
+<span class="fc" id="L311">			this.potential = potential;</span>
+<span class="fc" id="L312">			this.dijkstraRes = dijkstraRes;</span>
+<span class="fc" id="L313">			this.cycle = cycle;</span>
+<span class="fc" id="L314">		}</span>
 
 		static Result ofSuccess(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes) {
-<span class="fc" id="L311">			return new Result(source, potential, dijkstraRes, null);</span>
+<span class="fc" id="L317">			return new Result(source, potential, dijkstraRes, null);</span>
 		}
 
 		static Result ofNegCycle(int source, Path cycle) {
-<span class="fc" id="L315">			return new Result(source, null, null, cycle);</span>
+<span class="fc" id="L321">			return new Result(source, null, null, cycle);</span>
 		}
 
 		@Override
 		public double distance(int target) {
-<span class="pc bpc" id="L320" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L321">				throw new IllegalStateException();</span>
-<span class="fc" id="L322">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L327">				throw new IllegalStateException();</span>
+<span class="fc" id="L328">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
 		}
 
 		@Override
 		public Path getPath(int target) {
-<span class="pc bpc" id="L327" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L328">				throw new IllegalStateException();</span>
-<span class="fc" id="L329">			return dijkstraRes.getPath(target);</span>
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L334">				throw new IllegalStateException();</span>
+<span class="fc" id="L335">			return dijkstraRes.getPath(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L334" title="All 2 branches covered.">			return cycle != null;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">			return cycle != null;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="pc bpc" id="L339" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L340">				throw new IllegalStateException();</span>
-<span class="fc" id="L341">			return cycle;</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="nc" id="L346">				throw new IllegalStateException();</span>
+<span class="fc" id="L347">			return cycle;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L346" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
 		}
 
 	}
 
 	@Override
 	public Object getDiagnostic(String key) {
-<span class="nc" id="L353">		return Long.valueOf(diagnostics.get(key));</span>
+<span class="nc" id="L359">		return Long.valueOf(diagnostics.get(key));</span>
 	}
 
 	private static class Diagnostics {
@@ -366,40 +372,40 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		void runBegin() {
 			if (Enable)
 				runCount++;
-<span class="fc" id="L369">		}</span>
+<span class="fc" id="L375">		}</span>
 
 		void scalingIteration() {
 			if (Enable)
 				scalingIterations++;
-<span class="fc" id="L374">		}</span>
+<span class="fc" id="L380">		}</span>
 
 		void potentialIteration() {
 			if (Enable)
 				potentialIterations++;
-<span class="fc" id="L379">		}</span>
+<span class="fc" id="L385">		}</span>
 
 		void bigLayer() {
 			if (Enable)
 				bigLayer++;
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L390">		}</span>
 
 		void longPath() {
 			if (Enable)
 				longPath++;
-<span class="fc" id="L389">		}</span>
+<span class="fc" id="L395">		}</span>
 
 		long get(String key) {
-<span class="nc bnc" id="L392" title="All 2 branches missed.">			if (&quot;runCount&quot;.equals(key))</span>
-<span class="nc" id="L393">				return runCount;</span>
-<span class="nc bnc" id="L394" title="All 2 branches missed.">			if (&quot;scalingIterations&quot;.equals(key))</span>
-<span class="nc" id="L395">				return scalingIterations;</span>
-<span class="nc bnc" id="L396" title="All 2 branches missed.">			if (&quot;potentialIterations&quot;.equals(key))</span>
-<span class="nc" id="L397">				return potentialIterations;</span>
-<span class="nc bnc" id="L398" title="All 2 branches missed.">			if (&quot;bigLayer&quot;.equals(key))</span>
-<span class="nc" id="L399">				return bigLayer;</span>
-<span class="nc bnc" id="L400" title="All 2 branches missed.">			if (&quot;longPath&quot;.equals(key))</span>
-<span class="nc" id="L401">				return longPath;</span>
-<span class="nc" id="L402">			throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">			if (&quot;runCount&quot;.equals(key))</span>
+<span class="nc" id="L399">				return runCount;</span>
+<span class="nc bnc" id="L400" title="All 2 branches missed.">			if (&quot;scalingIterations&quot;.equals(key))</span>
+<span class="nc" id="L401">				return scalingIterations;</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">			if (&quot;potentialIterations&quot;.equals(key))</span>
+<span class="nc" id="L403">				return potentialIterations;</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">			if (&quot;bigLayer&quot;.equals(key))</span>
+<span class="nc" id="L405">				return bigLayer;</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">			if (&quot;longPath&quot;.equals(key))</span>
+<span class="nc" id="L407">				return longPath;</span>
+<span class="nc" id="L408">			throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
 		}
 
 	}

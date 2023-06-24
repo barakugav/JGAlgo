@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -37,17 +41,17 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L40">class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {</span>
+<span class="fc" id="L44">class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {</span>
 
-<span class="fc" id="L42">	private ShortestPathSingleSource negativeSssp =</span>
-<span class="fc" id="L43">			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();</span>
-<span class="fc" id="L44">	private boolean parallel = JGAlgoConfig.parallelByDefault;</span>
+<span class="fc" id="L46">	private ShortestPathSingleSource negativeSssp =</span>
+<span class="fc" id="L47">			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();</span>
+<span class="fc" id="L48">	private boolean parallel = JGAlgoConfig.parallelByDefault;</span>
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-<span class="fc" id="L50">	ShortestPathAllPairsJohnson() {}</span>
+<span class="fc" id="L54">	ShortestPathAllPairsJohnson() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -56,100 +60,100 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 */
 	@Override
 	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L59">		ArgumentCheck.onlyDirected(g);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L61">			w = WeightFunction.CardinalityWeightFunction;</span>
-<span class="fc" id="L62">		w = WeightsImpl.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L63">		final int n = g.vertices().size();</span>
+<span class="fc" id="L63">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L65">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L66">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L67">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L65">		boolean negWeight = false;</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
-<span class="fc" id="L68">				negWeight = true;</span>
-<span class="fc" id="L69">				break;</span>
+<span class="fc" id="L69">		boolean negWeight = false;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
+<span class="fc" id="L72">				negWeight = true;</span>
+<span class="fc" id="L73">				break;</span>
 			}
-<span class="fc" id="L71">		}</span>
+<span class="fc" id="L75">		}</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (!negWeight) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
-<span class="fc" id="L75">			SuccessRes res = computeAPSPPositive(g, w);</span>
-<span class="fc" id="L76">			res.potential = new double[n];</span>
-<span class="fc" id="L77">			return res;</span>
+<span class="fc" id="L79">			SuccessRes res = computeAPSPPositive(g, w);</span>
+<span class="fc" id="L80">			res.potential = new double[n];</span>
+<span class="fc" id="L81">			return res;</span>
 		}
 
-<span class="fc" id="L80">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (potential0.second() != null)</span>
-<span class="fc" id="L82">			return new NegCycleRes(potential0.second());</span>
-<span class="fc" id="L83">		double[] potential = potential0.first();</span>
+<span class="fc" id="L84">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (potential0.second() != null)</span>
+<span class="fc" id="L86">			return new NegCycleRes(potential0.second());</span>
+<span class="fc" id="L87">		double[] potential = potential0.first();</span>
 
-<span class="fc" id="L85">		WeightFunction wPotential = WeightsImpl.potentialWeightFunc(g, w, potential);</span>
-<span class="fc" id="L86">		SuccessRes res = computeAPSPPositive(g, wPotential);</span>
-<span class="fc" id="L87">		res.potential = potential;</span>
-<span class="fc" id="L88">		return res;</span>
+<span class="fc" id="L89">		WeightFunction wPotential = Utils.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L90">		SuccessRes res = computeAPSPPositive(g, wPotential);</span>
+<span class="fc" id="L91">		res.potential = potential;</span>
+<span class="fc" id="L92">		return res;</span>
 	}
 
 	private SuccessRes computeAPSPPositive(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L92">		final int n = g.vertices().size();</span>
-<span class="fc" id="L93">		SuccessRes res = new SuccessRes(n);</span>
+<span class="fc" id="L96">		final int n = g.vertices().size();</span>
+<span class="fc" id="L97">		SuccessRes res = new SuccessRes(n);</span>
 
-<span class="fc" id="L95">		ForkJoinPool pool = Utils.getPool();</span>
-<span class="pc bpc" id="L96" title="2 of 6 branches missed.">		if (n &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
+<span class="fc" id="L99">		ForkJoinPool pool = Utils.getPool();</span>
+<span class="pc bpc" id="L100" title="2 of 6 branches missed.">		if (n &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
 			/* sequential */
-<span class="fc" id="L98">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int source = 0; source &lt; n; source++)</span>
-<span class="fc" id="L100">				res.ssspResults[source] = sssp.computeShortestPaths(g, w, source);</span>
+<span class="fc" id="L102">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int source = 0; source &lt; n; source++)</span>
+<span class="fc" id="L104">				res.ssspResults[source] = sssp.computeShortestPaths(g, w, source);</span>
 
-<span class="fc" id="L102">		} else {</span>
+<span class="fc" id="L106">		} else {</span>
 			/* parallel */
-<span class="nc" id="L104">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(n);</span>
-<span class="nc" id="L105">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="nc" id="L106">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().build());</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">			for (int source = 0; source &lt; n; source++) {</span>
-<span class="nc" id="L108">				final int source0 = source;</span>
-<span class="nc" id="L109">				tasks.add(Utils.recursiveAction(</span>
-<span class="nc" id="L110">						() -&gt; res.ssspResults[source0] = sssp.get().computeShortestPaths(g, w, source0)));</span>
+<span class="nc" id="L108">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(n);</span>
+<span class="nc" id="L109">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="nc" id="L110">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().build());</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">			for (int source = 0; source &lt; n; source++) {</span>
+<span class="nc" id="L112">				final int source0 = source;</span>
+<span class="nc" id="L113">				tasks.add(Utils.recursiveAction(</span>
+<span class="nc" id="L114">						() -&gt; res.ssspResults[source0] = sssp.get().computeShortestPaths(g, w, source0)));</span>
 			}
-<span class="nc bnc" id="L112" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L113">				pool.execute(task);</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L115">				task.join();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L117">				pool.execute(task);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L119">				task.join();</span>
 		}
-<span class="fc" id="L117">		return res;</span>
+<span class="fc" id="L121">		return res;</span>
 	}
 
 	private Pair&lt;double[], Path&gt; calcPotential(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L121">		int n = g.vertices().size();</span>
+<span class="fc" id="L125">		int n = g.vertices().size();</span>
 
 		/* Add fake vertex */
-<span class="fc" id="L124">		GraphBuilderFixedUnmapped refgBuilder = GraphBuilderFixedUnmapped.newFrom(g);</span>
-<span class="fc" id="L125">		final int fakeV = refgBuilder.addVertex();</span>
-<span class="fc" id="L126">		final int fakeEdgesThreshold = refgBuilder.edgesNum();</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L128">			int e = refgBuilder.addEdge(fakeV, v);</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
+<span class="fc" id="L128">		IndexGraphBuilder refgBuilder = IndexGraphBuilder.newFrom(g);</span>
+<span class="fc" id="L129">		final int fakeV = refgBuilder.addVertex();</span>
+<span class="fc" id="L130">		final int fakeEdgesThreshold = refgBuilder.edges().size();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L132">			int e = refgBuilder.addEdge(fakeV, v);</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
 		}
-<span class="fc" id="L131">		IndexGraph refG = refgBuilder.build();</span>
+<span class="fc" id="L135">		IndexGraph refG = refgBuilder.build();</span>
 
 		WeightFunction refW;
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L135">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			WeightFunction.Int refWInt = e -&gt; e &lt; fakeEdgesThreshold ? wInt.weightInt(e) : 0;</span>
-<span class="fc" id="L137">			refW = refWInt;</span>
-<span class="fc" id="L138">		} else {</span>
-<span class="nc bnc" id="L139" title="All 2 branches missed.">			refW = e -&gt; e &lt; fakeEdgesThreshold ? w.weight(e) : 0;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L139">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			WeightFunction.Int refWInt = e -&gt; e &lt; fakeEdgesThreshold ? wInt.weightInt(e) : 0;</span>
+<span class="fc" id="L141">			refW = refWInt;</span>
+<span class="fc" id="L142">		} else {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">			refW = e -&gt; e &lt; fakeEdgesThreshold ? w.weight(e) : 0;</span>
 		}
-<span class="fc" id="L141">		ShortestPathSingleSource.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
-<span class="fc" id="L143">			double[] potential = new double[n];</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L145">				potential[v] = res.distance(v);</span>
-<span class="fc" id="L146">			return Pair.of(potential, null);</span>
+<span class="fc" id="L145">		ShortestPathSingleSource.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
+<span class="fc" id="L147">			double[] potential = new double[n];</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L149">				potential[v] = res.distance(v);</span>
+<span class="fc" id="L150">			return Pair.of(potential, null);</span>
 		} else {
-<span class="fc" id="L148">			Path negCycleRef = res.getNegativeCycle();</span>
-<span class="fc" id="L149">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">			for (int e : negCycleRef)</span>
-<span class="fc" id="L151">				negCycle.add(e);</span>
-<span class="fc" id="L152">			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
+<span class="fc" id="L152">			Path negCycleRef = res.getNegativeCycle();</span>
+<span class="fc" id="L153">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			for (int e : negCycleRef)</span>
+<span class="fc" id="L155">				negCycle.add(e);</span>
+<span class="fc" id="L156">			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
 		}
 	}
 
@@ -163,36 +167,36 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @param algo a SSSP implementation for graphs with negative weight function
 	 */
 	void setNegativeSsspAlgo(ShortestPathSingleSource algo) {
-<span class="nc" id="L166">		negativeSssp = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L167">	}</span>
+<span class="nc" id="L170">		negativeSssp = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L171">	}</span>
 
 	private static class NegCycleRes implements ShortestPathAllPairs.Result {
 
 		private final Path negCycle;
 
-<span class="fc" id="L173">		public NegCycleRes(Path negCycle) {</span>
-<span class="fc" id="L174">			Objects.requireNonNull(negCycle);</span>
-<span class="fc" id="L175">			this.negCycle = negCycle;</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc" id="L177">		public NegCycleRes(Path negCycle) {</span>
+<span class="fc" id="L178">			Objects.requireNonNull(negCycle);</span>
+<span class="fc" id="L179">			this.negCycle = negCycle;</span>
+<span class="fc" id="L180">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="nc" id="L180">			throw new IllegalStateException();</span>
+<span class="nc" id="L184">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="nc" id="L185">			throw new IllegalStateException();</span>
+<span class="nc" id="L189">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L190">			return true;</span>
+<span class="fc" id="L194">			return true;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="fc" id="L195">			return negCycle;</span>
+<span class="fc" id="L199">			return negCycle;</span>
 		}
 
 	}
@@ -202,28 +206,28 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final ShortestPathSingleSource.Result[] ssspResults;
 		double[] potential;
 
-<span class="fc" id="L205">		SuccessRes(int n) {</span>
-<span class="fc" id="L206">			ssspResults = new ShortestPathSingleSource.Result[n];</span>
-<span class="fc" id="L207">		}</span>
+<span class="fc" id="L209">		SuccessRes(int n) {</span>
+<span class="fc" id="L210">			ssspResults = new ShortestPathSingleSource.Result[n];</span>
+<span class="fc" id="L211">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="fc" id="L211">			return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
+<span class="fc" id="L215">			return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="fc" id="L216">			return ssspResults[source].getPath(target);</span>
+<span class="fc" id="L220">			return ssspResults[source].getPath(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L221">			return false;</span>
+<span class="fc" id="L225">			return false;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc" id="L226">			throw new IllegalStateException();</span>
+<span class="nc" id="L230">			throw new IllegalStateException();</span>
 		}
 
 	}

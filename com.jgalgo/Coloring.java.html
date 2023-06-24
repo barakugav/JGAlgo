@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
  * vertices.
@@ -28,7 +30,7 @@ package com.jgalgo;
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
  * &lt;pre&gt; {@code
- * Graph g = Graph.newBuilderUndirected().build();
+ * Graph g = GraphFactory.newUndirected().newGraph();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -97,7 +99,7 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-<span class="nc" id="L100">		return ColoringDSatur::new;</span>
+<span class="nc" id="L102">		return ColoringDSatur::new;</span>
 	}
 
 	/**

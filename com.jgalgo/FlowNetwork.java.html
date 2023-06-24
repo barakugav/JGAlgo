@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * Flow on graph edges, with capacities and flows values.
  * &lt;p&gt;
@@ -117,7 +119,7 @@ public interface FlowNetwork {
 	 * @return   a flow network implemented as edge weights
 	 */
 	static FlowNetwork createAsEdgeWeight(Graph g) {
-<span class="fc" id="L120">		return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);</span>
+<span class="fc" id="L122">		return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);</span>
 	}
 
 	/**
@@ -143,7 +145,7 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default double getCapacity(int edge) {
-<span class="fc" id="L146">			return getCapacityInt(edge);</span>
+<span class="fc" id="L148">			return getCapacityInt(edge);</span>
 		}
 
 		/**
@@ -159,8 +161,8 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default void setCapacity(int edge, double capacity) {
-<span class="nc" id="L162">			setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L163">		}</span>
+<span class="nc" id="L164">			setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L165">		}</span>
 
 		/**
 		 * Get the integer amount of flow units going along an edge.
@@ -182,7 +184,7 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default double getFlow(int edge) {
-<span class="fc" id="L185">			return getFlowInt(edge);</span>
+<span class="fc" id="L187">			return getFlowInt(edge);</span>
 		}
 
 		/**
@@ -197,8 +199,8 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default void setFlow(int edge, double flow) {
-<span class="fc" id="L200">			setFlow(edge, (int) flow);</span>
-<span class="fc" id="L201">		}</span>
+<span class="fc" id="L202">			setFlow(edge, (int) flow);</span>
+<span class="fc" id="L203">		}</span>
 
 		/**
 		 * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
@@ -210,7 +212,7 @@ public interface FlowNetwork {
 		 * @return   a flow network implemented as edge weights
 		 */
 		static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-<span class="fc" id="L213">			return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);</span>
+<span class="fc" id="L215">			return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);</span>
 		}
 
 	}

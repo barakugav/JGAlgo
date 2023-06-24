@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -72,7 +74,7 @@ public interface MinimumSpanningTree {
 	 */
 	static MinimumSpanningTree.Builder newBuilder() {
 		// TODO check for which graphs sizes Kruskal is faster
-<span class="fc" id="L75">		return MinimumSpanningTreePrim::new;</span>
+<span class="fc" id="L77">		return MinimumSpanningTreePrim::new;</span>
 	}
 
 	/**

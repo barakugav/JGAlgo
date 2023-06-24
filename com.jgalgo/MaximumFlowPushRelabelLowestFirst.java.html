@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
+
 /**
  * The push-relabel maximum flow algorithm with lowest-first ordering.
  * &lt;p&gt;
@@ -41,16 +43,16 @@ class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L44">	MaximumFlowPushRelabelLowestFirst() {}</span>
+<span class="fc" id="L46">	MaximumFlowPushRelabelLowestFirst() {}</span>
 
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L48">		return new WorkerDouble(gOrig, net, source, sink);</span>
+<span class="fc" id="L50">		return new WorkerDouble(gOrig, net, source, sink);</span>
 	}
 
 	@Override
 	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L53">		return new WorkerInt(gOrig, net, source, sink);</span>
+<span class="fc" id="L55">		return new WorkerInt(gOrig, net, source, sink);</span>
 	}
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
@@ -58,36 +60,36 @@ class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 		int minLayerActive;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L61">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L62">		}</span>
+<span class="fc" id="L63">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L64">		}</span>
 
 		@Override
 		void recomputeLabels() {
-<span class="fc" id="L66">			minLayerActive = 0;</span>
-<span class="fc" id="L67">			super.recomputeLabels();</span>
-<span class="fc" id="L68">		}</span>
+<span class="fc" id="L68">			minLayerActive = 0;</span>
+<span class="fc" id="L69">			super.recomputeLabels();</span>
+<span class="fc" id="L70">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L72">			super.activate(v);</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (minLayerActive &gt; label[v])</span>
-<span class="fc" id="L74">				minLayerActive = label[v];</span>
-<span class="fc" id="L75">		}</span>
+<span class="fc" id="L74">			super.activate(v);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (minLayerActive &gt; label[v])</span>
+<span class="fc" id="L76">				minLayerActive = label[v];</span>
+<span class="fc" id="L77">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L79" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L81">					return true;</span>
-<span class="fc" id="L82">			return false;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L83">					return true;</span>
+<span class="fc" id="L84">			return false;</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L89">					return layersHeadActive[minLayerActive];</span>
-<span class="nc" id="L90">			throw new IllegalStateException();</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L91">					return layersHeadActive[minLayerActive];</span>
+<span class="nc" id="L92">			throw new IllegalStateException();</span>
 		}
 	}
 
@@ -96,36 +98,36 @@ class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 		int minLayerActive;
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L99">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L100">		}</span>
+<span class="fc" id="L101">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L102">		}</span>
 
 		@Override
 		void recomputeLabels() {
-<span class="fc" id="L104">			minLayerActive = 0;</span>
-<span class="fc" id="L105">			super.recomputeLabels();</span>
-<span class="fc" id="L106">		}</span>
+<span class="fc" id="L106">			minLayerActive = 0;</span>
+<span class="fc" id="L107">			super.recomputeLabels();</span>
+<span class="fc" id="L108">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L110">			super.activate(v);</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (minLayerActive &gt; label[v])</span>
-<span class="fc" id="L112">				minLayerActive = label[v];</span>
-<span class="fc" id="L113">		}</span>
+<span class="fc" id="L112">			super.activate(v);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (minLayerActive &gt; label[v])</span>
+<span class="fc" id="L114">				minLayerActive = label[v];</span>
+<span class="fc" id="L115">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L119">					return true;</span>
-<span class="fc" id="L120">			return false;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L121">					return true;</span>
+<span class="fc" id="L122">			return false;</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L127">					return layersHeadActive[minLayerActive];</span>
-<span class="nc" id="L128">			throw new IllegalStateException();</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L129">					return layersHeadActive[minLayerActive];</span>
+<span class="nc" id="L130">			throw new IllegalStateException();</span>
 		}
 	}
 

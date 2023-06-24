@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphLinkedDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphLinkedDirected.java</span></div><h1>GraphLinkedDirected.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+
+/**
+ * A directed graph implementation using linked lists to store edge lists.
+ * &lt;p&gt;
+ * The edges of each vertex will be stored as a linked list. This implementation is efficient in use cases where
+ * multiple vertices/edges removals are performed, but it should not be the default choice for a directed graph.
+ *
+ * @see    GraphLinkedUndirected
+ * @see    GraphArrayDirected
+ * @author Barak Ugav
+ */
+class GraphLinkedDirected extends GraphLinkedAbstract {
+
+	private Node[] edgesIn;
+	private Node[] edgesOut;
+	private final DataContainer.Obj&lt;Node&gt; edgesInContainer;
+	private final DataContainer.Obj&lt;Node&gt; edgesOutContainer;
+
+<span class="fc" id="L38">	private static final Node[] EmptyNodeArr = new Node[0];</span>
+
+	/**
+	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
+	 *
+	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
+	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
+	 */
+	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L47">		super(expectedVerticesNum, expectedEdgesNum);</span>
+
+<span class="fc" id="L49">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyNodeArr, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L50">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyNodeArr, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L51">		addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L52">		addInternalVerticesContainer(edgesInContainer);</span>
+<span class="fc" id="L53">	}</span>
+
+	GraphLinkedDirected(IndexGraph g) {
+<span class="fc" id="L56">		super(g);</span>
+
+<span class="fc" id="L58">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyNodeArr, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L59">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyNodeArr, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L60">		addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L61">		addInternalVerticesContainer(edgesInContainer);</span>
+
+<span class="fc" id="L63">		final int m = g.edges().size();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L65">			addEdgeToLists(getNode(e));</span>
+<span class="fc" id="L66">	}</span>
+
+	@Override
+	void removeVertexImpl(int vertex) {
+<span class="fc" id="L70">		super.removeVertexImpl(vertex);</span>
+<span class="fc" id="L71">		edgesOutContainer.clear(edgesOut, vertex);</span>
+<span class="fc" id="L72">		edgesInContainer.clear(edgesIn, vertex);</span>
+<span class="fc" id="L73">	}</span>
+
+	@Override
+	void vertexSwap(int v1, int v2) {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		for (Node p = edgesOut[v1]; p != null; p = p.nextOut)</span>
+<span class="nc" id="L78">			p.source = v2;</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		for (Node p = edgesIn[v1]; p != null; p = p.nextIn)</span>
+<span class="nc" id="L80">			p.target = v2;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (Node p = edgesOut[v2]; p != null; p = p.nextOut)</span>
+<span class="fc" id="L82">			p.source = v1;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (Node p = edgesIn[v2]; p != null; p = p.nextIn)</span>
+<span class="fc" id="L84">			p.target = v1;</span>
+
+<span class="fc" id="L86">		edgesOutContainer.swap(edgesOut, v1, v2);</span>
+<span class="fc" id="L87">		edgesInContainer.swap(edgesIn, v1, v2);</span>
+
+<span class="fc" id="L89">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L90">	}</span>
+
+	@Override
+	public EdgeSet outEdges(int source) {
+<span class="fc" id="L94">		checkVertex(source);</span>
+<span class="fc" id="L95">		return new EdgeSetOut(source);</span>
+	}
+
+	@Override
+	public EdgeSet inEdges(int target) {
+<span class="fc" id="L100">		checkVertex(target);</span>
+<span class="fc" id="L101">		return new EdgeSetIn(target);</span>
+	}
+
+	@Override
+	public int addEdge(int source, int target) {
+<span class="fc" id="L106">		Node e = (Node) addEdgeNode(source, target);</span>
+<span class="fc" id="L107">		addEdgeToLists(e);</span>
+<span class="fc" id="L108">		return e.id;</span>
+	}
+
+	private void addEdgeToLists(Node e) {
+<span class="fc" id="L112">		int u = e.source, v = e.target;</span>
+		Node next;
+<span class="fc" id="L114">		next = edgesOut[u];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L116">			next.prevOut = e;</span>
+<span class="fc" id="L117">			e.nextOut = next;</span>
+		}
+<span class="fc" id="L119">		edgesOut[u] = e;</span>
+<span class="fc" id="L120">		next = edgesIn[v];</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L122">			next.prevIn = e;</span>
+<span class="fc" id="L123">			e.nextIn = next;</span>
+		}
+<span class="fc" id="L125">		edgesIn[v] = e;</span>
+<span class="fc" id="L126">	}</span>
+
+	@Override
+	Node allocNode(int id, int source, int target) {
+<span class="fc" id="L130">		return new Node(id, source, target);</span>
+	}
+
+	@Override
+	Node getNode(int edge) {
+<span class="fc" id="L135">		return (Node) super.getNode(edge);</span>
+	}
+
+	@Override
+	void removeEdgeImpl(int edge) {
+<span class="fc" id="L140">		Node node = getNode(edge);</span>
+<span class="fc" id="L141">		removeEdgeOutNode(node);</span>
+<span class="fc" id="L142">		removeEdgeInNode(node);</span>
+<span class="fc" id="L143">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L144">	}</span>
+
+	@Override
+	public void removeOutEdgesOf(int source) {
+<span class="fc" id="L148">		checkVertex(source);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		for (Node p = edgesOut[source], next; p != null; p = next) {</span>
+<span class="fc" id="L150">			next = p.nextOut;</span>
+<span class="fc" id="L151">			p.nextOut = p.prevOut = null;</span>
+<span class="fc" id="L152">			removeEdgeInNode(p);</span>
+<span class="fc" id="L153">			edgeSwapBeforeRemove(p.id);</span>
+<span class="fc" id="L154">			super.removeEdgeImpl(p.id);</span>
+		}
+<span class="fc" id="L156">		edgesOut[source] = null;</span>
+<span class="fc" id="L157">	}</span>
+
+	@Override
+	public void removeInEdgesOf(int target) {
+<span class="fc" id="L161">		checkVertex(target);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		for (Node p = edgesIn[target], next; p != null; p = next) {</span>
+<span class="fc" id="L163">			next = p.nextIn;</span>
+<span class="fc" id="L164">			p.nextIn = p.prevIn = null;</span>
+<span class="fc" id="L165">			removeEdgeOutNode(p);</span>
+<span class="fc" id="L166">			edgeSwapBeforeRemove(p.id);</span>
+<span class="fc" id="L167">			super.removeEdgeImpl(p.id);</span>
+		}
+<span class="fc" id="L169">		edgesIn[target] = null;</span>
+<span class="fc" id="L170">	}</span>
+
+	private void removeEdgeOutNode(Node e) {
+<span class="fc" id="L173">		Node next = e.nextOut, prev = e.prevOut;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L175">			edgesOut[e.source] = next;</span>
+		} else {
+<span class="fc" id="L177">			prev.nextOut = next;</span>
+<span class="fc" id="L178">			e.prevOut = null;</span>
+		}
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L181">			next.prevOut = prev;</span>
+<span class="fc" id="L182">			e.nextOut = null;</span>
+		}
+<span class="fc" id="L184">	}</span>
+
+	private void removeEdgeInNode(Node e) {
+<span class="fc" id="L187">		Node next = e.nextIn, prev = e.prevIn;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L189">			edgesIn[e.target] = next;</span>
+		} else {
+<span class="fc" id="L191">			prev.nextIn = next;</span>
+<span class="fc" id="L192">			e.prevIn = null;</span>
+		}
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L195">			next.prevIn = prev;</span>
+<span class="fc" id="L196">			e.nextIn = null;</span>
+		}
+<span class="fc" id="L198">	}</span>
+
+	@Override
+	public void reverseEdge(int edge) {
+<span class="fc" id="L202">		Node n = getNode(edge);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		if (n.source == n.target)</span>
+<span class="fc" id="L204">			return;</span>
+<span class="fc" id="L205">		removeEdgeOutNode(n);</span>
+<span class="fc" id="L206">		removeEdgeInNode(n);</span>
+<span class="fc" id="L207">		int w = n.source;</span>
+<span class="fc" id="L208">		n.source = n.target;</span>
+<span class="fc" id="L209">		n.target = w;</span>
+<span class="fc" id="L210">		addEdgeToLists(n);</span>
+<span class="fc" id="L211">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
+<span class="fc" id="L216">			Node p = (Node) p0;</span>
+<span class="fc" id="L217">			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;</span>
+<span class="fc" id="L218">		}</span>
+<span class="fc" id="L219">		edgesOutContainer.clear(edgesOut);</span>
+<span class="fc" id="L220">		edgesInContainer.clear(edgesIn);</span>
+<span class="fc" id="L221">		super.clearEdges();</span>
+<span class="fc" id="L222">	}</span>
+
+	@Override
+	public GraphCapabilities getCapabilities() {
+<span class="fc" id="L226">		return Capabilities;</span>
+	}
+
+<span class="fc" id="L229">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L230">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+<span class="fc" id="L233">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L234">			super(source);</span>
+<span class="fc" id="L235">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L239">			return new EdgeIterOut(edgesOut[source]);</span>
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+<span class="fc" id="L244">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L245">			super(target);</span>
+<span class="fc" id="L246">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L250">			return new EdgeIterIn(edgesIn[target]);</span>
+		}
+	}
+
+	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
+<span class="fc" id="L255">		EdgeIterImpl(Node p) {</span>
+<span class="fc" id="L256">			super(p);</span>
+<span class="fc" id="L257">		}</span>
+
+		@Override
+		public int source() {
+<span class="fc" id="L261">			return last.source;</span>
+		}
+
+		@Override
+		public int target() {
+<span class="fc" id="L266">			return last.target;</span>
+		}
+	}
+
+	private class EdgeIterOut extends EdgeIterImpl {
+<span class="fc" id="L271">		EdgeIterOut(Node p) {</span>
+<span class="fc" id="L272">			super(p);</span>
+<span class="fc" id="L273">		}</span>
+
+		@Override
+		Node nextNode(GraphLinkedAbstract.Node n) {
+<span class="fc" id="L277">			return ((Node) n).nextOut;</span>
+		}
+	}
+
+	private class EdgeIterIn extends EdgeIterImpl {
+<span class="fc" id="L282">		EdgeIterIn(Node p) {</span>
+<span class="fc" id="L283">			super(p);</span>
+<span class="fc" id="L284">		}</span>
+
+		@Override
+		Node nextNode(GraphLinkedAbstract.Node n) {
+<span class="fc" id="L288">			return ((Node) n).nextIn;</span>
+		}
+	}
+
+	private static class Node extends GraphLinkedAbstract.Node {
+
+		private Node nextOut;
+		private Node nextIn;
+		private Node prevOut;
+		private Node prevIn;
+
+		Node(int id, int source, int target) {
+<span class="fc" id="L300">			super(id, source, target);</span>
+<span class="fc" id="L301">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

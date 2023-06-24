@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -52,16 +55,16 @@ public interface DFSIter extends IntIterator {
 	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
 	static DFSIter newInstance(Graph g, int source) {
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L56">			return new DFSIterImpl((IndexGraph) g, source);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L59">			return new DFSIterImpl((IndexGraph) g, source);</span>
 
-<span class="fc" id="L58">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L59">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L60">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L61">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L62">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L63">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
-<span class="fc" id="L62">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L63">		DFSIter indexIter = new DFSIterImpl(iGraph, iSource);</span>
-<span class="fc" id="L64">		return new DFSIterImpl.DFSFromIndexDFS(indexIter, viMap, eiMap);</span>
+<span class="fc" id="L65">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L66">		DFSIter indexIter = new DFSIterImpl(iGraph, iSource);</span>
+<span class="fc" id="L67">		return new DFSIterImpl.DFSFromIndexDFS(indexIter, viMap, eiMap);</span>
 	}
 
 	/**

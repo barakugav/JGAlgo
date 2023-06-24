@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * Calculate the maximum flow in a flow network.
  * &lt;p&gt;
@@ -71,7 +73,7 @@ public interface MaximumFlow {
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-<span class="nc" id="L74">		return MaximumFlowPushRelabelHighestFirst::new;</span>
+<span class="nc" id="L76">		return MaximumFlowPushRelabelHighestFirst::new;</span>
 	}
 
 	/**

@@ -15,6 +15,7 @@
  */
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -63,7 +64,7 @@ public interface TopologicalOrderAlgo {
 	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
 	 */
 	static TopologicalOrderAlgo.Builder newBuilder() {
-<span class="fc" id="L66">		return TopologicalOrderAlgoImpl::new;</span>
+<span class="fc" id="L67">		return TopologicalOrderAlgoImpl::new;</span>
 	}
 
 	/**

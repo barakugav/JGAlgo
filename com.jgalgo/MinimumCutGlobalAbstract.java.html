@@ -15,20 +15,26 @@
  */
 package com.jgalgo;
 
-<span class="fc" id="L18">abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {</span>
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+
+<span class="fc" id="L24">abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {</span>
 
 	@Override
 	public Cut computeMinimumCut(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L23">			return computeMinimumCut((IndexGraph) g, w);</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L29">			return computeMinimumCut((IndexGraph) g, w);</span>
 
-<span class="fc" id="L25">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L26">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L27">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L28">		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+<span class="fc" id="L31">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L32">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L33">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L34">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="fc" id="L30">		Cut indexCut = computeMinimumCut(iGraph, w);</span>
-<span class="fc" id="L31">		return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);</span>
+<span class="fc" id="L36">		Cut indexCut = computeMinimumCut(iGraph, w);</span>
+<span class="fc" id="L37">		return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);</span>
 	}
 
 	abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w);

@@ -19,6 +19,11 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -33,13 +38,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCardinality {
 
-<span class="fc" id="L36">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
-<span class="fc" id="L37">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
+<span class="fc" id="L41">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
+<span class="fc" id="L42">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-<span class="fc" id="L42">	MaximumMatchingCardinalityBipartiteHopcroftKarp() {}</span>
+<span class="fc" id="L47">	MaximumMatchingCardinalityBipartiteHopcroftKarp() {}</span>
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
@@ -53,8 +58,8 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
-<span class="nc" id="L56">		bipartiteVerticesWeightKey = key;</span>
-<span class="nc" id="L57">	}</span>
+<span class="nc" id="L61">		bipartiteVerticesWeightKey = key;</span>
+<span class="nc" id="L62">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -65,120 +70,120 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 	 */
 	@Override
 	Matching computeMaximumCardinalityMatching(IndexGraph g) {
-<span class="fc" id="L68">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L69">		int n = g.vertices().size();</span>
+<span class="fc" id="L73">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L74">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L71">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
-<span class="fc" id="L72">		Objects.requireNonNull(partition,</span>
+<span class="fc" id="L76">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
+<span class="fc" id="L77">		Objects.requireNonNull(partition,</span>
 				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (Bipartite.isValidBipartitePartition(g, partition))</span>
-<span class="nc" id="L75">			throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (Bipartite.isValidBipartitePartition(g, partition))</span>
+<span class="nc" id="L80">			throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
 
 		/* BFS */
-<span class="fc" id="L78">		int[] depths = new int[n];</span>
-<span class="fc" id="L79">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L83">		int[] depths = new int[n];</span>
+<span class="fc" id="L84">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 
 		/* DFS */
-<span class="fc" id="L82">		BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L83">		EdgeIter[] edges = new EdgeIter[n];</span>
-<span class="fc" id="L84">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L87">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L88">		EdgeIter[] edges = new EdgeIter[n];</span>
+<span class="fc" id="L89">		int[] dfsPath = new int[n];</span>
 
-<span class="fc" id="L86">		int[] matched = new int[n];</span>
-<span class="fc" id="L87">		final int MatchedNone = -1;</span>
-<span class="fc" id="L88">		Arrays.fill(matched, MatchedNone);</span>
-<span class="fc" id="L89">		IndexGraph f = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).build();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L91">			f.addVertex();</span>
-<span class="fc" id="L92">		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L91">		int[] matched = new int[n];</span>
+<span class="fc" id="L92">		final int MatchedNone = -1;</span>
+<span class="fc" id="L93">		Arrays.fill(matched, MatchedNone);</span>
+<span class="fc" id="L94">		IndexGraph f = IndexGraphFactory.newUndirected().expectedVerticesNum(n).newGraph();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L96">			f.addVertex();</span>
+<span class="fc" id="L97">		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */
-<span class="fc" id="L96">			bfsQueue.clear();</span>
-<span class="fc" id="L97">			Arrays.fill(depths, Integer.MAX_VALUE);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L99" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
-<span class="fc" id="L100">					continue;</span>
-<span class="fc" id="L101">				depths[u] = 0;</span>
-<span class="fc" id="L102">				bfsQueue.enqueue(u);</span>
+<span class="fc" id="L101">			bfsQueue.clear();</span>
+<span class="fc" id="L102">			Arrays.fill(depths, Integer.MAX_VALUE);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
+<span class="fc" id="L105">					continue;</span>
+<span class="fc" id="L106">				depths[u] = 0;</span>
+<span class="fc" id="L107">				bfsQueue.enqueue(u);</span>
 			}
-<span class="fc" id="L104">			int unmatchedTDepth = Integer.MAX_VALUE;</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">			while (!bfsQueue.isEmpty()) {</span>
-<span class="fc" id="L106">				int u = bfsQueue.dequeueInt();</span>
-<span class="fc" id="L107">				int depth = depths[u];</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
-<span class="fc" id="L109">					continue;</span>
+<span class="fc" id="L109">			int unmatchedTDepth = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			while (!bfsQueue.isEmpty()) {</span>
+<span class="fc" id="L111">				int u = bfsQueue.dequeueInt();</span>
+<span class="fc" id="L112">				int depth = depths[u];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
+<span class="fc" id="L114">					continue;</span>
 
-<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L112">					int e = eit.nextInt();</span>
-<span class="fc" id="L113">					int v = eit.target();</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
-<span class="fc" id="L115">						continue;</span>
-<span class="fc" id="L116">					edgeRef.set(f.addEdge(u, v), e);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (depths[v] != Integer.MAX_VALUE)</span>
-<span class="fc" id="L118">						continue;</span>
-<span class="fc" id="L119">					depths[v] = depth + 1;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L117">					int e = eit.nextInt();</span>
+<span class="fc" id="L118">					int v = eit.target();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
+<span class="fc" id="L120">						continue;</span>
+<span class="fc" id="L121">					edgeRef.set(f.addEdge(u, v), e);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">					if (depths[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L123">						continue;</span>
+<span class="fc" id="L124">					depths[v] = depth + 1;</span>
 
-<span class="fc" id="L121">					int matchedEdge = matched[v];</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">					if (matchedEdge != MatchedNone) {</span>
-<span class="fc" id="L123">						int w = g.edgeEndpoint(matchedEdge, v);</span>
-<span class="fc" id="L124">						edgeRef.set(f.addEdge(v, w), matchedEdge);</span>
-<span class="fc" id="L125">						v = w;</span>
-<span class="fc" id="L126">						depths[v] = depth + 2;</span>
-<span class="fc" id="L127">						bfsQueue.enqueue(v);</span>
-<span class="fc" id="L128">					} else {</span>
-<span class="fc" id="L129">						unmatchedTDepth = depth + 1;</span>
+<span class="fc" id="L126">					int matchedEdge = matched[v];</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					if (matchedEdge != MatchedNone) {</span>
+<span class="fc" id="L128">						int w = g.edgeEndpoint(matchedEdge, v);</span>
+<span class="fc" id="L129">						edgeRef.set(f.addEdge(v, w), matchedEdge);</span>
+<span class="fc" id="L130">						v = w;</span>
+<span class="fc" id="L131">						depths[v] = depth + 2;</span>
+<span class="fc" id="L132">						bfsQueue.enqueue(v);</span>
+<span class="fc" id="L133">					} else {</span>
+<span class="fc" id="L134">						unmatchedTDepth = depth + 1;</span>
 					}
-<span class="fc" id="L131">				}</span>
-<span class="fc" id="L132">			}</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (unmatchedTDepth == Integer.MAX_VALUE)</span>
-<span class="fc" id="L134">				break;</span>
+<span class="fc" id="L136">				}</span>
+<span class="fc" id="L137">			}</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (unmatchedTDepth == Integer.MAX_VALUE)</span>
+<span class="fc" id="L139">				break;</span>
 
 			/*
 			 * Run DFS to find the maximal number of paths from unmatched S vertices to unmatched T vertices
 			 */
-<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L140" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
-<span class="fc" id="L141">					continue;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L145" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
+<span class="fc" id="L146">					continue;</span>
 
-<span class="fc" id="L143">				edges[0] = f.outEdges(u).iterator();</span>
-<span class="fc" id="L144">				visited.set(u);</span>
+<span class="fc" id="L148">				edges[0] = f.outEdges(u).iterator();</span>
+<span class="fc" id="L149">				visited.set(u);</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
-<span class="fc" id="L147">					EdgeIter eit = edges[depth];</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">					if (eit.hasNext()) {</span>
-<span class="fc" id="L149">						int e = eit.nextInt();</span>
-<span class="fc" id="L150">						int v = eit.target();</span>
-<span class="pc bpc" id="L151" title="1 of 4 branches missed.">						if (visited.get(v) || depth &gt;= depths[v])</span>
-<span class="nc" id="L152">							continue;</span>
-<span class="fc" id="L153">						visited.set(v);</span>
-<span class="fc" id="L154">						dfsPath[depth++] = edgeRef.getInt(e);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
+<span class="fc" id="L152">					EdgeIter eit = edges[depth];</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">					if (eit.hasNext()) {</span>
+<span class="fc" id="L154">						int e = eit.nextInt();</span>
+<span class="fc" id="L155">						int v = eit.target();</span>
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">						if (visited.get(v) || depth &gt;= depths[v])</span>
+<span class="nc" id="L157">							continue;</span>
+<span class="fc" id="L158">						visited.set(v);</span>
+<span class="fc" id="L159">						dfsPath[depth++] = edgeRef.getInt(e);</span>
 
-<span class="fc" id="L156">						int matchedEdge = matched[v];</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">						if (matchedEdge == MatchedNone) {</span>
+<span class="fc" id="L161">						int matchedEdge = matched[v];</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">						if (matchedEdge == MatchedNone) {</span>
 							// Augmenting path found
-<span class="fc bfc" id="L159" title="All 2 branches covered.">							for (int i = 0; i &lt; depth; i += 2) {</span>
-<span class="fc" id="L160">								int e1 = dfsPath[i];</span>
-<span class="fc" id="L161">								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">							for (int i = 0; i &lt; depth; i += 2) {</span>
+<span class="fc" id="L165">								int e1 = dfsPath[i];</span>
+<span class="fc" id="L166">								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;</span>
 							}
-<span class="fc" id="L163">							break;</span>
+<span class="fc" id="L168">							break;</span>
 						}
-<span class="fc" id="L165">						dfsPath[depth] = matchedEdge;</span>
-<span class="fc" id="L166">						v = g.edgeEndpoint(matchedEdge, v);</span>
+<span class="fc" id="L170">						dfsPath[depth] = matchedEdge;</span>
+<span class="fc" id="L171">						v = g.edgeEndpoint(matchedEdge, v);</span>
 
-<span class="fc" id="L168">						edges[++depth] = f.outEdges(v).iterator();</span>
-<span class="fc" id="L169">					} else {</span>
+<span class="fc" id="L173">						edges[++depth] = f.outEdges(v).iterator();</span>
+<span class="fc" id="L174">					} else {</span>
 						/*
 						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path
 						 */
-<span class="fc" id="L173">						depth -= 2;</span>
+<span class="fc" id="L178">						depth -= 2;</span>
 					}
-<span class="fc" id="L175">				}</span>
+<span class="fc" id="L180">				}</span>
 			}
-<span class="fc" id="L177">			visited.clear();</span>
-<span class="fc" id="L178">			f.clearEdges();</span>
-<span class="fc" id="L179">		}</span>
-<span class="fc" id="L180">		Arrays.fill(edges, null);</span>
-<span class="fc" id="L181">		return new MatchingImpl(g, matched);</span>
+<span class="fc" id="L182">			visited.clear();</span>
+<span class="fc" id="L183">			f.clearEdges();</span>
+<span class="fc" id="L184">		}</span>
+<span class="fc" id="L185">		Arrays.fill(edges, null);</span>
+<span class="fc" id="L186">		return new MatchingImpl(g, matched);</span>
 	}
 
 }

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphTableDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphTableDirected.java</span></div><h1>GraphTableDirected.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+
+/**
+ * A directed graph implementation using a two dimensional table to store all edges.
+ * &lt;p&gt;
+ * If the graph contains \(n\) vertices, table of size {@code [n][n]} stores the edges of the graph. The implementation
+ * does not support multiple edges with identical source and target.
+ * &lt;p&gt;
+ * This implementation is efficient for use cases where fast lookups of edge \((u,v)\) are required, as they can be
+ * answered in \(O(1)\) time, but it should not be the default choice for a directed graph.
+ *
+ * @see    GraphTableUndirected
+ * @author Barak Ugav
+ */
+class GraphTableDirected extends GraphTableAbstract {
+
+	GraphTableDirected() {
+<span class="nc" id="L36">		this(0, 0);</span>
+<span class="nc" id="L37">	}</span>
+
+	/**
+	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
+	 *
+	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
+	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
+	 */
+	GraphTableDirected(int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L46">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L47">	}</span>
+
+	GraphTableDirected(IndexGraph g) {
+<span class="fc" id="L50">		super(g);</span>
+<span class="fc" id="L51">	}</span>
+
+	@Override
+	public EdgeSet outEdges(int source) {
+<span class="fc" id="L55">		return new EdgeSetOut(source);</span>
+	}
+
+	@Override
+	public EdgeSet inEdges(int target) {
+<span class="fc" id="L60">		return new EdgeSetIn(target);</span>
+	}
+
+	@Override
+	public int addEdge(int source, int target) {
+<span class="fc" id="L65">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L66">		edges.get(source).set(target, e);</span>
+<span class="fc" id="L67">		return e;</span>
+	}
+
+	@Override
+	void removeEdgeImpl(int edge) {
+<span class="fc" id="L72">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
+<span class="fc" id="L73">		edges.get(u).set(v, EdgeNone);</span>
+<span class="fc" id="L74">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L75">	}</span>
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+<span class="fc" id="L79">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L80">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="fc" id="L81">		edges.get(u1).set(v1, e2);</span>
+<span class="fc" id="L82">		edges.get(u2).set(v2, e1);</span>
+<span class="fc" id="L83">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L84">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L88">		final int m = edges().size();</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		for (int e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L90">			int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="nc" id="L91">			edges.get(u).set(v, EdgeNone);</span>
+		}
+<span class="fc" id="L93">		super.clearEdges();</span>
+<span class="fc" id="L94">	}</span>
+
+	@Override
+	public void reverseEdge(int edge) {
+<span class="fc" id="L98">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
+<span class="pc bpc" id="L99" title="3 of 4 branches missed.">		if (edges.get(v).getInt(u) != EdgeNone &amp;&amp; u != v)</span>
+<span class="nc" id="L100">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L101">		edges.get(u).set(v, EdgeNone);</span>
+<span class="fc" id="L102">		edges.get(v).set(u, edge);</span>
+<span class="fc" id="L103">		super.reverseEdge0(edge);</span>
+<span class="fc" id="L104">	}</span>
+
+	@Override
+	void vertexSwap(int v1, int v2) {
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		for (int e : outEdges(v1))</span>
+<span class="nc" id="L109">			replaceEdgeSource(e, v2);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int e : outEdges(v2))</span>
+<span class="fc" id="L111">			replaceEdgeSource(e, v1);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		for (int e : inEdges(v1))</span>
+<span class="nc" id="L113">			replaceEdgeTarget(e, v2);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int e : inEdges(v2))</span>
+<span class="fc" id="L115">			replaceEdgeTarget(e, v1);</span>
+<span class="fc" id="L116">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L117">	}</span>
+
+	@Override
+	public GraphCapabilities getCapabilities() {
+<span class="fc" id="L121">		return Capabilities;</span>
+	}
+
+<span class="fc" id="L124">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L125">			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();</span>
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+<span class="fc" id="L128">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L129">			super(source);</span>
+<span class="fc" id="L130">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L134">			return new EdgeIterOut(source);</span>
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+<span class="fc" id="L139">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L140">			super(target);</span>
+<span class="fc" id="L141">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L145">			return new EdgeIterInDirected(target);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

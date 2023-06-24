@@ -18,7 +18,12 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -33,16 +38,17 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
-<span class="fc" id="L36">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
-<span class="fc" id="L37">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();</span>
-<span class="fc" id="L38">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();</span>
-<span class="fc" id="L39">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
-<span class="fc" id="L40">	private static final Object EdgeWeightKey = new Utils.Obj(&quot;weight&quot;);</span>
+<span class="fc" id="L41">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
+<span class="fc" id="L42">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();</span>
+<span class="fc" id="L43">	private ShortestPathSingleSource ssspNegative =</span>
+<span class="fc" id="L44">			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();</span>
+<span class="fc" id="L45">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
+<span class="fc" id="L46">	private static final Object EdgeWeightKey = new Utils.Obj(&quot;weight&quot;);</span>
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-<span class="fc" id="L45">	MaximumMatchingWeightedBipartiteSSSP() {}</span>
+<span class="fc" id="L51">	MaximumMatchingWeightedBipartiteSSSP() {}</span>
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
@@ -53,8 +59,8 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(ShortestPathSingleSource algo) {
-<span class="nc" id="L56">		ssspPositive = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L57">	}</span>
+<span class="nc" id="L62">		ssspPositive = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L63">	}</span>
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
@@ -68,8 +74,8 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
-<span class="nc" id="L71">		bipartiteVerticesWeightKey = key;</span>
-<span class="nc" id="L72">	}</span>
+<span class="nc" id="L77">		bipartiteVerticesWeightKey = key;</span>
+<span class="nc" id="L78">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -80,110 +86,110 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	 */
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L83">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L84">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
-<span class="fc" id="L85">		Objects.requireNonNull(partition,</span>
+<span class="fc" id="L89">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L90">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
+<span class="fc" id="L91">		Objects.requireNonNull(partition,</span>
 				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
-<span class="fc" id="L87">		ArgumentCheck.onlyBipartite(g, partition);</span>
+<span class="fc" id="L93">		ArgumentCheck.onlyBipartite(g, partition);</span>
 
-<span class="fc" id="L89">		int[] match = computeMaxMatching(g, w, partition);</span>
-<span class="fc" id="L90">		return new MatchingImpl(g, match);</span>
+<span class="fc" id="L95">		int[] match = computeMaxMatching(g, w, partition);</span>
+<span class="fc" id="L96">		return new MatchingImpl(g, match);</span>
 	}
 
 	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
-<span class="fc" id="L94">		final int n = gOrig.vertices().size();</span>
-<span class="fc" id="L95">		IndexGraph g = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L97">			g.addVertex();</span>
-<span class="fc" id="L98">		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L99">		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);</span>
+<span class="fc" id="L100">		final int n = gOrig.vertices().size();</span>
+<span class="fc" id="L101">		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L103">			g.addVertex();</span>
+<span class="fc" id="L104">		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L105">		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);</span>
 
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
-<span class="fc" id="L103">				continue;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L105">				int e = eit.nextInt();</span>
-<span class="fc" id="L106">				double weight = wOrig.weight(e);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">				if (weight &lt; 0)</span>
-<span class="fc" id="L108">					continue; // no reason to match negative edges</span>
-<span class="fc" id="L109">				int e0 = g.addEdge(u, eit.target());</span>
-<span class="fc" id="L110">				edgeRef.set(e0, e);</span>
-<span class="fc" id="L111">				w.set(e0, weight);</span>
-<span class="fc" id="L112">			}</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
+<span class="fc" id="L109">				continue;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L111">				int e = eit.nextInt();</span>
+<span class="fc" id="L112">				double weight = wOrig.weight(e);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (weight &lt; 0)</span>
+<span class="fc" id="L114">					continue; // no reason to match negative edges</span>
+<span class="fc" id="L115">				int e0 = g.addEdge(u, eit.target());</span>
+<span class="fc" id="L116">				edgeRef.set(e0, e);</span>
+<span class="fc" id="L117">				w.set(e0, weight);</span>
+<span class="fc" id="L118">			}</span>
 		}
 
-<span class="fc" id="L115">		final int s = g.addVertex(), t = g.addVertex();</span>
+<span class="fc" id="L121">		final int s = g.addVertex(), t = g.addVertex();</span>
 
-<span class="fc" id="L117">		int[] match = new int[n];</span>
-<span class="fc" id="L118">		Arrays.fill(match, -1);</span>
+<span class="fc" id="L123">		int[] match = new int[n];</span>
+<span class="fc" id="L124">		Arrays.fill(match, -1);</span>
 
-<span class="fc" id="L120">		double maxWeight = 1;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L122">			maxWeight = Math.max(maxWeight, w.weight(e));</span>
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
-<span class="nc" id="L124">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
-<span class="fc" id="L125">		final double RemovedEdgeWeight = maxWeight * n;</span>
+<span class="fc" id="L126">		double maxWeight = 1;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L128">			maxWeight = Math.max(maxWeight, w.weight(e));</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
+<span class="nc" id="L130">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
+<span class="fc" id="L131">		final double RemovedEdgeWeight = maxWeight * n;</span>
 
 		// Negate unmatched edges
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L129">			w.set(e, -w.weight(e));</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L135">			w.set(e, -w.weight(e));</span>
 		// Connected unmatched vertices to fake vertices s,t
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (partition.getBool(u)) {</span>
-<span class="fc" id="L133">				w.set(g.addEdge(s, u), 0);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (partition.getBool(u)) {</span>
+<span class="fc" id="L139">				w.set(g.addEdge(s, u), 0);</span>
 			} else {
-<span class="fc" id="L135">				w.set(g.addEdge(u, t), 0);</span>
+<span class="fc" id="L141">				w.set(g.addEdge(u, t), 0);</span>
 			}
 		}
 
-<span class="fc" id="L139">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L140">		WeightFunction spWeightFunc = WeightsImpl.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L145">		double[] potential = new double[n + 2];</span>
+<span class="fc" id="L146">		WeightFunction spWeightFunc = Utils.potentialWeightFunc(g, w, potential);</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-<span class="fc" id="L144">		ShortestPathSingleSource.Result sp = ssspNegative.computeShortestPaths(g, w, s);</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
-<span class="fc" id="L146">			potential[v] = sp.distance(v);</span>
+<span class="fc" id="L150">		ShortestPathSingleSource.Result sp = ssspNegative.computeShortestPaths(g, w, s);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
+<span class="fc" id="L152">			potential[v] = sp.distance(v);</span>
 
 		for (;;) {
-<span class="fc" id="L149">			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);</span>
-<span class="fc" id="L150">			Path augPath = sp.getPath(t);</span>
-<span class="fc" id="L151">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
-<span class="pc bpc" id="L152" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
-<span class="fc" id="L153">				break;</span>
+<span class="fc" id="L155">			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);</span>
+<span class="fc" id="L156">			Path augPath = sp.getPath(t);</span>
+<span class="fc" id="L157">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
+<span class="pc bpc" id="L158" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
+<span class="fc" id="L159">				break;</span>
 
 			// avoid using augPath.iterator() as we modify the graph during iteration
-<span class="fc" id="L156">			IntIterator it = new IntArrayList(augPath).iterator();</span>
+<span class="fc" id="L162">			IntIterator it = new IntArrayList(augPath).iterator();</span>
 			// 'remove' edge from S to new matched vertex
-<span class="fc" id="L158">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
+<span class="fc" id="L164">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
 			for (;;) {
-<span class="fc" id="L160">				int matchedEdge = it.nextInt();</span>
+<span class="fc" id="L166">				int matchedEdge = it.nextInt();</span>
 
 				// Reverse newly matched edge
-<span class="fc" id="L163">				g.reverseEdge(matchedEdge);</span>
-<span class="fc" id="L164">				int eOrig = edgeRef.getInt(matchedEdge);</span>
-<span class="fc" id="L165">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = eOrig;</span>
-<span class="fc" id="L166">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
+<span class="fc" id="L169">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L170">				int eOrig = edgeRef.getInt(matchedEdge);</span>
+<span class="fc" id="L171">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = eOrig;</span>
+<span class="fc" id="L172">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
 
-<span class="fc" id="L168">				int unmatchedEdge = it.nextInt();</span>
+<span class="fc" id="L174">				int unmatchedEdge = it.nextInt();</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 					// 'remove' edge from new matched vertex to T
-<span class="fc" id="L172">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
-<span class="fc" id="L173">					break;</span>
+<span class="fc" id="L178">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
+<span class="fc" id="L179">					break;</span>
 				}
 
 				// Reverse newly unmatched edge
-<span class="fc" id="L177">				g.reverseEdge(unmatchedEdge);</span>
-<span class="fc" id="L178">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
-<span class="fc" id="L179">			}</span>
+<span class="fc" id="L183">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L184">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
+<span class="fc" id="L185">			}</span>
 
 			// Update potential based on the distances
-<span class="fc bfc" id="L182" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L183">				potential[u] += sp.distance(u);</span>
-<span class="fc" id="L184">		}</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L189">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L190">		}</span>
 
-<span class="fc" id="L186">		return match;</span>
+<span class="fc" id="L192">		return match;</span>
 	}
 
 	/**
@@ -194,7 +200,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	@Deprecated
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-<span class="nc" id="L197">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L203">		throw new UnsupportedOperationException();</span>
 	}
 
 }

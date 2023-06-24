@@ -16,21 +16,25 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-<span class="fc" id="L21">abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {</span>
+<span class="fc" id="L25">abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {</span>
 
 	@Override
 	public BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(Graph g) {
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L26">			return computeBiConnectivityComponents((IndexGraph) g);</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L30">			return computeBiConnectivityComponents((IndexGraph) g);</span>
 
-<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L30">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L34">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
-<span class="fc" id="L32">		BiConnectedComponentsAlgo.Result indexResult = computeBiConnectivityComponents(iGraph);</span>
-<span class="fc" id="L33">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L36">		BiConnectedComponentsAlgo.Result indexResult = computeBiConnectivityComponents(iGraph);</span>
+<span class="fc" id="L37">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
 	}
 
 	abstract BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g);
@@ -41,30 +45,30 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L44">		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L45">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L46">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L47">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L48">		}</span>
+<span class="fc" id="L48">		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L49">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L50">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L51">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L52">		}</span>
 
 		@Override
 		public IntCollection getVertexBiCcs(int vertex) {
-<span class="fc" id="L52">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L56">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public int getNumberOfBiCcs() {
-<span class="fc" id="L57">			return res.getNumberOfBiCcs();</span>
+<span class="fc" id="L61">			return res.getNumberOfBiCcs();</span>
 		}
 
 		@Override
 		public IntCollection getBiCcVertices(int biccIdx) {
-<span class="fc" id="L62">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcVertices(biccIdx), viMap);</span>
+<span class="fc" id="L66">			return IndexIdMaps.indexToIdCollection(res.getBiCcVertices(biccIdx), viMap);</span>
 		}
 
 		@Override
 		public IntCollection getBiCcEdges(int biccIdx) {
-<span class="fc" id="L67">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcEdges(biccIdx), eiMap);</span>
+<span class="fc" id="L71">			return IndexIdMaps.indexToIdCollection(res.getBiCcEdges(biccIdx), eiMap);</span>
 		}
 
 	}

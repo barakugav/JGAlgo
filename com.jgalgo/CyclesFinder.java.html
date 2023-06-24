@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.Iterator;
+import com.jgalgo.graph.Graph;
 
 /**
  * An algorithm that finds all cycles in a graph.
@@ -41,7 +42,7 @@ public interface CyclesFinder {
 	 * @return a new builder that can build {@link CyclesFinder} objects
 	 */
 	static CyclesFinder.Builder newBuilder() {
-<span class="nc" id="L44">		return CyclesFinderTarjan::new;</span>
+<span class="nc" id="L45">		return CyclesFinderTarjan::new;</span>
 	}
 
 	/**

@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Algorithm that find the cycle with the minimum mean weight.
  * &lt;p&gt;
@@ -45,7 +48,7 @@ public interface MinimumMeanCycle {
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
 	static MinimumMeanCycle.Builder newBuilder() {
-<span class="nc" id="L48">		return MinimumMeanCycleHoward::new;</span>
+<span class="nc" id="L51">		return MinimumMeanCycleHoward::new;</span>
 	}
 
 	/**

@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Single Source Shortest Path for cardinality weight function.
  * &lt;p&gt;
@@ -31,17 +34,17 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	/**
 	 * Construct a new cardinality SSSP algorithm.
 	 */
-<span class="fc" id="L34">	ShortestPathSingleSourceCardinality() {}</span>
+<span class="fc" id="L37">	ShortestPathSingleSourceCardinality() {}</span>
 
 	@Override
 	ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
-<span class="fc" id="L38">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {</span>
-<span class="fc" id="L40">			int v = it.nextInt();</span>
-<span class="fc" id="L41">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L42">			res.backtrack[v] = it.lastEdge();</span>
-<span class="fc" id="L43">		}</span>
-<span class="fc" id="L44">		return res;</span>
+<span class="fc" id="L41">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {</span>
+<span class="fc" id="L43">			int v = it.nextInt();</span>
+<span class="fc" id="L44">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L45">			res.backtrack[v] = it.lastEdge();</span>
+<span class="fc" id="L46">		}</span>
+<span class="fc" id="L47">		return res;</span>
 	}
 
 	/**
@@ -52,9 +55,9 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-<span class="pc bpc" id="L55" title="3 of 4 branches missed.">		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))</span>
-<span class="nc" id="L56">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
-<span class="fc" id="L57">		return computeCardinalityShortestPaths(g, source);</span>
+<span class="pc bpc" id="L58" title="3 of 4 branches missed.">		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))</span>
+<span class="nc" id="L59">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
+<span class="fc" id="L60">		return computeCardinalityShortestPaths(g, source);</span>
 	}
 
 }

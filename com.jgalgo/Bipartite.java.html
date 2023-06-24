@@ -16,16 +16,19 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Weights;
+
 class Bipartite {
 	private Bipartite() {}
 
 	static boolean isValidBipartitePartition(Graph g, Weights.Bool partition) {
-<span class="fc bfc" id="L23" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
-<span class="fc" id="L24">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">			if (partition.getBool(u) == partition.getBool(v))</span>
-<span class="nc" id="L26">				return false;</span>
-<span class="fc" id="L27">		}</span>
-<span class="fc" id="L28">		return false;</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L27">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">			if (partition.getBool(u) == partition.getBool(v))</span>
+<span class="nc" id="L29">				return false;</span>
+<span class="fc" id="L30">		}</span>
+<span class="fc" id="L31">		return false;</span>
 	}
 
 }

@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -95,7 +96,7 @@ public interface ConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link ConnectedComponentsAlgo} objects
 	 */
 	static ConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L98">		return ConnectedComponentsAlgoImpl::new;</span>
+<span class="fc" id="L99">		return ConnectedComponentsAlgoImpl::new;</span>
 	}
 
 	/**

@@ -16,20 +16,23 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
-<span class="fc" id="L20">abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {</span>
+<span class="fc" id="L23">abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {</span>
 
 	@Override
 	public LowestCommonAncestorStatic.DataStructure preProcessTree(Graph tree, int root) {
-<span class="fc bfc" id="L24" title="All 2 branches covered.">		if (tree instanceof IndexGraph)</span>
-<span class="fc" id="L25">			return preProcessTree((IndexGraph) tree, root);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		if (tree instanceof IndexGraph)</span>
+<span class="fc" id="L28">			return preProcessTree((IndexGraph) tree, root);</span>
 
-<span class="fc" id="L27">		IndexGraph iGraph = tree.indexGraph();</span>
-<span class="fc" id="L28">		IndexIdMap viMap = tree.indexGraphVerticesMap();</span>
+<span class="fc" id="L30">		IndexGraph iGraph = tree.indexGraph();</span>
+<span class="fc" id="L31">		IndexIdMap viMap = tree.indexGraphVerticesMap();</span>
 
-<span class="fc" id="L30">		int iRoot = viMap.idToIndex(root);</span>
-<span class="fc" id="L31">		LowestCommonAncestorStatic.DataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
-<span class="fc" id="L32">		return new DSFromIndexDS(indexResult, viMap);</span>
+<span class="fc" id="L33">		int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L34">		LowestCommonAncestorStatic.DataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
+<span class="fc" id="L35">		return new DSFromIndexDS(indexResult, viMap);</span>
 	}
 
 	abstract LowestCommonAncestorStatic.DataStructure preProcessTree(IndexGraph tree, int root);
@@ -39,14 +42,14 @@ import java.util.Objects;
 		private final LowestCommonAncestorStatic.DataStructure ds;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L42">		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIdMap viMap) {</span>
-<span class="fc" id="L43">			this.ds = Objects.requireNonNull(ds);</span>
-<span class="fc" id="L44">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L45">		}</span>
+<span class="fc" id="L45">		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIdMap viMap) {</span>
+<span class="fc" id="L46">			this.ds = Objects.requireNonNull(ds);</span>
+<span class="fc" id="L47">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L48">		}</span>
 
 		@Override
 		public int findLowestCommonAncestor(int u, int v) {
-<span class="fc" id="L49">			return viMap.indexToId(ds.findLowestCommonAncestor(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
+<span class="fc" id="L52">			return viMap.indexToId(ds.findLowestCommonAncestor(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
 		}
 
 	}

@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.
  * &lt;p&gt;
@@ -27,7 +29,7 @@ package com.jgalgo;
  * query time.
  *
  * &lt;pre&gt; {@code
- * Graph tree = Graph.newBuilderUndirected().build();
+ * Graph tree = GraphFactory.newUndirected().newGraph();
  * int rt = tree.addVertex();
  * int v1 = tree.addVertex();
  * int v2 = tree.addVertex();
@@ -87,7 +89,7 @@ public interface LowestCommonAncestorStatic {
 	 * @return a new builder that can build {@link LowestCommonAncestorStatic} objects
 	 */
 	static LowestCommonAncestorStatic.Builder newBuilder() {
-<span class="nc" id="L90">		return LowestCommonAncestorStaticRMQ::new;</span>
+<span class="nc" id="L92">		return LowestCommonAncestorStaticRMQ::new;</span>
 	}
 
 	/**

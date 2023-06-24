@@ -15,7 +15,10 @@
  */
 package com.jgalgo;
 
-<span class="fc" id="L18">abstract class MaximumMatchingWeighted extends MaximumMatchingAbstract {</span>
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+
+<span class="fc" id="L21">abstract class MaximumMatchingWeighted extends MaximumMatchingAbstract {</span>
 
 	/**
 	 * {@inheritDoc}
@@ -24,7 +27,7 @@ package com.jgalgo;
 	 */
 	@Override
 	Matching computeMaximumCardinalityMatching(IndexGraph g) {
-<span class="fc" id="L27">		return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);</span>
+<span class="fc" id="L30">		return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);</span>
 	}
 
 }

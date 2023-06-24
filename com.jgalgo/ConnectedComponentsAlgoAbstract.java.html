@@ -16,21 +16,25 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-<span class="fc" id="L21">abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlgo {</span>
+<span class="fc" id="L25">abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlgo {</span>
 
 	@Override
 	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
-<span class="fc bfc" id="L25" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L26">			return computeConnectivityComponents((IndexGraph) g);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L30">			return computeConnectivityComponents((IndexGraph) g);</span>
 
-<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L30">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L34">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
-<span class="fc" id="L32">		ConnectedComponentsAlgo.Result indexResult = computeConnectivityComponents(iGraph);</span>
-<span class="fc" id="L33">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L36">		ConnectedComponentsAlgo.Result indexResult = computeConnectivityComponents(iGraph);</span>
+<span class="fc" id="L37">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
 	}
 
 	abstract ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g);
@@ -41,30 +45,30 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L44">		ResultFromIndexResult(ConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L45">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L46">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L47">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L48">		}</span>
+<span class="fc" id="L48">		ResultFromIndexResult(ConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L49">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L50">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L51">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L52">		}</span>
 
 		@Override
 		public int getVertexCc(int vertex) {
-<span class="fc" id="L52">			return res.getVertexCc(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L56">			return res.getVertexCc(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public int getNumberOfCcs() {
-<span class="fc" id="L57">			return res.getNumberOfCcs();</span>
+<span class="fc" id="L61">			return res.getNumberOfCcs();</span>
 		}
 
 		@Override
 		public IntCollection getCcVertices(int ccIdx) {
-<span class="nc" id="L62">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcVertices(ccIdx), viMap);</span>
+<span class="nc" id="L66">			return IndexIdMaps.indexToIdCollection(res.getCcVertices(ccIdx), viMap);</span>
 		}
 
 		@Override
 		public IntCollection getCcEdges(int ccIdx) {
-<span class="nc" id="L67">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcEdges(ccIdx), eiMap);</span>
+<span class="nc" id="L71">			return IndexIdMaps.indexToIdCollection(res.getCcEdges(ccIdx), eiMap);</span>
 		}
 
 	}

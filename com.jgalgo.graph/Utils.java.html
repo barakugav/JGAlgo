@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Utils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">Utils.java</span></div><h1>Utils.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+class Utils {
+	private Utils() {}
+
+	/* syntax sugar to iterator for loops */
+	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
+<span class="nc" id="L31">		return new Iterable&lt;&gt;() {</span>
+			@Override
+			public Iterator&lt;E&gt; iterator() {
+<span class="nc" id="L34">				return it;</span>
+			}
+		};
+	}
+
+	/* syntax sugar to iterator for loops */
+	static IntIterable iterable(IntIterator it) {
+<span class="nc" id="L41">		return new IntIterable() {</span>
+			@Override
+			public IntIterator iterator() {
+<span class="nc" id="L44">				return it;</span>
+			}
+		};
+	}
+
+	static class RangeIter implements IntIterator {
+
+		private int idx;
+		private final int size;
+
+<span class="fc" id="L54">		RangeIter(int size) {</span>
+<span class="fc" id="L55">			this.size = size;</span>
+<span class="fc" id="L56">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			return idx &lt; size;</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L66">				throw new NoSuchElementException();</span>
+<span class="fc" id="L67">			return idx++;</span>
+		}
+	}
+
+	static int size(IntIterable c) {
+<span class="fc" id="L72">		int count = 0;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (IntIterator it = c.iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L74">			count++;</span>
+<span class="fc" id="L75">		return count;</span>
+	}
+
+	static class Obj {
+		private final String s;
+
+<span class="fc" id="L81">		Obj(String s) {</span>
+<span class="fc" id="L82">			this.s = Objects.requireNonNull(s);</span>
+<span class="fc" id="L83">		}</span>
+
+		@Override
+		public String toString() {
+<span class="fc" id="L87">			return s;</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L92">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
+<span class="fc" id="L93">	};</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;T&gt; Consumer&lt;T&gt; consumerNoOp() {
+<span class="fc" id="L97">		return ConsumerNoOp;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

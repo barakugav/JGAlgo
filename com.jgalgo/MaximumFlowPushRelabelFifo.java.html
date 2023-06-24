@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -46,67 +47,67 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L49">	MaximumFlowPushRelabelFifo() {}</span>
+<span class="fc" id="L50">	MaximumFlowPushRelabelFifo() {}</span>
 
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L53">		return new WorkerDouble(gOrig, net, source, sink);</span>
+<span class="fc" id="L54">		return new WorkerDouble(gOrig, net, source, sink);</span>
 	}
 
 	@Override
 	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L58">		return new WorkerInt(gOrig, net, source, sink);</span>
+<span class="fc" id="L59">		return new WorkerInt(gOrig, net, source, sink);</span>
 	}
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
-<span class="fc" id="L63">		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L64">		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();</span>
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L66">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L67">		}</span>
+<span class="fc" id="L67">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L71">			super.activate(v);</span>
-<span class="pc bpc" id="L72" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
-<span class="fc" id="L73">				activeQueue.enqueue(v);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L72">			super.activate(v);</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
+<span class="fc" id="L74">				activeQueue.enqueue(v);</span>
+<span class="fc" id="L75">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L83">			return activeQueue.dequeueInt();</span>
+<span class="fc" id="L84">			return activeQueue.dequeueInt();</span>
 		}
 	}
 
 	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
-<span class="fc" id="L89">		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L90">		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();</span>
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L92">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L93">		}</span>
+<span class="fc" id="L93">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L94">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L97">			super.activate(v);</span>
-<span class="pc bpc" id="L98" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
-<span class="fc" id="L99">				activeQueue.enqueue(v);</span>
-<span class="fc" id="L100">		}</span>
+<span class="fc" id="L98">			super.activate(v);</span>
+<span class="pc bpc" id="L99" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
+<span class="fc" id="L100">				activeQueue.enqueue(v);</span>
+<span class="fc" id="L101">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L109">			return activeQueue.dequeueInt();</span>
+<span class="fc" id="L110">			return activeQueue.dequeueInt();</span>
 		}
 	}
 

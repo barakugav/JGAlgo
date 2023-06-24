@@ -17,27 +17,31 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.Objects;
-
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="nc" id="L26">class VertexCoverUtils {</span>
+<span class="nc" id="L30">class VertexCoverUtils {</span>
 
-<span class="fc" id="L28">	static abstract class AbstractImpl implements VertexCover {</span>
+<span class="fc" id="L32">	static abstract class AbstractImpl implements VertexCover {</span>
 
 		@Override
 		public VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L33">				return computeMinimumVertexCover((IndexGraph) g, w);</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L37">				return computeMinimumVertexCover((IndexGraph) g, w);</span>
 
-<span class="fc" id="L35">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L36">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L37">			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, viMap);</span>
+<span class="fc" id="L39">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L41">			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
 
-<span class="fc" id="L39">			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);</span>
-<span class="fc" id="L40">			return new ResultFromIndexResult(indexResult, viMap);</span>
+<span class="fc" id="L43">			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);</span>
+<span class="fc" id="L44">			return new ResultFromIndexResult(indexResult, viMap);</span>
 		}
 
 		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w);
@@ -50,32 +54,32 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		private final BitSet cover;
 		private IntCollection vertices;
 
-<span class="fc" id="L53">		ResultImpl(IndexGraph g, BitSet cover) {</span>
-<span class="fc" id="L54">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L55">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L56">		}</span>
+<span class="fc" id="L57">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L58">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L59">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L60">		}</span>
 
 		@Override
 		public IntCollection vertices() {
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">			if (this.vertices == null) {</span>
-<span class="fc" id="L61">				IntList vertices = new IntArrayList(cover.cardinality());</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">				for (int v : Utils.iterable(cover))</span>
-<span class="fc" id="L63">					vertices.add(v);</span>
-<span class="fc" id="L64">				this.vertices = IntLists.unmodifiable(vertices);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (this.vertices == null) {</span>
+<span class="fc" id="L65">				IntList vertices = new IntArrayList(cover.cardinality());</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				for (int v : Utils.iterable(cover))</span>
+<span class="fc" id="L67">					vertices.add(v);</span>
+<span class="fc" id="L68">				this.vertices = IntLists.unmodifiable(vertices);</span>
 			}
-<span class="fc" id="L66">			return this.vertices;</span>
+<span class="fc" id="L70">			return this.vertices;</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if (!g.vertices().contains(vertex))</span>
-<span class="nc" id="L72">				throw new IndexOutOfBoundsException(vertex);</span>
-<span class="fc" id="L73">			return cover.get(vertex);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">			if (!g.vertices().contains(vertex))</span>
+<span class="nc" id="L76">				throw new IndexOutOfBoundsException(vertex);</span>
+<span class="fc" id="L77">			return cover.get(vertex);</span>
 		}
 
 		@Override
 		public double weight(WeightFunction w) {
-<span class="fc" id="L78">			return GraphsUtils.weightSum(vertices(), w);</span>
+<span class="fc" id="L82">			return GraphsUtils.weightSum(vertices(), w);</span>
 		}
 
 	}
@@ -85,24 +89,24 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		private final VertexCover.Result res;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L88">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
-<span class="fc" id="L89">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L90">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc" id="L92">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
+<span class="fc" id="L93">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L94">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L95">		}</span>
 
 		@Override
 		public IntCollection vertices() {
-<span class="nc" id="L95">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.vertices(), viMap);</span>
+<span class="nc" id="L99">			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="fc" id="L100">			return res.isInCover(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L104">			return res.isInCover(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public double weight(WeightFunction w) {
-<span class="fc" id="L105">			return res.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, viMap));</span>
+<span class="fc" id="L109">			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, viMap));</span>
 		}
 
 	}

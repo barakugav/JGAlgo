@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Minimum spanning tree algorithm for directed graphs.
  * &lt;p&gt;
@@ -45,7 +48,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
 	 */
 	static MinimumDirectedSpanningTree.Builder newBuilder() {
-<span class="nc" id="L48">		return MinimumDirectedSpanningTreeTarjan::new;</span>
+<span class="nc" id="L51">		return MinimumDirectedSpanningTreeTarjan::new;</span>
 	}
 
 	/**

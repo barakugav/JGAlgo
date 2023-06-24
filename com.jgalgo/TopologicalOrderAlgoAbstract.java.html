@@ -16,20 +16,24 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-<span class="fc" id="L21">abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {</span>
+<span class="fc" id="L25">abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {</span>
 
 	@Override
 	public TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g) {
-<span class="fc bfc" id="L25" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L26">			return computeTopologicalSorting((IndexGraph) g);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L30">			return computeTopologicalSorting((IndexGraph) g);</span>
 
-<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
 
-<span class="fc" id="L31">		TopologicalOrderAlgo.Result indexResult = computeTopologicalSorting(iGraph);</span>
-<span class="fc" id="L32">		return new ResultFromIndexResult(indexResult, viMap);</span>
+<span class="fc" id="L35">		TopologicalOrderAlgo.Result indexResult = computeTopologicalSorting(iGraph);</span>
+<span class="fc" id="L36">		return new ResultFromIndexResult(indexResult, viMap);</span>
 	}
 
 	abstract TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g);
@@ -39,14 +43,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		private final TopologicalOrderAlgo.Result res;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L42">		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIdMap viMap) {</span>
-<span class="fc" id="L43">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L44">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L45">		}</span>
+<span class="fc" id="L46">		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIdMap viMap) {</span>
+<span class="fc" id="L47">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L48">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L49">		}</span>
 
 		@Override
 		public IntIterator verticesIterator() {
-<span class="fc" id="L49">			return new IndexIdMapUtils.IteratorFromIndexIterator(res.verticesIterator(), viMap);</span>
+<span class="fc" id="L53">			return IndexIdMaps.indexToIdIterator(res.verticesIterator(), viMap);</span>
 		}
 
 	}

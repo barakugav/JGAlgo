@@ -16,6 +16,9 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * Single Source Shortest Path algorithm.
  * &lt;p&gt;
@@ -37,7 +40,7 @@ package com.jgalgo;
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newBuilderDirected().build();
+ * Graph g = GraphFactory.newDirected().newGraph();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -97,7 +100,7 @@ public interface ShortestPathSingleSource {
 	 *                other vertex
 	 */
 	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
-<span class="nc" id="L100">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
+<span class="nc" id="L103">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
 	}
 
 	/**
@@ -158,7 +161,7 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder newBuilder() {
-<span class="fc" id="L161">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
+<span class="fc" id="L164">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
 	}
 
 	/**

@@ -16,6 +16,8 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -26,33 +28,33 @@ import java.util.BitSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L29">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
+<span class="fc" id="L31">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
 
 	@Override
 	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L33">		final int n = g.vertices().size();</span>
-<span class="fc" id="L34">		double[] sw = new double[n];</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L36">			sw[v] = w.weight(v);</span>
+<span class="fc" id="L35">		final int n = g.vertices().size();</span>
+<span class="fc" id="L36">		double[] sw = new double[n];</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L38">			sw[v] = w.weight(v);</span>
 
-<span class="fc" id="L38">		BitSet cover = new BitSet(n);</span>
+<span class="fc" id="L40">		BitSet cover = new BitSet(n);</span>
 
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
 			int u, v;
-<span class="fc bfc" id="L42" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
-<span class="fc" id="L43">				continue;</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
-<span class="fc" id="L45">				sw[v] -= sw[u];</span>
+<span class="fc bfc" id="L44" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
+<span class="fc" id="L45">				continue;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
+<span class="fc" id="L47">				sw[v] -= sw[u];</span>
 				// sw[u] -= sw[u]; don't bother
-<span class="fc" id="L47">				cover.set(u);</span>
+<span class="fc" id="L49">				cover.set(u);</span>
 			} else {
-<span class="fc" id="L49">				sw[u] -= sw[v];</span>
+<span class="fc" id="L51">				sw[u] -= sw[v];</span>
 				// sw[v] -= sw[v]; don't bother
-<span class="fc" id="L51">				cover.set(v);</span>
+<span class="fc" id="L53">				cover.set(v);</span>
 			}
-<span class="fc" id="L53">		}</span>
+<span class="fc" id="L55">		}</span>
 
-<span class="fc" id="L55">		return new VertexCoverUtils.ResultImpl(g, cover);</span>
+<span class="fc" id="L57">		return new VertexCoverUtils.ResultImpl(g, cover);</span>
 	}
 
 }

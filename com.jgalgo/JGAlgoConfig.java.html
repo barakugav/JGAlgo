@@ -15,6 +15,8 @@
  */
 package com.jgalgo;
 
+import java.util.function.Supplier;
+
 /**
  * A global configuration class.
  *
@@ -24,7 +26,7 @@ public class JGAlgoConfig {
 
 	private JGAlgoConfig() {}
 
-<span class="fc" id="L27">	static boolean parallelByDefault = true;</span>
+<span class="fc" id="L29">	static boolean parallelByDefault = true;</span>
 
 	/**
 	 * Enable/disable default parallel computations in all algorithms.
@@ -32,8 +34,25 @@ public class JGAlgoConfig {
 	 * @param enable if {@code true}, some algorithm will use parallel computations by default
 	 */
 	public static void setParallelByDefault(boolean enable) {
-<span class="nc" id="L35">		parallelByDefault = enable;</span>
-<span class="nc" id="L36">	}</span>
+<span class="nc" id="L37">		parallelByDefault = enable;</span>
+<span class="nc" id="L38">	}</span>
+
+	/**
+	 * Get a supplier of an option value.
+	 *
+	 * @param  &lt;O&gt; the option value type
+	 * @param  key the option key
+	 * @return     supplier that can be used multiple times to retrieve the most updated option value
+	 */
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot;, &quot;boxing&quot; })
+	public static &lt;O&gt; Supplier&lt;O&gt; getOption(String key) {
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		switch (key) {</span>
+			case &quot;GraphIdRandom&quot;:
+<span class="fc" id="L51">				return (Supplier) (() -&gt; GraphIdRandom);</span>
+			default:
+<span class="nc" id="L53">				return null;</span>
+		}
+	}
 
 	final static boolean GraphIdRandom = false;
 

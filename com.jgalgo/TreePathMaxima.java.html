@@ -16,6 +16,11 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
@@ -65,7 +70,7 @@ public interface TreePathMaxima {
 		 * @return a new queries container
 		 */
 		static TreePathMaxima.Queries newInstance() {
-<span class="fc" id="L68">			return new TreePathMaximaUtils.QueriesImpl();</span>
+<span class="fc" id="L73">			return new TreePathMaximaUtils.QueriesImpl();</span>
 		}
 
 		/**
@@ -140,25 +145,25 @@ public interface TreePathMaxima {
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder newBuilder() {
-<span class="nc" id="L143">		return new TreePathMaxima.Builder() {</span>
+<span class="nc" id="L148">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
 
 			@Override
 			public TreePathMaxima build() {
-<span class="nc" id="L149">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="nc" id="L150">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="nc" id="L151">				return tpm;</span>
+<span class="nc" id="L154">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
+<span class="nc" id="L155">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
+<span class="nc" id="L156">				return tpm;</span>
 			}
 
 			@Override
 			public TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L156" title="All 2 branches missed.">				if (&quot;bitsLookupTablesEnable&quot;.equals(key)) {</span>
-<span class="nc" id="L157">					bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">				if (&quot;bitsLookupTablesEnable&quot;.equals(key)) {</span>
+<span class="nc" id="L162">					bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
 				} else {
-<span class="nc" id="L159">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L164">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L161">				return this;</span>
+<span class="nc" id="L166">				return this;</span>
 			}
 
 		};
@@ -196,13 +201,13 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L199" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L200">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);</span>
-<span class="fc" id="L201">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L202">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L203">		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
-<span class="fc" id="L204">		mstEdges = new IndexIdMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L205">		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L205">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);</span>
+<span class="fc" id="L206">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L207">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L208">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L209">		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L210">		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);</span>
 	}
 
 }

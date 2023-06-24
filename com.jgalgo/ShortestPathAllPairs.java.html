@@ -16,11 +16,14 @@
 
 package com.jgalgo;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
  * &lt;p&gt;
- * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more efficient to use a
- * APSP algorithm in the first place.
+ * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more
+ * efficient to use a APSP algorithm in the first place.
  *
  * @author Barak Ugav
  */
@@ -48,7 +51,7 @@ public interface ShortestPathAllPairs {
 	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
 	 */
 	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
-<span class="nc" id="L51">		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);</span>
+<span class="nc" id="L54">		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);</span>
 	}
 
 	/**
@@ -107,18 +110,18 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder newBuilder() {
-<span class="nc" id="L110">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="nc" id="L113">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="nc bnc" id="L115" title="All 2 branches missed.">				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();</span>
 			}
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L120">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L121">				return this;</span>
+<span class="nc" id="L123">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L124">				return this;</span>
 			}
 		};
 	}

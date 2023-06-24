@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightFunctions.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">WeightFunctions.java</span></div><h1>WeightFunctions.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+/**
+ * Static methods class for {@linkplain WeightFunction weight functions}.
+ *
+ * @author Barak Ugav
+ */
+public class WeightFunctions {
+
+	private WeightFunctions() {}
+
+	/**
+	 * Get a 'local' version of a given weight function.
+	 * &lt;p&gt;
+	 * A {@link WeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
+	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
+	 * times, it may be more efficient to query the weights of each edge once and store the result &lt;i&gt;locally&lt;/i&gt;, to
+	 * ensure the potentially heavy computations occur few as possible.
+	 * &lt;p&gt;
+	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
+	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
+	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
+	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 * &lt;p&gt;
+	 * This function is used only for performance boost, it does not change any functionally over using the original
+	 * weight function.
+	 *
+	 * @param  g a graph
+	 * @param  w a weight function
+	 * @return   a local version of the weight function
+	 */
+	public static WeightFunction localEdgeWeightFunction(IndexGraph g, WeightFunction w) {
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="fc" id="L49">			return w;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L51">			return w;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L53">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L54">			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L56">				wLocal.set(e, wInt.weightInt(e));</span>
+<span class="fc" id="L57">			return wLocal;</span>
+		} else {
+<span class="fc" id="L59">			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L61">				wLocal.set(e, w.weight(e));</span>
+<span class="fc" id="L62">			return wLocal;</span>
+		}
+	}
+
+	/**
+	 * Get a 'local' version of a given weight function.
+	 * &lt;p&gt;
+	 * A {@link WeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
+	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
+	 * times, it may be more efficient to query the weights of each edge once and store the result &lt;i&gt;locally&lt;/i&gt;, to
+	 * ensure the potentially heavy computations occur few as possible.
+	 * &lt;p&gt;
+	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
+	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
+	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
+	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 * &lt;p&gt;
+	 * This function is used only for performance boost, it does not change any functionally over using the original
+	 * weight function.
+	 *
+	 * @param  g a graph
+	 * @param  w a weight function
+	 * @return   a local version of the weight function
+	 */
+	public static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
+<span class="pc bpc" id="L87" title="2 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
+<span class="nc" id="L88">			return w;</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L90">			return w;</span>
+<span class="nc" id="L91">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">		for (int e : g.edges())</span>
+<span class="nc" id="L93">			wLocal.set(e, w.weightInt(e));</span>
+<span class="nc" id="L94">		return wLocal;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

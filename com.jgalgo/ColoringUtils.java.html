@@ -17,43 +17,46 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
-<span class="nc" id="L21">class ColoringUtils {</span>
+<span class="nc" id="L24">class ColoringUtils {</span>
 
 	static class ResultImpl implements Coloring.Result {
 
 		int colorsNum;
 		final int[] colors;
 
-<span class="fc" id="L28">		ResultImpl(IndexGraph g) {</span>
-<span class="fc" id="L29">			colors = new int[g.vertices().size()];</span>
-<span class="fc" id="L30">			Arrays.fill(colors, -1);</span>
-<span class="fc" id="L31">		}</span>
+<span class="fc" id="L31">		ResultImpl(IndexGraph g) {</span>
+<span class="fc" id="L32">			colors = new int[g.vertices().size()];</span>
+<span class="fc" id="L33">			Arrays.fill(colors, -1);</span>
+<span class="fc" id="L34">		}</span>
 
 		@Override
 		public int colorsNum() {
-<span class="fc" id="L35">			return colorsNum;</span>
+<span class="fc" id="L38">			return colorsNum;</span>
 		}
 
 		@Override
 		public int colorOf(int vertex) {
-<span class="fc" id="L40">			return colors[vertex];</span>
+<span class="fc" id="L43">			return colors[vertex];</span>
 		}
 
 	}
 
-<span class="fc" id="L45">	static abstract class AbstractImpl implements Coloring {</span>
+<span class="fc" id="L48">	static abstract class AbstractImpl implements Coloring {</span>
 
 		@Override
 		public Coloring.Result computeColoring(Graph g) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L50">				return computeColoring((IndexGraph) g);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L53">				return computeColoring((IndexGraph) g);</span>
 
-<span class="fc" id="L52">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L53">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L55">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L56">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
 
-<span class="fc" id="L55">			Coloring.Result indexResult = computeColoring(iGraph);</span>
-<span class="fc" id="L56">			return new ResultFromIndexResult(indexResult, viMap);</span>
+<span class="fc" id="L58">			Coloring.Result indexResult = computeColoring(iGraph);</span>
+<span class="fc" id="L59">			return new ResultFromIndexResult(indexResult, viMap);</span>
 		}
 
 		abstract Coloring.Result computeColoring(IndexGraph g);
@@ -65,19 +68,19 @@ import java.util.Objects;
 		private final Coloring.Result res;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L68">		ResultFromIndexResult(Coloring.Result res, IndexIdMap viMap) {</span>
-<span class="fc" id="L69">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L70">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L71">		}</span>
+<span class="fc" id="L71">		ResultFromIndexResult(Coloring.Result res, IndexIdMap viMap) {</span>
+<span class="fc" id="L72">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L73">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L74">		}</span>
 
 		@Override
 		public int colorsNum() {
-<span class="fc" id="L75">			return res.colorsNum();</span>
+<span class="fc" id="L78">			return res.colorsNum();</span>
 		}
 
 		@Override
 		public int colorOf(int vertex) {
-<span class="fc" id="L80">			return res.colorOf(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L83">			return res.colorOf(viMap.idToIndex(vertex));</span>
 		}
 
 	}

@@ -15,19 +15,23 @@
  */
 package com.jgalgo;
 
-<span class="fc" id="L18">abstract class EulerianTourAlgoAbstract implements EulerianTourAlgo {</span>
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+
+<span class="fc" id="L22">abstract class EulerianTourAlgoAbstract implements EulerianTourAlgo {</span>
 
 	@Override
 	public Path computeEulerianTour(Graph g) {
-<span class="fc bfc" id="L22" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L23">			return computeEulerianTour((IndexGraph) g);</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L27">			return computeEulerianTour((IndexGraph) g);</span>
 
-<span class="fc" id="L25">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L26">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L27">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L29">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L30">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L31">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
-<span class="fc" id="L29">		Path indexPath = computeEulerianTour(iGraph);</span>
-<span class="fc" id="L30">		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="fc" id="L33">		Path indexPath = computeEulerianTour(iGraph);</span>
+<span class="fc" id="L34">		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
 	}
 
 	abstract Path computeEulerianTour(IndexGraph g);

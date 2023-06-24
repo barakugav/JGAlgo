@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">DataContainer.java</span></div><h1>DataContainer.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.longs.AbstractLongList;
+import it.unimi.dsi.fastutil.longs.LongArrays;
+import it.unimi.dsi.fastutil.longs.LongCollection;
+import it.unimi.dsi.fastutil.longs.LongIterators;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
+import it.unimi.dsi.fastutil.objects.AbstractObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+
+abstract class DataContainer&lt;E&gt; {
+
+	final IdStrategy idStrat;
+
+<span class="fc" id="L45">	DataContainer(IdStrategy idStrat) {</span>
+<span class="fc" id="L46">		this.idStrat = Objects.requireNonNull(idStrat);</span>
+<span class="fc" id="L47">	}</span>
+
+	int size() {
+<span class="fc" id="L50">		return idStrat.size();</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L55">		return values().hashCode();</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L60">		return values().toString();</span>
+	}
+
+	void checkIdx(int idx) {
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; idStrat.size()))</span>
+<span class="nc" id="L65">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L66">	}</span>
+
+	abstract void expand(int newCapacity);
+
+	abstract Collection&lt;E&gt; values();
+
+	private static abstract class Abstract&lt;E&gt; extends DataContainer&lt;E&gt; {
+
+		Abstract(IdStrategy idStrat) {
+<span class="fc" id="L75">			super(idStrat);</span>
+<span class="fc" id="L76">		}</span>
+
+		abstract int capacity();
+
+	}
+
+<span class="fc" id="L82">	static class Obj&lt;E&gt; extends DataContainer.Abstract&lt;E&gt; {</span>
+
+		private E[] weights;
+		private final E defaultWeight;
+		private final ObjectCollection&lt;E&gt; values;
+		private final Consumer&lt;E[]&gt; onArrayAlloc;
+
+		Obj(IdStrategy idStrat, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+<span class="fc" id="L90">			super(idStrat);</span>
+
+<span class="fc" id="L92">			defaultWeight = defVal;</span>
+<span class="fc" id="L93">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L94">			weights = emptyArr;</span>
+<span class="fc" id="L95">			Arrays.fill(weights, defaultWeight);</span>
+<span class="fc" id="L96">			onArrayAlloc.accept(weights);</span>
+
+<span class="fc" id="L98">			values = new AbstractObjectList&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L101">					return DataContainer.Obj.super.size();</span>
+				}
+
+				@Override
+				public ObjectListIterator&lt;E&gt; iterator() {
+<span class="fc" id="L106">					return ObjectIterators.wrap(weights, 0, size());</span>
+				}
+
+				@Override
+				public E get(int index) {
+<span class="nc" id="L111">					checkIdx(index);</span>
+<span class="nc" id="L112">					return weights[index];</span>
+				}
+			};
+<span class="fc" id="L115">		}</span>
+
+		public E get(int idx) {
+<span class="fc" id="L118">			checkIdx(idx);</span>
+<span class="fc" id="L119">			return weights[idx];</span>
+		}
+
+		public void set(int idx, E weight) {
+<span class="fc" id="L123">			checkIdx(idx);</span>
+<span class="fc" id="L124">			weights[idx] = weight;</span>
+<span class="fc" id="L125">		}</span>
+
+		@Override
+		public int capacity() {
+<span class="fc" id="L129">			return weights.length;</span>
+		}
+
+		@Override
+		public void expand(int newCapacity) {
+<span class="fc" id="L134">			int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L136">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L137">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L138">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L139">		}</span>
+
+		void swap(int idx1, int idx2) {
+<span class="fc" id="L142">			checkIdx(idx1);</span>
+<span class="fc" id="L143">			checkIdx(idx2);</span>
+<span class="fc" id="L144">			ObjectArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L145">		}</span>
+
+		void swap(E[] weights, int idx1, int idx2) {
+<span class="fc" id="L148">			ObjectArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L149">		}</span>
+
+		void clear(int idx) {
+<span class="nc" id="L152">			weights[idx] = defaultWeight;</span>
+<span class="nc" id="L153">		}</span>
+
+		void clear(E[] weights, int idx) {
+<span class="fc" id="L156">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L157">		}</span>
+
+		void clear() {
+<span class="nc" id="L160">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L161">		}</span>
+
+		public void clear(E[] weights) {
+<span class="fc" id="L164">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L165">		}</span>
+
+		@Override
+		public Collection&lt;E&gt; values() {
+<span class="fc" id="L169">			return values;</span>
+		}
+
+		public DataContainer.Obj&lt;E&gt; copy(IdStrategy idStrat, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L174">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L175">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(idStrat, defaultWeight, emptyArr, onArrayAlloc);</span>
+<span class="fc" id="L176">			copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L177">			onArrayAlloc.accept(copy.weights);</span>
+<span class="fc" id="L178">			return copy;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L183" title="All 2 branches missed.">			if (other == this)</span>
+<span class="nc" id="L184">				return true;</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Obj&lt;?&gt;))</span>
+<span class="nc" id="L186">				return false;</span>
+<span class="nc" id="L187">			DataContainer.Obj&lt;?&gt; o = (DataContainer.Obj&lt;?&gt;) other;</span>
+<span class="nc" id="L188">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+		}
+	}
+
+<span class="fc" id="L192">	static class Int extends DataContainer.Abstract&lt;Integer&gt; {</span>
+
+		private int[] weights;
+		private final int defaultWeight;
+		private final IntCollection values;
+		private final Consumer&lt;int[]&gt; onArrayAlloc;
+
+		Int(IdStrategy idStrat, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
+<span class="fc" id="L200">			super(idStrat);</span>
+
+<span class="fc" id="L202">			weights = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L203">			defaultWeight = defVal;</span>
+<span class="fc" id="L204">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L205">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L206">			values = new AbstractIntList() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L210">					return DataContainer.Int.super.size();</span>
+				}
+
+				@Override
+				public IntListIterator iterator() {
+<span class="nc" id="L215">					return IntIterators.wrap(weights, 0, size());</span>
+				}
+
+				@Override
+				public int getInt(int index) {
+<span class="nc" id="L220">					checkIdx(index);</span>
+<span class="nc" id="L221">					return weights[index];</span>
+				}
+			};
+<span class="fc" id="L224">		}</span>
+
+		public int getInt(int idx) {
+<span class="fc" id="L227">			checkIdx(idx);</span>
+<span class="fc" id="L228">			return weights[idx];</span>
+		}
+
+		public void set(int idx, int weight) {
+<span class="fc" id="L232">			checkIdx(idx);</span>
+<span class="fc" id="L233">			weights[idx] = weight;</span>
+<span class="fc" id="L234">		}</span>
+
+		public int defaultWeightInt() {
+<span class="nc" id="L237">			return defaultWeight;</span>
+		}
+
+		@Override
+		public int capacity() {
+<span class="fc" id="L242">			return weights.length;</span>
+		}
+
+		@Override
+		public void expand(int newCapacity) {
+<span class="fc" id="L247">			int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L249">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L250">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L251">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L252">		}</span>
+
+		void swap(int idx1, int idx2) {
+<span class="fc" id="L255">			checkIdx(idx1);</span>
+<span class="fc" id="L256">			checkIdx(idx2);</span>
+<span class="fc" id="L257">			IntArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L258">		}</span>
+
+		void swap(int[] weights, int idx1, int idx2) {
+<span class="fc" id="L261">			IntArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L262">		}</span>
+
+		void clear(int idx) {
+<span class="fc" id="L265">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L266">		}</span>
+
+		void clear(int[] weights, int idx) {
+<span class="fc" id="L269">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L270">		}</span>
+
+		void clear() {
+<span class="fc" id="L273">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L274">		}</span>
+
+		void clear(int[] weights) {
+<span class="fc" id="L277">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L278">		}</span>
+
+		@Override
+		IntCollection values() {
+<span class="nc" id="L282">			return values;</span>
+		}
+
+		DataContainer.Int copy(IdStrategy idStrat, Consumer&lt;int[]&gt; onArrayAlloc) {
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L287">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L288">			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultWeight, onArrayAlloc);</span>
+<span class="fc" id="L289">			copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L290">			onArrayAlloc.accept(copy.weights);</span>
+<span class="fc" id="L291">			return copy;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L296" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L297">				return true;</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Int))</span>
+<span class="nc" id="L299">				return false;</span>
+<span class="nc" id="L300">			DataContainer.Int o = (DataContainer.Int) other;</span>
+<span class="nc" id="L301">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+		}
+	}
+
+<span class="fc" id="L305">	static class Long extends DataContainer.Abstract&lt;java.lang.Long&gt; {</span>
+
+		private long[] weights;
+		private final long defaultWeight;
+<span class="fc" id="L309">		private final LongCollection values = new AbstractLongList() {</span>
+
+			@Override
+			public int size() {
+<span class="nc" id="L313">				return DataContainer.Long.super.size();</span>
+			}
+
+			@Override
+			public LongListIterator iterator() {
+<span class="nc" id="L318">				return LongIterators.wrap(weights, 0, size());</span>
+			}
+
+			@Override
+			public long getLong(int index) {
+<span class="nc" id="L323">				checkIdx(index);</span>
+<span class="nc" id="L324">				return weights[index];</span>
+			}
+		};
+		private final Consumer&lt;long[]&gt; onArrayAlloc;
+
+		Long(IdStrategy idStrat, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L330">			super(idStrat);</span>
+
+<span class="fc" id="L332">			weights = LongArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L333">			defaultWeight = defVal;</span>
+<span class="fc" id="L334">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L335">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L336">		}</span>
+
+		Long(DataContainer.Long orig, IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L339">			super(idStrat);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L341">				throw new IllegalArgumentException();</span>
+
+<span class="fc" id="L343">			weights = Arrays.copyOf(orig.weights, idStrat.size());</span>
+<span class="fc" id="L344">			defaultWeight = orig.defaultWeight;</span>
+<span class="fc" id="L345">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L346">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L347">		}</span>
+
+		long getLong(int idx) {
+<span class="nc" id="L350">			checkIdx(idx);</span>
+<span class="nc" id="L351">			return weights[idx];</span>
+		}
+
+		void set(int idx, long weight) {
+<span class="nc" id="L355">			checkIdx(idx);</span>
+<span class="nc" id="L356">			weights[idx] = weight;</span>
+<span class="nc" id="L357">		}</span>
+
+		long defaultWeightLong() {
+<span class="nc" id="L360">			return defaultWeight;</span>
+		}
+
+		@Override
+		int capacity() {
+<span class="fc" id="L365">			return weights.length;</span>
+		}
+
+		@Override
+		void expand(int newCapacity) {
+<span class="fc" id="L370">			int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L372">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L373">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L374">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L375">		}</span>
+
+		// void swap(int idx1, int idx2) {
+		// checkIdx(idx1);
+		// checkIdx(idx2);
+		// LongArrays.swap(weights, idx1, idx2);
+		// }
+
+		void swap(long[] weights, int idx1, int idx2) {
+<span class="fc" id="L384">			checkIdx(idx1);</span>
+<span class="fc" id="L385">			checkIdx(idx2);</span>
+<span class="fc" id="L386">			LongArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L387">		}</span>
+
+		// void clear(int idx) {
+		// weights[idx] = defaultWeight;
+		// }
+
+		void clear(long[] weights, int idx) {
+<span class="fc" id="L394">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L395">		}</span>
+
+		// void clear() {
+		// Arrays.fill(weights, 0, size(), defaultWeight);
+		// }
+
+		void clear(long[] weights) {
+<span class="fc" id="L402">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L403">		}</span>
+
+		@Override
+		LongCollection values() {
+<span class="nc" id="L407">			return values;</span>
+		}
+
+		DataContainer.Long copy(IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L411">			return new DataContainer.Long(this, idStrat, onArrayAlloc);</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L416" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L417">				return true;</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Long))</span>
+<span class="nc" id="L419">				return false;</span>
+<span class="nc" id="L420">			DataContainer.Long o = (DataContainer.Long) other;</span>
+<span class="nc" id="L421">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+		}
+	}
+
+	static class Manager {
+
+<span class="fc" id="L427">		final List&lt;DataContainer&lt;?&gt;&gt; containers = new ObjectArrayList&lt;&gt;();</span>
+		private int containersCapacity;
+
+<span class="fc" id="L430">		Manager(int initCapacity) {</span>
+<span class="fc" id="L431">			containersCapacity = initCapacity;</span>
+<span class="fc" id="L432">		}</span>
+
+		void addContainer(DataContainer&lt;?&gt; container) {
+<span class="fc" id="L435">			containers.add(container);</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">			if (containersCapacity &gt; ((DataContainer.Abstract&lt;?&gt;) container).capacity())</span>
+<span class="fc" id="L437">				container.expand(containersCapacity);</span>
+<span class="fc" id="L438">		}</span>
+
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L441" title="All 2 branches covered.">			if (capacity &lt;= containersCapacity)</span>
+<span class="fc" id="L442">				return;</span>
+<span class="fc" id="L443">			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">			for (DataContainer&lt;?&gt; container : containers)</span>
+<span class="fc" id="L445">				container.expand(newCapacity);</span>
+<span class="fc" id="L446">			containersCapacity = newCapacity;</span>
+<span class="fc" id="L447">		}</span>
+
+		// void swapElements(int idx1, int idx2) {
+		// for (DataContainer&lt;?&gt; container : containers.values())
+		// container.swap(idx1, idx2);
+		// }
+
+		// void clearElement(int idx) {
+		// for (DataContainer&lt;?&gt; container : containers.values())
+		// container.clear(idx);
+		// }
+
+		// void clearContainers() {
+		// for (DataContainer&lt;?&gt; container : containers.values())
+		// container.clear();
+		// }
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

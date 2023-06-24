@@ -16,6 +16,9 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -27,104 +30,104 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L30">class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {</span>
+<span class="fc" id="L33">class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {</span>
 
 	@Override
 	Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L34">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L35">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
-<span class="nc" id="L37">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
+<span class="fc" id="L37">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L38">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
+<span class="nc" id="L40">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
 
-<span class="fc" id="L39">		w = WeightsImpl.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L40">		ArgumentCheck.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L42">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L43">		ArgumentCheck.onlyPositiveEdgesWeights(g, w);</span>
 
-<span class="fc" id="L42">		ContractableGraph cg = new ContractableGraph(g);</span>
-<span class="fc" id="L43">		BitSet cut = new BitSet(n);</span>
+<span class="fc" id="L45">		ContractableGraph cg = new ContractableGraph(g);</span>
+<span class="fc" id="L46">		BitSet cut = new BitSet(n);</span>
 
 		HeapReferenceable&lt;Double, Integer&gt; heap =
-<span class="fc" id="L46">				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
+<span class="fc" id="L49">				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L48">		HeapReference&lt;Double, Integer&gt;[] vRefs = new HeapReference[n];</span>
+<span class="fc" id="L51">		HeapReference&lt;Double, Integer&gt;[] vRefs = new HeapReference[n];</span>
 
-<span class="fc" id="L50">		BitSet minimumCut = new BitSet(n);</span>
-<span class="fc" id="L51">		double minimumCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L53">		BitSet minimumCut = new BitSet(n);</span>
+<span class="fc" id="L54">		double minimumCutWeight = Double.MAX_VALUE;</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		while (cg.numberOfSuperVertices() &gt; 1) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		while (cg.numberOfSuperVertices() &gt; 1) {</span>
 			/* Start with an arbitrary cut with a single vertex */
-<span class="fc" id="L55">			cut.clear();</span>
-<span class="fc" id="L56">			cut.set(0);</span>
+<span class="fc" id="L58">			cut.clear();</span>
+<span class="fc" id="L59">			cut.set(0);</span>
 
 			/* Insert all (super) vertices to the heap */
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">			assert heap.isEmpty();</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int U = 0; U &lt; cg.numberOfSuperVertices(); U++)</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">				assert vRefs[U] == null;</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
-<span class="fc" id="L63">				double weightsSum = 0;</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
-<span class="fc" id="L65">					int e = eit.nextInt();</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">					assert eit.source() == U;</span>
-<span class="fc" id="L67">					int V = eit.target();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">					if (cut.get(V))</span>
-<span class="fc" id="L69">						weightsSum += w.weight(e);</span>
-<span class="fc" id="L70">				}</span>
-<span class="fc" id="L71">				vRefs[U] = heap.insert(Double.valueOf(-weightsSum), Integer.valueOf(U));</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			assert heap.isEmpty();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int U = 0; U &lt; cg.numberOfSuperVertices(); U++)</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">				assert vRefs[U] == null;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
+<span class="fc" id="L66">				double weightsSum = 0;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
+<span class="fc" id="L68">					int e = eit.nextInt();</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">					assert eit.source() == U;</span>
+<span class="fc" id="L70">					int V = eit.target();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">					if (cut.get(V))</span>
+<span class="fc" id="L72">						weightsSum += w.weight(e);</span>
+<span class="fc" id="L73">				}</span>
+<span class="fc" id="L74">				vRefs[U] = heap.insert(Double.valueOf(-weightsSum), Integer.valueOf(U));</span>
 			}
 
-<span class="fc" id="L74">			double cutOfThePhaseWeight = 0;</span>
-<span class="fc" id="L75">			int S = -1, T = -1;</span>
+<span class="fc" id="L77">			double cutOfThePhaseWeight = 0;</span>
+<span class="fc" id="L78">			int S = -1, T = -1;</span>
 			minimumCutPhase: for (;;) {
-<span class="fc" id="L77">				HeapReference&lt;Double, Integer&gt; min = heap.extractMin();</span>
-<span class="fc" id="L78">				int U = min.value().intValue();</span>
-<span class="fc" id="L79">				vRefs[U] = null;</span>
-<span class="fc" id="L80">				cut.set(U);</span>
+<span class="fc" id="L80">				HeapReference&lt;Double, Integer&gt; min = heap.extractMin();</span>
+<span class="fc" id="L81">				int U = min.value().intValue();</span>
+<span class="fc" id="L82">				vRefs[U] = null;</span>
+<span class="fc" id="L83">				cut.set(U);</span>
 
-<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (heap.size() == 1)</span>
-<span class="fc" id="L83">					S = U;</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">				if (heap.size() == 0)</span>
-<span class="fc" id="L85">					T = U;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (heap.size() == 1)</span>
+<span class="fc" id="L86">					S = U;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (heap.size() == 0)</span>
+<span class="fc" id="L88">					T = U;</span>
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (heap.size() &gt; 0) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (heap.size() &gt; 0) {</span>
 					/* Not the last vertex */
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
-<span class="fc bfc" id="L90" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
-<span class="fc" id="L91">						int e = eit.nextInt();</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
-<span class="fc" id="L93">						int V = eit.target();</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">						if (!cut.get(V)) {</span>
-<span class="fc" id="L95">							HeapReference&lt;Double, Integer&gt; vRef = vRefs[V];</span>
-<span class="fc" id="L96">							double weightsSum = -vRef.key().doubleValue();</span>
-<span class="fc" id="L97">							weightsSum += w.weight(e);</span>
-<span class="fc" id="L98">							heap.decreaseKey(vRef, Double.valueOf(-weightsSum));</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
+<span class="fc" id="L94">						int e = eit.nextInt();</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
+<span class="fc" id="L96">						int V = eit.target();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">						if (!cut.get(V)) {</span>
+<span class="fc" id="L98">							HeapReference&lt;Double, Integer&gt; vRef = vRefs[V];</span>
+<span class="fc" id="L99">							double weightsSum = -vRef.key().doubleValue();</span>
+<span class="fc" id="L100">							weightsSum += w.weight(e);</span>
+<span class="fc" id="L101">							heap.decreaseKey(vRef, Double.valueOf(-weightsSum));</span>
 						}
-<span class="fc" id="L100">					}</span>
+<span class="fc" id="L103">					}</span>
 				} else {
 					/* Last vertex, no need to decrease keys */
 					/* Find the cut-of-the-phase and its weight */
-<span class="fc bfc" id="L104" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
-<span class="fc" id="L105">						int e = eit.nextInt();</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">						assert cut.get(eit.target());</span>
-<span class="fc" id="L108">						cutOfThePhaseWeight += w.weight(e);</span>
-<span class="fc" id="L109">					}</span>
-<span class="fc" id="L110">					break minimumCutPhase;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
+<span class="fc" id="L108">						int e = eit.nextInt();</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">						assert cut.get(eit.target());</span>
+<span class="fc" id="L111">						cutOfThePhaseWeight += w.weight(e);</span>
+<span class="fc" id="L112">					}</span>
+<span class="fc" id="L113">					break minimumCutPhase;</span>
 				}
-<span class="fc" id="L112">			}</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			assert T != -1;</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (S == -1)</span>
-<span class="fc" id="L115">				S = 0;</span>
+<span class="fc" id="L115">			}</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			assert T != -1;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (S == -1)</span>
+<span class="fc" id="L118">				S = 0;</span>
 
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (minimumCutWeight &gt; cutOfThePhaseWeight) {</span>
-<span class="fc" id="L118">				minimumCutWeight = cutOfThePhaseWeight;</span>
-<span class="fc" id="L119">				minimumCut.clear();</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				for (IntIterator it = cg.superVertexVertices(T); it.hasNext();)</span>
-<span class="fc" id="L121">					minimumCut.set(it.nextInt());</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (minimumCutWeight &gt; cutOfThePhaseWeight) {</span>
+<span class="fc" id="L121">				minimumCutWeight = cutOfThePhaseWeight;</span>
+<span class="fc" id="L122">				minimumCut.clear();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (IntIterator it = cg.superVertexVertices(T); it.hasNext();)</span>
+<span class="fc" id="L124">					minimumCut.set(it.nextInt());</span>
 			}
 
-<span class="fc" id="L124">			cg.contract(S, T);</span>
-<span class="fc" id="L125">		}</span>
+<span class="fc" id="L127">			cg.contract(S, T);</span>
+<span class="fc" id="L128">		}</span>
 
-<span class="fc" id="L127">		return new CutImpl(g, minimumCut);</span>
+<span class="fc" id="L130">		return new CutImpl(g, minimumCut);</span>
 	}
 
 }
