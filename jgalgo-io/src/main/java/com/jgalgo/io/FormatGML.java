@@ -18,6 +18,7 @@ package com.jgalgo.io;
 import java.io.Reader;
 import java.io.Writer;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 
 class FormatGML implements GraphFormat {
 
@@ -53,9 +54,9 @@ class FormatGML implements GraphFormat {
 	private static class ReaderImpl implements GraphReader {
 
 		@Override
-		public Graph readGraph(Reader reader) {
+		public GraphBuilder readIntoBuilder(Reader reader) {
 			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'readGraph'");
+			throw new UnsupportedOperationException("Unimplemented method 'readIntoBuilder'");
 		}
 
 	}

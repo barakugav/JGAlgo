@@ -20,17 +20,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 
 /**
  * A reader that reads Graphs from files/IO-reader.
+ *
+ * <pre> {@code
+ * Graph g = GraphReader.newInstance("gml").readGraph("graph1.gml");
+ * System.out.println("g's vertices are: " + g.vertices());
+ * }</pre>
  *
  * @see    GraphWriter
  * @author Barak Ugav
  */
 public interface GraphReader {
-
-	// TODO add an example in the class documentation
-	// Graph g = GraphReader.newInstance("gml").readGraph("graph1.gml");
 
 	/**
 	 * Read a graph from an I/O reader.
@@ -38,7 +41,9 @@ public interface GraphReader {
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a new graph read from the reader
 	 */
-	Graph readGraph(Reader reader);
+	default Graph readGraph(Reader reader) {
+		return readIntoBuilder(reader).build();
+	}
 
 	/**
 	 * Read a graph from a file.
@@ -67,6 +72,14 @@ public interface GraphReader {
 			throw new RuntimeException(e);
 		}
 	}
+
+	/**
+	 * Read a graph from an I/O reader into a {@link GraphBuilder}.
+	 *
+	 * @param  reader an I/O reader that contain a graph description
+	 * @return        a graph builder containing the vertices and edge read from the reader
+	 */
+	GraphBuilder readIntoBuilder(Reader reader);
 
 	/**
 	 * Get new {@link GraphReader} instance by a format name.
