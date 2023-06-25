@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.util.Collection;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
@@ -92,6 +93,8 @@ public class GraphsUtils {
 	}
 
 	static double weightSum(IntIterable collection, WeightFunction w) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction && collection instanceof Collection<?>)
+			return ((Collection<?>) collection).size();
 		return weightSum(collection.iterator(), w);
 	}
 
