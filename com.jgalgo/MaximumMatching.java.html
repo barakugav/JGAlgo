@@ -92,25 +92,25 @@ public interface MaximumMatching {
 <span class="nc" id="L92">						return new MaximumMatchingWeightedGabow1990Simpler();</span>
 <span class="nc" id="L93">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">				if (cardinality) {</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (cardinality) {</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()</span>
 <span class="nc" id="L97">							: new MaximumMatchingCardinalityGabow1976();</span>
 				} else {
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
 <span class="fc" id="L100">							: new MaximumMatchingWeightedGabow1990Simpler();</span>
 				}
 			}
 
 			@Override
 			public MaximumMatching.Builder setBipartite(boolean bipartite) {
-<span class="nc" id="L106">				isBipartite = bipartite;</span>
-<span class="nc" id="L107">				return this;</span>
+<span class="fc" id="L106">				isBipartite = bipartite;</span>
+<span class="fc" id="L107">				return this;</span>
 			}
 
 			@Override
 			public MaximumMatching.Builder setCardinality(boolean cardinality) {
-<span class="nc" id="L112">				this.cardinality = cardinality;</span>
-<span class="nc" id="L113">				return this;</span>
+<span class="fc" id="L112">				this.cardinality = cardinality;</span>
+<span class="fc" id="L113">				return this;</span>
 			}
 
 			@Override

@@ -281,7 +281,7 @@ JGAlgo - Core,com.jgalgo,MinimumDirectedSpanningTreeTarjan,71,512,12,54,14,110,1
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod,11,60,0,0,4,12,2,3,2,3
 JGAlgo - Core,com.jgalgo,Heap,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,SplayTree.SplayImpl,4,117,1,21,0,36,1,15,0,5
-JGAlgo - Core,com.jgalgo,MaximumFlow,2,0,0,0,1,0,1,0,1,0
+JGAlgo - Core,com.jgalgo,MaximumFlow,0,2,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayIntExtended.Node,0,9,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo,SplitFindMin,0,12,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo,TSPMetricMatchingAppx,20,221,4,18,3,45,4,10,0,3
@@ -291,6 +291,7 @@ JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.Worker,40,885,13,109,0,2
 JGAlgo - Core,com.jgalgo,SplayTree.SplayBSTNode,7,16,0,0,3,7,2,3,2,3
 JGAlgo - Core,com.jgalgo,MaximumMatchingCardinalityBipartiteHopcroftKarp,10,336,2,40,4,85,3,22,1,3
 JGAlgo - Core,com.jgalgo,BinarySearchTrees.BSTIterator,4,36,1,5,1,9,1,5,0,3
+JGAlgo - Core,com.jgalgo,PageRank,105,260,14,20,16,45,9,12,0,4
 JGAlgo - Core,com.jgalgo,DynamicTreeBuilderImpl,40,98,7,11,8,20,7,8,1,5
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMinImpl.EdgeList,0,10,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo,MinimumSpanningTreeUtils.AbstractUndirected,0,33,0,2,0,8,0,3,0,2
@@ -311,6 +312,7 @@ JGAlgo - Core,com.jgalgo,Utils.new Iterable() {...},0,9,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo,Utils.new IntIterable() {...},9,0,0,0,2,0,2,0,2,0
 JGAlgo - Core,com.jgalgo,Utils.new IntIterator() {...},4,37,1,3,1,7,1,4,0,3
 JGAlgo - Core,com.jgalgo,Bipartite,2,30,1,3,1,5,1,2,0,1
+JGAlgo - Core,com.jgalgo,VertexScoringImpl,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,LinkedListFixedSize.Array,5,16,1,3,1,4,1,2,0,1
 JGAlgo - Core,com.jgalgo,BinarySearchTree.new BinarySearchTree.Builder() {...},45,41,7,5,12,11,10,6,5,5
 JGAlgo - Core,com.jgalgo,HeapAbstract,52,56,10,4,13,17,9,9,3,8
@@ -328,7 +330,7 @@ JGAlgo - Core,com.jgalgo,TreePathMaxima,11,23,1,1,2,6,2,1,1,1
 JGAlgo - Core,com.jgalgo,TSPMetricUtils,29,201,9,25,2,47,9,12,0,4
 JGAlgo - Core,com.jgalgo,Utils.RecursiveTaskFromSupplier,10,0,0,0,4,0,2,0,2,0
 JGAlgo - Core,com.jgalgo,Utils.NullList,127,17,27,1,24,6,31,3,17,3
-JGAlgo - Core,com.jgalgo,GraphsUtils,4,189,2,28,2,45,2,18,0,5
+JGAlgo - Core,com.jgalgo,GraphsUtils,7,199,6,30,2,47,5,18,0,5
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.WorkerInt,36,439,9,49,1,84,9,33,1,12
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.WorkerDouble,38,463,11,49,1,86,11,32,1,12
 JGAlgo - Core,com.jgalgo,HeapPairing.WithIntKeys.NodeIntegerInt,0,13,0,0,0,5,0,3,0,3
@@ -367,6 +369,7 @@ JGAlgo - Core,com.jgalgo,LinkedListFixedSize.WithNext,5,13,2,2,1,2,2,1,0,1
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelToFront.WorkerDouble,4,105,2,10,1,23,2,10,0,6
 JGAlgo - Core,com.jgalgo,LowestCommonAncestorStaticAbstract,0,33,0,2,0,8,0,3,0,2
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.AbstractWorker.Vertex,0,18,0,0,0,7,0,1,0,1
+JGAlgo - Core,com.jgalgo,PageRank.Predecessors,42,119,7,9,7,23,5,6,0,3
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMinImpl.SubTree,0,58,0,6,0,17,0,7,0,4
 JGAlgo - Core,com.jgalgo,ConnectedComponentsAlgoImpl.Result,4,175,0,18,1,30,1,14,1,5
 JGAlgo - Core,com.jgalgo,MaximumFlowAbstract.new FlowNetwork.Int() {...},43,0,0,0,7,0,5,0,5,0
@@ -394,7 +397,7 @@ JGAlgo - Core,com.jgalgo,BiConnectedComponentsAlgoHopcroftTarjan.new Object() {.
 JGAlgo - Core,com.jgalgo,RMQStaticCartesianTrees,4,15,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo,BiConnectedComponentsAlgoHopcroftTarjan,25,318,4,34,5,73,4,20,0,5
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelLowestFirst.WorkerInt,11,71,2,8,1,16,2,8,0,5
-JGAlgo - Core,com.jgalgo,MinimumDirectedSpanningTree,2,0,0,0,1,0,1,0,1,0
+JGAlgo - Core,com.jgalgo,MinimumDirectedSpanningTree,0,2,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,ShortestPathAllPairsJohnson.NegCycleRes,8,14,0,0,2,6,2,3,2,3
 JGAlgo - Core,com.jgalgo,BinarySearchTreeAbstract,0,12,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo,ShortestPathAllPairsUtils,3,0,0,0,1,0,1,0,1,0
@@ -549,6 +552,7 @@ JGAlgo - Core,com.jgalgo,SplayTree.SplayImplWithSize,4,55,1,7,0,10,1,5,0,2
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.Max,76,214,17,31,11,43,13,20,0,9
 JGAlgo - Core,com.jgalgo,ShortestPathSingleSourceUtils.AbstractImpl,0,83,0,4,0,19,0,6,0,4
 JGAlgo - Core,com.jgalgo,ShortestPathSingleSourceUtils.ResultImpl,17,124,2,10,2,32,4,9,2,5
+JGAlgo - Core,com.jgalgo,VertexScoringImpl.ResultImpl,0,11,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo,MaximumFlowAbstract.EdgeWeightsFlowNetworkInt,12,70,2,2,2,16,2,6,0,6
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.ExtensionData.Int,0,36,0,0,0,12,0,6,0,6
 JGAlgo - Core,com.jgalgo,Utils.IterPeekable.Int.new Utils.IterPeekable.Int() {...},8,5,0,0,2,2,2,2,2,2
@@ -572,6 +576,7 @@ JGAlgo - Core,com.jgalgo,HeapBinomial,28,766,10,132,6,174,11,77,1,16
 JGAlgo - Core,com.jgalgo,MinimumSpanningTreePrim,8,325,3,37,3,82,4,21,1,4
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990Abstract.Worker.new Iterator() {...},4,88,1,9,1,15,1,7,0,3
 JGAlgo - Core,com.jgalgo,PathImpl.IterDirected,20,50,1,3,4,13,3,6,2,5
+JGAlgo - Core,com.jgalgo,VertexScoringImpl.ResultFromIndexResult,0,21,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.Size,0,136,0,8,0,24,0,12,0,8
 JGAlgo - Core,com.jgalgo,TSPMetricMSTAppx,19,107,5,9,2,24,5,5,0,3
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelFifo,0,19,0,0,0,3,0,3,0,3
@@ -634,7 +639,7 @@ JGAlgo - Core,com.jgalgo,HeapBinary.It,4,37,1,3,1,6,1,4,0,3
 JGAlgo - Core,com.jgalgo,Coloring,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,MinimumSpanningTreeBoruvka,16,381,4,50,1,91,4,28,0,5
 JGAlgo - Core,com.jgalgo,MaximumFlowEdmondsKarp.Worker,0,103,0,12,0,30,0,8,0,2
-JGAlgo - Core,com.jgalgo,MaximumMatching.new MaximumMatching.Builder() {...},94,22,17,3,21,7,13,2,3,2
+JGAlgo - Core,com.jgalgo,MaximumMatching.new MaximumMatching.Builder() {...},72,44,14,6,16,12,9,6,1,4
 JGAlgo - Core,com.jgalgo,MinimumMeanCycle,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,ShortestPathSingleSourceGoldberg,17,747,1,79,4,141,3,44,2,5
 JGAlgo - Core,com.jgalgo,DFSIterImpl.DFSFromIndexDFS,0,36,0,0,0,8,0,4,0,4
