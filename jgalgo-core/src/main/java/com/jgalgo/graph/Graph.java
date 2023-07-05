@@ -655,16 +655,16 @@ public interface Graph {
 	}
 
 	/**
-	 * Get an unmodifiable view of this graph.
+	 * Get an immutable view of this graph.
 	 * <p>
 	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
-	 * is automatically updated when the original graph is updated. The view is unmodifiable, namely all operations that
+	 * is automatically updated when the original graph is updated. The view is immutable, namely all operations that
 	 * modify the graph will throw {@link UnsupportedOperationException}.
 	 *
-	 * @return an unmodifiable view of this graph
+	 * @return an immutable view of this graph
 	 */
-	default Graph unmodifiableView() {
-		return Graphs.unmodifiableView(this);
+	default Graph immutableView() {
+		return Graphs.immutableView(this);
 	}
 
 	/**

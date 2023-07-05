@@ -824,21 +824,21 @@ public class IndexIdMaps {
 	}
 
 	private static class WeightsUnwrapper {
-		private boolean unmodifiable;
+		private boolean immutableView;
 
 		@SuppressWarnings("unchecked")
 		<V, WeightsT extends WeightsImpl<V>> WeightsT unwrap(WeightsImpl<?> weights) {
 			WeightsImpl<?> weights0 = weights;
-			unmodifiable = weights0 instanceof WeightsImpl.Unmodifiable<?>;
-			if (unmodifiable)
-				weights0 = ((WeightsImpl.Unmodifiable<?>) weights0).weights;
+			immutableView = weights0 instanceof WeightsImpl.ImmutableView<?>;
+			if (immutableView)
+				weights0 = ((WeightsImpl.ImmutableView<?>) weights0).weights;
 			return (WeightsT) weights0;
 		}
 
 		@SuppressWarnings("unchecked")
 		<V, WeightsT extends WeightsImpl<V>> WeightsT rewrap(WeightsImpl<?> weights) {
-			if (unmodifiable)
-				weights = weights.unmodifiableView();
+			if (immutableView)
+				weights = weights.immutableView();
 			return (WeightsT) weights;
 		}
 

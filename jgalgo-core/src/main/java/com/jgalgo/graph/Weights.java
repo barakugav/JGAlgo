@@ -585,7 +585,7 @@ public interface Weights<W> {
 	 * Create an external vertex weights container.
 	 * <p>
 	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -602,7 +602,7 @@ public interface Weights<W> {
 	 * Create an external vertex weights container with default values.
 	 * <p>
 	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -629,7 +629,7 @@ public interface Weights<W> {
 	 * Create an external edge weights container.
 	 * <p>
 	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -645,7 +645,7 @@ public interface Weights<W> {
 	 * Create an external edge weights container with default values.
 	 * <p>
 	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights

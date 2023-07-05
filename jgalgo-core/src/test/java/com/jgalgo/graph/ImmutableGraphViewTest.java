@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class UnmodifiableGraphTest extends TestBase {
+public class ImmutableGraphViewTest extends TestBase {
 
 	private static final Object VerticesWeightsKey = new Utils.Obj("vWeights");
 	private static final Object EdgesWeightsKey = new Utils.Obj("eWeights");
@@ -63,7 +63,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testVertices() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -78,7 +78,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdges() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -92,7 +92,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testAddRemoveVertex() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 
@@ -117,7 +117,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testAddRemoveEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 
@@ -146,7 +146,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdgesOutIn() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -215,7 +215,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdgesSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -256,7 +256,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testRemoveEdgesOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 				int v = gUnmod.vertices().iterator().nextInt();
@@ -271,7 +271,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testReverseEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 				int e = gUnmod.edges().iterator().nextInt();
@@ -284,7 +284,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdgeGetSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -300,7 +300,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testClear() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
 				assertThrows(UnsupportedOperationException.class, () -> gUnmod.clear());
@@ -313,7 +313,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testVerticesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -339,7 +339,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testEdgesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;
@@ -365,7 +365,7 @@ public class UnmodifiableGraphTest extends TestBase {
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
-			Graph gUnmod0 = gOrig0.unmodifiableView();
+			Graph gUnmod0 = gOrig0.immutableView();
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gUnmod = index ? gUnmod0.indexGraph() : gUnmod0;

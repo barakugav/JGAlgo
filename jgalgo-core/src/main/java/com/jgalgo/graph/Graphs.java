@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -797,11 +798,19 @@ public class Graphs {
 		return new CompleteGraphDirected(numberOfVertices);
 	}
 
-	private static class UnmodifiableGraph extends GraphBase {
+	/**
+	 * Tag interface for graphs that can not be muted/changed/altered
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface ImmutableGraph {
+	}
+
+	private static class ImmutableGraphView extends GraphBase implements ImmutableGraph {
 
 		private final Graph graph;
 
-		UnmodifiableGraph(Graph g) {
+		ImmutableGraphView(Graph g) {
 			this.graph = Objects.requireNonNull(g);
 		}
 
@@ -832,17 +841,17 @@ public class Graphs {
 
 		@Override
 		public EdgeSet outEdges(int source) {
-			return new UnmodifiableEdgeSet(graph.outEdges(source));
+			return new ImmutableEdgeSet(graph.outEdges(source));
 		}
 
 		@Override
 		public EdgeSet inEdges(int target) {
-			return new UnmodifiableEdgeSet(graph.inEdges(target));
+			return new ImmutableEdgeSet(graph.inEdges(target));
 		}
 
 		@Override
 		public EdgeSet getEdges(int source, int target) {
-			return new UnmodifiableEdgeSet(graph.getEdges(source, target));
+			return new ImmutableEdgeSet(graph.getEdges(source, target));
 		}
 
 		@Override
@@ -888,7 +897,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<V>) graph.getVerticesWeights(key)).unmodifiableView();
+			return (WeightsT) ((WeightsImpl<V>) graph.getVerticesWeights(key)).immutableView();
 		}
 
 		@Override
@@ -910,7 +919,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<E>) graph.getEdgesWeights(key)).unmodifiableView();
+			return (WeightsT) ((WeightsImpl<E>) graph.getEdgesWeights(key)).immutableView();
 		}
 
 		@Override
@@ -940,7 +949,7 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(graph.indexGraph());
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());
 		}
 
 		@Override
@@ -958,9 +967,9 @@ public class Graphs {
 		}
 	}
 
-	private static class UnmodifiableIndexGraph extends UnmodifiableGraph implements IndexGraphImpl {
+	private static class ImmutableIndexGraphView extends ImmutableGraphView implements IndexGraphImpl {
 
-		UnmodifiableIndexGraph(IndexGraph g) {
+		ImmutableIndexGraphView(IndexGraph g) {
 			super(g);
 			if (!(g instanceof IndexGraphImpl))
 				throw new IllegalArgumentException("unknown graph implementation");
@@ -1000,11 +1009,11 @@ public class Graphs {
 
 	}
 
-	private static class UnmodifiableEdgeSet extends AbstractIntSet implements EdgeSet {
+	private static class ImmutableEdgeSet extends AbstractIntSet implements EdgeSet {
 
 		private final EdgeSet set;
 
-		UnmodifiableEdgeSet(EdgeSet set) {
+		ImmutableEdgeSet(EdgeSet set) {
 			this.set = Objects.requireNonNull(set);
 		}
 
@@ -1020,15 +1029,15 @@ public class Graphs {
 
 		@Override
 		public EdgeIter iterator() {
-			return new UnmodifiableEdgeIter(set.iterator());
+			return new ImmutableEdgeIter(set.iterator());
 		}
 
 	}
 
-	private static class UnmodifiableEdgeIter implements EdgeIter {
+	private static class ImmutableEdgeIter implements EdgeIter {
 		private final EdgeIter it;
 
-		UnmodifiableEdgeIter(EdgeIter it) {
+		ImmutableEdgeIter(EdgeIter it) {
 			this.it = Objects.requireNonNull(it);
 		}
 
@@ -1058,14 +1067,14 @@ public class Graphs {
 		}
 	}
 
-	static Graph unmodifiableView(Graph g) {
+	static Graph immutableView(Graph g) {
 		if (g instanceof IndexGraph)
-			return unmodifiableView((IndexGraph) g);
-		return g instanceof UnmodifiableGraph ? (UnmodifiableGraph) g : new UnmodifiableGraph(g);
+			return immutableView((IndexGraph) g);
+		return g instanceof ImmutableGraph ? g : new ImmutableGraphView(g);
 	}
 
-	static IndexGraph unmodifiableView(IndexGraph g) {
-		return g instanceof UnmodifiableIndexGraph ? (UnmodifiableIndexGraph) g : new UnmodifiableIndexGraph(g);
+	static IndexGraph immutableView(IndexGraph g) {
+		return g instanceof ImmutableGraph ? g : new ImmutableIndexGraphView(g);
 	}
 
 	private static class ReverseGraph extends GraphBase {
@@ -1348,8 +1357,8 @@ public class Graphs {
 			IndexGraph g0 = g;
 			if (g instanceof ReverseIndexGraph)
 				g = ((ReverseIndexGraph) g).graph();
-			if (g instanceof UnmodifiableIndexGraph)
-				g = ((UnmodifiableIndexGraph) g).graph();
+			if (g instanceof ImmutableIndexGraphView)
+				g = ((ImmutableIndexGraphView) g).graph();
 			if (g instanceof GraphArrayAbstract)
 				return "GraphArray";
 			if (g instanceof GraphLinkedAbstract)

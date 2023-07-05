@@ -231,7 +231,7 @@ public class WeightsTest extends TestBase {
 				}
 			}
 
-			Weights<E> weightsUnmod = g.unmodifiableView().getEdgesWeights(wKey);
+			Weights<E> weightsUnmod = g.immutableView().getEdgesWeights(wKey);
 			for (int e : g.edges())
 				assertEquals(weights.get(e), weightsUnmod.get(e));
 			assertEquals(weights.defaultWeight(), weightsUnmod.defaultWeight());

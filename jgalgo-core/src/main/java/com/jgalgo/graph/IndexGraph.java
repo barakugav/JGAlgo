@@ -222,8 +222,8 @@ public interface IndexGraph extends Graph {
 	}
 
 	@Override
-	default IndexGraph unmodifiableView() {
-		return Graphs.unmodifiableView(this);
+	default IndexGraph immutableView() {
+		return Graphs.immutableView(this);
 	}
 
 	@Override

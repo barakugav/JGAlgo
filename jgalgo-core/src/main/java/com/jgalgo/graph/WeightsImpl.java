@@ -72,26 +72,26 @@ import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 interface WeightsImpl<E> extends Weights<E> {
 
 	@SuppressWarnings("unchecked")
-	default WeightsImpl<E> unmodifiableView() {
-		if (this instanceof Unmodifiable<?>)
+	default WeightsImpl<E> immutableView() {
+		if (this instanceof ImmutableView<?>)
 			return this;
 		if (this instanceof Weights.Byte)
-			return (WeightsImpl<E>) new Unmodifiable.Byte((Weights.Byte) this);
+			return (WeightsImpl<E>) new ImmutableView.Byte((Weights.Byte) this);
 		if (this instanceof Weights.Short)
-			return (WeightsImpl<E>) new Unmodifiable.Short((Weights.Short) this);
+			return (WeightsImpl<E>) new ImmutableView.Short((Weights.Short) this);
 		if (this instanceof Weights.Int)
-			return (WeightsImpl<E>) new Unmodifiable.Int((Weights.Int) this);
+			return (WeightsImpl<E>) new ImmutableView.Int((Weights.Int) this);
 		if (this instanceof Weights.Long)
-			return (WeightsImpl<E>) new Unmodifiable.Long((Weights.Long) this);
+			return (WeightsImpl<E>) new ImmutableView.Long((Weights.Long) this);
 		if (this instanceof Weights.Float)
-			return (WeightsImpl<E>) new Unmodifiable.Float((Weights.Float) this);
+			return (WeightsImpl<E>) new ImmutableView.Float((Weights.Float) this);
 		if (this instanceof Weights.Double)
-			return (WeightsImpl<E>) new Unmodifiable.Double((Weights.Double) this);
+			return (WeightsImpl<E>) new ImmutableView.Double((Weights.Double) this);
 		if (this instanceof Weights.Bool)
-			return (WeightsImpl<E>) new Unmodifiable.Bool((Weights.Bool) this);
+			return (WeightsImpl<E>) new ImmutableView.Bool((Weights.Bool) this);
 		if (this instanceof Weights.Char)
-			return (WeightsImpl<E>) new Unmodifiable.Char((Weights.Char) this);
-		return new Unmodifiable.Obj<>(this);
+			return (WeightsImpl<E>) new ImmutableView.Char((Weights.Char) this);
+		return new ImmutableView.Obj<>(this);
 	}
 
 	static interface Index<E> extends WeightsImpl<E> {
@@ -158,16 +158,16 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static WeightsImpl.Index<?> copyOf(Weights<?> weights, IdStrategy idStart) {
-			if (weights instanceof WeightsImpl.Unmodifiable<?>)
-				weights = ((WeightsImpl.Unmodifiable<?>) weights).weights;
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
 			if (!(weights instanceof WeightsImpl.Index<?>))
 				throw new IllegalArgumentException();
 			return ((WeightsImpl.Index<?>) weights).copy(idStart);
 		}
 
 		static WeightsImpl.Index<?> copyOfMapped(Weights<?> weights, IdStrategy idStart, int[] mapOldToNew) {
-			if (weights instanceof WeightsImpl.Unmodifiable<?>)
-				weights = ((WeightsImpl.Unmodifiable<?>) weights).weights;
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
 			if (!(weights instanceof WeightsImpl.Index<?>))
 				throw new IllegalArgumentException();
 			return ((WeightsImpl.Index<?>) weights).copyMapped(idStart, mapOldToNew);
@@ -2121,11 +2121,11 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	static abstract class Unmodifiable<E> implements WeightsImpl<E> {
+	static abstract class ImmutableView<E> implements WeightsImpl<E> {
 
 		final WeightsImpl<E> weights;
 
-		Unmodifiable(Weights<E> w) {
+		ImmutableView(Weights<E> w) {
 			this.weights = (WeightsImpl<E>) Objects.requireNonNull(w);
 		}
 
@@ -2133,7 +2133,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights;
 		}
 
-		static class Obj<E> extends Unmodifiable<E> {
+		static class Obj<E> extends ImmutableView<E> {
 
 			Obj(Weights<E> w) {
 				super(w);
@@ -2155,7 +2155,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Byte extends Unmodifiable<java.lang.Byte> implements Weights.Byte {
+		static class Byte extends ImmutableView<java.lang.Byte> implements Weights.Byte {
 			Byte(Weights.Byte w) {
 				super(w);
 			}
@@ -2181,7 +2181,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Short extends Unmodifiable<java.lang.Short> implements Weights.Short {
+		static class Short extends ImmutableView<java.lang.Short> implements Weights.Short {
 			Short(Weights.Short w) {
 				super(w);
 			}
@@ -2207,7 +2207,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Int extends Unmodifiable<Integer> implements Weights.Int {
+		static class Int extends ImmutableView<Integer> implements Weights.Int {
 			Int(Weights.Int w) {
 				super(w);
 			}
@@ -2233,7 +2233,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Long extends Unmodifiable<java.lang.Long> implements Weights.Long {
+		static class Long extends ImmutableView<java.lang.Long> implements Weights.Long {
 			Long(Weights.Long w) {
 				super(w);
 			}
@@ -2259,7 +2259,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Float extends Unmodifiable<java.lang.Float> implements Weights.Float {
+		static class Float extends ImmutableView<java.lang.Float> implements Weights.Float {
 			Float(Weights.Float w) {
 				super(w);
 			}
@@ -2285,7 +2285,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Double extends Unmodifiable<java.lang.Double> implements Weights.Double {
+		static class Double extends ImmutableView<java.lang.Double> implements Weights.Double {
 			Double(Weights.Double w) {
 				super(w);
 			}
@@ -2311,7 +2311,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Bool extends Unmodifiable<Boolean> implements Weights.Bool {
+		static class Bool extends ImmutableView<Boolean> implements Weights.Bool {
 			Bool(Weights.Bool w) {
 				super(w);
 			}
@@ -2337,7 +2337,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Char extends Unmodifiable<Character> implements Weights.Char {
+		static class Char extends ImmutableView<Character> implements Weights.Char {
 			Char(Weights.Char w) {
 				super(w);
 			}
