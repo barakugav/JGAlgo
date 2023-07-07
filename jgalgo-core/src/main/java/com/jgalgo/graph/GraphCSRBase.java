@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -27,10 +28,11 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 	final int[] edgesOutBegin;
 	final int[] endpoints;
 
-	final WeightsImpl.Index.Manager verticesUserWeights;
-	final WeightsImpl.Index.Manager edgesUserWeights;
+	final Map<Object, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
+	final Map<Object, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
 
-	GraphCSRBase(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+	GraphCSRBase(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges,
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing) {
 		final int n = builder.vertices().size();
 		final int m = builder.edges().size();
 
@@ -41,8 +43,21 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 		endpoints = new int[m * 2];
 		assert edgesOutBegin.length == n + 1;
 
-		verticesUserWeights = new WeightsImpl.Index.Manager(n);
-		edgesUserWeights = new WeightsImpl.Index.Manager(m);
+		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
+		for (var entry : builder.verticesUserWeights.weights.entrySet())
+			verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+		if (edgesReIndexing == null) {
+			for (var entry : builder.edgesUserWeights.weights.entrySet())
+				edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+		} else {
+			for (var entry : builder.edgesUserWeights.weights.entrySet())
+				edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(), edgesReIndexing);
+		}
+		verticesUserWeights = verticesUserWeightsBuilder.build();
+		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
 	GraphCSRBase(IndexGraph g) {
@@ -60,8 +75,16 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 			endpoints[e * 2 + 1] = g.edgeTarget(e);
 		}
 
-		verticesUserWeights = new WeightsImpl.Index.Manager(n);
-		edgesUserWeights = new WeightsImpl.Index.Manager(m);
+		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
+		for (Object key : g.getVerticesWeightsKeys())
+			verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesWeights(key));
+		for (Object key : g.getEdgesWeightsKeys())
+			edgesUserWeightsBuilder.copyAndAddWeights(key, g.getEdgesWeights(key));
+		verticesUserWeights = verticesUserWeightsBuilder.build();
+		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
 	@Override
@@ -120,52 +143,45 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-		return verticesUserWeights.getWeights(key);
+		return (WeightsT) verticesUserWeights.get(key);
 	}
 
 	@Override
 	public Set<Object> getVerticesWeightsKeys() {
-		return verticesUserWeights.weightsKeys();
+		return verticesUserWeights.keySet();
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-		verticesUserWeights.removeWeights(key);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-		return (WeightsT) edgesUserWeights.getWeights(key);
+		return (WeightsT) edgesUserWeights.get(key);
 	}
 
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
-		return edgesUserWeights.weightsKeys();
+		return edgesUserWeights.keySet();
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-		edgesUserWeights.removeWeights(key);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(verticesIdStrat, type, defVal);
-		verticesUserWeights.addWeights(key, weights);
-		@SuppressWarnings("unchecked")
-		WeightsT weights0 = (WeightsT) weights;
-		return weights0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(edgesIdStrat, type, defVal);
-		edgesUserWeights.addWeights(key, weights);
-		@SuppressWarnings("unchecked")
-		WeightsT weights0 = (WeightsT) weights;
-		return weights0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

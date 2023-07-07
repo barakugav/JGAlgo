@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-abstract class GraphLinkedAbstract extends GraphBaseIndex {
+abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
 	private Node[] edges;
 	private final DataContainer.Obj<Node> edgesContainer;

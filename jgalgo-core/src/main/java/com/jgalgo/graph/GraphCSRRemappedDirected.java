@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Consumer;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
 class GraphCSRRemappedDirected extends GraphCSRBase {
@@ -26,8 +25,8 @@ class GraphCSRRemappedDirected extends GraphCSRBase {
 	private final int[] edgesInBegin;
 
 	private GraphCSRRemappedDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges,
-			Consumer<IndexGraphBuilder.ReIndexingMap> edgesMappingCallback) {
-		super(builder, processEdges);
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing) {
+		super(builder, processEdges, edgesReIndexing);
 		final int n = builder.vertices().size();
 		final int m = builder.edges().size();
 
@@ -38,36 +37,33 @@ class GraphCSRRemappedDirected extends GraphCSRBase {
 		assert edgesIn.length == m;
 		assert edgesInBegin.length == n + 1;
 
-		int[] edgesCsrToOrig = edgesOut;
-		int[] edgesOrigToCsr = new int[m];
-		for (int eCsr = 0; eCsr < m; eCsr++)
-			edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
 		for (int eIdx = 0; eIdx < m; eIdx++) {
 			int eOrig = edgesIn[eIdx];
-			int eCsr = edgesOrigToCsr[eOrig];
+			int eCsr = edgesReIndexing.origToReIndexed(eOrig);
 			edgesIn[eIdx] = eCsr;
 		}
 
 		for (int eCsr = 0; eCsr < m; eCsr++) {
-			int eOrig = edgesCsrToOrig[eCsr];
+			int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
 			endpoints[eCsr * 2 + 0] = builder.endpoints[eOrig * 2 + 0];
 			endpoints[eCsr * 2 + 1] = builder.endpoints[eOrig * 2 + 1];
 		}
-
-		IndexGraphBuilder.ReIndexingMap edgesMapping =
-				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
-		edgesMappingCallback.accept(edgesMapping);
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
 		GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(builder);
-		var callbackData = new Object() {
-			IndexGraphBuilder.ReIndexingMap edgesMapping;
-		};
-		GraphCSRRemappedDirected g = new GraphCSRRemappedDirected(builder, processEdges,
-				edgesMapping -> callbackData.edgesMapping = edgesMapping);
-		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(),
-				Optional.of(callbackData.edgesMapping));
+
+		final int m = builder.edges().size();
+		int[] edgesCsrToOrig = processEdges.edgesOut;
+		int[] edgesOrigToCsr = new int[m];
+		for (int eCsr = 0; eCsr < m; eCsr++)
+			edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
+
+		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
+				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+
+		GraphCSRRemappedDirected g = new GraphCSRRemappedDirected(builder, processEdges, edgesReIndexing);
+		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
 	}
 
 	@Override

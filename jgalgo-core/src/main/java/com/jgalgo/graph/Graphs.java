@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -454,8 +453,8 @@ public class Graphs {
 		final int n, m;
 		private final IdStrategy verticesIdStrat;
 		private final IdStrategy edgesIdStrat;
-		private final WeightsImpl.Index.Manager verticesWeights;
-		private final WeightsImpl.Index.Manager edgesWeights;
+		private final WeightsImpl.IndexMutable.Manager verticesWeights;
+		private final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
 			verticesIdStrat = new IdStrategy.Default(n);
@@ -464,8 +463,8 @@ public class Graphs {
 				throw new IllegalArgumentException();
 			this.n = n;
 			this.m = m;
-			verticesWeights = new WeightsImpl.Index.Manager(n);
-			edgesWeights = new WeightsImpl.Index.Manager(m);
+			verticesWeights = new WeightsImpl.IndexMutable.Manager(n);
+			edgesWeights = new WeightsImpl.IndexMutable.Manager(m);
 		}
 
 		CompleteGraph(CompleteGraph g) {
@@ -473,8 +472,8 @@ public class Graphs {
 			edgesIdStrat = new IdStrategy.Default(g.m);
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIdStrat);
-			edgesWeights = new WeightsImpl.Index.Manager(g.edgesWeights, edgesIdStrat);
+			verticesWeights = new WeightsImpl.IndexMutable.Manager(g.verticesWeights, verticesIdStrat);
+			edgesWeights = new WeightsImpl.IndexMutable.Manager(g.edgesWeights, edgesIdStrat);
 		}
 
 		@Override
@@ -724,7 +723,7 @@ public class Graphs {
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(verticesIdStrat, type, defVal);
+			WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);
 			verticesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -733,7 +732,7 @@ public class Graphs {
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(edgesIdStrat, type, defVal);
+			WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -897,7 +896,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<V>) graph.getVerticesWeights(key)).immutableView();
+			return (WeightsT) WeightsImpl.immutableView(graph.getVerticesWeights(key));
 		}
 
 		@Override
@@ -919,7 +918,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<E>) graph.getEdgesWeights(key)).immutableView();
+			return (WeightsT) WeightsImpl.immutableView(graph.getEdgesWeights(key));
 		}
 
 		@Override

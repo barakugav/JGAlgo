@@ -90,6 +90,26 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
+	GraphArrayUndirected(IndexGraphBuilderImpl.Undirected builder) {
+		super(builder);
+		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+				newArr -> edges = newArr);
+		edgesNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesNum = newArr);
+
+		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
+
+		final int m = builder.edges().size();
+		for (int e = 0; e < m; e++) {
+			int source = builder.endpoints[e * 2 + 0];
+			int target = builder.endpoints[e * 2 + 1];
+
+			addEdgeToList(edges, edgesNum, source, e);
+			if (source != target)
+				addEdgeToList(edges, edgesNum, target, e);
+		}
+	}
+
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);

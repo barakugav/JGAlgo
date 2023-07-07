@@ -72,106 +72,33 @@ import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 interface WeightsImpl<E> extends Weights<E> {
 
 	@SuppressWarnings("unchecked")
-	default WeightsImpl<E> immutableView() {
-		if (this instanceof ImmutableView<?>)
-			return this;
-		if (this instanceof Weights.Byte)
-			return (WeightsImpl<E>) new ImmutableView.Byte((Weights.Byte) this);
-		if (this instanceof Weights.Short)
-			return (WeightsImpl<E>) new ImmutableView.Short((Weights.Short) this);
-		if (this instanceof Weights.Int)
-			return (WeightsImpl<E>) new ImmutableView.Int((Weights.Int) this);
-		if (this instanceof Weights.Long)
-			return (WeightsImpl<E>) new ImmutableView.Long((Weights.Long) this);
-		if (this instanceof Weights.Float)
-			return (WeightsImpl<E>) new ImmutableView.Float((Weights.Float) this);
-		if (this instanceof Weights.Double)
-			return (WeightsImpl<E>) new ImmutableView.Double((Weights.Double) this);
-		if (this instanceof Weights.Bool)
-			return (WeightsImpl<E>) new ImmutableView.Bool((Weights.Bool) this);
-		if (this instanceof Weights.Char)
-			return (WeightsImpl<E>) new ImmutableView.Char((Weights.Char) this);
-		return new ImmutableView.Obj<>(this);
+	static <E> Weights<E> immutableView(Weights<E> weights) {
+		if (weights instanceof Immutable<?>)
+			return weights;
+		if (weights instanceof Weights.Byte)
+			return (WeightsImpl<E>) new ImmutableView.Byte((Weights.Byte) weights);
+		if (weights instanceof Weights.Short)
+			return (WeightsImpl<E>) new ImmutableView.Short((Weights.Short) weights);
+		if (weights instanceof Weights.Int)
+			return (WeightsImpl<E>) new ImmutableView.Int((Weights.Int) weights);
+		if (weights instanceof Weights.Long)
+			return (WeightsImpl<E>) new ImmutableView.Long((Weights.Long) weights);
+		if (weights instanceof Weights.Float)
+			return (WeightsImpl<E>) new ImmutableView.Float((Weights.Float) weights);
+		if (weights instanceof Weights.Double)
+			return (WeightsImpl<E>) new ImmutableView.Double((Weights.Double) weights);
+		if (weights instanceof Weights.Bool)
+			return (WeightsImpl<E>) new ImmutableView.Bool((Weights.Bool) weights);
+		if (weights instanceof Weights.Char)
+			return (WeightsImpl<E>) new ImmutableView.Char((Weights.Char) weights);
+		return new ImmutableView.Obj<>(weights);
 	}
 
 	static interface Index<E> extends WeightsImpl<E> {
 
-		int capacity();
-
-		void expand(int newCapacity);
-
-		void clear(int idx);
-
-		void clear();
-
-		void swap(int idx1, int idx2);
-
 		Collection<E> values();
 
 		Class<E> getTypeClass();
-
-		WeightsImpl.Index<E> copy(IdStrategy idStrat);
-
-		WeightsImpl.Index<E> copyMapped(IdStrategy idStrat, int[] mapOldToNew);
-
-		static <D> WeightsImpl.Index<D> newInstance(IdStrategy idStart, Class<? super D> type, D defVal) {
-			@SuppressWarnings("rawtypes")
-			WeightsImpl container;
-			if (type == byte.class) {
-				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
-				container = new WeightsImpl.Index.Byte(idStart, defVal0);
-
-			} else if (type == short.class) {
-				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
-				container = new WeightsImpl.Index.Short(idStart, defVal0);
-
-			} else if (type == int.class) {
-				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
-				container = new WeightsImpl.Index.Int(idStart, defVal0);
-
-			} else if (type == long.class) {
-				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
-				container = new WeightsImpl.Index.Long(idStart, defVal0);
-
-			} else if (type == float.class) {
-				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
-				container = new WeightsImpl.Index.Float(idStart, defVal0);
-
-			} else if (type == double.class) {
-				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
-				container = new WeightsImpl.Index.Double(idStart, defVal0);
-
-			} else if (type == boolean.class) {
-				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
-				container = new WeightsImpl.Index.Bool(idStart, defVal0);
-
-			} else if (type == char.class) {
-				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
-				container = new WeightsImpl.Index.Char(idStart, defVal0);
-
-			} else {
-				container = new WeightsImpl.Index.Obj<>(idStart, defVal, type);
-			}
-			@SuppressWarnings("unchecked")
-			WeightsImpl.Index<D> container0 = (WeightsImpl.Index<D>) container;
-			return container0;
-		}
-
-		static WeightsImpl.Index<?> copyOf(Weights<?> weights, IdStrategy idStart) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
-			if (!(weights instanceof WeightsImpl.Index<?>))
-				throw new IllegalArgumentException();
-			return ((WeightsImpl.Index<?>) weights).copy(idStart);
-		}
-
-		static WeightsImpl.Index<?> copyOfMapped(Weights<?> weights, IdStrategy idStart, int[] mapOldToNew) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
-			if (!(weights instanceof WeightsImpl.Index<?>))
-				throw new IllegalArgumentException();
-			return ((WeightsImpl.Index<?>) weights).copyMapped(idStart, mapOldToNew);
-		}
 
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
 
@@ -201,10 +128,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Obj<E> extends WeightsImpl.Index.Abstract<E> {
+		static abstract class Obj<E> extends WeightsImpl.Index.Abstract<E> {
 
-			private Object[] weights;
-			private final E defaultWeight;
+			Object[] weights;
+			final E defaultWeight;
 			private final ObjectCollection<E> values;
 			private final Class<E> type;
 
@@ -237,6 +164,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight, orig.type);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight, orig.type);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			@SuppressWarnings("unchecked")
 			public E get(int idx) {
@@ -245,45 +189,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, E weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public E defaultWeight() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				ObjectArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -297,27 +204,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Obj<E> copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Obj<E> copy = new WeightsImpl.Index.Obj<>(idStrat, defaultWeight, type);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Obj<E> copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Obj<E> copy = new WeightsImpl.Index.Obj<>(idStrat, defaultWeight, type);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
@@ -328,10 +214,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Byte extends WeightsImpl.Index.Abstract<java.lang.Byte> implements Weights.Byte {
+		static abstract class Byte extends WeightsImpl.Index.Abstract<java.lang.Byte> implements Weights.Byte {
 
-			private byte[] weights;
-			private final byte defaultWeight;
+			byte[] weights;
+			final byte defaultWeight;
 			private final ByteCollection values;
 
 			Byte(IdStrategy idStrat, byte defVal) {
@@ -359,6 +245,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public byte getByte(int idx) {
 				checkIdx(idx);
@@ -366,45 +269,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, byte weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public byte defaultWeightByte() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				ByteArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -418,27 +284,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Byte copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Byte copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -449,10 +294,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Short extends WeightsImpl.Index.Abstract<java.lang.Short> implements Weights.Short {
+		static abstract class Short extends WeightsImpl.Index.Abstract<java.lang.Short> implements Weights.Short {
 
-			private short[] weights;
-			private final short defaultWeight;
+			short[] weights;
+			final short defaultWeight;
 			private final ShortCollection values;
 
 			Short(IdStrategy idStrat, short defVal) {
@@ -480,6 +325,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public short getShort(int idx) {
 				checkIdx(idx);
@@ -487,45 +349,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, short weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public short defaultWeightShort() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				ShortArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -539,27 +364,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Short copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Short copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -570,10 +374,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Int extends WeightsImpl.Index.Abstract<Integer> implements Weights.Int {
+		static abstract class Int extends WeightsImpl.Index.Abstract<Integer> implements Weights.Int {
 
-			private int[] weights;
-			private final int defaultWeight;
+			int[] weights;
+			final int defaultWeight;
 			private final IntCollection values;
 
 			Int(IdStrategy idStrat, int defVal) {
@@ -601,6 +405,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public int getInt(int idx) {
 				checkIdx(idx);
@@ -608,45 +429,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, int weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public int defaultWeightInt() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				IntArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -660,27 +444,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Int copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Int copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -691,10 +454,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Long extends WeightsImpl.Index.Abstract<java.lang.Long> implements Weights.Long {
+		static abstract class Long extends WeightsImpl.Index.Abstract<java.lang.Long> implements Weights.Long {
 
-			private long[] weights;
-			private final long defaultWeight;
+			long[] weights;
+			final long defaultWeight;
 			private final LongCollection values = new AbstractLongList() {
 
 				@Override
@@ -721,6 +484,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				defaultWeight = defVal;
 			}
 
+			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public long getLong(int idx) {
 				checkIdx(idx);
@@ -728,45 +508,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, long weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public long defaultWeightLong() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				LongArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -780,27 +523,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Long copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Long copy = new WeightsImpl.Index.Long(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Long copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Long copy = new WeightsImpl.Index.Long(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -811,10 +533,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Float extends WeightsImpl.Index.Abstract<java.lang.Float> implements Weights.Float {
+		static abstract class Float extends WeightsImpl.Index.Abstract<java.lang.Float> implements Weights.Float {
 
-			private float[] weights;
-			private final float defaultWeight;
+			float[] weights;
+			final float defaultWeight;
 			private final FloatCollection values;
 
 			Float(IdStrategy idStrat, float defVal) {
@@ -842,6 +564,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public float getFloat(int idx) {
 				checkIdx(idx);
@@ -849,45 +588,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, float weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public float defaultWeightFloat() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				FloatArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -901,27 +603,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Float copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Float copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -932,10 +613,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Double extends WeightsImpl.Index.Abstract<java.lang.Double> implements Weights.Double {
+		static abstract class Double extends WeightsImpl.Index.Abstract<java.lang.Double> implements Weights.Double {
 
-			private double[] weights;
-			private final double defaultWeight;
+			double[] weights;
+			final double defaultWeight;
 			private final DoubleCollection values;
 
 			Double(IdStrategy idStrat, double defVal) {
@@ -963,6 +644,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				};
 			}
 
+			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
 			@Override
 			public double getDouble(int idx) {
 				checkIdx(idx);
@@ -970,45 +668,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, double weight) {
-				checkIdx(idx);
-				weights[idx] = weight;
-			}
-
-			@Override
 			public double defaultWeightDouble() {
 				return defaultWeight;
-			}
-
-			@Override
-			public int capacity() {
-				return weights.length;
-			}
-
-			@Override
-			public void expand(int newCapacity) {
-				int oldCapacity = weights.length;
-				assert oldCapacity < newCapacity;
-				weights = Arrays.copyOf(weights, newCapacity);
-				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			}
-
-			@Override
-			public void swap(int idx1, int idx2) {
-				checkIdx(idx1);
-				checkIdx(idx2);
-				DoubleArrays.swap(weights, idx1, idx2);
-			}
-
-			@Override
-			public void clear(int idx) {
-				// checkIdx(idx);
-				weights[idx] = defaultWeight;
-			}
-
-			@Override
-			public void clear() {
-				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
 
 			@Override
@@ -1022,27 +683,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Double copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Double copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -1053,11 +693,11 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Bool extends WeightsImpl.Index.Abstract<Boolean> implements Weights.Bool {
+		static abstract class Bool extends WeightsImpl.Index.Abstract<Boolean> implements Weights.Bool {
 
-			private final BitSet weights;
-			private int capacity;
-			private final boolean defaultWeight;
+			final BitSet weights;
+			int capacity;
+			final boolean defaultWeight;
 			private final BooleanCollection values = new AbstractBooleanList() {
 
 				@Override
@@ -1113,17 +753,28 @@ interface WeightsImpl<E> extends Weights<E> {
 				}
 			};
 
-			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
-				super(idStrat);
-				defaultWeight = orig.defaultWeight;
-				weights = (BitSet) orig.weights.clone();
-			}
-
 			Bool(IdStrategy idStrat, boolean defVal) {
 				super(idStrat);
 
 				defaultWeight = defVal;
 				weights = new BitSet();
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
+				super(idStrat);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				defaultWeight = orig.defaultWeight;
+				weights = (BitSet) orig.weights.clone();
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				for (int i = 0; i < s; i++)
+					weights.set(reIndexMap.origToReIndexed(i), orig.weights.get(i));
 			}
 
 			@Override
@@ -1133,14 +784,920 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public void set(int idx, boolean weight) {
-				checkIdx(idx);
-				weights.set(idx, weight);
+			public boolean defaultWeightBool() {
+				return defaultWeight;
 			}
 
 			@Override
-			public boolean defaultWeightBool() {
+			public BooleanCollection values() {
+				return values;
+			}
+
+			@Override
+			public Class<Boolean> getTypeClass() {
+				return boolean.class;
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (this == other)
+					return true;
+				if (!(other instanceof WeightsImpl.Index.Bool))
+					return false;
+				WeightsImpl.Index.Bool o = (WeightsImpl.Index.Bool) other;
+				return size() == o.size() && weights.equals(o.weights);
+			}
+		}
+
+		static abstract class Char extends WeightsImpl.Index.Abstract<Character> implements Weights.Char {
+
+			char[] weights;
+			final char defaultWeight;
+			private final CharCollection values;
+
+			Char(IdStrategy idStrat, char defVal) {
+				super(idStrat);
+
+				weights = CharArrays.EMPTY_ARRAY;
+				defaultWeight = defVal;
+				values = new AbstractCharList() {
+
+					@Override
+					public int size() {
+						return WeightsImpl.Index.Char.super.size();
+					}
+
+					@Override
+					public CharListIterator iterator() {
+						return CharIterators.wrap(weights, 0, size());
+					}
+
+					@Override
+					public char getChar(int index) {
+						checkIdx(index);
+						return weights[index];
+					}
+				};
+			}
+
+			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat) {
+				this(idStrat, orig.defaultWeight);
+				if (idStrat.size() != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(orig.weights, idStrat.size());
+			}
+
+			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				this(idStrat, orig.defaultWeight);
+				final int s = idStrat.size();
+				if (s != orig.idStrat.size())
+					throw new IllegalArgumentException();
+				weights = Arrays.copyOf(weights, idStrat.size());
+				for (int i = 0; i < s; i++)
+					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+			}
+
+			@Override
+			public char getChar(int idx) {
+				checkIdx(idx);
+				return weights[idx];
+			}
+
+			@Override
+			public char defaultWeightChar() {
 				return defaultWeight;
+			}
+
+			@Override
+			public CharCollection values() {
+				return values;
+			}
+
+			@Override
+			public Class<Character> getTypeClass() {
+				return char.class;
+			}
+
+			@Override
+			public boolean equals(Object other) {
+				if (this == other)
+					return true;
+				if (!(other instanceof WeightsImpl.Index.Char))
+					return false;
+				WeightsImpl.Index.Char o = (WeightsImpl.Index.Char) other;
+				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
+			}
+		}
+
+	}
+
+	static interface IndexImmutable<E> extends WeightsImpl.Index<E> {
+
+		static <D> WeightsImpl.IndexImmutable<D> newInstance(IdStrategy.FixedSize idStart, Class<? super D> type,
+				D defVal) {
+			@SuppressWarnings("rawtypes")
+			WeightsImpl container;
+			if (type == byte.class) {
+				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Byte(idStart, defVal0);
+
+			} else if (type == short.class) {
+				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Short(idStart, defVal0);
+
+			} else if (type == int.class) {
+				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Int(idStart, defVal0);
+
+			} else if (type == long.class) {
+				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Long(idStart, defVal0);
+
+			} else if (type == float.class) {
+				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Float(idStart, defVal0);
+
+			} else if (type == double.class) {
+				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Double(idStart, defVal0);
+
+			} else if (type == boolean.class) {
+				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
+				container = new WeightsImpl.IndexImmutable.Bool(idStart, defVal0);
+
+			} else if (type == char.class) {
+				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
+				container = new WeightsImpl.IndexImmutable.Char(idStart, defVal0);
+
+			} else {
+				container = new WeightsImpl.IndexImmutable.Obj<>(idStart, defVal, type);
+			}
+			@SuppressWarnings("unchecked")
+			WeightsImpl.IndexImmutable<D> container0 = (WeightsImpl.IndexImmutable<D>) container;
+			return container0;
+		}
+
+		static WeightsImpl.IndexImmutable<?> copyOf(Weights<?> weights, IdStrategy.FixedSize idStart) {
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+			if (weights instanceof WeightsImpl.Index.Byte) {
+				return new WeightsImpl.IndexImmutable.Byte((WeightsImpl.Index.Byte) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Short) {
+				return new WeightsImpl.IndexImmutable.Short((WeightsImpl.Index.Short) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Int) {
+				return new WeightsImpl.IndexImmutable.Int((WeightsImpl.Index.Int) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Long) {
+				return new WeightsImpl.IndexImmutable.Long((WeightsImpl.Index.Long) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Float) {
+				return new WeightsImpl.IndexImmutable.Float((WeightsImpl.Index.Float) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Double) {
+				return new WeightsImpl.IndexImmutable.Double((WeightsImpl.Index.Double) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Bool) {
+				return new WeightsImpl.IndexImmutable.Bool((WeightsImpl.Index.Bool) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Char) {
+				return new WeightsImpl.IndexImmutable.Char((WeightsImpl.Index.Char) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Obj) {
+				return new WeightsImpl.IndexImmutable.Obj<>((WeightsImpl.Index.Obj<?>) weights, idStart);
+			} else {
+				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
+			}
+		}
+
+		static WeightsImpl.IndexImmutable<?> copyOfReindexed(Weights<?> weights, IdStrategy.FixedSize idStart,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+			if (weights instanceof WeightsImpl.Index.Byte) {
+				return new WeightsImpl.IndexImmutable.Byte((WeightsImpl.Index.Byte) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Short) {
+				return new WeightsImpl.IndexImmutable.Short((WeightsImpl.Index.Short) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Int) {
+				return new WeightsImpl.IndexImmutable.Int((WeightsImpl.Index.Int) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Long) {
+				return new WeightsImpl.IndexImmutable.Long((WeightsImpl.Index.Long) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Float) {
+				return new WeightsImpl.IndexImmutable.Float((WeightsImpl.Index.Float) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Double) {
+				return new WeightsImpl.IndexImmutable.Double((WeightsImpl.Index.Double) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Bool) {
+				return new WeightsImpl.IndexImmutable.Bool((WeightsImpl.Index.Bool) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Char) {
+				return new WeightsImpl.IndexImmutable.Char((WeightsImpl.Index.Char) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Obj) {
+				return new WeightsImpl.IndexImmutable.Obj<>((WeightsImpl.Index.Obj<?>) weights, idStart, reIndexMap);
+			} else {
+				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
+			}
+		}
+
+		static class Obj<E> extends WeightsImpl.Index.Obj<E> implements WeightsImpl.IndexImmutable<E> {
+
+			Obj(IdStrategy.FixedSize idStrat, E defVal, Class<E> type) {
+				super(idStrat, defVal, type);
+			}
+
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, E weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Byte extends WeightsImpl.Index.Byte implements WeightsImpl.IndexImmutable<java.lang.Byte> {
+
+			Byte(IdStrategy.FixedSize idStrat, byte defVal) {
+				super(idStrat, defVal);
+			}
+
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, byte weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Short extends WeightsImpl.Index.Short implements WeightsImpl.IndexImmutable<java.lang.Short> {
+
+			Short(IdStrategy.FixedSize idStrat, short defVal) {
+				super(idStrat, defVal);
+			}
+
+			Short(WeightsImpl.Index.Short orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Short(WeightsImpl.Index.Short orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, short weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Int extends WeightsImpl.Index.Int implements WeightsImpl.IndexImmutable<Integer> {
+
+			Int(IdStrategy.FixedSize idStrat, int defVal) {
+				super(idStrat, defVal);
+			}
+
+			Int(WeightsImpl.Index.Int orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Int(WeightsImpl.Index.Int orig, IdStrategy.FixedSize idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, int weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Long extends WeightsImpl.Index.Long implements WeightsImpl.IndexImmutable<java.lang.Long> {
+
+			Long(IdStrategy.FixedSize idStrat, long defVal) {
+				super(idStrat, defVal);
+			}
+
+			Long(WeightsImpl.Index.Long orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Long(WeightsImpl.Index.Long orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, long weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Float extends WeightsImpl.Index.Float implements WeightsImpl.IndexImmutable<java.lang.Float> {
+
+			Float(IdStrategy.FixedSize idStrat, float defVal) {
+				super(idStrat, defVal);
+			}
+
+			Float(WeightsImpl.Index.Float orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Float(WeightsImpl.Index.Float orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, float weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Double extends WeightsImpl.Index.Double implements WeightsImpl.IndexImmutable<java.lang.Double> {
+
+			Double(IdStrategy.FixedSize idStrat, double defVal) {
+				super(idStrat, defVal);
+			}
+
+			Double(WeightsImpl.Index.Double orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Double(WeightsImpl.Index.Double orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, double weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Bool extends WeightsImpl.Index.Bool implements WeightsImpl.IndexImmutable<Boolean> {
+
+			Bool(IdStrategy.FixedSize idStrat, boolean defVal) {
+				super(idStrat, defVal);
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, boolean weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Char extends WeightsImpl.Index.Char implements WeightsImpl.IndexImmutable<Character> {
+
+			Char(IdStrategy.FixedSize idStrat, char defVal) {
+				super(idStrat, defVal);
+			}
+
+			Char(WeightsImpl.Index.Char orig, IdStrategy.FixedSize idStrat) {
+				super(orig, idStrat);
+			}
+
+			Char(WeightsImpl.Index.Char orig, IdStrategy.FixedSize idStrat,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, char weight) {
+				throw new UnsupportedOperationException();
+			}
+		}
+
+		static class Builder {
+
+			private final IdStrategy.FixedSize idStrat;
+			private final Map<Object, WeightsImpl.IndexImmutable<?>> weights;
+
+			Builder(IdStrategy.FixedSize idStrat) {
+				this.idStrat = Objects.requireNonNull(idStrat);
+				weights = new Object2ObjectArrayMap<>();
+			}
+
+			void copyAndAddWeights(Object key, Weights<?> weights) {
+				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, idStrat));
+				if (oldWeights != null)
+					throw new IllegalArgumentException("duplicate key: " + key);
+			}
+
+			void copyAndAddWeightsReindexed(Object key, Weights<?> weights,
+					IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				Object oldWeights =
+						this.weights.put(key, WeightsImpl.IndexImmutable.copyOfReindexed(weights, idStrat, reIndexMap));
+				if (oldWeights != null)
+					throw new IllegalArgumentException("duplicate key: " + key);
+			}
+
+			Map<Object, WeightsImpl.IndexImmutable<?>> build() {
+				return Map.copyOf(weights);
+			}
+		}
+	}
+
+	static interface IndexMutable<E> extends WeightsImpl.Index<E> {
+
+		int capacity();
+
+		void expand(int newCapacity);
+
+		void clear(int idx);
+
+		void clear();
+
+		void swap(int idx1, int idx2);
+
+		static <D> WeightsImpl.IndexMutable<D> newInstance(IdStrategy idStart, Class<? super D> type, D defVal) {
+			@SuppressWarnings("rawtypes")
+			WeightsImpl container;
+			if (type == byte.class) {
+				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
+				container = new WeightsImpl.IndexMutable.Byte(idStart, defVal0);
+
+			} else if (type == short.class) {
+				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
+				container = new WeightsImpl.IndexMutable.Short(idStart, defVal0);
+
+			} else if (type == int.class) {
+				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
+				container = new WeightsImpl.IndexMutable.Int(idStart, defVal0);
+
+			} else if (type == long.class) {
+				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
+				container = new WeightsImpl.IndexMutable.Long(idStart, defVal0);
+
+			} else if (type == float.class) {
+				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
+				container = new WeightsImpl.IndexMutable.Float(idStart, defVal0);
+
+			} else if (type == double.class) {
+				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
+				container = new WeightsImpl.IndexMutable.Double(idStart, defVal0);
+
+			} else if (type == boolean.class) {
+				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
+				container = new WeightsImpl.IndexMutable.Bool(idStart, defVal0);
+
+			} else if (type == char.class) {
+				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
+				container = new WeightsImpl.IndexMutable.Char(idStart, defVal0);
+
+			} else {
+				container = new WeightsImpl.IndexMutable.Obj<>(idStart, defVal, type);
+			}
+			@SuppressWarnings("unchecked")
+			WeightsImpl.IndexMutable<D> container0 = (WeightsImpl.IndexMutable<D>) container;
+			return container0;
+		}
+
+		static WeightsImpl.IndexMutable<?> copyOf(Weights<?> weights, IdStrategy idStart) {
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+			if (weights instanceof WeightsImpl.Index.Byte) {
+				return new WeightsImpl.IndexMutable.Byte((WeightsImpl.Index.Byte) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Short) {
+				return new WeightsImpl.IndexMutable.Short((WeightsImpl.Index.Short) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Int) {
+				return new WeightsImpl.IndexMutable.Int((WeightsImpl.Index.Int) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Long) {
+				return new WeightsImpl.IndexMutable.Long((WeightsImpl.Index.Long) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Float) {
+				return new WeightsImpl.IndexMutable.Float((WeightsImpl.Index.Float) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Double) {
+				return new WeightsImpl.IndexMutable.Double((WeightsImpl.Index.Double) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Bool) {
+				return new WeightsImpl.IndexMutable.Bool((WeightsImpl.Index.Bool) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Char) {
+				return new WeightsImpl.IndexMutable.Char((WeightsImpl.Index.Char) weights, idStart);
+			} else if (weights instanceof WeightsImpl.Index.Obj) {
+				return new WeightsImpl.IndexMutable.Obj<>((WeightsImpl.Index.Obj<?>) weights, idStart);
+			} else {
+				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
+			}
+		}
+
+		static WeightsImpl.IndexMutable<?> copyOfReindexed(Weights<?> weights, IdStrategy idStart,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			if (weights instanceof WeightsImpl.ImmutableView<?>)
+				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+			if (weights instanceof WeightsImpl.Index.Byte) {
+				return new WeightsImpl.IndexMutable.Byte((WeightsImpl.Index.Byte) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Short) {
+				return new WeightsImpl.IndexMutable.Short((WeightsImpl.Index.Short) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Int) {
+				return new WeightsImpl.IndexMutable.Int((WeightsImpl.Index.Int) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Long) {
+				return new WeightsImpl.IndexMutable.Long((WeightsImpl.Index.Long) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Float) {
+				return new WeightsImpl.IndexMutable.Float((WeightsImpl.Index.Float) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Double) {
+				return new WeightsImpl.IndexMutable.Double((WeightsImpl.Index.Double) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Bool) {
+				return new WeightsImpl.IndexMutable.Bool((WeightsImpl.Index.Bool) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Char) {
+				return new WeightsImpl.IndexMutable.Char((WeightsImpl.Index.Char) weights, idStart, reIndexMap);
+			} else if (weights instanceof WeightsImpl.Index.Obj) {
+				return new WeightsImpl.IndexMutable.Obj<>((WeightsImpl.Index.Obj<?>) weights, idStart, reIndexMap);
+			} else {
+				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
+			}
+		}
+
+		static class Obj<E> extends WeightsImpl.Index.Obj<E> implements WeightsImpl.IndexMutable<E> {
+
+			Obj(IdStrategy idStrat, E defVal, Class<E> type) {
+				super(idStrat, defVal, type);
+			}
+
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, E weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				ObjectArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Byte extends WeightsImpl.Index.Byte implements WeightsImpl.IndexMutable<java.lang.Byte> {
+
+			Byte(IdStrategy idStrat, byte defVal) {
+				super(idStrat, defVal);
+			}
+
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, byte weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				ByteArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Short extends WeightsImpl.Index.Short implements WeightsImpl.IndexMutable<java.lang.Short> {
+
+			Short(IdStrategy idStrat, short defVal) {
+				super(idStrat, defVal);
+			}
+
+			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, short weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				ShortArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Int extends WeightsImpl.Index.Int implements WeightsImpl.IndexMutable<Integer> {
+
+			Int(IdStrategy idStrat, int defVal) {
+				super(idStrat, defVal);
+			}
+
+			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, int weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				IntArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Long extends WeightsImpl.Index.Long implements WeightsImpl.IndexMutable<java.lang.Long> {
+
+			Long(IdStrategy idStrat, long defVal) {
+				super(idStrat, defVal);
+			}
+
+			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, long weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				LongArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Float extends WeightsImpl.Index.Float implements WeightsImpl.IndexMutable<java.lang.Float> {
+
+			Float(IdStrategy idStrat, float defVal) {
+				super(idStrat, defVal);
+			}
+
+			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, float weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				FloatArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Double extends WeightsImpl.Index.Double implements WeightsImpl.IndexMutable<java.lang.Double> {
+
+			Double(IdStrategy idStrat, double defVal) {
+				super(idStrat, defVal);
+			}
+
+			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, double weight) {
+				checkIdx(idx);
+				weights[idx] = weight;
+			}
+
+			@Override
+			public int capacity() {
+				return weights.length;
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+				int oldCapacity = weights.length;
+				assert oldCapacity < newCapacity;
+				weights = Arrays.copyOf(weights, newCapacity);
+				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+			}
+
+			@Override
+			public void swap(int idx1, int idx2) {
+				checkIdx(idx1);
+				checkIdx(idx2);
+				DoubleArrays.swap(weights, idx1, idx2);
+			}
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+				weights[idx] = defaultWeight;
+			}
+
+			@Override
+			public void clear() {
+				Arrays.fill(weights, 0, size(), defaultWeight);
+			}
+		}
+
+		static class Bool extends WeightsImpl.Index.Bool implements WeightsImpl.IndexMutable<Boolean> {
+
+			Bool(IdStrategy idStrat, boolean defVal) {
+				super(idStrat, defVal);
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
+			}
+
+			@Override
+			public void set(int idx, boolean weight) {
+				checkIdx(idx);
+				weights.set(idx, weight);
 			}
 
 			@Override
@@ -1176,93 +1733,26 @@ interface WeightsImpl<E> extends Weights<E> {
 			public void clear() {
 				weights.set(0, capacity, defaultWeight);
 			}
-
-			@Override
-			public BooleanCollection values() {
-				return values;
-			}
-
-			@Override
-			public Class<Boolean> getTypeClass() {
-				return boolean.class;
-			}
-
-			@Override
-			public WeightsImpl.Index.Bool copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				return new WeightsImpl.Index.Bool(this, idStrat);
-			}
-
-			@Override
-			public WeightsImpl.Index.Bool copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Bool copy = new WeightsImpl.Index.Bool(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights.set(mapOldToNew[i], weights.get(i));
-				return copy;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Bool))
-					return false;
-				WeightsImpl.Index.Bool o = (WeightsImpl.Index.Bool) other;
-				return size() == o.size() && weights.equals(o.weights);
-			}
 		}
 
-		static class Char extends WeightsImpl.Index.Abstract<Character> implements Weights.Char {
-
-			private char[] weights;
-			private final char defaultWeight;
-			private final CharCollection values;
+		static class Char extends WeightsImpl.Index.Char implements WeightsImpl.IndexMutable<Character> {
 
 			Char(IdStrategy idStrat, char defVal) {
-				super(idStrat);
-
-				weights = CharArrays.EMPTY_ARRAY;
-				defaultWeight = defVal;
-				values = new AbstractCharList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Char.super.size();
-					}
-
-					@Override
-					public CharListIterator iterator() {
-						return CharIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public char getChar(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
+				super(idStrat, defVal);
 			}
 
-			@Override
-			public char getChar(int idx) {
-				checkIdx(idx);
-				return weights[idx];
+			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat) {
+				super(orig, idStrat);
+			}
+
+			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
 			public void set(int idx, char weight) {
 				checkIdx(idx);
 				weights[idx] = weight;
-			}
-
-			@Override
-			public char defaultWeightChar() {
-				return defaultWeight;
 			}
 
 			@Override
@@ -1295,52 +1785,11 @@ interface WeightsImpl<E> extends Weights<E> {
 			public void clear() {
 				Arrays.fill(weights, 0, size(), defaultWeight);
 			}
-
-			@Override
-			public CharCollection values() {
-				return values;
-			}
-
-			@Override
-			public Class<Character> getTypeClass() {
-				return char.class;
-			}
-
-			@Override
-			public WeightsImpl.Index.Char copy(IdStrategy idStrat) {
-				if (idStrat.size() != this.idStrat.size())
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);
-				copy.weights = Arrays.copyOf(weights, idStrat.size());
-				return copy;
-			}
-
-			@Override
-			public WeightsImpl.Index.Char copyMapped(IdStrategy idStrat, int[] mapOldToNew) {
-				final int s = idStrat.size();
-				if (s != this.idStrat.size() || s != mapOldToNew.length)
-					throw new IllegalArgumentException();
-				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);
-				copy.expand(s);
-				for (int i = 0; i < s; i++)
-					copy.weights[mapOldToNew[i]] = weights[i];
-				return copy;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Char))
-					return false;
-				WeightsImpl.Index.Char o = (WeightsImpl.Index.Char) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static class Manager {
 
-			final Map<Object, WeightsImpl.Index<?>> weights = new Object2ObjectArrayMap<>();
+			final Map<Object, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectArrayMap<>();
 			private int weightsCapacity;
 
 			Manager(int initCapacity) {
@@ -1350,11 +1799,11 @@ interface WeightsImpl<E> extends Weights<E> {
 			Manager(Manager orig, IdStrategy idStrat) {
 				this(idStrat.size());
 				for (var entry : orig.weights.entrySet())
-					weights.put(entry.getKey(), entry.getValue().copy(idStrat));
+					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), idStrat));
 			}
 
-			void addWeights(Object key, WeightsImpl.Index<?> weight) {
-				WeightsImpl.Index<?> oldContainer = weights.put(key, weight);
+			void addWeights(Object key, WeightsImpl.IndexMutable<?> weight) {
+				WeightsImpl.IndexMutable<?> oldContainer = weights.put(key, weight);
 				if (oldContainer != null)
 					throw new IllegalArgumentException("Two weights types with the same key: " + key);
 				if (weightsCapacity > weight.capacity())
@@ -1378,23 +1827,23 @@ interface WeightsImpl<E> extends Weights<E> {
 				if (capacity <= weightsCapacity)
 					return;
 				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);
-				for (WeightsImpl.Index<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : weights.values())
 					container.expand(newCapacity);
 				weightsCapacity = newCapacity;
 			}
 
 			void swapElements(int idx1, int idx2) {
-				for (WeightsImpl.Index<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : weights.values())
 					container.swap(idx1, idx2);
 			}
 
 			void clearElement(int idx) {
-				for (WeightsImpl.Index<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : weights.values())
 					container.clear(idx);
 			}
 
 			void clearContainers() {
-				for (WeightsImpl.Index<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : weights.values())
 					container.clear();
 			}
 		}
@@ -2121,7 +2570,15 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	static abstract class ImmutableView<E> implements WeightsImpl<E> {
+	/**
+	 * Tag interface for graphs that can not be muted/changed/altered
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Immutable<E> extends WeightsImpl<E> {
+	}
+
+	static abstract class ImmutableView<E> implements Immutable<E> {
 
 		final WeightsImpl<E> weights;
 

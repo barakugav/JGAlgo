@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -27,16 +28,20 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
-	private int n, m;
+	private int m;
+	final IdStrategy.Default verticesIdStrat = new IdStrategy.Default(0);
+	final IdStrategy.Default edgesIdStrat = new IdStrategy.Default(0);
 	int[] endpoints = IntArrays.EMPTY_ARRAY;
 	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;
-	private final IntSet verticesSet = new VerticesSet();
 	private IntSet edgesSet;
 	private boolean userProvideEdgesIds;
 
+	final WeightsImpl.IndexMutable.Manager verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+	final WeightsImpl.IndexMutable.Manager edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+
 	@Override
 	public IntSet vertices() {
-		return verticesSet;
+		return verticesIdStrat.indices();
 	}
 
 	@Override
@@ -47,7 +52,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			if (userProvideEdgesIds) {
 				edgesSet = new EdgesSetProvidedIdx();
 			} else {
-				edgesSet = new EdgesSetNonProvidedIdx();
+				edgesSet = edgesIdStrat.indices();
 			}
 		}
 		return edgesSet;
@@ -55,7 +60,9 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public int addVertex() {
-		return n++;
+		int u = verticesIdStrat.newIdx();
+		verticesUserWeights.ensureCapacity(u + 1);
+		return u;
 	}
 
 	private boolean canAddEdgeWithoutId() {
@@ -72,10 +79,13 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw new IllegalArgumentException(
 					"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
 		int e = m++;
+		int eFromIdStrat = edgesIdStrat.newIdx();
+		assert e == eFromIdStrat;
 		if (e * 2 == endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(2, 2 * endpoints.length));
 		endpoints[e * 2 + 0] = source;
 		endpoints[e * 2 + 1] = target;
+		edgesUserWeights.ensureCapacity(e + 1);
 		return e;
 	}
 
@@ -87,6 +97,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw new IllegalArgumentException(
 					"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
 		int eIdx = m++;
+		while (eIdx >= edgesIdStrat.size())
+			edgesIdStrat.newIdx();
 		if (eIdx * 2 == endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
 		if (eIdx == edgesUserIds.length)
@@ -94,14 +106,20 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		endpoints[eIdx * 2 + 0] = source;
 		endpoints[eIdx * 2 + 1] = target;
 		edgesUserIds[eIdx] = edge;
+		edgesUserWeights.ensureCapacity(edge + 1);
 		userProvideEdgesIds = true;
 	}
 
 	@Override
 	public void clear() {
-		n = m = 0;
+		m = 0;
+		verticesIdStrat.clear();
+		edgesIdStrat.clear();
 		edgesSet = null;
 		userProvideEdgesIds = false;
+		verticesUserWeights.clearContainers();
+		edgesUserWeights.clearContainers();
+
 	}
 
 	void validateUserProvidedIdsBeforeBuild() {
@@ -145,48 +163,49 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			assert e == edgesUserIds[e];
 	}
 
-	private class VerticesSet extends AbstractIntSet {
-
-		@Override
-		public int size() {
-			return n;
-		}
-
-		@Override
-		public boolean contains(int v) {
-			return v >= 0 && v < n;
-		}
-
-		@Override
-		public IntIterator iterator() {
-			return new Utils.RangeIter(n);
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof VerticesSet))
-				return super.equals(other);
-			VerticesSet o = (VerticesSet) other;
-			return n == o.size();
-		}
-
-		@Override
-		public int hashCode() {
-			return n * (n + 1) / 2;
-		}
+	@Override
+	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+		return verticesUserWeights.getWeights(key);
 	}
 
-	private abstract class EdgesSetAbstract extends AbstractIntSet {
+	@Override
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
+		WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);
+		verticesUserWeights.addWeights(key, weights);
+		@SuppressWarnings("unchecked")
+		WeightsT weights0 = (WeightsT) weights;
+		return weights0;
+	}
+
+	@Override
+	public Set<Object> getVerticesWeightsKeys() {
+		return verticesUserWeights.weightsKeys();
+	}
+
+	@Override
+	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+		return edgesUserWeights.getWeights(key);
+	}
+
+	@Override
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);
+		edgesUserWeights.addWeights(key, weights);
+		@SuppressWarnings("unchecked")
+		WeightsT weights0 = (WeightsT) weights;
+		return weights0;
+	}
+
+	@Override
+	public Set<Object> getEdgesWeightsKeys() {
+		return edgesUserWeights.weightsKeys();
+	}
+
+	private class EdgesSetProvidedIdx extends AbstractIntSet {
 		@Override
 		public int size() {
 			return m;
 		}
-
-	}
-
-	private class EdgesSetProvidedIdx extends EdgesSetAbstract {
 
 		@Override
 		public IntIterator iterator() {
@@ -210,34 +229,6 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		}
 	}
 
-	private class EdgesSetNonProvidedIdx extends EdgesSetAbstract {
-
-		@Override
-		public boolean contains(int e) {
-			return m >= 0 && e < m;
-		}
-
-		@Override
-		public IntIterator iterator() {
-			return new Utils.RangeIter(m);
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof EdgesSetNonProvidedIdx))
-				return super.equals(other);
-			EdgesSetNonProvidedIdx o = (EdgesSetNonProvidedIdx) other;
-			return m == o.size();
-		}
-
-		@Override
-		public int hashCode() {
-			return m * (m + 1) / 2;
-		}
-	}
-
 	static class Undirected extends IndexGraphBuilderImpl {
 
 		@Override
@@ -251,14 +242,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		@Override
 		public IndexGraph buildMutable() {
 			validateUserProvidedIdsBeforeBuild();
-			final int n = vertices().size();
-			final int m = edges().size();
-			IndexGraph g = IndexGraphFactory.newUndirected().expectedVerticesNum(n).expectedEdgesNum(m).newGraph();
-			for (int v = 0; v < m; v++)
-				g.addVertex();
-			for (int e = 0; e < m; e++)
-				g.addEdge(endpoints[e * 2 + 0], endpoints[e * 2 + 1]);
-			return g;
+			return new GraphArrayUndirected(this);
 		}
 
 		@Override
@@ -285,14 +269,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		@Override
 		public IndexGraph buildMutable() {
 			validateUserProvidedIdsBeforeBuild();
-			final int n = vertices().size();
-			final int m = edges().size();
-			IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n).expectedEdgesNum(m).newGraph();
-			for (int v = 0; v < m; v++)
-				g.addVertex();
-			for (int e = 0; e < m; e++)
-				g.addEdge(endpoints[e * 2 + 0], endpoints[e * 2 + 1]);
-			return g;
+			return new GraphArrayDirected(this);
 		}
 
 		@Override

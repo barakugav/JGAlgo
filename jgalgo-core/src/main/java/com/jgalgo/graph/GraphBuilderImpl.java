@@ -15,7 +15,10 @@
  */
 package com.jgalgo.graph;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -38,6 +41,8 @@ class GraphBuilderImpl {
 		private boolean userProvideEdgesIds;
 		final IndexIdMap viMap;
 		final IndexIdMap eiMap;
+		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights = new IdentityHashMap<>();
+		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights = new IdentityHashMap<>();
 
 		Abstract(IndexGraphBuilder ibuilder) {
 			this.ibuilder = ibuilder;
@@ -121,7 +126,7 @@ class GraphBuilderImpl {
 				throw new IndexOutOfBoundsException(source);
 
 			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
-			int eId = eIndex;
+			int eId = eIndex + 1; // avoid null key in open hash maps
 			assert eIndex == eIndexToId.size();
 			eIndexToId.add(eId);
 			int oldVal = eIdToIndex.put(eId, eIndex);
@@ -149,6 +154,49 @@ class GraphBuilderImpl {
 			if (oldVal != eIdToIndex.defaultReturnValue())
 				throw new IllegalArgumentException("duplicate edge: " + edge);
 			userProvideEdgesIds = true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+			WeightsImpl.Index<V> indexWeights = ibuilder.getVerticesWeights(key);
+			if (indexWeights == null)
+				return null;
+			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
+					iw -> WeightsImpl.Mapped.newInstance(iw, viMap));
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			ibuilder.addVerticesWeights(key, type, defVal);
+			return getVerticesWeights(key);
+		}
+
+		@Override
+		public Set<Object> getVerticesWeightsKeys() {
+			return ibuilder.getVerticesWeightsKeys();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+			WeightsImpl.Index<E> indexWeights = ibuilder.getEdgesWeights(key);
+			if (indexWeights == null)
+				return null;
+			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
+					iw -> WeightsImpl.Mapped.newInstance(iw, eiMap));
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			ibuilder.addEdgesWeights(key, type, defVal);
+			return getEdgesWeights(key);
+		}
+
+		@Override
+		public Set<Object> getEdgesWeightsKeys() {
+			return ibuilder.getEdgesWeightsKeys();
 		}
 
 		@Override

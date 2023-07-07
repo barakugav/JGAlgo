@@ -20,7 +20,7 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 	final int[] edgesOut;
 
 	GraphCSRUnmappedAbstract(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-		super(builder, processEdges);
+		super(builder, processEdges, null);
 		edgesOut = processEdges.edgesOut;
 
 		final int m = builder.edges().size();
@@ -56,11 +56,6 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 			endpoints[e * 2 + 0] = g.edgeSource(e);
 			endpoints[e * 2 + 1] = g.edgeTarget(e);
 		}
-
-		for (Object key : g.getVerticesWeightsKeys())
-			verticesUserWeights.addWeights(key, WeightsImpl.Index.copyOf(g.getVerticesWeights(key), verticesIdStrat));
-		for (Object key : g.getEdgesWeightsKeys())
-			edgesUserWeights.addWeights(key, WeightsImpl.Index.copyOf(g.getEdgesWeights(key), edgesIdStrat));
 	}
 
 }

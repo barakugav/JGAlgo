@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
 	private final DataContainer.Long edgeEndpointsContainer;
 	private long[] edgeEndpoints;
@@ -43,9 +43,23 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 			final int m = edgesIdStrat.size();
 			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
 					newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
 				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
-			addInternalEdgesContainer(edgeEndpointsContainer);
+		}
+	}
+
+	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
+		super(builder);
+		final int m = edgesIdStrat.size();
+		edgeEndpointsContainer =
+				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
+
+		for (int e = 0; e < m; e++) {
+			int source = builder.endpoints[e * 2 + 0];
+			int target = builder.endpoints[e * 2 + 1];
+			EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
 		}
 	}
 

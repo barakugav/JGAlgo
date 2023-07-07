@@ -838,7 +838,7 @@ public class IndexIdMaps {
 		@SuppressWarnings("unchecked")
 		<V, WeightsT extends WeightsImpl<V>> WeightsT rewrap(WeightsImpl<?> weights) {
 			if (immutableView)
-				weights = weights.immutableView();
+				weights = (WeightsImpl<?>) WeightsImpl.immutableView(weights);
 			return (WeightsT) weights;
 		}
 

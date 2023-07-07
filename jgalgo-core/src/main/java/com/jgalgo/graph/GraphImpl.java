@@ -433,7 +433,7 @@ abstract class GraphImpl extends GraphBase {
 			idToIndex = new Int2IntOpenHashMap();
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			indexToId = new WeightsImpl.Index.Int(idStrat, -1);
+			indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
 			initListeners(idStrat);
 		}
 
@@ -442,12 +442,12 @@ abstract class GraphImpl extends GraphBase {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = orig0.indexToId.copy(idStrat);
+				indexToId = new WeightsImpl.IndexMutable.Int(orig0.indexToId, idStrat);
 			} else {
 				idToIndex = new Int2IntOpenHashMap(idStrat.size());
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImpl.Index.Int(idStrat, -1);
-				indexToId.expand(idStrat.size());
+				indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
+				((WeightsImpl.IndexMutable.Int) indexToId).expand(idStrat.size());
 				for (int idx : idStrat.indices()) {
 					int id = orig.indexToId(idx);
 					if (indexToId.getInt(idx) != -1)
@@ -494,10 +494,14 @@ abstract class GraphImpl extends GraphBase {
 			});
 			idStrat.addIdAddRemoveListener(new IdAddRemoveListener() {
 
+				WeightsImpl.IndexMutable.Int indexToId() {
+					return (WeightsImpl.IndexMutable.Int) indexToId;
+				}
+
 				@Override
 				public void idRemove(int idx) {
 					final int id = indexToId.getInt(idx);
-					indexToId.clear(idx);
+					indexToId().clear(idx);
 					idToIndex.remove(id);
 				}
 
@@ -510,8 +514,8 @@ abstract class GraphImpl extends GraphBase {
 					int oldIdx = idToIndex.put(id, idx);
 					assert oldIdx == -1;
 
-					if (idx == indexToId.capacity())
-						indexToId.expand(Math.max(2, 2 * indexToId.capacity()));
+					if (idx == indexToId().capacity())
+						indexToId().expand(Math.max(2, 2 * indexToId().capacity()));
 					indexToId.set(idx, id);
 
 					userChosenId = -1;
@@ -520,7 +524,7 @@ abstract class GraphImpl extends GraphBase {
 				@Override
 				public void idsClear() {
 					idToIndex.clear();
-					indexToId.clear();
+					indexToId().clear();
 				}
 			});
 		}

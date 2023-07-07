@@ -386,7 +386,7 @@ public interface Graph {
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        some key of the weights, could be anything
-	 * @return            vertices weights of the key, or null if no container found with the specified key
+	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <V>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
@@ -484,7 +484,7 @@ public interface Graph {
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        some key of the weights, could be anything
-	 * @return            edges weights of the key, or null if no container found with the specified key
+	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <E>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */

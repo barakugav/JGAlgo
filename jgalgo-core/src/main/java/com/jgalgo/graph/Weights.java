@@ -615,7 +615,7 @@ public interface Weights<W> {
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
 		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();
-		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);
 		if (idStrat.size() > 0)
 			weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
@@ -658,7 +658,7 @@ public interface Weights<W> {
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
 		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();
-		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);
 		if (idStrat.size() > 0)
 			weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {

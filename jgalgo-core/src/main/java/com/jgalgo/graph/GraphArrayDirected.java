@@ -121,6 +121,29 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
+	GraphArrayDirected(IndexGraphBuilderImpl.Directed builder) {
+		super(builder);
+		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
+				IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesOutNum = newArr);
+		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+				newArr -> edgesIn = newArr);
+		edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesInNum = newArr);
+
+		addInternalVerticesContainer(edgesOutContainer);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
+
+		final int m = builder.edges().size();
+		for (int e = 0; e < m; e++) {
+			int source = builder.endpoints[e * 2 + 0];
+			int target = builder.endpoints[e * 2 + 1];
+			addEdgeToList(edgesOut, edgesOutNum, source, e);
+			addEdgeToList(edgesIn, edgesInNum, target, e);
+		}
+	}
+
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);

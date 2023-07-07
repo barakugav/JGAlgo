@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
+abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
 	final DataContainer.Obj<DataContainer.Int> edges;
 	private long[] edgeEndpoints;
