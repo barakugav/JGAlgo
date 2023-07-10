@@ -88,7 +88,6 @@
         <version>${jacoco-maven-plugin.version}</version>
         <configuration>
           <excludes>
-            <exclude>com/jgalgo/WeakIdentityHashMap**</exclude>
             <exclude>com/jgalgo/IntArrayFIFOQueue**</exclude>
             <exclude>com/jgalgo/DebugPrintsManager**</exclude>
           </excludes>

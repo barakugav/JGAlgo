@@ -165,12 +165,4 @@
     <Method name="setHeapBuilder" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
-  <Match>
-    <!-- Implementation of WeakHashMap copied from java.util, should be fine -->
-    <Or>
-      <Class name="com.jgalgo.graph.WeakIdentityHashMap" />
-      <Class name="com.jgalgo.graph.WeakIdentityHashMap$HashIterator" />
-    </Or>
-    <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
-  </Match>
 </FindBugsFilter>
