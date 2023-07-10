@@ -447,18 +447,20 @@ abstract class GraphImpl extends GraphBase {
 				idToIndex = new Int2IntOpenHashMap(idStrat.size());
 				idToIndex.defaultReturnValue(-1);
 				indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
-				((WeightsImpl.IndexMutable.Int) indexToId).expand(idStrat.size());
-				for (int idx : idStrat.indices()) {
-					int id = orig.indexToId(idx);
-					if (indexToId.getInt(idx) != -1)
-						throw new IllegalArgumentException("duplicate index: " + idx);
-					if (id < 0)
-						throw new IllegalArgumentException("negative id: " + id);
-					indexToId.set(idx, id);
+				if (idStrat.size() > 0) {
+					((WeightsImpl.IndexMutable.Int) indexToId).expand(idStrat.size());
+					for (int idx : idStrat.indices()) {
+						int id = orig.indexToId(idx);
+						if (indexToId.getInt(idx) != -1)
+							throw new IllegalArgumentException("duplicate index: " + idx);
+						if (id < 0)
+							throw new IllegalArgumentException("negative id: " + id);
+						indexToId.set(idx, id);
 
-					int oldIdx = idToIndex.put(id, idx);
-					if (oldIdx != -1)
-						throw new IllegalArgumentException("duplicate id: " + id);
+						int oldIdx = idToIndex.put(id, idx);
+						if (oldIdx != -1)
+							throw new IllegalArgumentException("duplicate id: " + id);
+					}
 				}
 			}
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
