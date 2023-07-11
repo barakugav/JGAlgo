@@ -368,26 +368,15 @@ public interface IndexGraphBuilder {
 	}
 
 	/**
-	 * Create a new builder initialized with an existing graph vertices and edges.
+	 * Create a new builder initialized with an existing graph vertices, edges and weights.
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
 	 * @param  g a graph
-	 * @return   a builder initialized with the given graph vertices and edges
+	 * @return   a builder initialized with the given graph vertices, edges and weights
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-		IndexGraphBuilder builder = g.getCapabilities().directed() ? newDirected() : newUndirected();
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
-		for (int v = 0; v < n; v++) {
-			int vBuilder = builder.addVertex();
-			assert vBuilder == v;
-		}
-		for (int e = 0; e < m; e++) {
-			int eBuilder = builder.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			assert eBuilder == e;
-		}
-		return builder;
+		return IndexGraphBuilderImpl.newFrom(g);
 	}
 
 }

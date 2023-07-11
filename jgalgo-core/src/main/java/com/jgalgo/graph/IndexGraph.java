@@ -222,6 +222,11 @@ public interface IndexGraph extends Graph {
 	}
 
 	@Override
+	default IndexGraph immutableCopy() {
+		return IndexGraphBuilder.newFrom(this).build();
+	}
+
+	@Override
 	default IndexGraph immutableView() {
 		return Graphs.immutableView(this);
 	}

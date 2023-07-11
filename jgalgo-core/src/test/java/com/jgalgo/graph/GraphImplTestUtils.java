@@ -562,6 +562,91 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
+	static void testImmutableCopy(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : new boolean[] { true, false }) {
+			/* Create a random graph g */
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+
+			/* assign some weights to the vertices of g */
+			final Object gVDataKey = new Utils.Obj("vData");
+			Weights<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
+			for (int u : g.vertices()) {
+				Object data = new Utils.Obj("data" + u);
+				gVData.set(u, data);
+				gVDataMap.put(u, data);
+			}
+
+			/* assign some weights to the edges of g */
+			final Object gEDataKey = new Utils.Obj("eData");
+			Weights<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
+			for (int e : g.edges()) {
+				Object data = new Utils.Obj("data" + e);
+				gEData.set(e, data);
+				gEDataMap.put(e, data);
+			}
+
+			/* Copy g */
+			Graph copy = g.immutableCopy();
+
+			/* Assert vertices and edges are the same */
+			assertEquals(g.vertices().size(), copy.vertices().size());
+			assertEquals(g.vertices(), copy.vertices());
+			assertEquals(g.edges().size(), copy.edges().size());
+			assertEquals(g.edges(), copy.edges());
+			for (int u : g.vertices()) {
+				assertEquals(g.outEdges(u), copy.outEdges(u));
+				assertEquals(g.inEdges(u), copy.inEdges(u));
+			}
+
+			/* Assert weights were copied */
+			Weights<Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			Weights<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			assertNotNull(copyVData);
+			assertNotNull(copyEData);
+			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
+			Int2ObjectMap<Object> copyEDataMap = new Int2ObjectOpenHashMap<>(gEDataMap);
+			for (int u : g.vertices()) {
+				assertEquals(gVDataMap.get(u), gVData.get(u));
+				assertEquals(copyVDataMap.get(u), copyVData.get(u));
+			}
+			for (int e : g.edges()) {
+				assertEquals(gEDataMap.get(e), gEData.get(e));
+				assertEquals(copyEDataMap.get(e), copyEData.get(e));
+			}
+
+			/* Reassign some weights to g, and assert they are updated independently */
+			int[] vs = g.vertices().toIntArray();
+			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
+				int u = vs[rand.nextInt(vs.length)];
+				Object data = new Utils.Obj("data" + u + "new");
+				g.getVerticesWeights(gVDataKey).set(u, data);
+				gVDataMap.put(u, data);
+			}
+			int[] gEdges = g.edges().toIntArray();
+			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
+				int e = gEdges[rand.nextInt(g.edges().size())];
+				Object data = new Utils.Obj("data" + e + "new");
+				g.getEdgesWeights(gEDataKey).set(e, data);
+				gEDataMap.put(e, data);
+			}
+
+			/* Assert the weights were updated independently */
+			for (int u : g.vertices()) {
+				assertEquals(gVDataMap.get(u), gVData.get(u));
+				assertEquals(copyVDataMap.get(u), copyVData.get(u));
+			}
+			for (int e : g.edges()) {
+				assertEquals(gEDataMap.get(e), gEData.get(e));
+				assertEquals(copyEDataMap.get(e), copyEData.get(e));
+			}
+		}
+	}
+
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newBuilder().build(), graphImpl, seed);
 	}

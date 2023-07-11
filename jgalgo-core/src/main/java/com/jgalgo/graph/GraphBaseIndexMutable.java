@@ -48,25 +48,16 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 		if (!getCapabilities().parallelEdges())
 			ArgumentCheck.noParallelEdges(g, "parallel edges are not supported");
 
-		if (g instanceof GraphBaseIndexMutable) {
-			GraphBaseIndexMutable g0 = (GraphBaseIndexMutable) g;
-			verticesIdStrat = g0.verticesIdStrat.copy();
-			edgesIdStrat = g0.edgesIdStrat.copy();
+		verticesIdStrat = new IdStrategy.Default(g.vertices().size());
+		edgesIdStrat = new IdStrategy.Default(g.edges().size());
 
-			verticesUserWeights = new WeightsImpl.IndexMutable.Manager(g0.verticesUserWeights, verticesIdStrat);
-			edgesUserWeights = new WeightsImpl.IndexMutable.Manager(g0.edgesUserWeights, edgesIdStrat);
-		} else {
-			verticesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getVerticesIdStrategy().size());
-			edgesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getEdgesIdStrategy().size());
-
-			verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
-			for (Object key : g.getVerticesWeightsKeys())
-				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));
-			edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());
-			for (Object key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));
-		}
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
+		for (Object key : g.getVerticesWeightsKeys())
+			verticesUserWeights.addWeights(key,
+					WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());
+		for (Object key : g.getEdgesWeightsKeys())
+			edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));
 
 		/* internal data containers should be copied manually */
 		// verticesInternalContainers = g.verticesInternalContainers.copy(verticesIdStrategy);

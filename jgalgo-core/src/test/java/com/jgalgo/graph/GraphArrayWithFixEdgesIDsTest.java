@@ -81,6 +81,12 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 	}
 
 	@Test
+	public void testImmutableCopy() {
+		final long seed = 0xb8cf51194c0f860fL;
+		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x6519a3d6cfdcaa15L;
 		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);

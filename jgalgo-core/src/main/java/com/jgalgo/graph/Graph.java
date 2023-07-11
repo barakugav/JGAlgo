@@ -647,11 +647,35 @@ public interface Graph {
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities
 	 * (inclusive). The returned Graph will always be modifiable, with no side affects on the original graph.
+	 * <p>
+	 * Note that although {@code g.equals(g.copy())} is always {@code true}, there is no guarantee that
+	 * {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is copied, new indices may be
+	 * assigned to the vertices and edges.
 	 *
 	 * @return an identical copy of this graph
 	 */
 	default Graph copy() {
 		return GraphFactory.newFrom(this).newCopyOf(this);
+	}
+
+	/**
+	 * Create an immutable copy of this graph.
+	 * <p>
+	 * An identical copy of this graph will be created, with the same vertices, edges and weights. The returned graph
+	 * will be immutable, and no vertices/edges/weights can be added or removed from it.
+	 * <p>
+	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
+	 * in the future. It may be more efficient to create an immutable copy of a graph and passing the copy to algorithms
+	 * instead of using the original graph.
+	 * <p>
+	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true}, there is no guarantee that
+	 * {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely, when the graph is copied, new indices may
+	 * be assigned to the vertices and edges.
+	 *
+	 * @return an immutable copy of this graph
+	 */
+	default Graph immutableCopy() {
+		return GraphBuilder.newFrom(this).build();
 	}
 
 	/**

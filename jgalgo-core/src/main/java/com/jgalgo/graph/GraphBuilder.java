@@ -238,20 +238,15 @@ public interface GraphBuilder {
 	}
 
 	/**
-	 * Create a new builder initialized with an existing graph vertices and edges.
+	 * Create a new builder initialized with an existing graph vertices, edges and weights.
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
 	 * @param  g a graph
-	 * @return   a builder initialized with the given graph vertices and edges
+	 * @return   a builder initialized with the given graph vertices, edges and weights.
 	 */
 	static GraphBuilder newFrom(Graph g) {
-		GraphBuilder builder = g.getCapabilities().directed() ? newDirected() : newUndirected();
-		for (int v : g.vertices())
-			builder.addVertex(v);
-		for (int e : g.edges())
-			builder.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
-		return builder;
+		return GraphBuilderImpl.newFrom(g);
 	}
 
 }

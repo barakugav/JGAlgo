@@ -81,6 +81,12 @@ public class GraphLinkedTest extends TestBase {
 	}
 
 	@Test
+	public void testImmutableCopy() {
+		final long seed = 0x9f77f9dfded3f6fL;
+		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x757d2f9883276f90L;
 		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);

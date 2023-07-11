@@ -28,6 +28,10 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 class GraphBuilderImpl {
 
+	static GraphBuilder newFrom(Graph g) {
+		return g.getCapabilities().directed() ? new GraphBuilderImpl.Directed(g) : new GraphBuilderImpl.Undirected(g);
+	}
+
 	private static abstract class Abstract implements GraphBuilder {
 
 		final IndexGraphBuilder ibuilder;
@@ -56,6 +60,35 @@ class GraphBuilderImpl {
 			edges = IntSets.unmodifiable(eIdToIndex.keySet());
 			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId);
 			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId);
+		}
+
+		Abstract(Graph g) {
+			final int n = g.vertices().size();
+			final int m = g.edges().size();
+			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph());
+			vIdToIndex = new Int2IntOpenHashMap(n);
+			vIdToIndex.defaultReturnValue(-1);
+			vIndexToId = new IntArrayList(n);
+			vertices = IntSets.unmodifiable(vIdToIndex.keySet());
+			eIdToIndex = new Int2IntOpenHashMap(m);
+			eIdToIndex.defaultReturnValue(-1);
+			eIndexToId = new IntArrayList(m);
+			edges = IntSets.unmodifiable(eIdToIndex.keySet());
+			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId);
+			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId);
+
+			IndexIdMap gViMap = g.indexGraphVerticesMap();
+			IndexIdMap gEiMap = g.indexGraphEdgesMap();
+			for (int vIdx = 0; vIdx < n; vIdx++) {
+				int v = gViMap.indexToId(vIdx);
+				vIndexToId.add(v);
+				vIdToIndex.put(v, vIdx);
+			}
+			for (int eIdx = 0; eIdx < m; eIdx++) {
+				int e = gEiMap.indexToId(eIdx);
+				eIndexToId.add(e);
+				eIdToIndex.put(e, eIdx);
+			}
 		}
 
 		@Override
@@ -252,6 +285,11 @@ class GraphBuilderImpl {
 			super(IndexGraphBuilder.newUndirected());
 		}
 
+		Undirected(Graph g) {
+			super(g);
+			ArgumentCheck.onlyUndirected(g);
+		}
+
 		@Override
 		public Graph build() {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);
@@ -279,6 +317,11 @@ class GraphBuilderImpl {
 
 		Directed() {
 			super(IndexGraphBuilder.newDirected());
+		}
+
+		Directed(Graph g) {
+			super(g);
+			ArgumentCheck.onlyDirected(g);
 		}
 
 		@Override

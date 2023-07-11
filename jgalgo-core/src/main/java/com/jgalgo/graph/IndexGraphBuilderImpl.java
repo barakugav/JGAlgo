@@ -29,15 +29,49 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	private int m;
-	final IdStrategy.Default verticesIdStrat = new IdStrategy.Default(0);
-	final IdStrategy.Default edgesIdStrat = new IdStrategy.Default(0);
+	final IdStrategy.Default verticesIdStrat;
+	final IdStrategy.Default edgesIdStrat;
 	int[] endpoints = IntArrays.EMPTY_ARRAY;
 	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;
 	private IntSet edgesSet;
 	private boolean userProvideEdgesIds;
 
-	final WeightsImpl.IndexMutable.Manager verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
-	final WeightsImpl.IndexMutable.Manager edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
+	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+
+	private IndexGraphBuilderImpl() {
+		verticesIdStrat = new IdStrategy.Default(0);
+		edgesIdStrat = new IdStrategy.Default(0);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+	}
+
+	private IndexGraphBuilderImpl(IndexGraph g) {
+		final int n = g.vertices().size();
+		m = g.edges().size();
+
+		verticesIdStrat = new IdStrategy.Default(n);
+		edgesIdStrat = new IdStrategy.Default(m);
+
+		endpoints = new int[m * 2];
+		for (int e = 0; e < m; e++) {
+			endpoints[e * 2 + 0] = g.edgeSource(e);
+			endpoints[e * 2 + 1] = g.edgeTarget(e);
+		}
+
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
+		for (Object key : g.getVerticesWeightsKeys())
+			verticesUserWeights.addWeights(key,
+					WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());
+		for (Object key : g.getEdgesWeightsKeys())
+			edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));
+	}
+
+	static IndexGraphBuilderImpl newFrom(IndexGraph g) {
+		return g.getCapabilities().directed() ? new IndexGraphBuilderImpl.Directed(g)
+				: new IndexGraphBuilderImpl.Undirected(g);
+	}
 
 	@Override
 	public IntSet vertices() {
@@ -231,6 +265,13 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	static class Undirected extends IndexGraphBuilderImpl {
 
+		Undirected() {}
+
+		Undirected(IndexGraph g) {
+			super(g);
+			ArgumentCheck.onlyUndirected(g);
+		}
+
 		@Override
 		public IndexGraph build() {
 			validateUserProvidedIdsBeforeBuild();
@@ -258,6 +299,13 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	static class Directed extends IndexGraphBuilderImpl {
+
+		Directed() {}
+
+		Directed(IndexGraph g) {
+			super(g);
+			ArgumentCheck.onlyDirected(g);
+		}
 
 		@Override
 		public IndexGraph build() {
