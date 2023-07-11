@@ -321,18 +321,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	private class EdgeIterOut extends EdgeIt {
-
-		private final int source;
+	private class EdgeIterOut extends GraphArrayAbstract.EdgeIterOut {
 
 		EdgeIterOut(int source, int[] edges, int count) {
-			super(edges, count);
-			this.source = source;
-		}
-
-		@Override
-		public int source() {
-			return source;
+			super(source, edges, count);
 		}
 
 		@Override
@@ -341,23 +333,15 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	private class EdgeIterIn extends EdgeIt {
-
-		private final int target;
+	private class EdgeIterIn extends GraphArrayAbstract.EdgeIterIn {
 
 		EdgeIterIn(int target, int[] edges, int count) {
-			super(edges, count);
-			this.target = target;
+			super(target, edges, count);
 		}
 
 		@Override
 		public int source() {
 			return edgeSource(lastEdge);
-		}
-
-		@Override
-		public int target() {
-			return target;
 		}
 	}
 

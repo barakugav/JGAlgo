@@ -123,14 +123,14 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		super.clearEdges();
 	}
 
-	abstract class EdgeIt implements EdgeIter {
+	private abstract class EdgeIterBase implements EdgeIter {
 
 		private final int[] edges;
 		private int count;
 		private int idx;
 		int lastEdge = -1;
 
-		EdgeIt(int[] edges, int count) {
+		EdgeIterBase(int[] edges, int count) {
 			this.edges = edges;
 			this.count = count;
 		}
@@ -167,6 +167,36 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 			lastEdge = -1;
 		}
 
+	}
+
+	abstract class EdgeIterOut extends EdgeIterBase {
+
+		final int source;
+
+		EdgeIterOut(int source, int[] edges, int count) {
+			super(edges, count);
+			this.source = source;
+		}
+
+		@Override
+		public int source() {
+			return source;
+		}
+	}
+
+	abstract class EdgeIterIn extends EdgeIterBase {
+
+		final int target;
+
+		EdgeIterIn(int target, int[] edges, int count) {
+			super(edges, count);
+			this.target = target;
+		}
+
+		@Override
+		public int target() {
+			return target;
+		}
 	}
 
 }
