@@ -222,8 +222,8 @@ public interface IndexGraph extends Graph {
 	}
 
 	@Override
-	default IndexGraph unmodifiableView() {
-<span class="nc" id="L226">		return Graphs.unmodifiableView(this);</span>
+	default IndexGraph immutableView() {
+<span class="nc" id="L226">		return Graphs.immutableView(this);</span>
 	}
 
 	@Override

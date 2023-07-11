@@ -20,7 +20,7 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 	final int[] edgesOut;
 
 	GraphCSRUnmappedAbstract(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-<span class="fc" id="L23">		super(builder, processEdges);</span>
+<span class="fc" id="L23">		super(builder, processEdges, null);</span>
 <span class="fc" id="L24">		edgesOut = processEdges.edgesOut;</span>
 
 <span class="fc" id="L26">		final int m = builder.edges().size();</span>
@@ -56,12 +56,7 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 <span class="nc" id="L56">			endpoints[e * 2 + 0] = g.edgeSource(e);</span>
 <span class="nc" id="L57">			endpoints[e * 2 + 1] = g.edgeTarget(e);</span>
 <span class="nc" id="L58">		}</span>
-
-<span class="nc bnc" id="L60" title="All 2 branches missed.">		for (Object key : g.getVerticesWeightsKeys())</span>
-<span class="nc" id="L61">			verticesUserWeights.addWeights(key, WeightsImpl.Index.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">		for (Object key : g.getEdgesWeightsKeys())</span>
-<span class="nc" id="L63">			edgesUserWeights.addWeights(key, WeightsImpl.Index.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
-<span class="nc" id="L64">	}</span>
+<span class="nc" id="L59">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

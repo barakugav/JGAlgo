@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
 	private final DataContainer.Long edgeEndpointsContainer;
 	private long[] edgeEndpoints;
@@ -43,115 +43,129 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 <span class="fc" id="L43">			final int m = edgesIdStrat.size();</span>
 <span class="fc" id="L44">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
 <span class="fc" id="L45">					newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L47">				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L48">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L46">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			for (int e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L48">				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));</span>
 		}
 <span class="fc" id="L50">	}</span>
 
+	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
+<span class="nc" id="L53">		super(builder);</span>
+<span class="nc" id="L54">		final int m = edgesIdStrat.size();</span>
+<span class="nc" id="L55">		edgeEndpointsContainer =</span>
+<span class="nc" id="L56">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="nc" id="L57">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		for (int e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L60">			int source = builder.endpoints[e * 2 + 0];</span>
+<span class="nc" id="L61">			int target = builder.endpoints[e * 2 + 1];</span>
+<span class="nc" id="L62">			EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
+		}
+<span class="nc" id="L64">	}</span>
+
 	@Override
 	public int addEdge(int source, int target) {
-<span class="fc" id="L54">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L55">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
-<span class="fc" id="L56">		return e;</span>
+<span class="fc" id="L68">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L69">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
+<span class="fc" id="L70">		return e;</span>
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-<span class="fc" id="L61">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
-<span class="fc" id="L62">		super.removeEdgeImpl(edge);</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc" id="L75">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
+<span class="fc" id="L76">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L77">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L67">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
-<span class="fc" id="L68">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L69">	}</span>
+<span class="fc" id="L81">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
+<span class="fc" id="L82">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L83">	}</span>
 
 	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
-<span class="fc" id="L72">		int[] es = edges[w];</span>
-<span class="fc" id="L73">		int num = edgesNum[w];</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
-<span class="fc" id="L75">			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));</span>
-<span class="fc" id="L76">			edges[w] = es;</span>
+<span class="fc" id="L86">		int[] es = edges[w];</span>
+<span class="fc" id="L87">		int num = edgesNum[w];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
+<span class="fc" id="L89">			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));</span>
+<span class="fc" id="L90">			edges[w] = es;</span>
 		}
-<span class="fc" id="L78">		es[num] = e;</span>
-<span class="fc" id="L79">		edgesNum[w] = num + 1;</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L92">		es[num] = e;</span>
+<span class="fc" id="L93">		edgesNum[w] = num + 1;</span>
+<span class="fc" id="L94">	}</span>
 
 	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		for (int i = 0; i &lt; edgesNum; i++)</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (edges[i] == e)</span>
-<span class="fc" id="L85">				return i;</span>
-<span class="nc" id="L86">		return -1;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		for (int i = 0; i &lt; edgesNum; i++)</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (edges[i] == e)</span>
+<span class="fc" id="L99">				return i;</span>
+<span class="nc" id="L100">		return -1;</span>
 	}
 
 	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
-<span class="fc" id="L90">		int[] es = edges[w];</span>
-<span class="fc" id="L91">		int num = edgesNum[w];</span>
-<span class="fc" id="L92">		int i = edgeIndexOf(es, num, e);</span>
-<span class="fc" id="L93">		es[i] = es[num - 1];</span>
-<span class="fc" id="L94">		edgesNum[w] = num - 1;</span>
-<span class="fc" id="L95">	}</span>
+<span class="fc" id="L104">		int[] es = edges[w];</span>
+<span class="fc" id="L105">		int num = edgesNum[w];</span>
+<span class="fc" id="L106">		int i = edgeIndexOf(es, num, e);</span>
+<span class="fc" id="L107">		es[i] = es[num - 1];</span>
+<span class="fc" id="L108">		edgesNum[w] = num - 1;</span>
+<span class="fc" id="L109">	}</span>
 
 	@Override
 	public long[] edgeEndpoints() {
-<span class="fc" id="L99">		return edgeEndpoints;</span>
+<span class="fc" id="L113">		return edgeEndpoints;</span>
 	}
 
 	void reverseEdge0(int edge) {
-<span class="fc" id="L103">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
-<span class="fc" id="L104">	}</span>
+<span class="fc" id="L117">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
+<span class="fc" id="L118">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L108">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
-<span class="fc" id="L109">		super.clearEdges();</span>
-<span class="fc" id="L110">	}</span>
+<span class="fc" id="L122">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
+<span class="fc" id="L123">		super.clearEdges();</span>
+<span class="fc" id="L124">	}</span>
 
 	abstract class EdgeIt implements EdgeIter {
 
 		private final int[] edges;
 		private int count;
 		private int idx;
-<span class="fc" id="L117">		int lastEdge = -1;</span>
+<span class="fc" id="L131">		int lastEdge = -1;</span>
 
-<span class="fc" id="L119">		EdgeIt(int[] edges, int count) {</span>
-<span class="fc" id="L120">			this.edges = edges;</span>
-<span class="fc" id="L121">			this.count = count;</span>
-<span class="fc" id="L122">		}</span>
+<span class="fc" id="L133">		EdgeIt(int[] edges, int count) {</span>
+<span class="fc" id="L134">			this.edges = edges;</span>
+<span class="fc" id="L135">			this.count = count;</span>
+<span class="fc" id="L136">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			return idx &lt; count;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			return idx &lt; count;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L132">				throw new NoSuchElementException();</span>
-<span class="fc" id="L133">			return lastEdge = edges[idx++];</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L146">				throw new NoSuchElementException();</span>
+<span class="fc" id="L147">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L139">				throw new NoSuchElementException();</span>
-<span class="fc" id="L140">			return edges[idx];</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L153">				throw new NoSuchElementException();</span>
+<span class="fc" id="L154">			return edges[idx];</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
-<span class="nc" id="L146">				throw new IllegalStateException();</span>
-<span class="fc" id="L147">			removeEdge(lastEdge);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
+<span class="nc" id="L160">				throw new IllegalStateException();</span>
+<span class="fc" id="L161">			removeEdge(lastEdge);</span>
 			/**
 			 * The edge will be removed from entry idx-1 in edges[], go back and decrease the edges count.
 			 */
-<span class="fc" id="L151">			count--;</span>
-<span class="fc" id="L152">			idx--;</span>
-<span class="fc" id="L153">			lastEdge = -1;</span>
-<span class="fc" id="L154">		}</span>
+<span class="fc" id="L165">			count--;</span>
+<span class="fc" id="L166">			idx--;</span>
+<span class="fc" id="L167">			lastEdge = -1;</span>
+<span class="fc" id="L168">		}</span>
 
 	}
 

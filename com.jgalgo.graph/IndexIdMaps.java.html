@@ -824,21 +824,21 @@ public class IndexIdMaps {
 	}
 
 	private static class WeightsUnwrapper {
-		private boolean unmodifiable;
+		private boolean immutableView;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		&lt;V, WeightsT extends WeightsImpl&lt;V&gt;&gt; WeightsT unwrap(WeightsImpl&lt;?&gt; weights) {
 <span class="fc" id="L831">			WeightsImpl&lt;?&gt; weights0 = weights;</span>
-<span class="fc" id="L832">			unmodifiable = weights0 instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
-<span class="pc bpc" id="L833" title="1 of 2 branches missed.">			if (unmodifiable)</span>
-<span class="nc" id="L834">				weights0 = ((WeightsImpl.Unmodifiable&lt;?&gt;) weights0).weights;</span>
+<span class="fc" id="L832">			immutableView = weights0 instanceof WeightsImpl.ImmutableView&lt;?&gt;;</span>
+<span class="pc bpc" id="L833" title="1 of 2 branches missed.">			if (immutableView)</span>
+<span class="nc" id="L834">				weights0 = ((WeightsImpl.ImmutableView&lt;?&gt;) weights0).weights;</span>
 <span class="fc" id="L835">			return (WeightsT) weights0;</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		&lt;V, WeightsT extends WeightsImpl&lt;V&gt;&gt; WeightsT rewrap(WeightsImpl&lt;?&gt; weights) {
-<span class="pc bpc" id="L840" title="1 of 2 branches missed.">			if (unmodifiable)</span>
-<span class="nc" id="L841">				weights = weights.unmodifiableView();</span>
+<span class="pc bpc" id="L840" title="1 of 2 branches missed.">			if (immutableView)</span>
+<span class="nc" id="L841">				weights = (WeightsImpl&lt;?&gt;) WeightsImpl.immutableView(weights);</span>
 <span class="fc" id="L842">			return (WeightsT) weights;</span>
 		}
 

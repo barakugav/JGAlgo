@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBaseIndexMutable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphBaseIndexMutable.java</span></div><h1>GraphBaseIndexMutable.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Set;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+<span class="fc" id="L22">abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl {</span>
+
+	final IdStrategy.Default verticesIdStrat;
+	final IdStrategy.Default edgesIdStrat;
+	private final DataContainer.Manager verticesInternalContainers;
+	private final DataContainer.Manager edgesInternalContainers;
+	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
+	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+
+<span class="fc" id="L31">	GraphBaseIndexMutable(int expectedVerticesNum, int expectedEdgesNum) {</span>
+<span class="fc" id="L32">		verticesIdStrat = new IdStrategy.Default(0);</span>
+<span class="fc" id="L33">		edgesIdStrat = new IdStrategy.Default(0);</span>
+<span class="fc" id="L34">		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);</span>
+<span class="fc" id="L35">		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);</span>
+<span class="fc" id="L36">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);</span>
+<span class="fc" id="L37">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);</span>
+<span class="fc" id="L38">	}</span>
+
+<span class="fc" id="L40">	GraphBaseIndexMutable(IndexGraph g) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
+<span class="fc" id="L42">			ArgumentCheck.onlyDirected(g);</span>
+		} else {
+<span class="fc" id="L44">			ArgumentCheck.onlyUndirected(g);</span>
+		}
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (!getCapabilities().selfEdges())</span>
+<span class="fc" id="L47">			ArgumentCheck.noSelfEdges(g, &quot;self edges are not supported&quot;);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (!getCapabilities().parallelEdges())</span>
+<span class="fc" id="L49">			ArgumentCheck.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (g instanceof GraphBaseIndexMutable) {</span>
+<span class="fc" id="L52">			GraphBaseIndexMutable g0 = (GraphBaseIndexMutable) g;</span>
+<span class="fc" id="L53">			verticesIdStrat = g0.verticesIdStrat.copy();</span>
+<span class="fc" id="L54">			edgesIdStrat = g0.edgesIdStrat.copy();</span>
+
+<span class="fc" id="L56">			verticesUserWeights = new WeightsImpl.IndexMutable.Manager(g0.verticesUserWeights, verticesIdStrat);</span>
+<span class="fc" id="L57">			edgesUserWeights = new WeightsImpl.IndexMutable.Manager(g0.edgesUserWeights, edgesIdStrat);</span>
+<span class="fc" id="L58">		} else {</span>
+<span class="fc" id="L59">			verticesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getVerticesIdStrategy().size());</span>
+<span class="fc" id="L60">			edgesIdStrat = new IdStrategy.Default(((IndexGraphImpl) g).getEdgesIdStrategy().size());</span>
+
+<span class="fc" id="L62">			verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			for (Object key : g.getVerticesWeightsKeys())</span>
+<span class="nc" id="L64">				verticesUserWeights.addWeights(key,</span>
+<span class="nc" id="L65">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
+<span class="fc" id="L66">			edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			for (Object key : g.getEdgesWeightsKeys())</span>
+<span class="nc" id="L68">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
+		}
+
+		/* internal data containers should be copied manually */
+		// verticesInternalContainers = g.verticesInternalContainers.copy(verticesIdStrategy);
+		// edgesInternalContainers = g.edgesInternalContainers.copy(edgesIdStrategy);
+<span class="fc" id="L74">		verticesInternalContainers = new DataContainer.Manager(verticesIdStrat.size());</span>
+<span class="fc" id="L75">		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());</span>
+<span class="fc" id="L76">	}</span>
+
+<span class="nc" id="L78">	GraphBaseIndexMutable(IndexGraphBuilderImpl builder) {</span>
+<span class="nc" id="L79">		verticesIdStrat = builder.verticesIdStrat.copy();</span>
+<span class="nc" id="L80">		edgesIdStrat = builder.edgesIdStrat.copy();</span>
+<span class="nc" id="L81">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, verticesIdStrat);</span>
+<span class="nc" id="L82">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edgesIdStrat);</span>
+<span class="nc" id="L83">		verticesInternalContainers = new DataContainer.Manager(verticesIdStrat.size());</span>
+<span class="nc" id="L84">		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());</span>
+<span class="nc" id="L85">	}</span>
+
+	@Override
+	public final IntSet vertices() {
+<span class="fc" id="L89">		return verticesIdStrat.indices();</span>
+	}
+
+	@Override
+	public final IntSet edges() {
+<span class="fc" id="L94">		return edgesIdStrat.indices();</span>
+	}
+
+	@Override
+	public int addVertex() {
+<span class="fc" id="L99">		int u = verticesIdStrat.newIdx();</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		assert u &gt;= 0;</span>
+<span class="fc" id="L101">		verticesInternalContainers.ensureCapacity(u + 1);</span>
+<span class="fc" id="L102">		verticesUserWeights.ensureCapacity(u + 1);</span>
+<span class="fc" id="L103">		return u;</span>
+	}
+
+	@Override
+	public final void removeVertex(int vertex) {
+<span class="fc" id="L108">		removeEdgesOf(vertex);</span>
+<span class="fc" id="L109">		vertex = vertexSwapBeforeRemove(vertex);</span>
+<span class="fc" id="L110">		removeVertexImpl(vertex);</span>
+<span class="fc" id="L111">	}</span>
+
+	void removeVertexImpl(int vertex) {
+		// internal weights are handled manually
+		// verticesInternalContainers.clearElement(vertex);
+<span class="fc" id="L116">		verticesUserWeights.clearElement(vertex);</span>
+<span class="fc" id="L117">		verticesIdStrat.removeIdx(vertex);</span>
+<span class="fc" id="L118">	}</span>
+
+	private int vertexSwapBeforeRemove(int v) {
+<span class="fc" id="L121">		int vn = verticesIdStrat.isSwapNeededBeforeRemove(v);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (v != vn) {</span>
+<span class="fc" id="L123">			vertexSwap(v, vn);</span>
+<span class="fc" id="L124">			v = vn;</span>
+		}
+<span class="fc" id="L126">		return v;</span>
+	}
+
+	void vertexSwap(int v1, int v2) {
+<span class="fc" id="L130">		verticesIdStrat.idxSwap(v1, v2);</span>
+		// internal weights are handled manually
+		// verticesInternalContainers.swapElements(v1, v2);
+<span class="fc" id="L133">		verticesUserWeights.swapElements(v1, v2);</span>
+<span class="fc" id="L134">	}</span>
+
+	@Override
+	public int addEdge(int source, int target) {
+<span class="fc" id="L138">		checkVertex(source);</span>
+<span class="fc" id="L139">		checkVertex(target);</span>
+<span class="fc" id="L140">		int e = edgesIdStrat.newIdx();</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		assert e &gt;= 0;</span>
+<span class="fc" id="L142">		edgesInternalContainers.ensureCapacity(e + 1);</span>
+<span class="fc" id="L143">		edgesUserWeights.ensureCapacity(e + 1);</span>
+<span class="fc" id="L144">		return e;</span>
+	}
+
+	@Override
+	public final void removeEdge(int edge) {
+<span class="fc" id="L149">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L150">		removeEdgeImpl(edge);</span>
+<span class="fc" id="L151">	}</span>
+
+	void removeEdgeImpl(int edge) {
+		// internal weights are handled manually
+		// edgesInternalContainers.clearElement(edge);
+<span class="fc" id="L156">		edgesUserWeights.clearElement(edge);</span>
+<span class="fc" id="L157">		edgesIdStrat.removeIdx(edge);</span>
+<span class="fc" id="L158">	}</span>
+
+	int edgeSwapBeforeRemove(int e) {
+<span class="fc" id="L161">		int en = edgesIdStrat.isSwapNeededBeforeRemove(e);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (e != en) {</span>
+<span class="fc" id="L163">			edgeSwap(e, en);</span>
+<span class="fc" id="L164">			e = en;</span>
+		}
+<span class="fc" id="L166">		return e;</span>
+	}
+
+	void edgeSwap(int e1, int e2) {
+<span class="fc" id="L170">		edgesIdStrat.idxSwap(e1, e2);</span>
+		// internal weights are handled manually
+		// edgesInternalContainers.swapElements(e1, e2);
+<span class="fc" id="L173">		edgesUserWeights.swapElements(e1, e2);</span>
+<span class="fc" id="L174">	}</span>
+
+	@Override
+	public void clear() {
+<span class="fc" id="L178">		clearEdges();</span>
+<span class="fc" id="L179">		verticesIdStrat.clear();</span>
+		// internal weights are handled manually
+		// verticesInternalContainers.clearContainers();
+<span class="fc" id="L182">		verticesUserWeights.clearContainers();</span>
+<span class="fc" id="L183">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L187">		edgesIdStrat.clear();</span>
+		// internal weights are handled manually
+		// edgesInternalContainers.clearContainers();
+<span class="fc" id="L190">		edgesUserWeights.clearContainers();</span>
+<span class="fc" id="L191">	}</span>
+
+	@Override
+	public IdStrategy getVerticesIdStrategy() {
+<span class="fc" id="L195">		return verticesIdStrat;</span>
+	}
+
+	@Override
+	public IdStrategy getEdgesIdStrategy() {
+<span class="fc" id="L200">		return edgesIdStrat;</span>
+	}
+
+	@Override
+	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
+<span class="fc" id="L205">		return verticesUserWeights.getWeights(key);</span>
+	}
+
+	@Override
+	public Set&lt;Object&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L210">		return verticesUserWeights.weightsKeys();</span>
+	}
+
+	@Override
+	public void removeVerticesWeights(Object key) {
+<span class="fc" id="L215">		verticesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L216">	}</span>
+
+	@Override
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
+<span class="fc" id="L221">		return (WeightsT) edgesUserWeights.getWeights(key);</span>
+	}
+
+	@Override
+	public Set&lt;Object&gt; getEdgesWeightsKeys() {
+<span class="fc" id="L226">		return edgesUserWeights.weightsKeys();</span>
+	}
+
+	@Override
+	public void removeEdgesWeights(Object key) {
+<span class="fc" id="L231">		edgesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L232">	}</span>
+
+	void addInternalVerticesContainer(DataContainer&lt;?&gt; container) {
+<span class="fc" id="L235">		verticesInternalContainers.addContainer(container);</span>
+<span class="fc" id="L236">	}</span>
+
+	void addInternalEdgesContainer(DataContainer&lt;?&gt; container) {
+<span class="fc" id="L239">		edgesInternalContainers.addContainer(container);</span>
+<span class="fc" id="L240">	}</span>
+
+	@Override
+	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal) {
+<span class="fc" id="L244">		WeightsImpl.IndexMutable&lt;V&gt; weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);</span>
+<span class="fc" id="L245">		verticesUserWeights.addWeights(key, weights);</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L247">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L248">		return weights0;</span>
+	}
+
+	@Override
+	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
+<span class="fc" id="L253">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);</span>
+<span class="fc" id="L254">		edgesUserWeights.addWeights(key, weights);</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L256">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L257">		return weights0;</span>
+	}
+
+	void checkVertex(int vertex) {
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">		if (!vertices().contains(vertex))</span>
+<span class="nc" id="L262">			throw new IndexOutOfBoundsException(vertex);</span>
+<span class="fc" id="L263">	}</span>
+
+	void checkEdge(int edge) {
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
+<span class="nc" id="L267">			throw new IndexOutOfBoundsException(edge);</span>
+<span class="fc" id="L268">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

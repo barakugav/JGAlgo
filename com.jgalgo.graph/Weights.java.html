@@ -585,7 +585,7 @@ public interface Weights&lt;W&gt; {
 	 * Create an external vertex weights container.
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -602,7 +602,7 @@ public interface Weights&lt;W&gt; {
 	 * Create an external vertex weights container with default values.
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -615,7 +615,7 @@ public interface Weights&lt;W&gt; {
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
 <span class="fc" id="L617">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();</span>
-<span class="fc" id="L618">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
+<span class="fc" id="L618">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);</span>
 <span class="pc bpc" id="L619" title="1 of 2 branches missed.">		if (idStrat.size() &gt; 0)</span>
 <span class="fc" id="L620">			weights.expand(idStrat.size());</span>
 <span class="fc bfc" id="L621" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
@@ -629,7 +629,7 @@ public interface Weights&lt;W&gt; {
 	 * Create an external edge weights container.
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -645,7 +645,7 @@ public interface Weights&lt;W&gt; {
 	 * Create an external edge weights container with default values.
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
-	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
+	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
@@ -658,7 +658,7 @@ public interface Weights&lt;W&gt; {
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
 <span class="fc" id="L660">		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();</span>
-<span class="fc" id="L661">		WeightsImpl.Index&lt;E&gt; weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);</span>
+<span class="fc" id="L661">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);</span>
 <span class="fc bfc" id="L662" title="All 2 branches covered.">		if (idStrat.size() &gt; 0)</span>
 <span class="fc" id="L663">			weights.expand(idStrat.size());</span>
 <span class="fc bfc" id="L664" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>

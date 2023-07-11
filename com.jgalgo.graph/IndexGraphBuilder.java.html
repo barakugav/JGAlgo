@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Optional;
+import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -32,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IndexGraphFactory
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">public interface IndexGraphBuilder {</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">public interface IndexGraphBuilder {</span>
 
 	/**
 	 * Get the set of vertices that were added to the graph.
@@ -92,6 +93,110 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @param edge   the identifier of the new edge
 	 */
 	void addEdge(int source, int target, int edge);
+
+	/**
+	 * Get the vertices weights of some key.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key        some key of the weights, could be anything
+	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
+	 * @param  &lt;V&gt;        The weight data type
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 */
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key);
+
+	/**
+	 * Add a new weights container associated with the vertices of the built graph.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
+	 * @param  &lt;V&gt;                      The weight data type
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 */
+	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
+<span class="nc" id="L122">		return addVerticesWeights(key, type, null);</span>
+	}
+
+	/**
+	 * Add a new weights container associated with the vertices of built graph with default value.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @param  defVal                   default value use for the weights container
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
+	 * @param  &lt;V&gt;                      The weight data type
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 */
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal);
+
+	/**
+	 * Get the keys of all the associated vertices weights.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @return the keys of all the associated vertices weights
+	 */
+	Set&lt;Object&gt; getVerticesWeightsKeys();
+
+	/**
+	 * Get the edges weights of some key.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key        some key of the weights, could be anything
+	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
+	 * @param  &lt;E&gt;        The weight data type
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 */
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key);
+
+	/**
+	 * Add a new weights container associated with the edges of the built graph.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
+	 * @param  &lt;E&gt;                      The weight data type
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 */
+	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
+<span class="nc" id="L174">		return addEdgesWeights(key, type, null);</span>
+	}
+
+	/**
+	 * Add a new weights container associated with the edges of the built graph with default value.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @param  defVal                   default value use for the weights container
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
+	 * @param  &lt;E&gt;                      The weight data type
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 */
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal);
+
+	/**
+	 * Get the keys of all the associated edges weights.
+	 * &lt;p&gt;
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @return the keys of all the associated edges weights
+	 */
+	Set&lt;Object&gt; getEdgesWeightsKeys();
 
 	/**
 	 * Clear the builder by removing all vertices and edges added to it.
@@ -250,7 +355,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-<span class="fc" id="L253">		return new IndexGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L358">		return new IndexGraphBuilderImpl.Undirected();</span>
 	}
 
 	/**
@@ -259,7 +364,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-<span class="fc" id="L262">		return new IndexGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L367">		return new IndexGraphBuilderImpl.Directed();</span>
 	}
 
 	/**
@@ -271,18 +376,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @return   a builder initialized with the given graph vertices and edges
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="fc bfc" id="L274" title="All 2 branches covered.">		IndexGraphBuilder builder = g.getCapabilities().directed() ? newDirected() : newUndirected();</span>
-<span class="fc" id="L275">		final int n = g.vertices().size();</span>
-<span class="fc" id="L276">		final int m = g.edges().size();</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L278">			int vBuilder = builder.addVertex();</span>
-<span class="pc bpc" id="L279" title="2 of 4 branches missed.">			assert vBuilder == v;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		IndexGraphBuilder builder = g.getCapabilities().directed() ? newDirected() : newUndirected();</span>
+<span class="fc" id="L380">		final int n = g.vertices().size();</span>
+<span class="fc" id="L381">		final int m = g.edges().size();</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L383">			int vBuilder = builder.addVertex();</span>
+<span class="pc bpc" id="L384" title="2 of 4 branches missed.">			assert vBuilder == v;</span>
 		}
-<span class="fc bfc" id="L281" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L282">			int eBuilder = builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="pc bpc" id="L283" title="2 of 4 branches missed.">			assert eBuilder == e;</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L387">			int eBuilder = builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="pc bpc" id="L388" title="2 of 4 branches missed.">			assert eBuilder == e;</span>
 		}
-<span class="fc" id="L285">		return builder;</span>
+<span class="fc" id="L390">		return builder;</span>
 	}
 
 }
