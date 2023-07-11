@@ -222,13 +222,18 @@ public interface IndexGraph extends Graph {
 	}
 
 	@Override
+	default IndexGraph immutableCopy() {
+<span class="fc" id="L226">		return IndexGraphBuilder.newFrom(this).build();</span>
+	}
+
+	@Override
 	default IndexGraph immutableView() {
-<span class="nc" id="L226">		return Graphs.immutableView(this);</span>
+<span class="nc" id="L231">		return Graphs.immutableView(this);</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="nc" id="L231">		return Graphs.reverseView(this);</span>
+<span class="nc" id="L236">		return Graphs.reverseView(this);</span>
 	}
 
 }

@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IndexGraphFactory
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">public interface IndexGraphBuilder {</span>
+public interface IndexGraphBuilder {
 
 	/**
 	 * Get the set of vertices that were added to the graph.
@@ -368,26 +368,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	/**
-	 * Create a new builder initialized with an existing graph vertices and edges.
+	 * Create a new builder initialized with an existing graph vertices, edges and weights.
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
 	 * @param  g a graph
-	 * @return   a builder initialized with the given graph vertices and edges
+	 * @return   a builder initialized with the given graph vertices, edges and weights
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="fc bfc" id="L379" title="All 2 branches covered.">		IndexGraphBuilder builder = g.getCapabilities().directed() ? newDirected() : newUndirected();</span>
-<span class="fc" id="L380">		final int n = g.vertices().size();</span>
-<span class="fc" id="L381">		final int m = g.edges().size();</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L383">			int vBuilder = builder.addVertex();</span>
-<span class="pc bpc" id="L384" title="2 of 4 branches missed.">			assert vBuilder == v;</span>
-		}
-<span class="fc bfc" id="L386" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L387">			int eBuilder = builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="pc bpc" id="L388" title="2 of 4 branches missed.">			assert eBuilder == e;</span>
-		}
-<span class="fc" id="L390">		return builder;</span>
+<span class="fc" id="L379">		return IndexGraphBuilderImpl.newFrom(g);</span>
 	}
 
 }

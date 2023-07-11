@@ -47,14 +47,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
 <span class="fc" id="L48">		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =</span>
 				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		for (var entry : builder.verticesUserWeights.weights.entrySet())</span>
-<span class="nc" id="L51">			verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (var entry : builder.verticesUserWeights.weights.entrySet())</span>
+<span class="fc" id="L51">			verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		if (edgesReIndexing == null) {</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">			for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
-<span class="pc" id="L54">				edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
+<span class="fc" id="L54">				edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
 		} else {
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">			for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
-<span class="nc" id="L57">				edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(), edgesReIndexing);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
+<span class="fc" id="L57">				edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(), edgesReIndexing);</span>
 		}
 <span class="fc" id="L59">		verticesUserWeights = verticesUserWeightsBuilder.build();</span>
 <span class="fc" id="L60">		edgesUserWeights = edgesUserWeightsBuilder.build();</span>
@@ -145,43 +145,43 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="nc" id="L148">		return (WeightsT) verticesUserWeights.get(key);</span>
+<span class="fc" id="L148">		return (WeightsT) verticesUserWeights.get(key);</span>
 	}
 
 	@Override
 	public Set&lt;Object&gt; getVerticesWeightsKeys() {
-<span class="nc" id="L153">		return verticesUserWeights.keySet();</span>
+<span class="fc" id="L153">		return verticesUserWeights.keySet();</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-<span class="nc" id="L158">		throw new UnsupportedOperationException();</span>
+<span class="fc" id="L158">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="nc" id="L164">		return (WeightsT) edgesUserWeights.get(key);</span>
+<span class="fc" id="L164">		return (WeightsT) edgesUserWeights.get(key);</span>
 	}
 
 	@Override
 	public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L169">		return edgesUserWeights.keySet();</span>
+<span class="fc" id="L169">		return edgesUserWeights.keySet();</span>
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-<span class="nc" id="L174">		throw new UnsupportedOperationException();</span>
+<span class="fc" id="L174">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal) {
-<span class="nc" id="L179">		throw new UnsupportedOperationException();</span>
+<span class="fc" id="L179">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L184">		throw new UnsupportedOperationException();</span>
+<span class="fc" id="L184">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
