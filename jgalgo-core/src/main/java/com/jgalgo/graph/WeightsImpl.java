@@ -1924,7 +1924,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (Objects.equals(w.get(idx), o.get(indexMap.indexToId(idx))))
+						if (!Objects.equals(w.get(idx), o.get(indexMap.indexToId(idx))))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
