@@ -17,13 +17,13 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
-class GraphCSRUnmappedUndirected extends GraphCSRUnmappedAbstract {
+class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
-	GraphCSRUnmappedUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
+	GraphCSRUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
 		super(builder, processEdges);
 	}
 
-	GraphCSRUnmappedUndirected(IndexGraph g) {
+	GraphCSRUndirected(IndexGraph g) {
 		super(g);
 		ArgumentCheck.onlyUndirected(g);
 	}

@@ -15,34 +15,55 @@
  */
 package com.jgalgo.graph;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
-class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
+class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCSRUnmappedDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-		super(builder, processEdges);
+	private GraphCSRDirectedReindexed(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges,
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing) {
+		super(builder, processEdges, edgesReIndexing);
+		final int n = builder.vertices().size();
+		final int m = builder.edges().size();
+
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
+		int[] edgesOut = processEdges.edgesOut;
+		assert edgesOut.length == m;
+		assert edgesIn.length == m;
+		assert edgesInBegin.length == n + 1;
+
+		for (int eIdx = 0; eIdx < m; eIdx++) {
+			int eOrig = edgesIn[eIdx];
+			int eCsr = edgesReIndexing.origToReIndexed(eOrig);
+			edgesIn[eIdx] = eCsr;
+		}
+
+		for (int eCsr = 0; eCsr < m; eCsr++) {
+			int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
+			endpoints[eCsr * 2 + 0] = builder.endpoints[eOrig * 2 + 0];
+			endpoints[eCsr * 2 + 1] = builder.endpoints[eOrig * 2 + 1];
+		}
 	}
 
-	GraphCSRUnmappedDirected(IndexGraph g) {
-		super(g);
-		ArgumentCheck.onlyDirected(g);
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
+		GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(builder);
 
-		edgesIn = new int[m];
-		edgesInBegin = new int[n + 1];
+		final int m = builder.edges().size();
+		int[] edgesCsrToOrig = processEdges.edgesOut;
+		int[] edgesOrigToCsr = new int[m];
+		for (int eCsr = 0; eCsr < m; eCsr++)
+			edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
 
-		for (int eIdx = 0, v = 0; v < n; v++) {
-			edgesInBegin[v] = eIdx;
-			for (int e : g.inEdges(v))
-				edgesIn[eIdx++] = e;
-		}
-		edgesInBegin[n] = m;
+		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
+				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+
+		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(builder, processEdges, edgesReIndexing);
+		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
 	}
 
 	@Override
@@ -81,7 +102,7 @@ class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);
+			return new EdgeIterOut(source, edgesOutBegin[source], edgesOutBegin[source + 1]);
 		}
 	}
 
@@ -107,12 +128,34 @@ class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
 		}
 	}
 
-	private class EdgeIterOut extends EdgeIterAbstract {
+	private class EdgeIterOut implements EdgeIter {
 		private final int source;
+		private int nextEdge;
+		private final int endIdx;
 
-		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {
-			super(edges, beginIdx, endIdx);
+		EdgeIterOut(int source, int beginEdge, int endEdge) {
 			this.source = source;
+			this.nextEdge = beginEdge;
+			this.endIdx = endEdge;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return nextEdge < endIdx;
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return nextEdge++;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return nextEdge;
 		}
 
 		@Override
@@ -122,6 +165,7 @@ class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
 
 		@Override
 		public int target() {
+			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called
 			return edgeTarget(lastEdge);
 		}
 	}

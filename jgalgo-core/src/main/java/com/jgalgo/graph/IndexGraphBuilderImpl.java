@@ -277,7 +277,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			validateUserProvidedIdsBeforeBuild();
 			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =
 					new GraphCSRBase.BuilderProcessEdgesUndirected(this);
-			return new GraphCSRUnmappedUndirected(this, processEdges);
+			return new GraphCSRUndirected(this, processEdges);
 		}
 
 		@Override
@@ -311,7 +311,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		public IndexGraph build() {
 			validateUserProvidedIdsBeforeBuild();
 			GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(this);
-			return new GraphCSRUnmappedDirected(this, processEdges);
+			return new GraphCSRDirected(this, processEdges);
 		}
 
 		@Override
@@ -324,7 +324,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 			if (reIndexEdges) {
 				validateUserProvidedIdsBeforeBuild();
-				return GraphCSRRemappedDirected.newInstance(this);
+				return GraphCSRDirectedReindexed.newInstance(this);
 			} else {
 				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
 			}

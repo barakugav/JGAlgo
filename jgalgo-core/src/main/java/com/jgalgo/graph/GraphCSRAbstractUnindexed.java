@@ -15,11 +15,11 @@
  */
 package com.jgalgo.graph;
 
-abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
+abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 	final int[] edgesOut;
 
-	GraphCSRUnmappedAbstract(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+	GraphCSRAbstractUnindexed(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
 		super(builder, processEdges, null);
 		edgesOut = processEdges.edgesOut;
 
@@ -30,7 +30,7 @@ abstract class GraphCSRUnmappedAbstract extends GraphCSRBase {
 		}
 	}
 
-	GraphCSRUnmappedAbstract(IndexGraph g) {
+	GraphCSRAbstractUnindexed(IndexGraph g) {
 		super(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
