@@ -120,6 +120,8 @@ public interface GraphFactory extends BuilderAbstract<GraphFactory> {
 		FastEdgeRemoval,
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
 		FastEdgeLookup,
+		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
+		DenseGraph,
 	}
 
 	/**

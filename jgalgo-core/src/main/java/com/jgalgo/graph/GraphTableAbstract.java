@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 
 import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
@@ -126,7 +125,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 		if (edge == EdgeNone) {
 			return Edges.EmptyEdgeSet;
 		} else {
-			return new EdgeSetSourceTarget(source, target, edge);
+			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
 		}
 	}
 
@@ -361,93 +360,6 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 		@Override
 		public void remove() {
 			removeEdge(edges.get(source()).getInt(target()));
-		}
-	}
-
-	private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
-
-		private final int source, target;
-		private int edge;
-
-		EdgeSetSourceTarget(int source, int target, int edge) {
-			this.source = source;
-			this.target = target;
-			this.edge = edge;
-		}
-
-		@Override
-		public boolean remove(int edge) {
-			if (this.edge != edge)
-				return false;
-			removeEdge(edge);
-			this.edge = EdgeNone;
-			return true;
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			return this.edge != EdgeNone && this.edge == edge;
-		}
-
-		@Override
-		public int size() {
-			return edge != EdgeNone ? 1 : 0;
-		}
-
-		@Override
-		public void clear() {
-			if (edge != EdgeNone) {
-				removeEdge(edge);
-				edge = EdgeNone;
-			}
-		}
-
-		@Override
-		public EdgeIter iterator() {
-			if (edge == EdgeNone)
-				return EdgeIter.emptyIterator();
-			return new EdgeIter() {
-
-				boolean beforeNext = true;
-
-				@Override
-				public boolean hasNext() {
-					return beforeNext;
-				}
-
-				@Override
-				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					beforeNext = false;
-					return edge;
-				}
-
-				@Override
-				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					return edge;
-				}
-
-				@Override
-				public int source() {
-					return source;
-				}
-
-				@Override
-				public int target() {
-					return target;
-				}
-
-				@Override
-				public void remove() {
-					if (beforeNext)
-						throw new IllegalStateException();
-					removeEdge(edge);
-					edge = EdgeNone;
-				}
-			};
 		}
 	}
 

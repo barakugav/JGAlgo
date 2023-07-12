@@ -77,7 +77,7 @@ class EdgeEndpointsContainer {
 		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);
 	}
 
-	private static long sourceTarget2Endpoints(int source, int target) {
+	static long sourceTarget2Endpoints(int source, int target) {
 		return ((source & 0xffffffffL) << 32) | ((target & 0xffffffffL) << 0);
 	}
 

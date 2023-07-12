@@ -676,11 +676,17 @@ class GraphImplTestUtils extends TestUtils {
 				phase(16, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
-			final int opsNum = 128;
-			testRandOps(g, opsNum, seedGen.nextSeed());
+			testRandOps(graphImpl, directed, n, m, seedGen.nextSeed());
 		});
+	}
+
+	private static void testRandOps(Boolean2ObjectFunction<Graph> graphImpl, boolean directed, int n, int m,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+		final int opsNum = 128;
+		testRandOps(g, opsNum, seedGen.nextSeed());
 	}
 
 	private static class RandWeighted<E> {
@@ -752,9 +758,9 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		void removeVertex(Vertex v) {
-			removeEdgesOf(v);
 			if (debugPrints)
 				System.out.println("removeVertex(" + v + ")");
+			removeEdgesOf0(v);
 
 			Vertex oldV = vertices.remove(v.id);
 			assertTrue(v == oldV);
@@ -813,6 +819,10 @@ class GraphImplTestUtils extends TestUtils {
 		void removeEdgesOf(Vertex u) {
 			if (debugPrints)
 				System.out.println("removeEdgesOf(" + u + ")");
+			removeEdgesOf0(u);
+		}
+
+		private void removeEdgesOf0(Vertex u) {
 			edges.removeIf(edge -> edge.u == u || edge.v == u);
 		}
 

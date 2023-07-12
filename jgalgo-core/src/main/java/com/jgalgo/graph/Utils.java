@@ -20,8 +20,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
+import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 class Utils {
 	private Utils() {}
@@ -96,5 +103,74 @@ class Utils {
 	static <T> Consumer<T> consumerNoOp() {
 		return ConsumerNoOp;
 	}
+
+	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
+
+		private final int defVal;
+
+		Int2IntMapEmptyWithDefVal(int defVal) {
+			this.defVal = defVal;
+		}
+
+		@Override
+		public int get(int key) {
+			return defVal;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+
+		@Override
+		public int size() {
+			return 0;
+		}
+
+		@Override
+		public void clear() {}
+
+		@Override
+		public void defaultReturnValue(int rv) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int defaultReturnValue() {
+			return defVal;
+		}
+
+		@Override
+		public int remove(int key) {
+			return defVal;
+		}
+
+		@Override
+		public ObjectSet<Int2IntMap.Entry> int2IntEntrySet() {
+			return ObjectSets.emptySet();
+		}
+
+		@Override
+		public IntSet keySet() {
+			return IntSets.emptySet();
+		}
+
+		@Override
+		public IntCollection values() {
+			return IntSets.emptySet();
+		}
+
+		@Override
+		public boolean containsKey(int key) {
+			return false;
+		}
+
+		@Override
+		public boolean containsValue(int value) {
+			return false;
+		}
+	}
+
+	static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);
 
 }

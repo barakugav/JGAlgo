@@ -1362,6 +1362,8 @@ public class Graphs {
 				return "GraphArray";
 			if (g instanceof GraphLinkedAbstract)
 				return "GraphLinked";
+			if (g instanceof GraphHashmapAbstract)
+				return "GraphHashmap";
 			if (g instanceof GraphTableAbstract)
 				return "GraphTable";
 			if (g == g0)
@@ -1485,6 +1487,96 @@ public class Graphs {
 		@Override
 		public int idToIndex(int id) {
 			return id;
+		}
+	}
+
+	static class EdgeSetSourceTargetSingleton extends AbstractIntSet implements EdgeSet {
+
+		private final Graph g;
+		private final int source, target;
+		private int edge;
+		private static final int EdgeNone = -1;
+
+		EdgeSetSourceTargetSingleton(Graph g, int source, int target, int edge) {
+			this.g = g;
+			this.source = source;
+			this.target = target;
+			this.edge = edge;
+		}
+
+		@Override
+		public boolean remove(int edge) {
+			if (this.edge != edge)
+				return false;
+			g.removeEdge(edge);
+			this.edge = EdgeNone;
+			return true;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return this.edge != EdgeNone && this.edge == edge;
+		}
+
+		@Override
+		public int size() {
+			return edge != EdgeNone ? 1 : 0;
+		}
+
+		@Override
+		public void clear() {
+			if (edge != EdgeNone) {
+				g.removeEdge(edge);
+				edge = EdgeNone;
+			}
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			if (edge == EdgeNone)
+				return EdgeIter.emptyIterator();
+			return new EdgeIter() {
+
+				boolean beforeNext = true;
+
+				@Override
+				public boolean hasNext() {
+					return beforeNext;
+				}
+
+				@Override
+				public int nextInt() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					beforeNext = false;
+					return edge;
+				}
+
+				@Override
+				public int peekNext() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					return edge;
+				}
+
+				@Override
+				public int source() {
+					return source;
+				}
+
+				@Override
+				public int target() {
+					return target;
+				}
+
+				@Override
+				public void remove() {
+					if (beforeNext)
+						throw new IllegalStateException();
+					g.removeEdge(edge);
+					edge = EdgeNone;
+				}
+			};
 		}
 	}
 

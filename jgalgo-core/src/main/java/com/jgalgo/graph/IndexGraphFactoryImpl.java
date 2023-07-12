@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.EnumSet;
+import java.util.List;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
@@ -104,6 +105,29 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				return new GraphLinkedUndirected(graph);
 			}
 		};
+		Impl hashmapImpl = directed ? new Impl() {
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphHashmapDirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph) {
+				return new GraphHashmapDirected(graph);
+			}
+		} : new Impl() {
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphHashmapUndirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph) {
+				return new GraphHashmapUndirected(graph);
+			}
+		};
 		Impl tableImpl = directed ? new Impl() {
 
 			@Override
@@ -134,15 +158,24 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				impl = arrayImpl;
 			else if ("GraphLinked".equals(this.impl))
 				impl = linkedImpl;
+			else if ("GraphHashmap".equals(this.impl))
+				impl = hashmapImpl;
 			else if ("GraphTable".equals(this.impl))
 				impl = tableImpl;
 			else
 				throw new IllegalArgumentException("unknown 'impl' value: " + this.impl);
+
 		} else {
-			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !selfEdges && !parallelEdges)
+			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
+				impl = hashmapImpl;
+
+			if (hints.containsAll(List.of(GraphFactory.Hint.FastEdgeLookup, GraphFactory.Hint.DenseGraph)) && !selfEdges
+					&& !parallelEdges)
 				impl = tableImpl;
-			else if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !selfEdges)
+
+			else if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
 				impl = linkedImpl;
+
 			else
 				impl = arrayImpl;
 		}
