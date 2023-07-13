@@ -53,8 +53,8 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static <E> E getKthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
-		if (from < 0 || from >= to || to > a.length || k >= to - from)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + k + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
+		Assertions.Arrays.checkIndex(k, from, to);
 		if (!inPlace) {
 			a = Arrays.copyOfRange(a, from, to);
 			from = 0;
@@ -83,8 +83,8 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
-		if (from < 0 || from >= to || to > a.length || k >= to - from)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + k + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
+		Assertions.Arrays.checkIndex(k, from, to);
 		if (!inPlace) {
 			a = Arrays.copyOfRange(a, from, to);
 			from = 0;
@@ -152,8 +152,7 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
-		if (from < 0 || from >= to || to > a.length)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
 		c = c != null ? c : Utils.getDefaultComparator();
 
 		// Find greatest element smaller than the pivot
@@ -184,8 +183,7 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
-		if (from < 0 || from >= to || to > a.length)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
 		c = c != null ? c : Integer::compare;
 
 		// Find greatest element smaller than the pivot
@@ -290,8 +288,9 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static <E> void bucketPartition(E[] a, int from, int to, Comparator<? super E> c, int bucketSize) {
-		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + bucketSize + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
+		if (bucketSize <= 0)
+			throw new IllegalArgumentException("invalid bucket size: " + bucketSize);
 		c = c != null ? c : Utils.getDefaultComparator();
 		bucketPartition0(a, from, to, c, bucketSize);
 	}
@@ -308,8 +307,9 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
-		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)
-			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + bucketSize + "]");
+		Assertions.Arrays.checkFromTo(from, to, a.length);
+		if (bucketSize <= 0)
+			throw new IllegalArgumentException("invalid bucket size: " + bucketSize);
 		c = c != null ? c : Integer::compare;
 		bucketPartition0(a, from, to, c, bucketSize);
 	}

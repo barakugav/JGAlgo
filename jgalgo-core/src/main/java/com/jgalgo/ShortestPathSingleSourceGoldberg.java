@@ -80,7 +80,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-		ArgumentCheck.onlyDirected(g);
+		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof WeightFunction.Int))

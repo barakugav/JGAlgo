@@ -66,7 +66,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 	 */
 	@Override
 	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;

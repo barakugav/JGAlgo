@@ -67,7 +67,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 	 */
 	@Override
 	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;

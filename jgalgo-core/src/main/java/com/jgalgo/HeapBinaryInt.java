@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -127,8 +126,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 
 	@Override
 	public Integer findMin() {
-		if (size == 0)
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		return Integer.valueOf(arr[0]);
 	}
 
@@ -146,8 +144,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 
 	@Override
 	public Integer extractMin() {
-		if (size == 0)
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		int min = arr[0];
 		remove(0);
 		return Integer.valueOf(min);
@@ -218,8 +215,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 
 		@Override
 		public int nextInt() {
-			if (i >= size)
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return arr[i++];
 		}
 

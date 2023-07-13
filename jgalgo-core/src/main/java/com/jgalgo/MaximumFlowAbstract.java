@@ -213,7 +213,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		final int[] twin;
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-			ArgumentCheck.sourceSinkNotTheSame(source, sink);
+			Assertions.Graphs.sourceSinkNotTheSame(source, sink);
 			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
 			this.source = source;

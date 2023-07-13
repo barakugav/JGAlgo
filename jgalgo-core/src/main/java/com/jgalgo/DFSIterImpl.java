@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -84,8 +83,7 @@ class DFSIterImpl implements DFSIter {
 
 	@Override
 	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
+		Assertions.Iters.hasNext(this);
 		int ret = edgeIters.top().source();
 		isValid = false;
 		return ret;

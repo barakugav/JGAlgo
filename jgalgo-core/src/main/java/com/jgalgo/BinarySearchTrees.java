@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
 class BinarySearchTrees {
@@ -403,8 +402,7 @@ class BinarySearchTrees {
 
 		@Override
 		public Node next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			Node ret = n;
 			n = getSuccessorInSubtree(n, subtreeRoot);
 			return ret;

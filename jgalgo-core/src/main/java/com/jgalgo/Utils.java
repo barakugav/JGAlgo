@@ -126,12 +126,12 @@ class Utils {
 
 				@Override
 				public int nextInt() {
-					throw new NoSuchElementException();
+					throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
 				}
 
 				@Override
 				public int peekNext() {
-					throw new NoSuchElementException();
+					throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
 				}
 			};
 
@@ -162,8 +162,7 @@ class Utils {
 
 		@Override
 		public E next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			@SuppressWarnings("unchecked")
 			E n = (E) peek;
 			peek = PeekNone;
@@ -173,8 +172,7 @@ class Utils {
 		@Override
 		@SuppressWarnings("unchecked")
 		public E peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return (E) peek;
 		}
 
@@ -202,16 +200,14 @@ class Utils {
 
 			@Override
 			public int nextInt() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+				Assertions.Iters.hasNext(this);
 				isPeekValid = false;
 				return peek;
 			}
 
 			@Override
 			public int peekNext() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+				Assertions.Iters.hasNext(this);
 				return peek;
 			}
 
@@ -331,8 +327,7 @@ class Utils {
 
 		@Override
 		public E next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			size--;
 			return null;
 		}
@@ -364,8 +359,7 @@ class Utils {
 
 		@Override
 		public E next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			idx++;
 			return null;
 		}
@@ -377,8 +371,7 @@ class Utils {
 
 		@Override
 		public E previous() {
-			if (!hasPrevious())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasPrevious(this);
 			idx--;
 			return null;
 		}
@@ -535,8 +528,7 @@ class Utils {
 
 			@Override
 			public int nextInt() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+				Assertions.Iters.hasNext(this);
 				int ret = bit;
 				bit = bitSet.nextSetBit(bit + 1);
 				return ret;

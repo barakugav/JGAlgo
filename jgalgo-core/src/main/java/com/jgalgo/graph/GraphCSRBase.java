@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -220,15 +219,13 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return lastEdge = edges[idx++];
 		}
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return edges[idx];
 		}
 	}

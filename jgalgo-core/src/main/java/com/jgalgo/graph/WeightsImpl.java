@@ -21,7 +21,6 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
@@ -126,8 +125,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			void checkIdx(int idx) {
-				if (!(0 <= idx && idx < idStrat.size()))
-					throw new IndexOutOfBoundsException(idx);
+				Assertions.Graphs.checkId(idx, idStrat.size());
 			}
 		}
 
@@ -169,17 +167,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight, orig.type);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight, orig.type);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -250,17 +246,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -330,17 +324,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -410,17 +402,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -489,17 +479,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -569,17 +557,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -649,17 +635,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -720,15 +704,13 @@ interface WeightsImpl<E> extends Weights<E> {
 
 						@Override
 						public boolean nextBoolean() {
-							if (!hasNext())
-								throw new NoSuchElementException();
+							Assertions.Iters.hasNext(this);
 							return weights.get(idx++);
 						}
 
 						@Override
 						public boolean previousBoolean() {
-							if (!hasPrevious())
-								throw new NoSuchElementException();
+							Assertions.Iters.hasPrevious(this);
 							return weights.get(--idx);
 						}
 
@@ -765,8 +747,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
 				super(idStrat);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				defaultWeight = orig.defaultWeight;
 				if (defaultWeight) {
 					weights = orig.weights.get(0, idStrat.size());
@@ -777,9 +758,8 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
+				checkSameSize(idStrat, orig.idStrat);
 				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
 				for (int i = 0; i < s; i++)
 					weights.set(reIndexMap.origToReIndexed(i), orig.weights.get(i));
 			}
@@ -855,17 +835,15 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat) {
 				this(idStrat, orig.defaultWeight);
-				if (idStrat.size() != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(orig.weights, idStrat.size());
 			}
 
 			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				this(idStrat, orig.defaultWeight);
-				final int s = idStrat.size();
-				if (s != orig.idStrat.size())
-					throw new IllegalArgumentException();
+				checkSameSize(idStrat, orig.idStrat);
 				weights = Arrays.copyOf(weights, idStrat.size());
+				final int s = idStrat.size();
 				for (int i = 0; i < s; i++)
 					weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 			}
@@ -2699,6 +2677,11 @@ interface WeightsImpl<E> extends Weights<E> {
 				return weights().defaultWeightChar();
 			}
 		}
+	}
+
+	private static void checkSameSize(IdStrategy i1, IdStrategy i2) {
+		if (i1.size() != i2.size())
+			throw new IllegalArgumentException("IdStrategy size mismatch: " + i1.size() + " != " + i2.size());
 	}
 
 }

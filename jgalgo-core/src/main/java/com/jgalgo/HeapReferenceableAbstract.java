@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.AbstractCollection;
 import java.util.Comparator;
-import java.util.Objects;
 
 abstract class HeapReferenceableAbstract<K, V> extends AbstractCollection<HeapReference<K, V>>
 		implements HeapReferenceable<K, V> {
@@ -58,28 +57,6 @@ abstract class HeapReferenceableAbstract<K, V> extends AbstractCollection<HeapRe
 
 	int compare(K k1, K k2) {
 		return c == null ? Utils.cmpDefault(k1, k2) : c.compare(k1, k2);
-	}
-
-	void makeSureDecreaseKeyIsSmaller(K oldKey, K newKey) {
-		if (compare(oldKey, newKey) < 0)
-			throw new IllegalArgumentException("New key is greater than existing one");
-	}
-
-	void makeSureNoMeldWithSelf(HeapReferenceable<? extends K, ? extends V> other) {
-		if (other == this)
-			throw new IllegalArgumentException("A heap can't meld with itself");
-	}
-
-	@SuppressWarnings("rawtypes")
-	void makeSureMeldWithSameImpl(Class<? extends HeapReferenceable> impl,
-			HeapReferenceable<? extends K, ? extends V> other) {
-		if (!impl.isAssignableFrom(other.getClass()))
-			throw new IllegalArgumentException("Can't meld heaps with different implementations");
-	}
-
-	void makeSureEqualComparatorBeforeMeld(HeapReferenceable<? extends K, ? extends V> other) {
-		if (!Objects.equals(comparator(), other.comparator()))
-			throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 	}
 
 }

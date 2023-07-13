@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -37,8 +36,6 @@ class BFSIterImpl {
 		int firstVInLayer;
 
 		private Abstract(IndexGraph g, IntIterator sources) {
-			if (!sources.hasNext())
-				throw new IllegalArgumentException("no sources provided");
 			this.g = g;
 			int n = g.vertices().size();
 			visited = new BitSet(n);
@@ -47,14 +44,14 @@ class BFSIterImpl {
 			layer = -1;
 
 			firstVInLayer = -1;
-			while (sources.hasNext()) {
+			do {
 				int source = sources.nextInt();
 				visited.set(source);
 				queue.enqueue(source);
 				queue.enqueue(-1);
 				if (firstVInLayer == -1)
 					firstVInLayer = source;
-			}
+			} while (sources.hasNext());
 		}
 
 		@Override
@@ -98,8 +95,7 @@ class BFSIterImpl {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			final int u = queue.dequeueInt();
 			inEdge = queue.dequeueInt();
 			if (u == firstVInLayer) {
@@ -135,8 +131,7 @@ class BFSIterImpl {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			final int v = queue.dequeueInt();
 			inEdge = queue.dequeueInt();
 			if (v == firstVInLayer) {

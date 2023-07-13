@@ -25,8 +25,8 @@ import java.util.Iterator;
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
  * {@link #remove(HeapReference)} which takes \(O(\log n)\) time amortized.
  * <p>
- * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
- * the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
+ * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
+ * \(O(m \log n)\) as the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
  * <p>
  * In practice, the Fibonacci heaps are quire complex, and in some cases is better to use {@link HeapPairing}.
  *
@@ -115,9 +115,9 @@ class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 
 	@Override
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-		makeSureNoMeldWithSelf(heap);
-		makeSureMeldWithSameImpl(HeapFibonacci.class, heap);
-		makeSureEqualComparatorBeforeMeld(heap);
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(HeapFibonacci.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 		@SuppressWarnings("unchecked")
 		HeapFibonacci<K, V> h = (HeapFibonacci<K, V>) heap;
 		if (h.isEmpty())
@@ -141,8 +141,7 @@ class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 
 	@Override
 	public HeapReference<K, V> findMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		return minRoot;
 	}
 
@@ -193,7 +192,7 @@ class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 	@Override
 	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
 		Node<K, V> parent, n = (Node<K, V>) ref;
-		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		n.key = newKey;
 
 		if ((parent = n.parent) == null)

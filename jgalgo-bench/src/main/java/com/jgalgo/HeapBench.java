@@ -99,7 +99,7 @@ public class HeapBench {
 		List<Op> sequence = sequences.get(graphIdx.getAndUpdate(i -> (i + 1) % sequencesNum));
 		for (Op op : sequence) {
 			if (op instanceof Op.Insert) {
-				heap.insert(((Op.Insert) op).x);
+				heap.insert(Integer.valueOf(((Op.Insert) op).x));
 
 			} else if (op instanceof Op.FindMin) {
 				if (heap.isEmpty())

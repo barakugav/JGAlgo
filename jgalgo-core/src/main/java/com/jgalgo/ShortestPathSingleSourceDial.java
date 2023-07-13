@@ -104,7 +104,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 					continue;
 
 				int ew = w.weightInt(e);
-				ArgumentCheck.onlyPositiveWeight(ew);
+				Assertions.Graphs.onlyPositiveWeight(ew);
 				int distance = uDistance + ew;
 
 				if (!heap.containsVertex(v)) {

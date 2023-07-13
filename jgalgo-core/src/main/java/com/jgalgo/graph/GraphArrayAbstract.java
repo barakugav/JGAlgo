@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
 abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
@@ -142,15 +141,13 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return lastEdge = edges[idx++];
 		}
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return edges[idx];
 		}
 

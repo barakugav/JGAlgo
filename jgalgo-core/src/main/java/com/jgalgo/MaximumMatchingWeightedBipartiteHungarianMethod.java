@@ -81,7 +81,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 	 */
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -97,7 +97,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 	 */
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -122,7 +122,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 
 		@SuppressWarnings("unchecked")
 		Worker(IndexGraph g, Weights.Bool partition, WeightFunction w) {
-			ArgumentCheck.onlyBipartite(g, partition);
+			Assertions.Graphs.onlyBipartite(g, partition);
 
 			this.g = g;
 			this.partition = partition;

@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -73,8 +72,7 @@ class HeapPairing {
 
 		@Override
 		public HeapReference<K, V> findMin() {
-			if (isEmpty())
-				throw new IllegalStateException();
+			Assertions.Heaps.notEmpty(this);
 			return minRoot;
 		}
 
@@ -144,9 +142,9 @@ class HeapPairing {
 
 		@Override
 		public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-			makeSureNoMeldWithSelf(heap);
-			makeSureMeldWithSameImpl(getClass(), heap);
-			makeSureEqualComparatorBeforeMeld(heap);
+			Assertions.Heaps.noMeldWithSelf(this, heap);
+			Assertions.Heaps.meldWithSameImpl(getClass(), heap);
+			Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 			@SuppressWarnings("unchecked")
 			HeapPairing.Abstract<K, V, Node> h = (HeapPairing.Abstract<K, V, Node>) heap;
 			if (valueType != h.valueType)
@@ -250,8 +248,7 @@ class HeapPairing {
 
 			@Override
 			public Node next() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+				Assertions.Iters.hasNext(this);
 				final Node ret = path.top();
 
 				Node next;
@@ -394,7 +391,7 @@ class HeapPairing {
 		@Override
 		public void decreaseKey(HeapReference<K, V> ref, K newKey) {
 			Node<K, V> n = (Node<K, V>) ref;
-			makeSureDecreaseKeyIsSmaller(n.key, newKey);
+			Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 			n.key = newKey;
 			afterKeyDecrease(n);
 		}
@@ -522,10 +519,6 @@ class HeapPairing {
 			}
 		}
 
-		int compare(double k1, double k2) {
-			return c == null ? Double.compare(k1, k2) : doubleCmp.compare(k1, k2);
-		}
-
 		@Override
 		public HeapReference<Double, V> insert(Double key) {
 			Node<V> n = nodesFactory.apply(key.doubleValue());
@@ -630,8 +623,7 @@ class HeapPairing {
 		public void decreaseKey(HeapReference<Double, V> ref, Double newKey) {
 			double newKeyDouble = newKey.doubleValue();
 			Node<V> n = (Node<V>) ref;
-			if (compare(n.key, newKeyDouble) < 0)
-				throw new IllegalArgumentException("New key is greater than existing one");
+			Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKeyDouble, doubleCmp);
 			n.key = newKeyDouble;
 			afterKeyDecrease(n);
 		}
@@ -757,10 +749,6 @@ class HeapPairing {
 			}
 		}
 
-		int compare(int k1, int k2) {
-			return c == null ? Integer.compare(k1, k2) : intCmp.compare(k1, k2);
-		}
-
 		@Override
 		public HeapReference<Integer, V> insert(Integer key) {
 			Node<V> n = nodesFactory.apply(key.intValue());
@@ -865,8 +853,7 @@ class HeapPairing {
 		public void decreaseKey(HeapReference<Integer, V> ref, Integer newKey) {
 			int newKeyInteger = newKey.intValue();
 			Node<V> n = (Node<V>) ref;
-			if (compare(n.key, newKeyInteger) < 0)
-				throw new IllegalArgumentException("New key is greater than existing one");
+			Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKeyInteger, intCmp);
 			n.key = newKeyInteger;
 			afterKeyDecrease(n);
 		}

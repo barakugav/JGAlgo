@@ -410,7 +410,7 @@ class FormatGML implements GraphFormat {
 					}
 					boolean isFloat = reader.hasChar() && (c = reader.getChar()) == '.';
 					if (!isFloat) {
-						node.value = Integer.parseInt(num.toString());
+						node.value = Integer.valueOf(num.toString());
 					} else {
 
 						num.append('.');
@@ -434,7 +434,7 @@ class FormatGML implements GraphFormat {
 							}
 						}
 
-						node.value = Double.parseDouble(num.toString());
+						node.value = Double.valueOf(num.toString());
 					}
 
 					num.setLength(0);

@@ -39,6 +39,8 @@ public class JGAlgoConfig {
 
 	/**
 	 * Get a supplier of an option value.
+	 * <p>
+	 * Internal use only; do not use this method directly.
 	 *
 	 * @param  <O> the option value type
 	 * @param  key the option key
@@ -49,11 +51,35 @@ public class JGAlgoConfig {
 		switch (key) {
 			case "GraphIdRandom":
 				return (Supplier) (() -> GraphIdRandom);
+			case "AssertionsGraphsBipartitePartition":
+				return (Supplier) (() -> AssertionsGraphsBipartitePartition);
+			case "AssertionsGraphsPositiveWeights":
+				return (Supplier) (() -> AssertionsGraphsPositiveWeights);
+			case "AssertionsGraphIdCheck":
+				return (Supplier) (() -> AssertionsGraphIdCheck);
+			case "AssertionsIterNotEmpty":
+				return (Supplier) (() -> AssertionsIterNotEmpty);
+			case "AssertionsHeapsDecreaseKeyLegal":
+				return (Supplier) (() -> AssertionsHeapsDecreaseKeyLegal);
+			case "AssertionsHeapsNotEmpty":
+				return (Supplier) (() -> AssertionsHeapsNotEmpty);
+			case "AssertionsHeapsMeldLegal":
+				return (Supplier) (() -> AssertionsHeapsMeldLegal);
 			default:
 				return null;
 		}
 	}
 
-	final static boolean GraphIdRandom = false;
+	private static final boolean GraphIdRandom = false;
+
+	private static final boolean AssertionsGraphsBipartitePartition = true;
+	private static final boolean AssertionsGraphsPositiveWeights = true;
+	private static final boolean AssertionsGraphIdCheck = true;
+
+	private static final boolean AssertionsIterNotEmpty = true;
+
+	private static final boolean AssertionsHeapsDecreaseKeyLegal = true;
+	private static final boolean AssertionsHeapsNotEmpty = true;
+	private static final boolean AssertionsHeapsMeldLegal = true;
 
 }

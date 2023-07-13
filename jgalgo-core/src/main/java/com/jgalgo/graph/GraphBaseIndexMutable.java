@@ -39,14 +39,14 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 
 	GraphBaseIndexMutable(IndexGraph g) {
 		if (getCapabilities().directed()) {
-			ArgumentCheck.onlyDirected(g);
+			Assertions.Graphs.onlyDirected(g);
 		} else {
-			ArgumentCheck.onlyUndirected(g);
+			Assertions.Graphs.onlyUndirected(g);
 		}
 		if (!getCapabilities().selfEdges())
-			ArgumentCheck.noSelfEdges(g, "self edges are not supported");
+			Assertions.Graphs.noSelfEdges(g, "self edges are not supported");
 		if (!getCapabilities().parallelEdges())
-			ArgumentCheck.noParallelEdges(g, "parallel edges are not supported");
+			Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
 
 		verticesIdStrat = new IdStrategy.Default(g.vertices().size());
 		edgesIdStrat = new IdStrategy.Default(g.edges().size());
@@ -249,13 +249,11 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 	}
 
 	void checkVertex(int vertex) {
-		if (!vertices().contains(vertex))
-			throw new IndexOutOfBoundsException(vertex);
+		Assertions.Graphs.checkVertex(vertex, verticesIdStrat.size);
 	}
 
 	void checkEdge(int edge) {
-		if (!edges().contains(edge))
-			throw new IndexOutOfBoundsException(edge);
+		Assertions.Graphs.checkEdge(edge, edgesIdStrat.size);
 	}
 
 }

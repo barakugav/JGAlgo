@@ -47,8 +47,8 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		makeSureNoMeldWithSelf(heap);
-		makeSureEqualComparatorBeforeMeld(heap);
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 		addAll(heap);
 		heap.clear();
 	}
@@ -60,27 +60,6 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 	int compare(E e1, E e2) {
 		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);
-	}
-
-	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
-		if (compare(oldVal, newVal) < 0)
-			throw new IllegalArgumentException("New key is greater than existing one");
-	}
-
-	void makeSureNoMeldWithSelf(Heap<? extends E> other) {
-		if (other == this)
-			throw new IllegalArgumentException("A heap can't meld with itself");
-	}
-
-	@SuppressWarnings("rawtypes")
-	void makeSureMeldWithSameImpl(Class<? extends Heap> impl, Heap<? extends E> other) {
-		if (!impl.isAssignableFrom(other.getClass()))
-			throw new IllegalArgumentException("Can't meld heaps with different implementations");
-	}
-
-	void makeSureEqualComparatorBeforeMeld(Heap<? extends E> other) {
-		if (!Objects.equals(comparator(), other.comparator()))
-			throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 	}
 
 	static <K> Heap<K> fromHeapReferenceable(HeapReferenceable<K, ?> h) {

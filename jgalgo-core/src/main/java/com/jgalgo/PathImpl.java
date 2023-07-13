@@ -77,7 +77,7 @@ class PathImpl extends AbstractIntList implements Path {
 		private int e = -1, v = -1;
 
 		IterUndirected(IndexGraph g, IntList path, int source) {
-			ArgumentCheck.onlyUndirected(g);
+			Assertions.Graphs.onlyUndirected(g);
 			this.g = g;
 			v = source;
 			it = path.iterator();
@@ -122,7 +122,7 @@ class PathImpl extends AbstractIntList implements Path {
 		private int e = -1;
 
 		IterDirected(IndexGraph g, IntList path) {
-			ArgumentCheck.onlyDirected(g);
+			Assertions.Graphs.onlyDirected(g);
 			this.g = g;
 			it = path.iterator();
 		}

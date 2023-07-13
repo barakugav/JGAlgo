@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 /**
@@ -122,8 +121,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	@Override
 	public E findMin() {
-		if (size == 0)
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		return arr[0];
 	}
 
@@ -142,8 +140,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	@Override
 	public E extractMin() {
-		if (size == 0)
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		E min = arr[0];
 		remove(0);
 		return min;
@@ -204,8 +201,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 		@Override
 		public E next() {
-			if (i >= size)
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return arr[i++];
 		}
 

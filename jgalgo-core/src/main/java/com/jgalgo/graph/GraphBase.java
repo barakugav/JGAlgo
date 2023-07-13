@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -320,8 +319,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			int ret = e;
 			e = -1;
 			return ret;
@@ -329,8 +327,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return e;
 		}
 

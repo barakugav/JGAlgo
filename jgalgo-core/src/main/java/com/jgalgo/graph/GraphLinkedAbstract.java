@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
-import java.util.NoSuchElementException;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
@@ -123,16 +122,14 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			next = nextNode(last = next);
 			return last.id;
 		}
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return next.id;
 		}
 

@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import java.util.NoSuchElementException;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -30,7 +29,7 @@ class ContractableGraph {
 	private int numV;
 
 	ContractableGraph(IndexGraph g) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		this.g = g;
 		int n = g.vertices().size();
 		uf = UnionFind.newBuilder().expectedSize(n).build();
@@ -103,8 +102,7 @@ class ContractableGraph {
 
 			@Override
 			public int nextInt() {
-				if (!hasNext())
-					throw new NoSuchElementException();
+				Assertions.Iters.hasNext(this);
 				int e = eit.nextInt();
 				source = eit.source();
 				target = eit.target();
@@ -176,8 +174,7 @@ class ContractableGraph {
 	}
 
 	private void checkSuperVertex(int U) {
-		if (!(0 <= U && U < numV))
-			throw new IndexOutOfBoundsException(U);
+		Assertions.Graphs.checkVertex(U, numV);
 	}
 
 	static interface EdgeIter extends com.jgalgo.graph.EdgeIter {

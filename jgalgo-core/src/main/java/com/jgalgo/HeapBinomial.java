@@ -120,7 +120,7 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	@Override
 	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
 		Node<K, V> node = (Node<K, V>) ref;
-		makeSureDecreaseKeyIsSmaller(node.key, newKey);
+		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);
 		node.key = newKey;
 
 		if (c == null) {
@@ -311,9 +311,9 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-		makeSureNoMeldWithSelf(heap);
-		makeSureMeldWithSameImpl(HeapBinomial.class, heap);
-		makeSureEqualComparatorBeforeMeld(heap);
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(HeapBinomial.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 
 		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
 		size += meld(h.roots, h.rootsLen);
@@ -325,8 +325,7 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 
 	@Override
 	public HeapReference<K, V> findMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
+		Assertions.Heaps.notEmpty(this);
 		Node<K, V>[] rs = roots;
 		int rsLen = rootsLen;
 		Node<K, V> min = null;

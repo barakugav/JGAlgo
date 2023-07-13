@@ -86,11 +86,11 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	 */
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		ArgumentCheck.onlyBipartite(g, partition);
+		Assertions.Graphs.onlyBipartite(g, partition);
 
 		int[] match = computeMaxMatching(g, w, partition);
 		return new MatchingImpl(g, match);

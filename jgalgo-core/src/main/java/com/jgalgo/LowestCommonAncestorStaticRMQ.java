@@ -111,10 +111,8 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 		@Override
 		public int findLowestCommonAncestor(int u, int v) {
-			if (u >= n)
-				throw new IndexOutOfBoundsException(u);
-			if (v >= n)
-				throw new IndexOutOfBoundsException(v);
+			Assertions.Graphs.checkVertex(u, n);
+			Assertions.Graphs.checkVertex(v, n);
 			int uIdx = vToDepthsIdx[u];
 			int vIdx = vToDepthsIdx[v];
 			if (uIdx > vIdx) {

@@ -15,7 +15,6 @@
  */
 package com.jgalgo.graph;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
@@ -146,15 +145,13 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return nextEdge++;
 		}
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return nextEdge;
 		}
 

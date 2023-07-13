@@ -374,19 +374,19 @@ abstract class GraphImpl extends GraphBase {
 
 		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);
-			ArgumentCheck.onlyDirected(indexGraph);
+			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
 		Directed(IndexGraph indexGraph) {
 			super(indexGraph);
-			ArgumentCheck.onlyDirected(indexGraph);
+			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
 		/* copy constructor */
 		Directed(Graph orig, IndexGraphFactory indexGraphFactory) {
 			super(orig, indexGraphFactory);
-			ArgumentCheck.onlyDirected(orig);
-			ArgumentCheck.onlyDirected(indexGraph);
+			Assertions.Graphs.onlyDirected(orig);
+			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
 		@Override
@@ -400,19 +400,19 @@ abstract class GraphImpl extends GraphBase {
 
 		Undirected(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);
-			ArgumentCheck.onlyUndirected(indexGraph);
+			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
 		Undirected(IndexGraph indexGraph) {
 			super(indexGraph);
-			ArgumentCheck.onlyUndirected(indexGraph);
+			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
 		/* copy constructor */
 		Undirected(Graph orig, IndexGraphFactory indexGraphFactory) {
 			super(orig, indexGraphFactory);
-			ArgumentCheck.onlyUndirected(orig);
-			ArgumentCheck.onlyUndirected(indexGraph);
+			Assertions.Graphs.onlyUndirected(orig);
+			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
 		@Override

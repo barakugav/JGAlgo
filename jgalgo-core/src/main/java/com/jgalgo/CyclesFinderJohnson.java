@@ -51,8 +51,8 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 
 	@Override
 	Iterator<Path> findAllCycles(IndexGraph g) {
-		ArgumentCheck.onlyDirected(g);
-		ArgumentCheck.noParallelEdges(g, "graphs with parallel edges are not supported");
+		Assertions.Graphs.onlyDirected(g);
+		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
 		int n = g.vertices().size();
 		Worker worker = new Worker(g);
 		for (int startIdx = 0; startIdx < n; startIdx++) {

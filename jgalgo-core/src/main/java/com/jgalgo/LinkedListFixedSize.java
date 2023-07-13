@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
@@ -30,8 +29,7 @@ class LinkedListFixedSize {
 		int size();
 
 		default Utils.IterPeekable.Int iterator(int id) {
-			if (!(0 <= id && id < size()))
-				throw new IndexOutOfBoundsException(id);
+			Assertions.Arrays.checkIndex(id, 0, size());
 			return new Utils.IterPeekable.Int() {
 				int p = id;
 
@@ -42,8 +40,7 @@ class LinkedListFixedSize {
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					int ret = p;
 					p = LinkedListFixedSize.WithNext.this.next(p);
 					return ret;
@@ -51,8 +48,7 @@ class LinkedListFixedSize {
 
 				@Override
 				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					return p;
 				}
 

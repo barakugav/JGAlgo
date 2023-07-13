@@ -16,7 +16,6 @@
 
 package com.jgalgo.graph;
 
-import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
 abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
@@ -198,8 +197,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			int e = sourceEdges.getInt(lastTarget = target);
 			advanceUntilNext(target + 1);
 			return e;
@@ -207,8 +205,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return sourceEdges.getInt(target);
 		}
 
@@ -261,8 +258,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			int e = targetEdges.getInt(lastSource = source);
 			advanceUntilNext(source + 1);
 			return e;
@@ -270,8 +266,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return targetEdges.getInt(source);
 		}
 
@@ -322,8 +317,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			int e = edges.get(lastSource = source).getInt(target);
 			advanceUntilNext(source + 1);
 			return e;
@@ -331,8 +325,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return edges.get(source).getInt(target);
 		}
 

@@ -150,21 +150,18 @@ abstract class IdStrategy {
 		}
 
 		int isSwapNeededBeforeRemove(int idx) {
-			checkIdx(idx);
+			Assertions.Graphs.checkId(idx, size);
 			return size - 1;
 		}
 
 		void idxSwap(int idx1, int idx2) {
+			Assertions.Graphs.checkId(idx1, size);
+			Assertions.Graphs.checkId(idx2, size);
 			notifyIDSwap(idx1, idx2);
 		}
 
 		IdStrategy.Default copy() {
 			return new IdStrategy.Default(size);
-		}
-
-		private void checkIdx(int idx) {
-			if (!(0 <= idx && idx < size))
-				throw new IndexOutOfBoundsException(idx);
 		}
 
 		void notifyIDSwap(int id1, int id2) {

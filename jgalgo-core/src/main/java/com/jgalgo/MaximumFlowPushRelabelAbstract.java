@@ -59,17 +59,17 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 				@Override
 				public void setCapacity(int edge, int capacity) {
-					throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public int getFlowInt(int edge) {
-					throw new UnsupportedOperationException("Unimplemented method 'getFlowInt'");
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public void setFlow(int edge, int flow) {
-					throw new UnsupportedOperationException("Unimplemented method 'setFlow'");
+					throw new UnsupportedOperationException();
 				}
 
 			};
@@ -84,17 +84,17 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 				@Override
 				public void setCapacity(int edge, double capacity) {
-					throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public double getFlow(int edge) {
-					throw new UnsupportedOperationException("Unimplemented method 'getFlow'");
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
 				public void setFlow(int edge, double flow) {
-					throw new UnsupportedOperationException("Unimplemented method 'setFlow'");
+					throw new UnsupportedOperationException();
 				}
 
 			};

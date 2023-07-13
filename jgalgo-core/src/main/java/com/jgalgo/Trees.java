@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -52,7 +51,7 @@ public class Trees {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean isTree(Graph g) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());
 	}
 
@@ -273,8 +272,7 @@ public class Trees {
 
 		@Override
 		public Node next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			final Node ret = p;
 
 			Node next;
@@ -317,8 +315,7 @@ public class Trees {
 
 		@Override
 		public N next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			final N ret = p;
 
 			N next;

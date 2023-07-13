@@ -34,13 +34,13 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 
 	@Override
 	Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)
 			throw new IllegalArgumentException("There is no valid cut in a graph with less than two vertices");
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		ArgumentCheck.onlyPositiveEdgesWeights(g, w);
+		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
 
 		ContractableGraph cg = new ContractableGraph(g);
 		BitSet cut = new BitSet(n);

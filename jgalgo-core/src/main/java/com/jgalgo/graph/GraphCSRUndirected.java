@@ -25,7 +25,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 	GraphCSRUndirected(IndexGraph g) {
 		super(g);
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 	}
 
 	@Override

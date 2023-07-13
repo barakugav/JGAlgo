@@ -96,9 +96,9 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-		makeSureNoMeldWithSelf(heap);
-		makeSureMeldWithSameImpl(RedBlackTree.class, heap);
-		makeSureEqualComparatorBeforeMeld(heap);
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(RedBlackTree.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 		RedBlackTree<K, V> h = (RedBlackTree<K, V>) heap;
 		if (h.isEmpty())
 			return;
@@ -202,7 +202,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	@Override
 	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
 		Node<K, V> n = (Node<K, V>) ref;
-		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);

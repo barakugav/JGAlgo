@@ -26,7 +26,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 
 	@Override
 	TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g) {
-		ArgumentCheck.onlyDirected(g);
+		Assertions.Graphs.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
 		IntPriorityQueue queue = new IntArrayFIFOQueue();

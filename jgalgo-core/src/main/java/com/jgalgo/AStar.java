@@ -109,7 +109,7 @@ class AStar implements ShortestPathWithHeuristic {
 				int v = eit.target();
 
 				double ew = w.weight(e);
-				ArgumentCheck.onlyPositiveWeight(ew);
+				Assertions.Graphs.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
 				if (distance >= distances.get(v))

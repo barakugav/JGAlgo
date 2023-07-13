@@ -42,7 +42,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		else if (dt instanceof DynamicTreeSplayInt)
 			((DynamicTreeSplayInt) dt).splay((DynamicTreeSplayInt.SplayNode) node);
 		else
-			throw new IllegalStateException();
+			throw new IllegalStateException("unknown dynamic tree impl: " + dt.getClass().getName());
 	}
 
 	abstract void initNode(SplayTree.BaseNode<?, ?> n);
@@ -81,8 +81,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 		@Override
 		void afterLink(SplayTree.BaseNode<?, ?> n) {
-			SplayTree.BaseNode<?, ?> parent =
-					(SplayTree.BaseNode<?, ?>) ((DynamicTree.Node) n).getParent();
+			SplayTree.BaseNode<?, ?> parent = (SplayTree.BaseNode<?, ?>) ((DynamicTree.Node) n).getParent();
 			setNodeData(parent, getNodeData(parent) + getNodeData(n));
 		}
 

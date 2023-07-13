@@ -52,8 +52,8 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
-		ArgumentCheck.onlyUndirected(g);
-		ArgumentCheck.noParallelEdges(g, "parallel edges are not supported");
+		Assertions.Graphs.onlyUndirected(g);
+		Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
 		// if (VALIDATE_METRIC)
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 

@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -487,13 +486,11 @@ public class Graphs {
 		}
 
 		void checkVertex(int vertex) {
-			if (!(0 <= vertex && vertex < n))
-				throw new IndexOutOfBoundsException(vertex);
+			Assertions.Graphs.checkVertex(vertex, n);
 		}
 
 		void checkEdge(int edge) {
-			if (!(0 <= edge && edge < m))
-				throw new IndexOutOfBoundsException(edge);
+			Assertions.Graphs.checkEdge(edge, m);
 		}
 
 		@Override
@@ -523,8 +520,7 @@ public class Graphs {
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					target = nextTarget;
 					nextTarget++;
 					return getEdge(source, target);
@@ -532,8 +528,7 @@ public class Graphs {
 
 				@Override
 				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					return getEdge(source, nextTarget);
 				}
 
@@ -565,8 +560,7 @@ public class Graphs {
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					source = nextSource;
 					nextSource++;
 					return getEdge(source, target);
@@ -574,8 +568,7 @@ public class Graphs {
 
 				@Override
 				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					return getEdge(nextSource, target);
 				}
 
@@ -623,16 +616,14 @@ public class Graphs {
 
 					@Override
 					public int nextInt() {
-						if (!hasNext())
-							throw new NoSuchElementException();
+						Assertions.Iters.hasNext(this);
 						beforeNext = false;
 						return getEdge(source, target);
 					}
 
 					@Override
 					public int peekNext() {
-						if (!hasNext())
-							throw new NoSuchElementException();
+						Assertions.Iters.hasNext(this);
 						return getEdge(source, target);
 					}
 
@@ -1549,16 +1540,14 @@ public class Graphs {
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					beforeNext = false;
 					return edge;
 				}
 
 				@Override
 				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					return edge;
 				}
 

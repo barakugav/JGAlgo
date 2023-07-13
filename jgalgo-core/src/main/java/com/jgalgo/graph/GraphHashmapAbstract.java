@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -132,8 +131,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			prevEdge = nextEdge;
 			prevEndpoint = nextEndpoint;
 			advance();
@@ -142,8 +140,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 
 		@Override
 		public int peekNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return nextEdge;
 		}
 

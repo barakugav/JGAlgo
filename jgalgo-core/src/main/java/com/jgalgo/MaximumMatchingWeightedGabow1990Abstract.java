@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -49,14 +48,14 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
@@ -183,8 +182,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 						@Override
 						public Blossom next() {
-							if (!hasNext())
-								throw new NoSuchElementException();
+							Assertions.Iters.hasNext(this);
 							Blossom ret = c;
 							c = ret.right;
 							if (c == begin)
@@ -223,8 +221,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					int ret = next;
 
 					if (!stack.isEmpty()) {
@@ -889,8 +886,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 				@Override
 				public Blossom next() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					Blossom ret = b;
 					ret.lastVisitIdx = visitIdx;
 
@@ -929,8 +925,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 
 				@Override
 				public Blossom next() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					Blossom ret = b;
 					ret.lastVisitIdx = visitIdx;
 

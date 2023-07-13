@@ -287,7 +287,7 @@ class GraphBuilderImpl {
 
 		Undirected(Graph g) {
 			super(g);
-			ArgumentCheck.onlyUndirected(g);
+			Assertions.Graphs.onlyUndirected(g);
 		}
 
 		@Override
@@ -321,7 +321,7 @@ class GraphBuilderImpl {
 
 		Directed(Graph g) {
 			super(g);
-			ArgumentCheck.onlyDirected(g);
+			Assertions.Graphs.onlyDirected(g);
 		}
 
 		@Override

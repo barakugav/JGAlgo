@@ -32,22 +32,22 @@ class Edges {
 
 		@Override
 		public int nextInt() {
-			throw new NoSuchElementException();
+			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
 		}
 
 		@Override
 		public int peekNext() {
-			throw new NoSuchElementException();
+			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
 		}
 
 		@Override
 		public int source() {
-			throw new NoSuchElementException();
+			throw new IllegalStateException();
 		}
 
 		@Override
 		public int target() {
-			throw new NoSuchElementException();
+			throw new IllegalStateException();
 		}
 	};
 

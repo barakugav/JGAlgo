@@ -96,7 +96,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 	}
 
 	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 
 		int[] vTree = new int[n];

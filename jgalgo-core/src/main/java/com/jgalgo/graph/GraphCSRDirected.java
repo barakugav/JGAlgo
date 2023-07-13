@@ -30,7 +30,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
 	GraphCSRDirected(IndexGraph g) {
 		super(g);
-		ArgumentCheck.onlyDirected(g);
+		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

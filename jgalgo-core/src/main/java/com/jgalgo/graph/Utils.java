@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
@@ -69,8 +68,7 @@ class Utils {
 
 		@Override
 		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
+			Assertions.Iters.hasNext(this);
 			return idx++;
 		}
 	}
@@ -105,6 +103,8 @@ class Utils {
 	}
 
 	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
+
+		private static final long serialVersionUID = 1L;
 
 		private final int defVal;
 

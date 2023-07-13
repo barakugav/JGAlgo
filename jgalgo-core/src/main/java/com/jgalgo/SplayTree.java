@@ -151,7 +151,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	@Override
 	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
 		SplayBSTNode<K, V> n = (SplayBSTNode<K, V>) ref;
-		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);
@@ -214,9 +214,9 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-		makeSureNoMeldWithSelf(heap);
-		makeSureMeldWithSameImpl(SplayTree.class, heap);
-		makeSureEqualComparatorBeforeMeld(heap);
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(SplayTree.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 		SplayTree<K, V> h = (SplayTree<K, V>) heap;
 		if (h.isEmpty())
 			return;

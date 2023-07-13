@@ -70,7 +70,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 	 */
 	@Override
 	Matching computeMaximumCardinalityMatching(IndexGraph g) {
-		ArgumentCheck.onlyUndirected(g);
+		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);

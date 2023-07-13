@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -254,8 +253,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 				@Override
 				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
+					Assertions.Iters.hasNext(this);
 					return edgesUserIds[idx++];
 				}
 
@@ -269,7 +267,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		Undirected(IndexGraph g) {
 			super(g);
-			ArgumentCheck.onlyUndirected(g);
+			Assertions.Graphs.onlyUndirected(g);
 		}
 
 		@Override
@@ -304,7 +302,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		Directed(IndexGraph g) {
 			super(g);
-			ArgumentCheck.onlyDirected(g);
+			Assertions.Graphs.onlyDirected(g);
 		}
 
 		@Override
