@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCSRUnmappedDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCSRUnmappedDirected.java</span></div><h1>GraphCSRUnmappedDirected.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCSRDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCSRDirected.java</span></div><h1>GraphCSRDirected.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -17,18 +17,18 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
-class GraphCSRUnmappedDirected extends GraphCSRUnmappedAbstract {
+class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCSRUnmappedDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
+	GraphCSRDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 <span class="fc" id="L26">		super(builder, processEdges);</span>
 <span class="fc" id="L27">		edgesIn = processEdges.edgesIn;</span>
 <span class="fc" id="L28">		edgesInBegin = processEdges.edgesInBegin;</span>
 <span class="fc" id="L29">	}</span>
 
-	GraphCSRUnmappedDirected(IndexGraph g) {
+	GraphCSRDirected(IndexGraph g) {
 <span class="nc" id="L32">		super(g);</span>
 <span class="nc" id="L33">		ArgumentCheck.onlyDirected(g);</span>
 <span class="nc" id="L34">		final int n = g.vertices().size();</span>

@@ -120,6 +120,8 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 <span class="fc" id="L120">		FastEdgeRemoval,</span>
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
 <span class="fc" id="L122">		FastEdgeLookup,</span>
+		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
+<span class="fc" id="L124">		DenseGraph,</span>
 	}
 
 	/**
@@ -130,7 +132,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build undirected graphs
 	 */
 	public static GraphFactory newUndirected() {
-<span class="fc" id="L133">		return new GraphImpl.Factory(false);</span>
+<span class="fc" id="L135">		return new GraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -141,7 +143,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build directed graphs
 	 */
 	public static GraphFactory newDirected() {
-<span class="fc" id="L144">		return new GraphImpl.Factory(true);</span>
+<span class="fc" id="L146">		return new GraphImpl.Factory(true);</span>
 	}
 
 	/**
@@ -155,7 +157,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static GraphFactory newFrom(Graph g) {
-<span class="fc" id="L158">		return new GraphImpl.Factory(g);</span>
+<span class="fc" id="L160">		return new GraphImpl.Factory(g);</span>
 	}
 
 }

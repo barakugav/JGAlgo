@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 
 import java.util.NoSuchElementException;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
@@ -28,427 +27,340 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 	static final int EdgeNone = -1;
 
-<span class="fc" id="L31">	private static final DataContainer.Int[] EmptyEdgesArr = new DataContainer.Int[0];</span>
+<span class="fc" id="L30">	private static final DataContainer.Int[] EmptyEdgesArr = new DataContainer.Int[0];</span>
 
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L34">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L33">		super(expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());</span>
-<span class="fc" id="L37">		addInternalVerticesContainer(edges);</span>
+<span class="fc" id="L35">		edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());</span>
+<span class="fc" id="L36">		addInternalVerticesContainer(edges);</span>
 
-<span class="fc" id="L39">		edgeEndpointsContainer =</span>
-<span class="fc" id="L40">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L41">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc" id="L42">	}</span>
+<span class="fc" id="L38">		edgeEndpointsContainer =</span>
+<span class="fc" id="L39">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L40">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L41">	}</span>
 
 	GraphTableAbstract(IndexGraph g) {
-<span class="fc" id="L45">		super(g);</span>
-<span class="fc" id="L46">		final int n = g.vertices().size();</span>
+<span class="fc" id="L44">		super(g);</span>
+<span class="fc" id="L45">		final int n = g.vertices().size();</span>
 
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (g instanceof GraphTableAbstract) {</span>
-<span class="fc" id="L49">			GraphTableAbstract g0 = (GraphTableAbstract) g;</span>
-<span class="fc" id="L50">			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, Utils.consumerNoOp());</span>
-<span class="fc" id="L51">			addInternalVerticesContainer(edges);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L53">				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, Utils.consumerNoOp());</span>
-<span class="fc" id="L54">				addInternalVerticesContainer(vEdges);</span>
-<span class="fc" id="L55">				edges.set(v, vEdges);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (g instanceof GraphTableAbstract) {</span>
+<span class="fc" id="L48">			GraphTableAbstract g0 = (GraphTableAbstract) g;</span>
+<span class="fc" id="L49">			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, Utils.consumerNoOp());</span>
+<span class="fc" id="L50">			addInternalVerticesContainer(edges);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L52">				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, Utils.consumerNoOp());</span>
+<span class="fc" id="L53">				addInternalVerticesContainer(vEdges);</span>
+<span class="fc" id="L54">				edges.set(v, vEdges);</span>
 			}
 
-<span class="fc" id="L58">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L59">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc" id="L60">		} else {</span>
+<span class="fc" id="L57">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L58">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L59">		} else {</span>
 
-<span class="nc" id="L62">			edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());</span>
-<span class="nc" id="L63">			addInternalVerticesContainer(edges);</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L65">				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());</span>
-<span class="nc" id="L66">				addInternalVerticesContainer(vEdges);</span>
-<span class="nc" id="L67">				edges.set(v, vEdges);</span>
+<span class="nc" id="L61">			edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());</span>
+<span class="nc" id="L62">			addInternalVerticesContainer(edges);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L64">				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());</span>
+<span class="nc" id="L65">				addInternalVerticesContainer(vEdges);</span>
+<span class="nc" id="L66">				edges.set(v, vEdges);</span>
 
-<span class="nc bnc" id="L69" title="All 2 branches missed.">				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L70">					int e = eit.nextInt();</span>
-<span class="nc" id="L71">					vEdges.set(eit.target(), e);</span>
-<span class="nc" id="L72">				}</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L69">					int e = eit.nextInt();</span>
+<span class="nc" id="L70">					vEdges.set(eit.target(), e);</span>
+<span class="nc" id="L71">				}</span>
 			}
 
-<span class="nc" id="L75">			final int m = edgesIdStrat.size();</span>
-<span class="nc" id="L76">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
-<span class="nc" id="L77">					newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L79">				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="nc" id="L80">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="nc" id="L74">			final int m = edgesIdStrat.size();</span>
+<span class="nc" id="L75">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
+<span class="nc" id="L76">					newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			for (int e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L78">				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="nc" id="L79">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 		}
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L81">	}</span>
 
 	@Override
 	public int addVertex() {
-<span class="fc" id="L86">		int v = super.addVertex();</span>
-<span class="fc" id="L87">		DataContainer.Int vEdges = edges.get(v);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (vEdges == null) {</span>
-<span class="fc" id="L89">			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());</span>
-<span class="fc" id="L90">			addInternalVerticesContainer(vEdges);</span>
-<span class="fc" id="L91">			edges.set(v, vEdges);</span>
+<span class="fc" id="L85">		int v = super.addVertex();</span>
+<span class="fc" id="L86">		DataContainer.Int vEdges = edges.get(v);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (vEdges == null) {</span>
+<span class="fc" id="L88">			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());</span>
+<span class="fc" id="L89">			addInternalVerticesContainer(vEdges);</span>
+<span class="fc" id="L90">			edges.set(v, vEdges);</span>
 		}
-<span class="fc" id="L93">		return v;</span>
+<span class="fc" id="L92">		return v;</span>
 	}
 
 	@Override
 	void removeVertexImpl(int vertex) {
-<span class="fc" id="L98">		DataContainer.Int edgesV = edges.get(vertex);</span>
-<span class="fc" id="L99">		super.removeVertexImpl(vertex);</span>
-<span class="fc" id="L100">		edgesV.clear();</span>
+<span class="fc" id="L97">		DataContainer.Int edgesV = edges.get(vertex);</span>
+<span class="fc" id="L98">		super.removeVertexImpl(vertex);</span>
+<span class="fc" id="L99">		edgesV.clear();</span>
 		// Don't deallocate v array
 		// edges.clear(v);
 
-<span class="fc" id="L104">		final int n = vertices().size();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L106">			edges.get(u).clear(vertex);</span>
-<span class="fc" id="L107">	}</span>
+<span class="fc" id="L103">		final int n = vertices().size();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L105">			edges.get(u).clear(vertex);</span>
+<span class="fc" id="L106">	}</span>
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="fc" id="L111">		final int n = vertices().size();</span>
-<span class="fc" id="L112">		edges.swap(v1, v2);</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L114">			edges.get(u).swap(v1, v2);</span>
-<span class="fc" id="L115">		super.vertexSwap(v1, v2);</span>
-<span class="fc" id="L116">	}</span>
+<span class="fc" id="L110">		final int n = vertices().size();</span>
+<span class="fc" id="L111">		edges.swap(v1, v2);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L113">			edges.get(u).swap(v1, v2);</span>
+<span class="fc" id="L114">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L115">	}</span>
 
 	@Override
 	public int getEdge(int source, int target) {
-<span class="fc" id="L120">		return edges.get(source).getInt(target);</span>
+<span class="fc" id="L119">		return edges.get(source).getInt(target);</span>
 	}
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
-<span class="fc" id="L125">		int edge = edges.get(source).getInt(target);</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		if (edge == EdgeNone) {</span>
-<span class="nc" id="L127">			return Edges.EmptyEdgeSet;</span>
+<span class="fc" id="L124">		int edge = edges.get(source).getInt(target);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (edge == EdgeNone) {</span>
+<span class="nc" id="L126">			return Edges.EmptyEdgeSet;</span>
 		} else {
-<span class="fc" id="L129">			return new EdgeSetSourceTarget(source, target, edge);</span>
+<span class="fc" id="L128">			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);</span>
 		}
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (edges.get(source).getInt(target) != EdgeNone)</span>
-<span class="nc" id="L136">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="fc" id="L137">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L138">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
-<span class="fc" id="L139">		return e;</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (edges.get(source).getInt(target) != EdgeNone)</span>
+<span class="nc" id="L135">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L136">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L137">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
+<span class="fc" id="L138">		return e;</span>
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-<span class="fc" id="L144">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
-<span class="fc" id="L145">		super.removeEdgeImpl(edge);</span>
-<span class="fc" id="L146">	}</span>
+<span class="fc" id="L143">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
+<span class="fc" id="L144">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L145">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L150">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
-<span class="fc" id="L151">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L152">	}</span>
+<span class="fc" id="L149">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
+<span class="fc" id="L150">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L151">	}</span>
 
 	void reverseEdge0(int edge) {
-<span class="fc" id="L155">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
-<span class="fc" id="L156">	}</span>
+<span class="fc" id="L154">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
+<span class="fc" id="L155">	}</span>
 
 	@Override
 	public long[] edgeEndpoints() {
-<span class="fc" id="L160">		return edgeEndpoints;</span>
+<span class="fc" id="L159">		return edgeEndpoints;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L165">		clearEdges();</span>
-<span class="fc" id="L166">		final int n = vertices().size();</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L168">			edges.get(u).clear();</span>
+<span class="fc" id="L164">		clearEdges();</span>
+<span class="fc" id="L165">		final int n = vertices().size();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L167">			edges.get(u).clear();</span>
 		// Don't deallocate edges containers
 		// edges.clear();
-<span class="fc" id="L171">		super.clear();</span>
-<span class="fc" id="L172">	}</span>
+<span class="fc" id="L170">		super.clear();</span>
+<span class="fc" id="L171">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L176">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
-<span class="fc" id="L177">		super.clearEdges();</span>
-<span class="fc" id="L178">	}</span>
+<span class="fc" id="L175">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
+<span class="fc" id="L176">		super.clearEdges();</span>
+<span class="fc" id="L177">	}</span>
 
 	class EdgeIterOut implements EdgeIter {
 
 		private final int source;
 		private int target;
-<span class="fc" id="L184">		private int lastTarget = -1;</span>
+<span class="fc" id="L183">		private int lastTarget = -1;</span>
 		private final DataContainer.Int sourceEdges;
 
-<span class="fc" id="L187">		EdgeIterOut(int source) {</span>
-<span class="fc" id="L188">			checkVertex(source);</span>
-<span class="fc" id="L189">			this.source = source;</span>
-<span class="fc" id="L190">			sourceEdges = edges.get(source);</span>
+<span class="fc" id="L186">		EdgeIterOut(int source) {</span>
+<span class="fc" id="L187">			checkVertex(source);</span>
+<span class="fc" id="L188">			this.source = source;</span>
+<span class="fc" id="L189">			sourceEdges = edges.get(source);</span>
 
-<span class="fc" id="L192">			advanceUntilNext(0);</span>
-<span class="fc" id="L193">		}</span>
+<span class="fc" id="L191">			advanceUntilNext(0);</span>
+<span class="fc" id="L192">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			return target &gt;= 0;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			return target &gt;= 0;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L203">				throw new NoSuchElementException();</span>
-<span class="fc" id="L204">			int e = sourceEdges.getInt(lastTarget = target);</span>
-<span class="fc" id="L205">			advanceUntilNext(target + 1);</span>
-<span class="fc" id="L206">			return e;</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L202">				throw new NoSuchElementException();</span>
+<span class="fc" id="L203">			int e = sourceEdges.getInt(lastTarget = target);</span>
+<span class="fc" id="L204">			advanceUntilNext(target + 1);</span>
+<span class="fc" id="L205">			return e;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="pc bpc" id="L211" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L212">				throw new NoSuchElementException();</span>
-<span class="fc" id="L213">			return sourceEdges.getInt(target);</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L211">				throw new NoSuchElementException();</span>
+<span class="fc" id="L212">			return sourceEdges.getInt(target);</span>
 		}
 
 		void advanceUntilNext(int next) {
-<span class="fc" id="L217">			int n = vertices().size();</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (sourceEdges.getInt(next) != EdgeNone) {</span>
-<span class="fc" id="L220">					target = next;</span>
-<span class="fc" id="L221">					return;</span>
+<span class="fc" id="L216">			int n = vertices().size();</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (sourceEdges.getInt(next) != EdgeNone) {</span>
+<span class="fc" id="L219">					target = next;</span>
+<span class="fc" id="L220">					return;</span>
 				}
 			}
-<span class="fc" id="L224">			target = -1;</span>
-<span class="fc" id="L225">		}</span>
+<span class="fc" id="L223">			target = -1;</span>
+<span class="fc" id="L224">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L229">			return source;</span>
+<span class="fc" id="L228">			return source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L234">			return lastTarget;</span>
+<span class="fc" id="L233">			return lastTarget;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L239">			removeEdge(sourceEdges.getInt(target()));</span>
-<span class="fc" id="L240">		}</span>
+<span class="fc" id="L238">			removeEdge(sourceEdges.getInt(target()));</span>
+<span class="fc" id="L239">		}</span>
 	}
 
 	class EdgeIterInUndirected implements EdgeIter {
 
 		private int source;
 		private final int target;
-<span class="fc" id="L247">		private int lastSource = -1;</span>
+<span class="fc" id="L246">		private int lastSource = -1;</span>
 		private final DataContainer.Int targetEdges;
 
-<span class="fc" id="L250">		EdgeIterInUndirected(int target) {</span>
-<span class="fc" id="L251">			checkVertex(target);</span>
-<span class="fc" id="L252">			this.target = target;</span>
-<span class="fc" id="L253">			targetEdges = edges.get(target);</span>
+<span class="fc" id="L249">		EdgeIterInUndirected(int target) {</span>
+<span class="fc" id="L250">			checkVertex(target);</span>
+<span class="fc" id="L251">			this.target = target;</span>
+<span class="fc" id="L252">			targetEdges = edges.get(target);</span>
 
-<span class="fc" id="L255">			advanceUntilNext(0);</span>
-<span class="fc" id="L256">		}</span>
+<span class="fc" id="L254">			advanceUntilNext(0);</span>
+<span class="fc" id="L255">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L260" title="All 2 branches covered.">			return source != -1;</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">			return source != -1;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L266">				throw new NoSuchElementException();</span>
-<span class="fc" id="L267">			int e = targetEdges.getInt(lastSource = source);</span>
-<span class="fc" id="L268">			advanceUntilNext(source + 1);</span>
-<span class="fc" id="L269">			return e;</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L265">				throw new NoSuchElementException();</span>
+<span class="fc" id="L266">			int e = targetEdges.getInt(lastSource = source);</span>
+<span class="fc" id="L267">			advanceUntilNext(source + 1);</span>
+<span class="fc" id="L268">			return e;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="pc bpc" id="L274" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L275">				throw new NoSuchElementException();</span>
-<span class="fc" id="L276">			return targetEdges.getInt(source);</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L274">				throw new NoSuchElementException();</span>
+<span class="fc" id="L275">			return targetEdges.getInt(source);</span>
 		}
 
 		private void advanceUntilNext(int next) {
-<span class="fc" id="L280">			int n = vertices().size();</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">				if (targetEdges.getInt(next) != EdgeNone) {</span>
-<span class="fc" id="L283">					source = next;</span>
-<span class="fc" id="L284">					return;</span>
+<span class="fc" id="L279">			int n = vertices().size();</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">				if (targetEdges.getInt(next) != EdgeNone) {</span>
+<span class="fc" id="L282">					source = next;</span>
+<span class="fc" id="L283">					return;</span>
 				}
 			}
-<span class="fc" id="L287">			source = -1;</span>
-<span class="fc" id="L288">		}</span>
+<span class="fc" id="L286">			source = -1;</span>
+<span class="fc" id="L287">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L292">			return lastSource;</span>
+<span class="fc" id="L291">			return lastSource;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L297">			return target;</span>
+<span class="fc" id="L296">			return target;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L302">			removeEdge(targetEdges.getInt(source()));</span>
-<span class="fc" id="L303">		}</span>
+<span class="fc" id="L301">			removeEdge(targetEdges.getInt(source()));</span>
+<span class="fc" id="L302">		}</span>
 	}
 
 	class EdgeIterInDirected implements EdgeIter {
 
 		private int source;
 		private final int target;
-<span class="fc" id="L310">		private int lastSource = -1;</span>
+<span class="fc" id="L309">		private int lastSource = -1;</span>
 
-<span class="fc" id="L312">		EdgeIterInDirected(int target) {</span>
-<span class="fc" id="L313">			checkVertex(target);</span>
-<span class="fc" id="L314">			this.target = target;</span>
+<span class="fc" id="L311">		EdgeIterInDirected(int target) {</span>
+<span class="fc" id="L312">			checkVertex(target);</span>
+<span class="fc" id="L313">			this.target = target;</span>
 
-<span class="fc" id="L316">			advanceUntilNext(0);</span>
-<span class="fc" id="L317">		}</span>
+<span class="fc" id="L315">			advanceUntilNext(0);</span>
+<span class="fc" id="L316">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L321" title="All 2 branches covered.">			return source != -1;</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">			return source != -1;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L326" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L327">				throw new NoSuchElementException();</span>
-<span class="fc" id="L328">			int e = edges.get(lastSource = source).getInt(target);</span>
-<span class="fc" id="L329">			advanceUntilNext(source + 1);</span>
-<span class="fc" id="L330">			return e;</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L326">				throw new NoSuchElementException();</span>
+<span class="fc" id="L327">			int e = edges.get(lastSource = source).getInt(target);</span>
+<span class="fc" id="L328">			advanceUntilNext(source + 1);</span>
+<span class="fc" id="L329">			return e;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L336">				throw new NoSuchElementException();</span>
-<span class="fc" id="L337">			return edges.get(source).getInt(target);</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L335">				throw new NoSuchElementException();</span>
+<span class="fc" id="L336">			return edges.get(source).getInt(target);</span>
 		}
 
 		private void advanceUntilNext(int next) {
-<span class="fc" id="L341">			int n = vertices().size();</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">				if (edges.get(next).getInt(target) != EdgeNone) {</span>
-<span class="fc" id="L344">					source = next;</span>
-<span class="fc" id="L345">					return;</span>
+<span class="fc" id="L340">			int n = vertices().size();</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">				if (edges.get(next).getInt(target) != EdgeNone) {</span>
+<span class="fc" id="L343">					source = next;</span>
+<span class="fc" id="L344">					return;</span>
 				}
 			}
-<span class="fc" id="L348">			source = -1;</span>
-<span class="fc" id="L349">		}</span>
+<span class="fc" id="L347">			source = -1;</span>
+<span class="fc" id="L348">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L353">			return lastSource;</span>
+<span class="fc" id="L352">			return lastSource;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L358">			return target;</span>
+<span class="fc" id="L357">			return target;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L363">			removeEdge(edges.get(source()).getInt(target()));</span>
-<span class="fc" id="L364">		}</span>
-	}
-
-	private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
-
-		private final int source, target;
-		private int edge;
-
-<span class="fc" id="L372">		EdgeSetSourceTarget(int source, int target, int edge) {</span>
-<span class="fc" id="L373">			this.source = source;</span>
-<span class="fc" id="L374">			this.target = target;</span>
-<span class="fc" id="L375">			this.edge = edge;</span>
-<span class="fc" id="L376">		}</span>
-
-		@Override
-		public boolean remove(int edge) {
-<span class="pc bpc" id="L380" title="1 of 2 branches missed.">			if (this.edge != edge)</span>
-<span class="nc" id="L381">				return false;</span>
-<span class="fc" id="L382">			removeEdge(edge);</span>
-<span class="fc" id="L383">			this.edge = EdgeNone;</span>
-<span class="fc" id="L384">			return true;</span>
-		}
-
-		@Override
-		public boolean contains(int edge) {
-<span class="pc bpc" id="L389" title="2 of 4 branches missed.">			return this.edge != EdgeNone &amp;&amp; this.edge == edge;</span>
-		}
-
-		@Override
-		public int size() {
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">			return edge != EdgeNone ? 1 : 0;</span>
-		}
-
-		@Override
-		public void clear() {
-<span class="nc bnc" id="L399" title="All 2 branches missed.">			if (edge != EdgeNone) {</span>
-<span class="nc" id="L400">				removeEdge(edge);</span>
-<span class="nc" id="L401">				edge = EdgeNone;</span>
-			}
-<span class="nc" id="L403">		}</span>
-
-		@Override
-		public EdgeIter iterator() {
-<span class="pc bpc" id="L407" title="1 of 2 branches missed.">			if (edge == EdgeNone)</span>
-<span class="nc" id="L408">				return EdgeIter.emptyIterator();</span>
-<span class="fc" id="L409">			return new EdgeIter() {</span>
-
-<span class="fc" id="L411">				boolean beforeNext = true;</span>
-
-				@Override
-				public boolean hasNext() {
-<span class="fc" id="L415">					return beforeNext;</span>
-				}
-
-				@Override
-				public int nextInt() {
-<span class="pc bpc" id="L420" title="1 of 2 branches missed.">					if (!hasNext())</span>
-<span class="nc" id="L421">						throw new NoSuchElementException();</span>
-<span class="fc" id="L422">					beforeNext = false;</span>
-<span class="fc" id="L423">					return edge;</span>
-				}
-
-				@Override
-				public int peekNext() {
-<span class="pc bpc" id="L428" title="1 of 2 branches missed.">					if (!hasNext())</span>
-<span class="nc" id="L429">						throw new NoSuchElementException();</span>
-<span class="fc" id="L430">					return edge;</span>
-				}
-
-				@Override
-				public int source() {
-<span class="fc" id="L435">					return source;</span>
-				}
-
-				@Override
-				public int target() {
-<span class="fc" id="L440">					return target;</span>
-				}
-
-				@Override
-				public void remove() {
-<span class="nc bnc" id="L445" title="All 2 branches missed.">					if (beforeNext)</span>
-<span class="nc" id="L446">						throw new IllegalStateException();</span>
-<span class="nc" id="L447">					removeEdge(edge);</span>
-<span class="nc" id="L448">					edge = EdgeNone;</span>
-<span class="nc" id="L449">				}</span>
-			};
-		}
+<span class="fc" id="L362">			removeEdge(edges.get(source()).getInt(target()));</span>
+<span class="fc" id="L363">		}</span>
 	}
 
 }

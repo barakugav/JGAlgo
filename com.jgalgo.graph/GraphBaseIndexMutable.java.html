@@ -66,14 +66,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L66">		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());</span>
 <span class="fc" id="L67">	}</span>
 
-<span class="nc" id="L69">	GraphBaseIndexMutable(IndexGraphBuilderImpl builder) {</span>
-<span class="nc" id="L70">		verticesIdStrat = builder.verticesIdStrat.copy();</span>
-<span class="nc" id="L71">		edgesIdStrat = builder.edgesIdStrat.copy();</span>
-<span class="nc" id="L72">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, verticesIdStrat);</span>
-<span class="nc" id="L73">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edgesIdStrat);</span>
-<span class="nc" id="L74">		verticesInternalContainers = new DataContainer.Manager(verticesIdStrat.size());</span>
-<span class="nc" id="L75">		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L69">	GraphBaseIndexMutable(IndexGraphBuilderImpl builder) {</span>
+<span class="fc" id="L70">		verticesIdStrat = builder.verticesIdStrat.copy();</span>
+<span class="fc" id="L71">		edgesIdStrat = builder.edgesIdStrat.copy();</span>
+<span class="fc" id="L72">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, verticesIdStrat);</span>
+<span class="fc" id="L73">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edgesIdStrat);</span>
+<span class="fc" id="L74">		verticesInternalContainers = new DataContainer.Manager(verticesIdStrat.size());</span>
+<span class="fc" id="L75">		edgesInternalContainers = new DataContainer.Manager(edgesIdStrat.size());</span>
+<span class="fc" id="L76">	}</span>
 
 	@Override
 	public final IntSet vertices() {

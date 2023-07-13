@@ -20,28 +20,35 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
+import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 class Utils {
 	private Utils() {}
 
 	/* syntax sugar to iterator for loops */
 	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
-<span class="nc" id="L31">		return new Iterable&lt;&gt;() {</span>
+<span class="nc" id="L38">		return new Iterable&lt;&gt;() {</span>
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="nc" id="L34">				return it;</span>
+<span class="nc" id="L41">				return it;</span>
 			}
 		};
 	}
 
 	/* syntax sugar to iterator for loops */
 	static IntIterable iterable(IntIterator it) {
-<span class="nc" id="L41">		return new IntIterable() {</span>
+<span class="nc" id="L48">		return new IntIterable() {</span>
 			@Override
 			public IntIterator iterator() {
-<span class="nc" id="L44">				return it;</span>
+<span class="nc" id="L51">				return it;</span>
 			}
 		};
 	}
@@ -51,51 +58,120 @@ class Utils {
 		private int idx;
 		private final int size;
 
-<span class="fc" id="L54">		RangeIter(int size) {</span>
-<span class="fc" id="L55">			this.size = size;</span>
-<span class="fc" id="L56">		}</span>
+<span class="fc" id="L61">		RangeIter(int size) {</span>
+<span class="fc" id="L62">			this.size = size;</span>
+<span class="fc" id="L63">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			return idx &lt; size;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			return idx &lt; size;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L66">				throw new NoSuchElementException();</span>
-<span class="fc" id="L67">			return idx++;</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L73">				throw new NoSuchElementException();</span>
+<span class="fc" id="L74">			return idx++;</span>
 		}
 	}
 
 	static int size(IntIterable c) {
-<span class="fc" id="L72">		int count = 0;</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (IntIterator it = c.iterator(); it.hasNext(); it.nextInt())</span>
-<span class="fc" id="L74">			count++;</span>
-<span class="fc" id="L75">		return count;</span>
+<span class="fc" id="L79">		int count = 0;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (IntIterator it = c.iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L81">			count++;</span>
+<span class="fc" id="L82">		return count;</span>
 	}
 
 	static class Obj {
 		private final String s;
 
-<span class="fc" id="L81">		Obj(String s) {</span>
-<span class="fc" id="L82">			this.s = Objects.requireNonNull(s);</span>
-<span class="fc" id="L83">		}</span>
+<span class="fc" id="L88">		Obj(String s) {</span>
+<span class="fc" id="L89">			this.s = Objects.requireNonNull(s);</span>
+<span class="fc" id="L90">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L87">			return s;</span>
+<span class="fc" id="L94">			return s;</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L92">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
-<span class="fc" id="L93">	};</span>
+<span class="fc" id="L99">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
+<span class="fc" id="L100">	};</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;T&gt; Consumer&lt;T&gt; consumerNoOp() {
-<span class="fc" id="L97">		return ConsumerNoOp;</span>
+<span class="fc" id="L104">		return ConsumerNoOp;</span>
 	}
+
+	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
+
+		private final int defVal;
+
+<span class="fc" id="L111">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
+<span class="fc" id="L112">			this.defVal = defVal;</span>
+<span class="fc" id="L113">		}</span>
+
+		@Override
+		public int get(int key) {
+<span class="fc" id="L117">			return defVal;</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc" id="L122">			return true;</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L127">			return 0;</span>
+		}
+
+		@Override
+<span class="fc" id="L131">		public void clear() {}</span>
+
+		@Override
+		public void defaultReturnValue(int rv) {
+<span class="nc" id="L135">			throw new UnsupportedOperationException();</span>
+		}
+
+		@Override
+		public int defaultReturnValue() {
+<span class="nc" id="L140">			return defVal;</span>
+		}
+
+		@Override
+		public int remove(int key) {
+<span class="fc" id="L145">			return defVal;</span>
+		}
+
+		@Override
+		public ObjectSet&lt;Int2IntMap.Entry&gt; int2IntEntrySet() {
+<span class="fc" id="L150">			return ObjectSets.emptySet();</span>
+		}
+
+		@Override
+		public IntSet keySet() {
+<span class="nc" id="L155">			return IntSets.emptySet();</span>
+		}
+
+		@Override
+		public IntCollection values() {
+<span class="fc" id="L160">			return IntSets.emptySet();</span>
+		}
+
+		@Override
+		public boolean containsKey(int key) {
+<span class="nc" id="L165">			return false;</span>
+		}
+
+		@Override
+		public boolean containsValue(int value) {
+<span class="nc" id="L170">			return false;</span>
+		}
+	}
+
+<span class="fc" id="L174">	static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

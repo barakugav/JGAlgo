@@ -541,8 +541,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 		@Override
 		public int idToIndex(int id) {
 <span class="fc" id="L543">			int idx = idToIndex.get(id);</span>
-<span class="pc bpc" id="L544" title="1 of 2 branches missed.">			if (idx &lt; 0)</span>
-<span class="nc" id="L545">				throw new IndexOutOfBoundsException(id);</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">			if (idx &lt; 0)</span>
+<span class="fc" id="L545">				throw new IndexOutOfBoundsException(id);</span>
 <span class="fc" id="L546">			return idx;</span>
 		}
 

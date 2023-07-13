@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.EnumSet;
+import java.util.List;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
@@ -24,29 +25,29 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	private boolean parallelEdges;
 	private int expectedVerticesNum;
 	private int expectedEdgesNum;
-<span class="fc" id="L27">	private final EnumSet&lt;GraphFactory.Hint&gt; hints = EnumSet.noneOf(GraphFactory.Hint.class);</span>
+<span class="fc" id="L28">	private final EnumSet&lt;GraphFactory.Hint&gt; hints = EnumSet.noneOf(GraphFactory.Hint.class);</span>
 	private String impl;
 
-<span class="fc" id="L30">	IndexGraphFactoryImpl(boolean directed) {</span>
-<span class="fc" id="L31">		this.directed = directed;</span>
-<span class="fc" id="L32">	}</span>
+<span class="fc" id="L31">	IndexGraphFactoryImpl(boolean directed) {</span>
+<span class="fc" id="L32">		this.directed = directed;</span>
+<span class="fc" id="L33">	}</span>
 
-<span class="fc" id="L34">	IndexGraphFactoryImpl(IndexGraph g) {</span>
-<span class="fc" id="L35">		GraphCapabilities capabilities = g.getCapabilities();</span>
-<span class="fc" id="L36">		this.directed = capabilities.directed();</span>
-<span class="fc" id="L37">		this.selfEdges = capabilities.selfEdges();</span>
-<span class="fc" id="L38">		this.parallelEdges = capabilities.parallelEdges();</span>
-<span class="fc" id="L39">		impl = Graphs.getIndexGraphImpl(g);</span>
-<span class="fc" id="L40">	}</span>
+<span class="fc" id="L35">	IndexGraphFactoryImpl(IndexGraph g) {</span>
+<span class="fc" id="L36">		GraphCapabilities capabilities = g.getCapabilities();</span>
+<span class="fc" id="L37">		this.directed = capabilities.directed();</span>
+<span class="fc" id="L38">		this.selfEdges = capabilities.selfEdges();</span>
+<span class="fc" id="L39">		this.parallelEdges = capabilities.parallelEdges();</span>
+<span class="fc" id="L40">		impl = Graphs.getIndexGraphImpl(g);</span>
+<span class="fc" id="L41">	}</span>
 
 	@Override
 	public IndexGraph newGraph() {
-<span class="fc" id="L44">		return chooseImpl().newGraph(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L45">		return chooseImpl().newGraph(expectedVerticesNum, expectedEdgesNum);</span>
 	}
 
 	@Override
 	public IndexGraph newCopyOf(IndexGraph g) {
-<span class="fc" id="L49">		return chooseImpl().newCopyOf(g);</span>
+<span class="fc" id="L50">		return chooseImpl().newCopyOf(g);</span>
 	}
 
 	private static interface Impl {
@@ -58,151 +59,183 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	private Impl chooseImpl() {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		Impl arrayImpl = directed ? new Impl() {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		Impl arrayImpl = directed ? new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L65">				return new GraphArrayDirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L66">				return new GraphArrayDirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L70">				return new GraphArrayDirected(graph);</span>
+<span class="fc" id="L71">				return new GraphArrayDirected(graph);</span>
 			}
-<span class="fc" id="L72">		} : new Impl() {</span>
+<span class="fc" id="L73">		} : new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L76">				return new GraphArrayUndirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L77">				return new GraphArrayUndirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L81">				return new GraphArrayUndirected(graph);</span>
+<span class="fc" id="L82">				return new GraphArrayUndirected(graph);</span>
 			}
 		};
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		Impl linkedImpl = directed ? new Impl() {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		Impl linkedImpl = directed ? new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L88">				return new GraphLinkedDirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L89">				return new GraphLinkedDirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L93">				return new GraphLinkedDirected(graph);</span>
+<span class="fc" id="L94">				return new GraphLinkedDirected(graph);</span>
 			}
-<span class="fc" id="L95">		} : new Impl() {</span>
+<span class="fc" id="L96">		} : new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L99">				return new GraphLinkedUndirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L100">				return new GraphLinkedUndirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L104">				return new GraphLinkedUndirected(graph);</span>
+<span class="fc" id="L105">				return new GraphLinkedUndirected(graph);</span>
 			}
 		};
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		Impl tableImpl = directed ? new Impl() {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		Impl hashmapImpl = directed ? new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L111">				return new GraphTableDirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L112">				return new GraphHashmapDirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L116">				return new GraphTableDirected(graph);</span>
+<span class="fc" id="L117">				return new GraphHashmapDirected(graph);</span>
 			}
-<span class="fc" id="L118">		} : new Impl() {</span>
+<span class="fc" id="L119">		} : new Impl() {</span>
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L122">				return new GraphTableUndirected(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L123">				return new GraphHashmapUndirected(expectedVerticesNum, expectedEdgesNum);</span>
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-<span class="fc" id="L127">				return new GraphTableUndirected(graph);</span>
+<span class="fc" id="L128">				return new GraphHashmapUndirected(graph);</span>
+			}
+		};
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		Impl tableImpl = directed ? new Impl() {</span>
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L135">				return new GraphTableDirected(expectedVerticesNum, expectedEdgesNum);</span>
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph) {
+<span class="fc" id="L140">				return new GraphTableDirected(graph);</span>
+			}
+<span class="fc" id="L142">		} : new Impl() {</span>
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L146">				return new GraphTableUndirected(expectedVerticesNum, expectedEdgesNum);</span>
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph) {
+<span class="fc" id="L151">				return new GraphTableUndirected(graph);</span>
 			}
 		};
 
 		Impl impl;
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (this.impl != null) {</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (&quot;GraphArray&quot;.equals(this.impl))</span>
-<span class="fc" id="L134">				impl = arrayImpl;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			else if (&quot;GraphLinked&quot;.equals(this.impl))</span>
-<span class="fc" id="L136">				impl = linkedImpl;</span>
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(this.impl))</span>
-<span class="fc" id="L138">				impl = tableImpl;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		if (this.impl != null) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			if (&quot;GraphArray&quot;.equals(this.impl))</span>
+<span class="fc" id="L158">				impl = arrayImpl;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			else if (&quot;GraphLinked&quot;.equals(this.impl))</span>
+<span class="fc" id="L160">				impl = linkedImpl;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			else if (&quot;GraphHashmap&quot;.equals(this.impl))</span>
+<span class="fc" id="L162">				impl = hashmapImpl;</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(this.impl))</span>
+<span class="fc" id="L164">				impl = tableImpl;</span>
 			else
-<span class="nc" id="L140">				throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + this.impl);</span>
+<span class="nc" id="L166">				throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + this.impl);</span>
+
 		} else {
-<span class="pc bpc" id="L142" title="5 of 6 branches missed.">			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) &amp;&amp; !selfEdges &amp;&amp; !parallelEdges)</span>
-<span class="nc" id="L143">				impl = tableImpl;</span>
-<span class="pc bpc" id="L144" title="3 of 4 branches missed.">			else if (hints.contains(GraphFactory.Hint.FastEdgeLookup) &amp;&amp; !selfEdges)</span>
-<span class="nc" id="L145">				impl = linkedImpl;</span>
+<span class="pc bpc" id="L169" title="3 of 4 branches missed.">			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) &amp;&amp; !parallelEdges)</span>
+<span class="nc" id="L170">				impl = hashmapImpl;</span>
+
+<span class="pc bpc" id="L172" title="5 of 6 branches missed.">			if (hints.containsAll(List.of(GraphFactory.Hint.FastEdgeLookup, GraphFactory.Hint.DenseGraph)) &amp;&amp; !selfEdges</span>
+					&amp;&amp; !parallelEdges)
+<span class="nc" id="L174">				impl = tableImpl;</span>
+
+<span class="pc bpc" id="L176" title="3 of 4 branches missed.">			else if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) &amp;&amp; !selfEdges)</span>
+<span class="nc" id="L177">				impl = linkedImpl;</span>
+
 			else
-<span class="fc" id="L147">				impl = arrayImpl;</span>
+<span class="fc" id="L180">				impl = arrayImpl;</span>
 		}
-<span class="fc" id="L149">		return impl;</span>
+<span class="fc" id="L182">		return impl;</span>
 	}
 
 	@Override
 	public IndexGraphFactory setDirected(boolean directed) {
-<span class="fc" id="L154">		this.directed = directed;</span>
-<span class="fc" id="L155">		return this;</span>
+<span class="fc" id="L187">		this.directed = directed;</span>
+<span class="fc" id="L188">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="nc" id="L160">		this.selfEdges = selfEdges;</span>
-<span class="nc" id="L161">		return this;</span>
+<span class="nc" id="L193">		this.selfEdges = selfEdges;</span>
+<span class="nc" id="L194">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="nc" id="L166">		this.parallelEdges = parallelEdges;</span>
-<span class="nc" id="L167">		return this;</span>
+<span class="nc" id="L199">		this.parallelEdges = parallelEdges;</span>
+<span class="nc" id="L200">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
-<span class="nc" id="L173">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
-<span class="fc" id="L174">		this.expectedVerticesNum = expectedVerticesNum;</span>
-<span class="fc" id="L175">		return this;</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
+<span class="nc" id="L206">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
+<span class="fc" id="L207">		this.expectedVerticesNum = expectedVerticesNum;</span>
+<span class="fc" id="L208">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
-<span class="nc" id="L181">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
-<span class="fc" id="L182">		this.expectedEdgesNum = expectedEdgesNum;</span>
-<span class="fc" id="L183">		return this;</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
+<span class="nc" id="L214">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
+<span class="fc" id="L215">		this.expectedEdgesNum = expectedEdgesNum;</span>
+<span class="fc" id="L216">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="nc" id="L188">		hints.add(hint);</span>
-<span class="nc" id="L189">		return this;</span>
+<span class="nc" id="L221">		hints.add(hint);</span>
+<span class="nc" id="L222">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L194">		hints.remove(hint);</span>
-<span class="nc" id="L195">		return this;</span>
+<span class="nc" id="L227">		hints.remove(hint);</span>
+<span class="nc" id="L228">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory setOption(String key, Object value) {
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (&quot;impl&quot;.equals(key)) {</span>
-<span class="fc" id="L201">			impl = (String) value;</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">		if (&quot;impl&quot;.equals(key)) {</span>
+<span class="fc" id="L234">			impl = (String) value;</span>
 		} else {
-<span class="nc" id="L203">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L236">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
-<span class="fc" id="L205">		return this;</span>
+<span class="fc" id="L238">		return this;</span>
 	}
 
 }

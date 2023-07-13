@@ -77,7 +77,7 @@ package com.jgalgo.graph;
 <span class="fc" id="L77">		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);</span>
 <span class="fc" id="L78">	}</span>
 
-	private static long sourceTarget2Endpoints(int source, int target) {
+	static long sourceTarget2Endpoints(int source, int target) {
 <span class="fc" id="L81">		return ((source &amp; 0xffffffffL) &lt;&lt; 32) | ((target &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
