@@ -17,6 +17,7 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -231,15 +232,31 @@ public class WeightsTest extends TestBase {
 				}
 			}
 
-			Weights<E> weightsUnmod = g.immutableView().getEdgesWeights(wKey);
+			int nonExistingEdge0;
+			do {
+				nonExistingEdge0 = rand.nextInt();
+			} while (g.edges().contains(nonExistingEdge0));
+			final int nonExistingEdge = nonExistingEdge0;
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.get(-1));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.get(nonExistingEdge));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.set(-1, weightFactory.get()));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.set(nonExistingEdge, weightFactory.get()));
+
+			Weights<E> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
 			for (int e : g.edges())
-				assertEquals(weights.get(e), weightsUnmod.get(e));
-			assertEquals(weights.defaultWeight(), weightsUnmod.defaultWeight());
+				assertEquals(weights.get(e), weightsImmutable.get(e));
+			assertEquals(weights.defaultWeight(), weightsImmutable.defaultWeight());
 			assertThrows(UnsupportedOperationException.class, () -> {
 				IntIterator eit = g.edges().iterator();
 				int e1 = eit.nextInt(), e2 = eit.nextInt();
-				weightsUnmod.set(e1, weightsUnmod.get(e2));
+				weightsImmutable.set(e1, weightsImmutable.get(e2));
 			});
+
+			assertEquals(weights, weights);
+			assertEquals(weights, weightsImmutable);
+			assertEquals(weightsImmutable, weightsImmutable);
+			assertNotEquals(weights, Integer.valueOf(5));
+			assertNotEquals(weightsImmutable, Integer.valueOf(-95));
 		}
 	}
 

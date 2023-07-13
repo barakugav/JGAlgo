@@ -71,6 +71,8 @@ import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 
 interface WeightsImpl<E> extends Weights<E> {
 
+	int size();
+
 	@SuppressWarnings("unchecked")
 	static <E> Weights<E> immutableView(Weights<E> weights) {
 		if (weights instanceof Immutable<?>)
@@ -108,7 +110,8 @@ interface WeightsImpl<E> extends Weights<E> {
 				this.idStrat = Objects.requireNonNull(idStrat);
 			}
 
-			int size() {
+			@Override
+			public int size() {
 				return idStrat.size();
 			}
 
@@ -765,7 +768,11 @@ interface WeightsImpl<E> extends Weights<E> {
 				if (idStrat.size() != orig.idStrat.size())
 					throw new IllegalArgumentException();
 				defaultWeight = orig.defaultWeight;
-				weights = (BitSet) orig.weights.clone();
+				if (defaultWeight) {
+					weights = orig.weights.get(0, idStrat.size());
+				} else {
+					weights = orig.weights.get(0, orig.weights.previousSetBit(idStrat.size() - 1) + 1);
+				}
 			}
 
 			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
@@ -805,7 +812,13 @@ interface WeightsImpl<E> extends Weights<E> {
 				if (!(other instanceof WeightsImpl.Index.Bool))
 					return false;
 				WeightsImpl.Index.Bool o = (WeightsImpl.Index.Bool) other;
-				return size() == o.size() && weights.equals(o.weights);
+				final int s = size();
+				if (s != o.size())
+					return false;
+				for (int i = 0; i < s; i++)
+					if (weights.get(i) != o.weights.get(i))
+						return false;
+				return true;
 			}
 		}
 
@@ -893,50 +906,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	static interface IndexImmutable<E> extends WeightsImpl.Index<E> {
 
-		static <D> WeightsImpl.IndexImmutable<D> newInstance(IdStrategy.FixedSize idStart, Class<? super D> type,
-				D defVal) {
-			@SuppressWarnings("rawtypes")
-			WeightsImpl container;
-			if (type == byte.class) {
-				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Byte(idStart, defVal0);
-
-			} else if (type == short.class) {
-				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Short(idStart, defVal0);
-
-			} else if (type == int.class) {
-				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Int(idStart, defVal0);
-
-			} else if (type == long.class) {
-				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Long(idStart, defVal0);
-
-			} else if (type == float.class) {
-				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Float(idStart, defVal0);
-
-			} else if (type == double.class) {
-				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Double(idStart, defVal0);
-
-			} else if (type == boolean.class) {
-				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
-				container = new WeightsImpl.IndexImmutable.Bool(idStart, defVal0);
-
-			} else if (type == char.class) {
-				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
-				container = new WeightsImpl.IndexImmutable.Char(idStart, defVal0);
-
-			} else {
-				container = new WeightsImpl.IndexImmutable.Obj<>(idStart, defVal, type);
-			}
-			@SuppressWarnings("unchecked")
-			WeightsImpl.IndexImmutable<D> container0 = (WeightsImpl.IndexImmutable<D>) container;
-			return container0;
-		}
-
 		static WeightsImpl.IndexImmutable<?> copyOf(Weights<?> weights, IdStrategy.FixedSize idStart) {
 			if (weights instanceof WeightsImpl.ImmutableView<?>)
 				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
@@ -992,10 +961,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Obj<E> extends WeightsImpl.Index.Obj<E> implements WeightsImpl.IndexImmutable<E> {
 
-			Obj(IdStrategy.FixedSize idStrat, E defVal, Class<E> type) {
-				super(idStrat, defVal, type);
-			}
-
 			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
 			}
@@ -1012,10 +977,6 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Byte extends WeightsImpl.Index.Byte implements WeightsImpl.IndexImmutable<java.lang.Byte> {
-
-			Byte(IdStrategy.FixedSize idStrat, byte defVal) {
-				super(idStrat, defVal);
-			}
 
 			Byte(WeightsImpl.Index.Byte orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
@@ -1034,10 +995,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Short extends WeightsImpl.Index.Short implements WeightsImpl.IndexImmutable<java.lang.Short> {
 
-			Short(IdStrategy.FixedSize idStrat, short defVal) {
-				super(idStrat, defVal);
-			}
-
 			Short(WeightsImpl.Index.Short orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
 			}
@@ -1055,10 +1012,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Int extends WeightsImpl.Index.Int implements WeightsImpl.IndexImmutable<Integer> {
 
-			Int(IdStrategy.FixedSize idStrat, int defVal) {
-				super(idStrat, defVal);
-			}
-
 			Int(WeightsImpl.Index.Int orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
 			}
@@ -1074,10 +1027,6 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Long extends WeightsImpl.Index.Long implements WeightsImpl.IndexImmutable<java.lang.Long> {
-
-			Long(IdStrategy.FixedSize idStrat, long defVal) {
-				super(idStrat, defVal);
-			}
 
 			Long(WeightsImpl.Index.Long orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
@@ -1096,10 +1045,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Float extends WeightsImpl.Index.Float implements WeightsImpl.IndexImmutable<java.lang.Float> {
 
-			Float(IdStrategy.FixedSize idStrat, float defVal) {
-				super(idStrat, defVal);
-			}
-
 			Float(WeightsImpl.Index.Float orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
 			}
@@ -1116,10 +1061,6 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Double extends WeightsImpl.Index.Double implements WeightsImpl.IndexImmutable<java.lang.Double> {
-
-			Double(IdStrategy.FixedSize idStrat, double defVal) {
-				super(idStrat, defVal);
-			}
 
 			Double(WeightsImpl.Index.Double orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
@@ -1138,10 +1079,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Bool extends WeightsImpl.Index.Bool implements WeightsImpl.IndexImmutable<Boolean> {
 
-			Bool(IdStrategy.FixedSize idStrat, boolean defVal) {
-				super(idStrat, defVal);
-			}
-
 			Bool(WeightsImpl.Index.Bool orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
 			}
@@ -1158,10 +1095,6 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Char extends WeightsImpl.Index.Char implements WeightsImpl.IndexImmutable<Character> {
-
-			Char(IdStrategy.FixedSize idStrat, char defVal) {
-				super(idStrat, defVal);
-			}
 
 			Char(WeightsImpl.Index.Char orig, IdStrategy.FixedSize idStrat) {
 				super(orig, idStrat);
@@ -1289,33 +1222,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static WeightsImpl.IndexMutable<?> copyOfReindexed(Weights<?> weights, IdStrategy idStart,
-				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
-			if (weights instanceof WeightsImpl.Index.Byte) {
-				return new WeightsImpl.IndexMutable.Byte((WeightsImpl.Index.Byte) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Short) {
-				return new WeightsImpl.IndexMutable.Short((WeightsImpl.Index.Short) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Int) {
-				return new WeightsImpl.IndexMutable.Int((WeightsImpl.Index.Int) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Long) {
-				return new WeightsImpl.IndexMutable.Long((WeightsImpl.Index.Long) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Float) {
-				return new WeightsImpl.IndexMutable.Float((WeightsImpl.Index.Float) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Double) {
-				return new WeightsImpl.IndexMutable.Double((WeightsImpl.Index.Double) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Bool) {
-				return new WeightsImpl.IndexMutable.Bool((WeightsImpl.Index.Bool) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Char) {
-				return new WeightsImpl.IndexMutable.Char((WeightsImpl.Index.Char) weights, idStart, reIndexMap);
-			} else if (weights instanceof WeightsImpl.Index.Obj) {
-				return new WeightsImpl.IndexMutable.Obj<>((WeightsImpl.Index.Obj<?>) weights, idStart, reIndexMap);
-			} else {
-				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
-			}
-		}
-
 		static class Obj<E> extends WeightsImpl.Index.Obj<E> implements WeightsImpl.IndexMutable<E> {
 
 			Obj(IdStrategy idStrat, E defVal, Class<E> type) {
@@ -1324,10 +1230,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat) {
 				super(orig, idStrat);
-			}
-
-			Obj(WeightsImpl.Index.Obj<E> orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
@@ -1378,10 +1280,6 @@ interface WeightsImpl<E> extends Weights<E> {
 				super(orig, idStrat);
 			}
 
-			Byte(WeightsImpl.Index.Byte orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
-			}
-
 			@Override
 			public void set(int idx, byte weight) {
 				checkIdx(idx);
@@ -1428,10 +1326,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat) {
 				super(orig, idStrat);
-			}
-
-			Short(WeightsImpl.Index.Short orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
@@ -1482,10 +1376,6 @@ interface WeightsImpl<E> extends Weights<E> {
 				super(orig, idStrat);
 			}
 
-			Int(WeightsImpl.Index.Int orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
-			}
-
 			@Override
 			public void set(int idx, int weight) {
 				checkIdx(idx);
@@ -1532,10 +1422,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat) {
 				super(orig, idStrat);
-			}
-
-			Long(WeightsImpl.Index.Long orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
@@ -1586,10 +1472,6 @@ interface WeightsImpl<E> extends Weights<E> {
 				super(orig, idStrat);
 			}
 
-			Float(WeightsImpl.Index.Float orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
-			}
-
 			@Override
 			public void set(int idx, float weight) {
 				checkIdx(idx);
@@ -1638,10 +1520,6 @@ interface WeightsImpl<E> extends Weights<E> {
 				super(orig, idStrat);
 			}
 
-			Double(WeightsImpl.Index.Double orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
-			}
-
 			@Override
 			public void set(int idx, double weight) {
 				checkIdx(idx);
@@ -1688,10 +1566,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat) {
 				super(orig, idStrat);
-			}
-
-			Bool(WeightsImpl.Index.Bool orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
@@ -1743,10 +1617,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat) {
 				super(orig, idStrat);
-			}
-
-			Char(WeightsImpl.Index.Char orig, IdStrategy idStrat, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				super(orig, idStrat, reIndexMap);
 			}
 
 			@Override
@@ -1863,6 +1733,11 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights;
 		}
 
+		@Override
+		public int size() {
+			return weights.size();
+		}
+
 		static WeightsImpl.Mapped<?> newInstance(WeightsImpl.Index<?> weights, IndexIdMap indexMap) {
 			if (weights instanceof WeightsImpl.Index.Byte) {
 				return new WeightsImpl.Mapped.Byte((WeightsImpl.Index.Byte) weights, indexMap);
@@ -1914,13 +1789,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped<?>))
+				if (!(other instanceof WeightsImpl))
 					return false;
-				WeightsImpl.Mapped<?> o = (WeightsImpl.Mapped<?>) other;
+				WeightsImpl<?> o = (WeightsImpl<?>) other;
 
 				WeightsImpl.Index.Obj<E> w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -1990,13 +1865,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Byte))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Byte))
 					return false;
-				WeightsImpl.Mapped.Byte o = (WeightsImpl.Mapped.Byte) other;
+				Weights.Byte o = (Weights.Byte) other;
 
 				WeightsImpl.Index.Byte w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2066,13 +1941,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Short))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Short))
 					return false;
-				WeightsImpl.Mapped.Short o = (WeightsImpl.Mapped.Short) other;
+				Weights.Short o = (Weights.Short) other;
 
 				WeightsImpl.Index.Short w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2142,13 +2017,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Int))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Int))
 					return false;
-				WeightsImpl.Mapped.Int o = (WeightsImpl.Mapped.Int) other;
+				Weights.Int o = (Weights.Int) other;
 
 				WeightsImpl.Index.Int w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2218,13 +2093,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Long))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Long))
 					return false;
-				WeightsImpl.Mapped.Long o = (WeightsImpl.Mapped.Long) other;
+				Weights.Long o = (Weights.Long) other;
 
 				WeightsImpl.Index.Long w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2294,13 +2169,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Float))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Float))
 					return false;
-				WeightsImpl.Mapped.Float o = (WeightsImpl.Mapped.Float) other;
+				Weights.Float o = (Weights.Float) other;
 
 				WeightsImpl.Index.Float w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2370,13 +2245,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Double))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Double))
 					return false;
-				WeightsImpl.Mapped.Double o = (WeightsImpl.Mapped.Double) other;
+				Weights.Double o = (Weights.Double) other;
 
 				WeightsImpl.Index.Double w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2446,13 +2321,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Bool))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Bool))
 					return false;
-				WeightsImpl.Mapped.Bool o = (WeightsImpl.Mapped.Bool) other;
+				Weights.Bool o = (Weights.Bool) other;
 
 				WeightsImpl.Index.Bool w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2522,13 +2397,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl.Mapped.Char))
+				if (!(other instanceof WeightsImpl && other instanceof Weights.Char))
 					return false;
-				WeightsImpl.Mapped.Char o = (WeightsImpl.Mapped.Char) other;
+				Weights.Char o = (Weights.Char) other;
 
 				WeightsImpl.Index.Char w = weights();
 				int size = w.size();
-				if (size != o.weights().size())
+				if (size != ((WeightsImpl<?>) other).size())
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
@@ -2588,6 +2463,11 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		Weights<E> weights() {
 			return weights;
+		}
+
+		@Override
+		public int size() {
+			return weights.size();
 		}
 
 		static class Obj<E> extends ImmutableView<E> {

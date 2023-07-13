@@ -372,4 +372,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 		}
 	}
 
+	@Test
+	public void testImmutableViewOfImmutableCopy() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			IndexGraph gOrig = createGraph(directed).indexGraph();
+			IndexGraph gImmutable = gOrig.immutableCopy();
+
+			assertTrue(gImmutable == gImmutable.immutableView());
+		}
+	}
+
 }

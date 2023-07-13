@@ -382,4 +382,17 @@ public class ImmutableGraphViewTest extends TestBase {
 		}
 	}
 
+	@Test
+	public void testImmutableViewOfImmutableView() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean index : BooleanList.of(false, true)) {
+				Graph gOrig0 = createGraph(directed);
+				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				Graph gImmutable = gOrig.immutableView();
+
+				assertTrue(gImmutable == gImmutable.immutableView());
+			}
+		}
+	}
+
 }

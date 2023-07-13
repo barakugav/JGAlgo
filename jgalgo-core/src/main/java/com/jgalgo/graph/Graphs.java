@@ -1069,6 +1069,9 @@ public class Graphs {
 	static Graph immutableView(Graph g) {
 		if (g instanceof IndexGraph)
 			return immutableView((IndexGraph) g);
+		if (g instanceof GraphImpl)
+			if (((GraphImpl) g).indexGraph instanceof ImmutableGraph)
+				return g;
 		return g instanceof ImmutableGraph ? g : new ImmutableGraphView(g);
 	}
 

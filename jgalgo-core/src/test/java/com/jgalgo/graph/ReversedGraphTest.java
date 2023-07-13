@@ -478,11 +478,11 @@ public class ReversedGraphTest extends TestBase {
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				GraphCapabilities capOrig = gOrig.getCapabilities();
-				GraphCapabilities capUnmod = gRev.getCapabilities();
+				GraphCapabilities capRev = gRev.getCapabilities();
 
-				assertEquals(capOrig.parallelEdges(), capUnmod.parallelEdges());
-				assertEquals(capOrig.selfEdges(), capUnmod.selfEdges());
-				assertEquals(capOrig.directed(), capUnmod.directed());
+				assertEquals(capOrig.parallelEdges(), capRev.parallelEdges());
+				assertEquals(capOrig.selfEdges(), capRev.selfEdges());
+				assertEquals(capOrig.directed(), capRev.directed());
 			}
 		}
 	}

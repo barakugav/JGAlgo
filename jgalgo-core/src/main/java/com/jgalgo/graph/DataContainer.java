@@ -445,21 +445,6 @@ abstract class DataContainer<E> {
 				container.expand(newCapacity);
 			containersCapacity = newCapacity;
 		}
-
-		// void swapElements(int idx1, int idx2) {
-		// for (DataContainer<?> container : containers.values())
-		// container.swap(idx1, idx2);
-		// }
-
-		// void clearElement(int idx) {
-		// for (DataContainer<?> container : containers.values())
-		// container.clear(idx);
-		// }
-
-		// void clearContainers() {
-		// for (DataContainer<?> container : containers.values())
-		// container.clear();
-		// }
 	}
 
 }

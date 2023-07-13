@@ -18,9 +18,10 @@ package com.jgalgo.graph;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
+abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, ImmutableGraph {
 
 	final IdStrategy.FixedSize verticesIdStrat;
 	final IdStrategy.FixedSize edgesIdStrat;
@@ -192,6 +193,11 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl {
 	@Override
 	public IdStrategy getEdgesIdStrategy() {
 		return edgesIdStrat;
+	}
+
+	@Override
+	public IndexGraph immutableCopy() {
+		return this;
 	}
 
 	static abstract class EdgeIterAbstract implements EdgeIter {
