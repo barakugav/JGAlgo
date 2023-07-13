@@ -16,6 +16,8 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
@@ -43,6 +45,35 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 				edgesIn[eIdx++] = e;
 		}
 		edgesInBegin[n] = m;
+
+		for (int u = 0; u < n; u++) {
+			IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
+				int c;
+				if ((c = Integer.compare(edgeTarget(e1), edgeTarget(e2))) != 0)
+					return c;
+				if ((c = Integer.compare(e1, e2)) != 0)
+					return c;
+				return 0;
+			});
+		}
+		for (int v = 0; v < n; v++) {
+			IntArrays.quickSort(edgesIn, edgesInBegin[v], edgesInBegin[v + 1], (e1, e2) -> {
+				int c;
+				if ((c = Integer.compare(edgeSource(e1), edgeSource(e2))) != 0)
+					return c;
+				if ((c = Integer.compare(e1, e2)) != 0)
+					return c;
+				return 0;
+			});
+		}
+	}
+
+	@Override
+	public EdgeSet getEdges(int source, int target) {
+		IntIntPair edgeRange = Utils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target,
+				eIdx -> edgeTarget(edgesOut[eIdx]));
+		return edgeRange == null ? Edges.EmptyEdgeSet
+				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());
 	}
 
 	@Override
@@ -82,6 +113,18 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);
+		}
+	}
+
+	private class EdgeSetSourceTarget extends GraphCSRAbstractUnindexed.EdgeSetSourceTarget {
+
+		EdgeSetSourceTarget(int source, int target, int edgeIdxBegin, int edgeIdxEnd) {
+			super(source, target, edgeIdxBegin, edgeIdxEnd);
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return edgeSource(edge) == source && edgeTarget(edge) == target;
 		}
 	}
 

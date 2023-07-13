@@ -19,9 +19,11 @@ package com.jgalgo.graph;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -172,5 +174,52 @@ class Utils {
 	}
 
 	static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);
+
+	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
+		for (int len = to - from; len > 0;) {
+			int half = len >> 1;
+			int mid = from + half;
+			if (idx2key.applyAsInt(mid) < key) {
+				from = mid + 1;
+				len = len - half - 1;
+			} else {
+				len = half;
+			}
+		}
+		return from;
+	}
+
+	private static int upperBound(int to, int from, int key, IntUnaryOperator idx2key) {
+		for (int len = from - to; len > 0;) {
+			int half = len >> 1;
+			int mid = to + half;
+			if (key < idx2key.applyAsInt(mid)) {
+				len = half;
+			} else {
+				to = mid + 1;
+				len = len - half - 1;
+			}
+		}
+		return to;
+	}
+
+	static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
+		for (int len = to - from; len > 0;) {
+			int half = len >> 1;
+			int mid = from + half;
+			if (idx2key.applyAsInt(mid) < key) {
+				from = mid + 1;
+				len = len - half - 1;
+			} else if (key < idx2key.applyAsInt(mid)) {
+				len = half;
+			} else {
+				int left = lowerBound(from, mid, key, idx2key);
+				from += len;
+				int right = upperBound(++mid, from, key, idx2key);
+				return IntIntPair.of(left, right);
+			}
+		}
+		return null;
+	}
 
 }

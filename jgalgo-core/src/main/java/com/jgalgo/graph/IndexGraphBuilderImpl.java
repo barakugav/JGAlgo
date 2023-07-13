@@ -54,8 +54,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		endpoints = new int[m * 2];
 		for (int e = 0; e < m; e++) {
-			endpoints[e * 2 + 0] = g.edgeSource(e);
-			endpoints[e * 2 + 1] = g.edgeTarget(e);
+			setEdgeSource(e, g.edgeSource(e));
+			setEdgeTarget(e, g.edgeTarget(e));
 		}
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
@@ -116,8 +116,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		assert e == eFromIdStrat;
 		if (e * 2 == endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(2, 2 * endpoints.length));
-		endpoints[e * 2 + 0] = source;
-		endpoints[e * 2 + 1] = target;
+		setEdgeSource(e, source);
+		setEdgeTarget(e, target);
 		edgesUserWeights.ensureCapacity(e + 1);
 		return e;
 	}
@@ -136,8 +136,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
 		if (eIdx == edgesUserIds.length)
 			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, 2 * edgesUserIds.length));
-		endpoints[eIdx * 2 + 0] = source;
-		endpoints[eIdx * 2 + 1] = target;
+		setEdgeSource(eIdx, source);
+		setEdgeTarget(eIdx, target);
 		edgesUserIds[eIdx] = edge;
 		edgesUserWeights.ensureCapacity(edge + 1);
 		userProvideEdgesIds = true;
@@ -155,6 +155,33 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	}
 
+	int edgeSource(int e) {
+		return endpoints[e * 2 + 0];
+	}
+
+	int edgeTarget(int e) {
+		return endpoints[e * 2 + 1];
+	}
+
+	int edgeEndpoint(int e,int endpoint) {
+		int u = edgeSource(e);
+		int v = edgeTarget(e);
+		if (u == endpoint) {
+			return v;
+		} else {
+			assert v == endpoint;
+			return u;
+		}
+	}
+
+	private void setEdgeSource(int e, int source) {
+		endpoints[e * 2 + 0] = source;
+	}
+
+	private void setEdgeTarget(int e, int target) {
+		endpoints[e * 2 + 1] = target;
+	}
+
 	void validateUserProvidedIdsBeforeBuild() {
 		if (!userProvideEdgesIds)
 			return;
@@ -166,26 +193,25 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			int e = edgesUserIds[startIdx];
 			if (e >= m)
 				throw new IllegalArgumentException("Edges IDs should be 0,1,2,...,m-1. id >= m: " + e + " >= " + m);
-			int u = endpoints[startIdx * 2 + 0];
-			int v = endpoints[startIdx * 2 + 1];
+			int u = edgeSource(startIdx), v = edgeTarget(startIdx);
 			edgesUserIds[startIdx] = -1;
 			for (;;) {
 				int nextE = edgesUserIds[e];
 				if (nextE == -1) {
 					/* we completed a cycle */
 					edgesUserIds[e] = e;
-					endpoints[e * 2 + 0] = u;
-					endpoints[e * 2 + 1] = v;
+					setEdgeSource(e, u);
+					setEdgeTarget(e, v);
 					break;
 				} else if (nextE == e)
 					throw new IllegalArgumentException("duplicate edge id: " + e);
 				if (nextE >= m)
 					throw new IllegalArgumentException(
 							"Edges IDs should be 0,1,2,...,m-1. id >= m: " + nextE + " >= " + m);
-				int nextU = endpoints[e * 2 + 0];
-				int nextV = endpoints[e * 2 + 1];
-				endpoints[e * 2 + 0] = u;
-				endpoints[e * 2 + 1] = v;
+				int nextU = edgeSource(e);
+				int nextV = edgeTarget(e);
+				setEdgeSource(e, u);
+				setEdgeTarget(e, v);
 				edgesUserIds[e] = e;
 				u = nextU;
 				v = nextV;

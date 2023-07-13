@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import java.util.Map;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, ImmutableGraph {
@@ -115,6 +116,12 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 	@Override
 	public void removeVertex(int vertex) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int getEdge(int source, int target) {
+		EdgeSet edges = getEdges(source, target);
+		return edges.isEmpty() ? -1 : edges.iterator().nextInt();
 	}
 
 	@Override
@@ -246,8 +253,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 			/* Count how many out/in edges each vertex has */
 			edgesOutBegin = new int[n + 1];
 			for (int e = 0; e < m; e++) {
-				int u = builder.endpoints[e * 2 + 0];
-				int v = builder.endpoints[e * 2 + 1];
+				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				if (!(0 <= u && u < n))
 					throw new IndexOutOfBoundsException(u);
 				if (!(0 <= v && v < n))
@@ -276,8 +282,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 			}
 			edgesOutBegin[n] = outNumSum;
 			for (int e = 0; e < m; e++) {
-				int u = builder.endpoints[e * 2 + 0];
-				int v = builder.endpoints[e * 2 + 1];
+				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				int uOutIdx = edgesOutBegin[u]++;
 				edgesOut[uOutIdx] = e;
 				if (u != v) {
@@ -289,6 +294,18 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 			for (int v = n - 1; v > 0; v--)
 				edgesOutBegin[v] = edgesOutBegin[v - 1];
 			edgesOutBegin[0] = 0;
+
+			for (int u = 0; u < n; u++) {
+				final int u0 = u;
+				IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
+					int c;
+					if ((c = Integer.compare(builder.edgeEndpoint(e1, u0), builder.edgeEndpoint(e2, u0))) != 0)
+						return c;
+					if ((c = Integer.compare(e1, e2)) != 0)
+						return c;
+					return 0;
+				});
+			}
 		}
 
 	}
@@ -309,8 +326,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 
 			/* Count how many out/in edges each vertex has */
 			for (int e = 0; e < m; e++) {
-				int u = builder.endpoints[e * 2 + 0];
-				int v = builder.endpoints[e * 2 + 1];
+				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				if (!(0 <= u && u < n))
 					throw new IndexOutOfBoundsException(u);
 				if (!(0 <= v && v < n))
@@ -322,7 +338,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 				return;
 
 			/*
-			 * Arrange all the out-edges in a single continues array, where the out- edges of u are
+			 * Arrange all the out-edges in a single continues array, where the out-edges of u are
 			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1 and similarly all in-edges edgesInBegin[v]...edgesInBegin[v+1]-1
 			 */
 			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];
@@ -337,8 +353,8 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 			}
 			edgesOutBegin[n] = edgesInBegin[n] = m;
 			for (int e = 0; e < m; e++) {
-				int uOutIdx = edgesOutBegin[builder.endpoints[e * 2 + 0]]++;
-				int vInIdx = edgesInBegin[builder.endpoints[e * 2 + 1]]++;
+				int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
+				int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
 				edgesOut[uOutIdx] = e;
 				edgesIn[vInIdx] = e;
 			}
@@ -349,6 +365,27 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 				edgesInBegin[v] = edgesInBegin[v - 1];
 			}
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
+
+			for (int u = 0; u < n; u++) {
+				IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
+					int c;
+					if ((c = Integer.compare(builder.edgeTarget(e1), builder.edgeTarget(e2))) != 0)
+						return c;
+					if ((c = Integer.compare(e1, e2)) != 0)
+						return c;
+					return 0;
+				});
+			}
+			for (int v = 0; v < n; v++) {
+				IntArrays.quickSort(edgesIn, edgesInBegin[v], edgesInBegin[v + 1], (e1, e2) -> {
+					int c;
+					if ((c = Integer.compare(builder.edgeSource(e1), builder.edgeSource(e2))) != 0)
+						return c;
+					if ((c = Integer.compare(e1, e2)) != 0)
+						return c;
+					return 0;
+				});
+			}
 		}
 
 	}

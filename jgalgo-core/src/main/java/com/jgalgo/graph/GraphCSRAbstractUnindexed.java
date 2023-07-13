@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+
 abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 	final int[] edgesOut;
@@ -25,8 +27,8 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++) {
-			endpoints[e * 2 + 0] = builder.endpoints[e * 2 + 0];
-			endpoints[e * 2 + 1] = builder.endpoints[e * 2 + 1];
+			endpoints[e * 2 + 0] = builder.edgeSource(e);
+			endpoints[e * 2 + 1] = builder.edgeTarget(e);
 		}
 	}
 
@@ -55,6 +57,52 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 		for (int e : g.edges()) {
 			endpoints[e * 2 + 0] = g.edgeSource(e);
 			endpoints[e * 2 + 1] = g.edgeTarget(e);
+		}
+	}
+
+	abstract class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
+
+		final int source;
+		final int target;
+		private final int edgeIdxBegin;
+		private final int edgeIdxEnd;
+
+		EdgeSetSourceTarget(int source, int target, int edgeIdxBegin, int edgeIdxEnd) {
+			this.source = source;
+			this.target = target;
+			this.edgeIdxBegin = edgeIdxBegin;
+			this.edgeIdxEnd = edgeIdxEnd;
+		}
+
+		@Override
+		public int size() {
+			return edgeIdxEnd - edgeIdxBegin;
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterSourceTarget(source, target, edgesOut, edgeIdxBegin, edgeIdxEnd);
+		}
+	}
+
+	private static class EdgeIterSourceTarget extends EdgeIterAbstract {
+		private final int source;
+		private final int target;
+
+		EdgeIterSourceTarget(int source, int target, int[] edges, int beginIdx, int endIdx) {
+			super(edges, beginIdx, endIdx);
+			this.source = source;
+			this.target = target;
+		}
+
+		@Override
+		public int source() {
+			return source;
+		}
+
+		@Override
+		public int target() {
+			return target;
 		}
 	}
 

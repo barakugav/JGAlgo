@@ -17,6 +17,8 @@ package com.jgalgo.graph;
 
 import java.util.Optional;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCSRDirectedReindexed extends GraphCSRBase {
 
@@ -44,8 +46,8 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 		for (int eCsr = 0; eCsr < m; eCsr++) {
 			int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
-			endpoints[eCsr * 2 + 0] = builder.endpoints[eOrig * 2 + 0];
-			endpoints[eCsr * 2 + 1] = builder.endpoints[eOrig * 2 + 1];
+			endpoints[eCsr * 2 + 0] = builder.edgeSource(eOrig);
+			endpoints[eCsr * 2 + 1] = builder.edgeTarget(eOrig);
 		}
 	}
 
@@ -63,6 +65,14 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(builder, processEdges, edgesReIndexing);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
+	}
+
+	@Override
+	public EdgeSet getEdges(int source, int target) {
+		IntIntPair edgeRange =
+				Utils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target, this::edgeTarget);
+		return edgeRange == null ? Edges.EmptyEdgeSet
+				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());
 	}
 
 	@Override
@@ -105,7 +115,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
 
 		EdgeSetIn(int target) {
 			super(target);
@@ -127,12 +137,42 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 	}
 
-	private class EdgeIterOut implements EdgeIter {
+	private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
+
 		private final int source;
-		private int nextEdge;
+		private final int target;
+		private final int begin;
+		private final int end;
+
+		EdgeSetSourceTarget(int source, int target, int start, int end) {
+			this.source = source;
+			this.target = target;
+			this.begin = start;
+			this.end = end;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge) && target == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			return end - begin;
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterSourceTarget(source, target, begin, end);
+		}
+	}
+
+	private static abstract class EdgeIterOutAbstract implements EdgeIter {
+		private final int source;
+		int nextEdge;
 		private final int endIdx;
 
-		EdgeIterOut(int source, int beginEdge, int endEdge) {
+		EdgeIterOutAbstract(int source, int beginEdge, int endEdge) {
 			this.source = source;
 			this.nextEdge = beginEdge;
 			this.endIdx = endEdge;
@@ -159,6 +199,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		public int source() {
 			return source;
 		}
+	}
+
+	private class EdgeIterOut extends EdgeIterOutAbstract {
+		EdgeIterOut(int source, int beginEdge, int endEdge) {
+			super(source, beginEdge, endEdge);
+		}
 
 		@Override
 		public int target() {
@@ -178,6 +224,21 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		@Override
 		public int source() {
 			return edgeSource(lastEdge);
+		}
+
+		@Override
+		public int target() {
+			return target;
+		}
+	}
+
+	private static class EdgeIterSourceTarget extends EdgeIterOutAbstract {
+
+		private final int target;
+
+		EdgeIterSourceTarget(int source, int target, int beginEdge, int endEnd) {
+			super(source, beginEdge, endEnd);
+			this.target = target;
 		}
 
 		@Override

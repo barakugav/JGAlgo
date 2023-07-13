@@ -32,7 +32,7 @@ public class GraphBuilderTest extends TestBase {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void indexGraph() {
-		final long seed = 0;
+		final long seed = 0x56f68a18a0ca8d84L;
 		final Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
@@ -112,7 +112,7 @@ public class GraphBuilderTest extends TestBase {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void regularGraph() {
-		final long seed = 0;
+		final long seed = 0x1dbb0af52c6ad3e8L;
 		final Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
