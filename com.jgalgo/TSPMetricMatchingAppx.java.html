@@ -48,8 +48,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L48">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L50">			return null;</span>
-<span class="fc" id="L51">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L52">		ArgumentCheck.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L51">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L52">		Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */

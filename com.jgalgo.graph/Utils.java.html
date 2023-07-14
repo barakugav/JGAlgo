@@ -17,12 +17,13 @@
 package com.jgalgo.graph;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -35,20 +36,20 @@ class Utils {
 
 	/* syntax sugar to iterator for loops */
 	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
-<span class="nc" id="L38">		return new Iterable&lt;&gt;() {</span>
+<span class="nc" id="L39">		return new Iterable&lt;&gt;() {</span>
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="nc" id="L41">				return it;</span>
+<span class="nc" id="L42">				return it;</span>
 			}
 		};
 	}
 
 	/* syntax sugar to iterator for loops */
 	static IntIterable iterable(IntIterator it) {
-<span class="nc" id="L48">		return new IntIterable() {</span>
+<span class="nc" id="L49">		return new IntIterable() {</span>
 			@Override
 			public IntIterator iterator() {
-<span class="nc" id="L51">				return it;</span>
+<span class="nc" id="L52">				return it;</span>
 			}
 		};
 	}
@@ -58,19 +59,18 @@ class Utils {
 		private int idx;
 		private final int size;
 
-<span class="fc" id="L61">		RangeIter(int size) {</span>
-<span class="fc" id="L62">			this.size = size;</span>
-<span class="fc" id="L63">		}</span>
+<span class="fc" id="L62">		RangeIter(int size) {</span>
+<span class="fc" id="L63">			this.size = size;</span>
+<span class="fc" id="L64">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">			return idx &lt; size;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			return idx &lt; size;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L73">				throw new NoSuchElementException();</span>
+<span class="fc" id="L73">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L74">			return idx++;</span>
 		}
 	}
@@ -106,72 +106,121 @@ class Utils {
 
 	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
 
+		private static final long serialVersionUID = 1L;
+
 		private final int defVal;
 
-<span class="fc" id="L111">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
-<span class="fc" id="L112">			this.defVal = defVal;</span>
-<span class="fc" id="L113">		}</span>
+<span class="fc" id="L113">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
+<span class="fc" id="L114">			this.defVal = defVal;</span>
+<span class="fc" id="L115">		}</span>
 
 		@Override
 		public int get(int key) {
-<span class="fc" id="L117">			return defVal;</span>
+<span class="fc" id="L119">			return defVal;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L122">			return true;</span>
+<span class="fc" id="L124">			return true;</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L127">			return 0;</span>
+<span class="fc" id="L129">			return 0;</span>
 		}
 
 		@Override
-<span class="fc" id="L131">		public void clear() {}</span>
+<span class="fc" id="L133">		public void clear() {}</span>
 
 		@Override
 		public void defaultReturnValue(int rv) {
-<span class="nc" id="L135">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L137">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public int defaultReturnValue() {
-<span class="nc" id="L140">			return defVal;</span>
+<span class="nc" id="L142">			return defVal;</span>
 		}
 
 		@Override
 		public int remove(int key) {
-<span class="fc" id="L145">			return defVal;</span>
+<span class="fc" id="L147">			return defVal;</span>
 		}
 
 		@Override
 		public ObjectSet&lt;Int2IntMap.Entry&gt; int2IntEntrySet() {
-<span class="fc" id="L150">			return ObjectSets.emptySet();</span>
+<span class="fc" id="L152">			return ObjectSets.emptySet();</span>
 		}
 
 		@Override
 		public IntSet keySet() {
-<span class="nc" id="L155">			return IntSets.emptySet();</span>
+<span class="nc" id="L157">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public IntCollection values() {
-<span class="fc" id="L160">			return IntSets.emptySet();</span>
+<span class="fc" id="L162">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public boolean containsKey(int key) {
-<span class="nc" id="L165">			return false;</span>
+<span class="nc" id="L167">			return false;</span>
 		}
 
 		@Override
 		public boolean containsValue(int value) {
-<span class="nc" id="L170">			return false;</span>
+<span class="nc" id="L172">			return false;</span>
 		}
 	}
 
-<span class="fc" id="L174">	static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);</span>
+<span class="fc" id="L176">	static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);</span>
+
+	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L180">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L181">			int mid = from + half;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
+<span class="fc" id="L183">				from = mid + 1;</span>
+<span class="fc" id="L184">				len = len - half - 1;</span>
+			} else {
+<span class="fc" id="L186">				len = half;</span>
+			}
+<span class="fc" id="L188">		}</span>
+<span class="fc" id="L189">		return from;</span>
+	}
+
+	private static int upperBound(int to, int from, int key, IntUnaryOperator idx2key) {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		for (int len = from - to; len &gt; 0;) {</span>
+<span class="fc" id="L194">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L195">			int mid = to + half;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (key &lt; idx2key.applyAsInt(mid)) {</span>
+<span class="fc" id="L197">				len = half;</span>
+			} else {
+<span class="fc" id="L199">				to = mid + 1;</span>
+<span class="fc" id="L200">				len = len - half - 1;</span>
+			}
+<span class="fc" id="L202">		}</span>
+<span class="fc" id="L203">		return to;</span>
+	}
+
+	static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
+<span class="fc bfc" id="L207" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L208">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L209">			int mid = from + half;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
+<span class="fc" id="L211">				from = mid + 1;</span>
+<span class="fc" id="L212">				len = len - half - 1;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			} else if (key &lt; idx2key.applyAsInt(mid)) {</span>
+<span class="fc" id="L214">				len = half;</span>
+			} else {
+<span class="fc" id="L216">				int left = lowerBound(from, mid, key, idx2key);</span>
+<span class="fc" id="L217">				from += len;</span>
+<span class="fc" id="L218">				int right = upperBound(++mid, from, key, idx2key);</span>
+<span class="fc" id="L219">				return IntIntPair.of(left, right);</span>
+			}
+<span class="fc" id="L221">		}</span>
+<span class="fc" id="L222">		return null;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -155,7 +155,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-<span class="fc" id="L158">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L158">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L159">		int n = g.vertices().size();</span>
 <span class="fc" id="L160">		IndexGraphBuilder mstBuilder = IndexGraphBuilder.newUndirected();</span>
 <span class="fc bfc" id="L161" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>

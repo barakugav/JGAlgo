@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 */
 	@Override
 	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L52">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L52">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L53">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L55">		int[][][] edges = partitionEdgesToBuckets(g, w);</span>

@@ -287,7 +287,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 		Undirected(Graph g) {
 <span class="fc" id="L289">			super(g);</span>
-<span class="fc" id="L290">			ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L290">			Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L291">		}</span>
 
 		@Override
@@ -321,7 +321,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 		Directed(Graph g) {
 <span class="fc" id="L323">			super(g);</span>
-<span class="fc" id="L324">			ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L324">			Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L325">		}</span>
 
 		@Override

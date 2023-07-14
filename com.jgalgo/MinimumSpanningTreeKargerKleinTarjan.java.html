@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 */
 	@Override
 	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L78">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L78">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L79">		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w));</span>
 	}
 

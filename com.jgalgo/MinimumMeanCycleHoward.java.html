@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 */
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L61">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L61">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L62">		final int n = g.vertices().size();</span>
 <span class="fc" id="L63">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 

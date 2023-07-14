@@ -52,8 +52,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L52">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L54">			return null;</span>
-<span class="fc" id="L55">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L56">		ArgumentCheck.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L55">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L56">		Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// if (VALIDATE_METRIC)
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 

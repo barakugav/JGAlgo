@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 */
 	@Override
 	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L63">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L63">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L65">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L66">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>

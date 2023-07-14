@@ -96,7 +96,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	}
 
 	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {
-<span class="fc" id="L99">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L99">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L100">		final int n = g.vertices().size();</span>
 
 <span class="fc" id="L102">		int[] vTree = new int[n];</span>

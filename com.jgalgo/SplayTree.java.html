@@ -151,7 +151,7 @@ import java.util.Iterator;
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L153">		SplayBSTNode&lt;K, V&gt; n = (SplayBSTNode&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L154">		makeSureDecreaseKeyIsSmaller(n.key, newKey);</span>
+<span class="fc" id="L154">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L155">		remove(n);</span>
 <span class="fc" id="L156">		n.key = newKey;</span>
 <span class="fc" id="L157">		insertNode(n);</span>
@@ -214,9 +214,9 @@ import java.util.Iterator;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L217">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L218">		makeSureMeldWithSameImpl(SplayTree.class, heap);</span>
-<span class="fc" id="L219">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L217">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L218">		Assertions.Heaps.meldWithSameImpl(SplayTree.class, heap);</span>
+<span class="fc" id="L219">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
 <span class="fc" id="L220">		SplayTree&lt;K, V&gt; h = (SplayTree&lt;K, V&gt;) heap;</span>
 <span class="fc bfc" id="L221" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L222">			return;</span>

@@ -374,19 +374,19 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 <span class="fc" id="L376">			super(indexGraph, viMap, eiMap);</span>
-<span class="fc" id="L377">			ArgumentCheck.onlyDirected(indexGraph);</span>
+<span class="fc" id="L377">			Assertions.Graphs.onlyDirected(indexGraph);</span>
 <span class="fc" id="L378">		}</span>
 
 		Directed(IndexGraph indexGraph) {
 <span class="fc" id="L381">			super(indexGraph);</span>
-<span class="fc" id="L382">			ArgumentCheck.onlyDirected(indexGraph);</span>
+<span class="fc" id="L382">			Assertions.Graphs.onlyDirected(indexGraph);</span>
 <span class="fc" id="L383">		}</span>
 
 		/* copy constructor */
 		Directed(Graph orig, IndexGraphFactory indexGraphFactory) {
 <span class="fc" id="L387">			super(orig, indexGraphFactory);</span>
-<span class="fc" id="L388">			ArgumentCheck.onlyDirected(orig);</span>
-<span class="fc" id="L389">			ArgumentCheck.onlyDirected(indexGraph);</span>
+<span class="fc" id="L388">			Assertions.Graphs.onlyDirected(orig);</span>
+<span class="fc" id="L389">			Assertions.Graphs.onlyDirected(indexGraph);</span>
 <span class="fc" id="L390">		}</span>
 
 		@Override
@@ -400,19 +400,19 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 		Undirected(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 <span class="fc" id="L402">			super(indexGraph, viMap, eiMap);</span>
-<span class="fc" id="L403">			ArgumentCheck.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L403">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
 <span class="fc" id="L404">		}</span>
 
 		Undirected(IndexGraph indexGraph) {
 <span class="fc" id="L407">			super(indexGraph);</span>
-<span class="fc" id="L408">			ArgumentCheck.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L408">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
 <span class="fc" id="L409">		}</span>
 
 		/* copy constructor */
 		Undirected(Graph orig, IndexGraphFactory indexGraphFactory) {
 <span class="fc" id="L413">			super(orig, indexGraphFactory);</span>
-<span class="fc" id="L414">			ArgumentCheck.onlyUndirected(orig);</span>
-<span class="fc" id="L415">			ArgumentCheck.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L414">			Assertions.Graphs.onlyUndirected(orig);</span>
+<span class="fc" id="L415">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
 <span class="fc" id="L416">		}</span>
 
 		@Override

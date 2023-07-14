@@ -92,7 +92,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 <span class="fc bfc" id="L92" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L93">					continue;</span>
 <span class="fc" id="L94">				double ew = w.weight(e);</span>
-<span class="fc" id="L95">				ArgumentCheck.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L95">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L96">				double distance = uDistance + ew;</span>
 
 <span class="fc" id="L98">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs[v];</span>
@@ -134,7 +134,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 <span class="fc bfc" id="L134" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
 <span class="fc" id="L135">					continue;</span>
 <span class="fc" id="L136">				int ew = w.weightInt(e);</span>
-<span class="fc" id="L137">				ArgumentCheck.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L137">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L138">				int distance = uDistance + ew;</span>
 
 <span class="fc" id="L140">				HeapReference&lt;Integer, Integer&gt; vPtr = verticesPtrs[v];</span>

@@ -73,7 +73,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	@Override
 	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
 			TreePathMaxima.Queries queries) {
-<span class="fc" id="L76">		ArgumentCheck.onlyUndirected(tree);</span>
+<span class="fc" id="L76">		Assertions.Graphs.onlyUndirected(tree);</span>
 <span class="pc bpc" id="L77" title="1 of 2 branches missed.">		if (!Trees.isTree(tree))</span>
 <span class="nc" id="L78">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
 <span class="fc" id="L79">		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);</span>

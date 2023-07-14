@@ -32,22 +32,22 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 		@Override
 		public int nextInt() {
-<span class="nc" id="L35">			throw new NoSuchElementException();</span>
+<span class="nc" id="L35">			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="nc" id="L40">			throw new NoSuchElementException();</span>
+<span class="nc" id="L40">			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);</span>
 		}
 
 		@Override
 		public int source() {
-<span class="nc" id="L45">			throw new NoSuchElementException();</span>
+<span class="nc" id="L45">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public int target() {
-<span class="nc" id="L50">			throw new NoSuchElementException();</span>
+<span class="nc" id="L50">			throw new IllegalStateException();</span>
 		}
 	};
 

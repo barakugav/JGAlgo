@@ -44,7 +44,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 
 	@Override
 	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
-<span class="fc" id="L47">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L47">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L48">		Worker worker = new Worker(g);</span>
 <span class="fc" id="L49">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int s = 0; s &lt; n; s++) {</span>

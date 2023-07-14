@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 <span class="fc" id="L104">					continue;</span>
 
 <span class="fc" id="L106">				int ew = w.weightInt(e);</span>
-<span class="fc" id="L107">				ArgumentCheck.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L107">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L108">				int distance = uDistance + ew;</span>
 
 <span class="fc bfc" id="L110" title="All 2 branches covered.">				if (!heap.containsVertex(v)) {</span>

@@ -55,7 +55,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	 */
 	@Override
 	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L58">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L58">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L59">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 
 <span class="fc" id="L61">		Path cycle = computeMinimumMeanCycle0(g, w);</span>

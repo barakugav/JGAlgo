@@ -46,7 +46,7 @@ class MaximumMatchingCardinalityGabow1976 extends MaximumMatchingCardinality {
 
 	@Override
 	Matching computeMaximumCardinalityMatching(IndexGraph g) {
-<span class="fc" id="L49">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L49">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L50">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L52">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>

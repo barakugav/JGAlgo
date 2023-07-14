@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Override
 	BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g) {
-<span class="fc" id="L47">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L47">		Assertions.Graphs.onlyUndirected(g);</span>
 
 <span class="fc" id="L49">		final int n = g.vertices().size();</span>
 <span class="fc" id="L50">		int[] depths = new int[n];</span>

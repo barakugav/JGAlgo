@@ -109,7 +109,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L109">				int v = eit.target();</span>
 
 <span class="fc" id="L111">				double ew = w.weight(e);</span>
-<span class="fc" id="L112">				ArgumentCheck.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L112">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L113">				double distance = uDistance + ew;</span>
 
 <span class="fc bfc" id="L115" title="All 2 branches covered.">				if (distance &gt;= distances.get(v))</span>

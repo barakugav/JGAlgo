@@ -213,7 +213,7 @@ import com.jgalgo.graph.Weights;
 		final int[] twin;
 
 <span class="fc" id="L215">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L216">			ArgumentCheck.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L216">			Assertions.Graphs.sourceSinkNotTheSame(source, sink);</span>
 <span class="fc" id="L217">			positiveCapacitiesOrThrow(gOrig, net);</span>
 <span class="fc" id="L218">			this.gOrig = gOrig;</span>
 <span class="fc" id="L219">			this.source = source;</span>

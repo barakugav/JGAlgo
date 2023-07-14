@@ -134,7 +134,7 @@ class MinimumCutSTUtils {
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L137">		ArgumentCheck.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L137">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
 <span class="fc" id="L138">		double[] flow = new double[g.edges().size()];</span>
 <span class="fc" id="L139">		FlowNetwork net = new FlowNetwork() {</span>
 			@Override

@@ -47,8 +47,8 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 
 	@Override
 	public void meld(Heap&lt;? extends E&gt; heap) {
-<span class="fc" id="L50">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L51">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L50">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L51">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
 <span class="fc" id="L52">		addAll(heap);</span>
 <span class="fc" id="L53">		heap.clear();</span>
 <span class="fc" id="L54">	}</span>
@@ -62,29 +62,8 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
 	}
 
-	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (compare(oldVal, newVal) &lt; 0)</span>
-<span class="nc" id="L67">			throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
-<span class="nc" id="L68">	}</span>
-
-	void makeSureNoMeldWithSelf(Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (other == this)</span>
-<span class="nc" id="L72">			throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-<span class="fc" id="L73">	}</span>
-
-	@SuppressWarnings(&quot;rawtypes&quot;)
-	void makeSureMeldWithSameImpl(Class&lt;? extends Heap&gt; impl, Heap&lt;? extends E&gt; other) {
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="nc" id="L78">			throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
-<span class="nc" id="L79">	}</span>
-
-	void makeSureEqualComparatorBeforeMeld(Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), other.comparator()))</span>
-<span class="nc" id="L83">			throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-<span class="fc" id="L84">	}</span>
-
 	static &lt;K&gt; Heap&lt;K&gt; fromHeapReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
-<span class="fc" id="L87">		return new HeapFromReferenceable&lt;&gt;(h);</span>
+<span class="fc" id="L66">		return new HeapFromReferenceable&lt;&gt;(h);</span>
 	}
 
 	private static class HeapFromReferenceable&lt;K&gt; extends HeapAbstract&lt;K&gt; {
@@ -92,70 +71,70 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 		private final HeapReferenceable&lt;K, ?&gt; h;
 
 		HeapFromReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
-<span class="fc" id="L95">			super(h.comparator());</span>
-<span class="fc" id="L96">			this.h = Objects.requireNonNull(h);</span>
-<span class="fc" id="L97">		}</span>
+<span class="fc" id="L74">			super(h.comparator());</span>
+<span class="fc" id="L75">			this.h = Objects.requireNonNull(h);</span>
+<span class="fc" id="L76">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L101">			return h.size();</span>
+<span class="fc" id="L80">			return h.size();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean contains(Object o) {
-<span class="nc bnc" id="L107" title="All 2 branches missed.">			return h.find((K) o) != null;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			return h.find((K) o) != null;</span>
 		}
 
 		@Override
 		public Iterator&lt;K&gt; iterator() {
-<span class="fc" id="L112">			return new Utils.IterMap&lt;&gt;(h.iterator(), HeapReference::key);</span>
+<span class="fc" id="L91">			return new Utils.IterMap&lt;&gt;(h.iterator(), HeapReference::key);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean remove(Object o) {
-<span class="fc" id="L118">			HeapReference&lt;K, ?&gt; ref = h.find((K) o);</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			if (ref == null)</span>
-<span class="nc" id="L120">				return false;</span>
-<span class="fc" id="L121">			h.remove(ref);</span>
-<span class="fc" id="L122">			return true;</span>
+<span class="fc" id="L97">			HeapReference&lt;K, ?&gt; ref = h.find((K) o);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">			if (ref == null)</span>
+<span class="nc" id="L99">				return false;</span>
+<span class="fc" id="L100">			h.remove(ref);</span>
+<span class="fc" id="L101">			return true;</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L127">			h.clear();</span>
-<span class="fc" id="L128">		}</span>
+<span class="fc" id="L106">			h.clear();</span>
+<span class="fc" id="L107">		}</span>
 
 		@Override
 		public void insert(K key) {
-<span class="fc" id="L132">			h.insert(key);</span>
-<span class="fc" id="L133">		}</span>
+<span class="fc" id="L111">			h.insert(key);</span>
+<span class="fc" id="L112">		}</span>
 
 		@Override
 		public void insertAll(Collection&lt;? extends K&gt; elms) {
-<span class="nc bnc" id="L137" title="All 2 branches missed.">			for (K elm : elms)</span>
-<span class="nc" id="L138">				h.insert(elm);</span>
-<span class="nc" id="L139">		}</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">			for (K elm : elms)</span>
+<span class="nc" id="L117">				h.insert(elm);</span>
+<span class="nc" id="L118">		}</span>
 
 		@Override
 		public K findMin() {
-<span class="fc" id="L143">			return h.findMin().key();</span>
+<span class="fc" id="L122">			return h.findMin().key();</span>
 		}
 
 		@Override
 		public K extractMin() {
-<span class="fc" id="L148">			return h.extractMin().key();</span>
+<span class="fc" id="L127">			return h.extractMin().key();</span>
 		}
 
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		@Override
 		public void meld(Heap&lt;? extends K&gt; heap) {
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
-<span class="nc" id="L155">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L156">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
-<span class="fc" id="L157">			h.meld((HeapReferenceable) oh);</span>
-<span class="fc" id="L158">		}</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
+<span class="nc" id="L134">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L135">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
+<span class="fc" id="L136">			h.meld((HeapReferenceable) oh);</span>
+<span class="fc" id="L137">		}</span>
 	}
 
 }

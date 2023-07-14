@@ -49,7 +49,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-<span class="fc" id="L52">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L52">		Assertions.Graphs.onlyDirected(g);</span>
 
 <span class="fc" id="L54">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 <span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (w == null)</span>

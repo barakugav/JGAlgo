@@ -120,7 +120,7 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L122">		Node&lt;K, V&gt; node = (Node&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L123">		makeSureDecreaseKeyIsSmaller(node.key, newKey);</span>
+<span class="fc" id="L123">		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);</span>
 <span class="fc" id="L124">		node.key = newKey;</span>
 
 <span class="fc bfc" id="L126" title="All 2 branches covered.">		if (c == null) {</span>
@@ -311,9 +311,9 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L314">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L315">		makeSureMeldWithSameImpl(HeapBinomial.class, heap);</span>
-<span class="fc" id="L316">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L314">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L315">		Assertions.Heaps.meldWithSameImpl(HeapBinomial.class, heap);</span>
+<span class="fc" id="L316">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
 
 <span class="fc" id="L318">		HeapBinomial&lt;K, V&gt; h = (HeapBinomial&lt;K, V&gt;) heap;</span>
 <span class="fc" id="L319">		size += meld(h.roots, h.rootsLen);</span>
@@ -325,27 +325,26 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMin() {
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L329">			throw new IllegalStateException();</span>
-<span class="fc" id="L330">		Node&lt;K, V&gt;[] rs = roots;</span>
-<span class="fc" id="L331">		int rsLen = rootsLen;</span>
-<span class="fc" id="L332">		Node&lt;K, V&gt; min = null;</span>
+<span class="fc" id="L328">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L329">		Node&lt;K, V&gt;[] rs = roots;</span>
+<span class="fc" id="L330">		int rsLen = rootsLen;</span>
+<span class="fc" id="L331">		Node&lt;K, V&gt; min = null;</span>
 
-<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L336" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.key, rs[i].key) &gt; 0))</span>
-<span class="fc" id="L337">					min = rs[i];</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L335" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.key, rs[i].key) &gt; 0))</span>
+<span class="fc" id="L336">					min = rs[i];</span>
 		} else {
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L340" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.key, rs[i].key) &gt; 0))</span>
-<span class="fc" id="L341">					min = rs[i];</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L339" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.key, rs[i].key) &gt; 0))</span>
+<span class="fc" id="L340">					min = rs[i];</span>
 		}
-<span class="fc" id="L343">		return min;</span>
+<span class="fc" id="L342">		return min;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K, V&gt; Node&lt;K, V&gt;[] newArr(int n) {
-<span class="fc" id="L348">		return new Node[n];</span>
+<span class="fc" id="L347">		return new Node[n];</span>
 	}
 
 	private static class Node&lt;K, V&gt; extends Trees.TreeNodeImpl&lt;Node&lt;K, V&gt;&gt; implements HeapReference&lt;K, V&gt; {
@@ -353,32 +352,32 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 		K key;
 		V value;
 
-<span class="fc" id="L356">		Node(K key) {</span>
-<span class="fc" id="L357">			parent = null;</span>
-<span class="fc" id="L358">			next = null;</span>
-<span class="fc" id="L359">			prev = null;</span>
-<span class="fc" id="L360">			child = null;</span>
-<span class="fc" id="L361">			this.key = key;</span>
-<span class="fc" id="L362">		}</span>
+<span class="fc" id="L355">		Node(K key) {</span>
+<span class="fc" id="L356">			parent = null;</span>
+<span class="fc" id="L357">			next = null;</span>
+<span class="fc" id="L358">			prev = null;</span>
+<span class="fc" id="L359">			child = null;</span>
+<span class="fc" id="L360">			this.key = key;</span>
+<span class="fc" id="L361">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L366">			return key;</span>
+<span class="fc" id="L365">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="nc" id="L371">			return value;</span>
+<span class="nc" id="L370">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="nc" id="L376">			value = val;</span>
-<span class="nc" id="L377">		}</span>
+<span class="nc" id="L375">			value = val;</span>
+<span class="nc" id="L376">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L381">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="nc" id="L380">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 
 	}
@@ -387,26 +386,26 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 
 		private int nextRootIdx;
 
-<span class="fc" id="L390">		Itr() {</span>
-<span class="fc" id="L391">			super(null);</span>
-<span class="fc" id="L392">			nextRootIdx = 0;</span>
-<span class="fc" id="L393">		}</span>
+<span class="fc" id="L389">		Itr() {</span>
+<span class="fc" id="L390">			super(null);</span>
+<span class="fc" id="L391">			nextRootIdx = 0;</span>
+<span class="fc" id="L392">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L397" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
-<span class="fc" id="L399">					return false;</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
+<span class="fc" id="L398">					return false;</span>
 				int i;
-<span class="fc bfc" id="L401" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">					if (roots[i] != null) {</span>
-<span class="fc" id="L403">						reset(roots[i]);</span>
-<span class="fc" id="L404">						break;</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">					if (roots[i] != null) {</span>
+<span class="fc" id="L402">						reset(roots[i]);</span>
+<span class="fc" id="L403">						break;</span>
 					}
 				}
-<span class="fc" id="L407">				nextRootIdx = i + 1;</span>
-<span class="fc" id="L408">			}</span>
-<span class="fc" id="L409">			return true;</span>
+<span class="fc" id="L406">				nextRootIdx = i + 1;</span>
+<span class="fc" id="L407">			}</span>
+<span class="fc" id="L408">			return true;</span>
 		}
 
 	}

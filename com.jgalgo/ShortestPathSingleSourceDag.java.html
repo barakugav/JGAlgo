@@ -46,7 +46,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 */
 	@Override
 	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-<span class="fc" id="L49">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L49">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L51">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		return w instanceof WeightFunction.Int ? computeSsspInt(g, (WeightFunction.Int) w, source)</span>

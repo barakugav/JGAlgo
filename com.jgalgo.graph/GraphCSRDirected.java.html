@@ -16,6 +16,8 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
@@ -23,125 +25,166 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 	private final int[] edgesInBegin;
 
 	GraphCSRDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-<span class="fc" id="L26">		super(builder, processEdges);</span>
-<span class="fc" id="L27">		edgesIn = processEdges.edgesIn;</span>
-<span class="fc" id="L28">		edgesInBegin = processEdges.edgesInBegin;</span>
-<span class="fc" id="L29">	}</span>
+<span class="fc" id="L28">		super(builder, processEdges);</span>
+<span class="fc" id="L29">		edgesIn = processEdges.edgesIn;</span>
+<span class="fc" id="L30">		edgesInBegin = processEdges.edgesInBegin;</span>
+<span class="fc" id="L31">	}</span>
 
 	GraphCSRDirected(IndexGraph g) {
-<span class="nc" id="L32">		super(g);</span>
-<span class="nc" id="L33">		ArgumentCheck.onlyDirected(g);</span>
-<span class="nc" id="L34">		final int n = g.vertices().size();</span>
-<span class="nc" id="L35">		final int m = g.edges().size();</span>
+<span class="nc" id="L34">		super(g);</span>
+<span class="nc" id="L35">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="nc" id="L36">		final int n = g.vertices().size();</span>
+<span class="nc" id="L37">		final int m = g.edges().size();</span>
 
-<span class="nc" id="L37">		edgesIn = new int[m];</span>
-<span class="nc" id="L38">		edgesInBegin = new int[n + 1];</span>
+<span class="nc" id="L39">		edgesIn = new int[m];</span>
+<span class="nc" id="L40">		edgesInBegin = new int[n + 1];</span>
 
-<span class="nc bnc" id="L40" title="All 2 branches missed.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L41">			edgesInBegin[v] = eIdx;</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">			for (int e : g.inEdges(v))</span>
-<span class="nc" id="L43">				edgesIn[eIdx++] = e;</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L43">			edgesInBegin[v] = eIdx;</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">			for (int e : g.inEdges(v))</span>
+<span class="nc" id="L45">				edgesIn[eIdx++] = e;</span>
 		}
-<span class="nc" id="L45">		edgesInBegin[n] = m;</span>
-<span class="nc" id="L46">	}</span>
+<span class="nc" id="L47">		edgesInBegin[n] = m;</span>
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="nc" id="L50">			IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -&gt; {</span>
+				int c;
+<span class="nc bnc" id="L52" title="All 2 branches missed.">				if ((c = Integer.compare(edgeTarget(e1), edgeTarget(e2))) != 0)</span>
+<span class="nc" id="L53">					return c;</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">				if ((c = Integer.compare(e1, e2)) != 0)</span>
+<span class="nc" id="L55">					return c;</span>
+<span class="nc" id="L56">				return 0;</span>
+			});
+		}
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L60">			IntArrays.quickSort(edgesIn, edgesInBegin[v], edgesInBegin[v + 1], (e1, e2) -&gt; {</span>
+				int c;
+<span class="nc bnc" id="L62" title="All 2 branches missed.">				if ((c = Integer.compare(edgeSource(e1), edgeSource(e2))) != 0)</span>
+<span class="nc" id="L63">					return c;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">				if ((c = Integer.compare(e1, e2)) != 0)</span>
+<span class="nc" id="L65">					return c;</span>
+<span class="nc" id="L66">				return 0;</span>
+			});
+		}
+<span class="nc" id="L69">	}</span>
+
+	@Override
+	public EdgeSet getEdges(int source, int target) {
+<span class="fc" id="L73">		IntIntPair edgeRange = Utils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target,</span>
+<span class="fc" id="L74">				eIdx -&gt; edgeTarget(edgesOut[eIdx]));</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		return edgeRange == null ? Edges.EmptyEdgeSet</span>
+<span class="fc" id="L76">				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());</span>
+	}
 
 	@Override
 	public EdgeSet outEdges(int source) {
-<span class="fc" id="L50">		return new EdgeSetOut(source);</span>
+<span class="fc" id="L81">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
 	public EdgeSet inEdges(int target) {
-<span class="fc" id="L55">		return new EdgeSetIn(target);</span>
+<span class="fc" id="L86">		return new EdgeSetIn(target);</span>
 	}
 
 	@Override
 	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L60">		return Capabilities;</span>
+<span class="fc" id="L91">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L63">	private static final GraphCapabilities Capabilities =</span>
-<span class="fc" id="L64">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
+<span class="fc" id="L94">	private static final GraphCapabilities Capabilities =</span>
+<span class="fc" id="L95">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 
-<span class="fc" id="L68">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L69">			super(source);</span>
-<span class="fc" id="L70">		}</span>
+<span class="fc" id="L99">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L100">			super(source);</span>
+<span class="fc" id="L101">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L74">			return edgesOutBegin[source + 1] - edgesOutBegin[source];</span>
+<span class="fc" id="L105">			return edgesOutBegin[source + 1] - edgesOutBegin[source];</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L79" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L84">			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);</span>
+<span class="fc" id="L115">			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);</span>
+		}
+	}
+
+	private class EdgeSetSourceTarget extends GraphCSRAbstractUnindexed.EdgeSetSourceTarget {
+
+<span class="fc" id="L121">		EdgeSetSourceTarget(int source, int target, int edgeIdxBegin, int edgeIdxEnd) {</span>
+<span class="fc" id="L122">			super(source, target, edgeIdxBegin, edgeIdxEnd);</span>
+<span class="fc" id="L123">		}</span>
+
+		@Override
+		public boolean contains(int edge) {
+<span class="pc bpc" id="L127" title="2 of 4 branches missed.">			return edgeSource(edge) == source &amp;&amp; edgeTarget(edge) == target;</span>
 		}
 	}
 
 	class EdgeSetIn extends GraphBase.EdgeSetInDirected {
 
-<span class="fc" id="L90">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L91">			super(target);</span>
-<span class="fc" id="L92">		}</span>
+<span class="fc" id="L133">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L134">			super(target);</span>
+<span class="fc" id="L135">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L96">			return edgesInBegin[target + 1] - edgesInBegin[target];</span>
+<span class="fc" id="L139">			return edgesInBegin[target + 1] - edgesInBegin[target];</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L101" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L106">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
+<span class="fc" id="L149">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterAbstract {
 		private final int source;
 
-<span class="fc" id="L113">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L114">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L115">			this.source = source;</span>
-<span class="fc" id="L116">		}</span>
+<span class="fc" id="L156">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L157">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L158">			this.source = source;</span>
+<span class="fc" id="L159">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L120">			return source;</span>
+<span class="fc" id="L163">			return source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L125">			return edgeTarget(lastEdge);</span>
+<span class="fc" id="L168">			return edgeTarget(lastEdge);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L132">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L133">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L134">			this.target = target;</span>
-<span class="fc" id="L135">		}</span>
+<span class="fc" id="L175">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L176">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L177">			this.target = target;</span>
+<span class="fc" id="L178">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L139">			return edgeSource(lastEdge);</span>
+<span class="fc" id="L182">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L144">			return target;</span>
+<span class="fc" id="L187">			return target;</span>
 		}
 	}
 

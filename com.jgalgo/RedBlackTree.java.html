@@ -96,9 +96,9 @@ import java.util.Iterator;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L99">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L100">		makeSureMeldWithSameImpl(RedBlackTree.class, heap);</span>
-<span class="fc" id="L101">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L99">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L100">		Assertions.Heaps.meldWithSameImpl(RedBlackTree.class, heap);</span>
+<span class="fc" id="L101">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
 <span class="fc" id="L102">		RedBlackTree&lt;K, V&gt; h = (RedBlackTree&lt;K, V&gt;) heap;</span>
 <span class="pc bpc" id="L103" title="1 of 2 branches missed.">		if (h.isEmpty())</span>
 <span class="nc" id="L104">			return;</span>
@@ -202,7 +202,7 @@ import java.util.Iterator;
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L204">		Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L205">		makeSureDecreaseKeyIsSmaller(n.key, newKey);</span>
+<span class="fc" id="L205">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L206">		remove(n);</span>
 <span class="fc" id="L207">		n.key = newKey;</span>
 <span class="fc" id="L208">		insertNode(n);</span>

@@ -34,13 +34,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 	@Override
 	Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L37">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L37">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L38">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L39" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
 <span class="nc" id="L40">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
 
 <span class="fc" id="L42">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L43">		ArgumentCheck.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L43">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
 
 <span class="fc" id="L45">		ContractableGraph cg = new ContractableGraph(g);</span>
 <span class="fc" id="L46">		BitSet cut = new BitSet(n);</span>

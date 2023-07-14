@@ -39,14 +39,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L40">	GraphBaseIndexMutable(IndexGraph g) {</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
-<span class="fc" id="L42">			ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L42">			Assertions.Graphs.onlyDirected(g);</span>
 		} else {
-<span class="fc" id="L44">			ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L44">			Assertions.Graphs.onlyUndirected(g);</span>
 		}
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		if (!getCapabilities().selfEdges())</span>
-<span class="fc" id="L47">			ArgumentCheck.noSelfEdges(g, &quot;self edges are not supported&quot;);</span>
+<span class="fc" id="L47">			Assertions.Graphs.noSelfEdges(g, &quot;self edges are not supported&quot;);</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (!getCapabilities().parallelEdges())</span>
-<span class="fc" id="L49">			ArgumentCheck.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L49">			Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 
 <span class="fc" id="L51">		verticesIdStrat = new IdStrategy.Default(g.vertices().size());</span>
 <span class="fc" id="L52">		edgesIdStrat = new IdStrategy.Default(g.edges().size());</span>
@@ -249,14 +249,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	void checkVertex(int vertex) {
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">		if (!vertices().contains(vertex))</span>
-<span class="nc" id="L253">			throw new IndexOutOfBoundsException(vertex);</span>
-<span class="fc" id="L254">	}</span>
+<span class="fc" id="L252">		Assertions.Graphs.checkVertex(vertex, verticesIdStrat.size);</span>
+<span class="fc" id="L253">	}</span>
 
 	void checkEdge(int edge) {
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
-<span class="nc" id="L258">			throw new IndexOutOfBoundsException(edge);</span>
-<span class="fc" id="L259">	}</span>
+<span class="fc" id="L256">		Assertions.Graphs.checkEdge(edge, edgesIdStrat.size);</span>
+<span class="fc" id="L257">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

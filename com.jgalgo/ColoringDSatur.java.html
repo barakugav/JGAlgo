@@ -59,8 +59,8 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 
 	@Override
 	Coloring.Result computeColoring(IndexGraph g) {
-<span class="fc" id="L62">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L63">		ArgumentCheck.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+<span class="fc" id="L62">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L63">		Assertions.Graphs.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
 <span class="fc" id="L65">		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);</span>
 <span class="fc" id="L66">		int n = g.vertices().size();</span>

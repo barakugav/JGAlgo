@@ -51,8 +51,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 	@Override
 	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
-<span class="fc" id="L54">		ArgumentCheck.onlyDirected(g);</span>
-<span class="fc" id="L55">		ArgumentCheck.noParallelEdges(g, &quot;graphs with parallel edges are not supported&quot;);</span>
+<span class="fc" id="L54">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L55">		Assertions.Graphs.noParallelEdges(g, &quot;graphs with parallel edges are not supported&quot;);</span>
 <span class="fc" id="L56">		int n = g.vertices().size();</span>
 <span class="fc" id="L57">		Worker worker = new Worker(g);</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int startIdx = 0; startIdx &lt; n; startIdx++) {</span>

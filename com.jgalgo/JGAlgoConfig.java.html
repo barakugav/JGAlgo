@@ -39,6 +39,8 @@ public class JGAlgoConfig {
 
 	/**
 	 * Get a supplier of an option value.
+	 * &lt;p&gt;
+	 * Internal use only; do not use this method directly.
 	 *
 	 * @param  &lt;O&gt; the option value type
 	 * @param  key the option key
@@ -46,15 +48,39 @@ public class JGAlgoConfig {
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot;, &quot;boxing&quot; })
 	public static &lt;O&gt; Supplier&lt;O&gt; getOption(String key) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		switch (key) {</span>
+<span class="pc bpc" id="L51" title="1 of 9 branches missed.">		switch (key) {</span>
 			case &quot;GraphIdRandom&quot;:
-<span class="fc" id="L51">				return (Supplier) (() -&gt; GraphIdRandom);</span>
+<span class="fc" id="L53">				return (Supplier) (() -&gt; GraphIdRandom);</span>
+			case &quot;AssertionsGraphsBipartitePartition&quot;:
+<span class="fc" id="L55">				return (Supplier) (() -&gt; AssertionsGraphsBipartitePartition);</span>
+			case &quot;AssertionsGraphsPositiveWeights&quot;:
+<span class="fc" id="L57">				return (Supplier) (() -&gt; AssertionsGraphsPositiveWeights);</span>
+			case &quot;AssertionsGraphIdCheck&quot;:
+<span class="fc" id="L59">				return (Supplier) (() -&gt; AssertionsGraphIdCheck);</span>
+			case &quot;AssertionsIterNotEmpty&quot;:
+<span class="fc" id="L61">				return (Supplier) (() -&gt; AssertionsIterNotEmpty);</span>
+			case &quot;AssertionsHeapsDecreaseKeyLegal&quot;:
+<span class="fc" id="L63">				return (Supplier) (() -&gt; AssertionsHeapsDecreaseKeyLegal);</span>
+			case &quot;AssertionsHeapsNotEmpty&quot;:
+<span class="fc" id="L65">				return (Supplier) (() -&gt; AssertionsHeapsNotEmpty);</span>
+			case &quot;AssertionsHeapsMeldLegal&quot;:
+<span class="fc" id="L67">				return (Supplier) (() -&gt; AssertionsHeapsMeldLegal);</span>
 			default:
-<span class="nc" id="L53">				return null;</span>
+<span class="nc" id="L69">				return null;</span>
 		}
 	}
 
-	final static boolean GraphIdRandom = false;
+	private static final boolean GraphIdRandom = false;
+
+	private static final boolean AssertionsGraphsBipartitePartition = true;
+	private static final boolean AssertionsGraphsPositiveWeights = true;
+	private static final boolean AssertionsGraphIdCheck = true;
+
+	private static final boolean AssertionsIterNotEmpty = true;
+
+	private static final boolean AssertionsHeapsDecreaseKeyLegal = true;
+	private static final boolean AssertionsHeapsNotEmpty = true;
+	private static final boolean AssertionsHeapsMeldLegal = true;
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
