@@ -63,6 +63,7 @@ def create_report(out_img):
 
 				plt.gcf().suptitle(f"{bench_key[0]} {bench_key[1]}")
 				plt.plot_date(matplotlib.dates.date2num(created_at), scores,'b-')
+				plt.xticks(rotation=90)
 				plt.savefig(temp_img_file)
 				plt.clf()
 				with open(temp_img_file, 'rb') as image_file:
