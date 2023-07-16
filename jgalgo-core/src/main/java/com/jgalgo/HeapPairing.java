@@ -18,9 +18,6 @@ package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.DoubleFunction;
-import java.util.function.Function;
-import java.util.function.IntFunction;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -50,24 +47,22 @@ class HeapPairing {
 	static <K, V> HeapReferenceable<K, V> newHeap(Class<? extends K> keysType, Class<? extends V> valuesType,
 			Comparator<? super K> comparator) {
 		if (keysType == int.class) {
-			return new HeapPairing.WithIntKeys(valuesType, comparator);
+			return IntBase.newHeap(valuesType, (Comparator) comparator);
 		} else if (keysType == double.class) {
-			return new HeapPairing.WithDoubleKeys(valuesType, comparator);
+			return DoubleBase.newHeap(valuesType, (Comparator) comparator);
 		} else {
-			return new HeapPairing.WithObjKeys(valuesType, comparator);
+			return ObjBase.newHeap(valuesType, comparator);
 		}
 	}
 
-	private static abstract class Abstract<K, V, Node extends Abstract.INode<K, V, Node>>
+	private static abstract class HeapBase<K, V, Node extends HeapBase.NodeImpl<K, V, Node>>
 			extends HeapReferenceableAbstract<K, V> {
 
 		Node minRoot;
 		int size;
-		private final Class<? extends V> valueType;
 
-		Abstract(Class<? extends V> valueType, Comparator<? super K> c) {
+		HeapBase(Comparator<? super K> c) {
 			super(c);
-			this.valueType = valueType;
 		}
 
 		@Override
@@ -81,7 +76,7 @@ class HeapPairing {
 			return size;
 		}
 
-		private static <K, V, Node extends HeapPairing.Abstract.INode<K, V, Node>> void cut(Node n) {
+		private static <K, V, Node extends HeapBase.NodeImpl<K, V, Node>> void cut(Node n) {
 			Node next = n.next;
 			if (next != null) {
 				next.prevOrParent = n.prevOrParent;
@@ -95,7 +90,7 @@ class HeapPairing {
 			n.prevOrParent = null;
 		}
 
-		static <K, V, Node extends HeapPairing.Abstract.INode<K, V, Node>> void addChild(Node parent, Node newChild) {
+		static <K, V, Node extends HeapBase.NodeImpl<K, V, Node>> void addChild(Node parent, Node newChild) {
 			assert newChild.prevOrParent == null;
 			assert newChild.next == null;
 			Node oldChild = parent.child;
@@ -146,9 +141,7 @@ class HeapPairing {
 			Assertions.Heaps.meldWithSameImpl(getClass(), heap);
 			Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 			@SuppressWarnings("unchecked")
-			HeapPairing.Abstract<K, V, Node> h = (HeapPairing.Abstract<K, V, Node>) heap;
-			if (valueType != h.valueType)
-				throw new IllegalArgumentException("Can't meld heaps with different implementations");
+			HeapBase<K, V, Node> h = (HeapBase<K, V, Node>) heap;
 
 			if (size == 0) {
 				assert minRoot == null;
@@ -203,10 +196,10 @@ class HeapPairing {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		public Iterator<HeapReference<K, V>> iterator() {
-			return (Iterator) new HeapPairing.Abstract.PreOrderIter<>(minRoot);
+			return (Iterator) new HeapBase.PreOrderIter<>(minRoot);
 		}
 
-		static abstract class INode<K, V, Node extends INode<K, V, Node>> implements HeapReference<K, V> {
+		static abstract class NodeImpl<K, V, Node extends NodeImpl<K, V, Node>> implements HeapReference<K, V> {
 
 			Node prevOrParent;
 			Node next;
@@ -232,7 +225,7 @@ class HeapPairing {
 			}
 		}
 
-		static class PreOrderIter<K, V, Node extends INode<K, V, Node>> implements Iterator<Node> {
+		static class PreOrderIter<K, V, Node extends NodeImpl<K, V, Node>> implements Iterator<Node> {
 
 			private final Stack<Node> path = new ObjectArrayList<>();
 
@@ -272,28 +265,31 @@ class HeapPairing {
 
 	}
 
-	private static class WithObjKeys<K, V> extends HeapPairing.Abstract<K, V, HeapPairing.WithObjKeys.Node<K, V>> {
+	private static abstract class ObjBase<K, V> extends HeapBase<K, V, ObjBase.Node<K, V>> {
 
-		private final Function<K, Node<K, V>> nodesFactory;
+		ObjBase(Comparator<? super K> comparator) {
+			super(comparator);
+		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		WithObjKeys(Class<? extends V> valueType, Comparator<? super K> comparator) {
-			super(valueType, comparator);
-			if (valueType == int.class) {
-				nodesFactory = (Function) NodeObjInt::new;
-			} else if (valueType == void.class) {
-				nodesFactory = (Function) NodeObjVoid::new;
+		static <K, V> HeapReferenceable<K, V> newHeap(Class<? extends V> valuesType, Comparator<? super K> comparator) {
+			if (valuesType == int.class) {
+				return new HeapPairing.ObjInt(comparator);
+			} else if (valuesType == void.class) {
+				return new HeapPairing.ObjVoid(comparator);
 			} else {
-				nodesFactory = (Function) NodeObjObj::new;
+				return new HeapPairing.ObjObj(comparator);
 			}
 		}
 
 		@Override
 		public HeapReference<K, V> insert(K key) {
-			Node<K, V> n = nodesFactory.apply(key);
+			Node<K, V> n = newNode(key);
 			insertNode(n);
 			return n;
 		}
+
+		abstract Node<K, V> newNode(K key);
 
 		@Override
 		void removeRoot() {
@@ -432,7 +428,7 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<K, V> extends HeapPairing.Abstract.INode<K, V, Node<K, V>> {
+		static abstract class Node<K, V> extends HeapBase.NodeImpl<K, V, Node<K, V>> {
 			K key;
 
 			Node(K key) {
@@ -449,11 +445,23 @@ class HeapPairing {
 				key = null;
 			}
 		}
+	}
 
-		private static class NodeObjObj<K, V> extends Node<K, V> {
+	private static class ObjObj<K, V> extends ObjBase<K, V> {
+
+		ObjObj(Comparator<? super K> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		ObjBase.Node<K, V> newNode(K key) {
+			return new Node<>(key);
+		}
+
+		private static class Node<K, V> extends ObjBase.Node<K, V> {
 			private V value;
 
-			NodeObjObj(K key) {
+			Node(K key) {
 				super(key);
 			}
 
@@ -473,11 +481,23 @@ class HeapPairing {
 				value = null;
 			}
 		}
+	}
 
-		private static class NodeObjInt<K> extends Node<K, Integer> {
+	private static class ObjInt<K> extends ObjBase<K, Integer> {
+
+		ObjInt(Comparator<? super K> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		ObjBase.Node<K, Integer> newNode(K key) {
+			return new Node<>(key);
+		}
+
+		private static class Node<K> extends ObjBase.Node<K, Integer> {
 			private int value;
 
-			NodeObjInt(K key) {
+			Node(K key) {
 				super(key);
 			}
 
@@ -491,40 +511,56 @@ class HeapPairing {
 				value = val.intValue();
 			}
 		}
+	}
 
-		private static class NodeObjVoid<K> extends Node<K, Void> implements HeapPairing.Abstract.NodeVoidVal<K> {
-			NodeObjVoid(K key) {
+	private static class ObjVoid<K> extends ObjBase<K, Void> {
+
+		ObjVoid(Comparator<? super K> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		ObjBase.Node<K, Void> newNode(K key) {
+			return new Node<>(key);
+		}
+
+		private static class Node<K> extends ObjBase.Node<K, Void> implements HeapBase.NodeVoidVal<K> {
+			Node(K key) {
 				super(key);
 			}
 		}
-
 	}
 
-	private static class WithDoubleKeys<V> extends HeapPairing.Abstract<Double, V, HeapPairing.WithDoubleKeys.Node<V>> {
+	private static abstract class DoubleBase<V> extends HeapBase<Double, V, DoubleBase.Node<V>> {
 
-		private final DoubleFunction<Node<V>> nodesFactory;
 		private final DoubleComparator doubleCmp;
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		WithDoubleKeys(Class<? extends V> valueType, Comparator<? super Double> comparator) {
-			super(valueType, comparator);
+		DoubleBase(Comparator<? super Double> comparator) {
+			super(comparator);
 			doubleCmp = comparator == null || comparator instanceof DoubleComparator ? (DoubleComparator) comparator
 					: (k1, k2) -> comparator.compare(Double.valueOf(k1), Double.valueOf(k2));
-			if (valueType == int.class) {
-				nodesFactory = (DoubleFunction) NodeDoubleInt::new;
-			} else if (valueType == void.class) {
-				nodesFactory = (DoubleFunction) NodeDoubleVoid::new;
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		static <V> HeapReferenceable<Double, V> newHeap(Class<? extends V> valuesType,
+				Comparator<? super Double> comparator) {
+			if (valuesType == int.class) {
+				return (HeapReferenceable) new HeapPairing.DoubleInt(comparator);
+			} else if (valuesType == void.class) {
+				return (HeapReferenceable) new HeapPairing.DoubleVoid(comparator);
 			} else {
-				nodesFactory = NodeDoubleObj::new;
+				return new HeapPairing.DoubleObj(comparator);
 			}
 		}
 
 		@Override
 		public HeapReference<Double, V> insert(Double key) {
-			Node<V> n = nodesFactory.apply(key.doubleValue());
+			Node<V> n = newNode(key.doubleValue());
 			insertNode(n);
 			return n;
 		}
+
+		abstract Node<V> newNode(double key);
 
 		@Override
 		void removeRoot() {
@@ -664,7 +700,7 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<V> extends HeapPairing.Abstract.INode<Double, V, Node<V>> {
+		static abstract class Node<V> extends HeapBase.NodeImpl<Double, V, Node<V>> {
 			double key;
 
 			Node(double key) {
@@ -679,11 +715,23 @@ class HeapPairing {
 			@Override
 			void clearUserData() {}
 		}
+	}
 
-		private static class NodeDoubleObj<V> extends Node<V> {
+	private static class DoubleObj<V> extends DoubleBase<V> {
+
+		DoubleObj(Comparator<? super Double> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		DoubleBase.Node<V> newNode(double key) {
+			return new Node<>(key);
+		}
+
+		private static class Node<V> extends DoubleBase.Node<V> {
 			private V value;
 
-			NodeDoubleObj(double key) {
+			Node(double key) {
 				super(key);
 			}
 
@@ -703,11 +751,23 @@ class HeapPairing {
 				value = null;
 			}
 		}
+	}
 
-		private static class NodeDoubleInt extends Node<Integer> {
+	private static class DoubleInt extends DoubleBase<Integer> {
+
+		DoubleInt(Comparator<? super Double> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		DoubleBase.Node<Integer> newNode(double key) {
+			return new Node(key);
+		}
+
+		private static class Node extends DoubleBase.Node<Integer> {
 			private int value;
 
-			NodeDoubleInt(double key) {
+			Node(double key) {
 				super(key);
 			}
 
@@ -721,40 +781,56 @@ class HeapPairing {
 				value = val.intValue();
 			}
 		}
+	}
 
-		private static class NodeDoubleVoid extends Node<Void> implements HeapPairing.Abstract.NodeVoidVal<Double> {
-			NodeDoubleVoid(double key) {
+	private static class DoubleVoid extends DoubleBase<Void> {
+
+		DoubleVoid(Comparator<? super Double> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		DoubleBase.Node<Void> newNode(double key) {
+			return new Node(key);
+		}
+
+		private static class Node extends DoubleBase.Node<Void> implements HeapBase.NodeVoidVal<Double> {
+			Node(double key) {
 				super(key);
 			}
 		}
-
 	}
 
-	private static class WithIntKeys<V> extends HeapPairing.Abstract<Integer, V, HeapPairing.WithIntKeys.Node<V>> {
+	private static abstract class IntBase<V> extends HeapBase<Integer, V, IntBase.Node<V>> {
 
-		private final IntFunction<Node<V>> nodesFactory;
 		private final IntComparator intCmp;
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		WithIntKeys(Class<? extends V> valueType, Comparator<? super Integer> comparator) {
-			super(valueType, comparator);
+		IntBase(Comparator<? super Integer> comparator) {
+			super(comparator);
 			intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator
 					: (k1, k2) -> comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));
-			if (valueType == int.class) {
-				nodesFactory = (IntFunction) NodeIntegerInt::new;
-			} else if (valueType == void.class) {
-				nodesFactory = (IntFunction) NodeIntegerVoid::new;
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		static <V> HeapReferenceable<Integer, V> newHeap(Class<? extends V> valuesType,
+				Comparator<? super Integer> comparator) {
+			if (valuesType == int.class) {
+				return (HeapReferenceable) new HeapPairing.IntInt(comparator);
+			} else if (valuesType == void.class) {
+				return (HeapReferenceable) new HeapPairing.IntVoid(comparator);
 			} else {
-				nodesFactory = NodeIntegerObj::new;
+				return new HeapPairing.IntObj(comparator);
 			}
 		}
 
 		@Override
 		public HeapReference<Integer, V> insert(Integer key) {
-			Node<V> n = nodesFactory.apply(key.intValue());
+			Node<V> n = newNode(key.intValue());
 			insertNode(n);
 			return n;
 		}
+
+		abstract Node<V> newNode(int key);
 
 		@Override
 		void removeRoot() {
@@ -894,7 +970,7 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<V> extends HeapPairing.Abstract.INode<Integer, V, Node<V>> {
+		static abstract class Node<V> extends HeapBase.NodeImpl<Integer, V, Node<V>> {
 			int key;
 
 			Node(int key) {
@@ -909,11 +985,23 @@ class HeapPairing {
 			@Override
 			void clearUserData() {}
 		}
+	}
 
-		private static class NodeIntegerObj<V> extends Node<V> {
+	private static class IntObj<V> extends IntBase<V> {
+
+		IntObj(Comparator<? super Integer> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		IntBase.Node<V> newNode(int key) {
+			return new Node<>(key);
+		}
+
+		private static class Node<V> extends IntBase.Node<V> {
 			private V value;
 
-			NodeIntegerObj(int key) {
+			Node(int key) {
 				super(key);
 			}
 
@@ -933,11 +1021,23 @@ class HeapPairing {
 				value = null;
 			}
 		}
+	}
 
-		private static class NodeIntegerInt extends Node<Integer> {
+	private static class IntInt extends IntBase<Integer> {
+
+		IntInt(Comparator<? super Integer> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		IntBase.Node<Integer> newNode(int key) {
+			return new Node(key);
+		}
+
+		private static class Node extends IntBase.Node<Integer> {
 			private int value;
 
-			NodeIntegerInt(int key) {
+			Node(int key) {
 				super(key);
 			}
 
@@ -951,13 +1051,24 @@ class HeapPairing {
 				value = val.intValue();
 			}
 		}
+	}
 
-		private static class NodeIntegerVoid extends Node<Void> implements HeapPairing.Abstract.NodeVoidVal<Integer> {
-			NodeIntegerVoid(int key) {
+	private static class IntVoid extends IntBase<Void> {
+
+		IntVoid(Comparator<? super Integer> comparator) {
+			super(comparator);
+		}
+
+		@Override
+		IntBase.Node<Void> newNode(int key) {
+			return new Node(key);
+		}
+
+		private static class Node extends IntBase.Node<Void> implements HeapBase.NodeVoidVal<Integer> {
+			Node(int key) {
 				super(key);
 			}
 		}
-
 	}
 
 }
