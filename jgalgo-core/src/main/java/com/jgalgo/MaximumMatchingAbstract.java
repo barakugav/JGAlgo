@@ -90,6 +90,21 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 		}
 
 		@Override
+		public IntCollection matchedVertices() {
+			return IndexIdMaps.indexToIdCollection(match.matchedVertices(), viMap);
+		}
+
+		@Override
+		public IntCollection unmatchedVertices() {
+			return IndexIdMaps.indexToIdCollection(match.unmatchedVertices(), viMap);
+		}
+
+		@Override
+		public int getMatchedEdge(int vertex) {
+			return match.getMatchedEdge(viMap.idToIndex(vertex));
+		}
+
+		@Override
 		public boolean containsEdge(int edge) {
 			return match.containsEdge(eiMap.idToIndex(edge));
 		}
@@ -102,6 +117,16 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 		@Override
 		public double weight(WeightFunction w) {
 			return match.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
+		}
+
+		@Override
+		public String toString() {
+			return edges().toString();
+		}
+
+		@Override
+		public boolean isPerfect() {
+			return match.isPerfect();
 		}
 
 	}

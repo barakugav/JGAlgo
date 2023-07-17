@@ -45,6 +45,35 @@ public interface Matching {
 	boolean isVertexMatched(int vertex);
 
 	/**
+	 * Get the only matched edge adjacent to a given vertex.
+	 *
+	 * @param  vertex a vertex
+	 * @return        the edge adjacent to {@code vertex} in the matching, or {@code -1} if {@code vertex} is not
+	 *                matched
+	 */
+	int getMatchedEdge(int vertex);
+
+	/**
+	 * Get all the vertices matched by the matching.
+	 * <p>
+	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
+	 * \(w\).
+	 *
+	 * @return all the matched vertices
+	 */
+	IntCollection matchedVertices();
+
+	/**
+	 * Get all the vertices that are not matched by the matching.
+	 * <p>
+	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
+	 * \(w\).
+	 *
+	 * @return all the unmatched vertices
+	 */
+	IntCollection unmatchedVertices();
+
+	/**
 	 * Check whether an edge is part of the matching.
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
@@ -71,5 +100,14 @@ public interface Matching {
 	 * @return   the sum of this matching edges weights
 	 */
 	double weight(WeightFunction w);
+
+	/**
+	 * Check whether this matching is perfect.
+	 * <p>
+	 * A perfect matching is a matching in which all the vertices are matched.
+	 *
+	 * @return {@code true} if this matching is perfect, else {@code false}.
+	 */
+	boolean isPerfect();
 
 }

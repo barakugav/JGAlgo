@@ -152,7 +152,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		}
 		assertEquals(expectedSize, actualSize, "unexpected match size");
 
-		double expectedWeight = validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w).weight(w);
+		Matching expected = validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
+		double expectedWeight = expected.weight(w);
 		if (actualWeight > expectedWeight) {
 			System.err.println(
 					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);
@@ -230,10 +231,15 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 				@Override
 				public boolean isVertexMatched(int vertex) {
+					return getMatchedEdge(vertex) != -1;
+				}
+
+				@Override
+				public int getMatchedEdge(int vertex) {
 					for (int e : matchedEdgesRes)
 						if (vertex == g.edgeSource(e) || vertex == g.edgeTarget(e))
-							return true;
-					return false;
+							return e;
+					return -1;
 				}
 
 				@Override
@@ -249,6 +255,24 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				@Override
 				public double weight(WeightFunction w) {
 					return GraphsUtils.weightSum(edges(), w);
+				}
+
+				@Override
+				public IntCollection matchedVertices() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'matchedVertices'");
+				}
+
+				@Override
+				public IntCollection unmatchedVertices() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'unmatchedVertices'");
+				}
+
+				@Override
+				public boolean isPerfect() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'isPerfect'");
 				}
 
 			};

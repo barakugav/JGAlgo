@@ -16,7 +16,7 @@
 
 package com.jgalgo;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
@@ -65,7 +65,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 					+ expectedMatchSize);
 			throw new IllegalStateException();
 		}
-		assertTrue(match.edges().size() == expectedMatchSize, "unexpected match size");
+		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {

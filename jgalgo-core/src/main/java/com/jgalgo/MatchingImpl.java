@@ -22,6 +22,7 @@ import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 class MatchingImpl implements Matching {
@@ -29,6 +30,8 @@ class MatchingImpl implements Matching {
 	private final IndexGraph g;
 	private IntCollection edges;
 	private int[] matched;
+	private IntCollection matchedVertices;
+	private IntCollection unmatchedVertices;
 
 	MatchingImpl(IndexGraph g, IntCollection edges) {
 		this.g = Objects.requireNonNull(g);
@@ -43,8 +46,39 @@ class MatchingImpl implements Matching {
 
 	@Override
 	public boolean isVertexMatched(int vertex) {
+		return getMatchedEdge(vertex) != -1;
+	}
+
+	@Override
+	public IntCollection matchedVertices() {
+		if (matchedVertices == null) {
+			computeMatchedArray();
+			IntList matchedVertices0 = new IntArrayList();
+			for (int v = 0; v < matched.length; v++)
+				if (matched[v] != -1)
+					matchedVertices0.add(v);
+			matchedVertices = matchedVertices0;
+		}
+		return matchedVertices;
+	}
+
+	@Override
+	public IntCollection unmatchedVertices() {
+		if (unmatchedVertices == null) {
+			computeMatchedArray();
+			IntList unmatchedVertices0 = new IntArrayList();
+			for (int v = 0; v < matched.length; v++)
+				if (matched[v] == -1)
+					unmatchedVertices0.add(v);
+			unmatchedVertices = unmatchedVertices0;
+		}
+		return unmatchedVertices;
+	}
+
+	@Override
+	public int getMatchedEdge(int vertex) {
 		computeMatchedArray();
-		return matched[vertex] != -1;
+		return matched[vertex];
 	}
 
 	@Override
@@ -74,7 +108,7 @@ class MatchingImpl implements Matching {
 			int e = matched[v];
 			if (e == -1)
 				continue;
-			if (v <= g.edgeEndpoint(e, v))
+			if (v == g.edgeSource(e))
 				edges0.add(e);
 		}
 		edges = IntLists.unmodifiable(edges0);
@@ -100,6 +134,15 @@ class MatchingImpl implements Matching {
 	@Override
 	public String toString() {
 		return edges().toString();
+	}
+
+	@Override
+	public boolean isPerfect() {
+		computeMatchedArray();
+		for (int e : matched)
+			if (e == -1)
+				return false;
+		return true;
 	}
 
 }

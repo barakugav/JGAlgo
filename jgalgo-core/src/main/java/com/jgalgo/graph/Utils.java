@@ -207,10 +207,11 @@ class Utils {
 		for (int len = to - from; len > 0;) {
 			int half = len >> 1;
 			int mid = from + half;
-			if (idx2key.applyAsInt(mid) < key) {
+			int midKey = idx2key.applyAsInt(mid);
+			if (midKey < key) {
 				from = mid + 1;
 				len = len - half - 1;
-			} else if (key < idx2key.applyAsInt(mid)) {
+			} else if (key < midKey) {
 				len = half;
 			} else {
 				int left = lowerBound(from, mid, key, idx2key);
