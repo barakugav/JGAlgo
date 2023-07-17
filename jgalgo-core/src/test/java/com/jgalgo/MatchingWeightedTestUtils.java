@@ -137,7 +137,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeightedPerfect(MaximumMatching algo, Graph g, WeightFunction.Int w,
+	static void testGraphWeightedPerfect(MaximumMatching algo, Graph g, WeightFunction.Int w,
 			MaximumMatching validationUnweightedAlgo, MaximumMatching validationWeightedAlgo) {
 		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
