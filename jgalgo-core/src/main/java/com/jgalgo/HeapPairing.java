@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import com.jgalgo.Heaps.AbstractHeapReferenceable;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -39,9 +40,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
  * @author Barak Ugav
  */
-class HeapPairing {
-
-	private HeapPairing() {}
+abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, NodeImpl>>
+		extends AbstractHeapReferenceable<K, V> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	static <K, V> HeapReferenceable<K, V> newHeap(Class<? extends K> keysType, Class<? extends V> valuesType,
@@ -55,217 +55,214 @@ class HeapPairing {
 		}
 	}
 
-	private static abstract class HeapBase<K, V, Node extends HeapBase.NodeImpl<K, V, Node>>
-			extends HeapReferenceableAbstract<K, V> {
+	NodeImpl minRoot;
+	int size;
 
-		Node minRoot;
-		int size;
+	HeapPairing(Comparator<? super K> c) {
+		super(c);
+	}
 
-		HeapBase(Comparator<? super K> c) {
-			super(c);
+	@Override
+	public HeapReference<K, V> findMin() {
+		Assertions.Heaps.notEmpty(this);
+		return minRoot;
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	private static <K, V, Node extends NodeBase<K, V, Node>> void cut(Node n) {
+		Node next = n.next;
+		if (next != null) {
+			next.prevOrParent = n.prevOrParent;
+			n.next = null;
 		}
-
-		@Override
-		public HeapReference<K, V> findMin() {
-			Assertions.Heaps.notEmpty(this);
-			return minRoot;
+		if (n.prevOrParent.child == n) { /* n.parent.child == n */
+			n.prevOrParent.child = next;
+		} else {
+			n.prevOrParent.next = next;
 		}
+		n.prevOrParent = null;
+	}
 
-		@Override
-		public int size() {
-			return size;
+	static <K, V, Node extends NodeBase<K, V, Node>> void addChild(Node parent, Node newChild) {
+		assert newChild.prevOrParent == null;
+		assert newChild.next == null;
+		Node oldChild = parent.child;
+		if (oldChild != null) {
+			oldChild.prevOrParent = newChild;
+			newChild.next = oldChild;
 		}
+		parent.child = newChild;
+		newChild.prevOrParent = parent;
+	}
 
-		private static <K, V, Node extends HeapBase.NodeImpl<K, V, Node>> void cut(Node n) {
-			Node next = n.next;
-			if (next != null) {
-				next.prevOrParent = n.prevOrParent;
-				n.next = null;
-			}
-			if (n.prevOrParent.child == n) { /* n.parent.child == n */
-				n.prevOrParent.child = next;
-			} else {
-				n.prevOrParent.next = next;
-			}
-			n.prevOrParent = null;
-		}
-
-		static <K, V, Node extends HeapBase.NodeImpl<K, V, Node>> void addChild(Node parent, Node newChild) {
-			assert newChild.prevOrParent == null;
-			assert newChild.next == null;
-			Node oldChild = parent.child;
-			if (oldChild != null) {
-				oldChild.prevOrParent = newChild;
-				newChild.next = oldChild;
-			}
-			parent.child = newChild;
-			newChild.prevOrParent = parent;
-		}
-
-		void insertNode(Node n) {
-			if (minRoot == null) {
-				minRoot = n;
-				assert size == 0;
-			} else {
-				minRoot = meld(minRoot, n);
-			}
-			size++;
-		}
-
-		void afterKeyDecrease(Node n) {
-			if (n == minRoot)
-				return;
-			cut(n);
+	void insertNode(NodeImpl n) {
+		if (minRoot == null) {
+			minRoot = n;
+			assert size == 0;
+		} else {
 			minRoot = meld(minRoot, n);
 		}
+		size++;
+	}
+
+	void afterKeyDecrease(NodeImpl n) {
+		if (n == minRoot)
+			return;
+		cut(n);
+		minRoot = meld(minRoot, n);
+	}
+
+	@Override
+	public void remove(HeapReference<K, V> ref) {
+		@SuppressWarnings("unchecked")
+		NodeImpl n = (NodeImpl) ref;
+		assert minRoot != null;
+		if (n != minRoot) {
+			cut(n);
+			addChild(n, minRoot);
+			minRoot = n;
+		}
+		removeRoot();
+		size--;
+	}
+
+	abstract void removeRoot();
+
+	@Override
+	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(getClass(), heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
+		@SuppressWarnings("unchecked")
+		HeapPairing<K, V, NodeImpl> h = (HeapPairing<K, V, NodeImpl>) heap;
+
+		if (size == 0) {
+			assert minRoot == null;
+			minRoot = h.minRoot;
+		} else if (h.minRoot != null) {
+			minRoot = meld(minRoot, h.minRoot);
+		}
+		size += h.size;
+
+		h.minRoot = null;
+		h.size = 0;
+	}
+
+	private NodeImpl meld(NodeImpl n1, NodeImpl n2) {
+		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);
+	}
+
+	abstract NodeImpl meldDefaultCmp(NodeImpl n1, NodeImpl n2);
+
+	abstract NodeImpl meldCustomCmp(NodeImpl n1, NodeImpl n2);
+
+	@Override
+	public void clear() {
+		if (minRoot == null) {
+			assert size == 0;
+			return;
+		}
+
+		for (NodeImpl p = minRoot;;) {
+			while (p.child != null) {
+				p = p.child;
+				while (p.next != null)
+					p = p.next;
+			}
+			p.clearUserData();
+			NodeImpl prev = p.prevOrParent;
+			if (prev == null)
+				break;
+			p.prevOrParent = null;
+			if (prev.next == p) {
+				prev.next = null;
+			} else {
+				prev.child = null;
+			}
+			p = prev;
+		}
+
+		minRoot = null;
+		size = 0;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public Iterator<HeapReference<K, V>> iterator() {
+		return (Iterator) new PreOrderIter<>(minRoot);
+	}
+
+	abstract int compareNodesKeys(NodeImpl n1, NodeImpl n2);
+
+	static abstract class NodeBase<K, V, Node extends NodeBase<K, V, Node>> implements HeapReference<K, V> {
+
+		Node prevOrParent;
+		Node next;
+		Node child;
 
 		@Override
-		public void remove(HeapReference<K, V> ref) {
-			@SuppressWarnings("unchecked")
-			Node n = (Node) ref;
-			assert minRoot != null;
-			if (n != minRoot) {
-				cut(n);
-				addChild(n, minRoot);
-				minRoot = n;
-			}
-			removeRoot();
-			size--;
+		public String toString() {
+			return "{" + key() + ":" + value() + "}";
 		}
 
-		abstract void removeRoot();
+		abstract void clearUserData();
+	}
+
+	private static interface NodeVoidValBase<K> extends HeapReference<K, Void> {
+		@Override
+		default Void value() {
+			return null;
+		}
 
 		@Override
-		public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
-			Assertions.Heaps.noMeldWithSelf(this, heap);
-			Assertions.Heaps.meldWithSameImpl(getClass(), heap);
-			Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
-			@SuppressWarnings("unchecked")
-			HeapBase<K, V, Node> h = (HeapBase<K, V, Node>) heap;
-
-			if (size == 0) {
-				assert minRoot == null;
-				minRoot = h.minRoot;
-			} else if (h.minRoot != null) {
-				minRoot = meld(minRoot, h.minRoot);
-			}
-			size += h.size;
-
-			h.minRoot = null;
-			h.size = 0;
+		default void setValue(Void val) {
+			assert val == null;
 		}
+	}
 
-		private Node meld(Node n1, Node n2) {
-			return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);
+	static class PreOrderIter<K, V, Node extends NodeBase<K, V, Node>> implements Iterator<Node> {
+
+		private final Stack<Node> path = new ObjectArrayList<>();
+
+		PreOrderIter(Node p) {
+			if (p != null)
+				path.push(p);
 		}
-
-		abstract Node meldDefaultCmp(Node n1, Node n2);
-
-		abstract Node meldCustomCmp(Node n1, Node n2);
 
 		@Override
-		public void clear() {
-			if (minRoot == null) {
-				assert size == 0;
-				return;
-			}
-
-			for (Node p = minRoot;;) {
-				while (p.child != null) {
-					p = p.child;
-					while (p.next != null)
-						p = p.next;
-				}
-				p.clearUserData();
-				Node prev = p.prevOrParent;
-				if (prev == null)
-					break;
-				p.prevOrParent = null;
-				if (prev.next == p) {
-					prev.next = null;
-				} else {
-					prev.child = null;
-				}
-				p = prev;
-			}
-
-			minRoot = null;
-			size = 0;
+		public boolean hasNext() {
+			return !path.isEmpty();
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public Iterator<HeapReference<K, V>> iterator() {
-			return (Iterator) new HeapBase.PreOrderIter<>(minRoot);
-		}
+		public Node next() {
+			Assertions.Iters.hasNext(this);
+			final Node ret = path.top();
 
-		static abstract class NodeImpl<K, V, Node extends NodeImpl<K, V, Node>> implements HeapReference<K, V> {
-
-			Node prevOrParent;
 			Node next;
-			Node child;
-
-			@Override
-			public String toString() {
-				return "{" + key() + ":" + value() + "}";
+			if ((next = ret.child) != null) {
+				path.push(next);
+			} else {
+				Node p0;
+				do {
+					p0 = path.pop();
+					if ((next = p0.next) != null) {
+						path.push(next);
+						break;
+					}
+				} while (!path.isEmpty());
 			}
 
-			abstract void clearUserData();
-		}
-
-		private static interface NodeVoidVal<K> extends HeapReference<K, Void> {
-			@Override
-			default Void value() {
-				return null;
-			}
-
-			@Override
-			default void setValue(Void val) {
-				assert val == null;
-			}
-		}
-
-		static class PreOrderIter<K, V, Node extends NodeImpl<K, V, Node>> implements Iterator<Node> {
-
-			private final Stack<Node> path = new ObjectArrayList<>();
-
-			PreOrderIter(Node p) {
-				if (p != null)
-					path.push(p);
-			}
-
-			@Override
-			public boolean hasNext() {
-				return !path.isEmpty();
-			}
-
-			@Override
-			public Node next() {
-				Assertions.Iters.hasNext(this);
-				final Node ret = path.top();
-
-				Node next;
-				if ((next = ret.child) != null) {
-					path.push(next);
-				} else {
-					Node p0;
-					do {
-						p0 = path.pop();
-						if ((next = p0.next) != null) {
-							path.push(next);
-							break;
-						}
-					} while (!path.isEmpty());
-				}
-
-				return ret;
-			}
-
+			return ret;
 		}
 
 	}
 
-	private static abstract class ObjBase<K, V> extends HeapBase<K, V, ObjBase.Node<K, V>> {
+	private static abstract class ObjBase<K, V> extends HeapPairing<K, V, ObjBase.Node<K, V>> {
 
 		ObjBase(Comparator<? super K> comparator) {
 			super(comparator);
@@ -428,7 +425,12 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<K, V> extends HeapBase.NodeImpl<K, V, Node<K, V>> {
+		@Override
+		int compareNodesKeys(Node<K, V> n1, Node<K, V> n2) {
+			return compare(n1.key, n2.key);
+		}
+
+		static abstract class Node<K, V> extends NodeBase<K, V, Node<K, V>> {
 			K key;
 
 			Node(K key) {
@@ -524,14 +526,19 @@ class HeapPairing {
 			return new Node<>(key);
 		}
 
-		private static class Node<K> extends ObjBase.Node<K, Void> implements HeapBase.NodeVoidVal<K> {
+		private static class Node<K> extends ObjBase.Node<K, Void> implements NodeVoidValBase<K> {
 			Node(K key) {
 				super(key);
+			}
+
+			@Override
+			public String toString() {
+				return "{" + key() + "}";
 			}
 		}
 	}
 
-	private static abstract class DoubleBase<V> extends HeapBase<Double, V, DoubleBase.Node<V>> {
+	private static abstract class DoubleBase<V> extends HeapPairing<Double, V, DoubleBase.Node<V>> {
 
 		private final DoubleComparator doubleCmp;
 
@@ -700,7 +707,12 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<V> extends HeapBase.NodeImpl<Double, V, Node<V>> {
+		@Override
+		int compareNodesKeys(Node<V> n1, Node<V> n2) {
+			return doubleCmp.compare(n1.key, n2.key);
+		}
+
+		static abstract class Node<V> extends NodeBase<Double, V, Node<V>> {
 			double key;
 
 			Node(double key) {
@@ -794,14 +806,19 @@ class HeapPairing {
 			return new Node(key);
 		}
 
-		private static class Node extends DoubleBase.Node<Void> implements HeapBase.NodeVoidVal<Double> {
+		private static class Node extends DoubleBase.Node<Void> implements NodeVoidValBase<Double> {
 			Node(double key) {
 				super(key);
+			}
+
+			@Override
+			public String toString() {
+				return "{" + key() + "}";
 			}
 		}
 	}
 
-	private static abstract class IntBase<V> extends HeapBase<Integer, V, IntBase.Node<V>> {
+	private static abstract class IntBase<V> extends HeapPairing<Integer, V, IntBase.Node<V>> {
 
 		private final IntComparator intCmp;
 
@@ -970,7 +987,12 @@ class HeapPairing {
 			return n1;
 		}
 
-		static abstract class Node<V> extends HeapBase.NodeImpl<Integer, V, Node<V>> {
+		@Override
+		int compareNodesKeys(Node<V> n1, Node<V> n2) {
+			return intCmp.compare(n1.key, n2.key);
+		}
+
+		static abstract class Node<V> extends NodeBase<Integer, V, Node<V>> {
 			int key;
 
 			Node(int key) {
@@ -1064,9 +1086,42 @@ class HeapPairing {
 			return new Node(key);
 		}
 
-		private static class Node extends IntBase.Node<Void> implements HeapBase.NodeVoidVal<Integer> {
+		private static class Node extends IntBase.Node<Void> implements NodeVoidValBase<Integer> {
 			Node(int key) {
 				super(key);
+			}
+
+			@Override
+			public String toString() {
+				return "{" + key() + "}";
+			}
+		}
+	}
+
+	static <K, V, Node extends HeapPairing.NodeBase<K, V, Node>> void assertHeapConstraints(
+			HeapPairing<K, V, Node> heap) {
+		if (heap.isEmpty())
+			return;
+
+		Stack<Node> path = new ObjectArrayList<>();
+		path.push(heap.minRoot);
+		for (;;) {
+			for (Node node = path.top(); node.child != null;)
+				path.push(node = node.child);
+			for (;;) {
+				Node node = path.pop();
+				if (path.isEmpty()) {
+					if (node.next != null)
+						throw new IllegalArgumentException();
+					return;
+				}
+				Node parent = path.top();
+				if (heap.compareNodesKeys(node, parent) < 0)
+					throw new IllegalArgumentException();
+				if (node.next != null) {
+					path.push(node.next);
+					break;
+				}
 			}
 		}
 	}

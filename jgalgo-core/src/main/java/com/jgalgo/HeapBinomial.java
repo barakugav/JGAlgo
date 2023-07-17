@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import com.jgalgo.Heaps.AbstractHeapReferenceable;
 
 /**
  * A binomial heap implementation.
@@ -38,7 +39,7 @@ import java.util.Iterator;
  * @see        <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
  * @author     Barak Ugav
  */
-class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
+class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	private Node<K, V>[] roots;
 	private int rootsLen;

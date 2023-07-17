@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import com.jgalgo.Heaps.AbstractHeapReferenceable;
 
 /**
  * A Fibonacci heap implementation.
@@ -36,7 +37,7 @@ import java.util.Iterator;
  * @see        HeapPairing
  * @author     Barak Ugav
  */
-class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
+class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	private Node<K, V> minRoot;
 	private Node<K, V> begin;

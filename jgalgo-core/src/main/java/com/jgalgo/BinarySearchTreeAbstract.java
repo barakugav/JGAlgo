@@ -17,8 +17,9 @@
 package com.jgalgo;
 
 import java.util.Comparator;
+import com.jgalgo.Heaps.AbstractHeapReferenceable;
 
-abstract class BinarySearchTreeAbstract<K, V> extends HeapReferenceableAbstract<K, V>
+abstract class BinarySearchTreeAbstract<K, V> extends AbstractHeapReferenceable<K, V>
 		implements BinarySearchTree<K, V> {
 
 	public BinarySearchTreeAbstract(Comparator<? super K> c) {
