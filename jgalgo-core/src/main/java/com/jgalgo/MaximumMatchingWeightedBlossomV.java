@@ -423,7 +423,8 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			for (Edge e : v.outEdges()) {
 				Blossom w = e.getTargetOuterBlossom();
 				if (w.isEven() && w.isProcessed()) {
-					assert e.pqEvenOutRef != null;
+					// assert e.pqEvenOutRef != null;
+					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
 					w.tree.pqRemoveEvenOut(e);
 					e.slack -= tree.eps;
@@ -439,7 +440,8 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			for (Edge e : v.inEdges()) {
 				Blossom w = e.getSourceOuterBlossom();
 				if (w.isEven() && w.isProcessed()) {
-					assert e.pqEvenOutRef != null;
+					// assert e.pqEvenOutRef != null;
+					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
 					w.tree.pqRemoveEvenOut(e);
 					e.slack -= tree.eps;
@@ -469,7 +471,8 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 					tree.pqInsertEvenOut(e);
 
 				} else if (x.isEven() && x.isProcessed()) {
-					assert e.pqEvenOutRef != null;
+					// assert e.pqEvenOutRef != null;
+					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
 					x.tree.pqRemoveEvenOut(e);
 					if (tree != x.tree) {
@@ -494,7 +497,8 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 					tree.pqInsertEvenOut(e);
 
 				} else if (x.isEven() && x.isProcessed()) {
-					assert e.pqEvenOutRef != null;
+					// assert e.pqEvenOutRef != null;
+					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
 					x.tree.pqRemoveEvenOut(e);
 					if (tree != x.tree) {
@@ -645,7 +649,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			/* Swap 'root' and B in the tree (children, siblings) */
 			B.treeSiblingPrev = root.treeSiblingPrev;
 			B.treeSiblingNext = root.treeSiblingNext;
-			root.treeSiblingPrev = root.treeSiblingNext = null; // TODO not needed
+			// root.treeSiblingPrev = root.treeSiblingNext = null;
 			Blossom bParent = null;
 			if (!B.isTreeRoot())
 				bParent = root.matchedNode().getTreeParent();
@@ -904,7 +908,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			};
 			for (Blossom b1 = base.blossomSibling();;) {
 				assert B == b1.blossomParent;
-				assert B == b1.blossomGrandparent; // TODO maybe not
+				assert B == b1.blossomGrandparent; // maybe not
 				expandTemp.add(b1);
 				b1.setOut();
 				processSelfLoops.accept(b1);
@@ -1172,8 +1176,10 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 						if (target.isEven() && target.isProcessed()) {
 							if (target.tree != tree) {
 								e.slack += eps;
-								if (e.pqEvenOutRef == null && e.pqEvenEvenRef == null && e.pqEvenOddRef == null)
-									target.tree.pqInsertEvenOut(e); // TODO dont think this can happen
+								// if (e.pqEvenOutRef == null && e.pqEvenEvenRef == null && e.pqEvenOddRef == null)
+								// if (e.pqRef == null)
+								// target.tree.pqInsertEvenOut(e);
+								assert e.pqRef != null;
 							}
 						} else {
 							e.slack += eps;
@@ -1184,8 +1190,10 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 						if (source.isEven() && source.isProcessed()) {
 							if (source.tree != tree) {
 								e.slack += eps;
-								if (e.pqEvenOutRef == null && e.pqEvenEvenRef == null && e.pqEvenOddRef == null)
-									source.tree.pqInsertEvenOut(e); // TODO dont think this can happen
+								// if (e.pqEvenOutRef == null && e.pqEvenEvenRef == null && e.pqEvenOddRef == null)
+								// if (e.pqRef == null)
+								// source.tree.pqInsertEvenOut(e);
+								assert e.pqRef != null;
 							}
 						} else {
 							e.slack += eps;
@@ -1204,34 +1212,33 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 				target.currentEdge = null;
 
 				/* All odd nodes of this tree become out, meld into EvenOut of the other tree */
-				for (HeapReference<Edge, Void> ref : e.pqOddEven) {
-					// TODO remove this code, use a single pointer for any PQ reference
-					Edge ePq = ref.key();
-					assert ePq.pqEvenOddRef == ref;
-					ePq.pqEvenOddRef = null;
-					assert ePq.pqEvenOutRef == null;
-					ePq.pqEvenOutRef = ref;
-				}
+				// for (HeapReference<Edge, Void> ref : e.pqOddEven) {
+				// Edge ePq = ref.key();
+				// assert ePq.pqEvenOddRef == ref;
+				// ePq.pqEvenOddRef = null;
+				// assert ePq.pqEvenOutRef == null;
+				// ePq.pqEvenOutRef = ref;
+				// }
 				target.pqEvenOut.meld(e.pqOddEven);
 
 				/* All even nodes of this tree become out, meld into EvenOut of the other tree */
 				for (HeapReference<Edge, Void> ref : e.pqEvenEven) {
 					handleEvenPqEdge.accept(ref.key());
-
-					// TODO remove this code, use a single pointer for any PQ reference
-					Edge ePq = ref.key();
-					assert ePq.pqEvenEvenRef == ref;
-					ePq.pqEvenEvenRef = null;
-					assert ePq.pqEvenOutRef == null;
-					ePq.pqEvenOutRef = ref;
+					// Edge ePq = ref.key();
+					// assert ePq.pqEvenEvenRef == ref;
+					// ePq.pqEvenEvenRef = null;
+					// assert ePq.pqEvenOutRef == null;
+					// ePq.pqEvenOutRef = ref;
 				}
 				target.pqEvenOut.meld(e.pqEvenEven);
 
 				/* All even nodes of this tree become out, clear EvenOdd PQ */
 				for (HeapReference<Edge, Void> ref : e.pqEvenOdd) {
 					Edge ePq = ref.key();
-					assert ePq.pqEvenOddRef == ref;
-					ePq.pqEvenOddRef = null;
+					// assert ePq.pqEvenOddRef == ref;
+					// ePq.pqEvenOddRef = null;
+					assert ePq.pqRef == ref;
+					ePq.pqRef = null;
 
 					handleEvenPqEdge.accept(ePq);
 				}
@@ -1242,34 +1249,33 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 				source.currentEdge = null;
 
 				/* All odd nodes of this tree become out, meld into EvenOut of the other tree */
-				for (HeapReference<Edge, Void> ref : e.pqEvenOdd) {
-					// TODO remove this code, use a single pointer for any PQ reference
-					Edge ePq = ref.key();
-					assert ePq.pqEvenOddRef == ref;
-					ePq.pqEvenOddRef = null;
-					assert ePq.pqEvenOutRef == null;
-					ePq.pqEvenOutRef = ref;
-				}
+				// for (HeapReference<Edge, Void> ref : e.pqEvenOdd) {
+				// Edge ePq = ref.key();
+				// assert ePq.pqEvenOddRef == ref;
+				// ePq.pqEvenOddRef = null;
+				// assert ePq.pqEvenOutRef == null;
+				// ePq.pqEvenOutRef = ref;
+				// }
 				source.pqEvenOut.meld(e.pqEvenOdd);
 
 				/* All even nodes of this tree become out, meld into EvenOut of the other tree */
 				for (HeapReference<Edge, Void> ref : e.pqEvenEven) {
 					handleEvenPqEdge.accept(ref.key());
-
-					// TODO remove this code, use a single pointer for any PQ reference
-					Edge ePq = ref.key();
-					assert ePq.pqEvenEvenRef == ref;
-					ePq.pqEvenEvenRef = null;
-					assert ePq.pqEvenOutRef == null;
-					ePq.pqEvenOutRef = ref;
+					// Edge ePq = ref.key();
+					// assert ePq.pqEvenEvenRef == ref;
+					// ePq.pqEvenEvenRef = null;
+					// assert ePq.pqEvenOutRef == null;
+					// ePq.pqEvenOutRef = ref;
 				}
 				source.pqEvenOut.meld(e.pqEvenEven);
 
 				/* All even nodes of this tree become out, clear OddEven PQ */
 				for (HeapReference<Edge, Void> ref : e.pqOddEven) {
 					Edge ePq = ref.key();
-					assert ePq.pqEvenOddRef == ref;
-					ePq.pqEvenOddRef = null;
+					// assert ePq.pqEvenOddRef == ref;
+					// ePq.pqEvenOddRef = null;
+					assert ePq.pqRef == ref;
+					ePq.pqRef = null;
 
 					handleEvenPqEdge.accept(ePq);
 				}
@@ -1279,8 +1285,10 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			/* All even nodes of this tree become out, clear EvenOut PQ */
 			for (HeapReference<Edge, Void> ref : tree.pqEvenOut) {
 				Edge ePq = ref.key();
-				assert ePq.pqEvenOutRef == ref;
-				ePq.pqEvenOutRef = null;
+				// assert ePq.pqEvenOutRef == ref;
+				// ePq.pqEvenOutRef = null;
+				assert ePq.pqRef == ref;
+				ePq.pqRef = null;
 
 				handleEvenPqEdge.accept(ePq);
 			}
@@ -1289,8 +1297,10 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			/* All even nodes of this tree become out, clear EvenEven PQ */
 			for (HeapReference<Edge, Void> ref : tree.pqEvenEven) {
 				Edge ePq = ref.key();
-				assert ePq.pqEvenEvenRef == ref;
-				ePq.pqEvenEvenRef = null;
+				// assert ePq.pqEvenEvenRef == ref;
+				// ePq.pqEvenEvenRef = null;
+				assert ePq.pqRef == ref;
+				ePq.pqRef = null;
 
 				processEdgeEvenEven(ePq, true);
 			}
@@ -2151,10 +2161,11 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 		/* The alternating tree is composed of tight edges */
 		double slack;
 
-		// TODO use a single pointer for any PQ reference
-		HeapReference<Edge, Void> pqEvenEvenRef;
-		HeapReference<Edge, Void> pqEvenOddRef;
-		HeapReference<Edge, Void> pqEvenOutRef;
+		// HeapReference<Edge, Void> pqEvenEvenRef;
+		// HeapReference<Edge, Void> pqEvenOddRef;
+		// HeapReference<Edge, Void> pqEvenOutRef;
+		/* Reference to either to the PQ containing this edge */
+		HeapReference<Edge, Void> pqRef;
 
 		static final Comparator<Edge> slackComparator = (e1, e2) -> Double.compare(e1.slack, e2.slack);
 
@@ -2467,35 +2478,45 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 		}
 
 		private void pqInsertEvenOut(Edge edge) {
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
-			edge.pqEvenOutRef = pqEvenOut.insert(edge);
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			// edge.pqEvenOutRef = pqEvenOut.insert(edge);
+			assert edge.pqRef == null;
+			edge.pqRef = pqEvenOut.insert(edge);
 		}
 
 		private void pqRemoveEvenOut(Edge edge) {
-			assert edge.pqEvenOutRef != null;
-			pqEvenOut.remove(edge.pqEvenOutRef);
-			edge.pqEvenOutRef = null;
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
+			// assert edge.pqEvenOutRef != null;
+			// pqEvenOut.remove(edge.pqEvenOutRef);
+			// edge.pqEvenOutRef = null;
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			assert edge.pqRef != null;
+			pqEvenOut.remove(edge.pqRef);
+			edge.pqRef = null;
 		}
 
 		private void pqInsertEvenEven(Edge edge) {
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
-			edge.pqEvenEvenRef = pqEvenEven.insert(edge);
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			// edge.pqEvenEvenRef = pqEvenEven.insert(edge);
+			assert edge.pqRef == null;
+			edge.pqRef = pqEvenEven.insert(edge);
 		}
 
 		private void pqRemoveEvenEven(Edge edge) {
-			assert edge.pqEvenEvenRef != null;
-			pqEvenEven.remove(edge.pqEvenEvenRef);
-			edge.pqEvenEvenRef = null;
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
+			// assert edge.pqEvenEvenRef != null;
+			// pqEvenEven.remove(edge.pqEvenEvenRef);
+			// edge.pqEvenEvenRef = null;
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			assert edge.pqRef != null;
+			pqEvenEven.remove(edge.pqRef);
+			edge.pqRef = null;
 		}
 
 		private void pqEdgeInsertEvenOdd(TreesEdge treesEdge, Edge edge) {
@@ -2507,10 +2528,12 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 				pqEvenOdd = treesEdge.pqOddEven;
 			}
 
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
-			edge.pqEvenOddRef = pqEvenOdd.insert(edge);
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			// edge.pqEvenOddRef = pqEvenOdd.insert(edge);
+			assert edge.pqRef == null;
+			edge.pqRef = pqEvenOdd.insert(edge);
 		}
 
 		private void pqEdgeRemoveEvenOdd(TreesEdge treesEdge, Edge edge) {
@@ -2521,12 +2544,15 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 				assert this == treesEdge.target;
 				pqEvenOdd = treesEdge.pqOddEven;
 			}
-			assert edge.pqEvenOddRef != null;
-			pqEvenOdd.remove(edge.pqEvenOddRef);
-			edge.pqEvenOddRef = null;
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
+			// assert edge.pqEvenOddRef != null;
+			// pqEvenOdd.remove(edge.pqEvenOddRef);
+			// edge.pqEvenOddRef = null;
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			assert edge.pqRef != null;
+			pqEvenOdd.remove(edge.pqRef);
+			edge.pqRef = null;
 		}
 
 		private void pqInsertOdd(Blossom b) {
@@ -2571,10 +2597,12 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 
 		private void pqInsertEvenEven(Edge edge) {
 			assert edge.source != edge.target;
-			assert edge.pqEvenEvenRef == null;
-			assert edge.pqEvenOddRef == null;
-			assert edge.pqEvenOutRef == null;
-			edge.pqEvenEvenRef = pqEvenEven.insert(edge);
+			// assert edge.pqEvenEvenRef == null;
+			// assert edge.pqEvenOddRef == null;
+			// assert edge.pqEvenOutRef == null;
+			// edge.pqEvenEvenRef = pqEvenEven.insert(edge);
+			assert edge.pqRef == null;
+			edge.pqRef = pqEvenEven.insert(edge);
 		}
 
 		@Override
