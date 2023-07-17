@@ -76,8 +76,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		if (Bipartite.isValidBipartitePartition(g, partition))
-			throw new IllegalArgumentException("the graph is not bipartite");
+		Assertions.Graphs.onlyBipartite(g, partition);
 
 		/* BFS */
 		int[] depths = new int[n];

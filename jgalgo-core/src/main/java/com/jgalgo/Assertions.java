@@ -47,7 +47,7 @@ class Assertions {
 		static void onlyBipartite(Graph g, Weights.Bool partition) {
 			if (!AssertBipartitePartition)
 				return;
-			if (Bipartite.isValidBipartitePartition(g, partition))
+			if (!Bipartite.isValidBipartitePartition(g, partition))
 				throw new IllegalArgumentException("the graph is not bipartite");
 		}
 

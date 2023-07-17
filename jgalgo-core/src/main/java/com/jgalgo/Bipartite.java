@@ -28,7 +28,7 @@ class Bipartite {
 			if (partition.getBool(u) == partition.getBool(v))
 				return false;
 		}
-		return false;
+		return true;
 	}
 
 }
