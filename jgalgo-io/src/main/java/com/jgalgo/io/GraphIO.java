@@ -66,8 +66,13 @@ class GraphIO {
 		formats.add(FormatSparse6.Instance);
 
 		Object2ObjectMap<String, GraphFormat> fileExtensionToFormat = new Object2ObjectArrayMap<>();
-		for (GraphFormat format : formats)
-			fileExtensionToFormat.put(format.getFileExtension(), format);
+		for (GraphFormat format : formats) {
+			for (String ext : format.getFileExtensions()) {
+				GraphFormat f1 = fileExtensionToFormat.put(ext, format);
+				if (f1 != null)
+					throw new IllegalStateException("two formats with same file extension: '" + ext + "'");
+			}
+		}
 		FileExtensionToFormat = Object2ObjectMaps.unmodifiable(fileExtensionToFormat);
 	}
 

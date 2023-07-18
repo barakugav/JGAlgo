@@ -55,9 +55,11 @@ class FormatGML implements GraphFormat {
 		return new ReaderImpl();
 	}
 
+	private static final List<String> FILE_EXTENSIONS = List.of("gml");
+
 	@Override
-	public String getFileExtension() {
-		return "gml";
+	public List<String> getFileExtensions() {
+		return FILE_EXTENSIONS;
 	}
 
 	private static class WriterImpl implements GraphWriter {

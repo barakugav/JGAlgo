@@ -17,6 +17,7 @@ package com.jgalgo.io;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 
@@ -36,9 +37,11 @@ class FormatGraph6 implements GraphFormat {
 		return new ReaderImpl();
 	}
 
+	private static final List<String> FILE_EXTENSIONS = List.of("g6");
+
 	@Override
-	public String getFileExtension() {
-		return "g6";
+	public List<String> getFileExtensions() {
+		return FILE_EXTENSIONS;
 	}
 
 	private static class WriterImpl implements GraphWriter {

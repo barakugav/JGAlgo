@@ -15,13 +15,15 @@
  */
 package com.jgalgo.io;
 
+import java.util.List;
+
 interface GraphFormat {
 
 	GraphWriter newWriter();
 
 	GraphReader newReader();
 
-	String getFileExtension();
+	List<String> getFileExtensions();
 
 	static GraphFormat getInstanceByName(String formatName) {
 		switch (formatName.toLowerCase()) {
