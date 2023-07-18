@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Matchings.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Matchings.java</span></div><h1>Matchings.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.Arrays;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntCollections;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+<span class="nc" id="L31">class Matchings {</span>
+
+<span class="fc" id="L33">	static class MatchingImpl implements Matching {</span>
+
+		private final IndexGraph g;
+		private IntCollection edges;
+		private int[] matched;
+		private IntCollection matchedVertices;
+		private IntCollection unmatchedVertices;
+
+<span class="fc" id="L41">		MatchingImpl(IndexGraph g, IntCollection edges) {</span>
+<span class="fc" id="L42">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L43">			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L44">		}</span>
+
+<span class="fc" id="L46">		MatchingImpl(IndexGraph g, int[] matched) {</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			assert matched.length == g.vertices().size();</span>
+<span class="fc" id="L48">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L49">			this.matched = Objects.requireNonNull(matched);</span>
+<span class="fc" id="L50">		}</span>
+
+		@Override
+		public boolean isVertexMatched(int vertex) {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">			return getMatchedEdge(vertex) != -1;</span>
+		}
+
+		@Override
+		public IntCollection matchedVertices() {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">			if (matchedVertices == null) {</span>
+<span class="nc" id="L60">				computeMatchedArray();</span>
+<span class="nc" id="L61">				IntList matchedVertices0 = new IntArrayList();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">				for (int v = 0; v &lt; matched.length; v++)</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">					if (matched[v] != -1)</span>
+<span class="nc" id="L64">						matchedVertices0.add(v);</span>
+<span class="nc" id="L65">				matchedVertices = matchedVertices0;</span>
+			}
+<span class="nc" id="L67">			return matchedVertices;</span>
+		}
+
+		@Override
+		public IntCollection unmatchedVertices() {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (unmatchedVertices == null) {</span>
+<span class="fc" id="L73">				computeMatchedArray();</span>
+<span class="fc" id="L74">				IntList unmatchedVertices0 = new IntArrayList();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				for (int v = 0; v &lt; matched.length; v++)</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">					if (matched[v] == -1)</span>
+<span class="fc" id="L77">						unmatchedVertices0.add(v);</span>
+<span class="fc" id="L78">				unmatchedVertices = unmatchedVertices0;</span>
+			}
+<span class="fc" id="L80">			return unmatchedVertices;</span>
+		}
+
+		@Override
+		public int getMatchedEdge(int vertex) {
+<span class="fc" id="L85">			computeMatchedArray();</span>
+<span class="fc" id="L86">			return matched[vertex];</span>
+		}
+
+		@Override
+		public boolean containsEdge(int edge) {
+<span class="nc" id="L91">			computeMatchedArray();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			return matched[g.edgeSource(edge)] == edge;</span>
+		}
+
+		@Override
+		public IntCollection edges() {
+<span class="fc" id="L97">			computeEdgesCollection();</span>
+<span class="fc" id="L98">			return edges;</span>
+		}
+
+		@Override
+		public double weight(WeightFunction w) {
+<span class="fc" id="L103">			computeEdgesCollection();</span>
+<span class="fc" id="L104">			return GraphsUtils.weightSum(edges, w);</span>
+		}
+
+		private void computeEdgesCollection() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (edges != null)</span>
+<span class="fc" id="L109">				return;</span>
+<span class="fc" id="L110">			IntArrayList edges0 = new IntArrayList();</span>
+<span class="fc" id="L111">			int n = g.vertices().size();</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L113">				int e = matched[v];</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L115">					continue;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (v == g.edgeSource(e))</span>
+<span class="fc" id="L117">					edges0.add(e);</span>
+			}
+<span class="fc" id="L119">			edges = IntLists.unmodifiable(edges0);</span>
+<span class="fc" id="L120">		}</span>
+
+		private void computeMatchedArray() {
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">			if (matched != null)</span>
+<span class="fc" id="L124">				return;</span>
+<span class="nc" id="L125">			matched = new int[g.vertices().size()];</span>
+<span class="nc" id="L126">			Arrays.fill(matched, -1);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">			for (int e : edges) {</span>
+<span class="nc" id="L128">				int u = g.edgeSource(e);</span>
+<span class="nc" id="L129">				int v = g.edgeTarget(e);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">				if (matched[u] != -1)</span>
+<span class="nc" id="L131">					throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + u);</span>
+<span class="nc" id="L132">				matched[u] = e;</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">				if (matched[v] != -1)</span>
+<span class="nc" id="L134">					throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + v);</span>
+<span class="nc" id="L135">				matched[v] = e;</span>
+<span class="nc" id="L136">			}</span>
+<span class="nc" id="L137">		}</span>
+
+		@Override
+		public String toString() {
+<span class="nc" id="L141">			return edges().toString();</span>
+		}
+
+		@Override
+		public boolean isPerfect() {
+<span class="fc" id="L146">			computeMatchedArray();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (int e : matched)</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">				if (e == -1)</span>
+<span class="nc" id="L149">					return false;</span>
+<span class="fc" id="L150">			return true;</span>
+		}
+
+	}
+
+<span class="fc" id="L155">	static abstract class AbstractMatchingImpl implements MatchingAlgorithm {</span>
+
+		@Override
+		public Matching computeMaximumCardinalityMatching(Graph g) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
+<span class="fc" id="L160">				return computeMaximumCardinalityMatching((IndexGraph) g);</span>
+
+<span class="fc" id="L162">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L163">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L164">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+
+<span class="fc" id="L166">			Matching indexMatch = computeMaximumCardinalityMatching(iGraph);</span>
+<span class="fc" id="L167">			return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+		}
+
+		@Override
+		public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
+<span class="fc" id="L173">				return computeMaximumWeightedMatching((IndexGraph) g, w);</span>
+
+<span class="fc" id="L175">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L176">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L177">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L178">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L180">			Matching indexMatch = computeMaximumWeightedMatching(iGraph, iw);</span>
+<span class="fc" id="L181">			return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+		}
+
+		@Override
+		public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L186" title="All 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L187">				return computeMinimumWeightedMatching((IndexGraph) g, w);</span>
+
+<span class="nc" id="L189">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L190">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L191">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L192">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="nc" id="L194">			Matching indexMatch = computeMinimumWeightedMatching(iGraph, iw);</span>
+<span class="nc" id="L195">			return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+		}
+
+		@Override
+		public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
+<span class="fc" id="L201">				return computeMaximumWeightedPerfectMatching((IndexGraph) g, w);</span>
+
+<span class="fc" id="L203">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L204">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L205">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L206">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L208">			Matching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, iw);</span>
+<span class="fc" id="L209">			return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+		}
+
+		@Override
+		public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L215">				return computeMinimumWeightedPerfectMatching((IndexGraph) g, w);</span>
+
+<span class="nc" id="L217">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L218">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L219">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L220">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="nc" id="L222">			Matching indexMatch = computeMinimumWeightedPerfectMatching(iGraph, iw);</span>
+<span class="nc" id="L223">			return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+		}
+
+		abstract Matching computeMaximumCardinalityMatching(IndexGraph g);
+
+		abstract Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w);
+
+		abstract Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w);
+
+		abstract Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w);
+
+		abstract Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w);
+
+		private static class MatchingFromIndexMatching implements Matching {
+
+			private final Matching match;
+			private final IndexIdMap viMap;
+			private final IndexIdMap eiMap;
+
+<span class="fc" id="L242">			MatchingFromIndexMatching(Matching match, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L243">				this.match = Objects.requireNonNull(match);</span>
+<span class="fc" id="L244">				this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L245">				this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L246">			}</span>
+
+			@Override
+			public boolean isVertexMatched(int vertex) {
+<span class="nc" id="L250">				return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+			}
+
+			@Override
+			public IntCollection matchedVertices() {
+<span class="nc" id="L255">				return IndexIdMaps.indexToIdCollection(match.matchedVertices(), viMap);</span>
+			}
+
+			@Override
+			public IntCollection unmatchedVertices() {
+<span class="fc" id="L260">				return IndexIdMaps.indexToIdCollection(match.unmatchedVertices(), viMap);</span>
+			}
+
+			@Override
+			public int getMatchedEdge(int vertex) {
+<span class="nc" id="L265">				return match.getMatchedEdge(viMap.idToIndex(vertex));</span>
+			}
+
+			@Override
+			public boolean containsEdge(int edge) {
+<span class="nc" id="L270">				return match.containsEdge(eiMap.idToIndex(edge));</span>
+			}
+
+			@Override
+			public IntCollection edges() {
+<span class="fc" id="L275">				return IndexIdMaps.indexToIdCollection(match.edges(), eiMap);</span>
+			}
+
+			@Override
+			public double weight(WeightFunction w) {
+<span class="fc" id="L280">				return match.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));</span>
+			}
+
+			@Override
+			public String toString() {
+<span class="nc" id="L285">				return edges().toString();</span>
+			}
+
+			@Override
+			public boolean isPerfect() {
+<span class="fc" id="L290">				return match.isPerfect();</span>
+			}
+
+		}
+
+	}
+
+<span class="fc" id="L297">	static abstract class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {</span>
+
+		@Override
+		Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L301">			onlyCardinality(w);</span>
+<span class="nc" id="L302">			return computeMaximumCardinalityMatching(g);</span>
+		}
+
+		@Override
+		Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L307">			onlyCardinality(w);</span>
+<span class="nc" id="L308">			return new Matchings.MatchingImpl(g, IntLists.emptyList());</span>
+		}
+
+		@Override
+		Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L313">			onlyCardinality(w);</span>
+<span class="nc" id="L314">			return computeMaximumCardinalityMatching(g);</span>
+		}
+
+		@Override
+		Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L319">			onlyCardinality(w);</span>
+<span class="nc" id="L320">			return computeMaximumCardinalityMatching(g);</span>
+		}
+
+		private static void onlyCardinality(WeightFunction w) {
+<span class="nc bnc" id="L324" title="All 4 branches missed.">			if (w != null &amp;&amp; w != WeightFunction.CardinalityWeightFunction)</span>
+<span class="nc" id="L325">				throw new IllegalArgumentException(&quot;Only cardinality matching is supported by this algorithm&quot;);</span>
+<span class="nc" id="L326">		}</span>
+
+	}
+
+<span class="fc" id="L330">	static abstract class AbstractWeightedMatchingImpl extends AbstractMatchingImpl {</span>
+
+		@Override
+		Matching computeMaximumCardinalityMatching(IndexGraph g) {
+<span class="fc" id="L334">			return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);</span>
+		}
+
+	}
+
+<span class="fc" id="L339">	static abstract class AbstractMaximumMatchingImpl extends AbstractWeightedMatchingImpl {</span>
+
+		@Override
+		Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L343">			return computeMaximumWeightedMatching(g, e -&gt; -w.weight(e));</span>
+		}
+
+		@Override
+		Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+<span class="nc" id="L348">			return computeMaximumWeightedPerfectMatching(g, e -&gt; -w.weight(e));</span>
+		}
+
+	}
+
+<span class="fc" id="L353">	static abstract class AbstractMinimumMatchingImpl extends AbstractWeightedMatchingImpl {</span>
+
+		@Override
+		Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+<span class="fc" id="L357">			return computeMinimumWeightedMatching(g, e -&gt; -w.weight(e));</span>
+		}
+
+		@Override
+		Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+<span class="fc" id="L362">			return computeMinimumWeightedPerfectMatching(g, e -&gt; -w.weight(e));</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

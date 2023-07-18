@@ -217,8 +217,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
 <span class="fc" id="L218">		proneRemovedVerticesWeights();</span>
 <span class="fc" id="L219">		WeightsImpl.Index&lt;V&gt; indexWeights = indexGraph.getVerticesWeights(key);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (indexWeights == null)</span>
-<span class="fc" id="L221">			return null;</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">		if (indexWeights == null)</span>
+<span class="nc" id="L221">			return null;</span>
 <span class="fc" id="L222">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
 <span class="fc" id="L223">				iw -&gt; WeightsImpl.Mapped.newInstance(iw, indexGraphVerticesMap()));</span>
 	}

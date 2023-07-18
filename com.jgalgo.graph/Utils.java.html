@@ -207,19 +207,20 @@ class Utils {
 <span class="fc bfc" id="L207" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
 <span class="fc" id="L208">			int half = len &gt;&gt; 1;</span>
 <span class="fc" id="L209">			int mid = from + half;</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
-<span class="fc" id="L211">				from = mid + 1;</span>
-<span class="fc" id="L212">				len = len - half - 1;</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">			} else if (key &lt; idx2key.applyAsInt(mid)) {</span>
-<span class="fc" id="L214">				len = half;</span>
+<span class="fc" id="L210">			int midKey = idx2key.applyAsInt(mid);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			if (midKey &lt; key) {</span>
+<span class="fc" id="L212">				from = mid + 1;</span>
+<span class="fc" id="L213">				len = len - half - 1;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			} else if (key &lt; midKey) {</span>
+<span class="fc" id="L215">				len = half;</span>
 			} else {
-<span class="fc" id="L216">				int left = lowerBound(from, mid, key, idx2key);</span>
-<span class="fc" id="L217">				from += len;</span>
-<span class="fc" id="L218">				int right = upperBound(++mid, from, key, idx2key);</span>
-<span class="fc" id="L219">				return IntIntPair.of(left, right);</span>
+<span class="fc" id="L217">				int left = lowerBound(from, mid, key, idx2key);</span>
+<span class="fc" id="L218">				from += len;</span>
+<span class="fc" id="L219">				int right = upperBound(++mid, from, key, idx2key);</span>
+<span class="fc" id="L220">				return IntIntPair.of(left, right);</span>
 			}
-<span class="fc" id="L221">		}</span>
-<span class="fc" id="L222">		return null;</span>
+<span class="fc" id="L222">		}</span>
+<span class="fc" id="L223">		return null;</span>
 	}
 
 }

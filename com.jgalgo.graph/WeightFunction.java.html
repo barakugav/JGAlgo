@@ -16,7 +16,7 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.MaximumMatching;
+import com.jgalgo.MatchingAlgorithm;
 import com.jgalgo.MinimumSpanningTree;
 import com.jgalgo.ShortestPathSingleSource;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -25,9 +25,9 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * Weight function that maps graph edges (or vertices) to weights.
  * &lt;p&gt;
  * This interface is usually used as weight function of edges, for example in algorithms such as
- * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MaximumMatching} try to find a set of edges
- * satisfying some constraint while minimizing/maximizing some objective function based on the weights of the edges. But
- * it can represent weights assigned to vertices, in algorithms such as vertex cover.
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgorithm} try to find a set of
+ * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
+ * edges. But it can represent weights assigned to vertices, in algorithms such as vertex cover.
  * &lt;p&gt;
  * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.

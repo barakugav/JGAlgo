@@ -17,19 +17,20 @@
 package com.jgalgo;
 
 import java.util.Comparator;
+import com.jgalgo.Heaps.AbstractHeapReferenceable;
 
-abstract class BinarySearchTreeAbstract&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt;
+abstract class BinarySearchTreeAbstract&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt;
 		implements BinarySearchTree&lt;K, V&gt; {
 
 	public BinarySearchTreeAbstract(Comparator&lt;? super K&gt; c) {
-<span class="fc" id="L25">		super(c);</span>
-<span class="fc" id="L26">	}</span>
+<span class="fc" id="L26">		super(c);</span>
+<span class="fc" id="L27">	}</span>
 
 	@Override
 	public HeapReference&lt;K, V&gt; extractMax() {
-<span class="fc" id="L30">		HeapReference&lt;K, V&gt; max = findMax();</span>
-<span class="fc" id="L31">		remove(max);</span>
-<span class="fc" id="L32">		return max;</span>
+<span class="fc" id="L31">		HeapReference&lt;K, V&gt; max = findMax();</span>
+<span class="fc" id="L32">		remove(max);</span>
+<span class="fc" id="L33">		return max;</span>
 	}
 
 }

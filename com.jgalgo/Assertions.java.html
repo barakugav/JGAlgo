@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 		static void onlyBipartite(Graph g, Weights.Bool partition) {
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">			if (!AssertBipartitePartition)</span>
 <span class="nc" id="L49">				return;</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">			if (Bipartite.isValidBipartitePartition(g, partition))</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">			if (!Bipartite.isValidBipartitePartition(g, partition))</span>
 <span class="nc" id="L51">				throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
 <span class="fc" id="L52">		}</span>
 
