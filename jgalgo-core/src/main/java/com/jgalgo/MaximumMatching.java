@@ -90,6 +90,8 @@ public interface MaximumMatching {
 						return new MaximumMatchingWeightedGabow1990();
 					if ("Gabow1990Simpler".equals(impl))
 						return new MaximumMatchingWeightedGabow1990Simpler();
+					if ("BlossomV".equals(impl))
+						return new MaximumMatchingWeightedBlossomV();
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}
 				if (cardinality) {
@@ -97,7 +99,7 @@ public interface MaximumMatching {
 							: new MaximumMatchingCardinalityGabow1976();
 				} else {
 					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()
-							: new MaximumMatchingWeightedGabow1990Simpler();
+							: new MaximumMatchingWeightedBlossomV();
 				}
 			}
 

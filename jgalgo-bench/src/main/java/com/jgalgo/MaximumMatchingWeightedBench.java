@@ -100,6 +100,11 @@ public class MaximumMatchingWeightedBench {
 	}
 
 	@Benchmark
+	public void MaximumMatchingWeightedBlossomV(Blackhole blackhole) {
+		benchMaximumMatchingWeighted(getAlgo("BlossomV"), blackhole);
+	}
+
+	@Benchmark
 	public void MaximumMatchingWeightedGabow1990SimplerPerfect(Blackhole blackhole) {
 		benchMaximumMatchingWeightedPerfect(getAlgo("Gabow1990Simpler"), blackhole);
 	}
