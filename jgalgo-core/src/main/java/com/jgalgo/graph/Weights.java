@@ -16,7 +16,7 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.MaximumMatching;
+import com.jgalgo.MatchingAlgorithm;
 import com.jgalgo.ShortestPathSingleSource;
 
 /**
@@ -24,9 +24,9 @@ import com.jgalgo.ShortestPathSingleSource;
  * <p>
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
  * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
- * algorithms such as {@link ShortestPathSingleSource} or {@link MaximumMatching} to assigned the <i>cost</i> of edges.
- * Another example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
- * algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
+ * algorithms such as {@link ShortestPathSingleSource} or {@link MatchingAlgorithm} to assigned the <i>cost</i> of
+ * edges. Another example is boolean weights used to represent the partition of vertices in bipartite graphs, which is
+ * used by algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of

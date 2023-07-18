@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCardinality {
+class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
@@ -44,7 +44,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 	/**
 	 * Create a new maximum matching object.
 	 */
-	MaximumMatchingCardinalityBipartiteHopcroftKarp() {}
+	MatchingCardinalityBipartiteHopcroftKarp() {}
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
@@ -182,7 +182,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCar
 			f.clearEdges();
 		}
 		Arrays.fill(edges, null);
-		return new MatchingImpl(g, matched);
+		return new Matchings.MatchingImpl(g, matched);
 	}
 
 }

@@ -97,7 +97,7 @@
   </Match>
   <Match>
     <!-- should be fine -->
-    <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990Abstract$Worker" />
+    <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker" />
     <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
   </Match>
   <Match>
@@ -160,7 +160,7 @@
       <Class name="com.jgalgo.ColoringDSaturHeap" />
       <Class name="com.jgalgo.MSTFredmanTarjan" />
       <Class name="com.jgalgo.MSTPrim" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBipartiteHungarianMethod" />
+      <Class name="com.jgalgo.MatchingWeightedBipartiteHungarianMethod" />
     </Or>
     <Method name="setHeapBuilder" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -170,15 +170,15 @@
     <Or>
       <Class name="com.jgalgo.BinarySearchTrees$BSTIterator" />
       <Class name="com.jgalgo.HeapBinary$It" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990Abstract$Blossom$1$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990Abstract$Worker$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990Abstract$Worker$2" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Blossom$1$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Blossom$2$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Tree$1$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Tree$2$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Worker$2$1" />
-      <Class name="com.jgalgo.MaximumMatchingWeightedBlossomV$Worker$3$1" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$1" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$2" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$3$1" />
       <Class name="com.jgalgo.Utils$IterPeekableImpl" />
       <Class name="com.jgalgo.Utils$NullIterator" />
       <Class name="com.jgalgo.Utils$NullListIterator" />
@@ -186,4 +186,17 @@
     <Method name="next" />
     <Bug pattern="IT_NO_SUCH_ELEMENT" />
   </Match>
+  <Match>
+    <!-- used when Debug=trues -->
+    <Or>
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug$Impl" />
+    </Or>
+    <Or>
+      <Bug pattern="UC_USELESS_VOID_METHOD" />
+      <Bug pattern="UUF_UNUSED_FIELD" />
+    </Or>
+  </Match>
+
+
 </FindBugsFilter>

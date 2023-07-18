@@ -86,4 +86,9 @@ class GraphsTestUtils extends TestUtils {
 				.connected(false).build();
 	}
 
+	static Graph randGraphBipartite(int sn, int tn, int m, long seed) {
+		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
+				.selfEdges(false).cycles(true).connected(false).build();
+	}
+
 }

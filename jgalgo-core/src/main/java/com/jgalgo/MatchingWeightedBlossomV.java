@@ -33,18 +33,18 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
  * The implementation is based on 'Blossom V: A new implementation of a minimum cost perfect matching algorithm' by
  * Vladimir Kolmogorov. It is an implementation of Edmonds 'Blossom' algorithm, using priory queues
  * ({@link HeapReferenceable}, pairing heaps) to find the next tight edge each iteration. In contrast to
- * {@link MaximumMatchingWeightedGabow1990}, it achieve a worse \(O(n^3 m)\) running time in the worst case, but runs
- * faster in practice.
+ * {@link MatchingWeightedGabow1990}, it achieve a worse \(O(n^3 m)\) running time in the worst case, but runs faster in
+ * practice.
  * <p>
  * The implementation actually computes minimum perfect matching, and assume such perfect matching always exists.
  * Maximum or non-perfect matchings are computed by a reduction to a minimum perfect matching instance.
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
+class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -98,7 +98,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			wDup = e -> e < dummyEdgesThreshold ? w.weight(e / 2) : 0;
 		}
 		IndexGraph gDup = b.build();
-		Matching matchDup = computeMaximumWeightedPerfectMatching(gDup, wDup);
+		Matching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);
 
 		/* Convert matching to the original graph */
 		int[] matched = new int[g.vertices().size()];
@@ -109,14 +109,10 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			int e = eDup < dummyEdgesThreshold ? eDup / 2 : -1;
 			matched[v] = e;
 		}
-		return new MatchingImpl(g, matched);
+		return new Matchings.MatchingImpl(g, matched);
 	}
 
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-		return computeMinimumWeightedPerfectMatching(g, e -> -w.weight(e));
-	}
-
 	Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return new Worker(g, w).solve();
@@ -1421,7 +1417,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 				assert singletonNodes[u].isMatched();
 				matched[u] = singletonNodes[u].match.id;
 			}
-			return new MatchingImpl(g, matched);
+			return new Matchings.MatchingImpl(g, matched);
 		}
 
 		private boolean updateDuals() {
@@ -2628,7 +2624,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			return Enable ? String.valueOf(Impl.blossomIds.computeIfAbsent(b, k -> Impl.nextBlossomId++)) : "";
 		}
 
-		static void init(MaximumMatchingWeightedBlossomV.Worker worker) {
+		static void init(MatchingWeightedBlossomV.Worker worker) {
 			if (!Enable)
 				return;
 			assert Impl.blossomIds.isEmpty();
@@ -2643,7 +2639,7 @@ class MaximumMatchingWeightedBlossomV extends MaximumMatchingWeighted {
 			Impl.blossomIds.clear();
 		}
 
-		static void assertConstraints(MaximumMatchingWeightedBlossomV.Worker worker) {
+		static void assertConstraints(MatchingWeightedBlossomV.Worker worker) {
 			if (!Enable)
 				return;
 

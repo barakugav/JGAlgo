@@ -18,42 +18,42 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-public class MaximumMatchingWeightedGabow1990Test extends TestBase {
+public class MatchingWeightedGabow1990SimplerTest extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
 		final long seed = 0x2ab1588bd0eb62b2L;
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
 		final long seed = 0xbffb50ae18bf664cL;
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
 		final long seed = 0xf5c0a210842d9f5eL;
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 	@Test
 	public void testRandGraphsWeight1() {
 		final long seed = 0x67ead1b9c6600229L;
-		MatchingUnweightedTestUtils.randGraphs(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingUnweightedTestUtils.randGraphs(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 	@Test
 	public void testRandGraphsWeighted() {
 		final long seed = 0x33a1793a0388c73bL;
-		MatchingWeightedTestUtils.randGraphsWeighted(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingWeightedTestUtils.randGraphsWeighted(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 	@Test
 	public void testRandGraphsWeightedPerfect() {
 		final long seed = 0x625606329a1eb13cL;
-		MatchingWeightedTestUtils.randGraphsWeightedPerfect(new MaximumMatchingWeightedGabow1990(), seed);
+		MatchingWeightedTestUtils.randGraphsWeightedPerfect(new MatchingWeightedGabow1990Simpler(), seed);
 	}
 
 }

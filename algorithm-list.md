@@ -33,6 +33,7 @@
 | Maximum matching bipartite weighted using SSSP | $O(m n + n^2 \log n)$ | |
 | Maximum matching bipartite weighted Hungarian method with heaps | $O(m n + n^2 \log n)$ | |
 | Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ | |
+| Minimum perfect matching general weighted Blossom V | $O(m n^3)$ | best in practice |
 | Traveling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ | |
 | Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ | |
 | Vertex Coloring Greedy (random vertices order) | $O(n + m)$ | assuming the number of colors is constant |

@@ -18,12 +18,18 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-public class MaximumMatchingBipartiteHopcroftKarpTest extends TestBase {
+public class MatchingWeightedBipartiteSSSPTest extends TestBase {
 
 	@Test
-	public void testRandBipartiteGraphs() {
-		final long seed = 0x16f0491558fa62f8L;
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingCardinalityBipartiteHopcroftKarp(), seed);
+	public void testRandBipartiteGraphsWeight1() {
+		final long seed = 0x6d2c36b6f7f5d43fL;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MatchingWeightedBipartiteSSSP(), seed);
+	}
+
+	@Test
+	public void testRandBipartiteGraphsWeighted() {
+		final long seed = 0x131359e008ab11acL;
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MatchingWeightedBipartiteSSSP(), seed);
 	}
 
 }

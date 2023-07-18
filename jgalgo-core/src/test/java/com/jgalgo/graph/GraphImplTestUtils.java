@@ -30,7 +30,7 @@ import com.jgalgo.MatchingBipartiteTestUtils;
 import com.jgalgo.MatchingWeightedTestUtils;
 import com.jgalgo.MaximumFlow;
 import com.jgalgo.MaximumFlowTestUtils;
-import com.jgalgo.MaximumMatching;
+import com.jgalgo.MatchingAlgorithm;
 import com.jgalgo.MinimumDirectedSpanningTree;
 import com.jgalgo.MinimumDirectedSpanningTreeTarjanTest;
 import com.jgalgo.MinimumSpanningTree;
@@ -662,11 +662,11 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(
-				MaximumMatching.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
+				MatchingAlgorithm.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MaximumMatching.newBuilder().setBipartite(true).build(),
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgorithm.newBuilder().setBipartite(true).build(),
 				graphImpl, seed);
 	}
 

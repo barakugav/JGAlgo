@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * structure.
  * <p>
  * This algorithm runs in \(O(m n \log n)\) time and uses linear space. The asymptotically running time is lower than
- * the regular {@link MaximumMatchingWeightedGabow1990} implementation, but it runs faster in practice. Instead of using
+ * the regular {@link MatchingWeightedGabow1990} implementation, but it runs faster in practice. Instead of using
  * {@link SubtreeMergeFindMin} and {@link LowestCommonAncestorDynamic}, a simple heap is used to tracker 'blossom'
  * steps.
  * <p>
@@ -36,12 +36,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGabow1990Abstract {
+class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract {
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MaximumMatchingWeightedGabow1990Simpler() {}
+	MatchingWeightedGabow1990Simpler() {}
 
 	@Override
 	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
@@ -49,7 +49,7 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
 
-	private static class Worker extends MaximumMatchingWeightedGabow1990Abstract.Worker {
+	private static class Worker extends MatchingWeightedGabow1990Abstract.Worker {
 
 		/* Heap storing all the blossom and augmenting events */
 		final Heap<EdgeEvent> blossomEvents;

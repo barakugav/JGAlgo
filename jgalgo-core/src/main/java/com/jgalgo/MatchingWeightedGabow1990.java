@@ -33,12 +33,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990Abstract {
+class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MaximumMatchingWeightedGabow1990() {}
+	MatchingWeightedGabow1990() {}
 
 	@Override
 	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
@@ -46,7 +46,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
 
-	private static class Worker extends MaximumMatchingWeightedGabow1990Abstract.Worker {
+	private static class Worker extends MatchingWeightedGabow1990Abstract.Worker {
 
 		/* Heap storing all the blossom and augmenting events */
 		final SubtreeMergeFindMin<EdgeEvent> smf;

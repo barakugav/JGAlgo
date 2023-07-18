@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWeighted {
+class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
@@ -46,7 +46,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MaximumMatchingWeightedBipartiteHungarianMethod() {}
+	MatchingWeightedBipartiteHungarianMethod() {}
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
@@ -234,7 +234,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWei
 				Arrays.fill(nextTightEdgePerOutV, null);
 			}
 
-			return new MatchingImpl(g, matched);
+			return new Matchings.MatchingImpl(g, matched);
 		}
 
 		private void nextTightEdgeAdd(int u, int e) {

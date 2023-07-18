@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
+class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();
@@ -48,7 +48,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MaximumMatchingWeightedBipartiteSSSP() {}
+	MatchingWeightedBipartiteSSSP() {}
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
@@ -93,7 +93,7 @@ class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 		Assertions.Graphs.onlyBipartite(g, partition);
 
 		int[] match = computeMaxMatching(g, w, partition);
-		return new MatchingImpl(g, match);
+		return new Matchings.MatchingImpl(g, match);
 	}
 
 	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {

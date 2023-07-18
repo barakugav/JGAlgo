@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import com.jgalgo.MaximumMatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
+import com.jgalgo.MatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
 import com.jgalgo.Utils.NullList;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingWeighted {
+abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
 	final DebugPrintsManager debugPrintManager = new DebugPrintsManager();
 	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
@@ -659,7 +659,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 			for (int u = 0; u < n; u++)
 				if (isMatched(u) && u < g.edgeEndpoint(matched[u], u))
 					matchingEdges.add(edgeVal.get(matched[u]).e);
-			return new MatchingImpl(gOrig, matchingEdges);
+			return new Matchings.MatchingImpl(gOrig, matchingEdges);
 		}
 
 		abstract void makeEven(Blossom V);
