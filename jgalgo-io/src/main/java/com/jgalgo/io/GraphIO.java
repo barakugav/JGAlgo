@@ -19,9 +19,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 class GraphIO {
@@ -65,7 +65,7 @@ class GraphIO {
 		formats.add(FormatGraph6.Instance);
 		formats.add(FormatSparse6.Instance);
 
-		Object2ObjectMap<String, GraphFormat> fileExtensionToFormat = new Object2ObjectArrayMap<>();
+		Object2ObjectMap<String, GraphFormat> fileExtensionToFormat = new Object2ObjectOpenHashMap<>();
 		for (GraphFormat format : formats) {
 			for (String ext : format.getFileExtensions()) {
 				GraphFormat f1 = fileExtensionToFormat.put(ext, format);

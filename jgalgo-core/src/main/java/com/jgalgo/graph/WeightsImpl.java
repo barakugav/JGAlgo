@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.longs.LongCollection;
 import it.unimi.dsi.fastutil.longs.LongIterators;
 import it.unimi.dsi.fastutil.longs.LongListIterator;
 import it.unimi.dsi.fastutil.objects.AbstractObjectList;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
@@ -1096,7 +1096,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Builder(IdStrategy.FixedSize idStrat) {
 				this.idStrat = Objects.requireNonNull(idStrat);
-				weights = new Object2ObjectArrayMap<>();
+				weights = new Object2ObjectOpenHashMap<>();
 			}
 
 			void copyAndAddWeights(Object key, Weights<?> weights) {
@@ -1637,7 +1637,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Manager {
 
-			final Map<Object, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectArrayMap<>();
+			final Map<Object, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectOpenHashMap<>();
 			private int weightsCapacity;
 
 			Manager(int initCapacity) {

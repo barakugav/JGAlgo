@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,6 +29,7 @@ import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -189,8 +189,8 @@ class FormatGML implements GraphFormat {
 				throw new IllegalArgumentException("expected a single root list 'graph'");
 
 			GraphBuilder b = GraphBuilder.newUndirected();
-			Map<String, List<IntObjectPair<Object>>> vWeights = new HashMap<>();
-			Map<String, List<IntObjectPair<Object>>> eWeights = new HashMap<>();
+			Map<String, List<IntObjectPair<Object>>> vWeights = new Object2ObjectOpenHashMap<>();
+			Map<String, List<IntObjectPair<Object>>> eWeights = new Object2ObjectOpenHashMap<>();
 			for (Node n : root.children()) {
 				if ("node".equals(n.key)) {
 					int id = -1;
