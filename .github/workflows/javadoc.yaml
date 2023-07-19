@@ -21,7 +21,7 @@ jobs:
         cache: maven
 
     - name: Generate Javadoc with Maven
-      run: mvn javadoc:aggregate -pl jgalgo-core
+      run: mvn javadoc:aggregate
       shell: bash
 
     - name: Deploy to GitHub Page 🚀 with Maven
@@ -30,5 +30,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: javadoc
         clean: true
-        folder: jgalgo-core/target/site/apidocs
+        folder: target/site/apidocs
         target-folder: .
