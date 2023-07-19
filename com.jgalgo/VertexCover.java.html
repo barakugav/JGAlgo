@@ -17,6 +17,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -90,7 +91,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L93">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L94">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**

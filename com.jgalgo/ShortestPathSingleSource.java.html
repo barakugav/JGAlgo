@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -100,7 +101,7 @@ public interface ShortestPathSingleSource {
 	 *                other vertex
 	 */
 	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
-<span class="nc" id="L103">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
+<span class="nc" id="L104">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
 	}
 
 	/**
@@ -161,7 +162,7 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder newBuilder() {
-<span class="fc" id="L164">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
+<span class="fc" id="L165">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -73,7 +74,48 @@ public interface MaximumFlow {
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-<span class="fc" id="L76">		return MaximumFlowPushRelabelHighestFirst::new;</span>
+<span class="fc" id="L77">		return new MaximumFlow.Builder() {</span>
+			String impl;
+
+			@Override
+			public MaximumFlow build() {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L83" title="All 9 branches missed.">					switch (impl) {</span>
+						case &quot;edmonds-karp&quot;:
+<span class="nc" id="L85">							return new MaximumFlowEdmondsKarp();</span>
+						case &quot;dinic&quot;:
+<span class="nc" id="L87">							return new MaximumFlowDinic();</span>
+						case &quot;dinic-dynamic-trees&quot;:
+<span class="nc" id="L89">							return new MaximumFlowDinicDynamicTrees();</span>
+						case &quot;push-relabel-fifo&quot;:
+<span class="nc" id="L91">							return new MaximumFlowPushRelabelFifo();</span>
+						case &quot;push-relabel-highest-first&quot;:
+<span class="nc" id="L93">							return new MaximumFlowPushRelabelHighestFirst();</span>
+						case &quot;push-relabel-lowest-first&quot;:
+<span class="nc" id="L95">							return new MaximumFlowPushRelabelLowestFirst();</span>
+						case &quot;push-relabel-move-to-front&quot;:
+<span class="nc" id="L97">							return new MaximumFlowPushRelabelToFront();</span>
+						case &quot;push-relabel-fifo-dynamic-trees&quot;:
+<span class="nc" id="L99">							return new MaximumFlowPushRelabelDynamicTrees();</span>
+						default:
+<span class="nc" id="L101">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc" id="L104">				return new MaximumFlowPushRelabelHighestFirst();</span>
+			}
+
+			@Override
+			public MaximumFlow.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L111">						impl = (String) value;</span>
+<span class="nc" id="L112">						break;</span>
+					default:
+<span class="nc" id="L114">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L116">				return this;</span>
+			}
+		};
 	}
 
 	/**

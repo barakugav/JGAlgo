@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTreeBuilderImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">DynamicTreeBuilderImpl.java</span></div><h1>DynamicTreeBuilderImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+
+<span class="fc" id="L25">class DynamicTreeBuilderImpl implements DynamicTree.Builder {</span>
+
+	private double maxWeight;
+	private boolean maxWeightValid;
+	private boolean intWeights;
+<span class="fc" id="L30">	private final Set&lt;Class&lt;? extends DynamicTreeExtension&gt;&gt; extensions = new ObjectArraySet&lt;&gt;();</span>
+
+	@Override
+	public DynamicTree build() {
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (!maxWeightValid)</span>
+<span class="nc" id="L35">			throw new IllegalStateException(&quot;Maximum set was not set. Call setMaxWeight(double)&quot;);</span>
+<span class="pc bpc" id="L36" title="2 of 6 branches missed.">		if (intWeights &amp;&amp; !(Integer.MIN_VALUE &lt;= maxWeight &amp;&amp; maxWeight &lt;= Integer.MAX_VALUE))</span>
+<span class="nc" id="L37">			throw new IllegalStateException(&quot;Maximum weight is too great for integer weights&quot;);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (extensions.isEmpty()) {</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">			if (intWeights)</span>
+<span class="nc" id="L40">				return new DynamicTreeSplayInt((int) maxWeight);</span>
+			else
+<span class="fc" id="L42">				return new DynamicTreeSplay(maxWeight);</span>
+		} else {
+<span class="fc" id="L44">			List&lt;DynamicTreeSplayExtension&gt; extensions = new ObjectArrayList&lt;&gt;(this.extensions.size());</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			for (Class&lt;? extends DynamicTreeExtension&gt; extClass : this.extensions) {</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">				if (extClass.equals(DynamicTreeExtension.TreeSize.class)) {</span>
+<span class="fc" id="L47">					extensions.add(new DynamicTreeSplayExtension.TreeSize());</span>
+				} else {
+<span class="nc" id="L49">					throw new IllegalArgumentException(&quot;unknown extension: &quot; + extClass);</span>
+				}
+<span class="fc" id="L51">			}</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (intWeights)</span>
+<span class="fc" id="L54">				return new DynamicTreeSplayIntExtended((int) maxWeight, extensions);</span>
+			else
+<span class="fc" id="L56">				return new DynamicTreeSplayExtended(maxWeight, extensions);</span>
+		}
+	}
+
+	@Override
+	public DynamicTree.Builder setMaxWeight(double maxWeight) {
+<span class="fc" id="L62">		this.maxWeight = maxWeight;</span>
+<span class="fc" id="L63">		maxWeightValid = true;</span>
+<span class="fc" id="L64">		return this;</span>
+	}
+
+	@Override
+	public DynamicTree.Builder setIntWeights(boolean enable) {
+<span class="fc" id="L69">		intWeights = enable;</span>
+<span class="fc" id="L70">		return this;</span>
+	}
+
+	@Override
+	public DynamicTree.Builder addExtension(Class&lt;? extends DynamicTreeExtension&gt; extensionType) {
+<span class="fc" id="L75">		extensions.add(Objects.requireNonNull(extensionType));</span>
+<span class="fc" id="L76">		return this;</span>
+	}
+
+	@Override
+	public DynamicTree.Builder removeExtension(Class&lt;? extends DynamicTreeExtension&gt; extensionType) {
+<span class="nc" id="L81">		extensions.remove(Objects.requireNonNull(extensionType));</span>
+<span class="nc" id="L82">		return this;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

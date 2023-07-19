@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.internal.util.BuilderAbstract;
+
 /**
  * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
  * &lt;p&gt;
@@ -119,29 +121,34 @@ public interface LowestCommonAncestorDynamic {
 	 * @return a new builder that can build {@link LowestCommonAncestorDynamic} objects
 	 */
 	static LowestCommonAncestorDynamic.Builder newBuilder() {
-<span class="nc" id="L122">		return new LowestCommonAncestorDynamic.Builder() {</span>
+<span class="fc" id="L124">		return new LowestCommonAncestorDynamic.Builder() {</span>
 			String impl;
 
 			@Override
 			public LowestCommonAncestorDynamic build() {
-<span class="nc bnc" id="L127" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">					if (&quot;GabowLinear&quot;.equals(impl))</span>
-<span class="nc" id="L129">						return new LowestCommonAncestorDynamicGabowLinear();</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">					if (&quot;GabowSimple&quot;.equals(impl))</span>
-<span class="nc" id="L131">						return new LowestCommonAncestorDynamicGabowSimple();</span>
-<span class="nc" id="L132">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L130" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;GabowLinear&quot;:
+<span class="nc" id="L132">							return new LowestCommonAncestorDynamicGabowLinear();</span>
+						case &quot;GabowSimple&quot;:
+<span class="nc" id="L134">							return new LowestCommonAncestorDynamicGabowSimple();</span>
+						default:
+<span class="nc" id="L136">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
 				}
-<span class="nc" id="L134">				return new LowestCommonAncestorDynamicGabowLinear();</span>
+<span class="fc" id="L139">				return new LowestCommonAncestorDynamicGabowLinear();</span>
 			}
 
 			@Override
 			public LowestCommonAncestorDynamic.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L139" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
-<span class="nc" id="L140">					impl = (String) value;</span>
-				} else {
-<span class="nc" id="L142">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L146">						impl = (String) value;</span>
+<span class="nc" id="L147">						break;</span>
+					default:
+<span class="nc" id="L149">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L144">				return this;</span>
+<span class="nc" id="L151">				return this;</span>
 			}
 		};
 	}

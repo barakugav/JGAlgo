@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
@@ -51,7 +52,7 @@ public interface ShortestPathAllPairs {
 	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
 	 */
 	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
-<span class="nc" id="L54">		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);</span>
+<span class="nc" id="L55">		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);</span>
 	}
 
 	/**
@@ -110,18 +111,43 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder newBuilder() {
-<span class="nc" id="L113">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="nc" id="L114">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
+			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="nc bnc" id="L118" title="All 2 branches missed.">				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L121" title="All 4 branches missed.">					switch (impl) {</span>
+						case &quot;cardinality&quot;:
+<span class="nc" id="L123">							return new ShortestPathAllPairsCardinality();</span>
+						case &quot;floyd-warshall&quot;:
+<span class="nc" id="L125">							return new ShortestPathAllPairsFloydWarshall();</span>
+						case &quot;johnson&quot;:
+<span class="nc" id="L127">							return new ShortestPathAllPairsJohnson();</span>
+						default:
+<span class="nc" id="L129">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="nc bnc" id="L132" title="All 2 branches missed.">				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();</span>
 			}
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L123">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L124">				return this;</span>
+<span class="nc" id="L137">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L138">				return this;</span>
+			}
+
+			@Override
+			public ShortestPathAllPairs.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L145">						impl = (String) value;</span>
+<span class="nc" id="L146">						break;</span>
+					default:
+<span class="nc" id="L148">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L150">				return this;</span>
 			}
 		};
 	}

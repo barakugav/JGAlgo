@@ -17,6 +17,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.
@@ -57,7 +58,7 @@ public interface MinimumCutGlobal {
 	 * @return a new builder that can build {@link MinimumCutGlobal} objects
 	 */
 	static MinimumCutGlobal.Builder newBuilder() {
-<span class="nc" id="L60">		return MinimumCutGlobalStoerWagner::new;</span>
+<span class="nc" id="L61">		return MinimumCutGlobalStoerWagner::new;</span>
 	}
 
 	/**

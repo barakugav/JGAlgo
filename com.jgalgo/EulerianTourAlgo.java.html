@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Eulerian tour calculation algorithm.
@@ -56,7 +57,7 @@ public interface EulerianTourAlgo {
 	 * @return a new builder that can build {@link EulerianTourAlgo} objects
 	 */
 	static EulerianTourAlgo.Builder newBuilder() {
-<span class="fc" id="L59">		return EulerianTourImpl::new;</span>
+<span class="fc" id="L60">		return EulerianTourImpl::new;</span>
 	}
 
 	/**

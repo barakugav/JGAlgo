@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RedBlackTreeExtended.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">RedBlackTreeExtended.java</span></div><h1>RedBlackTreeExtended.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Objects;
+
+/**
+ * A red black tree that support extensions such as subtree size/min/max.
+ * &lt;p&gt;
+ * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
+ * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
+ * black tree without increasing the asymptotical running time.
+ * &lt;p&gt;
+ * This red black tree implementation support arbitrary number of extensions, for example a size and max extensions are
+ * used in this snippet:
+ *
+ * &lt;pre&gt; {@code
+ * RedBlackTreeExtension.Size&lt;Integer, String&gt; sizeExt = new RedBlackTreeExtension.Size&lt;&gt;();
+ * RedBlackTreeExtension.Max&lt;Integer, String&gt; maxExt = new RedBlackTreeExtension.Max&lt;&gt;();
+ * RedBlackTreeExtended&lt;Integer&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(sizeExt, maxExt));
+ *
+ * HeapReference&lt;Integer, String&gt; e1 = tree.insert(15, &quot;Alice&quot;);
+ * tree.insert(5, &quot;Bob&quot;);
+ * tree.insert(3, &quot;Charlie&quot;);
+ * tree.insert(1, &quot;Door&quot;);
+ * ...
+ * tree.insert(1, &quot;Zebra&quot;);
+ *
+ * int subTreeSize = sizeExt.getSubTreeSize(e1);
+ * HeapReference&lt;Integer, String&gt; subTreeMax = maxExt.getSubTreeMax(e1);
+ * System.out.println(&quot;The subtree of &quot; + e1 + &quot; is of size &quot; + subTreeSize);
+ * System.out.println(&quot;The maximum element in the sub tree of &quot; + e1 + &quot; is &quot; + subTreeMax);
+ * }&lt;/pre&gt;
+ *
+ * @param  &lt;K&gt; the keys type
+ * @param  &lt;V&gt; the values type
+ * @author     Barak Ugav
+ */
+class RedBlackTreeExtended&lt;K, V&gt; extends RedBlackTree&lt;K, V&gt; {
+
+	private Node&lt;K, V&gt;[] nodes;
+	private final RedBlackTreeExtension&lt;K, V&gt;[] extensions;
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L62">	private static final Node[] EmptyNodesArray = new Node[0];</span>
+
+	/**
+	 * Constructs a new, empty red black tree, with the given extensions, ordered according to the natural ordering of
+	 * its keys.
+	 * &lt;p&gt;
+	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
+	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
+	 * &lt;p&gt;
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
+	 *
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
+	 * @throws IllegalArgumentException if the extensions collection is empty
+	 */
+	RedBlackTreeExtended(Collection&lt;? extends RedBlackTreeExtension&lt;K, V&gt;&gt; extensions) {
+<span class="nc" id="L81">		this(null, extensions);</span>
+<span class="nc" id="L82">	}</span>
+
+	/**
+	 * Constructs a new, empty red black tree, with the given extensions, with keys ordered according to the specified
+	 * comparator.
+	 * &lt;p&gt;
+	 * All keys inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
+	 * &lt;p&gt;
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
+	 *
+	 * @param  comparator               the comparator that will be used to order this tree. If {@code null}, the
+	 *                                      {@linkplain Comparable natural ordering} of the keys will be used.
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
+	 * @throws IllegalArgumentException if the extensions collection is empty
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	RedBlackTreeExtended(Comparator&lt;? super K&gt; comparator,
+			Collection&lt;? extends RedBlackTreeExtension&lt;K, V&gt;&gt; extensions) {
+<span class="fc" id="L104">		super(comparator);</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		if (extensions.isEmpty())</span>
+<span class="nc" id="L106">			throw new IllegalArgumentException(&quot;No extensions provided. Use the regular Red Black tree.&quot;);</span>
+<span class="fc" id="L107">		this.extensions = extensions.toArray(len -&gt; new RedBlackTreeExtension[len]);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L109">			Objects.requireNonNull(extension);</span>
+<span class="fc" id="L110">		nodes = EmptyNodesArray;</span>
+<span class="fc" id="L111">	}</span>
+
+	@Override
+	Node&lt;K, V&gt; newNode(K key) {
+<span class="fc" id="L115">		int idx = size();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
+<span class="fc" id="L117">			int newLen = Math.max(2, nodes.length * 2);</span>
+<span class="fc" id="L118">			nodes = Arrays.copyOf(nodes, newLen);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L120">				extension.data.expand(newLen);</span>
+		}
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="fc" id="L123">		Node&lt;K, V&gt; n = nodes[idx] = new Node&lt;&gt;(key, idx);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L125">			extension.initNode(n);</span>
+<span class="fc" id="L126">		return n;</span>
+	}
+
+	@Override
+	void removeNode(RedBlackTree.Node&lt;K, V&gt; n0) {
+<span class="fc" id="L131">		super.removeNode(n0);</span>
+<span class="fc" id="L132">		Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) n0;</span>
+<span class="fc" id="L133">		int nIdx = n.idx;</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		assert nodes[nIdx] == n;</span>
+
+<span class="fc" id="L136">		int lastIdx = size();</span>
+<span class="fc" id="L137">		Node&lt;K, V&gt; last = nodes[lastIdx];</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		assert last.idx == lastIdx;</span>
+<span class="fc" id="L139">		nodes[nIdx] = last;</span>
+
+<span class="fc" id="L141">		nodes[lastIdx] = null;</span>
+
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions) {</span>
+<span class="fc" id="L144">			extension.data.swap(nIdx, lastIdx);</span>
+<span class="fc" id="L145">			extension.data.clear(lastIdx);</span>
+		}
+<span class="fc" id="L147">		last.idx = nIdx;</span>
+<span class="fc" id="L148">		n.idx = -1;</span>
+<span class="fc" id="L149">	}</span>
+
+	@Override
+	void swap(RedBlackTree.Node&lt;K, V&gt; a, RedBlackTree.Node&lt;K, V&gt; b) {
+<span class="fc" id="L153">		Node&lt;K, V&gt; n1 = (Node&lt;K, V&gt;) a, n2 = (Node&lt;K, V&gt;) b;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L155">			extension.beforeNodeSwap((Node&lt;K, V&gt;) a, (Node&lt;K, V&gt;) b);</span>
+<span class="fc" id="L156">		super.swap(n1, n2);</span>
+<span class="fc" id="L157">	}</span>
+
+	@Override
+	void afterInsert(RedBlackTree.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L162">			extension.afterInsert((Node&lt;K, V&gt;) n);</span>
+<span class="fc" id="L163">	}</span>
+
+	@Override
+	void beforeRemove(RedBlackTree.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L168">			extension.beforeRemove((Node&lt;K, V&gt;) n);</span>
+<span class="fc" id="L169">	}</span>
+
+	@Override
+	void beforeRotateLeft(RedBlackTree.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L174">			extension.beforeRotateLeft((Node&lt;K, V&gt;) n);</span>
+<span class="fc" id="L175">	}</span>
+
+	@Override
+	void beforeRotateRight(RedBlackTree.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="fc" id="L180">			extension.beforeRotateRight((Node&lt;K, V&gt;) n);</span>
+<span class="fc" id="L181">	}</span>
+
+	void beforeNodeReuse(Node&lt;K, V&gt; node) {
+<span class="nc bnc" id="L184" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="nc" id="L185">			extension.initNode(node);</span>
+<span class="nc" id="L186">	}</span>
+
+	@Override
+	public void clear() {
+<span class="nc" id="L190">		int s = size();</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
+<span class="nc" id="L192">			extension.data.clear(s);</span>
+<span class="nc" id="L193">		super.clear();</span>
+<span class="nc" id="L194">	}</span>
+
+	static class Node&lt;K, V&gt; extends RedBlackTree.Node&lt;K, V&gt; {
+
+		int idx;
+
+		Node(K key, int idx) {
+<span class="fc" id="L201">			super(key);</span>
+<span class="fc" id="L202">			this.idx = idx;</span>
+<span class="fc" id="L203">		}</span>
+
+		Node&lt;K, V&gt; parent() {
+<span class="fc" id="L206">			return (Node&lt;K, V&gt;) parent;</span>
+		}
+
+		Node&lt;K, V&gt; left() {
+<span class="fc" id="L210">			return (Node&lt;K, V&gt;) left;</span>
+		}
+
+		Node&lt;K, V&gt; right() {
+<span class="fc" id="L214">			return (Node&lt;K, V&gt;) right;</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

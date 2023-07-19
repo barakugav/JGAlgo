@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindPtr.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">UnionFindPtr.java</span></div><h1>UnionFindPtr.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.Arrays;
+
+/**
+ * Pointer based implementation for the Union Find data structure.
+ * &lt;p&gt;
+ * Each element is represented as a Object allocated on the heap. This implementation is usually out-performed by the
+ * {@link UnionFindArray} implementation.
+ * &lt;p&gt;
+ * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
+ * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use
+ * should be treated as constant.
+ *
+ * @see    UnionFindArray
+ * @author Barak Ugav
+ */
+class UnionFindPtr implements UnionFind {
+
+	private Elm[] elements;
+	private int size;
+
+	/**
+	 * Create an empty Union Find data structure with no elements.
+	 */
+	UnionFindPtr() {
+<span class="fc" id="L43">		this(0);</span>
+<span class="fc" id="L44">	}</span>
+
+	/**
+	 * Create a new empty Union Find data structure with expected number of elements.
+	 *
+	 * @param expectedSize the expended number of elements in the data structure
+	 */
+<span class="fc" id="L51">	UnionFindPtr(int expectedSize) {</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
+<span class="nc" id="L53">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		elements = new Elm[expectedSize == 0 ? 2 : expectedSize];</span>
+<span class="fc" id="L55">		size = 0;</span>
+<span class="fc" id="L56">	}</span>
+
+	@Override
+	public int make() {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (elements.length &lt;= size)</span>
+<span class="fc" id="L61">			elements = Arrays.copyOf(elements, size * 2);</span>
+<span class="fc" id="L62">		int x = size++;</span>
+<span class="fc" id="L63">		elements[x] = new Elm(x);</span>
+<span class="fc" id="L64">		return x;</span>
+	}
+
+	@Override
+	public int find(int x) {
+<span class="fc" id="L69">		return find0(x).idx;</span>
+	}
+
+	private Elm find0(int x) {
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L74">			throw new IndexOutOfBoundsException(x);</span>
+<span class="fc" id="L75">		Elm e = elements[x];</span>
+
+		/* Find root */
+		Elm r;
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
+
+		/* path compression */
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (; e != r;) {</span>
+<span class="fc" id="L83">			Elm next = e.parent;</span>
+<span class="fc" id="L84">			e.parent = r;</span>
+<span class="fc" id="L85">			e = next;</span>
+<span class="fc" id="L86">		}</span>
+
+<span class="fc" id="L88">		return r;</span>
+	}
+
+	@Override
+	public int union(int aIdx, int bIdx) {
+<span class="fc" id="L93">		Elm a = find0(aIdx);</span>
+<span class="fc" id="L94">		Elm b = find0(bIdx);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L96">			return a.idx;</span>
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (a.rank &lt; b.rank) {</span>
+<span class="fc" id="L99">			Elm temp = a;</span>
+<span class="fc" id="L100">			a = b;</span>
+<span class="fc" id="L101">			b = temp;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		} else if (a.rank == b.rank)</span>
+<span class="fc" id="L103">			a.rank++;</span>
+
+<span class="fc" id="L105">		b.parent = a;</span>
+<span class="fc" id="L106">		return a.idx;</span>
+	}
+
+	@Override
+	public int size() {
+<span class="nc" id="L111">		return size;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="nc" id="L117">			Elm e = elements[i];</span>
+<span class="nc" id="L118">			e.parent = null;</span>
+<span class="nc" id="L119">			elements[i] = null;</span>
+		}
+<span class="nc" id="L121">		size = 0;</span>
+<span class="nc" id="L122">	}</span>
+
+	private static class Elm {
+
+		final int idx;
+		Elm parent;
+		byte rank;
+
+<span class="fc" id="L130">		Elm(int idx) {</span>
+<span class="fc" id="L131">			this.idx = idx;</span>
+<span class="fc" id="L132">			parent = null;</span>
+<span class="fc" id="L133">			rank = 0;</span>
+<span class="fc" id="L134">		}</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

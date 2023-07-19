@@ -20,6 +20,9 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.HeapReference;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.util.Assertions;
 
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
@@ -45,9 +48,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	/**
 	 * Construct a new SSSP algorithm.
 	 */
-<span class="fc" id="L48">	ShortestPathSingleSourceDijkstra() {</span>
-<span class="fc" id="L49">		heapBuilder = HeapReferenceable.newBuilder();</span>
-<span class="fc" id="L50">	}</span>
+<span class="fc" id="L51">	ShortestPathSingleSourceDijkstra() {</span>
+<span class="fc" id="L52">		heapBuilder = HeapReferenceable.newBuilder();</span>
+<span class="fc" id="L53">	}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -55,8 +58,8 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
-<span class="nc" id="L58">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
-<span class="nc" id="L59">	}</span>
+<span class="nc" id="L61">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L62">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -65,97 +68,97 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L69">			w = WeightFunction.CardinalityWeightFunction;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L71">			return computeSsspInts(g, (WeightFunction.Int) w, source);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L72">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L74">			return computeSsspInts(g, (WeightFunction.Int) w, source);</span>
 		} else {
-<span class="fc" id="L73">			return computeSsspDoubles(g, w, source);</span>
+<span class="fc" id="L76">			return computeSsspDoubles(g, w, source);</span>
 		}
 	}
 
 	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, WeightFunction w, int source) {
-<span class="fc" id="L78">		final int n = g.vertices().size();</span>
-<span class="fc" id="L79">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
-<span class="fc" id="L80">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
+<span class="fc" id="L81">		final int n = g.vertices().size();</span>
+<span class="fc" id="L82">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
+<span class="fc" id="L83">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L82">		HeapReference&lt;Double, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
+<span class="fc" id="L85">		HeapReference&lt;Double, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
 
-<span class="fc" id="L84">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
-<span class="fc" id="L85">		res.distances[source] = 0;</span>
+<span class="fc" id="L87">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="fc" id="L88">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L87">		for (int u = source;;) {</span>
-<span class="fc" id="L88">			final double uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L90">				int e = eit.nextInt();</span>
-<span class="fc" id="L91">				int v = eit.target();</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L93">					continue;</span>
-<span class="fc" id="L94">				double ew = w.weight(e);</span>
-<span class="fc" id="L95">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L96">				double distance = uDistance + ew;</span>
+<span class="fc" id="L90">		for (int u = source;;) {</span>
+<span class="fc" id="L91">			final double uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L93">				int e = eit.nextInt();</span>
+<span class="fc" id="L94">				int v = eit.target();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L96">					continue;</span>
+<span class="fc" id="L97">				double ew = w.weight(e);</span>
+<span class="fc" id="L98">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L99">				double distance = uDistance + ew;</span>
 
-<span class="fc" id="L98">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L100">					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));</span>
-<span class="fc" id="L101">					res.backtrack[v] = e;</span>
+<span class="fc" id="L101">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L103">					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));</span>
+<span class="fc" id="L104">					res.backtrack[v] = e;</span>
 				} else {
-<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (distance &lt; vPtr.key().doubleValue()) {</span>
-<span class="fc" id="L104">						res.backtrack[v] = e;</span>
-<span class="fc" id="L105">						heap.decreaseKey(vPtr, Double.valueOf(distance));</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					if (distance &lt; vPtr.key().doubleValue()) {</span>
+<span class="fc" id="L107">						res.backtrack[v] = e;</span>
+<span class="fc" id="L108">						heap.decreaseKey(vPtr, Double.valueOf(distance));</span>
 					}
 				}
-<span class="fc" id="L108">			}</span>
+<span class="fc" id="L111">			}</span>
 
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (heap.isEmpty())</span>
-<span class="fc" id="L111">				break;</span>
-<span class="fc" id="L112">			HeapReference&lt;Double, Integer&gt; next = heap.extractMin();</span>
-<span class="fc" id="L113">			res.distances[u = next.value().intValue()] = next.key().doubleValue();</span>
-<span class="fc" id="L114">		}</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L114">				break;</span>
+<span class="fc" id="L115">			HeapReference&lt;Double, Integer&gt; next = heap.extractMin();</span>
+<span class="fc" id="L116">			res.distances[u = next.value().intValue()] = next.key().doubleValue();</span>
+<span class="fc" id="L117">		}</span>
 
-<span class="fc" id="L116">		return res;</span>
+<span class="fc" id="L119">		return res;</span>
 	}
 
 	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunction.Int w, int source) {
-<span class="fc" id="L120">		final int n = g.vertices().size();</span>
-<span class="fc" id="L121">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
-<span class="fc" id="L122">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>
+<span class="fc" id="L123">		final int n = g.vertices().size();</span>
+<span class="fc" id="L124">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
+<span class="fc" id="L125">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L124">		HeapReference&lt;Integer, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
+<span class="fc" id="L127">		HeapReference&lt;Integer, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
 
-<span class="fc" id="L126">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
-<span class="fc" id="L127">		res.distances[source] = 0;</span>
+<span class="fc" id="L129">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
+<span class="fc" id="L130">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L129">		for (int u = source;;) {</span>
-<span class="fc" id="L130">			final int uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L132">				int e = eit.nextInt();</span>
-<span class="fc" id="L133">				int v = eit.target();</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
-<span class="fc" id="L135">					continue;</span>
-<span class="fc" id="L136">				int ew = w.weightInt(e);</span>
-<span class="fc" id="L137">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L138">				int distance = uDistance + ew;</span>
+<span class="fc" id="L132">		for (int u = source;;) {</span>
+<span class="fc" id="L133">			final int uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L135">				int e = eit.nextInt();</span>
+<span class="fc" id="L136">				int v = eit.target();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L138">					continue;</span>
+<span class="fc" id="L139">				int ew = w.weightInt(e);</span>
+<span class="fc" id="L140">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L141">				int distance = uDistance + ew;</span>
 
-<span class="fc" id="L140">				HeapReference&lt;Integer, Integer&gt; vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L142">					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));</span>
-<span class="fc" id="L143">					res.backtrack[v] = e;</span>
+<span class="fc" id="L143">				HeapReference&lt;Integer, Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L145">					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));</span>
+<span class="fc" id="L146">					res.backtrack[v] = e;</span>
 				} else {
-<span class="fc bfc" id="L145" title="All 2 branches covered.">					if (distance &lt; vPtr.key().intValue()) {</span>
-<span class="fc" id="L146">						res.backtrack[v] = e;</span>
-<span class="fc" id="L147">						heap.decreaseKey(vPtr, Integer.valueOf(distance));</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">					if (distance &lt; vPtr.key().intValue()) {</span>
+<span class="fc" id="L149">						res.backtrack[v] = e;</span>
+<span class="fc" id="L150">						heap.decreaseKey(vPtr, Integer.valueOf(distance));</span>
 					}
 				}
-<span class="fc" id="L150">			}</span>
+<span class="fc" id="L153">			}</span>
 
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (heap.isEmpty())</span>
-<span class="fc" id="L153">				break;</span>
-<span class="fc" id="L154">			HeapReference&lt;Integer, Integer&gt; next = heap.extractMin();</span>
-<span class="fc" id="L155">			res.distances[u = next.value().intValue()] = next.key().intValue();</span>
-<span class="fc" id="L156">		}</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L156">				break;</span>
+<span class="fc" id="L157">			HeapReference&lt;Integer, Integer&gt; next = heap.extractMin();</span>
+<span class="fc" id="L158">			res.distances[u = next.value().intValue()] = next.key().intValue();</span>
+<span class="fc" id="L159">		}</span>
 
-<span class="fc" id="L158">		return res;</span>
+<span class="fc" id="L161">		return res;</span>
 	}
 
 }

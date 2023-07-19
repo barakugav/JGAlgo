@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RedBlackTreeExtension.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">RedBlackTreeExtension.java</span></div><h1>RedBlackTreeExtension.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+
+/**
+ * An extension property to Red Black tree nodes such as subtree size/min/max.
+ * &lt;p&gt;
+ * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
+ * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
+ * black tree without increasing the asymptotical running time.
+ * &lt;p&gt;
+ * Each extension should be used in exactly one red black tree. If an extension was used in another tree, it should not
+ * be passed to a new one for reuse.
+ *
+ * &lt;pre&gt; {@code
+ * RedBlackTreeExtension.Size&lt;Integer, String&gt; sizeExt = new RedBlackTreeExtension.Size&lt;&gt;();
+ * RedBlackTreeExtension.Max&lt;Integer, String&gt; maxExt = new RedBlackTreeExtension.Max&lt;&gt;();
+ * RedBlackTreeExtended&lt;Integer&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(sizeExt, maxExt));
+ *
+ * HeapReference&lt;Integer, String&gt; e1 = tree.insert(15, &quot;Alice&quot;);
+ * tree.insert(5, &quot;Bob&quot;);
+ * tree.insert(3, &quot;Charlie&quot;);
+ * tree.insert(1, &quot;Door&quot;);
+ * ...
+ * tree.insert(1, &quot;Zebra&quot;);
+ *
+ * int subTreeSize = sizeExt.getSubTreeSize(e1);
+ * HeapReference&lt;Integer, String&gt; subTreeMax = maxExt.getSubTreeMax(e1);
+ * System.out.println(&quot;The subtree of &quot; + e1 + &quot; is of size &quot; + subTreeSize);
+ * System.out.println(&quot;The maximum element in the sub tree of &quot; + e1 + &quot; is &quot; + subTreeMax);
+ * }&lt;/pre&gt;
+ *
+ * @param  &lt;K&gt; the keys type
+ * @param  &lt;V&gt; the values type
+ * @author     Barak Ugav
+ */
+class RedBlackTreeExtension&lt;K, V&gt; {
+
+	final ExtensionData data;
+
+<span class="fc" id="L59">	private RedBlackTreeExtension(ExtensionData data) {</span>
+<span class="fc" id="L60">		this.data = data;</span>
+<span class="fc" id="L61">	}</span>
+
+<span class="nc" id="L63">	void initNode(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+<span class="nc" id="L65">	void removeNodeData(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+<span class="nc" id="L67">	void afterInsert(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+<span class="nc" id="L69">	void beforeRemove(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+<span class="nc" id="L71">	void beforeNodeSwap(RedBlackTreeExtended.Node&lt;K, V&gt; a, RedBlackTreeExtended.Node&lt;K, V&gt; b) {}</span>
+
+<span class="nc" id="L73">	void beforeRotateLeft(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+<span class="nc" id="L75">	void beforeRotateRight(RedBlackTreeExtended.Node&lt;K, V&gt; n) {}</span>
+
+	/**
+	 * A subtree size extension to a red black tree.
+	 * &lt;p&gt;
+	 * The extension will keep track of the subtree size of each node in the red black tree. This is implemented without
+	 * increasing the asymptotical running time.
+	 *
+	 * &lt;pre&gt; {@code
+	 * RedBlackTreeExtension.Size&lt;Integer, String&gt; sizeExt = new RedBlackTreeExtension.Size&lt;&gt;();
+	 * RedBlackTreeExtended&lt;Integer, String&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(sizeExt));
+	 *
+	 * HeapReference&lt;Integer, String&gt; e1 = tree.insert(15, &quot;Alice&quot;);
+	 * HeapReference&lt;Integer, String&gt; e2 = tree.insert(5, &quot;Bob&quot;);
+	 * tree.insert(3, &quot;Charlie&quot;);
+	 * tree.insert(1, &quot;Dude&quot;);
+	 * ...
+	 * tree.insert(1, &quot;Koala&quot;);
+	 *
+	 * System.out.println(&quot;The subtree of &quot; + e1 + &quot; is of size &quot; + sizeExt.getSubTreeSize(e1));
+	 * System.out.println(&quot;The subtree of &quot; + e2 + &quot; is of size &quot; + sizeExt.getSubTreeSize(e2));
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
+	 * @author     Barak Ugav
+	 */
+	static class Size&lt;K, V&gt; extends RedBlackTreeExtension.Int&lt;K, V&gt; {
+
+		/**
+		 * Create a new subtree size extension.
+		 * &lt;p&gt;
+		 * A new extension should be used for each red black tree individually.
+		 */
+<span class="fc" id="L109">		Size() {}</span>
+
+		/**
+		 * Get the number of nodes in the subtree of given red black tree node.
+		 *
+		 * @param  ref a reference to a red black tree node
+		 * @return     the number of nodes in the subtree of given red black tree node. The counting include the node
+		 *             itself, therefore the returned value is always greater or equal to one.
+		 */
+		int getSubTreeSize(HeapReference&lt;K, V&gt; ref) {
+<span class="fc" id="L119">			return getNodeData((RedBlackTreeExtended.Node&lt;K, V&gt;) ref);</span>
+		}
+
+		@Override
+		void initNode(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L124">			setNodeData(n, 1);</span>
+<span class="fc" id="L125">		}</span>
+
+		@Override
+		void afterInsert(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			/* for each ancestor, increase sub tree size by 1 */
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
+<span class="fc" id="L131">				setNodeData(n, getNodeData(n) + 1);</span>
+<span class="fc" id="L132">		}</span>
+
+		@Override
+		void beforeRemove(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			/* for each ancestor, decrease sub tree size by 1 */
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
+<span class="fc" id="L138">				setNodeData(n, getNodeData(n) - 1);</span>
+<span class="fc" id="L139">		}</span>
+
+		@Override
+		void beforeNodeSwap(RedBlackTreeExtended.Node&lt;K, V&gt; a, RedBlackTreeExtended.Node&lt;K, V&gt; b) {
+<span class="fc" id="L143">			int s = getNodeData(a);</span>
+<span class="fc" id="L144">			setNodeData(a, getNodeData(b));</span>
+<span class="fc" id="L145">			setNodeData(b, s);</span>
+<span class="fc" id="L146">		}</span>
+
+		@Override
+		void beforeRotateLeft(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L150">			RedBlackTreeExtended.Node&lt;K, V&gt; child = n.right(), grandchild = child.left();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
+
+<span class="fc" id="L153">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
+<span class="fc" id="L154">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
+<span class="fc" id="L155">		}</span>
+
+		@Override
+		void beforeRotateRight(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L159">			RedBlackTreeExtended.Node&lt;K, V&gt; child = n.left(), grandchild = child.right();</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
+
+<span class="fc" id="L162">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
+<span class="fc" id="L163">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
+<span class="fc" id="L164">		}</span>
+
+	}
+
+	/**
+	 * A subtree minimum element extension to a red black tree.
+	 * &lt;p&gt;
+	 * The extension will keep track of the element with the minimum key in the subtree of each node in the red black
+	 * tree. This is implemented without increasing the asymptotical running time.
+	 *
+	 * &lt;pre&gt; {@code
+	 * RedBlackTreeExtension.Min&lt;Integer, String&gt; minExt = new RedBlackTreeExtension.Min&lt;&gt;();
+	 * RedBlackTreeExtended&lt;Integer, String&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(minExt));
+	 *
+	 * HeapReference&lt;Integer, String&gt; e1 = tree.insert(15, &quot;Alice&quot;);
+	 * HeapReference&lt;Integer, String&gt; e2 = tree.insert(5, &quot;Bob&quot;);
+	 * tree.insert(3, &quot;Charlie&quot;);
+	 * tree.insert(1, &quot;The Doors&quot;);
+	 * ...
+	 * tree.insert(1, &quot;Led Zeppelin&quot;);
+	 *
+	 * HeapReference&lt;Integer, String&gt; e1SubtreeMin = minExt.getSubTreeMin(e1);
+	 * HeapReference&lt;Integer, String&gt; e2SubtreeMin = minExt.getSubTreeMin(e2);
+	 * System.out.println(&quot;The minimum element in the subtree of &quot; + e1 + &quot; is &quot; + e1SubtreeMin);
+	 * System.out.println(&quot;The minimum element in the subtree of &quot; + e2 + &quot; is &quot; + e2SubtreeMin);
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
+	 * @author     Barak Ugav
+	 */
+<span class="fc" id="L195">	static class Min&lt;K, V&gt; extends RedBlackTreeExtension.Obj&lt;K, V, RedBlackTreeExtended.Node&lt;K, V&gt;&gt; {</span>
+
+		/**
+		 * Create a new subtree minimum extension.
+		 * &lt;p&gt;
+		 * A new extension should be used for each red black tree individually.
+		 */
+<span class="fc" id="L202">		Min() {}</span>
+
+		/**
+		 * Get a reference to the node with the minimum key in the subtree of given red black tree node.
+		 *
+		 * @param  ref a reference to a red black tree node
+		 * @return     a reference to the node with the minimum key in the subtree of given red black tree node. The
+		 *             subtree include the given node itself, therefore the returned element is always smaller or equal
+		 *             to the provided node.
+		 */
+		HeapReference&lt;K, V&gt; getSubTreeMin(HeapReference&lt;K, V&gt; ref) {
+<span class="fc" id="L213">			return getNodeData((RedBlackTreeExtended.Node&lt;K, V&gt;) ref);</span>
+		}
+
+		@Override
+		void initNode(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			/* minimum node of subtree of the single node is the node itself */
+<span class="fc" id="L219">			setNodeData(n, n);</span>
+<span class="fc" id="L220">		}</span>
+
+		@Override
+		void afterInsert(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L224" title="All 4 branches covered.">			for (RedBlackTreeExtended.Node&lt;K, V&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="fc" id="L225">				setNodeData(p.parent(), n);</span>
+<span class="fc" id="L226">		}</span>
+
+		@Override
+		void beforeRemove(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			RedBlackTreeExtended.Node&lt;K, V&gt; min;
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			if (n.left() != null)</span>
+<span class="fc" id="L232">				min = getNodeData(n.left());</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">			else if (n.right() != null)</span>
+<span class="fc" id="L234">				min = getNodeData(n.right());</span>
+			else
+<span class="fc" id="L236">				min = n.parent();</span>
+
+<span class="fc bfc" id="L238" title="All 4 branches covered.">			for (RedBlackTreeExtended.Node&lt;K, V&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="fc" id="L239">				setNodeData(p.parent(), min);</span>
+<span class="fc" id="L240">		}</span>
+
+		@Override
+		void beforeNodeSwap(RedBlackTreeExtended.Node&lt;K, V&gt; a, RedBlackTreeExtended.Node&lt;K, V&gt; b) {
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
+<span class="nc" id="L245">				RedBlackTreeExtended.Node&lt;K, V&gt; temp = a;</span>
+<span class="nc" id="L246">				a = b;</span>
+<span class="nc" id="L247">				b = temp;</span>
+			}
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">			if (getNodeData(a) == b) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="nc bnc" id="L251" title="All 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p =</span>
+<span class="nc" id="L252">						p.parent())</span>
+<span class="nc" id="L253">					setNodeData(p.parent(), a);</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
+<span class="nc" id="L255">				setNodeData(b, a);</span>
+<span class="nc" id="L256">				return;</span>
+			}
+
+			RedBlackTreeExtended.Node&lt;K, V&gt; aData, bData;
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">			if (a.hasLeftChild()) {</span>
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.left());</span>
+<span class="fc" id="L262">				bData = getNodeData(a);</span>
+			} else {
+<span class="nc bnc" id="L264" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
+<span class="nc bnc" id="L265" title="All 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().left(); p =</span>
+<span class="nc" id="L266">						p.parent()) {</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">					assert p.parent() != b;</span>
+<span class="nc" id="L268">					setNodeData(p.parent(), b);</span>
+				}
+<span class="nc" id="L270">				bData = b;</span>
+			}
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			if (b.hasLeftChild()) {</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">				assert getNodeData(b) == getNodeData(b.left());</span>
+<span class="nc" id="L274">				aData = getNodeData(b);</span>
+			} else {
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L277" title="1 of 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p =</span>
+<span class="fc" id="L278">						p.parent())</span>
+<span class="fc" id="L279">					setNodeData(p.parent(), a);</span>
+<span class="fc" id="L280">				aData = a;</span>
+			}
+<span class="fc" id="L282">			setNodeData(a, aData);</span>
+<span class="fc" id="L283">			setNodeData(b, bData);</span>
+<span class="fc" id="L284">		}</span>
+
+		@Override
+		void beforeRotateLeft(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L288">			RedBlackTreeExtended.Node&lt;K, V&gt; child = n.right();</span>
+<span class="fc" id="L289">			setNodeData(child, getNodeData(n));</span>
+<span class="fc" id="L290">		}</span>
+
+		@Override
+		void beforeRotateRight(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L294">			RedBlackTreeExtended.Node&lt;K, V&gt; grandchild = n.left().right();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
+<span class="fc" id="L296">		}</span>
+
+	}
+
+	/**
+	 * A subtree maximum element extension to a red black tree.
+	 * &lt;p&gt;
+	 * The extension will keep track of the element with the maximum key in the subtree of each node in the red black
+	 * tree. This is implemented without increasing the asymptotical running time.
+	 *
+	 * &lt;pre&gt; {@code
+	 * RedBlackTreeExtension.Max&lt;Integer, String&gt; maxExt = new RedBlackTreeExtension.Max&lt;&gt;();
+	 * RedBlackTreeExtended&lt;Integer, String&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(maxExt));
+	 *
+	 * HeapReference&lt;Integer, String&gt; e1 = tree.insert(15, &quot;Alice&quot;);
+	 * HeapReference&lt;Integer, String&gt; e2 = tree.insert(5, &quot;Bob&quot;);
+	 * tree.insert(3, &quot;Charlie&quot;);
+	 * tree.insert(1, &quot;Dollar&quot;);
+	 * ...
+	 * tree.insert(1, &quot;Euro&quot;);
+	 *
+	 * HeapReference&lt;Integer, String&gt; e1SubtreeMax = maxExt.getSubTreeMax(e1);
+	 * HeapReference&lt;Integer, String&gt; e2SubtreeMax = maxExt.getSubTreeMax(e2);
+	 * System.out.println(&quot;The maximum element in the subtree of &quot; + e1 + &quot; is &quot; + e1SubtreeMax);
+	 * System.out.println(&quot;The maximum element in the subtree of &quot; + e2 + &quot; is &quot; + e2SubtreeMax);
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
+	 * @author     Barak Ugav
+	 */
+<span class="fc" id="L327">	static class Max&lt;K, V&gt; extends RedBlackTreeExtension.Obj&lt;K, V, RedBlackTreeExtended.Node&lt;K, V&gt;&gt; {</span>
+
+		/**
+		 * Create a new subtree maximum extension.
+		 * &lt;p&gt;
+		 * A new extension should be used for each red black tree individually.
+		 */
+<span class="fc" id="L334">		Max() {}</span>
+
+		/**
+		 * Get a reference to the node with maximal key in the subtree of given red black tree node.
+		 *
+		 * @param  ref a reference to a red black tree node
+		 * @return     a reference to the node with the maximal key in the subtree of given red black tree node. The
+		 *             subtree include the given node itself, therefore the returned element is always greater or equal
+		 *             to the provided node.
+		 */
+		HeapReference&lt;K, V&gt; getSubTreeMax(HeapReference&lt;K, V&gt; ref) {
+<span class="fc" id="L345">			return getNodeData((RedBlackTreeExtended.Node&lt;K, V&gt;) ref);</span>
+		}
+
+		@Override
+		void initNode(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			/* maximum node of subtree of the single node is the node itself */
+<span class="fc" id="L351">			setNodeData(n, n);</span>
+<span class="fc" id="L352">		}</span>
+
+		@Override
+		void afterInsert(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc bfc" id="L356" title="All 4 branches covered.">			for (RedBlackTreeExtended.Node&lt;K, V&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="fc" id="L357">				setNodeData(p.parent(), n);</span>
+<span class="fc" id="L358">		}</span>
+
+		@Override
+		void beforeRemove(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+			RedBlackTreeExtended.Node&lt;K, V&gt; max;
+<span class="fc bfc" id="L363" title="All 2 branches covered.">			if (n.right() != null)</span>
+<span class="fc" id="L364">				max = getNodeData(n.right());</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">			else if (n.left() != null)</span>
+<span class="fc" id="L366">				max = getNodeData(n.left());</span>
+			else
+<span class="fc" id="L368">				max = n.parent();</span>
+
+<span class="fc bfc" id="L370" title="All 4 branches covered.">			for (RedBlackTreeExtended.Node&lt;K, V&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="fc" id="L371">				setNodeData(p.parent(), max);</span>
+<span class="fc" id="L372">		}</span>
+
+		@Override
+		void beforeNodeSwap(RedBlackTreeExtended.Node&lt;K, V&gt; a, RedBlackTreeExtended.Node&lt;K, V&gt; b) {
+<span class="pc bpc" id="L376" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
+<span class="nc" id="L377">				RedBlackTreeExtended.Node&lt;K, V&gt; temp = a;</span>
+<span class="nc" id="L378">				a = b;</span>
+<span class="nc" id="L379">				b = temp;</span>
+			}
+<span class="fc bfc" id="L381" title="All 2 branches covered.">			if (getNodeData(a) == b) {</span>
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="fc bfc" id="L383" title="All 4 branches covered.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p =</span>
+<span class="fc" id="L384">						p.parent())</span>
+<span class="fc" id="L385">					setNodeData(p.parent(), a);</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
+<span class="fc" id="L387">				setNodeData(b, a);</span>
+<span class="fc" id="L388">				return;</span>
+			}
+
+			RedBlackTreeExtended.Node&lt;K, V&gt; aData, bData;
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">			if (a.hasRightChild()) {</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.right());</span>
+<span class="fc" id="L394">				bData = getNodeData(a);</span>
+			} else {
+<span class="nc bnc" id="L396" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
+<span class="nc bnc" id="L397" title="All 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().right(); p =</span>
+<span class="nc" id="L398">						p.parent()) {</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">					assert p.parent() != b;</span>
+<span class="nc" id="L400">					setNodeData(p.parent(), b);</span>
+				}
+<span class="nc" id="L402">				bData = b;</span>
+			}
+<span class="fc bfc" id="L404" title="All 2 branches covered.">			if (b.hasRightChild()) {</span>
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">				assert getNodeData(b) == getNodeData(b.right());</span>
+<span class="fc" id="L406">				aData = getNodeData(b);</span>
+			} else {
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L409" title="2 of 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p =</span>
+<span class="nc" id="L410">						p.parent())</span>
+<span class="nc" id="L411">					setNodeData(p.parent(), a);</span>
+<span class="fc" id="L412">				aData = a;</span>
+			}
+<span class="fc" id="L414">			setNodeData(a, aData);</span>
+<span class="fc" id="L415">			setNodeData(b, bData);</span>
+<span class="fc" id="L416">		}</span>
+
+		@Override
+		void beforeRotateLeft(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L420">			RedBlackTreeExtended.Node&lt;K, V&gt; grandchild = n.right().left();</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
+<span class="fc" id="L422">		}</span>
+
+		@Override
+		void beforeRotateRight(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L426">			RedBlackTreeExtended.Node&lt;K, V&gt; child = n.left();</span>
+<span class="fc" id="L427">			setNodeData(child, getNodeData(n));</span>
+<span class="fc" id="L428">		}</span>
+
+	}
+
+	private static abstract class Obj&lt;K, V, D&gt; extends RedBlackTreeExtension&lt;K, V&gt; {
+
+		Obj() {
+<span class="fc" id="L435">			super(new ExtensionData.Obj&lt;D&gt;());</span>
+<span class="fc" id="L436">		}</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		private ExtensionData.Obj&lt;D&gt; data() {
+<span class="fc" id="L440">			return (ExtensionData.Obj&lt;D&gt;) data;</span>
+		}
+
+		D getNodeData(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L444">			return data().get(n.idx);</span>
+		}
+
+		void setNodeData(RedBlackTreeExtended.Node&lt;K, V&gt; n, D data) {
+<span class="fc" id="L448">			data().set(n.idx, data);</span>
+<span class="fc" id="L449">		}</span>
+
+	}
+
+	private static abstract class Int&lt;K, V&gt; extends RedBlackTreeExtension&lt;K, V&gt; {
+
+		Int() {
+<span class="fc" id="L456">			super(new ExtensionData.Int());</span>
+<span class="fc" id="L457">		}</span>
+
+		private ExtensionData.Int data() {
+<span class="fc" id="L460">			return (ExtensionData.Int) data;</span>
+		}
+
+		int getNodeData(RedBlackTreeExtended.Node&lt;K, V&gt; n) {
+<span class="fc" id="L464">			return data().get(n.idx);</span>
+		}
+
+		void setNodeData(RedBlackTreeExtended.Node&lt;K, V&gt; n, int data) {
+<span class="fc" id="L468">			data().set(n.idx, data);</span>
+<span class="fc" id="L469">		}</span>
+	}
+
+<span class="fc" id="L472">	static abstract class ExtensionData {</span>
+		abstract void swap(int idx1, int idx2);
+
+		abstract void clear(int idx);
+
+		abstract void expand(int newCapacity);
+
+		static class Obj&lt;D&gt; extends ExtensionData {
+			private Object[] data;
+
+<span class="fc" id="L482">			Obj() {</span>
+<span class="fc" id="L483">				data = ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L484">			}</span>
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			D get(int idx) {
+<span class="fc" id="L488">				return (D) data[idx];</span>
+			}
+
+			void set(int idx, D d) {
+<span class="fc" id="L492">				data[idx] = d;</span>
+<span class="fc" id="L493">			}</span>
+
+			@Override
+			void swap(int idx1, int idx2) {
+<span class="fc" id="L497">				ObjectArrays.swap(data, idx1, idx2);</span>
+<span class="fc" id="L498">			}</span>
+
+			@Override
+			void clear(int idx) {
+<span class="fc" id="L502">				data[idx] = null;</span>
+<span class="fc" id="L503">			}</span>
+
+			@Override
+			void expand(int newCapacity) {
+<span class="fc" id="L507">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L508">			}</span>
+		}
+
+		static class Int extends ExtensionData {
+			private int[] data;
+
+<span class="fc" id="L514">			Int() {</span>
+<span class="fc" id="L515">				data = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L516">			}</span>
+
+			int get(int idx) {
+<span class="fc" id="L519">				return data[idx];</span>
+			}
+
+			void set(int idx, int d) {
+<span class="fc" id="L523">				data[idx] = d;</span>
+<span class="fc" id="L524">			}</span>
+
+			@Override
+			void swap(int idx1, int idx2) {
+<span class="fc" id="L528">				IntArrays.swap(data, idx1, idx2);</span>
+<span class="fc" id="L529">			}</span>
+
+			@Override
+			void clear(int idx) {
+<span class="fc" id="L533">				data[idx] = 0;</span>
+<span class="fc" id="L534">			}</span>
+
+			@Override
+			void expand(int newCapacity) {
+<span class="fc" id="L538">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L539">			}</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

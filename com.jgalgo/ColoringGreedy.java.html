@@ -20,6 +20,7 @@ import java.util.BitSet;
 import java.util.Random;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
@@ -43,48 +44,48 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 	/**
 	 * Create a new coloring algorithm object with random seed.
 	 */
-<span class="nc" id="L46">	ColoringGreedy() {</span>
-<span class="nc" id="L47">		rand = new Random();</span>
-<span class="nc" id="L48">	}</span>
+<span class="nc" id="L47">	ColoringGreedy() {</span>
+<span class="nc" id="L48">		rand = new Random();</span>
+<span class="nc" id="L49">	}</span>
 
 	/**
 	 * Create a new coloring algorithm object with the provided seed.
 	 *
 	 * @param seed the seed to use for all random operations
 	 */
-<span class="fc" id="L55">	public ColoringGreedy(long seed) {</span>
-<span class="fc" id="L56">		rand = new Random(seed);</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L56">	public ColoringGreedy(long seed) {</span>
+<span class="fc" id="L57">		rand = new Random(seed);</span>
+<span class="fc" id="L58">	}</span>
 
 	@Override
 	Coloring.Result computeColoring(IndexGraph g) {
-<span class="fc" id="L61">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L62">		Assertions.Graphs.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+<span class="fc" id="L62">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L63">		Assertions.Graphs.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
-<span class="fc" id="L64">		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);</span>
-<span class="fc" id="L65">		int n = g.vertices().size();</span>
-<span class="fc" id="L66">		int[] order = new int[n];</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L68">			order[u] = u;</span>
-<span class="fc" id="L69">		IntArrays.shuffle(order, rand);</span>
+<span class="fc" id="L65">		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);</span>
+<span class="fc" id="L66">		int n = g.vertices().size();</span>
+<span class="fc" id="L67">		int[] order = new int[n];</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L69">			order[u] = u;</span>
+<span class="fc" id="L70">		IntArrays.shuffle(order, rand);</span>
 
-<span class="fc" id="L71">		BitSet usedColors = new BitSet();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int u : order) {</span>
-<span class="fc" id="L73">			usedColors.clear();</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L75">				eit.nextInt();</span>
-<span class="fc" id="L76">				int v = eit.target();</span>
-<span class="fc" id="L77">				int c = res.colorOf(v);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				if (c != -1)</span>
-<span class="fc" id="L79">					usedColors.set(c);</span>
-<span class="fc" id="L80">			}</span>
-<span class="fc" id="L81">			int color = 0;</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">			while (usedColors.get(color))</span>
-<span class="fc" id="L83">				color++;</span>
-<span class="fc" id="L84">			res.colors[u] = color;</span>
-<span class="fc" id="L85">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+<span class="fc" id="L72">		BitSet usedColors = new BitSet();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (int u : order) {</span>
+<span class="fc" id="L74">			usedColors.clear();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L76">				eit.nextInt();</span>
+<span class="fc" id="L77">				int v = eit.target();</span>
+<span class="fc" id="L78">				int c = res.colorOf(v);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (c != -1)</span>
+<span class="fc" id="L80">					usedColors.set(c);</span>
+<span class="fc" id="L81">			}</span>
+<span class="fc" id="L82">			int color = 0;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			while (usedColors.get(color))</span>
+<span class="fc" id="L84">				color++;</span>
+<span class="fc" id="L85">			res.colors[u] = color;</span>
+<span class="fc" id="L86">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 		}
-<span class="fc" id="L87">		return res;</span>
+<span class="fc" id="L88">		return res;</span>
 	}
 
 }

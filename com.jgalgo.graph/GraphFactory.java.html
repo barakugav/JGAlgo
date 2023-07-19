@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.BuilderAbstract;
+
 /**
  * A factory for {@link Graph} objects.
  *
@@ -115,13 +117,13 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L118">	static enum Hint {</span>
+<span class="fc" id="L120">	static enum Hint {</span>
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L120">		FastEdgeRemoval,</span>
+<span class="fc" id="L122">		FastEdgeRemoval,</span>
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L122">		FastEdgeLookup,</span>
+<span class="fc" id="L124">		FastEdgeLookup,</span>
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
-<span class="fc" id="L124">		DenseGraph,</span>
+<span class="fc" id="L126">		DenseGraph,</span>
 	}
 
 	/**
@@ -132,7 +134,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build undirected graphs
 	 */
 	public static GraphFactory newUndirected() {
-<span class="fc" id="L135">		return new GraphImpl.Factory(false);</span>
+<span class="fc" id="L137">		return new GraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -143,7 +145,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build directed graphs
 	 */
 	public static GraphFactory newDirected() {
-<span class="fc" id="L146">		return new GraphImpl.Factory(true);</span>
+<span class="fc" id="L148">		return new GraphImpl.Factory(true);</span>
 	}
 
 	/**
@@ -157,7 +159,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static GraphFactory newFrom(Graph g) {
-<span class="fc" id="L160">		return new GraphImpl.Factory(g);</span>
+<span class="fc" id="L162">		return new GraphImpl.Factory(g);</span>
 	}
 
 }

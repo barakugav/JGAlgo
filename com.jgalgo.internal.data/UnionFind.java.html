@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFind.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">UnionFind.java</span></div><h1>UnionFind.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import com.jgalgo.internal.util.BuilderAbstract;
+
+/**
+ * Data structure of a finite set of elements supporting union and find operations.
+ * &lt;p&gt;
+ * The Union Find data structure stores a collection of disjoint sets. Each such set has some representative element,
+ * which is an arbitrary element from the set. Three basic operations are supported:
+ * &lt;ul&gt;
+ * &lt;li&gt;{@link #make()} - create a new element in a new set.&lt;/li&gt;
+ * &lt;li&gt;{@link #find(int)} - find the representative of the set of an element (return the same representative for any
+ * element in the set).&lt;/li&gt;
+ * &lt;li&gt;{@link #union(int, int)} - union the sets of two elements.&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;pre&gt; {@code
+ * UnionFind uf = UnionFind.newBuilder().build();
+ * int x1 = uf.make();
+ * int x2 = uf.make();
+ * int x3 = uf.make();
+ *
+ * assert uf.find(x1) == x1;
+ * assert uf.find(x2) == x2;
+ * assert uf.find(x3) == x3;
+ *
+ * uf.union(x1, x2);
+ * assert uf.find(x1) == uf.find(x2);
+ * assert uf.find(x1) != uf.find(x3);
+ * }&lt;/pre&gt;
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Disjoint-set_data_structure&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface UnionFind {
+
+	/**
+	 * Create a new element in a singleton set.
+	 *
+	 * @return identifier of the new element
+	 */
+	int make();
+
+	/**
+	 * Find the set of an element and get an arbitrary element from it.
+	 * &lt;p&gt;
+	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the same set.
+	 *
+	 * @param  x element in the data structure
+	 * @return   arbitrary element from the set of x
+	 */
+	int find(int x);
+
+	/**
+	 * Union the two sets of {@code a} and {@code b}.
+	 *
+	 * @param  a the first element
+	 * @param  b the second element
+	 * @return   arbitrary element from the union of sets of {@code a} and {@code b}.
+	 */
+	int union(int a, int b);
+
+	/**
+	 * Get the number of elements in all the sets in the union find data structure.
+	 *
+	 * @return number of elements in the data structure
+	 */
+	int size();
+
+	/**
+	 * Clear the data structure by removing all elements from all sets.
+	 * &lt;p&gt;
+	 * This method can be used to reuse allocated memory of the data structure.
+	 */
+	void clear();
+
+	/**
+	 * Create a new union-find data structure builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link UnionFind} object.
+	 *
+	 * @return a new builder that can build {@link UnionFind} objects
+	 */
+	static UnionFind.Builder newBuilder() {
+<span class="fc" id="L101">		return new UnionFind.Builder() {</span>
+			int expectedSize;
+			String impl;
+
+			@Override
+			public UnionFind build() {
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L108" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;array&quot;:
+<span class="nc" id="L110">							return new UnionFindArray(expectedSize);</span>
+						case &quot;ptr&quot;:
+<span class="nc" id="L112">							return new UnionFindPtr(expectedSize);</span>
+						default:
+<span class="nc" id="L114">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc" id="L117">				return new UnionFindArray(expectedSize);</span>
+			}
+
+			@Override
+			public UnionFind.Builder expectedSize(int expectedSize) {
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L123">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L124">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L125">				return this;</span>
+			}
+
+			@Override
+			public UnionFind.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L130" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L132">						impl = (String) value;</span>
+<span class="nc" id="L133">						break;</span>
+					default:
+<span class="nc" id="L135">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L137">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link UnionFind} objects.
+	 *
+	 * @see    UnionFind#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;UnionFind.Builder&gt; {
+
+		/**
+		 * Create a new empty union-find data structure
+		 *
+		 * @return a new empty union-find data structure
+		 */
+		UnionFind build();
+
+		/**
+		 * Hint the implementation the number of elements that will exists in the union-find data structure.
+		 *
+		 * @param  expectedSize the expected number of elements that will be in the data structure
+		 * @return              this builder
+		 */
+		UnionFind.Builder expectedSize(int expectedSize);
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

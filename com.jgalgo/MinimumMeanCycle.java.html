@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Algorithm that find the cycle with the minimum mean weight.
@@ -48,7 +49,36 @@ public interface MinimumMeanCycle {
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
 	static MinimumMeanCycle.Builder newBuilder() {
-<span class="nc" id="L51">		return MinimumMeanCycleHoward::new;</span>
+<span class="nc" id="L52">		return new MinimumMeanCycle.Builder() {</span>
+			String impl;
+
+			@Override
+			public MinimumMeanCycle build() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L58" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;dasdan-gupta&quot;:
+<span class="nc" id="L60">							return new MinimumMeanCycleDasdanGupta();</span>
+						case &quot;howard&quot;:
+<span class="nc" id="L62">							return new MinimumMeanCycleHoward();</span>
+						default:
+<span class="nc" id="L64">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="nc" id="L67">				return new MinimumMeanCycleHoward();</span>
+			}
+
+			@Override
+			public MinimumMeanCycle.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L74">						impl = (String) value;</span>
+<span class="nc" id="L75">						break;</span>
+					default:
+<span class="nc" id="L77">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L79">				return this;</span>
+			}
+		};
 	}
 
 	/**

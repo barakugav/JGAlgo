@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeapAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">HeapAbstract.java</span></div><h1>HeapAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Objects;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils;
+
+abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; implements Heap&lt;E&gt; {
+
+	final Comparator&lt;? super E&gt; c;
+
+<span class="fc" id="L31">	HeapAbstract(Comparator&lt;? super E&gt; c) {</span>
+<span class="fc" id="L32">		this.c = c;</span>
+<span class="fc" id="L33">	}</span>
+
+	@Override
+	public boolean add(E e) {
+<span class="fc" id="L37">		insert(e);</span>
+<span class="fc" id="L38">		return true;</span>
+	}
+
+	@Override
+	public boolean removeAll(Collection&lt;?&gt; c) {
+<span class="nc" id="L43">		boolean modified = false;</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		for (Object e : c)</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">			if (remove(e))</span>
+<span class="nc" id="L46">				modified = true;</span>
+<span class="nc" id="L47">		return modified;</span>
+	}
+
+	@Override
+	public void meld(Heap&lt;? extends E&gt; heap) {
+<span class="fc" id="L52">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L53">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
+<span class="fc" id="L54">		addAll(heap);</span>
+<span class="fc" id="L55">		heap.clear();</span>
+<span class="fc" id="L56">	}</span>
+
+	@Override
+	public Comparator&lt;? super E&gt; comparator() {
+<span class="fc" id="L60">		return c;</span>
+	}
+
+	int compare(E e1, E e2) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
+	}
+
+	static &lt;K&gt; Heap&lt;K&gt; fromHeapReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
+<span class="fc" id="L68">		return new HeapFromReferenceable&lt;&gt;(h);</span>
+	}
+
+	private static class HeapFromReferenceable&lt;K&gt; extends HeapAbstract&lt;K&gt; {
+
+		private final HeapReferenceable&lt;K, ?&gt; h;
+
+		HeapFromReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
+<span class="fc" id="L76">			super(h.comparator());</span>
+<span class="fc" id="L77">			this.h = Objects.requireNonNull(h);</span>
+<span class="fc" id="L78">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L82">			return h.size();</span>
+		}
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public boolean contains(Object o) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">			return h.find((K) o) != null;</span>
+		}
+
+		@Override
+		public Iterator&lt;K&gt; iterator() {
+<span class="fc" id="L93">			return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);</span>
+		}
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public boolean remove(Object o) {
+<span class="fc" id="L99">			HeapReference&lt;K, ?&gt; ref = h.find((K) o);</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			if (ref == null)</span>
+<span class="nc" id="L101">				return false;</span>
+<span class="fc" id="L102">			h.remove(ref);</span>
+<span class="fc" id="L103">			return true;</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L108">			h.clear();</span>
+<span class="fc" id="L109">		}</span>
+
+		@Override
+		public void insert(K key) {
+<span class="fc" id="L113">			h.insert(key);</span>
+<span class="fc" id="L114">		}</span>
+
+		@Override
+		public void insertAll(Collection&lt;? extends K&gt; elms) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">			for (K elm : elms)</span>
+<span class="nc" id="L119">				h.insert(elm);</span>
+<span class="nc" id="L120">		}</span>
+
+		@Override
+		public K findMin() {
+<span class="fc" id="L124">			return h.findMin().key();</span>
+		}
+
+		@Override
+		public K extractMin() {
+<span class="fc" id="L129">			return h.extractMin().key();</span>
+		}
+
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		@Override
+		public void meld(Heap&lt;? extends K&gt; heap) {
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
+<span class="nc" id="L136">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L137">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
+<span class="fc" id="L138">			h.meld((HeapReferenceable) oh);</span>
+<span class="fc" id="L139">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

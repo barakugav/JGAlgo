@@ -18,6 +18,7 @@ package com.jgalgo;
 import java.util.function.IntToDoubleFunction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Shortest path algorithm that uses a distance heuristic function.
@@ -58,7 +59,7 @@ public interface ShortestPathWithHeuristic {
 	 * @return a new builder that can build {@link ShortestPathWithHeuristic} objects
 	 */
 	static ShortestPathWithHeuristic.Builder newBuilder() {
-<span class="nc" id="L61">		return AStar::new;</span>
+<span class="nc" id="L62">		return AStar::new;</span>
 	}
 
 	/**

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticPowerOf2Table.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">RMQStaticPowerOf2Table.java</span></div><h1>RMQStaticPowerOf2Table.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+import java.util.Objects;
+import com.jgalgo.internal.util.JGAlgoUtils;
+
+/**
+ * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in \(O(1)\) time.
+ * &lt;p&gt;
+ * An array of size {@code [log n][n]} is created, and at each entry {@code [k][i]} the index of the minimum element in
+ * range {@code [i, i+k)} is stored. A query can be answered by two access to the array, giving a total query time of
+ * \(O(1)\).
+ *
+ * @author Barak Ugav
+ */
+class RMQStaticPowerOf2Table implements RMQStatic {
+
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+<span class="fc" id="L36">	RMQStaticPowerOf2Table() {}</span>
+
+	@Override
+	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L41">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L42">		Objects.requireNonNull(c);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="fc" id="L44">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (n &lt;= DSu16.LIMIT)</span>
+<span class="fc" id="L46">			return new DSu16(c, (short) n);</span>
+<span class="fc" id="L47">		return new DSu32(c, n);</span>
+	}
+
+	private static class DSu32 implements RMQStatic.DataStructure {
+		private final int n;
+		private final int[][] arr;
+		private final RMQStaticComparator c;
+
+<span class="fc" id="L55">		DSu32(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L56">			this.n = n;</span>
+<span class="fc" id="L57">			arr = new int[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L58">			this.c = c;</span>
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int k = 1; k &lt; arr.length; k++) {</span>
+<span class="fc" id="L64">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L65">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				for (int i = 0; i &lt; n - kSize + 1; i++) {</span>
+<span class="fc" id="L67">					int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L68">					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+				}
+			}
+
+<span class="fc" id="L73">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="pc bpc" id="L77" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L78">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc" id="L80">				return i;</span>
+<span class="fc" id="L81">			j++;</span>
+
+<span class="fc" id="L83">			int k = JGAlgoUtils.log2(j - i);</span>
+<span class="fc" id="L84">			int kSize = 1 &lt;&lt; k;</span>
+
+<span class="fc" id="L86">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L87">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+		}
+	}
+
+	private static class DSu16 implements RMQStatic.DataStructure {
+		private final short n;
+		private final short[][] arr;
+		private final RMQStaticComparator c;
+		private static final int LIMIT = (1 &lt;&lt; (Short.SIZE - 1)) - 1;
+
+<span class="fc" id="L98">		DSu16(RMQStaticComparator c, short n) {</span>
+<span class="fc" id="L99">			this.n = n;</span>
+<span class="fc" id="L100">			arr = new short[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L101">			this.c = c;</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			for (int k = 1; k &lt; arr.length; k++) {</span>
+<span class="fc" id="L107">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L108">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				for (int i = 0; i &lt; n - kSize + 1; i++) {</span>
+<span class="fc" id="L110">					short idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L111">					short idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+				}
+			}
+
+<span class="fc" id="L116">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="pc bpc" id="L120" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L121">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L123">				return i;</span>
+<span class="fc" id="L124">			j++;</span>
+
+<span class="fc" id="L126">			int k = JGAlgoUtils.log2(j - i);</span>
+<span class="fc" id="L127">			int kSize = 1 &lt;&lt; k;</span>
+
+<span class="fc" id="L129">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L130">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+		}
+	}
+
+	private static class DSu08 implements RMQStatic.DataStructure {
+		private final byte n;
+		private final byte[][] arr;
+		private final RMQStaticComparator c;
+		private static final int LIMIT = (1 &lt;&lt; (Byte.SIZE - 1)) - 1;
+
+<span class="fc" id="L141">		DSu08(RMQStaticComparator c, byte n) {</span>
+<span class="fc" id="L142">			this.n = n;</span>
+<span class="fc" id="L143">			arr = new byte[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L144">			this.c = c;</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int k = 1; k &lt; arr.length; k++) {</span>
+<span class="fc" id="L150">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L151">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (int i = 0; i &lt; n - kSize + 1; i++) {</span>
+<span class="fc" id="L153">					byte idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L154">					byte idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+				}
+			}
+
+<span class="fc" id="L159">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="pc bpc" id="L163" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L164">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L166">				return i;</span>
+<span class="fc" id="L167">			j++;</span>
+
+<span class="fc" id="L169">			int k = JGAlgoUtils.log2(j - i);</span>
+<span class="fc" id="L170">			int kSize = 1 &lt;&lt; k;</span>
+
+<span class="fc" id="L172">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L173">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindValue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.data</a> &gt; <span class="el_source">UnionFindValue.java</span></div><h1>UnionFindValue.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.data;
+
+/**
+ * Union Find with {@code double} values for the elements.
+ * &lt;p&gt;
+ * This interface is an extension to the {@link UnionFind} interface that support, along with regular operation, value
+ * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
+ *
+ * &lt;pre&gt; {@code
+ * UnionFindValue uf = UnionFindValue.newBuilder().build();
+ * int x1 = uf.make(4);
+ * int x2 = uf.make(11);
+ * int x3 = uf.make(6);
+ *
+ * assert uf.getValue(x1) == 4;
+ * assert uf.getValue(x2) == 11;
+ * assert uf.getValue(x3) == 6;
+ *
+ * uf.union(x1, x2);
+ * uf.addValue(x1, 20);
+ * assert uf.getValue(x1) == 24;
+ * assert uf.getValue(x2) == 31;
+ * assert uf.getValue(x3) == 6;
+ *
+ * uf.addValue(x3, -2);
+ * assert uf.getValue(x1) == 24;
+ * assert uf.getValue(x2) == 31;
+ * assert uf.getValue(x3) == 4;
+ * }&lt;/pre&gt;
+ *
+ * @author Barak Ugav
+ */
+public interface UnionFindValue extends UnionFind {
+
+	/**
+	 * Create a new element with a given value.
+	 *
+	 * @param  value the value of the new element
+	 * @return       identifier of the new element in the union find data structure
+	 */
+	int make(double value);
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * The created element will be assigned a value of {@code 0}.
+	 */
+	@Override
+	default int make() {
+<span class="nc" id="L66">		return make(0);</span>
+	}
+
+	/**
+	 * Get the value of an element.
+	 *
+	 * @param  x an element in the data structure
+	 * @return   value of the element
+	 */
+	double getValue(int x);
+
+	/**
+	 * Add value to ALL elements in the set of a given element.
+	 *
+	 * @param x     an element in the data structure
+	 * @param value value to add to all elements of the set of {@code x}
+	 */
+	void addValue(int x, double value);
+
+	/**
+	 * Create a new union-find with values data structure builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
+	 *
+	 * @return a new builder that can build {@link UnionFindValue} objects
+	 */
+	static UnionFindValue.Builder newBuilder() {
+<span class="fc" id="L93">		return new UnionFindValue.Builder() {</span>
+			int expectedSize;
+
+			@Override
+			public UnionFindValue build() {
+<span class="fc" id="L98">				return new UnionFindValueArray(expectedSize);</span>
+			}
+
+			@Override
+			public UnionFindValue.Builder expectedSize(int expectedSize) {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L104">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L105">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L106">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link UnionFindValue} objects.
+	 *
+	 * @see    UnionFindValue#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends UnionFind.Builder {
+
+		@Override
+		UnionFindValue build();
+
+		@Override
+		UnionFindValue.Builder expectedSize(int expectedSize);
+
+		@Override
+		default UnionFindValue.Builder setOption(String key, Object value) {
+<span class="nc" id="L127">			UnionFind.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L128">			return this;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
