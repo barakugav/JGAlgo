@@ -19,7 +19,7 @@ package com.jgalgo.bench.impls;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.bench.JMHTester;
 
-public class TestBenchmarksDemoSuite {
+public class ImplementationsBenchmarksDemoSuiteTest {
 
 	@Test
 	public void launchBenchmarksDemo() throws Exception {

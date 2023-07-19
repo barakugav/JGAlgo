@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class JMHTester {
 	public static void testBenchmarksInPackage(String packageName) {
 		for (Class<?> clazz : getClasses(packageName)) {
 			List<Method> benchs = getBenchmarksMethods(clazz);
-			if (benchs.isEmpty())
+			if (benchs.isEmpty() || Modifier.isAbstract(clazz.getModifiers()))
 				continue;
 			System.out.println("Testing benchmarks in class " + clazz.getName());
 			for (Method bench : benchs)
