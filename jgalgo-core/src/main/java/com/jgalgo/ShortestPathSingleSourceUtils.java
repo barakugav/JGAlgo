@@ -22,6 +22,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -107,8 +109,30 @@ class ShortestPathSingleSourceUtils {
 		private boolean dagGraphs;
 		private boolean cardinalityWeight;
 
+		private String impl;
+		private HeapReferenceable.Builder<?, ?> heapBuilder;
+
 		@Override
 		public ShortestPathSingleSource build() {
+			if (impl != null) {
+				switch (impl) {
+					case "cardinality":
+						return new ShortestPathSingleSourceCardinality();
+					case "dag":
+						return new ShortestPathSingleSourceDag();
+					case "dijkstra":
+						return new ShortestPathSingleSourceDijkstra();
+					case "dial":
+						return new ShortestPathSingleSourceDial();
+					case "bellman-ford":
+						return new ShortestPathSingleSourceBellmanFord();
+					case "goldberg":
+						return new ShortestPathSingleSourceGoldberg();
+					default:
+						throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+			}
+
 			if (cardinalityWeight)
 				return new ShortestPathSingleSourceCardinality();
 			if (dagGraphs)
@@ -120,11 +144,13 @@ class ShortestPathSingleSourceUtils {
 					return new ShortestPathSingleSourceBellmanFord();
 				}
 			} else {
+				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
+				if (heapBuilder != null)
+					ssspDijkstra.setHeapBuilder(heapBuilder);
+
 				if (intWeights && maxDistance < Integer.MAX_VALUE) {
 					return new ShortestPathSingleSourceUtils.AbstractImpl() {
 						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
-						private final ShortestPathSingleSourceDijkstra ssspDijkstra =
-								new ShortestPathSingleSourceDijkstra();
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
 						@Override
@@ -142,7 +168,7 @@ class ShortestPathSingleSourceUtils {
 
 					};
 				}
-				return new ShortestPathSingleSourceDijkstra();
+				return ssspDijkstra;
 			}
 		}
 
@@ -173,6 +199,21 @@ class ShortestPathSingleSourceUtils {
 		@Override
 		public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
 			this.cardinalityWeight = cardinalityWeight;
+			return this;
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setOption(String key, Object value) {
+			switch (key) {
+				case "impl":
+					impl = (String) value;
+					break;
+				case "heap-builder":
+					heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
+					break;
+				default:
+					throw new IllegalArgumentException("unknown option key: " + key);
+			}
 			return this;
 		}
 	}

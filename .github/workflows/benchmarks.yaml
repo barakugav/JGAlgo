@@ -27,7 +27,7 @@ jobs:
       run: mkdir bench_results
 
     - name: Run JMH Benchmarks
-      run: java -jar jgalgo-bench/target/benchmarks.jar -rf csv -rff bench_results/bench_results.csv
+      run: java -jar jgalgo-bench/target/benchmarks.jar -rf csv -rff bench_results/bench_results.csv "com.jgalgo.bench.impls.*"
 
     - name: Zip Results
       run: |

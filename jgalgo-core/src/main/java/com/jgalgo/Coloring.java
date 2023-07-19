@@ -16,7 +16,9 @@
 
 package com.jgalgo;
 
+import java.util.Random;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -99,7 +101,42 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-		return ColoringDSatur::new;
+		return new Coloring.Builder() {
+			String impl;
+			Random rand;
+
+			@Override
+			public Coloring build() {
+				if (impl != null) {
+					switch (impl) {
+						case "greedy":
+							return rand == null ? new ColoringGreedy() : new ColoringGreedy(rand.nextLong());
+						case "dsatur":
+							return new ColoringDSatur();
+						case "rlf":
+							return new ColoringRecursiveLargestFirst();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new ColoringDSatur();
+			}
+
+			@Override
+			public Coloring.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					case "seed":
+						rand = value == null ? null : new Random(((Long) value).longValue());
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

@@ -17,7 +17,7 @@
 package com.jgalgo.graph;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.TestBase;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphArrayWithFixEdgesIDsTest extends TestBase {

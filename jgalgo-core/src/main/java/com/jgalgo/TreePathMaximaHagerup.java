@@ -18,11 +18,14 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.Utils.BiInt2IntFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.Utils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

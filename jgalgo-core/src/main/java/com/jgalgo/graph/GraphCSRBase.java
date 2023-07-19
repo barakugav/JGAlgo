@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import java.util.Map;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.TestBase;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
 public class EmptyGraphTest extends TestBase {

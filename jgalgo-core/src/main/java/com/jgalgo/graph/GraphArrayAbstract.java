@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
+import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 

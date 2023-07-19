@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
@@ -107,21 +108,24 @@ public interface MatchingAlgorithm {
 			@Override
 			public MatchingAlgorithm build() {
 				if (impl != null) {
-					if ("CardinalityBipartiteHopcroftKarp".equals(impl))
-						return new MatchingCardinalityBipartiteHopcroftKarp();
-					if ("CardinalityGabow1976".equals(impl))
-						return new MatchingCardinalityGabow1976();
-					if ("BipartiteHungarianMethod".equals(impl))
-						return new MatchingWeightedBipartiteHungarianMethod();
-					if ("BipartiteSSSP".equals(impl))
-						return new MatchingWeightedBipartiteSSSP();
-					if ("Gabow1990".equals(impl))
-						return new MatchingWeightedGabow1990();
-					if ("Gabow1990Simpler".equals(impl))
-						return new MatchingWeightedGabow1990Simpler();
-					if ("BlossomV".equals(impl))
-						return new MatchingWeightedBlossomV();
-					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					switch (impl) {
+						case "CardinalityBipartiteHopcroftKarp":
+							return new MatchingCardinalityBipartiteHopcroftKarp();
+						case "CardinalityGabow1976":
+							return new MatchingCardinalityGabow1976();
+						case "BipartiteHungarianMethod":
+							return new MatchingWeightedBipartiteHungarianMethod();
+						case "BipartiteSSSP":
+							return new MatchingWeightedBipartiteSSSP();
+						case "Gabow1990":
+							return new MatchingWeightedGabow1990();
+						case "Gabow1990Simpler":
+							return new MatchingWeightedGabow1990Simpler();
+						case "BlossomV":
+							return new MatchingWeightedBlossomV();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
 				}
 				final MatchingAlgorithm cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()
 						: new MatchingCardinalityGabow1976();
@@ -182,10 +186,12 @@ public interface MatchingAlgorithm {
 
 			@Override
 			public MatchingAlgorithm.Builder setOption(String key, Object value) {
-				if ("impl".equals(key)) {
-					impl = (String) value;
-				} else {
-					throw new IllegalArgumentException("unknown option key: " + key);
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
 				}
 				return this;
 			}

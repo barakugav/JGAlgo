@@ -17,10 +17,13 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import com.jgalgo.DynamicTree.MinEdge;
-import com.jgalgo.Utils.QueueFixSize;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.DynamicTree;
+import com.jgalgo.internal.data.DynamicTree.MinEdge;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.data.DynamicTreeExtension;
+import com.jgalgo.internal.data.QueueFixSize;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;

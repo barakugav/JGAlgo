@@ -11,11 +11,12 @@ def main(args):
 	def run_cmd(cmd):
 		subprocess.check_call(cmd, cwd=TOP_DOR, shell=True)
 
+	print("\n\n ============ Clean and Build ============\n")
 	if not args.skip_rebuild:
-		print("\n\n ============ Clean ============\n")
 		run_cmd("mvn clean")
-		print("\n\n ============ Build ============\n")
 		run_cmd("mvn --batch-mode --update-snapshots package -Dmaven.test.skip")
+	else:
+		print("skipping...")
 
 	print("\n\n ============ Tests ============\n")
 	if not args.skip_tests:
@@ -31,7 +32,7 @@ def main(args):
 
 	print("\n\n ============ Javadoc ============\n")
 	if not args.skip_javadoc:
-		run_cmd("mvn javadoc:aggregate -pl jgalgo-core")
+		run_cmd("mvn javadoc:aggregate")
 	else:
 		print("skipping...")
 

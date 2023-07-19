@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.TestBase;
 
 @SuppressWarnings("boxing")
 public class ArraysUtilsTest extends TestBase {

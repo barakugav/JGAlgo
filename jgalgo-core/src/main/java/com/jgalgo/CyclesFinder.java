@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that finds all cycles in a graph.
@@ -42,7 +43,36 @@ public interface CyclesFinder {
 	 * @return a new builder that can build {@link CyclesFinder} objects
 	 */
 	static CyclesFinder.Builder newBuilder() {
-		return CyclesFinderTarjan::new;
+		return new CyclesFinder.Builder() {
+			String impl;
+
+			@Override
+			public CyclesFinder build() {
+				if (impl != null) {
+					switch (impl) {
+						case "johnson":
+							return new CyclesFinderJohnson();
+						case "tarjan":
+							return new CyclesFinderTarjan();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new CyclesFinderTarjan();
+			}
+
+			@Override
+			public CyclesFinder.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

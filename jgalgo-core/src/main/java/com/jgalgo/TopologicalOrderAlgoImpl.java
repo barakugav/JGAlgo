@@ -19,6 +19,8 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 

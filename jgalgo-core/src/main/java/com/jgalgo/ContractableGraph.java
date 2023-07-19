@@ -16,6 +16,8 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.UnionFind;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class ContractableGraph {

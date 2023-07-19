@@ -19,6 +19,9 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.data.SubtreeMergeFindMin;
+import com.jgalgo.internal.util.DebugPrintsManager;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -69,7 +72,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 			int n = gOrig.vertices().size();
 			vToSMFId = new SubtreeMergeFindMin.Node[n];
 			oddBlossomPath = new int[n];
-			smf = new SubtreeMergeFindMinImpl<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			smf = SubtreeMergeFindMin.newBuilder().build((e1, e2) -> Double.compare(e1.slack, e2.slack));
 		}
 
 		@Override

@@ -19,6 +19,9 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.RMQStatic;
+import com.jgalgo.internal.data.RMQStaticComparator;
+import com.jgalgo.internal.util.Assertions;
 
 /**
  * Static LCA implementation using RMQ.
@@ -35,7 +38,7 @@ import com.jgalgo.graph.IndexGraph;
  */
 class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
-	private final RMQStatic rmq = new RMQStaticPlusMinusOne();
+	private final RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "PlusMinusOne").build();
 
 	/**
 	 * Create a new static LCA algorithm object.

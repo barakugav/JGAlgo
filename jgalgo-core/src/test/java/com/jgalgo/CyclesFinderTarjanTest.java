@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.TestBase;
 
 public class CyclesFinderTarjanTest extends TestBase {
 

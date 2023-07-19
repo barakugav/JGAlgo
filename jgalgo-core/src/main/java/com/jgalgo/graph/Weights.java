@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.MatchingAlgorithm;
 import com.jgalgo.ShortestPathSingleSource;
+import com.jgalgo.internal.util.Utils;
 
 /**
  * Weights of graph vertices or edges.

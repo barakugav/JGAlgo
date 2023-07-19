@@ -20,6 +20,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.TestBase;
 
 public class MatchingWeightedBlossomVTest extends TestBase {
 

@@ -17,6 +17,7 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
+import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 

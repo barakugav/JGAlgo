@@ -17,6 +17,7 @@
 package com.jgalgo.graph;
 
 import java.util.NoSuchElementException;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 class Edges {

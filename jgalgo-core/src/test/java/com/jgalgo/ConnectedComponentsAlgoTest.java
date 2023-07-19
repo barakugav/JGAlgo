@@ -22,6 +22,8 @@ import java.util.BitSet;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;

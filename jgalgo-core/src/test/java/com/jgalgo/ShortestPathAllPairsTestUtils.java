@@ -23,6 +23,8 @@ import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.TestUtils;
 
 class ShortestPathAllPairsTestUtils extends TestUtils {
 

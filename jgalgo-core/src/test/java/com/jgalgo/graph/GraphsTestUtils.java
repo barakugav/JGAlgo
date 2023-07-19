@@ -17,9 +17,9 @@
 package com.jgalgo.graph;
 
 import java.util.Random;
-import com.jgalgo.RandomGraphBuilder;
-import com.jgalgo.RandomIntUnique;
-import com.jgalgo.TestUtils;
+import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.RandomIntUnique;
+import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {

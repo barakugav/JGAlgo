@@ -230,10 +230,12 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraphFactory setOption(String key, Object value) {
-		if ("impl".equals(key)) {
-			impl = (String) value;
-		} else {
-			throw new IllegalArgumentException("unknown option key: " + key);
+		switch (key) {
+			case "impl":
+				impl = (String) value;
+				break;
+			default:
+				throw new IllegalArgumentException("unknown option key: " + key);
 		}
 		return this;
 	}

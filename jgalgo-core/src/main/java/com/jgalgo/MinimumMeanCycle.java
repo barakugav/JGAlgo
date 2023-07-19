@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Algorithm that find the cycle with the minimum mean weight.
@@ -48,7 +49,36 @@ public interface MinimumMeanCycle {
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
 	static MinimumMeanCycle.Builder newBuilder() {
-		return MinimumMeanCycleHoward::new;
+		return new MinimumMeanCycle.Builder() {
+			String impl;
+
+			@Override
+			public MinimumMeanCycle build() {
+				if (impl != null) {
+					switch (impl) {
+						case "dasdan-gupta":
+							return new MinimumMeanCycleDasdanGupta();
+						case "howard":
+							return new MinimumMeanCycleHoward();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new MinimumMeanCycleHoward();
+			}
+
+			@Override
+			public MinimumMeanCycle.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

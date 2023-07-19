@@ -24,6 +24,11 @@ import java.util.function.Consumer;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.HeapReference;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.data.Heaps;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.DebugPrintsManager;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 

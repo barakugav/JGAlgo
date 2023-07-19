@@ -24,6 +24,8 @@ import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.TestUtils;
 
 public class ShortestPathSingleSourceTestUtils extends TestUtils {
 

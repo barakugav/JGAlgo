@@ -16,6 +16,8 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 

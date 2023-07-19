@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.BuilderAbstract;
+
 /**
  * A factory for {@linkplain IndexGraph Index graphs}.
  * <p>

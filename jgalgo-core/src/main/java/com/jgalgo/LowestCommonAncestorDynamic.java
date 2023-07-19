@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.internal.util.BuilderAbstract;
+
 /**
  * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
  * <p>
@@ -125,21 +127,26 @@ public interface LowestCommonAncestorDynamic {
 			@Override
 			public LowestCommonAncestorDynamic build() {
 				if (impl != null) {
-					if ("GabowLinear".equals(impl))
-						return new LowestCommonAncestorDynamicGabowLinear();
-					if ("GabowSimple".equals(impl))
-						return new LowestCommonAncestorDynamicGabowSimple();
-					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					switch (impl) {
+						case "GabowLinear":
+							return new LowestCommonAncestorDynamicGabowLinear();
+						case "GabowSimple":
+							return new LowestCommonAncestorDynamicGabowSimple();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
 				}
 				return new LowestCommonAncestorDynamicGabowLinear();
 			}
 
 			@Override
 			public LowestCommonAncestorDynamic.Builder setOption(String key, Object value) {
-				if ("impl".equals(key)) {
-					impl = (String) value;
-				} else {
-					throw new IllegalArgumentException("unknown option key: " + key);
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
 				}
 				return this;
 			}

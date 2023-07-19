@@ -18,6 +18,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIntPair;

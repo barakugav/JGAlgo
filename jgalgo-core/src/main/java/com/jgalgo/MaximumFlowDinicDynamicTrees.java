@@ -17,12 +17,15 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import com.jgalgo.DynamicTree.MinEdge;
-import com.jgalgo.Utils.IntDoubleConsumer;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.DynamicTree;
+import com.jgalgo.internal.data.DynamicTree.MinEdge;
+import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -86,7 +89,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];
-			DynamicTree dt = new DynamicTreeSplay(capacitySum > 0 ? capacitySum : 1e100);
+			DynamicTree dt = DynamicTree.newBuilder().setMaxWeight(capacitySum > 0 ? capacitySum : 1e100).build();
 			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
 			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
 

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanListIterator;

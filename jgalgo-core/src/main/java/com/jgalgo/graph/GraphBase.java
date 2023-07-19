@@ -19,6 +19,8 @@ package com.jgalgo.graph;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 

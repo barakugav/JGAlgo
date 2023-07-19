@@ -24,6 +24,9 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**

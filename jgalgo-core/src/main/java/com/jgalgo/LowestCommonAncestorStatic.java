@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.

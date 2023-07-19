@@ -18,6 +18,7 @@ package com.jgalgo;
 import java.util.function.IntToDoubleFunction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Shortest path algorithm that uses a distance heuristic function.

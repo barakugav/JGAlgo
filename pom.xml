@@ -143,6 +143,8 @@
           </header>
 
           <sourceFileExcludes>
+            <sourceFileExclude>**/com/jgalgo/internal/**/*.java</sourceFileExclude>
+            <sourceFileExclude>**/com/jgalgo/bench/**/*.java</sourceFileExclude>
             <sourceFileExclude>**/target/**.java</sourceFileExclude>
             <sourceFileExclude>**/jmh_generated/**.java</sourceFileExclude>
           </sourceFileExcludes>

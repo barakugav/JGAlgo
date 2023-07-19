@@ -25,13 +25,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.jgalgo.MatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
-import com.jgalgo.Utils.NullList;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.data.HeapReference;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.data.SplitFindMin;
+import com.jgalgo.internal.data.UnionFind;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.Utils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -42,7 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
-	final DebugPrintsManager debugPrintManager = new DebugPrintsManager();
+	final DebugPrintsManager debugPrintManager = new DebugPrintsManager(false);
 	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
 	static final double EPS = 0.00001;
 
@@ -310,7 +317,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 					(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
 
 			Arrays.fill(vToSf, -1);
-			sf.init(new NullList<>(n), edgeSlackBarComparator);
+			sf.init(Utils.nullList(n), edgeSlackBarComparator);
 			nextIdx = 0;
 		}
 

@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Utils;
 
 class LinkedListFixedSize {
 	private LinkedListFixedSize() {}

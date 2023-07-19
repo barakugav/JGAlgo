@@ -17,6 +17,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.

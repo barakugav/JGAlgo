@@ -27,6 +27,9 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.TestBase;
+import com.jgalgo.internal.util.Utils;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
 

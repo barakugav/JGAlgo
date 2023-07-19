@@ -34,6 +34,12 @@
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
+    <!-- Intended -->
+    <Class name="com.jgalgo.internal.util.DebugPrintsManager" />
+    <Method name="setPrintStream" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
     <!-- The Path object indeed store a mutable reference to the graph and the user should not
     modify the graph while the Path object is in use -->
     <Class name="com.jgalgo.Path" />
@@ -168,8 +174,8 @@
   <Match>
     <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
     <Or>
-      <Class name="com.jgalgo.BinarySearchTrees$BSTIterator" />
-      <Class name="com.jgalgo.HeapBinary$It" />
+      <Class name="com.jgalgo.internal.data.BinarySearchTrees$BSTIterator" />
+      <Class name="com.jgalgo.internal.data.HeapBinary$It" />
       <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
       <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$1" />
       <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$2" />
@@ -179,9 +185,9 @@
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$2$1" />
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$2$1" />
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$3$1" />
-      <Class name="com.jgalgo.Utils$IterPeekableImpl" />
-      <Class name="com.jgalgo.Utils$NullIterator" />
-      <Class name="com.jgalgo.Utils$NullListIterator" />
+      <Class name="com.jgalgo.internal.util.Utils$IterPeekableImpl" />
+      <Class name="com.jgalgo.internal.util.Utils$NullIterator" />
+      <Class name="com.jgalgo.internal.util.Utils$NullListIterator" />
     </Or>
     <Method name="next" />
     <Bug pattern="IT_NO_SUCH_ELEMENT" />

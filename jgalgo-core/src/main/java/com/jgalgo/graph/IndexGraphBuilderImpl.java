@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -163,7 +164,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return endpoints[e * 2 + 1];
 	}
 
-	int edgeEndpoint(int e,int endpoint) {
+	int edgeEndpoint(int e, int endpoint) {
 		int u = edgeSource(e);
 		int v = edgeTarget(e);
 		if (u == endpoint) {

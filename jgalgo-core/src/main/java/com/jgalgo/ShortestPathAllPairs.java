@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
@@ -112,15 +113,40 @@ public interface ShortestPathAllPairs {
 	static ShortestPathAllPairs.Builder newBuilder() {
 		return new ShortestPathAllPairs.Builder() {
 			private boolean cardinalityWeight;
+			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
+				if (impl != null) {
+					switch (impl) {
+						case "cardinality":
+							return new ShortestPathAllPairsCardinality();
+						case "floyd-warshall":
+							return new ShortestPathAllPairsFloydWarshall();
+						case "johnson":
+							return new ShortestPathAllPairsJohnson();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
 				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();
 			}
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
 				this.cardinalityWeight = cardinalityWeight;
+				return this;
+			}
+
+			@Override
+			public ShortestPathAllPairs.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
 				return this;
 			}
 		};

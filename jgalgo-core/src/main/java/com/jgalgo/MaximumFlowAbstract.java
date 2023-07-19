@@ -23,6 +23,8 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Utils;
 
 abstract class MaximumFlowAbstract implements MaximumFlow {
 

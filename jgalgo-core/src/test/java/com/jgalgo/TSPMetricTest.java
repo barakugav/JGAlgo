@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.TestBase;
 
 public class TSPMetricTest extends TestBase {
 

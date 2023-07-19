@@ -18,6 +18,8 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -73,8 +75,53 @@ public interface MinimumSpanningTree {
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */
 	static MinimumSpanningTree.Builder newBuilder() {
-		// TODO check for which graphs sizes Kruskal is faster
-		return MinimumSpanningTreePrim::new;
+		return new MinimumSpanningTree.Builder() {
+			String impl;
+			private HeapReferenceable.Builder<?, ?> heapBuilder;
+
+			@Override
+			public MinimumSpanningTree build() {
+				if (impl != null) {
+					switch (impl) {
+						case "kruskal":
+							return new MinimumSpanningTreeKruskal();
+						case "prim":
+							return new MinimumSpanningTreePrim();
+						case "boruvka":
+							return new MinimumSpanningTreeBoruvka();
+						case "yao":
+							return new MinimumSpanningTreeYao();
+						case "fredman-tarjan":
+							return new MinimumSpanningTreeFredmanTarjan();
+						case "karger-klein-tarjan":
+							return new MinimumSpanningTreeKargerKleinTarjan();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+
+				// TODO check for which graphs sizes Kruskal is faster
+				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();
+				if (heapBuilder != null)
+					algo.setHeapBuilder(heapBuilder);
+				return algo;
+			}
+
+			@Override
+			public MinimumSpanningTree.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					case "heap-builder":
+						heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

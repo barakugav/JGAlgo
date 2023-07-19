@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.TestBase;
 
 public class MinimumSpanningTreeKargerKleinTarjanTest extends TestBase {
 
@@ -24,7 +25,8 @@ public class MinimumSpanningTreeKargerKleinTarjanTest extends TestBase {
 	public void testRandGraph() {
 		final long seed = 0xe76fc4911bdb2da2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKargerKleinTarjan(seedGen.nextSeed()), seedGen.nextSeed());
+		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKargerKleinTarjan(seedGen.nextSeed()),
+				seedGen.nextSeed());
 	}
 
 }

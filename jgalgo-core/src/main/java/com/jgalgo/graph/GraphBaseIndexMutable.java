@@ -17,6 +17,7 @@
 package com.jgalgo.graph;
 
 import java.util.Set;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl {

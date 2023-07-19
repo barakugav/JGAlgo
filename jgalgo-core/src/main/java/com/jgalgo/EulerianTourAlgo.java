@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Eulerian tour calculation algorithm.

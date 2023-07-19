@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -73,7 +74,48 @@ public interface MaximumFlow {
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-		return MaximumFlowPushRelabelHighestFirst::new;
+		return new MaximumFlow.Builder() {
+			String impl;
+
+			@Override
+			public MaximumFlow build() {
+				if (impl != null) {
+					switch (impl) {
+						case "edmonds-karp":
+							return new MaximumFlowEdmondsKarp();
+						case "dinic":
+							return new MaximumFlowDinic();
+						case "dinic-dynamic-trees":
+							return new MaximumFlowDinicDynamicTrees();
+						case "push-relabel-fifo":
+							return new MaximumFlowPushRelabelFifo();
+						case "push-relabel-highest-first":
+							return new MaximumFlowPushRelabelHighestFirst();
+						case "push-relabel-lowest-first":
+							return new MaximumFlowPushRelabelLowestFirst();
+						case "push-relabel-move-to-front":
+							return new MaximumFlowPushRelabelToFront();
+						case "push-relabel-fifo-dynamic-trees":
+							return new MaximumFlowPushRelabelDynamicTrees();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new MaximumFlowPushRelabelHighestFirst();
+			}
+
+			@Override
+			public MaximumFlow.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
