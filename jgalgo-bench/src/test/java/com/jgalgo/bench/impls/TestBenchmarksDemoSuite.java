@@ -17,32 +17,13 @@
 package com.jgalgo.bench.impls;
 
 import org.junit.jupiter.api.Test;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
+import com.jgalgo.bench.JMHTester;
 
 public class TestBenchmarksDemoSuite {
 
-	/*
-	 * Runs all benchmarks without any warmup, for 0.1 seconds each, just to check
-	 */
-
-	 @Test
-	 public void launchBenchmarksDemo() throws Exception {
-		 String packageName = TestBenchmarksDemoSuite.class.getPackageName();
-		 Options opt = new OptionsBuilder()
-				 .include(packageName + ".*")
-				 .exclude(packageName + ".HeapBench.*")
-				 .warmupIterations(0)
-				 .warmupTime(TimeValue.seconds(0))
-				 .measurementIterations(1)
-				 .measurementTime(TimeValue.microseconds(100))
-				 .threads(1).forks(1)
-				 .shouldFailOnError(true)
-				 .shouldDoGC(true)
-				 .build();
-		 new Runner(opt).run();
-	 }
+	@Test
+	public void launchBenchmarksDemo() throws Exception {
+		JMHTester.testBenchmarksInPackage("com.jgalgo.bench.impls");
+	}
 
 }
