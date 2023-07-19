@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 public class Heaps {
 
@@ -62,7 +62,7 @@ public class Heaps {
 		}
 
 		int compare(E e1, E e2) {
-			return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);
+			return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);
 		}
 
 		static <K> Heap<K> fromHeapReferenceable(HeapReferenceable<K, ?> h) {
@@ -91,7 +91,7 @@ public class Heaps {
 
 			@Override
 			public Iterator<K> iterator() {
-				return Utils.iterMap(h.iterator(), HeapReference::key);
+				return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);
 			}
 
 			@SuppressWarnings("unchecked")
@@ -179,7 +179,7 @@ public class Heaps {
 		}
 
 		int compare(K k1, K k2) {
-			return c == null ? Utils.cmpDefault(k1, k2) : c.compare(k1, k2);
+			return c == null ? JGAlgoUtils.cmpDefault(k1, k2) : c.compare(k1, k2);
 		}
 
 	}

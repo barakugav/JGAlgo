@@ -35,7 +35,7 @@
   </Match>
   <Match>
     <!-- Intended -->
-    <Class name="com.jgalgo.internal.util.DebugPrintsManager" />
+    <Class name="com.jgalgo.internal.util.DebugPrinter" />
     <Method name="setPrintStream" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
@@ -185,9 +185,9 @@
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$2$1" />
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$2$1" />
       <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$3$1" />
-      <Class name="com.jgalgo.internal.util.Utils$IterPeekableImpl" />
-      <Class name="com.jgalgo.internal.util.Utils$NullIterator" />
-      <Class name="com.jgalgo.internal.util.Utils$NullListIterator" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$IterPeekableImpl" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
     </Or>
     <Method name="next" />
     <Bug pattern="IT_NO_SUCH_ELEMENT" />

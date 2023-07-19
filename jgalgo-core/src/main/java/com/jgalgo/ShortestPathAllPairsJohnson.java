@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -88,7 +88,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		WeightFunction wPotential = Utils.potentialWeightFunc(g, w, potential);
+		WeightFunction wPotential = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
 		return res;
@@ -98,7 +98,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		final int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 
-		ForkJoinPool pool = Utils.getPool();
+		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();
@@ -112,7 +112,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().build());
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
-				tasks.add(Utils.recursiveAction(
+				tasks.add(JGAlgoUtils.recursiveAction(
 						() -> res.ssspResults[source0] = sssp.get().computeShortestPaths(g, w, source0)));
 			}
 			for (RecursiveAction task : tasks)

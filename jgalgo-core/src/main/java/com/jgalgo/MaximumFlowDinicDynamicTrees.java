@@ -23,9 +23,9 @@ import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.data.DynamicTree;
 import com.jgalgo.internal.data.DynamicTree.MinEdge;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.IntArrayFIFOQueue;
-import com.jgalgo.internal.util.Utils.IntDoubleConsumer;
+import com.jgalgo.internal.util.JGAlgoUtils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
-	private final DebugPrintsManager debug = new DebugPrintsManager(false);
+	private final DebugPrinter debug = new DebugPrinter(false);
 	private static final double EPS = 0.0001;
 
 	/**

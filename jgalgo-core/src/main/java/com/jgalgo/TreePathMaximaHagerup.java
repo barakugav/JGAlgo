@@ -24,8 +24,8 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntArrayFIFOQueue;
-import com.jgalgo.internal.util.Utils;
-import com.jgalgo.internal.util.Utils.BiInt2IntFunction;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -108,7 +108,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 			if (useBitsLookupTables) {
 				int n = tOrig.vertices().size();
-				int wordsize = n > 1 ? Utils.log2ceil(n) : 1;
+				int wordsize = n > 1 ? JGAlgoUtils.log2ceil(n) : 1;
 				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);
 				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);
 

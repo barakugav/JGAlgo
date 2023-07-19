@@ -18,7 +18,7 @@ package com.jgalgo.internal.data;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A {@link SplitFindMin} implementation using arrays.
@@ -48,7 +48,7 @@ class SplitFindMinArray<K> implements SplitFindMin<K> {
 		int elmNum = keys.size();
 		this.keys = (K[]) keys.toArray();
 		blocks = new Block[elmNum];
-		this.c = c = c != null ? c : Utils.getDefaultComparator();
+		this.c = c = c != null ? c : JGAlgoUtils.getDefaultComparator();
 		if (elmNum == 0)
 			return;
 

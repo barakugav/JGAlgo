@@ -19,7 +19,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Comparator;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
@@ -62,7 +62,7 @@ class ArraysUtils {
 			from = 0;
 			to = a.length;
 		}
-		c = c != null ? c : Utils.getDefaultComparator();
+		c = c != null ? c : JGAlgoUtils.getDefaultComparator();
 
 		getKthElement0(a, from, to, k, c);
 		return a[k];
@@ -155,7 +155,7 @@ class ArraysUtils {
 	 */
 	static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
 		Assertions.Arrays.checkFromTo(from, to, a.length);
-		c = c != null ? c : Utils.getDefaultComparator();
+		c = c != null ? c : JGAlgoUtils.getDefaultComparator();
 
 		// Find greatest element smaller than the pivot
 		int pivotIdx = -1;
@@ -293,7 +293,7 @@ class ArraysUtils {
 		Assertions.Arrays.checkFromTo(from, to, a.length);
 		if (bucketSize <= 0)
 			throw new IllegalArgumentException("invalid bucket size: " + bucketSize);
-		c = c != null ? c : Utils.getDefaultComparator();
+		c = c != null ? c : JGAlgoUtils.getDefaultComparator();
 		bucketPartition0(a, from, to, c, bucketSize);
 	}
 

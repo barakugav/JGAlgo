@@ -22,7 +22,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import com.jgalgo.internal.data.Heaps.AbstractHeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A binomial heap implementation.
@@ -128,7 +128,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 		if (c == null) {
 			for (Node<K, V> p; (p = node.parent) != null;) {
-				if (Utils.cmpDefault(p.key, newKey) <= 0)
+				if (JGAlgoUtils.cmpDefault(p.key, newKey) <= 0)
 					break;
 				swapParentChild(p, node);
 			}
@@ -215,7 +215,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
-		if (Utils.cmpDefault(r1.key, r2.key) > 0) {
+		if (JGAlgoUtils.cmpDefault(r1.key, r2.key) > 0) {
 			Node<K, V> t = r1;
 			r1 = r2;
 			r2 = t;
@@ -335,7 +335,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 		if (c == null) {
 			for (int i = 0; i < rsLen; i++)
-				if (rs[i] != null && (min == null || Utils.cmpDefault(min.key, rs[i].key) > 0))
+				if (rs[i] != null && (min == null || JGAlgoUtils.cmpDefault(min.key, rs[i].key) > 0))
 					min = rs[i];
 		} else {
 			for (int i = 0; i < rsLen; i++)

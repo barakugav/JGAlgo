@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -107,7 +107,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		WeightFunction.Int pw = Utils.potentialWeightFunc(g, w, potential);
+		WeightFunction.Int pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
@@ -147,7 +147,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));
 
 		/* Run log(-minWeight) scaling iterations */
-		final int minWeightWordsize = Utils.log2(-minWeight);
+		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);
 		for (int weightMask = minWeightWordsize; weightMask >= 0; weightMask--) {
 			if (weightMask != minWeightWordsize)
 				for (int v = 0; v < n; v++)

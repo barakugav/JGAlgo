@@ -21,7 +21,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.Heap;
 import com.jgalgo.internal.data.HeapReferenceable;
 import com.jgalgo.internal.data.SubtreeMergeFindMin;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -49,7 +49,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 	@Override
 	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrintsManager debugPrint) {
+			DebugPrinter debugPrint) {
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
 
@@ -59,7 +59,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 		final Heap<EdgeEvent> blossomEvents;
 
 		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrintsManager debugPrint) {
+				DebugPrinter debugPrint) {
 			super(gOrig, w, heapBuilder, debugPrint);
 			blossomEvents = Heap.newBuilder().<EdgeEvent>elementsTypeObj()
 					.build((e1, e2) -> Double.compare(e1.slack, e2.slack));

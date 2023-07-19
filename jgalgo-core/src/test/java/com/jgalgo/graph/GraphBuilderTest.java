@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -67,7 +67,7 @@ public class GraphBuilderTest extends TestBase {
 				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
 					for (boolean edgesWeights : BooleanList.of(false, true)) {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
-							Object key = new Utils.Obj("weight" + weightIdx.getAndIncrement());
+							Object key = JGAlgoUtils.labeledObj("weight" + weightIdx.getAndIncrement());
 							Object defVal = valSupplier.get();
 							Weights wG, wB;
 							IntSet elements;
@@ -145,7 +145,7 @@ public class GraphBuilderTest extends TestBase {
 				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
 					for (boolean edgesWeights : BooleanList.of(false, true)) {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
-							Object key = new Utils.Obj("weight" + weightIdx.getAndIncrement());
+							Object key = JGAlgoUtils.labeledObj("weight" + weightIdx.getAndIncrement());
 							Object defVal = valSupplier.get();
 							Weights wG, wB;
 							IntSet elements;

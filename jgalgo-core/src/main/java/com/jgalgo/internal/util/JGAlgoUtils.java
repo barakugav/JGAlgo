@@ -49,8 +49,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
-public class Utils {
-	private Utils() {}
+public class JGAlgoUtils {
+	private JGAlgoUtils() {}
 
 	private static final double LOG2 = Math.log(2);
 	private static final double LOG2_INV = 1 / LOG2;
@@ -178,7 +178,7 @@ public class Utils {
 
 		private final Iterator<? super E> it;
 		private Object peek;
-		private static final Object PeekNone = new Utils.Obj("None");
+		private static final Object PeekNone = JGAlgoUtils.labeledObj("None");
 
 		IterPeekableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
@@ -581,18 +581,21 @@ public class Utils {
 		}
 	}
 
-	public static class Obj {
-		// TODO rename
+	private static class LabeledObj {
 		private final String s;
 
-		public Obj(String s) {
-			this.s = Objects.requireNonNull(s);
+		LabeledObj(String label) {
+			this.s = Objects.requireNonNull(label);
 		}
 
 		@Override
 		public String toString() {
 			return s;
 		}
+	}
+
+	public static Object labeledObj(String label) {
+		return new LabeledObj(label);
 	}
 
 	public static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {

@@ -166,7 +166,7 @@ public class Assertions {
 		public static <E> void decreaseKeyIsSmaller(E oldKey, E newKey, Comparator<? super E> cmp) {
 			if (!AssertDecreaseKeyLegal)
 				return;
-			int c = cmp == null ? Utils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);
+			int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);
 			if (c < 0)
 				throw new IllegalArgumentException("New key is greater than existing one");
 		}

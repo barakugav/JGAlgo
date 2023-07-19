@@ -21,7 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.HeapReferenceable;
 import com.jgalgo.internal.data.SubtreeMergeFindMin;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -45,7 +45,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 
 	@Override
 	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrintsManager debugPrint) {
+			DebugPrinter debugPrint) {
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
 
@@ -67,7 +67,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 		final int[] oddBlossomPath;
 
 		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrintsManager debugPrint) {
+				DebugPrinter debugPrint) {
 			super(gOrig, w, heapBuilder, debugPrint);
 			int n = gOrig.vertices().size();
 			vToSMFId = new SubtreeMergeFindMin.Node[n];

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -33,8 +33,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ImmutableGraphCopyTest extends TestBase {
 
-	private static final Object VerticesWeightsKey = new Utils.Obj("vWeights");
-	private static final Object EdgesWeightsKey = new Utils.Obj("eWeights");
+	private static final Object VerticesWeightsKey = JGAlgoUtils.labeledObj("vWeights");
+	private static final Object EdgesWeightsKey = JGAlgoUtils.labeledObj("eWeights");
 
 	private static Graph createGraph(boolean directed) {
 		final long seed = 0x4ff62bb8f3a0b831L;

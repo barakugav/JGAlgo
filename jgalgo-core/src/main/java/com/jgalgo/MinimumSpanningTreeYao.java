@@ -20,7 +20,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -166,7 +166,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, WeightFunction w) {
-		int n = g.vertices().size(), k = Utils.log2ceil(n);
+		int n = g.vertices().size(), k = JGAlgoUtils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];
@@ -177,7 +177,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 				edgesTemp[edgesCount++] = e;
 
 			if (edgesCount <= k) {
-				Utils.sort(edgesTemp, 0, edgesCount, w, parallel);
+				JGAlgoUtils.sort(edgesTemp, 0, edgesCount, w, parallel);
 				edges[u] = new int[edgesCount][];
 				for (int i = 0; i < edgesCount; i++)
 					edges[u][i] = new int[] { edgesTemp[i] };

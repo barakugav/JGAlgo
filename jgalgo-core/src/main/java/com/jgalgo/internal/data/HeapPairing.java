@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import com.jgalgo.internal.data.Heaps.AbstractHeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -399,7 +399,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 			assert n2.next == null;
 
 			/* assume n1 has smaller key than n2 */
-			if (Utils.cmpDefault(n1.key, n2.key) > 0) {
+			if (JGAlgoUtils.cmpDefault(n1.key, n2.key) > 0) {
 				Node<K, V> temp = n1;
 				n1 = n2;
 				n2 = temp;

@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 class BinarySearchTrees {
 
@@ -72,7 +72,7 @@ class BinarySearchTrees {
 		};
 		if (c == null) {
 			for (Node p = root;;) {
-				int cmp = Utils.cmpDefault(key, p.key);
+				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp < 0) {
 					if (!p.hasLeftChild())
 						return onLeftChildMissing.apply(neighborType, p);
@@ -108,7 +108,7 @@ class BinarySearchTrees {
 			return null;
 		if (c == null) {
 			for (Node p = root;;) {
-				int cmp = Utils.cmpDefault(key, p.key);
+				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp <= 0) {
 					if (!p.hasLeftChild())
 						return getPredecessor(p);
@@ -140,7 +140,7 @@ class BinarySearchTrees {
 			return null;
 		if (c == null) {
 			for (Node p = root;;) {
-				int cmp = Utils.cmpDefault(key, p.key);
+				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp >= 0) {
 					if (!p.hasRightChild())
 						return getSuccessor(p);
@@ -220,7 +220,7 @@ class BinarySearchTrees {
 	static <K, Node extends INode<K, Node>> void insert(Node root, Comparator<? super K> c, Node n) {
 		if (c == null) {
 			for (Node parent = root;;) {
-				int cmp = Utils.cmpDefault(n.key, parent.key);
+				int cmp = JGAlgoUtils.cmpDefault(n.key, parent.key);
 				if (cmp <= 0) {
 					if (!parent.hasLeftChild()) {
 						parent.left = n;

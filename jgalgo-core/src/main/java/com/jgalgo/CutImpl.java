@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
@@ -94,7 +94,7 @@ class CutImpl implements Cut {
 			return;
 		computeCutBitmap();
 		IntArrayList crossEdges0 = new IntArrayList();
-		for (int u : Utils.iterable(cutBitmap)) {
+		for (int u : JGAlgoUtils.iterable(cutBitmap)) {
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();

@@ -25,7 +25,7 @@ import java.util.NavigableMap;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -270,7 +270,7 @@ class HeapTestUtils extends TestUtils {
 	@SuppressWarnings("boxing")
 	static void testHeap(HeapTracker tracker, int m, TestMode mode, int[] values, Comparator<? super Integer> compare,
 			long seed) {
-		DebugPrintsManager debug = new DebugPrintsManager(false);
+		DebugPrinter debug = new DebugPrinter(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;

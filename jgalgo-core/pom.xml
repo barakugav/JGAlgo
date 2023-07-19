@@ -89,7 +89,7 @@
         <configuration>
           <excludes>
             <exclude>com/jgalgo/internal/data/IntArrayFIFOQueue**</exclude>
-            <exclude>com/jgalgo/internal/util/DebugPrintsManager**</exclude>
+            <exclude>com/jgalgo/internal/util/DebugPrinter**</exclude>
           </excludes>
         </configuration>
       </plugin>

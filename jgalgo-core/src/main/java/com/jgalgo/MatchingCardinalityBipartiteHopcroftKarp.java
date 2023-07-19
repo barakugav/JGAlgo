@@ -26,7 +26,7 @@ import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntArrayFIFOQueue;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
+	private static final Object EdgeRefWeightKey = JGAlgoUtils.labeledObj("refToOrig");
 
 	/**
 	 * Create a new maximum matching object.

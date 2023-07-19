@@ -18,13 +18,12 @@ package com.jgalgo.internal.util;
 
 import java.io.PrintStream;
 
-// TODO remove
-public class DebugPrintsManager {
+public class DebugPrinter {
 
 	private boolean enable;
 	private PrintStream printStream;
 
-	public DebugPrintsManager(boolean enable) {
+	public DebugPrinter(boolean enable) {
 		this.enable = enable;
 		printStream = System.out;
 	}

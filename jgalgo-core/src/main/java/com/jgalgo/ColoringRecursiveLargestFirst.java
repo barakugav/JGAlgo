@@ -20,7 +20,7 @@ import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * The Recursive Largest First coloring algorithm.
@@ -115,7 +115,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				u = nextU;
 			}
 
-			for (int u : Utils.iterable(S)) {
+			for (int u : JGAlgoUtils.iterable(S)) {
 				res.colors[u] = color;
 
 				// update degree to include only vertices without color

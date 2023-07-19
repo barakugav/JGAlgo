@@ -17,7 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -79,7 +79,7 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)
-					: Utils.IterPeekable.Int.Empty;
+					: JGAlgoUtils.IterPeekable.Int.Empty;
 		}
 
 		@Override
@@ -128,7 +128,7 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)
-					: Utils.IterPeekable.Int.Empty;
+					: JGAlgoUtils.IterPeekable.Int.Empty;
 		}
 
 		@Override
@@ -161,7 +161,7 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 
 		final LinkedListFixedSize.Doubly vertices;
 		int listHead = LinkedListFixedSize.None;
-		Utils.IterPeekable.Int listIter;
+		JGAlgoUtils.IterPeekable.Int listIter;
 
 		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {
 			int n = worker.g.vertices().size();

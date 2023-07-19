@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 /**
@@ -101,7 +101,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		int i;
 		if (c == null) {
 			for (i = 0; i < s; i++)
-				if (Utils.cmpDefault(e, a[i]) == 0)
+				if (JGAlgoUtils.cmpDefault(e, a[i]) == 0)
 					break;
 		} else {
 			for (i = 0; i < s; i++)
@@ -155,7 +155,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));
 
 		int reconstructionCost = combinedSize;
-		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);
+		int addAllCost = elms.size() * JGAlgoUtils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
 			for (E e : elms)
 				add(e);
@@ -167,7 +167,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 			size = s;
 
 			if (s > 1) {
-				int lastLayer = Utils.log2ceil(s + 1) - 1;
+				int lastLayer = JGAlgoUtils.log2ceil(s + 1) - 1;
 				int lastParent = (1 << lastLayer) - 2;
 				for (int parent = lastParent; parent >= 0; parent--)
 					moveDown(parent, a[parent]);
@@ -215,7 +215,8 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		if (c == null) {
 			for (;;) {
 				int p;
-				if (i == 0 || Utils.cmpDefault(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
+				if (i == 0
+						|| JGAlgoUtils.cmpDefault(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
 					a[i] = e;
 					return;
 				}
@@ -250,7 +251,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					break;
 
 				E c01, c0 = a[c0i], c1;
-				if (c1i < s && Utils.cmpDefault(c1 = a[c1i], c0) < 0) {
+				if (c1i < s && JGAlgoUtils.cmpDefault(c1 = a[c1i], c0) < 0) {
 					c01i = c1i;
 					c01 = c1;
 				} else {
@@ -258,7 +259,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					c01 = c0;
 				}
 
-				if (Utils.cmpDefault(e, c01) <= 0)
+				if (JGAlgoUtils.cmpDefault(e, c01) <= 0)
 					break;
 
 				/* continue down */

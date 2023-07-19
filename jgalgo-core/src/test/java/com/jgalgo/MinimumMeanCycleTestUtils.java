@@ -29,7 +29,7 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
 
@@ -82,7 +82,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 				}
 			}
 
-			for (Path c : Utils.iterable(cycles)) {
+			for (Path c : JGAlgoUtils.iterable(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
 				final double EPS = 0.0001;
 				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);

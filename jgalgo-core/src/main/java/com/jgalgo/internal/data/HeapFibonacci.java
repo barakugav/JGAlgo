@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import com.jgalgo.internal.data.Heaps.AbstractHeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A Fibonacci heap implementation.
@@ -310,7 +310,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 				for (Node<K, V> p : newRoots) {
 					if (p == null)
 						continue;
-					if (min == null || Utils.cmpDefault(min.key, p.key) > 0)
+					if (min == null || JGAlgoUtils.cmpDefault(min.key, p.key) > 0)
 						min = p;
 				}
 			} else {
@@ -326,12 +326,12 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	private Node<K, V> unionDefaultCmp(Node<K, V> u, Node<K, V> v) {
-		if (v == minRoot || Utils.cmpDefault(u.key, v.key) > 0) {
+		if (v == minRoot || JGAlgoUtils.cmpDefault(u.key, v.key) > 0) {
 			Node<K, V> temp = u;
 			u = v;
 			v = temp;
 		}
-		assert Utils.cmpDefault(u.key, v.key) <= 0;
+		assert JGAlgoUtils.cmpDefault(u.key, v.key) <= 0;
 
 		v.parent = u;
 		v.prev = null;

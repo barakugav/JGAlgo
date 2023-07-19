@@ -18,7 +18,7 @@ package com.jgalgo.internal.data;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
@@ -45,7 +45,7 @@ public interface SplitFindMin<K> extends SplitFind {
 
 	@Override
 	default void init(int size) {
-		init(Utils.nullList(size), (k1, k2) -> 0);
+		init(JGAlgoUtils.nullList(size), (k1, k2) -> 0);
 	}
 
 	/**

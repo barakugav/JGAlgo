@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -161,7 +161,7 @@ abstract class GraphBase implements Graph {
 
 		@Override
 		public int size() {
-			return Utils.size(this);
+			return JGAlgoUtils.size(this);
 		}
 
 		@Override

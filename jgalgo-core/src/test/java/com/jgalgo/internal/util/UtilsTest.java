@@ -59,7 +59,7 @@ public class UtilsTest extends TestBase {
 					}
 				}
 				IntIntPair rangeExpected = rangeBegin == -1 ? null : IntIntPair.of(rangeBegin, rangeEnd);
-				IntIntPair rangeActual = Utils.equalRange(0, n, x, i -> arr[i]);
+				IntIntPair rangeActual = JGAlgoUtils.equalRange(0, n, x, i -> arr[i]);
 				assertEquals(rangeExpected, rangeActual);
 			}
 		}

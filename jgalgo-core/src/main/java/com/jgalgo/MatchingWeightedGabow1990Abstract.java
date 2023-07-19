@@ -36,9 +36,9 @@ import com.jgalgo.internal.data.HeapReferenceable;
 import com.jgalgo.internal.data.SplitFindMin;
 import com.jgalgo.internal.data.UnionFind;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.IntArrayFIFOQueue;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
-	final DebugPrintsManager debugPrintManager = new DebugPrintsManager(false);
+	final DebugPrinter debugPrintManager = new DebugPrinter(false);
 	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
 	static final double EPS = 0.00001;
 
@@ -67,7 +67,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 	}
 
 	abstract Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrintsManager debugPrint);
+			DebugPrinter debugPrint);
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -317,7 +317,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 					(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
 
 			Arrays.fill(vToSf, -1);
-			sf.init(Utils.nullList(n), edgeSlackBarComparator);
+			sf.init(JGAlgoUtils.nullList(n), edgeSlackBarComparator);
 			nextIdx = 0;
 		}
 
@@ -427,7 +427,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		final IntPriorityQueue scanQueue;
 
 		/* Manage debug prints */
-		final DebugPrintsManager debug;
+		final DebugPrinter debug;
 
 		static class EdgeEvent {
 			final int e;
@@ -456,10 +456,10 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			}
 		}
 
-		private static final Object EdgeValKey = new Utils.Obj("edgeVal");
+		private static final Object EdgeValKey = JGAlgoUtils.labeledObj("edgeVal");
 
 		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrintsManager debugPrint) {
+				DebugPrinter debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
 			this.g = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
@@ -620,7 +620,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 						growStep();
 					} else if (deltaNext == delta3) {
 						EdgeEvent event = extractNextBlossomEvent();
-						assert Utils.isEqual(delta, event.slack / 2);
+						assert JGAlgoUtils.isEqual(delta, event.slack / 2);
 						int e = event.e;
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						assert isEven(u) && isEven(v);
@@ -678,7 +678,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		void expandStep() {
 			debug.println("expandStep");
 
-			assert Utils.isEqual(delta, expandEvents.findMin().key().doubleValue());
+			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key().doubleValue());
 			final Blossom B = expandEvents.extractMin().value();
 
 			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;

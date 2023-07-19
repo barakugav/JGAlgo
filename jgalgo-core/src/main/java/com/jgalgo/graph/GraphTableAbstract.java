@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
@@ -33,7 +33,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());
+		edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 		addInternalVerticesContainer(edges);
 
 		edgeEndpointsContainer =
@@ -47,10 +47,10 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 		if (g instanceof GraphTableAbstract) {
 			GraphTableAbstract g0 = (GraphTableAbstract) g;
-			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, Utils.consumerNoOp());
+			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
 			for (int v = 0; v < n; v++) {
-				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, Utils.consumerNoOp());
+				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
 				edges.set(v, vEdges);
 			}
@@ -59,10 +59,10 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 			addInternalEdgesContainer(edgeEndpointsContainer);
 		} else {
 
-			edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, Utils.consumerNoOp());
+			edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
 			for (int v = 0; v < n; v++) {
-				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());
+				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
 				edges.set(v, vEdges);
 
@@ -86,7 +86,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 		int v = super.addVertex();
 		DataContainer.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, Utils.consumerNoOp());
+			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(vEdges);
 			edges.set(v, vEdges);
 		}

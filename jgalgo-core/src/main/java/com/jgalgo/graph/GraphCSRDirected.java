@@ -17,7 +17,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
@@ -72,7 +72,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
-		IntIntPair edgeRange = Utils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target,
+		IntIntPair edgeRange = JGAlgoUtils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target,
 				eIdx -> edgeTarget(edgesOut[eIdx]));
 		return edgeRange == null ? Edges.EmptyEdgeSet
 				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());

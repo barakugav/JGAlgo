@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -33,9 +33,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
 				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
 				EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 		addInternalVerticesContainer(edgesOutContainer);
@@ -67,9 +67,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				}
 			}
 		} else {
-			edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+			edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
 					EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-			edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+			edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
 					EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			addInternalVerticesContainer(edgesOutContainer);
@@ -257,10 +257,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		assert e1 != e2;
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
 		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		assert edgesOut[u1] != Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
-		assert edgesIn[v1] != Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
-		assert edgesOut[u2] != Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
-		assert edgesIn[v2] != Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
 		int oldVal1 = edgesOut[u1].put(v1, e2);
 		int oldVal2 = edgesIn[v1].put(u1, e2);
 		int oldVal3 = edgesOut[u2].put(v2, e1);

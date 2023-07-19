@@ -24,7 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class MaximumFlowAbstract implements MaximumFlow {
 
@@ -57,8 +57,8 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		}
 
 		static EdgeWeightsFlowNetwork newInstance(Graph g) {
-			Weights.Double capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), double.class);
-			Weights.Double flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), double.class);
+			Weights.Double capacityWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), double.class);
+			Weights.Double flowWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), double.class);
 			return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
 		}
 
@@ -100,8 +100,8 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		}
 
 		static EdgeWeightsFlowNetworkInt newInstance(Graph g) {
-			Weights.Int capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), int.class);
-			Weights.Int flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), int.class);
+			Weights.Int capacityWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), int.class);
+			Weights.Int flowWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), int.class);
 			return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
 		}
 

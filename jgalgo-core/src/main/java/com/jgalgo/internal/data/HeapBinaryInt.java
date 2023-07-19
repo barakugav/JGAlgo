@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -159,7 +159,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));
 
 		int reconstructionCost = combinedSize;
-		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);
+		int addAllCost = elms.size() * JGAlgoUtils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
 			if (elms instanceof IntCollection) {
 				for (int e : (IntCollection) elms)
@@ -181,7 +181,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 			size = s;
 
 			if (s > 1) {
-				int lastLayer = Utils.log2ceil(s + 1) - 1;
+				int lastLayer = JGAlgoUtils.log2ceil(s + 1) - 1;
 				int lastParent = (1 << lastLayer) - 2;
 				for (int parent = lastParent; parent >= 0; parent--)
 					moveDown(parent, a[parent]);

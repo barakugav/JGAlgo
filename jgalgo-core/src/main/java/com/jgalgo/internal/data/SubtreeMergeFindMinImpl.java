@@ -19,7 +19,7 @@ package com.jgalgo.internal.data;
 import java.util.Arrays;
 import java.util.Comparator;
 import com.jgalgo.LowestCommonAncestorDynamic;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Implementation of the {@link SubtreeMergeFindMin} data structure.
@@ -68,7 +68,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		uf = UnionFind.newBuilder().build();
 		lca = LowestCommonAncestorDynamic.newBuilder().build();
 
-		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
+		this.weightCmp = weightCmp != null ? weightCmp : JGAlgoUtils.getDefaultComparator();
 		timestamp = 0;
 
 		heap = heapBuilder.<SubTree<E>>keysTypeObj().valuesTypeVoid()
@@ -252,7 +252,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		if (u == v)
 			return; /* ignore edge within same sub tree */
 
-		int span = Utils.log2(edge.u.depth - edge.v.depth + 1);
+		int span = JGAlgoUtils.log2(edge.u.depth - edge.v.depth + 1);
 		int uRank = u.rank(), vRank = v.rank();
 
 		if (uRank < span)
@@ -398,7 +398,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		}
 
 		int rank() {
-			return Utils.log2(size);
+			return JGAlgoUtils.log2(size);
 		}
 
 		void clear() {

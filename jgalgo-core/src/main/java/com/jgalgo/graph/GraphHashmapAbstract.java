@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Iterator;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -235,7 +235,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	}
 
 	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesArr, int idx) {
-		if (edgesArr[idx] == Utils.EMPTY_INT2INT_MAP_DEFVAL_NEG1) {
+		if (edgesArr[idx] == JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1) {
 			edgesArr[idx] = new Int2IntOpenHashMap();
 			edgesArr[idx].defaultReturnValue(-1);
 		}

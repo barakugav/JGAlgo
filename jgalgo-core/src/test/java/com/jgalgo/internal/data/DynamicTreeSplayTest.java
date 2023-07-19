@@ -25,7 +25,7 @@ import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -86,7 +86,7 @@ public class DynamicTreeSplayTest extends TestBase {
 	@SuppressWarnings("boxing")
 	private static void testRandOps(DoubleFunction<? extends DynamicTree> builder, final int m, List<Op> ops,
 			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
-		DebugPrintsManager debug = new DebugPrintsManager(false);
+		DebugPrinter debug = new DebugPrinter(false);
 		debug.println("\tnew iteration");
 		Random rand = new Random(seed);
 

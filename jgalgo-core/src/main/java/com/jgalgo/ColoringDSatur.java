@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.data.HeapReference;
 import com.jgalgo.internal.data.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils.BiInt2IntFunction;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**

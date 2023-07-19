@@ -18,7 +18,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
@@ -30,9 +30,9 @@ class LinkedListFixedSize {
 
 		int size();
 
-		default Utils.IterPeekable.Int iterator(int id) {
+		default JGAlgoUtils.IterPeekable.Int iterator(int id) {
 			Assertions.Arrays.checkIndex(id, 0, size());
-			return new Utils.IterPeekable.Int() {
+			return new JGAlgoUtils.IterPeekable.Int() {
 				int p = id;
 
 				@Override

@@ -17,7 +17,7 @@
 package com.jgalgo.internal.data;
 
 import java.util.Objects;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Static RMQ which uses Cartesian trees answering a query in constant time and requiring linear preprocessing time.
@@ -62,7 +62,7 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 		@Override
 		byte getBlockSize(int n) {
-			int s = (int) Math.ceil(Utils.log2((double) n) / 3);
+			int s = (int) Math.ceil(JGAlgoUtils.log2((double) n) / 3);
 			/* choose block size of at least 4, as the Catalan number of 4 is 14 (small) */
 			return (byte) Math.min(Math.max(s, 4), n);
 		}

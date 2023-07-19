@@ -20,7 +20,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -51,7 +51,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		final int n = g.vertices().size();
 		ShortestPathAllPairsUtils.ResFromSSSP res = new ShortestPathAllPairsUtils.ResFromSSSP(n);
 
-		ForkJoinPool pool = Utils.getPool();
+		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();
@@ -65,7 +65,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().setCardinality(true).build());
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
-				tasks.add(Utils.recursiveAction(
+				tasks.add(JGAlgoUtils.recursiveAction(
 						() -> res.ssspResults[source0] = sssp.get().computeCardinalityShortestPaths(g, source0)));
 			}
 			for (RecursiveAction task : tasks)

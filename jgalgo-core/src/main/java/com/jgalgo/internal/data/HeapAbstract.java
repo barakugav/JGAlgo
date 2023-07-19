@@ -22,7 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
 
@@ -61,7 +61,7 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 	}
 
 	int compare(E e1, E e2) {
-		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);
+		return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);
 	}
 
 	static <K> Heap<K> fromHeapReferenceable(HeapReferenceable<K, ?> h) {
@@ -90,7 +90,7 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 		@Override
 		public Iterator<K> iterator() {
-			return Utils.iterMap(h.iterator(), HeapReference::key);
+			return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);
 		}
 
 		@SuppressWarnings("unchecked")

@@ -21,7 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.UnionFind;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -77,7 +77,7 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 
 		/* sort edges */
 		int[] edges = g.edges().toIntArray();
-		Utils.sort(edges, 0, m, w, parallelEnable);
+		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);
 
 		/* create union find data structure for each vertex */
 		UnionFind uf = unionFindBuilder.expectedSize(n).build();

@@ -19,7 +19,7 @@ package com.jgalgo.internal.data;
 import java.util.Collection;
 import java.util.Comparator;
 import com.jgalgo.internal.util.BuilderAbstract;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
@@ -139,7 +139,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 		Comparator<? super K> c = comparator();
 		if (c == null) {
 			for (HeapReference<K, V> p : this) {
-				if (Utils.cmpDefault(key, p.key()) == 0)
+				if (JGAlgoUtils.cmpDefault(key, p.key()) == 0)
 					return p;
 			}
 		} else {

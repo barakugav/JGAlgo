@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.MatchingAlgorithm;
 import com.jgalgo.ShortestPathSingleSource;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Weights of graph vertices or edges.
@@ -678,6 +678,6 @@ public interface Weights<W> {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-	public static final Object DefaultBipartiteWeightKey = new Utils.Obj("DefaultBipartiteVerticesWeightKey");
+	public static final Object DefaultBipartiteWeightKey = JGAlgoUtils.labeledObj("DefaultBipartiteVerticesWeightKey");
 
 }

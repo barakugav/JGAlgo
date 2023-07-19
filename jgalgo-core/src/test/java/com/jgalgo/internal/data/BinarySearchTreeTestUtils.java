@@ -27,7 +27,7 @@ import java.util.Set;
 import com.jgalgo.internal.data.HeapReferenceableTestUtils.HeapReferenceableTracker;
 import com.jgalgo.internal.data.HeapReferenceableTestUtils.HeapTrackerIdGenerator;
 import com.jgalgo.internal.data.HeapReferenceableTestUtils.TestMode;
-import com.jgalgo.internal.util.DebugPrintsManager;
+import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -105,7 +105,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	@SuppressWarnings("boxing")
 	private static void testFindSmallerGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder,
 			IntComparator compare, long seed, int n, boolean smaller) {
-		DebugPrintsManager debug = new DebugPrintsManager(false);
+		DebugPrinter debug = new DebugPrinter(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		BSTTracker tracker = new BSTTracker(treeBuilder.build(compare), 0, compare, seedGen.nextSeed());
@@ -184,7 +184,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	private static void testGetPredecessorSuccessor(BinarySearchTree.Builder<Integer, Void> treeBuilder, int n,
 			IntComparator compare, long seed, boolean predecessor) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		DebugPrintsManager debug = new DebugPrintsManager(false);
+		DebugPrinter debug = new DebugPrinter(false);
 		Random rand = new Random(seedGen.nextSeed());
 		int[] a = randPermutation(n, seedGen.nextSeed());
 

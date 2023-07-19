@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.Utils;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -64,7 +64,7 @@ class VertexCoverUtils {
 		public IntCollection vertices() {
 			if (this.vertices == null) {
 				IntList vertices = new IntArrayList(cover.cardinality());
-				for (int v : Utils.iterable(cover))
+				for (int v : JGAlgoUtils.iterable(cover))
 					vertices.add(v);
 				this.vertices = IntLists.unmodifiable(vertices);
 			}
