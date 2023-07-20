@@ -288,7 +288,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int[] edges = new int[(n - 1) * 3];
 			int[] edgesNext = new int[(n / 2 * 1) * 3];
 			int edgesNum = 0;
-			for (int e : tOrig.edges()) {
+			for (int m = tOrig.edges().size(), e = 0; e < m; e++) {
 				int u = tOrig.edgeSource(e);
 				int v = tOrig.edgeTarget(e);
 				edges[edgesNum * 3 + 0] = e;

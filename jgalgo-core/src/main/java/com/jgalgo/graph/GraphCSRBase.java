@@ -72,7 +72,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 		edgesOutBegin = new int[n + 1];
 		endpoints = new int[m * 2];
 
-		for (int e : g.edges()) {
+		for (int e = 0; e < m; e++) {
 			endpoints[e * 2 + 0] = g.edgeSource(e);
 			endpoints[e * 2 + 1] = g.edgeTarget(e);
 		}

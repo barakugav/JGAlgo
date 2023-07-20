@@ -94,7 +94,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunction.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 
-		for (int e : g.edges())
+		for (int m = g.edges().size(), e = 0; e < m; e++)
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
@@ -159,12 +159,12 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			for (;;) {
 				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
-				for (int e : g.edges())
+				for (int e = 0; e < m; e++)
 					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);
 
 				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
-				for (int e : g.edges()) {
+				for (int e = 0; e < m; e++) {
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
 					if (w[e] <= 0)
 						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
@@ -261,7 +261,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-					for (int e : g.edges()) {
+					for (int e = 0; e < m; e++) {
 						int weight = w[e];
 						if (weight > 0) {
 							int U = connectivityRes.getVertexCc(g.edgeSource(e));
@@ -272,8 +272,9 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					}
 
 					// Calc distance with abs weight function to update potential function
-					for (int e : G.edges())
-						GWeights.set(e, Math.abs(GWeights.getInt(e)));
+					for (int weight, mG = G.edges().size(), e = 0; e < mG; e++)
+						if ((weight = GWeights.getInt(e)) < 0)
+							GWeights.set(e, -weight);
 					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));

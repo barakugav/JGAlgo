@@ -27,9 +27,23 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class IdStrategy {
 
-	abstract int size();
+	int size;
+	private final IntSet indices;
 
-	abstract IntSet indices();
+	IdStrategy(int initSize) {
+		if (initSize < 0)
+			throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
+		size = initSize;
+		indices = new IndicesSet();
+	}
+
+	int size() {
+		return size;
+	}
+
+	IntSet indices() {
+		return indices;
+	}
 
 	abstract void addIdSwapListener(IndexSwapListener listener);
 
@@ -44,64 +58,40 @@ abstract class IdStrategy {
 		return indices().toString();
 	}
 
-	static abstract class WithSize extends IdStrategy {
-
-		int size;
-		private final IntSet indices;
-
-		WithSize(int initSize) {
-			if (initSize < 0)
-				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
-			size = initSize;
-			indices = new IndicesSet();
-		}
+	private class IndicesSet extends AbstractIntSet {
 
 		@Override
-		int size() {
+		public int size() {
 			return size;
 		}
 
 		@Override
-		IntSet indices() {
-			return indices;
+		public boolean contains(int key) {
+			return key >= 0 && key < size;
 		}
 
-		private class IndicesSet extends AbstractIntSet {
-
-			@Override
-			public int size() {
-				return size;
-			}
-
-			@Override
-			public boolean contains(int key) {
-				return key >= 0 && key < size;
-			}
-
-			@Override
-			public IntIterator iterator() {
-				return JGAlgoUtils.rangeIter(size);
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof IndicesSet))
-					return super.equals(other);
-				IndicesSet o = (IndicesSet) other;
-				return size == o.size();
-			}
-
-			@Override
-			public int hashCode() {
-				return size * (size + 1) / 2;
-			}
+		@Override
+		public IntIterator iterator() {
+			return JGAlgoUtils.rangeIter(size);
 		}
 
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof IndicesSet))
+				return super.equals(other);
+			IndicesSet o = (IndicesSet) other;
+			return size == o.size();
+		}
+
+		@Override
+		public int hashCode() {
+			return size * (size + 1) / 2;
+		}
 	}
 
-	static class FixedSize extends WithSize {
+	static class FixedSize extends IdStrategy {
 
 		FixedSize(int initSize) {
 			super(initSize);

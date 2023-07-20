@@ -39,7 +39,7 @@ class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 
 		BitSet cover = new BitSet(n);
 
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u, v;
 			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))
 				continue;

@@ -47,7 +47,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 
 	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, WeightFunction w) {
 		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
@@ -93,7 +93,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 
 	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, WeightFunction w) {
 		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);

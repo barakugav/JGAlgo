@@ -174,13 +174,13 @@ class TreePathMaximaUtils {
 			return false;
 
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
-		for (int e : g.edges())
+		for (int m = g.edges().size(), e = 0; e < m; e++)
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
 		WeightFunction w0 = e -> w.weight(edgeRef[e]);
 		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int mstEdge = tpmResults.getHeaviestEdge(i++);
 			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;

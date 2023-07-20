@@ -216,7 +216,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 				biccsEdges = new IntList[getNumberOfBiCcs()];
 				for (int idx = 0; idx < biccsVertices.length; idx++)
 					biccsEdges[idx] = new IntArrayList();
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					/* Both getVertexBiCcs(u) and getVertexBiCcs(v) are sorted */

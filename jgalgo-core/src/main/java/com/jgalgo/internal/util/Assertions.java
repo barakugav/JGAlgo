@@ -23,6 +23,7 @@ import java.util.Objects;
 import com.jgalgo.GraphsUtils;
 import com.jgalgo.JGAlgoConfig;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.data.Heap;
@@ -48,10 +49,10 @@ public class Assertions {
 				throw new IllegalArgumentException("only undirected graphs are supported");
 		}
 
-		public static void onlyBipartite(Graph g, Weights.Bool partition) {
+		public static void onlyBipartite(IndexGraph g, Weights.Bool partition) {
 			if (!AssertBipartitePartition)
 				return;
-			for (int e : g.edges())
+			for (int m = g.edges().size(), e = 0; e < m; e++)
 				if (partition.getBool(g.edgeSource(e)) == partition.getBool(g.edgeTarget(e)))
 					throw new IllegalArgumentException("the graph is not bipartite");
 		}
@@ -66,15 +67,15 @@ public class Assertions {
 				throw new IllegalArgumentException(msg);
 		}
 
-		public static void onlyPositiveEdgesWeights(Graph g, WeightFunction w) {
+		public static void onlyPositiveEdgesWeights(IndexGraph g, WeightFunction w) {
 			if (!AssertPositiveWeights)
 				return;
 			if (w instanceof WeightFunction.Int) {
 				WeightFunction.Int wInt = (WeightFunction.Int) w;
-				for (int e : g.edges())
+				for (int m = g.edges().size(), e = 0; e < m; e++)
 					onlyPositiveWeight(wInt.weightInt(e));
 			} else {
-				for (int e : g.edges())
+				for (int m = g.edges().size(), e = 0; e < m; e++)
 					onlyPositiveWeight(w.weight(e));
 			}
 		}

@@ -92,7 +92,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 			u = g.edgeEndpoint(e, u);
 		}
 
-		for (int e : g.edges())
+		for (int e = 0; e < m; e++)
 			if (!usedEdges.get(e))
 				throw new IllegalArgumentException("Graph is not connected");
 		return new PathImpl(g, start, end, tour);
@@ -179,7 +179,7 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 			u = g.edgeSource(e);
 		}
 
-		for (int e : g.edges())
+		for (int e = 0; e < m; e++)
 			if (!usedEdges.get(e))
 				throw new IllegalArgumentException("Graph is not connected");
 		IntArrays.reverse(tour.elements(), 0, tour.size());

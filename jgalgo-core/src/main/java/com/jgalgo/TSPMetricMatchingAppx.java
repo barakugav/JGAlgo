@@ -69,7 +69,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 				mVtoV[mGn++] = u;
 		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
 		Weights.Double mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);
-		for (int e : mG.edges()) {
+		for (int m = mG.edges().size(), e = 0; e < m; e++) {
 			int u = mVtoV[mG.edgeSource(e)];
 			int v = mVtoV[mG.edgeTarget(e)];
 			mGWeightsNeg.set(e, -w.weight(g.getEdge(u, v)));

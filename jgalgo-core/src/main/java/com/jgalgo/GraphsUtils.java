@@ -55,7 +55,7 @@ public class GraphsUtils {
 		if (!g.getCapabilities().selfEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
-		for (int u : ig.vertices()) {
+		for (int n = ig.vertices().size(), u = 0; u < n; u++) {
 			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				if (u == eit.target())

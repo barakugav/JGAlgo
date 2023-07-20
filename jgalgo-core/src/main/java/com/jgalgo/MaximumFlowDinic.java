@@ -88,7 +88,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		double computeMaximumFlow() {
 			Graph L =
 					layerGraphFactory.setDirected(true).expectedVerticesNum(/* >= */ n).expectedEdgesNum(n).newGraph();
-			for (int v : g.vertices())
+			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				L.addVertex(v);
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();

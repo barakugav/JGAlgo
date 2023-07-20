@@ -78,13 +78,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 			debug.println("\t", getClass().getSimpleName());
 
 			double capacitySum = 100;
-			for (int e : gOrig.edges())
+			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				capacitySum += net.getCapacity(e);
 			capacitySum *= 16;
 
 			GraphFactory factory = GraphFactory.newDirected().setOption("impl", "GraphLinked");
 			Graph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
-			for (int v : g.vertices())
+			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				L.addVertex(v);
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();

@@ -135,7 +135,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 	static Weights.Double assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, int[] edgeRef) {
 		Weights.Double w2 = Weights.createExternalEdgesWeights(g, double.class);
-		for (int e : g.edges())
+		for (int m = g.edges().size(), e = 0; e < m; e++)
 			w2.set(e, w.weight(edgeRef[e]));
 		return w2;
 	}
@@ -144,7 +144,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
-		for (int e : g.edges())
+		for (int m = g.edges().size(), e = 0; e < m; e++)
 			if (rand.nextBoolean())
 				edgeSet.add(e);
 		return subGraph(g, edgeSet, edgeRef);
@@ -170,7 +170,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 			vToVnew[u] = trees[ut].addVertex();
 		}
 
-		for (int e : f.edges()) {
+		for (int m = f.edges().size(), e = 0; e < m; e++) {
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
 			int treeIdx = vToTree.applyAsInt(u);
@@ -180,7 +180,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 		// use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
 		TreePathMaxima.Queries[] tpmQueries = allocatedMem.tpmQueries;
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v))
@@ -199,7 +199,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		lightEdges.clear();
 		int[] tpmIdx = allocatedMem.vToVnew;
 		Arrays.fill(tpmIdx, 0, treeCount, 0);
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v)

@@ -82,7 +82,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 			assert v == vBuilder;
 		}
 		int[] edgeRef = IntArrays.EMPTY_ARRAY;
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = mstRes.vToTree[g.edgeSource(e)];
 			int v = mstRes.vToTree[g.edgeTarget(e)];
 			if (u == v)

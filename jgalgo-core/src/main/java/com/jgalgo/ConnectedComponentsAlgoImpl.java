@@ -177,7 +177,7 @@ class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
 				ccEdges = new IntList[ccNum];
 				for (int c = 0; c < ccNum; c++)
 					ccEdges[c] = new IntArrayList();
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cc1 = vertexToCc[g.edgeSource(e)];
 					int cc2 = vertexToCc[g.edgeTarget(e)];
 					if (cc1 == cc2)

@@ -66,7 +66,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		IndexGraphBuilder b = IndexGraphBuilder.newUndirected();
 
 		/* Add two vertices for each original vertex */
-		for (int v : g.vertices()) {
+		for (int n = g.vertices().size(), v = 0; v < n; v++) {
 			int v1 = b.addVertex();
 			int v2 = b.addVertex();
 			assert v1 == v * 2 + 0;
@@ -74,7 +74,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 		/* Add two edges for each original edge */
 		final int dummyEdgesThreshold = g.edges().size() * 2;
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int source = g.edgeSource(e);
 			int target = g.edgeTarget(e);
 			int e1 = b.addEdge(source * 2 + 0, target * 2 + 0);
@@ -86,7 +86,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/* Add dummy edges between each pair of duplicated vertices */
-		for (int v : g.vertices()) {
+		for (int n = g.vertices().size(), v = 0; v < n; v++) {
 			int v1 = v * 2 + 0;
 			int v2 = v * 2 + 1;
 			int e = b.addEdge(v1, v2);
@@ -107,7 +107,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		/* Convert matching to the original graph */
 		int[] matched = new int[g.vertices().size()];
-		for (int v : g.vertices()) {
+		for (int n = g.vertices().size(), v = 0; v < n; v++) {
 			int vDup = v * 2 + 0;
 			int eDup = matchDup.getMatchedEdge(vDup);
 			assert eDup >= 0 : "vertex " + vDup + " is not matched";
@@ -164,7 +164,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			treeNum = n;
 
 			/* Create all edges objects */
-			for (int e : g.edges()) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				Blossom U = singletonNodes[g.edgeSource(e)];
 				Blossom V = singletonNodes[g.edgeTarget(e)];
 				if (U == V)

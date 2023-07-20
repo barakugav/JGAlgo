@@ -283,12 +283,12 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 		void initCapacitiesAndFlows(double[] flow, double[] capacity) {
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					capacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;
 					flow[e] = 0;
 				}
 			} else {
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					double cap =
 							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(edgeRef[e]) : 0;
 					capacity[e] = cap;
@@ -300,12 +300,12 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		void initCapacitiesAndFlows(int[] flow, int[] capacity) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					capacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
 					flow[e] = 0;
 				}
 			} else {
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap =
 							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacityInt(edgeRef[e]) : 0;
 					capacity[e] = cap;
@@ -315,7 +315,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		}
 
 		double constructResult(double[] flow) {
-			for (int e : g.edges()) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (isOriginalEdge(e))
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 					net.setFlow(edgeRef[e], flow[e]);
@@ -336,7 +336,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 		int constructResult(int[] flow) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
-			for (int e : g.edges()) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (isOriginalEdge(e))
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 					net.setFlow(edgeRef[e], flow[e]);
@@ -362,13 +362,13 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		private static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {
 			if (net instanceof FlowNetwork.Int) {
 				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap = netInt.getCapacityInt(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
 				}
 			} else {
-				for (int e : g.edges()) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					double cap = net.getCapacity(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);

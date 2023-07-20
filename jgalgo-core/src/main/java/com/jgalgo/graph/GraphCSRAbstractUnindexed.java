@@ -54,7 +54,7 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 		}
 		edgesOutBegin[n] = edgesOutArrLen;
 
-		for (int e : g.edges()) {
+		for (int e = 0; e < m; e++) {
 			endpoints[e * 2 + 0] = g.edgeSource(e);
 			endpoints[e * 2 + 1] = g.edgeTarget(e);
 		}

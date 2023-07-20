@@ -65,7 +65,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		if (g.getCapabilities().selfEdges()) {
 			int bestSelfLoop = -1;
 			double bestSelfLoopWeight = Double.POSITIVE_INFINITY;
-			for (int e : g.edges()) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (g.edgeSource(e) != g.edgeTarget(e))
 					continue;
 				double ew = w.weight(e);

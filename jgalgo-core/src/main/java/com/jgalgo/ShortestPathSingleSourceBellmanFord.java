@@ -61,7 +61,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		res.distances[source] = 0;
 
 		for (int i = 0; i < n; i++) {
-			for (int e : g.edges()) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double d = res.distances[u] + w.weight(e);
 				if (d < res.distances[v]) {

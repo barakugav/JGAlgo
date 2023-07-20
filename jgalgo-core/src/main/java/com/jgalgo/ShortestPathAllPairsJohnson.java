@@ -69,7 +69,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		final int n = g.vertices().size();
 
 		boolean negWeight = false;
-		for (int e : g.edges()) {
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			if (w.weight(e) < 0) {
 				negWeight = true;
 				break;

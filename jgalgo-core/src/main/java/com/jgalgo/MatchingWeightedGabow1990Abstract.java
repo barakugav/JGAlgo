@@ -469,7 +469,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
 			this.w = e -> wLocal.weight(edgeVal.get(e).e);
 
-			for (int e : gOrig.edges()) {
+			for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);
@@ -538,7 +538,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 			// init dual value of all vertices as maxWeight / 2
 			double maxWeight = Double.MIN_VALUE;
-			for (int e : g.edges())
+			for (int m = g.edges().size(), e = 0; e < m; e++)
 				maxWeight = Math.max(maxWeight, w.weight(e));
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)

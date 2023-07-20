@@ -52,12 +52,12 @@ public class WeightFunctions {
 		if (w instanceof WeightFunction.Int) {
 			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);
-			for (int e : g.edges())
+			for (int m = g.edges().size(), e = 0; e < m; e++)
 				wLocal.set(e, wInt.weightInt(e));
 			return wLocal;
 		} else {
 			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);
-			for (int e : g.edges())
+			for (int m = g.edges().size(), e = 0; e < m; e++)
 				wLocal.set(e, w.weight(e));
 			return wLocal;
 		}
@@ -89,7 +89,7 @@ public class WeightFunctions {
 		if (w instanceof WeightsImpl.Index)
 			return w;
 		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);
-		for (int e : g.edges())
+		for (int m = g.edges().size(), e = 0; e < m; e++)
 			wLocal.set(e, w.weightInt(e));
 		return wLocal;
 	}

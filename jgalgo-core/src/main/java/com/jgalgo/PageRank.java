@@ -50,7 +50,7 @@ class PageRank {
 		double[] transferredScores = new double[n];
 		Predecessors ng = new Predecessors(g, w);
 
-		for (int v : g.vertices()) {
+		for (int v = 0; v < n; v++) {
 			outDegree[v] = g.outEdges(v).size();
 			scores[v] = 1.0 / n;
 		}
@@ -66,11 +66,11 @@ class PageRank {
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
-				for (int v : g.vertices())
+				for (int v = 0; v < n; v++)
 					transferredScores[v] = scores[v] / outDegree[v];
 
 				double maxChange = 0;
-				for (int v : g.vertices()) {
+				for (int v = 0; v < n; v++) {
 					double score = 0;
 					for (int num = outDegree[v], eIdx = 0; eIdx < num; eIdx++)
 						score += transferredScores[ng.predecessor(v, eIdx)];
@@ -84,17 +84,17 @@ class PageRank {
 
 		} else {
 			double[] weightSum = new double[n];
-			for (int u : g.vertices())
+			for (int u = 0; u < n; u++)
 				weightSum[u] = GraphsUtils.weightSum(g.outEdges(u), w);
 
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
-				for (int v : g.vertices())
+				for (int v = 0; v < n; v++)
 					transferredScores[v] = scores[v] / weightSum[v];
 
 				double maxChange = 0;
-				for (int v : g.vertices()) {
+				for (int v = 0; v < n; v++) {
 					double score = 0;
 					for (int num = outDegree[v], eIdx = 0; eIdx < num; eIdx++)
 						score += transferredScores[ng.predecessor(v, eIdx)] * ng.edgeWeight(v, eIdx);
