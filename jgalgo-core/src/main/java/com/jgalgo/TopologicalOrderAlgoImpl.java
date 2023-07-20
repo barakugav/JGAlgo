@@ -20,7 +20,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -31,7 +31,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		Assertions.Graphs.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
-		IntPriorityQueue queue = new IntArrayFIFOQueue();
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 

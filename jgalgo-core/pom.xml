@@ -88,7 +88,7 @@
         <version>${jacoco-maven-plugin.version}</version>
         <configuration>
           <excludes>
-            <exclude>com/jgalgo/internal/data/IntArrayFIFOQueue**</exclude>
+            <exclude>com/jgalgo/internal/data/FIFOQueueIntNoReduce**</exclude>
             <exclude>com/jgalgo/internal/util/DebugPrinter**</exclude>
           </excludes>
         </configuration>

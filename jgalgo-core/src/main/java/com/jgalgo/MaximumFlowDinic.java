@@ -22,7 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -91,7 +91,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 			for (int v : g.vertices())
 				L.addVertex(v);
 
-			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
+			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];
 
 			for (;;) {

@@ -168,7 +168,7 @@ public class RandomGraphBuilder {
 		Weights.Bool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
 		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
 		int reachableFromRootCount = 1;
-		IntPriorityQueue queue = new IntArrayFIFOQueue();
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 		int dagRoot = g.vertices().iterator().nextInt();
 		IntList dagOrder = new IntArrayList(g.vertices());

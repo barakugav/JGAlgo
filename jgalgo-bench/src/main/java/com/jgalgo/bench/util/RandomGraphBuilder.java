@@ -22,7 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.data.UnionFind;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -168,7 +168,7 @@ public class RandomGraphBuilder {
 		Weights.Bool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
 		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
 		int reachableFromRootCount = 1;
-		IntPriorityQueue queue = new IntArrayFIFOQueue();
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 		int dagRoot = g.vertices().iterator().nextInt();
 		IntList dagOrder = new IntArrayList(g.vertices());

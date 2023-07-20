@@ -21,7 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -41,7 +41,7 @@ class BFSIterImpl {
 			this.g = g;
 			int n = g.vertices().size();
 			visited = new BitSet(n);
-			queue = new IntArrayFIFOQueue();
+			queue = new FIFOQueueIntNoReduce();
 			inEdge = -1;
 			layer = -1;
 

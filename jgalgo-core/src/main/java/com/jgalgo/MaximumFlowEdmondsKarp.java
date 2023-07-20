@@ -19,7 +19,7 @@ package com.jgalgo;
 import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -62,7 +62,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 			final int n = g.vertices().size();
 			int[] backtrack = new int[n];
 			BitSet visited = new BitSet(n);
-			IntPriorityQueue queue = new IntArrayFIFOQueue();
+			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 			for (;;) {
 				queue.clear();

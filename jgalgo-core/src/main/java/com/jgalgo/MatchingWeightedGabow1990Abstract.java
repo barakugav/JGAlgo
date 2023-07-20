@@ -37,7 +37,7 @@ import com.jgalgo.internal.data.SplitFindMin;
 import com.jgalgo.internal.data.UnionFind;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.DebugPrinter;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -495,8 +495,8 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 					.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
 			expandEvents = heapBuilder.keysTypePrimitive(double.class).<Blossom>valuesTypeObj().build();
 
-			unionQueue = new IntArrayFIFOQueue();
-			scanQueue = new IntArrayFIFOQueue();
+			unionQueue = new FIFOQueueIntNoReduce();
+			scanQueue = new FIFOQueueIntNoReduce();
 
 			this.debug = debugPrint;
 		}

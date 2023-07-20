@@ -21,7 +21,7 @@ import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -128,7 +128,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			edgeIters = new EdgeIter[n];
 
 			relabelVisited = new BitSet(n);
-			relabelQueue = new IntArrayFIFOQueue();
+			relabelQueue = new FIFOQueueIntNoReduce();
 			labelsReComputeThreshold = n;
 
 			layersActive = new LinkedListFixedSize.Doubly(n);

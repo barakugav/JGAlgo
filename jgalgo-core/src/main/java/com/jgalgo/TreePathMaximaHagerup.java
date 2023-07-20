@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.Pair;
@@ -449,7 +449,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			}
 
 			/* Start traversing the full branching tree from the leaves upwards */
-			IntPriorityQueue queue = new IntArrayFIFOQueue();
+			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 			BitSet queued = new BitSet(n);
 			for (int u = 0; u < n; u++) {
 				if (depths[u] == treeHeight - 1) {

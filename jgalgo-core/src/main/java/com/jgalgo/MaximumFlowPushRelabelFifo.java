@@ -17,7 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -62,7 +62,7 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
-		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
+		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
@@ -88,7 +88,7 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 
 	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
-		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
+		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);

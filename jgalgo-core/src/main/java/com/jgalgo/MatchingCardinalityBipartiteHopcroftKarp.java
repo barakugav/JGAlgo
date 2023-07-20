@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -83,7 +83,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 
 		/* BFS */
 		int[] depths = new int[n];
-		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
+		IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 
 		/* DFS */
 		BitSet visited = new BitSet(n);

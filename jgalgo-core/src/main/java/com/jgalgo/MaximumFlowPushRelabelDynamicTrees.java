@@ -21,7 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.data.DynamicTree;
 import com.jgalgo.internal.data.DynamicTree.MinEdge;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.data.DynamicTreeExtension;
 import com.jgalgo.internal.data.QueueFixSize;
 import it.unimi.dsi.fastutil.Stack;
@@ -81,7 +81,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		/* Data structure maintaining the children of each node in the DT */
 		final LinkedListFixedSize.Doubly children;
-		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
+		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();
 
 		AbstractWorker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
@@ -119,7 +119,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 			// perform another one from source to init unreachable vertices
 
 			BitSet visited = new BitSet(n);
-			IntPriorityQueue queue = new IntArrayFIFOQueue();
+			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 			assert visited.isEmpty();
 			assert queue.isEmpty();
 

@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
+public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 
 	private static final long serialVersionUID = 0L;
 	/** The standard initial capacity of a queue. */
@@ -58,7 +58,7 @@ public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	 * @param    capacity the initial capacity of this queue.
 	 */
 
-	public IntArrayFIFOQueue(final int capacity) {
+	public FIFOQueueIntNoReduce(final int capacity) {
 		if (capacity > it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1)
 			throw new IllegalArgumentException(
 					"Initial capacity (" + capacity + ") exceeds " + (it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1));
@@ -73,7 +73,7 @@ public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	/**
 	 * Creates a new empty queue with standard {@linkplain #INITIAL_CAPACITY initial capacity}.
 	 */
-	public IntArrayFIFOQueue() {
+	public FIFOQueueIntNoReduce() {
 		this(INITIAL_CAPACITY);
 	}
 
