@@ -135,6 +135,9 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		/* we are done when it reaches zero */
 		private int treeNum;
 
+		/* temporary pointer to an augmentation edge found during grow/shrink/expand */
+		private Edge eAugment = null;
+
 		/* Temp list used during expand */
 		private final List<Blossom> expandTemp = new ArrayList<>();
 
@@ -222,86 +225,90 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			/* main loop */
 			for (;;) {
 				final int iterationTreeNum = treeNum;
-				for (Blossom root : rootsDuringAugmentation()) {
+				treesLoop: for (Blossom root : rootsDuringAugmentation()) {
 					assert root.isTreeRoot();
 					assert root == root.tree.root;
 
 					Tree tree = root.tree;
-					currentTree: do {
-						/* Check for augmentation, set currentEdge */
-						for (TreesEdge e : tree.outEdgesAndProneRemoved()) {
-							Tree t2 = e.target;
-							t2.currentEdge = e;
+					/* Check for augmentation, set currentEdge */
+					for (TreesEdge e : tree.outEdgesAndProneRemoved()) {
+						Tree t2 = e.target;
+						t2.currentEdge = e;
 
-							if (!e.pqEvenEven.isEmpty()) {
-								Edge minEdge = e.pqEvenEven.findMin().key();
-								if (minEdge.slack - tree.eps <= t2.eps) {
-									augment(minEdge);
-									assert e.pqEvenEven.isEmpty() || e.pqEvenEven.findMin()
-											.key() != minEdge : "edge was not removed during augment";
-									break currentTree;
-								}
-							}
-						}
-						for (TreesEdge e : tree.inEdgesAndProneRemoved()) {
-							Tree t2 = e.source;
-							t2.currentEdge = e;
-
-							Edge minEdge;
-							if (!e.pqEvenEven.isEmpty()
-									&& (minEdge = e.pqEvenEven.findMin().key()).slack - tree.eps <= t2.eps) {
-								/* Augment step */
+						if (!e.pqEvenEven.isEmpty()) {
+							Edge minEdge = e.pqEvenEven.findMin().key();
+							if (minEdge.slack - tree.eps <= t2.eps) {
 								augment(minEdge);
 								assert e.pqEvenEven.isEmpty() || e.pqEvenEven.findMin()
 										.key() != minEdge : "edge was not removed during augment";
-								break currentTree;
+								continue treesLoop;
 							}
 						}
-						Debug.assertConstraints(this);
+					}
+					for (TreesEdge e : tree.inEdgesAndProneRemoved()) {
+						Tree t2 = e.source;
+						t2.currentEdge = e;
 
-						/* Grow tree */
-						for (;;) {
-							Edge minEdge;
-							Blossom minBlossom;
+						Edge minEdge;
+						if (!e.pqEvenEven.isEmpty()
+								&& (minEdge = e.pqEvenEven.findMin().key()).slack - tree.eps <= t2.eps) {
+							/* Augment step */
+							augment(minEdge);
+							assert e.pqEvenEven.isEmpty()
+									|| e.pqEvenEven.findMin().key() != minEdge : "edge was not removed during augment";
+							continue treesLoop;
+						}
+					}
+					Debug.assertConstraints(this);
 
-							if (!tree.pqEvenOut.isEmpty()
-									&& (minEdge = tree.pqEvenOut.findMin().key()).slack <= tree.eps) {
-								/* Grow step */
-								/* no need to extractMin(), all Even-Out edges of minEdge's target will be removed */
-								grow(minEdge);
+					/* Grow tree */
+					for (;;) {
+						Edge minEdge;
+						Blossom minBlossom;
 
-							} else if (!tree.pqEvenEven.isEmpty()
-									&& (minEdge = tree.pqEvenEven.findMin().key()).slack <= tree.eps * 2) {
-								/* Shrink step */
-								tree.pqRemoveEvenEven(minEdge);
-								if (processEdgeEvenEven(minEdge, true))
-									shrink(minEdge);
+						if (!tree.pqEvenOut.isEmpty() && (minEdge = tree.pqEvenOut.findMin().key()).slack <= tree.eps) {
+							/* Grow step */
+							/* no need to extractMin(), all Even-Out edges of minEdge's target will be removed */
+							boolean augmentPerformed = grow(minEdge);
+							if (augmentPerformed)
+								continue treesLoop;
 
-							} else if (!tree.pqOdd.isEmpty()
-									&& (minBlossom = tree.pqOdd.findMin().key()).dual <= tree.eps) {
-								/* Expand step */
-								tree.pqRemoveOdd(minBlossom);
-								expand(minBlossom);
-
-							} else {
-								break;
+						} else if (!tree.pqEvenEven.isEmpty()
+								&& (minEdge = tree.pqEvenEven.findMin().key()).slack <= tree.eps * 2) {
+							/* Shrink step */
+							tree.pqRemoveEvenEven(minEdge);
+							if (processEdgeEvenEven(minEdge, true)) {
+								boolean augmentPerformed = shrink(minEdge);
+								if (augmentPerformed)
+									continue treesLoop;
 							}
-						}
-						Debug.assertConstraints(this);
 
-						/* Clear currentEdge */
-						assert tree.currentEdge == null;
-						for (TreesEdge e : tree.outEdges()) {
-							assert e.source == tree;
-							assert e.target.currentEdge == e;
-							e.target.currentEdge = null;
+						} else if (!tree.pqOdd.isEmpty()
+								&& (minBlossom = tree.pqOdd.findMin().key()).dual <= tree.eps) {
+							/* Expand step */
+							tree.pqRemoveOdd(minBlossom);
+							boolean augmentPerformed = expand(minBlossom);
+							if (augmentPerformed)
+								continue treesLoop;
+
+						} else {
+							break;
 						}
-						for (TreesEdge e : tree.inEdges()) {
-							assert e.target == tree;
-							assert e.source.currentEdge == e;
-							e.source.currentEdge = null;
-						}
-					} while (false);
+					}
+					Debug.assertConstraints(this);
+
+					/* Clear currentEdge */
+					assert tree.currentEdge == null;
+					for (TreesEdge e : tree.outEdges()) {
+						assert e.source == tree;
+						assert e.target.currentEdge == e;
+						e.target.currentEdge = null;
+					}
+					for (TreesEdge e : tree.inEdges()) {
+						assert e.target == tree;
+						assert e.source.currentEdge == e;
+						e.source.currentEdge = null;
+					}
 				}
 				Debug.assertConstraints(this);
 
@@ -419,7 +426,12 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			lastRoot.treeSiblingNext = null;
 		}
 
-		private static void grow(Edge growEdge) {
+		/**
+		 *
+		 * @param  growEdge the edge from an even node to an out node
+		 * @return          {@code true} if augmentation was performed
+		 */
+		private boolean grow(Edge growEdge) {
 			Blossom u, v;
 			if (growEdge.target.isOut()) {
 				u = growEdge.getSourceOuterBlossom();
@@ -439,7 +451,9 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 			/* Grow the new sub tree iteratively, until no more grow step is available */
 			for (Blossom j = w;;) {
-				grow0(j);
+				boolean augmentPerformed = grow0(j);
+				if (augmentPerformed)
+					return true;
 
 				/* continue exploring sub tree for more grow operations */
 				if (j.firstTreeChild != null) {
@@ -447,7 +461,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				} else {
 					for (;;) {
 						if (j == w)
-							return;
+							return false;
 						if (j.treeSiblingNext != null)
 							break;
 						j = j.matchedNode().getTreeParent();
@@ -491,7 +505,12 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			addTreeChild(u, w);
 		}
 
-		private static void grow0(Blossom w) {
+		/**
+		 *
+		 * @param  w the new even node grown
+		 * @return   {@code true} if augmentation was performed
+		 */
+		private boolean grow0(Blossom w) {
 			Blossom v = w.matchedNode();
 			Blossom u = v.getTreeParent();
 			dbgLog.format("grow(%s, %s, %s)\n", u, v, v.matchedNode());
@@ -541,6 +560,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			}
 
 			/* Add w as an even (+) node to the tree */
+			eAugment = null;
 			for (Edge e : w.outEdges()) {
 				Blossom x = e.getTargetOuterBlossom();
 				e.slack += tree.eps;
@@ -561,9 +581,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 					}
 					if (tree != x.tree) {
 						/* Cross-trees (+,+) edge */
+						if (e.slack <= x.tree.eps)
+							/* we can augment using e, prioritize augmentation over other operations */
+							eAugment = e;
 						ensureTreesEdgeExists(tree, x.tree);
 						x.tree.currentEdge.pqInsertEvenEven(e);
-						// TODO optimization: check for augmentation
 					} else {
 						/* Inner (+,+) edge */
 						tree.pqInsertEvenEven(e);
@@ -594,9 +616,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 					}
 					if (tree != x.tree) {
 						/* Cross-trees (+,+) edge */
+						if (e.slack <= x.tree.eps)
+							/* we can augment using e, prioritize augmentation over other operations */
+							eAugment = e;
 						ensureTreesEdgeExists(tree, x.tree);
 						x.tree.currentEdge.pqInsertEvenEven(e);
-						// TODO optimization: check for augmentation
 					} else {
 						/* Inner (+,+) edge */
 						tree.pqInsertEvenEven(e);
@@ -614,6 +638,9 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			v.setProcessed(true);
 			if (v.isBlossom())
 				tree.pqInsertOdd(v);
+
+			/* prioritize augmentation over other operations */
+			return augmentIfEdgeFound();
 		}
 
 		private static void addTreeChild(Blossom parent, Blossom child) {
@@ -638,7 +665,12 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			parent.firstTreeChild = child;
 		}
 
-		private static void shrink(Edge bridge) {
+		/**
+		 *
+		 * @param  bridge the edge connecting between the two branches of the new blossom
+		 * @return        {@code true} if augmentation was performed
+		 */
+		private boolean shrink(Edge bridge) {
 			dbgLog.format("shrink(%s)\n", bridge);
 			Blossom root;
 			{ /* Find LCA of the edge endpoints */
@@ -767,6 +799,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				B.match = root.match;
 			}
 
+			eAugment = null;
 			Edge prevBlossomSibling = bridge;
 			for (boolean sideSource : new boolean[] { true, false }) {
 				Blossom b = sideSource ? bridge.source : bridge.target;
@@ -870,6 +903,9 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				}
 			}
 			dbgLog.format("\t%s (new blossom)\n", B);
+
+			/* prioritize augmentation over other operations */
+			return augmentIfEdgeFound();
 		}
 
 		private static void removeFromTreeChildrenList(Blossom b) {
@@ -905,15 +941,15 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			}
 		}
 
-		private static void handleCrossBlossomOutEdgeOfOddToEven(Edge e) {
+		private void handleCrossBlossomOutEdgeOfOddToEven(Edge e) {
 			handleCrossBlossomEdgeOfOddToEven(e, true);
 		}
 
-		private static void handleCrossBlossomInEdgeOfOddToEven(Edge e) {
+		private void handleCrossBlossomInEdgeOfOddToEven(Edge e) {
 			handleCrossBlossomEdgeOfOddToEven(e, false);
 		}
 
-		private static void handleCrossBlossomEdgeOfOddToEven(Edge e, boolean outEdge) {
+		private void handleCrossBlossomEdgeOfOddToEven(Edge e, boolean outEdge) {
 			/*
 			 * When a blossom is changed from odd to even, we traverse its edges one by one, and if the edge is a
 			 * cross-blossom edge, namely its endpoints does not lie in the blossoms, we need to add/remove it from/to
@@ -935,7 +971,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			if (other.isEven() && tree != other.tree) {
 				/* e was (-,+) edge, remove it from PQ as b is now + (even) */
 				other.tree.pqEdgeRemoveEvenOdd(other.tree.currentEdge, e);
-				// TODO optimization: check of augment
+				if (e.slack + tree.eps <= other.tree.eps)
+					eAugment = e;
 			}
 
 			/* Add e to all relevant PQs */
@@ -961,7 +998,12 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			}
 		}
 
-		private void expand(Blossom B) {
+		/**
+		 *
+		 * @param  B the blossom to expand
+		 * @return   {@code true} if augmentation was performed
+		 */
+		private boolean expand(Blossom B) {
 			dbgLog.format("expand(%s)\n", B);
 			assert B.isBlossom();
 			assert B.isOuter();
@@ -1136,6 +1178,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				B.outEdges.prevOutEdge.nextOutEdge = null;
 			if (B.inEdges != null)
 				B.inEdges.prevInEdge.nextInEdge = null;
+			eAugment = null;
 			for (Edge e : B.outEdges()) {
 				Blossom b = e.sourceOrig.getPenultimateBlossomAndUpdateGrandparentToGrandchild();
 				/* its ok to modify it during iteration, e.nextOutEdge already saved in iterator */
@@ -1162,9 +1205,10 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 						if (bOther.tree == tree) {
 							tree.pqInsertEvenEven(e);
 						} else {
+							if (e.slack <= bOther.tree.eps + eps)
+								eAugment = e;
 							ensureTreesEdgeExists(tree, bOther.tree);
 							bOther.tree.currentEdge.pqInsertEvenEven(e);
-							// TODO optimization, check for agumentation
 						}
 					} else if (tree != bOther.tree) {
 						assert bOther.isOdd();
@@ -1199,9 +1243,10 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 						if (bOther.tree == tree) {
 							tree.pqInsertEvenEven(e);
 						} else {
+							if (e.slack <= bOther.tree.eps + eps)
+								eAugment = e;
 							ensureTreesEdgeExists(tree, bOther.tree);
 							bOther.tree.currentEdge.pqInsertEvenEven(e);
-							// TODO optimization, check for agumentation
 						}
 					} else if (tree != bOther.tree) {
 						assert bOther.isOdd();
@@ -1217,6 +1262,19 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				b.blossomGrandparent = b;
 			}
 			expandTemp.clear();
+
+			/* prioritize augmentation over other operations */
+			return augmentIfEdgeFound();
+		}
+
+		private boolean augmentIfEdgeFound() {
+			if (eAugment != null) {
+				augment(eAugment);
+				eAugment = null;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		private void augment(Edge e) {
