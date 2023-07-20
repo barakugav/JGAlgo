@@ -138,6 +138,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		/* Temp list used during expand */
 		private final List<Blossom> expandTemp = new ArrayList<>();
 
+		private static final boolean OptimizationGrowSubTree = Boolean.parseBoolean("true");
+
 		Worker(IndexGraph g, WeightFunction w) {
 			Debug.reset();
 
@@ -353,31 +355,49 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 					slackMin = Math.min(slackMin, e.slack);
 				node.dual += slackMin;
 
-				/* After we increase the dual of the node, at least one edge should be tight */
-				for (Edge e : node.outEdges()) {
-					assert node == e.source;
-					if (e.slack <= slackMin && node.isEven() && e.target.isEven()) {
-						// TODO optimization: after we match a node, we can iterate over the edges and only decrease
-						// their slack
-						dbgLog.format("\tmatch %s\n", e);
-						node.setOut();
-						e.target.setOut();
-						node.match = e.target.match = e;
-						treeNum -= 2;
+				/* After we increased the dual of the node, at least one edge should be tight */
+				Iterator<Edge> outIter = node.outEdges().iterator();
+				if (node.isEven()) {
+					while (outIter.hasNext()) {
+						Edge e = outIter.next();
+						assert node == e.source;
+						if (e.slack <= slackMin && e.target.isEven()) {
+							dbgLog.format("\tmatch %s\n", e);
+							node.setOut();
+							e.target.setOut();
+							node.match = e.target.match = e;
+							treeNum -= 2;
+							e.slack -= slackMin;
+							break;
+						}
+						e.slack -= slackMin;
 					}
+				}
+				while (outIter.hasNext()) {
+					Edge e = outIter.next();
+					assert node == e.source;
 					e.slack -= slackMin;
 				}
-				for (Edge e : node.inEdges()) {
-					assert node == e.target;
-					if (e.slack <= slackMin && node.isEven() && e.source.isEven()) {
-						// TODO optimization: after we match a node, we can iterate over the edges and only decrease
-						// their slack
-						dbgLog.format("\tmatch %s\n", e);
-						node.setOut();
-						e.source.setOut();
-						node.match = e.source.match = e;
-						treeNum -= 2;
+				Iterator<Edge> inIter = node.inEdges().iterator();
+				if (node.isEven()) {
+					while (inIter.hasNext()) {
+						Edge e = inIter.next();
+						assert node == e.target;
+						if (e.slack <= slackMin && node.isEven() && e.source.isEven()) {
+							dbgLog.format("\tmatch %s\n", e);
+							node.setOut();
+							e.source.setOut();
+							node.match = e.source.match = e;
+							treeNum -= 2;
+							e.slack -= slackMin;
+							break;
+						}
+						e.slack -= slackMin;
 					}
+				}
+				while (inIter.hasNext()) {
+					Edge e = inIter.next();
+					assert node == e.target;
 					e.slack -= slackMin;
 				}
 			}
@@ -399,7 +419,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			lastRoot.treeSiblingNext = null;
 		}
 
-		void grow(Edge growEdge) {
+		private static void grow(Edge growEdge) {
 			Blossom u, v;
 			if (growEdge.target.isOut()) {
 				u = growEdge.getSourceOuterBlossom();
@@ -409,29 +429,92 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				u = growEdge.getTargetOuterBlossom();
 				v = growEdge.source;
 			}
-			dbgLog.format("grow(%s, %s, %s)\n", u, v, v.matchedNode());
+			assert u.isOuter() && u.isEven();
+			assert v.isOuter() && v.isOut();
+
+			addGrowBlossomsToTree(u, v, growEdge);
+			assert v.isMatched();
+			Blossom w = v.matchedNode();
+			assert w.isEven();
+
+			/* Grow the new sub tree iteratively, until no more grow step is available */
+			for (Blossom j = w;;) {
+				grow0(j);
+
+				/* continue exploring sub tree for more grow operations */
+				if (j.firstTreeChild != null) {
+					j = j.firstTreeChild;
+				} else {
+					for (;;) {
+						if (j == w)
+							return;
+						if (j.treeSiblingNext != null)
+							break;
+						j = j.matchedNode().getTreeParent();
+					}
+					j = j.treeSiblingNext;
+				}
+			}
+		}
+
+		private static void addGrowBlossomsToTree(Edge growEdge) {
+			Blossom u, v;
+			if (growEdge.target.isOut()) {
+				u = growEdge.getSourceOuterBlossom();
+				v = growEdge.target;
+			} else {
+				assert growEdge.source.isOut();
+				u = growEdge.getTargetOuterBlossom();
+				v = growEdge.source;
+			}
+			addGrowBlossomsToTree(u, v, growEdge);
+		}
+
+		private static void addGrowBlossomsToTree(Blossom u, Blossom v, Edge growEdge) {
 			assert u.isOuter() && u.isEven();
 			assert v.isOuter() && v.isOut();
 			Tree tree = u.tree;
 
-			/* Add v as an odd (-) node to the tree */
 			v.setOdd();
 			// assert v.tree == null;
 			v.tree = tree;
 			v.treeParentEdge = growEdge;
 			v.dual += tree.eps;
+
+			assert v.isMatched();
+			Blossom w = v.matchedNode();
+			w.setEven();
+			w.tree = tree;
+			w.dual -= tree.eps;
+
+			/* Although v is the direct 'parent' of w, the child-parent is a relationship between even nodes only */
+			addTreeChild(u, w);
+		}
+
+		private static void grow0(Blossom w) {
+			Blossom v = w.matchedNode();
+			Blossom u = v.getTreeParent();
+			dbgLog.format("grow(%s, %s, %s)\n", u, v, v.matchedNode());
+			assert u.isOuter() && u.isEven();
+			assert v.isOuter() && v.isOdd();
+			assert w.isOuter() && w.isEven();
+			Tree tree = u.tree;
+
+			/* Add v as an odd (-) node to the tree */
 			/* Handle (v,w) edges, which may become (-,+) */
 			for (Edge e : v.outEdges()) {
-				Blossom w = e.getTargetOuterBlossom();
-				if (w.isEven() && w.isProcessed()) {
+				Blossom x = e.getTargetOuterBlossom();
+				if (x.isEven() && x.isProcessed()) {
 					// assert e.pqEvenOutRef != null;
-					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
-					w.tree.pqRemoveEvenOut(e);
+					if (!OptimizationGrowSubTree || e.pqRef != null) {
+						assert e.pqRef != null;
+						x.tree.pqRemoveEvenOut(e);
+					}
 					e.slack -= tree.eps;
-					if (w.tree != tree) {
-						ensureTreesEdgeExists(tree, w.tree);
-						w.tree.pqEdgeInsertEvenOdd(w.tree.currentEdge, e);
+					if (x.tree != tree) {
+						ensureTreesEdgeExists(tree, x.tree);
+						x.tree.pqEdgeInsertEvenOdd(x.tree.currentEdge, e);
 					}
 				} else {
 					e.slack -= tree.eps;
@@ -439,47 +522,48 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			}
 			/* Handle (v,w) edges, which may become (-,+) */
 			for (Edge e : v.inEdges()) {
-				Blossom w = e.getSourceOuterBlossom();
-				if (w.isEven() && w.isProcessed()) {
+				Blossom x = e.getSourceOuterBlossom();
+				if (x.isEven() && x.isProcessed()) {
 					// assert e.pqEvenOutRef != null;
-					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
-					w.tree.pqRemoveEvenOut(e);
+					if (!OptimizationGrowSubTree || e.pqRef != null) {
+						assert e.pqRef != null;
+						x.tree.pqRemoveEvenOut(e);
+					}
 					e.slack -= tree.eps;
-					if (w.tree != tree) {
-						ensureTreesEdgeExists(tree, w.tree);
-						w.tree.pqEdgeInsertEvenOdd(w.tree.currentEdge, e);
+					if (x.tree != tree) {
+						ensureTreesEdgeExists(tree, x.tree);
+						x.tree.pqEdgeInsertEvenOdd(x.tree.currentEdge, e);
 					}
 				} else {
 					e.slack -= tree.eps;
 				}
 			}
 
-			/* v must be matched to some vertex w */
 			/* Add w as an even (+) node to the tree */
-			assert v.isMatched();
-			Blossom w = v.matchedNode();
-			w.setEven();
-			w.tree = tree;
-			w.dual -= tree.eps;
-			/* Although v is the direct 'parent' of w, the child-parent is a relationship between even nodes only */
-			addTreeChild(u, w);
 			for (Edge e : w.outEdges()) {
 				Blossom x = e.getTargetOuterBlossom();
 				e.slack += tree.eps;
 				if (x.isOut()) {
-					// TODO optimization, eOther.slack might be negative, we can further grow the tree immediately
-					tree.pqInsertEvenOut(e);
+					/* e is (+,x) edge */
+					if (OptimizationGrowSubTree && e.slack <= 0) {
+						/* grow e immediately, no need to insert into PQ and extract it in the next iteration */
+						addGrowBlossomsToTree(e);
+					} else {
+						tree.pqInsertEvenOut(e);
+					}
 
 				} else if (x.isEven() && x.isProcessed()) {
-					// assert e.pqEvenOutRef != null;
-					assert e.pqRef != null;
 					// if (e.pqEvenOutRef != null)
-					x.tree.pqRemoveEvenOut(e);
+					if (!OptimizationGrowSubTree || e.pqRef != null) {
+						assert e.pqRef != null;
+						x.tree.pqRemoveEvenOut(e);
+					}
 					if (tree != x.tree) {
 						/* Cross-trees (+,+) edge */
 						ensureTreesEdgeExists(tree, x.tree);
 						x.tree.currentEdge.pqInsertEvenEven(e);
+						// TODO optimization: check for augmentation
 					} else {
 						/* Inner (+,+) edge */
 						tree.pqInsertEvenEven(e);
@@ -494,18 +578,25 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				Blossom x = e.getSourceOuterBlossom();
 				e.slack += tree.eps;
 				if (x.isOut()) {
-					// TODO optimization, eOther.slack might be negative, we can further grow the tree immediately
-					tree.pqInsertEvenOut(e);
+					/* e is (+,x) edge */
+					if (OptimizationGrowSubTree && e.slack <= 0) {
+						/* grow e immediately, no need to insert into PQ and extract it in the next iteration */
+						addGrowBlossomsToTree(e);
+					} else {
+						tree.pqInsertEvenOut(e);
+					}
 
 				} else if (x.isEven() && x.isProcessed()) {
 					// assert e.pqEvenOutRef != null;
-					assert e.pqRef != null;
-					// if (e.pqEvenOutRef != null)
-					x.tree.pqRemoveEvenOut(e);
+					if (!OptimizationGrowSubTree || e.pqRef != null) {
+						assert e.pqRef != null;
+						x.tree.pqRemoveEvenOut(e);
+					}
 					if (tree != x.tree) {
 						/* Cross-trees (+,+) edge */
 						ensureTreesEdgeExists(tree, x.tree);
 						x.tree.currentEdge.pqInsertEvenEven(e);
+						// TODO optimization: check for augmentation
 					} else {
 						/* Inner (+,+) edge */
 						tree.pqInsertEvenEven(e);
@@ -523,8 +614,6 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			v.setProcessed(true);
 			if (v.isBlossom())
 				tree.pqInsertOdd(v);
-
-			// TODO optimization: we can take the opportunity to continue exploring the new sub tree and growing it more
 		}
 
 		private static void addTreeChild(Blossom parent, Blossom child) {
