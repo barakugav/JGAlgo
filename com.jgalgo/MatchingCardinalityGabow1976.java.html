@@ -22,7 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.data.UnionFind;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -52,7 +52,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 <span class="fc" id="L52">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L53">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L55">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L55">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L56">		int[] root = new int[n];</span>
 <span class="fc" id="L57">		BitSet isEven = new BitSet(n);</span>
 

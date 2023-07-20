@@ -39,7 +39,7 @@ import com.jgalgo.graph.WeightFunction;
 
 <span class="fc" id="L40">		BitSet cover = new BitSet(n);</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 			int u, v;
 <span class="fc bfc" id="L44" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
 <span class="fc" id="L45">				continue;</span>
@@ -52,7 +52,7 @@ import com.jgalgo.graph.WeightFunction;
 				// sw[v] -= sw[v]; don't bother
 <span class="fc" id="L53">				cover.set(v);</span>
 			}
-<span class="fc" id="L55">		}</span>
+		}
 
 <span class="fc" id="L57">		return new VertexCoverUtils.ResultImpl(g, cover);</span>
 	}

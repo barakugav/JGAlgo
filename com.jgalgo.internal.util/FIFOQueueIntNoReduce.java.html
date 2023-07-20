@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntArrayFIFOQueue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">IntArrayFIFOQueue.java</span></div><h1>IntArrayFIFOQueue.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FIFOQueueIntNoReduce.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">FIFOQueueIntNoReduce.java</span></div><h1>FIFOQueueIntNoReduce.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
+public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 
 	private static final long serialVersionUID = 0L;
 	/** The standard initial capacity of a queue. */
@@ -58,7 +58,7 @@ public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	 * @param    capacity the initial capacity of this queue.
 	 */
 
-<span class="fc" id="L61">	public IntArrayFIFOQueue(final int capacity) {</span>
+<span class="fc" id="L61">	public FIFOQueueIntNoReduce(final int capacity) {</span>
 <span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (capacity &gt; it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1)</span>
 <span class="nc" id="L63">			throw new IllegalArgumentException(</span>
 					&quot;Initial capacity (&quot; + capacity + &quot;) exceeds &quot; + (it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1));
@@ -73,7 +73,7 @@ public class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	/**
 	 * Creates a new empty queue with standard {@linkplain #INITIAL_CAPACITY initial capacity}.
 	 */
-	public IntArrayFIFOQueue() {
+	public FIFOQueueIntNoReduce() {
 <span class="fc" id="L77">		this(INITIAL_CAPACITY);</span>
 <span class="fc" id="L78">	}</span>
 

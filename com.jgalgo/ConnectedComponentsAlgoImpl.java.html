@@ -177,12 +177,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L177">				ccEdges = new IntList[ccNum];</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
 <span class="fc" id="L179">					ccEdges[c] = new IntArrayList();</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L181">					int cc1 = vertexToCc[g.edgeSource(e)];</span>
 <span class="fc" id="L182">					int cc2 = vertexToCc[g.edgeTarget(e)];</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">					if (cc1 == cc2)</span>
 <span class="fc" id="L184">						ccEdges[cc1].add(e);</span>
-<span class="fc" id="L185">				}</span>
+				}
 <span class="fc bfc" id="L186" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
 <span class="fc" id="L187">					ccEdges[c] = IntLists.unmodifiable(ccEdges[c]);</span>
 			}

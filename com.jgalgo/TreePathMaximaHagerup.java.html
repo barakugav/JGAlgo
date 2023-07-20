@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.Pair;
@@ -288,14 +288,14 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L288">			int[] edges = new int[(n - 1) * 3];</span>
 <span class="fc" id="L289">			int[] edgesNext = new int[(n / 2 * 1) * 3];</span>
 <span class="fc" id="L290">			int edgesNum = 0;</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">			for (int e : tOrig.edges()) {</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			for (int m = tOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L292">				int u = tOrig.edgeSource(e);</span>
 <span class="fc" id="L293">				int v = tOrig.edgeTarget(e);</span>
 <span class="fc" id="L294">				edges[edgesNum * 3 + 0] = e;</span>
 <span class="fc" id="L295">				edges[edgesNum * 3 + 1] = u;</span>
 <span class="fc" id="L296">				edges[edgesNum * 3 + 2] = v;</span>
 <span class="fc" id="L297">				edgesNum++;</span>
-<span class="fc" id="L298">			}</span>
+			}
 
 <span class="fc" id="L300">			for (int height = 1;; height++) {</span>
 <span class="fc bfc" id="L301" title="All 2 branches covered.">				if (n &lt;= 1) {</span>
@@ -449,7 +449,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			}
 
 			/* Start traversing the full branching tree from the leaves upwards */
-<span class="fc" id="L452">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L452">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L453">			BitSet queued = new BitSet(n);</span>
 <span class="fc bfc" id="L454" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L455" title="All 2 branches covered.">				if (depths[u] == treeHeight - 1) {</span>

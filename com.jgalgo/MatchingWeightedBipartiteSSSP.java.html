@@ -126,14 +126,14 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 <span class="fc" id="L126">		Arrays.fill(match, -1);</span>
 
 <span class="fc" id="L128">		double maxWeight = 1;</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L130">			maxWeight = Math.max(maxWeight, w.weight(e));</span>
 <span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
 <span class="nc" id="L132">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
 <span class="fc" id="L133">		final double RemovedEdgeWeight = maxWeight * n;</span>
 
 		// Negate unmatched edges
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L137">			w.set(e, -w.weight(e));</span>
 		// Connected unmatched vertices to fake vertices s,t
 <span class="fc bfc" id="L139" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>

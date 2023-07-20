@@ -94,7 +94,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunction.Int w, int source) {
 <span class="fc" id="L95">		int minWeight = Integer.MAX_VALUE;</span>
 
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L98">			minWeight = Math.min(minWeight, w.weightInt(e));</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		if (minWeight &gt;= 0)</span>
 			// All weights are positive, use Dijkstra
@@ -159,16 +159,16 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			for (;;) {
 <span class="fc" id="L160">				diagnostics.potentialIteration();</span>
 				/* update current weight function according to latest potential */
-<span class="fc bfc" id="L162" title="All 2 branches covered.">				for (int e : g.edges())</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L163">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
 
 				/* populate gNeg with all 0,-1 edges */
 <span class="fc" id="L166">				gNeg.clearEdges();</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L168">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L169" title="All 2 branches covered.">					if (w[e] &lt;= 0)</span>
 <span class="fc" id="L170">						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);</span>
-<span class="fc" id="L171">				}</span>
+				}
 
 				/* Find all strong connectivity components in the graph */
 <span class="fc" id="L174">				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);</span>
@@ -261,7 +261,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L261">							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);</span>
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-<span class="fc bfc" id="L264" title="All 2 branches covered.">					for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L265">						int weight = w[e];</span>
 <span class="fc bfc" id="L266" title="All 2 branches covered.">						if (weight &gt; 0) {</span>
 <span class="fc" id="L267">							int U = connectivityRes.getVertexCc(g.edgeSource(e));</span>
@@ -269,36 +269,37 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc bfc" id="L269" title="All 2 branches covered.">							if (U != V)</span>
 <span class="fc" id="L270">								GWeights.set(G.addEdge(U, V), weight);</span>
 						}
-<span class="fc" id="L272">					}</span>
+					}
 
 					// Calc distance with abs weight function to update potential function
-<span class="fc bfc" id="L275" title="All 2 branches covered.">					for (int e : G.edges())</span>
-<span class="fc" id="L276">						GWeights.set(e, Math.abs(GWeights.getInt(e)));</span>
-<span class="fc" id="L277">					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L279">						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">					for (int weight, mG = G.edges().size(), e = 0; e &lt; mG; e++)</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">						if ((weight = GWeights.getInt(e)) &lt; 0)</span>
+<span class="fc" id="L277">							GWeights.set(e, -weight);</span>
+<span class="fc" id="L278">					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L280">						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));</span>
 				}
-<span class="fc" id="L281">			}</span>
+<span class="fc" id="L282">			}</span>
 		}
 
-<span class="fc" id="L284">		return Pair.of(potential, null);</span>
+<span class="fc" id="L285">		return Pair.of(potential, null);</span>
 	}
 
 	private static int calcWeightWithPotential(IndexGraph g, int e, WeightFunction.Int w, int[] potential,
 			int weightMask) {
-<span class="fc" id="L289">		int weight = w.weightInt(e);</span>
+<span class="fc" id="L290">		int weight = w.weightInt(e);</span>
 		// weight = ceil(weight / 2^weightMask)
-<span class="fc bfc" id="L291" title="All 2 branches covered.">		if (weightMask != 0) {</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">			if (weight &lt;= 0) {</span>
-<span class="fc" id="L293">				weight = -((-weight) &gt;&gt; weightMask);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">		if (weightMask != 0) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">			if (weight &lt;= 0) {</span>
+<span class="fc" id="L294">				weight = -((-weight) &gt;&gt; weightMask);</span>
 			} else {
-<span class="fc" id="L295">				weight += 1 &lt;&lt; (weightMask - 1);</span>
-<span class="fc" id="L296">				weight = weight &gt;&gt; weightMask;</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">				if (weight == 0)</span>
-<span class="fc" id="L298">					weight = 1;</span>
+<span class="fc" id="L296">				weight += 1 &lt;&lt; (weightMask - 1);</span>
+<span class="fc" id="L297">				weight = weight &gt;&gt; weightMask;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">				if (weight == 0)</span>
+<span class="fc" id="L299">					weight = 1;</span>
 			}
 		}
-<span class="fc" id="L301">		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L302">		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	private static class Result implements ShortestPathSingleSource.Result {
@@ -308,57 +309,57 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		private final ShortestPathSingleSource.Result dijkstraRes;
 		private final Path cycle;
 
-<span class="fc" id="L311">		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, Path cycle) {</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">			this.sourcePotential = potential != null ? potential[source] : 0;</span>
-<span class="fc" id="L313">			this.potential = potential;</span>
-<span class="fc" id="L314">			this.dijkstraRes = dijkstraRes;</span>
-<span class="fc" id="L315">			this.cycle = cycle;</span>
-<span class="fc" id="L316">		}</span>
+<span class="fc" id="L312">		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, Path cycle) {</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">			this.sourcePotential = potential != null ? potential[source] : 0;</span>
+<span class="fc" id="L314">			this.potential = potential;</span>
+<span class="fc" id="L315">			this.dijkstraRes = dijkstraRes;</span>
+<span class="fc" id="L316">			this.cycle = cycle;</span>
+<span class="fc" id="L317">		}</span>
 
 		static Result ofSuccess(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes) {
-<span class="fc" id="L319">			return new Result(source, potential, dijkstraRes, null);</span>
+<span class="fc" id="L320">			return new Result(source, potential, dijkstraRes, null);</span>
 		}
 
 		static Result ofNegCycle(int source, Path cycle) {
-<span class="fc" id="L323">			return new Result(source, null, null, cycle);</span>
+<span class="fc" id="L324">			return new Result(source, null, null, cycle);</span>
 		}
 
 		@Override
 		public double distance(int target) {
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L329">				throw new IllegalStateException();</span>
-<span class="fc" id="L330">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L330">				throw new IllegalStateException();</span>
+<span class="fc" id="L331">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
 		}
 
 		@Override
 		public Path getPath(int target) {
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L336">				throw new IllegalStateException();</span>
-<span class="fc" id="L337">			return dijkstraRes.getPath(target);</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L337">				throw new IllegalStateException();</span>
+<span class="fc" id="L338">			return dijkstraRes.getPath(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L342" title="All 2 branches covered.">			return cycle != null;</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">			return cycle != null;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="pc bpc" id="L347" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L348">				throw new IllegalStateException();</span>
-<span class="fc" id="L349">			return cycle;</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="nc" id="L349">				throw new IllegalStateException();</span>
+<span class="fc" id="L350">			return cycle;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L354" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
 		}
 
 	}
 
 	@Override
 	public Object getDiagnostic(String key) {
-<span class="nc" id="L361">		return Long.valueOf(diagnostics.get(key));</span>
+<span class="nc" id="L362">		return Long.valueOf(diagnostics.get(key));</span>
 	}
 
 	private static class Diagnostics {
@@ -374,40 +375,40 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		void runBegin() {
 			if (Enable)
 				runCount++;
-<span class="fc" id="L377">		}</span>
+<span class="fc" id="L378">		}</span>
 
 		void scalingIteration() {
 			if (Enable)
 				scalingIterations++;
-<span class="fc" id="L382">		}</span>
+<span class="fc" id="L383">		}</span>
 
 		void potentialIteration() {
 			if (Enable)
 				potentialIterations++;
-<span class="fc" id="L387">		}</span>
+<span class="fc" id="L388">		}</span>
 
 		void bigLayer() {
 			if (Enable)
 				bigLayer++;
-<span class="fc" id="L392">		}</span>
+<span class="fc" id="L393">		}</span>
 
 		void longPath() {
 			if (Enable)
 				longPath++;
-<span class="fc" id="L397">		}</span>
+<span class="fc" id="L398">		}</span>
 
 		long get(String key) {
-<span class="nc bnc" id="L400" title="All 2 branches missed.">			if (&quot;runCount&quot;.equals(key))</span>
-<span class="nc" id="L401">				return runCount;</span>
-<span class="nc bnc" id="L402" title="All 2 branches missed.">			if (&quot;scalingIterations&quot;.equals(key))</span>
-<span class="nc" id="L403">				return scalingIterations;</span>
-<span class="nc bnc" id="L404" title="All 2 branches missed.">			if (&quot;potentialIterations&quot;.equals(key))</span>
-<span class="nc" id="L405">				return potentialIterations;</span>
-<span class="nc bnc" id="L406" title="All 2 branches missed.">			if (&quot;bigLayer&quot;.equals(key))</span>
-<span class="nc" id="L407">				return bigLayer;</span>
-<span class="nc bnc" id="L408" title="All 2 branches missed.">			if (&quot;longPath&quot;.equals(key))</span>
-<span class="nc" id="L409">				return longPath;</span>
-<span class="nc" id="L410">			throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">			if (&quot;runCount&quot;.equals(key))</span>
+<span class="nc" id="L402">				return runCount;</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">			if (&quot;scalingIterations&quot;.equals(key))</span>
+<span class="nc" id="L404">				return scalingIterations;</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">			if (&quot;potentialIterations&quot;.equals(key))</span>
+<span class="nc" id="L406">				return potentialIterations;</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">			if (&quot;bigLayer&quot;.equals(key))</span>
+<span class="nc" id="L408">				return bigLayer;</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">			if (&quot;longPath&quot;.equals(key))</span>
+<span class="nc" id="L410">				return longPath;</span>
+<span class="nc" id="L411">			throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
 		}
 
 	}

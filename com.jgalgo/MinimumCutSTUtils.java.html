@@ -24,7 +24,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -63,7 +63,7 @@ class MinimumCutSTUtils {
 			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 <span class="fc" id="L64">				final int n = g.vertices().size();</span>
 <span class="fc" id="L65">				BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L66">				IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L66">				IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
 				/* create a flow network with weights as capacities */
 <span class="fc" id="L69">				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);</span>

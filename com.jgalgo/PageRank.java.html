@@ -50,10 +50,10 @@ import com.jgalgo.graph.WeightFunction;
 <span class="fc" id="L50">		double[] transferredScores = new double[n];</span>
 <span class="fc" id="L51">		Predecessors ng = new Predecessors(g, w);</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int v : g.vertices()) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L54">			outDegree[v] = g.outEdges(v).size();</span>
 <span class="fc" id="L55">			scores[v] = 1.0 / n;</span>
-<span class="fc" id="L56">		}</span>
+		}
 
 <span class="fc" id="L58">		DoubleSupplier randomFactor = () -&gt; {</span>
 <span class="fc" id="L59">			double rFactor = 0;</span>
@@ -66,42 +66,42 @@ import com.jgalgo.graph.WeightFunction;
 <span class="nc bnc" id="L66" title="All 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
 <span class="nc" id="L67">				double rFactor = randomFactor.getAsDouble();</span>
 
-<span class="nc bnc" id="L69" title="All 2 branches missed.">				for (int v : g.vertices())</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++)</span>
 <span class="nc" id="L70">					transferredScores[v] = scores[v] / outDegree[v];</span>
 
 <span class="nc" id="L72">				double maxChange = 0;</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">				for (int v : g.vertices()) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++) {</span>
 <span class="nc" id="L74">					double score = 0;</span>
 <span class="nc bnc" id="L75" title="All 2 branches missed.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
 <span class="nc" id="L76">						score += transferredScores[ng.predecessor(v, eIdx)];</span>
 <span class="nc" id="L77">					score = rFactor + dampingFactor * score;</span>
 <span class="nc" id="L78">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
 <span class="nc" id="L79">					scores[v] = score;</span>
-<span class="nc" id="L80">				}</span>
+				}
 <span class="nc bnc" id="L81" title="All 2 branches missed.">				if (maxChange &lt; tolerance)</span>
 <span class="nc" id="L82">					break;</span>
 			}
 
 		} else {
 <span class="fc" id="L86">			double[] weightSum = new double[n];</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u : g.vertices())</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
 <span class="fc" id="L88">				weightSum[u] = GraphsUtils.weightSum(g.outEdges(u), w);</span>
 
 <span class="pc bpc" id="L90" title="1 of 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
 <span class="fc" id="L91">				double rFactor = randomFactor.getAsDouble();</span>
 
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (int v : g.vertices())</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L94">					transferredScores[v] = scores[v] / weightSum[v];</span>
 
 <span class="fc" id="L96">				double maxChange = 0;</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int v : g.vertices()) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L98">					double score = 0;</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
 <span class="fc" id="L100">						score += transferredScores[ng.predecessor(v, eIdx)] * ng.edgeWeight(v, eIdx);</span>
 <span class="fc" id="L101">					score = rFactor + dampingFactor * score;</span>
 <span class="fc" id="L102">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
 <span class="fc" id="L103">					scores[v] = score;</span>
-<span class="fc" id="L104">				}</span>
+				}
 <span class="fc bfc" id="L105" title="All 2 branches covered.">				if (maxChange &lt; tolerance)</span>
 <span class="fc" id="L106">					break;</span>
 			}

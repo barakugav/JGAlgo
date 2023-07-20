@@ -135,7 +135,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	static Weights.Double assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, int[] edgeRef) {
 <span class="fc" id="L137">		Weights.Double w2 = Weights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L139">			w2.set(e, w.weight(edgeRef[e]));</span>
 <span class="fc" id="L140">		return w2;</span>
 	}
@@ -144,7 +144,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L144">		allocatedMem.allocateForRandSubGraph();</span>
 <span class="fc" id="L145">		IntCollection edgeSet = allocatedMem.edgeList;</span>
 <span class="fc" id="L146">		edgeSet.clear();</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			if (rand.nextBoolean())</span>
 <span class="fc" id="L149">				edgeSet.add(e);</span>
 <span class="fc" id="L150">		return subGraph(g, edgeSet, edgeRef);</span>
@@ -170,23 +170,23 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L170">			vToVnew[u] = trees[ut].addVertex();</span>
 		}
 
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (int e : f.edges()) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (int m = f.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L174">			int u = f.edgeSource(e), v = f.edgeTarget(e);</span>
 <span class="fc" id="L175">			int un = vToVnew[u], vn = vToVnew[v];</span>
 <span class="fc" id="L176">			int treeIdx = vToTree.applyAsInt(u);</span>
 <span class="fc" id="L177">			int en = trees[treeIdx].addEdge(un, vn);</span>
 <span class="fc" id="L178">			treeData[treeIdx].set(en, fw.get(e));</span>
-<span class="fc" id="L179">		}</span>
+		}
 
 		// use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
 <span class="fc" id="L182">		TreePathMaxima.Queries[] tpmQueries = allocatedMem.tpmQueries;</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L184">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L185">			int ut = vToTree.applyAsInt(u);</span>
 <span class="pc bpc" id="L186" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v))</span>
 <span class="nc" id="L187">				continue;</span>
 <span class="fc" id="L188">			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);</span>
-<span class="fc" id="L189">		}</span>
+		}
 
 <span class="fc" id="L191">		TreePathMaxima.Result[] tpmResults = allocatedMem.tpmResults;</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++) {</span>
@@ -199,13 +199,13 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L199">		lightEdges.clear();</span>
 <span class="fc" id="L200">		int[] tpmIdx = allocatedMem.vToVnew;</span>
 <span class="fc" id="L201">		Arrays.fill(tpmIdx, 0, treeCount, 0);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L203">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L204">			int ut = vToTree.applyAsInt(u);</span>
 <span class="pc bpc" id="L205" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v)</span>
 <span class="fc bfc" id="L206" title="All 2 branches covered.">					|| gw.get(e) &lt;= treeData[ut].weight(tpmResults[ut].getHeaviestEdge(tpmIdx[ut]++)))</span>
 <span class="fc" id="L207">				lightEdges.add(e);</span>
-<span class="fc" id="L208">		}</span>
+		}
 <span class="fc bfc" id="L209" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++)</span>
 <span class="fc" id="L210">			trees[t].clear();</span>
 <span class="fc" id="L211">		return lightEdges;</span>

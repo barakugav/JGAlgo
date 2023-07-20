@@ -20,7 +20,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L31">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L32">		int n = g.vertices().size();</span>
 <span class="fc" id="L33">		int[] inDegree = new int[n];</span>
-<span class="fc" id="L34">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L34">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L35">		int[] topolSort = new int[n];</span>
 <span class="fc" id="L36">		int topolSortSize = 0;</span>
 

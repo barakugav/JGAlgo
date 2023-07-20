@@ -37,7 +37,7 @@ import com.jgalgo.internal.data.SplitFindMin;
 import com.jgalgo.internal.data.UnionFind;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.DebugPrinter;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -469,7 +469,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L469">			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);</span>
 <span class="fc" id="L470">			this.w = e -&gt; wLocal.weight(edgeVal.get(e).e);</span>
 
-<span class="fc bfc" id="L472" title="All 2 branches covered.">			for (int e : gOrig.edges()) {</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L473">				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
 <span class="fc" id="L474">				int e1 = g.addEdge(u, v);</span>
 <span class="fc" id="L475">				int e2 = g.addEdge(v, u);</span>
@@ -477,7 +477,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L477">				EdgeVal val2 = new EdgeVal(e, e1);</span>
 <span class="fc" id="L478">				edgeVal.set(e1, val1);</span>
 <span class="fc" id="L479">				edgeVal.set(e2, val2);</span>
-<span class="fc" id="L480">			}</span>
+			}
 
 <span class="fc" id="L482">			matched = new int[n];</span>
 <span class="fc" id="L483">			Arrays.fill(matched, -1);</span>
@@ -495,8 +495,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L495">					.build((e1, e2) -&gt; Double.compare(growEventsKey(e1), growEventsKey(e2)));</span>
 <span class="fc" id="L496">			expandEvents = heapBuilder.keysTypePrimitive(double.class).&lt;Blossom&gt;valuesTypeObj().build();</span>
 
-<span class="fc" id="L498">			unionQueue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L499">			scanQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L498">			unionQueue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L499">			scanQueue = new FIFOQueueIntNoReduce();</span>
 
 <span class="fc" id="L501">			this.debug = debugPrint;</span>
 <span class="fc" id="L502">		}</span>
@@ -538,7 +538,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 			// init dual value of all vertices as maxWeight / 2
 <span class="fc" id="L540">			double maxWeight = Double.MIN_VALUE;</span>
-<span class="fc bfc" id="L541" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L542">				maxWeight = Math.max(maxWeight, w.weight(e));</span>
 <span class="fc" id="L543">			double delta1Threshold = maxWeight / 2;</span>
 <span class="fc bfc" id="L544" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>

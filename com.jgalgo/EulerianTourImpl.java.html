@@ -92,7 +92,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L92">			u = g.edgeEndpoint(e, u);</span>
 <span class="fc" id="L93">		}</span>
 
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
 <span class="pc bpc" id="L96" title="1 of 2 branches missed.">			if (!usedEdges.get(e))</span>
 <span class="nc" id="L97">				throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
 <span class="fc" id="L98">		return new PathImpl(g, start, end, tour);</span>
@@ -179,7 +179,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L179">			u = g.edgeSource(e);</span>
 <span class="fc" id="L180">		}</span>
 
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
 <span class="pc bpc" id="L183" title="1 of 2 branches missed.">			if (!usedEdges.get(e))</span>
 <span class="nc" id="L184">				throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
 <span class="fc" id="L185">		IntArrays.reverse(tour.elements(), 0, tour.size());</span>

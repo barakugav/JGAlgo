@@ -69,11 +69,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L69">				mVtoV[mGn++] = u;</span>
 <span class="fc" id="L70">		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);</span>
 <span class="fc" id="L71">		Weights.Double mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int e : mG.edges()) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int m = mG.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L73">			int u = mVtoV[mG.edgeSource(e)];</span>
 <span class="fc" id="L74">			int v = mVtoV[mG.edgeTarget(e)];</span>
 <span class="fc" id="L75">			mGWeightsNeg.set(e, -w.weight(g.getEdge(u, v)));</span>
-<span class="fc" id="L76">		}</span>
+		}
 
 		/* Calculate maximum matching between the odd vertices */
 <span class="fc" id="L79">		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);</span>

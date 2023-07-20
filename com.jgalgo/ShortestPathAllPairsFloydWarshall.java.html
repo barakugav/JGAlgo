@@ -47,7 +47,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 
 	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L49">		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L51">			int u = g.edgeSource(e);</span>
 <span class="fc" id="L52">			int v = g.edgeTarget(e);</span>
 <span class="fc" id="L53">			double ew = w.weight(e);</span>
@@ -63,7 +63,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc" id="L63">				res.setEdgeTo(u, v, e);</span>
 <span class="fc" id="L64">				res.setEdgeTo(v, u, e);</span>
 			}
-<span class="fc" id="L66">		}</span>
+		}
 <span class="fc" id="L67">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
@@ -93,7 +93,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 
 	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L95">		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L97">			int u = g.edgeSource(e);</span>
 <span class="fc" id="L98">			int v = g.edgeTarget(e);</span>
 <span class="fc" id="L99">			double ew = w.weight(e);</span>
@@ -108,7 +108,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc" id="L108">				res.setDistance(u, v, ew);</span>
 <span class="fc" id="L109">				res.setEdgeTo(u, v, e);</span>
 			}
-<span class="fc" id="L111">		}</span>
+		}
 <span class="fc" id="L112">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */

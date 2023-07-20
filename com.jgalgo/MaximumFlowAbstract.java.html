@@ -283,43 +283,43 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 		void initCapacitiesAndFlows(double[] flow, double[] capacity) {
 <span class="fc bfc" id="L285" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L287" title="All 2 branches covered.">					capacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;</span>
 <span class="fc" id="L288">					flow[e] = 0;</span>
-<span class="fc" id="L289">				}</span>
+				}
 			} else {
-<span class="fc bfc" id="L291" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 					double cap =
 <span class="fc bfc" id="L293" title="All 4 branches covered.">							(g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? net.getCapacity(edgeRef[e]) : 0;</span>
 <span class="fc" id="L294">					capacity[e] = cap;</span>
 <span class="fc" id="L295">					flow[e] = 0;</span>
-<span class="fc" id="L296">				}</span>
+				}
 			}
 <span class="fc" id="L298">		}</span>
 
 		void initCapacitiesAndFlows(int[] flow, int[] capacity) {
 <span class="fc" id="L301">			FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
 <span class="fc bfc" id="L302" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L304" title="All 2 branches covered.">					capacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;</span>
 <span class="fc" id="L305">					flow[e] = 0;</span>
-<span class="fc" id="L306">				}</span>
+				}
 			} else {
-<span class="fc bfc" id="L308" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 					int cap =
 <span class="fc bfc" id="L310" title="All 4 branches covered.">							(g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? net.getCapacityInt(edgeRef[e]) : 0;</span>
 <span class="fc" id="L311">					capacity[e] = cap;</span>
 <span class="fc" id="L312">					flow[e] = 0;</span>
-<span class="fc" id="L313">				}</span>
+				}
 			}
 <span class="fc" id="L315">		}</span>
 
 		double constructResult(double[] flow) {
-<span class="fc bfc" id="L318" title="All 2 branches covered.">			for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L319" title="All 2 branches covered.">				if (isOriginalEdge(e))</span>
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 <span class="fc" id="L321">					net.setFlow(edgeRef[e], flow[e]);</span>
-<span class="fc" id="L322">			}</span>
+			}
 
 <span class="fc" id="L324">			double totalFlow = 0;</span>
 <span class="fc bfc" id="L325" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
@@ -336,11 +336,11 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 		int constructResult(int[] flow) {
 <span class="fc" id="L338">			FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L340" title="All 2 branches covered.">				if (isOriginalEdge(e))</span>
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 <span class="fc" id="L342">					net.setFlow(edgeRef[e], flow[e]);</span>
-<span class="fc" id="L343">			}</span>
+			}
 
 <span class="fc" id="L345">			int totalFlow = 0;</span>
 <span class="fc bfc" id="L346" title="All 2 branches covered.">			if (gOrig.getCapabilities().directed()) {</span>
@@ -362,17 +362,17 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		private static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {
 <span class="fc bfc" id="L363" title="All 2 branches covered.">			if (net instanceof FlowNetwork.Int) {</span>
 <span class="fc" id="L364">				FlowNetwork.Int netInt = (FlowNetwork.Int) net;</span>
-<span class="fc bfc" id="L365" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L366">					int cap = netInt.getCapacityInt(e);</span>
 <span class="pc bpc" id="L367" title="1 of 2 branches missed.">					if (cap &lt; 0)</span>
 <span class="nc" id="L368">						throw new IllegalArgumentException(&quot;negative capacity of edge (&quot; + e + &quot;): &quot; + cap);</span>
-<span class="fc" id="L369">				}</span>
+				}
 <span class="fc" id="L370">			} else {</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L372">					double cap = net.getCapacity(e);</span>
 <span class="pc bpc" id="L373" title="1 of 2 branches missed.">					if (cap &lt; 0)</span>
 <span class="nc" id="L374">						throw new IllegalArgumentException(&quot;negative capacity of edge (&quot; + e + &quot;): &quot; + cap);</span>
-<span class="fc" id="L375">				}</span>
+				}
 			}
 <span class="fc" id="L377">		}</span>
 

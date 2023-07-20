@@ -22,7 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -88,10 +88,10 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		double computeMaximumFlow() {
 <span class="fc" id="L89">			Graph L =</span>
 <span class="fc" id="L90">					layerGraphFactory.setDirected(true).expectedVerticesNum(/* &gt;= */ n).expectedEdgesNum(n).newGraph();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int v : g.vertices())</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L92">				L.addVertex(v);</span>
 
-<span class="fc" id="L94">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L94">			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L95">			int[] level = new int[n];</span>
 
 			for (;;) {

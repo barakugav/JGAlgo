@@ -216,7 +216,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L216">				biccsEdges = new IntList[getNumberOfBiCcs()];</span>
 <span class="fc bfc" id="L217" title="All 2 branches covered.">				for (int idx = 0; idx &lt; biccsVertices.length; idx++)</span>
 <span class="fc" id="L218">					biccsEdges[idx] = new IntArrayList();</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L220">					int u = g.edgeSource(e);</span>
 <span class="fc" id="L221">					int v = g.edgeTarget(e);</span>
 					/* Both getVertexBiCcs(u) and getVertexBiCcs(v) are sorted */
@@ -235,7 +235,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L235">							((IntListIterator) vBiccs).previousInt();</span>
 						}
 <span class="fc" id="L237">					}</span>
-<span class="fc" id="L238">				}</span>
+				}
 <span class="fc bfc" id="L239" title="All 2 branches covered.">				for (int idx = 0; idx &lt; biccsVertices.length; idx++)</span>
 <span class="fc" id="L240">					biccsEdges[idx] = IntLists.unmodifiable(biccsEdges[idx]);</span>
 

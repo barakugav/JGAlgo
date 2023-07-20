@@ -61,14 +61,14 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 <span class="fc" id="L61">		res.distances[source] = 0;</span>
 
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L65">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L66">				double d = res.distances[u] + w.weight(e);</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
 <span class="fc" id="L68">					res.distances[v] = d;</span>
 <span class="fc" id="L69">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L71">			}</span>
+			}
 		}
 
 <span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>

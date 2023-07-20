@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L84">			}</span>
 		}
 
-<span class="fc" id="L87">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L87">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
 <span class="fc" id="L89">		double overallBestCycleMeanWeight = Double.POSITIVE_INFINITY;</span>
 <span class="fc" id="L90">		int overallBestCycleVertex = -1;</span>

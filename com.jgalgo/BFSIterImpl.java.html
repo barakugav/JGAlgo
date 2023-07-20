@@ -21,7 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntArrayFIFOQueue;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L41">			this.g = g;</span>
 <span class="fc" id="L42">			int n = g.vertices().size();</span>
 <span class="fc" id="L43">			visited = new BitSet(n);</span>
-<span class="fc" id="L44">			queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L44">			queue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L45">			inEdge = -1;</span>
 <span class="fc" id="L46">			layer = -1;</span>
 

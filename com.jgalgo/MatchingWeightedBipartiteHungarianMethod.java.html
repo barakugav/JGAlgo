@@ -151,7 +151,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 <span class="fc" id="L151">			Arrays.fill(matched, EdgeNone);</span>
 
 <span class="fc" id="L153">			double maxWeight = Double.MIN_VALUE;</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L155">				maxWeight = Math.max(maxWeight, w.weight(e));</span>
 <span class="fc" id="L156">			final double delta1Threshold = maxWeight;</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>

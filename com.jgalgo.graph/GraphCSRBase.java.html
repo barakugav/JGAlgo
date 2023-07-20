@@ -72,10 +72,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L72">		edgesOutBegin = new int[n + 1];</span>
 <span class="nc" id="L73">		endpoints = new int[m * 2];</span>
 
-<span class="nc bnc" id="L75" title="All 2 branches missed.">		for (int e : g.edges()) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">		for (int e = 0; e &lt; m; e++) {</span>
 <span class="nc" id="L76">			endpoints[e * 2 + 0] = g.edgeSource(e);</span>
 <span class="nc" id="L77">			endpoints[e * 2 + 1] = g.edgeTarget(e);</span>
-<span class="nc" id="L78">		}</span>
+		}
 
 <span class="nc" id="L80">		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =</span>
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);

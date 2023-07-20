@@ -69,12 +69,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L69">		final int n = g.vertices().size();</span>
 
 <span class="fc" id="L71">		boolean negWeight = false;</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
 <span class="fc" id="L74">				negWeight = true;</span>
 <span class="fc" id="L75">				break;</span>
 			}
-<span class="fc" id="L77">		}</span>
+		}
 
 <span class="fc bfc" id="L79" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
