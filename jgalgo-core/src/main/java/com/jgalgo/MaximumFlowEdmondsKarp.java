@@ -20,6 +20,7 @@ import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -52,10 +53,23 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 		}
 	}
 
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		if (net instanceof FlowNetwork.Int) {
+			return new WorkerInt(g, (FlowNetwork.Int) net, sources, sinks).computeMaxFlow();
+		} else {
+			return new WorkerDouble(g, net, sources, sinks).computeMaxFlow();
+		}
+	}
+
 	private abstract class Worker extends MaximumFlowAbstract.Worker {
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+		}
+
+		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 		}
 
 		void computeMaxFlow0() {
@@ -116,6 +130,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
+
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
+			initCapacitiesAndFlows(flow, capacity);
+		}
+
 		double computeMaxFlow() {
 			computeMaxFlow0();
 			return constructResult(flow);
@@ -157,6 +179,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
+
+			flow = new int[g.edges().size()];
+			capacity = new int[g.edges().size()];
+			initCapacitiesAndFlows(flow, capacity);
+		}
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 
 			flow = new int[g.edges().size()];
 			capacity = new int[g.edges().size()];

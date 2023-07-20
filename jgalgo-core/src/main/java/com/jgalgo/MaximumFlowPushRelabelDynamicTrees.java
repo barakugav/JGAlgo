@@ -25,6 +25,7 @@ import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.data.DynamicTreeExtension;
 import com.jgalgo.internal.data.QueueFixSize;
 import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -56,11 +57,6 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 	 */
 	MaximumFlowPushRelabelDynamicTrees() {}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		if (net instanceof FlowNetwork.Int) {
@@ -68,6 +64,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		} else {
 			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
+	}
+
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
 	private static abstract class AbstractWorker extends MaximumFlowAbstract.Worker {
@@ -86,7 +87,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		AbstractWorker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			double maxWeight = getMaxWeight();
+			double maxWeight = getMaxCapacity();
 			dt = DynamicTree.newBuilder().setMaxWeight(maxWeight * 10).setIntWeights(this instanceof WorkerInt)
 					.addExtension(DynamicTreeExtension.TreeSize.class).build();
 			dtTreeSize = dt.getExtension(DynamicTreeExtension.TreeSize.class);
@@ -111,7 +112,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
 
-		abstract double getMaxWeight();
+		abstract double getMaxCapacity();
 
 		void recomputeLabels() {
 			// Global labels heuristic
@@ -336,7 +337,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		}
 
 		@Override
-		double getMaxWeight() {
+		double getMaxCapacity() {
 			double maxCapacity = 100;
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
@@ -464,7 +465,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		}
 
 		@Override
-		double getMaxWeight() {
+		double getMaxCapacity() {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			int maxCapacity = 100;
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)

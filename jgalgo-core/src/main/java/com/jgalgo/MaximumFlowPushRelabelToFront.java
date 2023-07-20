@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -59,12 +60,27 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
+	@Override
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		return new WorkerDouble(gOrig, net, sources, sinks);
+	}
+
+	@Override
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+		return new WorkerInt(gOrig, net, sources, sinks);
+	}
+
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		final VertexList list;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+			list = new VertexList(this);
+		}
+
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 			list = new VertexList(this);
 		}
 
@@ -114,6 +130,11 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
+			list = new VertexList(this);
+		}
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 			list = new VertexList(this);
 		}
 

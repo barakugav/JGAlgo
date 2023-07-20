@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -53,7 +54,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
 public interface MaximumFlow {
 
 	/**
-	 * Calculate the maximum flow in a flow network.
+	 * Calculate the maximum flow in a network between a source and a sink.
 	 * <p>
 	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
 	 *
@@ -65,6 +66,21 @@ public interface MaximumFlow {
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
 	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
+
+	/**
+	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
+	 * <p>
+	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
+	 *
+	 * @param  g                        a graph
+	 * @param  net                      network flow
+	 * @param  sources                  a set of source vertices
+	 * @param  sinks                    a set of sink vertices
+	 * @return                          the maximum flow in the network from the sources to the sinks
+	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
+	 *                                      source or sinks sets
+	 */
+	double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new maximum flow algorithm builder.

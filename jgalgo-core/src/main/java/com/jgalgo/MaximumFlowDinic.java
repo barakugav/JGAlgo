@@ -24,6 +24,7 @@ import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -62,14 +63,14 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		layerGraphFactory = Objects.requireNonNull(factory);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		return new Worker(g, net, source, sink).computeMaximumFlow();
+	}
+
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		return new Worker(g, net, sources, sinks).computeMaximumFlow();
 	}
 
 	private class Worker extends MaximumFlowAbstract.Worker {
@@ -79,6 +80,14 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
+			initCapacitiesAndFlows(flow, capacity);
+		}
+
+		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];

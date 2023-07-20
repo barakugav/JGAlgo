@@ -32,9 +32,45 @@ public class MaximumFlowDinicTest extends TestBase {
 	}
 
 	@Test
+	public void testRandUGraphs() {
+		final long seed = 0x86a7f5c194ac447fL;
+		MaximumFlowTestUtils.testRandGraphs(algo(), seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testRandDiGraphsIntFlow() {
+		final long seed = 0xbd4682ff7230bcaaL;
+		MaximumFlowTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ true);
+	}
+
+	@Test
 	public void testRandUGraphsIntFlow() {
 		final long seed = 0x6be26a022c1cd652L;
 		MaximumFlowTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testRandDiGraphsMultiSourceMultiSink() {
+		final long seed = 0xf272c542a254c43L;
+		MaximumFlowTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsMultiSourceMultiSink() {
+		final long seed = 0x266aa46ba790fc2aL;
+		MaximumFlowTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testRandDiGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0x6408b63b19c9c18dL;
+		MaximumFlowTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0x8190655305863691L;
+		MaximumFlowTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ false);
 	}
 
 	@Test

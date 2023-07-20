@@ -32,6 +32,12 @@ public class MaximumFlowPushRelabelDynamicTreesTest extends TestBase {
 	}
 
 	@Test
+	public void testRandUGraphs() {
+		final long seed = 0x226c6e1fa36f6599L;
+		MaximumFlowTestUtils.testRandGraphs(algo(), seed, /* directed= */ false);
+	}
+
+	@Test
 	public void testRandDiGraphsInt() {
 		final long seed = 0x00dd5c7d6b25fe3bL;
 		MaximumFlowTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ true);

@@ -23,6 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -32,6 +33,11 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 	abstract WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink);
 
 	abstract WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink);
+
+	abstract WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources,
+			IntCollection sinks);
+
+	abstract WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * {@inheritDoc}
@@ -44,6 +50,15 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
 			return newWorkerDouble(g, net, source, sink).computeMaxFlow();
+		}
+	}
+
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		if (net instanceof FlowNetwork.Int) {
+			return newWorkerInt(g, (FlowNetwork.Int) net, sources, sinks).computeMaxFlow();
+		} else {
+			return newWorkerDouble(g, net, sources, sinks).computeMaxFlow();
 		}
 	}
 
@@ -123,6 +138,22 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+
+			label = new int[n];
+			edgeIters = new EdgeIter[n];
+
+			relabelVisited = new BitSet(n);
+			relabelQueue = new FIFOQueueIntNoReduce();
+			labelsReComputeThreshold = n;
+
+			layersActive = new LinkedListFixedSize.Doubly(n);
+			layersInactive = new LinkedListFixedSize.Doubly(n);
+			layersHeadActive = new int[n];
+			layersHeadInactive = new int[n];
+		}
+
+		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 
 			label = new int[n];
 			edgeIters = new EdgeIter[n];
@@ -465,6 +496,16 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			excess = new double[n];
 		}
 
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
+
+			flow = new double[g.edges().size()];
+			capacity = new double[g.edges().size()];
+			initCapacitiesAndFlows(flow, capacity);
+
+			excess = new double[n];
+		}
+
 		@Override
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
@@ -610,6 +651,16 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
+
+			flow = new int[g.edges().size()];
+			capacity = new int[g.edges().size()];
+			initCapacitiesAndFlows(flow, capacity);
+
+			excess = new int[n];
+		}
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 
 			flow = new int[g.edges().size()];
 			capacity = new int[g.edges().size()];

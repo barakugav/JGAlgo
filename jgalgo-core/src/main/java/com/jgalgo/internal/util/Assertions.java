@@ -29,6 +29,9 @@ import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.data.Heap;
 import com.jgalgo.internal.data.HeapReferenceable;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.Int2ByteMap;
+import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class Assertions {
@@ -97,6 +100,32 @@ public class Assertions {
 		public static void sourceSinkNotTheSame(int source, int sink) {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex (" + source + ")");
+		}
+
+		public static void sourcesSinksNotTheSame(IntCollection sources, IntCollection sinks) {
+			if (sources.isEmpty())
+				throw new IllegalArgumentException("no sources vertices provided");
+			if (sinks.isEmpty())
+				throw new IllegalArgumentException("no sinks vertices provided");
+			final byte UNSEEN = 0;
+			final byte SOURCE = 1;
+			final byte TARGET = 2;
+			Int2ByteMap types = new Int2ByteOpenHashMap(sources.size() + sinks.size());
+			types.defaultReturnValue(UNSEEN);
+			for (int v : sources) {
+				int vType = types.put(v, SOURCE);
+				if (vType != UNSEEN)
+					throw new IllegalArgumentException("Source vertex appear twice (" + v + ")");
+			}
+			for (int v : sinks) {
+				int vType = types.put(v, TARGET);
+				if (vType != UNSEEN) {
+					if (vType == SOURCE)
+						throw new IllegalArgumentException("A vertex can't be both a source and target (" + v + ")");
+					if (vType == TARGET)
+						throw new IllegalArgumentException("Target vertex appear twice (" + v + ")");
+				}
+			}
 		}
 
 		public static void checkId(int id, int length) {

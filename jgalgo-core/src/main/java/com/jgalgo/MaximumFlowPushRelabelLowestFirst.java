@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * The push-relabel maximum flow algorithm with lowest-first ordering.
@@ -55,12 +56,26 @@ class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
+	@Override
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		return new WorkerDouble(gOrig, net, sources, sinks);
+	}
+
+	@Override
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+		return new WorkerInt(gOrig, net, sources, sinks);
+	}
+
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		int minLayerActive;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+		}
+
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 		}
 
 		@Override
@@ -99,6 +114,10 @@ class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
+		}
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+			super(gOrig, net, sources, sinks);
 		}
 
 		@Override

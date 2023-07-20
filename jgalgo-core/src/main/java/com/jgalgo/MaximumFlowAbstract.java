@@ -15,16 +15,14 @@
  */
 package com.jgalgo;
 
-import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class MaximumFlowAbstract implements MaximumFlow {
 
@@ -37,171 +35,30 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		net = indexFlowFromFlow(net, eiMap);
+		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 		int iSource = viMap.idToIndex(source);
 		int iSink = viMap.idToIndex(sink);
-		return computeMaximumFlow(iGraph, net, iSource, iSink);
+		return computeMaximumFlow(iGraph, iNet, iSource, iSink);
+	}
+
+	@Override
+	public double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		if (g instanceof IndexGraph)
+			return computeMaximumFlow((IndexGraph) g, net, sources, sinks);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
+
+		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+		IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
+		IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
+		return computeMaximumFlow(iGraph, iNet, iSources, iSinks);
 	}
 
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink);
 
-	static class EdgeWeightsFlowNetwork implements FlowNetwork {
-
-		private final Weights.Double capacityWeights;
-		private final Weights.Double flowWeights;
-		private static final double EPS = 0.0001;
-
-		EdgeWeightsFlowNetwork(Weights.Double capacityWeights, Weights.Double flowWeights) {
-			this.capacityWeights = Objects.requireNonNull(capacityWeights);
-			this.flowWeights = Objects.requireNonNull(flowWeights);
-		}
-
-		static EdgeWeightsFlowNetwork newInstance(Graph g) {
-			Weights.Double capacityWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), double.class);
-			Weights.Double flowWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), double.class);
-			return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
-		}
-
-		@Override
-		public double getCapacity(int edge) {
-			return capacityWeights.getDouble(edge);
-		}
-
-		@Override
-		public void setCapacity(int edge, double capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
-			capacityWeights.set(edge, capacity);
-		}
-
-		@Override
-		public double getFlow(int edge) {
-			return flowWeights.getDouble(edge);
-		}
-
-		@Override
-		public void setFlow(int edge, double flow) {
-			double capacity = getCapacity(edge);
-			if (flow > capacity + EPS)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
-			flowWeights.set(edge, Math.min(flow, capacity));
-		}
-
-	}
-
-	static class EdgeWeightsFlowNetworkInt implements FlowNetwork.Int {
-
-		private final Weights.Int capacityWeights;
-		private final Weights.Int flowWeights;
-
-		EdgeWeightsFlowNetworkInt(Weights.Int capacityWeights, Weights.Int flowWeights) {
-			this.capacityWeights = Objects.requireNonNull(capacityWeights);
-			this.flowWeights = Objects.requireNonNull(flowWeights);
-		}
-
-		static EdgeWeightsFlowNetworkInt newInstance(Graph g) {
-			Weights.Int capacityWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), int.class);
-			Weights.Int flowWeights = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), int.class);
-			return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
-		}
-
-		@Override
-		public int getCapacityInt(int edge) {
-			return capacityWeights.getInt(edge);
-		}
-
-		@Override
-		public void setCapacity(int edge, int capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
-			capacityWeights.set(edge, capacity);
-		}
-
-		@Override
-		public int getFlowInt(int edge) {
-			return flowWeights.getInt(edge);
-		}
-
-		@Override
-		public void setFlow(int edge, int flow) {
-			int capacity = getCapacityInt(edge);
-			if (flow > capacity)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
-			flowWeights.set(edge, Math.min(flow, capacity));
-		}
-
-	}
-
-	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexIdMap eiMap) {
-		if (net instanceof EdgeWeightsFlowNetwork) {
-			EdgeWeightsFlowNetwork net0 = (EdgeWeightsFlowNetwork) net;
-
-			/* Create a network from the underlying index weights containers */
-			Weights.Double capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacityWeights, eiMap);
-			Weights.Double flowWeights = IndexIdMaps.idToIndexWeights(net0.flowWeights, eiMap);
-			return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
-
-		} else if (net instanceof EdgeWeightsFlowNetworkInt) {
-			EdgeWeightsFlowNetworkInt net0 = (EdgeWeightsFlowNetworkInt) net;
-
-			/* Create a network from the underlying index weights containers */
-			Weights.Int capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacityWeights, eiMap);
-			Weights.Int flowWeights = IndexIdMaps.idToIndexWeights(net0.flowWeights, eiMap);
-			return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
-		} else {
-
-			/* Unknown network implementation, create a mapped wrapper */
-			if (net instanceof FlowNetwork.Int) {
-				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-				return new FlowNetwork.Int() {
-
-					@Override
-					public int getCapacityInt(int edge) {
-						return netInt.getCapacityInt(eiMap.indexToId(edge));
-					}
-
-					@Override
-					public void setCapacity(int edge, int capacity) {
-						netInt.setCapacity(eiMap.indexToId(edge), capacity);
-					}
-
-					@Override
-					public int getFlowInt(int edge) {
-						return netInt.getFlowInt(eiMap.indexToId(edge));
-					}
-
-					@Override
-					public void setFlow(int edge, int flow) {
-						netInt.setFlow(eiMap.indexToId(edge), flow);
-					}
-
-				};
-			} else {
-				return new FlowNetwork() {
-
-					@Override
-					public double getCapacity(int edge) {
-						return net.getCapacity(eiMap.indexToId(edge));
-					}
-
-					@Override
-					public void setCapacity(int edge, double capacity) {
-						net.setCapacity(eiMap.indexToId(edge), capacity);
-					}
-
-					@Override
-					public double getFlow(int edge) {
-						return net.getFlow(eiMap.indexToId(edge));
-					}
-
-					@Override
-					public void setFlow(int edge, double flow) {
-						net.setFlow(eiMap.indexToId(edge), flow);
-					}
-				};
-			}
-		}
-	}
+	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	static class Worker {
 		final IndexGraph gOrig;
@@ -214,69 +71,114 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		final int[] edgeRef;
 		final int[] twin;
 
+		final boolean multiSourceMultiSink;
+		final IntCollection sources;
+		final IntCollection sinks;
+
+		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			Assertions.Graphs.sourcesSinksNotTheSame(sources, sinks);
+			positiveCapacitiesOrThrow(gOrig, net);
+			this.gOrig = gOrig;
+			this.n = gOrig.vertices().size() + 2;
+			this.source = n - 2;
+			this.sink = n - 1;
+			this.sources = sources;
+			this.sinks = sinks;
+			this.net = net;
+			multiSourceMultiSink = true;
+
+			final int gEdgeNumMax = (gOrig.edges().size() + sources.size() + sinks.size()) * 2;
+			int[] edgeRefTemp = new int[gEdgeNumMax];
+			int[] twinTemp = new int[gEdgeNumMax];
+
+			IndexGraphBuilder gBuilder = IndexGraphBuilder.newDirected();
+			addOriginalEdgesToBuilder(gBuilder, gOrig, edgeRefTemp, twinTemp);
+			int source0 = gBuilder.addVertex();
+			int sink0 = gBuilder.addVertex();
+			assert source == source0;
+			assert sink == sink0;
+			for (int s : sources)
+				addEdgeToBuilder(gBuilder, source, s, -1, edgeRefTemp, twinTemp);
+			for (int t : sinks)
+				addEdgeToBuilder(gBuilder, t, sink, -1, edgeRefTemp, twinTemp);
+			IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);
+			g = reindexedGraph.graph();
+			final int m = g.edges().size();
+			edgeRef = new int[m];
+			twin = new int[m];
+			updateEdgeRefAndTwinFromBuilderReIndexing(reindexedGraph, edgeRefTemp, twinTemp);
+		}
+
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			Assertions.Graphs.sourceSinkNotTheSame(source, sink);
 			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
 			this.source = source;
 			this.sink = sink;
+			this.sources = IntLists.singleton(source);
+			this.sinks = IntLists.singleton(sink);
 			this.n = gOrig.vertices().size();
 			this.net = net;
+			multiSourceMultiSink = false;
 
-			final int mOrig = gOrig.edges().size();
-			int[] edgeRefTemp = new int[mOrig * 2];
-			int[] twinTemp = new int[mOrig * 2];
+			final int gEdgeNumMax = gOrig.edges().size() * 2;
+			int[] edgeRefTemp = new int[gEdgeNumMax];
+			int[] twinTemp = new int[gEdgeNumMax];
 
 			IndexGraphBuilder gBuilder = IndexGraphBuilder.newDirected();
-			if (gOrig.getCapabilities().directed()) {
-				for (int u = 0; u < n; u++) {
-					int vBuilder = gBuilder.addVertex();
-					assert u == vBuilder;
-					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
-						int v = eit.target();
-						if (u == v)
-							continue;
-						if (u == sink || v == source)
-							continue;
-						int e1Builder = gBuilder.addEdge(u, v);
-						int e2Builder = gBuilder.addEdge(v, u);
-						edgeRefTemp[e1Builder] = e;
-						edgeRefTemp[e2Builder] = e;
-						twinTemp[e1Builder] = e2Builder;
-						twinTemp[e2Builder] = e1Builder;
-					}
-				}
-			} else {
-				for (int u = 0; u < n; u++) {
-					int vBuilder = gBuilder.addVertex();
-					assert u == vBuilder;
-					for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
-						if (gOrig.edgeSource(e) != u)
-							continue; // each edge will appear twice
-						int v = eit.target();
-						if (u == v)
-							continue;
-						int e1Builder = gBuilder.addEdge(u, v);
-						int e2Builder = gBuilder.addEdge(v, u);
-						edgeRefTemp[e1Builder] = e;
-						edgeRefTemp[e2Builder] = e;
-						twinTemp[e1Builder] = e2Builder;
-						twinTemp[e2Builder] = e1Builder;
-					}
-				}
-			}
+			addOriginalEdgesToBuilder(gBuilder, gOrig, edgeRefTemp, twinTemp);
 			IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);
 			g = reindexedGraph.graph();
 			final int m = g.edges().size();
 			edgeRef = new int[m];
 			twin = new int[m];
+			updateEdgeRefAndTwinFromBuilderReIndexing(reindexedGraph, edgeRefTemp, twinTemp);
+		}
+
+		private void addOriginalEdgesToBuilder(IndexGraphBuilder gBuilder, IndexGraph gOrig, int[] edgeRefTemp,
+				int[] twinTemp) {
+			for (int n = gOrig.vertices().size(), u = 0; u < n; u++) {
+				int vBuilder = gBuilder.addVertex();
+				assert u == vBuilder;
+			}
+			if (gOrig.getCapabilities().directed()) {
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+					if (u != v && u != sink && v != source)
+						addEdgeToBuilder(gBuilder, u, v, e, edgeRefTemp, twinTemp);
+				}
+			} else {
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+					if (u != v)
+						addEdgeToBuilder(gBuilder, u, v, e, edgeRefTemp, twinTemp);
+				}
+			}
+		}
+
+		private static void addEdgeToBuilder(IndexGraphBuilder gBuilder, int u, int v, int e, int[] edgeRefTemp,
+				int[] twinTemp) {
+			int e1Builder = gBuilder.addEdge(u, v);
+			int e2Builder = gBuilder.addEdge(v, u);
+			edgeRefTemp[e1Builder] = e;
+			edgeRefTemp[e2Builder] = e;
+			twinTemp[e1Builder] = e2Builder;
+			twinTemp[e2Builder] = e1Builder;
+		}
+
+		private void updateEdgeRefAndTwinFromBuilderReIndexing(IndexGraphBuilder.ReIndexedGraph reindexedGraph,
+				int[] edgeRefTemp, int[] twinTemp) {
+			final int m = g.edges().size();
 			if (reindexedGraph.edgesReIndexing().isPresent()) {
 				IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
 				for (int eBuilder = 0; eBuilder < m; eBuilder++) {
 					edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];
 					twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);
+				}
+			} else {
+				for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+					edgeRef[eBuilder] = edgeRefTemp[eBuilder];
+					twin[eBuilder] = twinTemp[eBuilder];
 				}
 			}
 		}
@@ -289,11 +191,23 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					int eRef = edgeRef[e];
 					double cap =
-							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(edgeRef[e]) : 0;
+							(eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(eRef)
+									: 0;
 					capacity[e] = cap;
 					flow[e] = 0;
 				}
+			}
+			if (multiSourceMultiSink) {
+				double capacitySum = 0;
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+					capacitySum += net.getCapacity(e);
+
+				/* init edges from super-source to sources and from sinks to super-sink */
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (edgeRef[e] == -1)
+						capacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 			}
 		}
 
@@ -306,11 +220,31 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					int cap =
-							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacityInt(edgeRef[e]) : 0;
+					int eRef = edgeRef[e];
+					int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+							? net.getCapacityInt(eRef)
+							: 0;
 					capacity[e] = cap;
 					flow[e] = 0;
 				}
+			}
+			if (multiSourceMultiSink) {
+				int capacitySum = 0;
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					int cap = net.getCapacityInt(e);
+					int capacitySumNext = capacitySum + cap;
+					if (((capacitySum ^ capacitySumNext) & (cap ^ capacitySumNext)) < 0) {
+						// HD 2-12 Overflow iff both arguments have the opposite sign of the result
+						capacitySum = Integer.MAX_VALUE;
+						break;
+					}
+					capacitySum = capacitySumNext;
+				}
+
+				/* init edges from super-source to sources and from sinks to super-sink */
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (edgeRef[e] == -1)
+						capacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 			}
 		}
 
@@ -323,13 +257,17 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 			double totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : gOrig.outEdges(source))
-					totalFlow += net.getFlow(e);
-				for (int e : gOrig.inEdges(source))
-					totalFlow -= net.getFlow(e);
+				for (int s : sources) {
+					for (int e : gOrig.outEdges(s))
+						totalFlow += net.getFlow(e);
+					for (int e : gOrig.inEdges(s))
+						totalFlow -= net.getFlow(e);
+				}
 			} else {
-				for (int e : g.outEdges(source))
-					totalFlow += flow[e];
+				for (int s : sources)
+					for (int e : g.outEdges(s))
+						if (g.edgeTarget(e) != source)
+							totalFlow += flow[e];
 			}
 			return totalFlow;
 		}
@@ -344,19 +282,24 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 			int totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (int e : gOrig.outEdges(source))
-					totalFlow += net.getFlowInt(e);
-				for (int e : gOrig.inEdges(source))
-					totalFlow -= net.getFlowInt(e);
+				for (int s : sources) {
+					for (int e : gOrig.outEdges(s))
+						totalFlow += net.getFlowInt(e);
+					for (int e : gOrig.inEdges(s))
+						totalFlow -= net.getFlowInt(e);
+				}
 			} else {
-				for (int e : g.outEdges(source))
-					totalFlow += flow[e];
+				for (int s : sources)
+					for (int e : g.outEdges(s))
+						if (g.edgeTarget(e) != source)
+							totalFlow += flow[e];
 			}
 			return totalFlow;
 		}
 
 		boolean isOriginalEdge(int e) {
-			return g.edgeSource(e) == gOrig.edgeSource(edgeRef[e]);
+			int eOrig = edgeRef[e];
+			return eOrig != -1 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
 		}
 
 		private static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {

@@ -119,7 +119,7 @@ public interface FlowNetwork {
 	 * @return   a flow network implemented as edge weights
 	 */
 	static FlowNetwork createAsEdgeWeight(Graph g) {
-		return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);
+		return FlowNetworks.NetImplEdgeWeights.newInstance(g);
 	}
 
 	/**
@@ -212,7 +212,7 @@ public interface FlowNetwork {
 		 * @return   a flow network implemented as edge weights
 		 */
 		static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-			return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);
+			return FlowNetworks.NetImplEdgeWeightsInt.newInstance(g);
 		}
 
 	}
