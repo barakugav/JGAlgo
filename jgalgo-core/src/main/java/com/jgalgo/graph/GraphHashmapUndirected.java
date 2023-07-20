@@ -37,7 +37,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	 */
 	GraphHashmapUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 		addInternalVerticesContainer(edgesContainer);
@@ -56,7 +56,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 				if (!edges[v].isEmpty())
 					edges[v] = new Int2IntOpenHashMap(edges[v]);
 		} else {
-			edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,
+			edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 			addInternalVerticesContainer(edgesContainer);
@@ -193,8 +193,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		assert e1 != e2;
 
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		assert edges[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
-		assert edges[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edges[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		int oldVal1 = edges[u1].put(v1, e2);
 		assert oldVal1 == e1;
 		if (u1 != v1) {
@@ -203,8 +203,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		assert edges[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
-		assert edges[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;
+		assert edges[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		int oldVal3 = edges[u2].put(v2, e1);
 		assert oldVal3 == e2;
 		if (u2 != v2) {

@@ -684,7 +684,7 @@ public class JGAlgoUtils {
 		}
 	}
 
-	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG1 = new Int2IntMapEmptyWithDefVal(-1);
+	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);
 
 	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
 		for (int len = to - from; len > 0;) {
