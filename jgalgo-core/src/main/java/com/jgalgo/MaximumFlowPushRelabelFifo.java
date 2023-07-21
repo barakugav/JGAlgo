@@ -130,5 +130,4 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 			return activeQueue.dequeueInt();
 		}
 	}
-
 }

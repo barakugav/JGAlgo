@@ -113,4 +113,32 @@ public class MaximumFlowDinicTest extends TestBase {
 		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSink() {
+		final long seed = 0x1e3ec52fa134b779L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSink() {
+		final long seed = 0xd90323dd166e596fL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0x1a109b2ed86a22ddL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0xbf7d89623c8c4aedL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ false);
+	}
+
 }

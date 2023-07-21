@@ -113,4 +113,32 @@ public class MaximumFlowDinicDynamicTreesTest extends TestBase {
 		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSink() {
+		final long seed = 0x9ecd5d10b7d6641eL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSink() {
+		final long seed = 0x3f158fb2fefc508aL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0xe614027b65b85dc9L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0x59960e1c624e979aL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ false);
+	}
+
 }

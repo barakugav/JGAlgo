@@ -64,6 +64,25 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 	@Override
 	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+		FlowNetwork net = flowNetFromEdgeWeights(w);
+		if (w instanceof WeightFunction.Int) {
+			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMinimumCut();
+		} else {
+			return newWorkerDouble(g, net, source, sink).computeMinimumCut();
+		}
+	}
+
+	@Override
+	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+		FlowNetwork net = flowNetFromEdgeWeights(w);
+		if (w instanceof WeightFunction.Int) {
+			return newWorkerInt(g, (FlowNetwork.Int) net, sources, sinks).computeMinimumCut();
+		} else {
+			return newWorkerDouble(g, net, sources, sinks).computeMinimumCut();
+		}
+	}
+
+	private static FlowNetwork flowNetFromEdgeWeights(WeightFunction w) {
 		if (w instanceof WeightFunction.Int) {
 			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			FlowNetwork.Int net = new FlowNetwork.Int() {
@@ -89,7 +108,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				}
 
 			};
-			return newWorkerInt(g, net, source, sink).computeMinimumCut();
+			return net;
 		} else {
 			FlowNetwork net = new FlowNetwork() {
 
@@ -114,7 +133,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				}
 
 			};
-			return newWorkerDouble(g, net, source, sink).computeMinimumCut();
+			return net;
 		}
 	}
 
@@ -461,7 +480,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			}
 			assert !visited.get(source);
 			IntList cut = new IntArrayList(n - visited.cardinality());
-			for (int u = 0; u < n; u++)
+			for (int n = gOrig.vertices().size(), u = 0; u < n; u++)
 				if (!visited.get(u))
 					cut.add(u);
 			visited.clear();

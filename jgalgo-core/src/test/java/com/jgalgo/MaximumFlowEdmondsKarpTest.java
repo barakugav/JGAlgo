@@ -113,4 +113,32 @@ public class MaximumFlowEdmondsKarpTest extends TestBase {
 		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSink() {
+		final long seed = 0x76b371f5c1ccd8b1L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSink() {
+		final long seed = 0x7788a53ce2988224L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo, seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testMinimumCutRandDiGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0x9f8031ceb55ca23fL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsMultiSourceMultiSinkInt() {
+		final long seed = 0xbf7d89623c8c4aedL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(algo());
+		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo, seed, /* directed= */ false);
+	}
+
 }

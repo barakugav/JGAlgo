@@ -19,6 +19,7 @@ package com.jgalgo;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
@@ -40,7 +41,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
 public interface MinimumCutST {
 
 	/**
-	 * Compute the minimum cut in a graph and a weight function with two terminal vertices.
+	 * Compute the minimum cut in a graph between two terminal vertices.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
@@ -53,6 +54,23 @@ public interface MinimumCutST {
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
 	Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink);
+
+	/**
+	 * Compute the minimum cut in a graph between two sets of vertices.
+	 * <p>
+	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
+	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
+	 *
+	 *
+	 * @param  g                        a graph
+	 * @param  w                        an edge weight function
+	 * @param  sources                  special vertices that will be in \(C\)
+	 * @param  sinks                    special vertices that will be in \(\bar{C}\)
+	 * @return                          the minimum cut between the two sets
+	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
+	 *                                      source or sinks sets
+	 */
+	Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new minimum cut algorithm builder.

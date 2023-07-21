@@ -26,7 +26,9 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class MinimumCutSTUtils {
@@ -44,15 +46,34 @@ class MinimumCutSTUtils {
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
 
-			Cut indexCut = computeMinimumCut(iGraph, w, iSource, iSink);
+			Cut indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
 			return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);
 		}
 
-		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink);
+		@Override
+		default Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+			if (g instanceof IndexGraph)
+				return computeMinimumCut((IndexGraph) g, w, sources, sinks);
+
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
+			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
+
+			Cut indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
+			return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);
+		}
+
+		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, int sources, int sinks);
+
+		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks);
 
 	}
 
@@ -61,22 +82,39 @@ class MinimumCutSTUtils {
 
 			@Override
 			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
-				final int n = g.vertices().size();
-				BitSet visited = new BitSet(n);
-				IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-
 				/* create a flow network with weights as capacities */
 				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
 
 				/* compute max flow */
 				maxFlowAlg.computeMaximumFlow(g, net, source, sink);
 
+				return minCutFromMaxFlow(g, IntLists.singleton(source), net);
+			}
+
+			@Override
+			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+				/* create a flow network with weights as capacities */
+				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
+
+				/* compute max flow */
+				maxFlowAlg.computeMaximumFlow(g, net, sources, sinks);
+
+				return minCutFromMaxFlow(g, sources, net);
+			}
+
+			private Cut minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
+				final int n = g.vertices().size();
+				BitSet visited = new BitSet(n);
+				IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+
 				/* perform a BFS from source and use only non saturated edges */
 				IntList cut = new IntArrayList();
 				final double eps = 0.00001;
-				cut.add(source);
-				visited.set(source);
-				queue.enqueue(source);
+				for (int source : sources) {
+					cut.add(source);
+					visited.set(source);
+					queue.enqueue(source);
+				}
 
 				if (g.getCapabilities().directed()) {
 					while (!queue.isEmpty()) {
