@@ -33,4 +33,10 @@ public class MinimumMeanCycleDasdanGuptaTest extends TestBase {
 		MinimumMeanCycleTestUtils.testRandGraphsSimilarWeights(new MinimumMeanCycleDasdanGupta(), seed);
 	}
 
+	@Test
+	public void testRandGraphsEqualWeightCycles() {
+		final long seed = 0x78eeddb6a942d422L;
+		MinimumMeanCycleTestUtils.testRandGraphsEqualWeightCycles(new MinimumMeanCycleDasdanGupta(), seed);
+	}
+
 }

@@ -33,4 +33,10 @@ public class MinimumMeanCycleHowardTest extends TestBase {
 		MinimumMeanCycleTestUtils.testRandGraphsSimilarWeights(new MinimumMeanCycleHoward(), seed);
 	}
 
+	@Test
+	public void testRandGraphsEqualWeightCycles() {
+		final long seed = 0x38793806f1809284L;
+		MinimumMeanCycleTestUtils.testRandGraphsEqualWeightCycles(new MinimumMeanCycleHoward(), seed);
+	}
+
 }

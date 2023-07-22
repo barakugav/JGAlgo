@@ -72,7 +72,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	private static IntIntPair chooseSourceSink(Graph g, Random rand) {
+	static IntIntPair chooseSourceSink(Graph g, Random rand) {
 		int source, sink;
 		for (int[] vs = g.vertices().toIntArray();;) {
 			source = vs[rand.nextInt(vs.length)];

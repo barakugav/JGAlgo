@@ -189,17 +189,42 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 			}
 		}
 
+		/* handle self loops separately, as the algorithm skip SCC of size one */
+		int bestSelfLoop = 1;
+		double bestSelfLoopWeight = Double.POSITIVE_INFINITY;
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
+			if (g.edgeSource(e) == g.edgeTarget(e) && w.weight(e) < bestSelfLoopWeight) {
+				bestSelfLoop = e;
+				bestSelfLoopWeight = w.weight(e);
+			}
+		}
+		if (bestSelfLoop != -1 && bestSelfLoopWeight < overallBestCycleMeanWeight) {
+			int cycleVertex = g.edgeSource(bestSelfLoop);
+			return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfLoop));
+		}
+
 		if (overallBestCycleVertex == -1)
 			return null;
+
 		IntList cycle = new IntArrayList();
-		for (int v = overallBestCycleVertex;;) {
+		for (int cycleVertex = overallBestCycleVertex, v = cycleVertex;;) {
 			int e = policy[v];
 			cycle.add(e);
 			v = g.edgeTarget(e);
-			if (v == overallBestCycleVertex)
-				break;
+			if (v == cycleVertex)
+				return new PathImpl(g, cycleVertex, cycleVertex, cycle);
+
+			if (cycle.size() > n) {
+				/**
+				 * In case we have multiple cycles with the same minimum mean weight, the original
+				 * overallBestCycleVertex might point to tail that leads to minimum mean cycle. For example:
+				 * v1->v2,v2->v3,v3->v2, if start at v1 and search for a cycle ending at v1 we will never find it. If
+				 * the cycle length is greater than n, we will not reach our original cycle.
+				 */
+				cycle.clear();
+				cycleVertex = v;
+			}
 		}
-		return new PathImpl(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
 	}
 
 }
