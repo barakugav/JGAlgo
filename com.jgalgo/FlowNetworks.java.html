@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlowNetworks.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">FlowNetworks.java</span></div><h1>FlowNetworks.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.JGAlgoUtils;
+
+<span class="nc" id="L25">class FlowNetworks {</span>
+
+	static class NetImplEdgeWeights implements FlowNetwork {
+
+		final Weights.Double capacities;
+		final Weights.Double flows;
+		static final double EPS = 0.0001;
+
+<span class="fc" id="L33">		NetImplEdgeWeights(Weights.Double capacities, Weights.Double flows) {</span>
+<span class="fc" id="L34">			this.capacities = Objects.requireNonNull(capacities);</span>
+<span class="fc" id="L35">			this.flows = Objects.requireNonNull(flows);</span>
+<span class="fc" id="L36">		}</span>
+
+		static NetImplEdgeWeights newInstance(Graph g) {
+<span class="fc" id="L39">			Weights.Double capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), double.class);</span>
+<span class="fc" id="L40">			Weights.Double flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), double.class);</span>
+<span class="fc" id="L41">			return new NetImplEdgeWeights(capacities, flows);</span>
+		}
+
+		@Override
+		public double getCapacity(int edge) {
+<span class="fc" id="L46">			return capacities.getDouble(edge);</span>
+		}
+
+		@Override
+		public void setCapacity(int edge, double capacity) {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">			if (capacity &lt; 0)</span>
+<span class="nc" id="L52">				throw new IllegalArgumentException(&quot;capacity can't be negative&quot;);</span>
+<span class="fc" id="L53">			capacities.set(edge, capacity);</span>
+<span class="fc" id="L54">		}</span>
+
+		@Override
+		public double getFlow(int edge) {
+<span class="fc" id="L58">			return flows.getDouble(edge);</span>
+		}
+
+		@Override
+		public void setFlow(int edge, double flow) {
+<span class="fc" id="L63">			double capacity = getCapacity(edge);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (flow &gt; capacity + EPS)</span>
+<span class="nc" id="L65">				throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L66">			flows.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L67">		}</span>
+
+	}
+
+	static class NetImplEdgeWeightsInt implements FlowNetwork.Int {
+
+		final Weights.Int capacities;
+		final Weights.Int flows;
+
+<span class="fc" id="L76">		NetImplEdgeWeightsInt(Weights.Int capacities, Weights.Int flows) {</span>
+<span class="fc" id="L77">			this.capacities = Objects.requireNonNull(capacities);</span>
+<span class="fc" id="L78">			this.flows = Objects.requireNonNull(flows);</span>
+<span class="fc" id="L79">		}</span>
+
+		static NetImplEdgeWeightsInt newInstance(Graph g) {
+<span class="fc" id="L82">			Weights.Int capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), int.class);</span>
+<span class="fc" id="L83">			Weights.Int flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), int.class);</span>
+<span class="fc" id="L84">			return new NetImplEdgeWeightsInt(capacities, flows);</span>
+		}
+
+		@Override
+		public int getCapacityInt(int edge) {
+<span class="fc" id="L89">			return capacities.getInt(edge);</span>
+		}
+
+		@Override
+		public void setCapacity(int edge, int capacity) {
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">			if (capacity &lt; 0)</span>
+<span class="nc" id="L95">				throw new IllegalArgumentException(&quot;capacity can't be negative&quot;);</span>
+<span class="fc" id="L96">			capacities.set(edge, capacity);</span>
+<span class="fc" id="L97">		}</span>
+
+		@Override
+		public int getFlowInt(int edge) {
+<span class="fc" id="L101">			return flows.getInt(edge);</span>
+		}
+
+		@Override
+		public void setFlow(int edge, int flow) {
+<span class="fc" id="L106">			int capacity = getCapacityInt(edge);</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			if (flow &gt; capacity)</span>
+<span class="nc" id="L108">				throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L109">			flows.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L110">		}</span>
+
+	}
+
+	static class IndexNetFromNet implements FlowNetwork {
+
+		private final FlowNetwork idNet;
+		final IndexIdMap eiMap;
+
+<span class="nc" id="L119">		IndexNetFromNet(FlowNetwork idNet, IndexIdMap eiMap) {</span>
+<span class="nc bnc" id="L120" title="All 4 branches missed.">			if (idNet instanceof NetImplEdgeWeights || idNet instanceof NetImplEdgeWeightsInt)</span>
+<span class="nc" id="L121">				throw new IllegalArgumentException(&quot;net is already an index flow network&quot;);</span>
+<span class="nc" id="L122">			this.idNet = Objects.requireNonNull(idNet);</span>
+<span class="nc" id="L123">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="nc" id="L124">		}</span>
+
+		FlowNetwork idNet() {
+<span class="nc" id="L127">			return idNet;</span>
+		}
+
+		@Override
+		public double getCapacity(int edge) {
+<span class="nc" id="L132">			return idNet.getCapacity(eiMap.indexToId(edge));</span>
+		}
+
+		@Override
+		public void setCapacity(int edge, double capacity) {
+<span class="nc" id="L137">			idNet.setCapacity(eiMap.indexToId(edge), capacity);</span>
+<span class="nc" id="L138">		}</span>
+
+		@Override
+		public double getFlow(int edge) {
+<span class="nc" id="L142">			return idNet.getFlow(eiMap.indexToId(edge));</span>
+		}
+
+		@Override
+		public void setFlow(int edge, double flow) {
+<span class="nc" id="L147">			idNet.setFlow(eiMap.indexToId(edge), flow);</span>
+<span class="nc" id="L148">		}</span>
+
+	}
+
+	static class IndexNetFromNetInt implements FlowNetwork.Int {
+
+		private final FlowNetwork.Int idNet;
+		final IndexIdMap eiMap;
+
+<span class="nc" id="L157">		IndexNetFromNetInt(FlowNetwork.Int idNet, IndexIdMap eiMap) {</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">			if (idNet instanceof NetImplEdgeWeightsInt)</span>
+<span class="nc" id="L159">				throw new IllegalArgumentException(&quot;net is already an index flow network&quot;);</span>
+<span class="nc" id="L160">			this.idNet = Objects.requireNonNull(idNet);</span>
+<span class="nc" id="L161">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="nc" id="L162">		}</span>
+
+		FlowNetwork.Int idNet() {
+<span class="nc" id="L165">			return idNet;</span>
+		}
+
+		@Override
+		public int getCapacityInt(int edge) {
+<span class="nc" id="L170">			return idNet.getCapacityInt(eiMap.indexToId(edge));</span>
+		}
+
+		@Override
+		public void setCapacity(int edge, int capacity) {
+<span class="nc" id="L175">			idNet.setCapacity(eiMap.indexToId(edge), capacity);</span>
+<span class="nc" id="L176">		}</span>
+
+		@Override
+		public int getFlowInt(int edge) {
+<span class="nc" id="L180">			return idNet.getFlowInt(eiMap.indexToId(edge));</span>
+		}
+
+		@Override
+		public void setFlow(int edge, int flow) {
+<span class="nc" id="L185">			idNet.setFlow(eiMap.indexToId(edge), flow);</span>
+<span class="nc" id="L186">		}</span>
+	}
+
+	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIdMap eiMap) {
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		if (net instanceof NetImplEdgeWeights) {</span>
+<span class="fc" id="L191">			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;</span>
+
+			/* Create a network from the underlying index weights containers */
+<span class="fc" id="L194">			Weights.Double capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
+<span class="fc" id="L195">			Weights.Double flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
+<span class="fc" id="L196">			return new NetImplEdgeWeights(capacityWeights, flowWeights);</span>
+
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">		} else if (net instanceof NetImplEdgeWeightsInt) {</span>
+<span class="fc" id="L199">			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;</span>
+
+			/* Create a network from the underlying index weights containers */
+<span class="fc" id="L202">			Weights.Int capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
+<span class="fc" id="L203">			Weights.Int flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
+<span class="fc" id="L204">			return new NetImplEdgeWeightsInt(capacityWeights, flowWeights);</span>
+		} else {
+
+			/* Unknown network implementation, create a mapped wrapper */
+<span class="nc bnc" id="L208" title="All 2 branches missed.">			if (net instanceof FlowNetwork.Int) {</span>
+<span class="nc" id="L209">				return new IndexNetFromNetInt((FlowNetwork.Int) net, eiMap);</span>
+			} else {
+<span class="nc" id="L211">				return new IndexNetFromNet(net, eiMap);</span>
+			}
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

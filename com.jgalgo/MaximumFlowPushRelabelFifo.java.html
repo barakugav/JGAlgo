@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -48,69 +49,86 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L51">	MaximumFlowPushRelabelFifo() {}</span>
+<span class="fc" id="L52">	MaximumFlowPushRelabelFifo() {}</span>
 
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L55">		return new WorkerDouble(gOrig, net, source, sink);</span>
+<span class="fc" id="L56">		return new WorkerDouble(gOrig, net, source, sink);</span>
 	}
 
 	@Override
 	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L60">		return new WorkerInt(gOrig, net, source, sink);</span>
+<span class="fc" id="L61">		return new WorkerInt(gOrig, net, source, sink);</span>
+	}
+
+	@Override
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L66">		return new WorkerDouble(gOrig, net, sources, sinks);</span>
+	}
+
+	@Override
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L71">		return new WorkerInt(gOrig, net, sources, sinks);</span>
 	}
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
-<span class="fc" id="L65">		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L76">		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L68">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L69">		}</span>
+<span class="fc" id="L79">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L80">		}</span>
+
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L83">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L84">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L73">			super.activate(v);</span>
-<span class="pc bpc" id="L74" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
-<span class="fc" id="L75">				activeQueue.enqueue(v);</span>
-<span class="fc" id="L76">		}</span>
+<span class="fc" id="L88">			super.activate(v);</span>
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
+<span class="fc" id="L90">				activeQueue.enqueue(v);</span>
+<span class="fc" id="L91">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L85">			return activeQueue.dequeueInt();</span>
+<span class="fc" id="L100">			return activeQueue.dequeueInt();</span>
 		}
 	}
 
 	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
-<span class="fc" id="L91">		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L106">		final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L94">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L95">		}</span>
+<span class="fc" id="L109">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L110">		}</span>
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L113">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L114">		}</span>
 
 		@Override
 		void activate(int v) {
-<span class="fc" id="L99">			super.activate(v);</span>
-<span class="pc bpc" id="L100" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
-<span class="fc" id="L101">				activeQueue.enqueue(v);</span>
-<span class="fc" id="L102">		}</span>
+<span class="fc" id="L118">			super.activate(v);</span>
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">			if (v != source &amp;&amp; v != sink)</span>
+<span class="fc" id="L120">				activeQueue.enqueue(v);</span>
+<span class="fc" id="L121">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			return !activeQueue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L111">			return activeQueue.dequeueInt();</span>
+<span class="fc" id="L130">			return activeQueue.dequeueInt();</span>
 		}
 	}
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

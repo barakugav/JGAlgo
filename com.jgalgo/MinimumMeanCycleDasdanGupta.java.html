@@ -186,7 +186,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L186">			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);</span>
 
 <span class="pc bpc" id="L188" title="1 of 2 branches missed.">		for (int len : bestCycleLengths) {</span>
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))</span>
 <span class="fc" id="L191">					continue;</span>
 <span class="pc bpc" id="L192" title="1 of 2 branches missed.">				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) &lt; EPS) {</span>
@@ -195,7 +195,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L195">					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);</span>
 				}
 			}
-<span class="nc" id="L198">		}</span>
+<span class="fc" id="L198">		}</span>
 <span class="nc" id="L199">		throw new IllegalStateException(&quot;shouldn't happend! implementation bug&quot;);</span>
 	}
 

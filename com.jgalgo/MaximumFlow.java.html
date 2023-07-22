@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -53,7 +54,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
 public interface MaximumFlow {
 
 	/**
-	 * Calculate the maximum flow in a flow network.
+	 * Calculate the maximum flow in a network between a source and a sink.
 	 * &lt;p&gt;
 	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
 	 *
@@ -67,6 +68,21 @@ public interface MaximumFlow {
 	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
 
 	/**
+	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
+	 * &lt;p&gt;
+	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
+	 *
+	 * @param  g                        a graph
+	 * @param  net                      network flow
+	 * @param  sources                  a set of source vertices
+	 * @param  sinks                    a set of sink vertices
+	 * @return                          the maximum flow in the network from the sources to the sinks
+	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
+	 *                                      source or sinks sets
+	 */
+	double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
+
+	/**
 	 * Create a new maximum flow algorithm builder.
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
@@ -74,46 +90,46 @@ public interface MaximumFlow {
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-<span class="fc" id="L77">		return new MaximumFlow.Builder() {</span>
+<span class="fc" id="L93">		return new MaximumFlow.Builder() {</span>
 			String impl;
 
 			@Override
 			public MaximumFlow build() {
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L83" title="All 9 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L99" title="All 9 branches missed.">					switch (impl) {</span>
 						case &quot;edmonds-karp&quot;:
-<span class="nc" id="L85">							return new MaximumFlowEdmondsKarp();</span>
+<span class="nc" id="L101">							return new MaximumFlowEdmondsKarp();</span>
 						case &quot;dinic&quot;:
-<span class="nc" id="L87">							return new MaximumFlowDinic();</span>
+<span class="nc" id="L103">							return new MaximumFlowDinic();</span>
 						case &quot;dinic-dynamic-trees&quot;:
-<span class="nc" id="L89">							return new MaximumFlowDinicDynamicTrees();</span>
+<span class="nc" id="L105">							return new MaximumFlowDinicDynamicTrees();</span>
 						case &quot;push-relabel-fifo&quot;:
-<span class="nc" id="L91">							return new MaximumFlowPushRelabelFifo();</span>
+<span class="nc" id="L107">							return new MaximumFlowPushRelabelFifo();</span>
 						case &quot;push-relabel-highest-first&quot;:
-<span class="nc" id="L93">							return new MaximumFlowPushRelabelHighestFirst();</span>
+<span class="nc" id="L109">							return new MaximumFlowPushRelabelHighestFirst();</span>
 						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L95">							return new MaximumFlowPushRelabelLowestFirst();</span>
+<span class="nc" id="L111">							return new MaximumFlowPushRelabelLowestFirst();</span>
 						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L97">							return new MaximumFlowPushRelabelToFront();</span>
+<span class="nc" id="L113">							return new MaximumFlowPushRelabelToFront();</span>
 						case &quot;push-relabel-fifo-dynamic-trees&quot;:
-<span class="nc" id="L99">							return new MaximumFlowPushRelabelDynamicTrees();</span>
+<span class="nc" id="L115">							return new MaximumFlowPushRelabelDynamicTrees();</span>
 						default:
-<span class="nc" id="L101">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L117">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L104">				return new MaximumFlowPushRelabelHighestFirst();</span>
+<span class="fc" id="L120">				return new MaximumFlowPushRelabelHighestFirst();</span>
 			}
 
 			@Override
 			public MaximumFlow.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L109" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L111">						impl = (String) value;</span>
-<span class="nc" id="L112">						break;</span>
+<span class="nc" id="L127">						impl = (String) value;</span>
+<span class="nc" id="L128">						break;</span>
 					default:
-<span class="nc" id="L114">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L130">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L116">				return this;</span>
+<span class="nc" id="L132">				return this;</span>
 			}
 		};
 	}

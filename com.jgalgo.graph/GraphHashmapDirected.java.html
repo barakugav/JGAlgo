@@ -33,9 +33,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L35">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L36">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,</span>
+<span class="fc" id="L36">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="fc" id="L37">				EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L38">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,</span>
+<span class="fc" id="L38">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="fc" id="L39">				EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
 
 <span class="fc" id="L41">		addInternalVerticesContainer(edgesOutContainer);</span>
@@ -67,9 +67,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				}
 			}
 <span class="fc" id="L69">		} else {</span>
-<span class="nc" id="L70">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,</span>
+<span class="nc" id="L70">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="nc" id="L71">					EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="nc" id="L72">			edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1,</span>
+<span class="nc" id="L72">			edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="nc" id="L73">					EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
 
 <span class="nc" id="L75">			addInternalVerticesContainer(edgesOutContainer);</span>
@@ -257,10 +257,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="pc bpc" id="L257" title="1 of 2 branches missed.">		assert e1 != e2;</span>
 <span class="fc" id="L258">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
 <span class="fc" id="L259">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;</span>
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;</span>
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;</span>
-<span class="pc bpc" id="L263" title="1 of 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1;</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
 <span class="fc" id="L264">		int oldVal1 = edgesOut[u1].put(v1, e2);</span>
 <span class="fc" id="L265">		int oldVal2 = edgesIn[v1].put(u1, e2);</span>
 <span class="fc" id="L266">		int oldVal3 = edgesOut[u2].put(v2, e1);</span>

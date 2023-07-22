@@ -235,7 +235,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	}
 
 	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesArr, int idx) {
-<span class="fc bfc" id="L238" title="All 2 branches covered.">		if (edgesArr[idx] == JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG1) {</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">		if (edgesArr[idx] == JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE) {</span>
 <span class="fc" id="L239">			edgesArr[idx] = new Int2IntOpenHashMap();</span>
 <span class="fc" id="L240">			edgesArr[idx].defaultReturnValue(-1);</span>
 		}
