@@ -70,6 +70,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
  * <p>
+ * Although the Graph API does not expose an explicit method to check whether it is a directed or undirected graph, the
+ * information can be accessed via {@link #getCapabilities()}. The number of vertices and edges can be read via
+ * {@code g.vertices().size()} and {@code g.edges().size()}. The out or in degree of a vertex is exposed by
+ * {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ * <p>
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
  *

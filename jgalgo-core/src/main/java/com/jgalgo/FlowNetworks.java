@@ -17,10 +17,13 @@ package com.jgalgo;
 
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 class FlowNetworks {
 
@@ -33,12 +36,6 @@ class FlowNetworks {
 		NetImplEdgeWeights(Weights.Double capacities, Weights.Double flows) {
 			this.capacities = Objects.requireNonNull(capacities);
 			this.flows = Objects.requireNonNull(flows);
-		}
-
-		static NetImplEdgeWeights newInstance(Graph g) {
-			Weights.Double capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), double.class);
-			Weights.Double flows = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), double.class);
-			return new NetImplEdgeWeights(capacities, flows);
 		}
 
 		@Override
@@ -78,9 +75,15 @@ class FlowNetworks {
 			this.flows = Objects.requireNonNull(flows);
 		}
 
-		static NetImplEdgeWeightsInt newInstance(Graph g) {
+		static FlowNetwork.Int addWeightsAndCreateNet(Graph g) {
 			Weights.Int capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), int.class);
 			Weights.Int flows = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), int.class);
+			return new NetImplEdgeWeightsInt(capacities, flows);
+		}
+
+		static FlowNetwork.Int createExternalWeightsAndCreateNet(Graph g) {
+			Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);
+			Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
 			return new NetImplEdgeWeightsInt(capacities, flows);
 		}
 
@@ -107,6 +110,102 @@ class FlowNetworks {
 			if (flow > capacity)
 				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
 			flows.set(edge, Math.min(flow, capacity));
+		}
+
+	}
+
+	static class ResidualGraph {
+		final IndexGraph gOrig;
+		final IndexGraph g;
+		final int[] edgeRef;
+		final int[] twin;
+
+		ResidualGraph(IndexGraph gOrig, IndexGraph g, int[] edgeRef, int[] twin) {
+			this.gOrig = gOrig;
+			this.g = g;
+			this.edgeRef = edgeRef;
+			this.twin = twin;
+		}
+
+		boolean isOriginalEdge(int e) {
+			int eOrig = edgeRef[e];
+			return eOrig != -1 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
+		}
+
+		static class Builder {
+
+			private final IndexGraphBuilder gBuilder;
+			private final IndexGraph gOrig;
+			private final IntArrayList edgeRef;
+			private final IntArrayList twin;
+
+			Builder(IndexGraph gOrig) {
+				this.gOrig = Objects.requireNonNull(gOrig);
+				gBuilder = IndexGraphBuilder.newDirected();
+				edgeRef = new IntArrayList(gOrig.edges().size() * 2);
+				twin = new IntArrayList(gOrig.edges().size() * 2);
+			}
+
+			void addAllOriginalEdges() {
+				for (int n = gOrig.vertices().size(), u = 0; u < n; u++) {
+					int vBuilder = gBuilder.addVertex();
+					assert u == vBuilder;
+				}
+				if (gOrig.getCapabilities().directed()) {
+					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+						int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+						if (u != v)
+							addEdge(u, v, e);
+					}
+				} else {
+					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+						int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+						if (u != v)
+							addEdge(u, v, e);
+					}
+				}
+			}
+
+			int addVertex() {
+				return gBuilder.addVertex();
+			}
+
+			void addEdge(int u, int v, int e) {
+				int e1Builder = gBuilder.addEdge(u, v);
+				int e2Builder = gBuilder.addEdge(v, u);
+				assert e1Builder == edgeRef.size();
+				edgeRef.add(e);
+				assert e2Builder == edgeRef.size();
+				edgeRef.add(e);
+				assert e1Builder == twin.size();
+				twin.add(e2Builder);
+				assert e2Builder == twin.size();
+				twin.add(e1Builder);
+			}
+
+			ResidualGraph build() {
+				IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);
+				IndexGraph g = reindexedGraph.graph();
+				final int m = g.edges().size();
+				int[] edgeRefTemp = edgeRef.elements();
+				int[] twinTemp = twin.elements();
+				int[] edgeRef = new int[m];
+				int[] twin = new int[m];
+				if (reindexedGraph.edgesReIndexing().isPresent()) {
+					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
+					for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];
+						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);
+					}
+				} else {
+					for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+						edgeRef[eBuilder] = edgeRefTemp[eBuilder];
+						twin[eBuilder] = twinTemp[eBuilder];
+					}
+				}
+				return new ResidualGraph(gOrig, g, edgeRef, twin);
+			}
+
 		}
 
 	}

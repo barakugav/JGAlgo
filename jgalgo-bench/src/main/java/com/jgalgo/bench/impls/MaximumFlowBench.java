@@ -154,7 +154,7 @@ public class MaximumFlowBench {
 
 	private static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
+		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;

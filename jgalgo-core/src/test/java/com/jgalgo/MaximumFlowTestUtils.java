@@ -51,7 +51,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(seed);
-		FlowNetwork flow = FlowNetwork.createAsEdgeWeight(g);
+		FlowNetwork flow = FlowNetwork.createFromEdgeWeights(g);
 		for (int e : g.edges()) {
 			double cap;
 			for (;;) {
@@ -74,7 +74,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
+		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
@@ -222,8 +222,15 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaximumFlow algo) {
-		double actualMaxFlow = algo.computeMaximumFlow(g, net, source, sink);
+		double actualTotalFlow = algo.computeMaximumFlow(g, net, source, sink);
 
+		assertValidFlow(g, net, source, sink, actualTotalFlow);
+
+		double expectedTotalFlow = calcExpectedFlow(g, net, source, sink);
+		assertEquals(expectedTotalFlow, actualTotalFlow, 1E-3, "Unexpected max flow");
+	}
+
+	static void assertValidFlow(Graph g, FlowNetwork net, int source, int sink, double totalFlow) {
 		int n = g.vertices().size();
 		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
 		for (int e : g.edges()) {
@@ -232,12 +239,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 			vertexFlowOut.put(v, vertexFlowOut.get(v) - net.getFlow(e));
 		}
 		for (int v : g.vertices()) {
-			double expected = v == source ? actualMaxFlow : v == sink ? -actualMaxFlow : 0;
+			double expected = v == source ? totalFlow : v == sink ? -totalFlow : 0;
 			assertEquals(expected, vertexFlowOut.get(v), 1E-3, "Invalid vertex(" + v + ") flow");
 		}
-
-		double expectedMaxFlow = calcExpectedFlow(g, net, source, sink);
-		assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
 	private static void testNetwork(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks,

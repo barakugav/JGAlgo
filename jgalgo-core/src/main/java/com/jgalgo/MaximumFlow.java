@@ -49,6 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * }</pre>
  *
  * @see    FlowNetwork
+ * @see    <a href= "https://en.wikipedia.org/wiki/Maximum_flow_problem">Wikipedia</a>
  * @author Barak Ugav
  */
 public interface MaximumFlow {
