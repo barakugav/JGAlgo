@@ -131,7 +131,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		IndexGraph gNeg = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 		for (int v = 0; v < n; v++)
 			gNeg.addVertex();
-		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
+		int[] gNegEdgeRefs = new int[m];
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
 		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
@@ -165,9 +165,10 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
 				for (int e = 0; e < m; e++) {
-					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					if (w[e] <= 0)
-						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
+					if (w[e] <= 0) {
+						int u = g.edgeSource(e), v = g.edgeTarget(e);
+						gNegEdgeRefs[gNeg.addEdge(u, v)] = e;
+					}
 				}
 
 				/* Find all strong connectivity components in the graph */
@@ -187,7 +188,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 						int e = eit.nextInt();
 						int v = eit.target();
 						int V = connectivityRes.getVertexCc(v);
-						int weight = w[gNegEdgeRefs.getInt(e)];
+						int weight = w[gNegEdgeRefs[e]];
 						if (U != V) {
 							GWeights.set(G.addEdge(U, V), weight);
 
@@ -196,8 +197,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 							Path negCycle0 = Path.findPath(gNeg, v, u);
 							IntList negCycle = new IntArrayList(negCycle0.size() + 1);
 							for (int e2 : negCycle0)
-								negCycle.add(gNegEdgeRefs.getInt(e2));
-							negCycle.add(gNegEdgeRefs.getInt(e));
+								negCycle.add(gNegEdgeRefs[e2]);
+							negCycle.add(gNegEdgeRefs[e]);
 							return Pair.of(null, new PathImpl(g, v, v, negCycle));
 						}
 					}

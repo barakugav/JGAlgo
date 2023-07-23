@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.LinkedListFixedSize;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**

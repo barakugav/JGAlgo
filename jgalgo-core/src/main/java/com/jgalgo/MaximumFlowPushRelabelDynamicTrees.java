@@ -23,6 +23,7 @@ import com.jgalgo.internal.data.DynamicTree;
 import com.jgalgo.internal.data.DynamicTree.MinEdge;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.data.DynamicTreeExtension;
+import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.data.QueueFixSize;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntCollection;

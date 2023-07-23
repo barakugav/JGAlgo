@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+package com.jgalgo.internal.data;
 
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-class LinkedListFixedSize {
+public class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
 
-	static final int None = -1;
+	public static final int None = -1;
 
 	private static interface WithNext {
 		int next(int id);
@@ -58,11 +58,11 @@ class LinkedListFixedSize {
 		}
 	}
 
-	static class Singly implements WithNext {
+	public static class Singly implements WithNext {
 
 		private final Array arr;
 
-		Singly(int n) {
+		public Singly(int n) {
 			if (n < 0)
 				throw new IllegalArgumentException("negative size: " + n);
 			int bitsNum = n == 0 ? 1 : (32 - Integer.numberOfLeadingZeros(n - 1));
@@ -80,25 +80,25 @@ class LinkedListFixedSize {
 			return arr.get(id);
 		}
 
-		void setNext(int id, int next) {
+		public void setNext(int id, int next) {
 			arr.set(id, next);
 		}
 
-		boolean hasNext(int id) {
+		public boolean hasNext(int id) {
 			return next(id) != None;
 		}
 
-		void clear() {
+		public void clear() {
 			arr.fill(None);
 		}
 
 	}
 
-	static class Doubly implements WithNext {
+	public static class Doubly implements WithNext {
 
 		private final Array arr;
 
-		Doubly(int n) {
+		public Doubly(int n) {
 			if (n < 0)
 				throw new IllegalArgumentException("negative size: " + n);
 			int bitsNum = n == 0 ? 1 : (32 - Integer.numberOfLeadingZeros(n - 1));
@@ -124,27 +124,27 @@ class LinkedListFixedSize {
 			return arr.get(idxOfNext(id));
 		}
 
-		void setNext(int id, int next) {
+		public void setNext(int id, int next) {
 			arr.set(idxOfNext(id), next);
 		}
 
-		boolean hasNext(int id) {
+		public boolean hasNext(int id) {
 			return next(id) != None;
 		}
 
-		int prev(int id) {
+		public int prev(int id) {
 			return arr.get(idxOfPrev(id));
 		}
 
-		void setPrev(int id, int prev) {
+		public void setPrev(int id, int prev) {
 			arr.set(idxOfPrev(id), prev);
 		}
 
-		boolean hasPrev(int id) {
+		public boolean hasPrev(int id) {
 			return prev(id) != None;
 		}
 
-		void insert(int prev, int id) {
+		public void insert(int prev, int id) {
 			if (hasNext(id) || hasPrev(id))
 				throw new IllegalArgumentException();
 			int next = next(prev);
@@ -156,14 +156,14 @@ class LinkedListFixedSize {
 			}
 		}
 
-		void connect(int prev, int next) {
+		public void connect(int prev, int next) {
 			if (hasNext(prev) || hasPrev(next))
 				throw new IllegalArgumentException();
 			setNext(prev, next);
 			setPrev(next, prev);
 		}
 
-		void disconnect(int id) {
+		public void disconnect(int id) {
 			int prev = prev(id), next = next(id);
 			if (prev != None) {
 				setNext(prev, next);
@@ -175,7 +175,7 @@ class LinkedListFixedSize {
 			}
 		}
 
-		void clear() {
+		public void clear() {
 			arr.fill(None);
 		}
 
