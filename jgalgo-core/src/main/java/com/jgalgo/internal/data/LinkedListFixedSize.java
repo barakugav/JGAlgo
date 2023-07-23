@@ -25,12 +25,36 @@ public class LinkedListFixedSize {
 
 	public static final int None = -1;
 
-	private static interface WithNext {
-		int next(int id);
+	public static class Singly {
 
-		int size();
+		private final int[] arr;
 
-		default JGAlgoUtils.IterPeekable.Int iterator(int id) {
+		public Singly(int n) {
+			arr = new int[n];
+			Arrays.fill(arr, None);
+		}
+
+		public int size() {
+			return arr.length;
+		}
+
+		public int next(int id) {
+			return arr[id];
+		}
+
+		public void setNext(int id, int next) {
+			arr[id] = next;
+		}
+
+		public boolean hasNext(int id) {
+			return next(id) != None;
+		}
+
+		public void clear() {
+			Arrays.fill(arr, None);
+		}
+
+		public JGAlgoUtils.IterPeekable.Int iterator(int id) {
 			Assertions.Arrays.checkIndex(id, 0, size());
 			return new JGAlgoUtils.IterPeekable.Int() {
 				int p = id;
@@ -44,7 +68,7 @@ public class LinkedListFixedSize {
 				public int nextInt() {
 					Assertions.Iters.hasNext(this);
 					int ret = p;
-					p = LinkedListFixedSize.WithNext.this.next(p);
+					p = LinkedListFixedSize.Singly.this.next(p);
 					return ret;
 				}
 
@@ -56,54 +80,16 @@ public class LinkedListFixedSize {
 
 			};
 		}
-	}
-
-	public static class Singly implements WithNext {
-
-		private final Array arr;
-
-		public Singly(int n) {
-			if (n < 0)
-				throw new IllegalArgumentException("negative size: " + n);
-			int bitsNum = n == 0 ? 1 : (32 - Integer.numberOfLeadingZeros(n - 1));
-			arr = Array.newInstance(bitsNum, n);
-			arr.fill(None);
-		}
-
-		@Override
-		public int size() {
-			return arr.length();
-		}
-
-		@Override
-		public int next(int id) {
-			return arr.get(id);
-		}
-
-		public void setNext(int id, int next) {
-			arr.set(id, next);
-		}
-
-		public boolean hasNext(int id) {
-			return next(id) != None;
-		}
-
-		public void clear() {
-			arr.fill(None);
-		}
 
 	}
 
-	public static class Doubly implements WithNext {
+	public static class Doubly {
 
-		private final Array arr;
+		private final int[] arr;
 
 		public Doubly(int n) {
-			if (n < 0)
-				throw new IllegalArgumentException("negative size: " + n);
-			int bitsNum = n == 0 ? 1 : (32 - Integer.numberOfLeadingZeros(n - 1));
-			arr = Array.newInstance(bitsNum, n * 2);
-			arr.fill(None);
+			arr = new int[n * 2];
+			Arrays.fill(arr, None);
 		}
 
 		private static int idxOfNext(int id) {
@@ -114,18 +100,16 @@ public class LinkedListFixedSize {
 			return id * 2 + 1;
 		}
 
-		@Override
 		public int size() {
-			return arr.length() / 2;
+			return arr.length / 2;
 		}
 
-		@Override
 		public int next(int id) {
-			return arr.get(idxOfNext(id));
+			return arr[idxOfNext(id)];
 		}
 
 		public void setNext(int id, int next) {
-			arr.set(idxOfNext(id), next);
+			arr[idxOfNext(id)] = next;
 		}
 
 		public boolean hasNext(int id) {
@@ -133,11 +117,11 @@ public class LinkedListFixedSize {
 		}
 
 		public int prev(int id) {
-			return arr.get(idxOfPrev(id));
+			return arr[idxOfPrev(id)];
 		}
 
 		public void setPrev(int id, int prev) {
-			arr.set(idxOfPrev(id), prev);
+			arr[idxOfPrev(id)] = prev;
 		}
 
 		public boolean hasPrev(int id) {
@@ -176,120 +160,36 @@ public class LinkedListFixedSize {
 		}
 
 		public void clear() {
-			arr.fill(None);
+			Arrays.fill(arr, None);
 		}
 
-	}
+		public JGAlgoUtils.IterPeekable.Int iterator(int id) {
+			Assertions.Arrays.checkIndex(id, 0, size());
+			return new JGAlgoUtils.IterPeekable.Int() {
+				int p = id;
 
-	private static interface Array {
-		int length();
+				@Override
+				public boolean hasNext() {
+					return p != None;
+				}
 
-		int get(int idx);
+				@Override
+				public int nextInt() {
+					Assertions.Iters.hasNext(this);
+					int ret = p;
+					p = LinkedListFixedSize.Doubly.this.next(p);
+					return ret;
+				}
 
-		void set(int idx, int val);
+				@Override
+				public int peekNext() {
+					Assertions.Iters.hasNext(this);
+					return p;
+				}
 
-		void fill(int val);
-
-		static Array newInstance(int valBits, int length) {
-			if (valBits <= java.lang.Byte.SIZE - 1) {
-				return new Array.Byte(length);
-			} else if (valBits <= java.lang.Short.SIZE - 1) {
-				return new Array.Short(length);
-			} else {
-				return new Array.Int(length);
-			}
+			};
 		}
 
-		static class Byte implements Array {
-
-			final byte[] arr;
-
-			Byte(int len) {
-				arr = new byte[len];
-			}
-
-			@Override
-			public int length() {
-				return arr.length;
-			}
-
-			@Override
-			public int get(int idx) {
-				return arr[idx];
-			}
-
-			@Override
-			public void set(int idx, int val) {
-				assert val == -1 || (val & 0xff) == val;
-				arr[idx] = (byte) val;
-			}
-
-			@Override
-			public void fill(int val) {
-				assert val == -1 || (val & 0xff) == val;
-				Arrays.fill(arr, (byte) val);
-			}
-		}
-
-		static class Short implements Array {
-
-			final short[] arr;
-
-			Short(int len) {
-				arr = new short[len];
-			}
-
-			@Override
-			public int length() {
-				return arr.length;
-			}
-
-			@Override
-			public int get(int idx) {
-				return arr[idx];
-			}
-
-			@Override
-			public void set(int idx, int val) {
-				assert val == -1 || (val & 0xffff) == val;
-				arr[idx] = (short) val;
-			}
-
-			@Override
-			public void fill(int val) {
-				assert val == -1 || (val & 0xffff) == val;
-				Arrays.fill(arr, (short) val);
-			}
-		}
-
-		static class Int implements Array {
-
-			final int[] arr;
-
-			Int(int len) {
-				arr = new int[len];
-			}
-
-			@Override
-			public int length() {
-				return arr.length;
-			}
-
-			@Override
-			public int get(int idx) {
-				return arr[idx];
-			}
-
-			@Override
-			public void set(int idx, int val) {
-				arr[idx] = val;
-			}
-
-			@Override
-			public void fill(int val) {
-				Arrays.fill(arr, val);
-			}
-		}
 	}
 
 }
