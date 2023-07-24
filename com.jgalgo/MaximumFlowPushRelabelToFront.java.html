@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -48,26 +49,26 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L51">	MaximumFlowPushRelabelToFront() {}</span>
+<span class="fc" id="L52">	MaximumFlowPushRelabelToFront() {}</span>
 
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L55">		return new WorkerDouble(gOrig, net, source, sink);</span>
+<span class="fc" id="L56">		return new WorkerDouble(gOrig, net, source, sink);</span>
 	}
 
 	@Override
 	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L60">		return new WorkerInt(gOrig, net, source, sink);</span>
+<span class="fc" id="L61">		return new WorkerInt(gOrig, net, source, sink);</span>
 	}
 
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L65">		return new WorkerDouble(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L66">		return new WorkerDouble(gOrig, net, sources, sinks);</span>
 	}
 
 	@Override
 	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L70">		return new WorkerInt(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L71">		return new WorkerInt(gOrig, net, sources, sinks);</span>
 	}
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
@@ -75,52 +76,52 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 		final VertexList list;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L78">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L79">			list = new VertexList(this);</span>
-<span class="fc" id="L80">		}</span>
+<span class="fc" id="L79">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L80">			list = new VertexList(this);</span>
+<span class="fc" id="L81">		}</span>
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L83">			super(gOrig, net, sources, sinks);</span>
-<span class="fc" id="L84">			list = new VertexList(this);</span>
-<span class="fc" id="L85">		}</span>
+<span class="fc" id="L84">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L85">			list = new VertexList(this);</span>
+<span class="fc" id="L86">		}</span>
 
 		@Override
 		void relabel(int v, int newLabel) {
-<span class="fc" id="L89">			super.relabel(v, newLabel);</span>
-<span class="fc" id="L90">			list.afterRelabel(v);</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc" id="L90">			super.relabel(v, newLabel);</span>
+<span class="fc" id="L91">			list.afterRelabel(v);</span>
+<span class="fc" id="L92">		}</span>
 
 		@Override
 		void recomputeLabels() {
-<span class="fc" id="L95">			list.clear();</span>
-<span class="fc" id="L96">			super.recomputeLabels();</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)</span>
-<span class="fc" id="L98">					: JGAlgoUtils.IterPeekable.Int.Empty;</span>
-<span class="fc" id="L99">		}</span>
+<span class="fc" id="L96">			list.clear();</span>
+<span class="fc" id="L97">			super.recomputeLabels();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)</span>
+<span class="fc" id="L99">					: JGAlgoUtils.IterPeekable.Int.Empty;</span>
+<span class="fc" id="L100">		}</span>
 
 		@Override
 		void onVertexLabelReCompute(int u, int newLabel) {
-<span class="fc" id="L103">			super.onVertexLabelReCompute(u, newLabel);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (list.listHead != LinkedListFixedSize.None)</span>
-<span class="fc" id="L105">				list.vertices.connect(u, list.listHead);</span>
-<span class="fc" id="L106">			list.listHead = u;</span>
-<span class="fc" id="L107">		}</span>
+<span class="fc" id="L104">			super.onVertexLabelReCompute(u, newLabel);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (list.listHead != LinkedListFixedSize.None)</span>
+<span class="fc" id="L106">				list.vertices.connect(u, list.listHead);</span>
+<span class="fc" id="L107">			list.listHead = u;</span>
+<span class="fc" id="L108">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (; list.listIter.hasNext(); list.listIter.nextInt())</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (hasExcess(list.listIter.peekNext()))</span>
-<span class="fc" id="L113">					return true;</span>
-<span class="fc" id="L114">			return false;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (; list.listIter.hasNext(); list.listIter.nextInt())</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (hasExcess(list.listIter.peekNext()))</span>
+<span class="fc" id="L114">					return true;</span>
+<span class="fc" id="L115">			return false;</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
 			int v;
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			while (list.listIter.hasNext())</span>
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">				if (hasExcess(v = list.listIter.nextInt()))</span>
-<span class="fc" id="L122">					return v;</span>
-<span class="nc" id="L123">			throw new IllegalStateException();</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">			while (list.listIter.hasNext())</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">				if (hasExcess(v = list.listIter.nextInt()))</span>
+<span class="fc" id="L123">					return v;</span>
+<span class="nc" id="L124">			throw new IllegalStateException();</span>
 		}
 	}
 
@@ -129,95 +130,95 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 		final VertexList list;
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
-<span class="fc" id="L132">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L133">			list = new VertexList(this);</span>
-<span class="fc" id="L134">		}</span>
+<span class="fc" id="L133">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L134">			list = new VertexList(this);</span>
+<span class="fc" id="L135">		}</span>
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L137">			super(gOrig, net, sources, sinks);</span>
-<span class="fc" id="L138">			list = new VertexList(this);</span>
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L138">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L139">			list = new VertexList(this);</span>
+<span class="fc" id="L140">		}</span>
 
 		@Override
 		void relabel(int v, int newLabel) {
-<span class="fc" id="L143">			super.relabel(v, newLabel);</span>
-<span class="fc" id="L144">			list.afterRelabel(v);</span>
-<span class="fc" id="L145">		}</span>
+<span class="fc" id="L144">			super.relabel(v, newLabel);</span>
+<span class="fc" id="L145">			list.afterRelabel(v);</span>
+<span class="fc" id="L146">		}</span>
 
 		@Override
 		void recomputeLabels() {
-<span class="fc" id="L149">			list.clear();</span>
-<span class="fc" id="L150">			super.recomputeLabels();</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)</span>
-<span class="fc" id="L152">					: JGAlgoUtils.IterPeekable.Int.Empty;</span>
-<span class="fc" id="L153">		}</span>
+<span class="fc" id="L150">			list.clear();</span>
+<span class="fc" id="L151">			super.recomputeLabels();</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)</span>
+<span class="fc" id="L153">					: JGAlgoUtils.IterPeekable.Int.Empty;</span>
+<span class="fc" id="L154">		}</span>
 
 		@Override
 		void onVertexLabelReCompute(int u, int newLabel) {
-<span class="fc" id="L157">			super.onVertexLabelReCompute(u, newLabel);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (list.listHead != LinkedListFixedSize.None)</span>
-<span class="fc" id="L159">				list.vertices.connect(u, list.listHead);</span>
-<span class="fc" id="L160">			list.listHead = u;</span>
-<span class="fc" id="L161">		}</span>
+<span class="fc" id="L158">			super.onVertexLabelReCompute(u, newLabel);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (list.listHead != LinkedListFixedSize.None)</span>
+<span class="fc" id="L160">				list.vertices.connect(u, list.listHead);</span>
+<span class="fc" id="L161">			list.listHead = u;</span>
+<span class="fc" id="L162">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (; list.listIter.hasNext(); list.listIter.nextInt())</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (hasExcess(list.listIter.peekNext()))</span>
-<span class="fc" id="L167">					return true;</span>
-<span class="fc" id="L168">			return false;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			for (; list.listIter.hasNext(); list.listIter.nextInt())</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">				if (hasExcess(list.listIter.peekNext()))</span>
+<span class="fc" id="L168">					return true;</span>
+<span class="fc" id="L169">			return false;</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
 			int v;
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">			while (list.listIter.hasNext())</span>
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">				if (hasExcess(v = list.listIter.nextInt()))</span>
-<span class="fc" id="L176">					return v;</span>
-<span class="nc" id="L177">			throw new IllegalStateException();</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">			while (list.listIter.hasNext())</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (hasExcess(v = list.listIter.nextInt()))</span>
+<span class="fc" id="L177">					return v;</span>
+<span class="nc" id="L178">			throw new IllegalStateException();</span>
 		}
 	}
 
-<span class="fc" id="L181">	private static class VertexList {</span>
+<span class="fc" id="L182">	private static class VertexList {</span>
 
 		final LinkedListFixedSize.Doubly vertices;
-<span class="fc" id="L184">		int listHead = LinkedListFixedSize.None;</span>
+<span class="fc" id="L185">		int listHead = LinkedListFixedSize.None;</span>
 		JGAlgoUtils.IterPeekable.Int listIter;
 
-<span class="fc" id="L187">		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {</span>
-<span class="fc" id="L188">			int n = worker.g.vertices().size();</span>
-<span class="fc" id="L189">			vertices = new LinkedListFixedSize.Doubly(n);</span>
-<span class="fc" id="L190">		}</span>
+<span class="fc" id="L188">		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {</span>
+<span class="fc" id="L189">			int n = worker.g.vertices().size();</span>
+<span class="fc" id="L190">			vertices = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L191">		}</span>
 
 		void clear() {
-<span class="fc" id="L193">			vertices.clear();</span>
-<span class="fc" id="L194">			listHead = LinkedListFixedSize.None;</span>
-<span class="fc" id="L195">			listIter = null;</span>
-<span class="fc" id="L196">		}</span>
+<span class="fc" id="L194">			vertices.clear();</span>
+<span class="fc" id="L195">			listHead = LinkedListFixedSize.None;</span>
+<span class="fc" id="L196">			listIter = null;</span>
+<span class="fc" id="L197">		}</span>
 
 		void afterRelabel(int v) {
 			// move to front
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (v != listHead) {</span>
-<span class="fc" id="L201">				vertices.disconnect(v);</span>
-<span class="fc" id="L202">				vertices.connect(v, listHead);</span>
-<span class="fc" id="L203">				listHead = v;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (v != listHead) {</span>
+<span class="fc" id="L202">				vertices.disconnect(v);</span>
+<span class="fc" id="L203">				vertices.connect(v, listHead);</span>
+<span class="fc" id="L204">				listHead = v;</span>
 			}
-<span class="fc" id="L205">			listIter = vertices.iterator(listHead);</span>
-<span class="fc" id="L206">		}</span>
+<span class="fc" id="L206">			listIter = vertices.iterator(listHead);</span>
+<span class="fc" id="L207">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L210" title="All 2 branches missed.">			if (listHead == LinkedListFixedSize.None)</span>
-<span class="nc" id="L211">				return &quot;[]&quot;;</span>
-<span class="nc" id="L212">			StringBuilder s = new StringBuilder().append('[');</span>
-<span class="nc" id="L213">			for (IntIterator it = vertices.iterator(listHead);;) {</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">				assert it.hasNext();</span>
-<span class="nc" id="L215">				int v = it.nextInt();</span>
-<span class="nc" id="L216">				s.append(v);</span>
-<span class="nc bnc" id="L217" title="All 2 branches missed.">				if (!it.hasNext())</span>
-<span class="nc" id="L218">					return s.append(']').toString();</span>
-<span class="nc" id="L219">				s.append(',').append(' ');</span>
-<span class="nc" id="L220">			}</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">			if (listHead == LinkedListFixedSize.None)</span>
+<span class="nc" id="L212">				return &quot;[]&quot;;</span>
+<span class="nc" id="L213">			StringBuilder s = new StringBuilder().append('[');</span>
+<span class="nc" id="L214">			for (IntIterator it = vertices.iterator(listHead);;) {</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">				assert it.hasNext();</span>
+<span class="nc" id="L216">				int v = it.nextInt();</span>
+<span class="nc" id="L217">				s.append(v);</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">				if (!it.hasNext())</span>
+<span class="nc" id="L219">					return s.append(']').toString();</span>
+<span class="nc" id="L220">				s.append(',').append(' ');</span>
+<span class="nc" id="L221">			}</span>
 		}
 
 	}

@@ -17,6 +17,11 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Flow on graph edges, with capacities and flows values.
@@ -110,16 +115,97 @@ public interface FlowNetwork {
 	void setFlow(int edge, double flow);
 
 	/**
+	 * Get the sum of flow units going out of a source vertex.
+	 *
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @return        the sum of flow units going out of {@code source}
+	 */
+	default double getFlowSum(Graph g, int source) {
+<span class="fc" id="L125">		return getFlowSum(g, IntList.of(source));</span>
+	}
+
+	/**
+	 * Get the sum of flow units going out of a set of source vertices.
+	 *
+	 * @param  g       a graph
+	 * @param  sources a set of source vertices
+	 * @return         the sum of flow units going out of {@code sources}
+	 */
+	default double getFlowSum(Graph g, IntCollection sources) {
+<span class="fc" id="L136">		double sum = 0;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		if (g.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (int source : sources) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (int e : g.outEdges(source))</span>
+<span class="fc" id="L140">					sum += getFlow(e);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				for (int e : g.inEdges(source))</span>
+<span class="fc" id="L142">					sum -= getFlow(e);</span>
+<span class="fc" id="L143">			}</span>
+		} else {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">			for (int source : sources) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">				for (int e : g.outEdges(source)) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">					if (g.edgeSource(e) == source) {</span>
+<span class="nc" id="L148">						sum += getFlow(e);</span>
+					} else {
+<span class="nc" id="L150">						sum -= getFlow(e);</span>
+					}
+<span class="nc" id="L152">				}</span>
+<span class="nc" id="L153">			}</span>
+		}
+<span class="fc" id="L155">		return sum;</span>
+	}
+
+	/**
+	 * Get the cost of the flow along a set of edges.
+	 * &lt;p&gt;
+	 * The cost function define the cost per unit of flow on each edge of the network. The cost of an edge in the
+	 * network is defined as the flow on the edge multiplied by the cost per unit of flow on the edge.
+	 *
+	 * @param  edges the set of edges to sum their cost
+	 * @param  cost  a edge weight cost function
+	 * @return       the sum of the cost of the flow along the edges
+	 */
+	default double getCostSum(IntCollection edges, WeightFunction cost) {
+<span class="fc" id="L169">		double sum = 0;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		for (int e : edges)</span>
+<span class="fc" id="L171">			sum += getFlow(e) * cost.weight(e);</span>
+<span class="fc" id="L172">		return sum;</span>
+	}
+
+	/**
 	 * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
 	 * &lt;p&gt;
 	 * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
 	 * edge will be zero.
+	 * &lt;p&gt;
+	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
+	 * graph is modified, as they are added to the graph. This is a key difference between this function and
+	 * {@link #createFromEdgeWeights(Weights.Double, Weights.Double)}, which if provided with weights containers created
+	 * with {@link Weights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
+	 * scenarios in which we are not allowed to add weights to the graph.
 	 *
 	 * @param  g a graph
-	 * @return   a flow network implemented as edge weights
+	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
-	static FlowNetwork createAsEdgeWeight(Graph g) {
-<span class="fc" id="L122">		return FlowNetworks.NetImplEdgeWeights.newInstance(g);</span>
+	static FlowNetwork createFromEdgeWeights(Graph g) {
+<span class="fc" id="L191">		Weights.Double capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), double.class);</span>
+<span class="fc" id="L192">		Weights.Double flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), double.class);</span>
+<span class="fc" id="L193">		return createFromEdgeWeights(capacities, flows);</span>
+	}
+
+	/**
+	 * Create a flow network by using existing edge weights.
+	 * &lt;p&gt;
+	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
+	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
+	 * the graph.
+	 *
+	 * @param  capacities a weight container containing the capacities of the edges
+	 * @param  flows      a weight container that will contain the flow values of the edges
+	 * @return            a flow network implemented as external edge weights containers
+	 */
+	static FlowNetwork createFromEdgeWeights(Weights.Double capacities, Weights.Double flows) {
+<span class="fc" id="L208">		return new FlowNetworks.NetImplEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
@@ -145,7 +231,7 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default double getCapacity(int edge) {
-<span class="fc" id="L148">			return getCapacityInt(edge);</span>
+<span class="fc" id="L234">			return getCapacityInt(edge);</span>
 		}
 
 		/**
@@ -161,8 +247,8 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default void setCapacity(int edge, double capacity) {
-<span class="nc" id="L164">			setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L165">		}</span>
+<span class="nc" id="L250">			setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L251">		}</span>
 
 		/**
 		 * Get the integer amount of flow units going along an edge.
@@ -184,7 +270,7 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default double getFlow(int edge) {
-<span class="fc" id="L187">			return getFlowInt(edge);</span>
+<span class="fc" id="L273">			return getFlowInt(edge);</span>
 		}
 
 		/**
@@ -199,20 +285,43 @@ public interface FlowNetwork {
 		@Deprecated
 		@Override
 		default void setFlow(int edge, double flow) {
-<span class="fc" id="L202">			setFlow(edge, (int) flow);</span>
-<span class="fc" id="L203">		}</span>
+<span class="fc" id="L288">			setFlow(edge, (int) flow);</span>
+<span class="fc" id="L289">		}</span>
 
 		/**
 		 * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
 		 * &lt;p&gt;
 		 * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each
 		 * edge will be zero.
+		 * &lt;p&gt;
+		 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
+		 * the graph is modified, as they are added to the graph. This is a key difference between this function and
+		 * {@link #createFromEdgeWeights(Weights.Double, Weights.Double)}, which if provided with weights containers
+		 * created with {@link Weights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but
+		 * may suite in scenarios in which we are not allowed to add weights to the graph.
 		 *
 		 * @param  g a graph
-		 * @return   a flow network implemented as edge weights
+		 * @return   a flow network implemented as edge weights containers added to the graph
 		 */
-		static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-<span class="fc" id="L215">			return FlowNetworks.NetImplEdgeWeightsInt.newInstance(g);</span>
+		static FlowNetwork.Int createFromEdgeWeights(Graph g) {
+<span class="fc" id="L307">			Weights.Int capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), int.class);</span>
+<span class="fc" id="L308">			Weights.Int flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), int.class);</span>
+<span class="fc" id="L309">			return createFromEdgeWeights(capacities, flows);</span>
+		}
+
+		/**
+		 * Create a flow network by using existing edge weights.
+		 * &lt;p&gt;
+		 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for
+		 * a graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to
+		 * modify the graph.
+		 *
+		 * @param  capacities a weight container containing the capacities of the edges
+		 * @param  flows      a weight container that will contain the flow values of the edges
+		 * @return            a flow network implemented as external edge weights containers
+		 */
+		static FlowNetwork.Int createFromEdgeWeights(Weights.Int capacities, Weights.Int flows) {
+<span class="fc" id="L324">			return new FlowNetworks.NetImplEdgeWeightsInt(capacities, flows);</span>
 		}
 
 	}

@@ -49,12 +49,12 @@ public interface MinimumMeanCycle {
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
 	static MinimumMeanCycle.Builder newBuilder() {
-<span class="nc" id="L52">		return new MinimumMeanCycle.Builder() {</span>
+<span class="fc" id="L52">		return new MinimumMeanCycle.Builder() {</span>
 			String impl;
 
 			@Override
 			public MinimumMeanCycle build() {
-<span class="nc bnc" id="L57" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				if (impl != null) {</span>
 <span class="nc bnc" id="L58" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;dasdan-gupta&quot;:
 <span class="nc" id="L60">							return new MinimumMeanCycleDasdanGupta();</span>
@@ -64,7 +64,7 @@ public interface MinimumMeanCycle {
 <span class="nc" id="L64">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L67">				return new MinimumMeanCycleHoward();</span>
+<span class="fc" id="L67">				return new MinimumMeanCycleHoward();</span>
 			}
 
 			@Override

@@ -70,6 +70,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
  * &lt;p&gt;
+ * Although the Graph API does not expose an explicit method to check whether it is a directed or undirected graph, the
+ * information can be accessed via {@link #getCapabilities()}. The number of vertices and edges can be read via
+ * {@code g.vertices().size()} and {@code g.edges().size()}. The out or in degree of a vertex is exposed by
+ * {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ * &lt;p&gt;
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
  *
@@ -213,12 +218,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L216" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L217">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L219">				return e;</span>
-<span class="fc" id="L220">		}</span>
-<span class="fc" id="L221">		return -1;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L222">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L224">				return e;</span>
+<span class="fc" id="L225">		}</span>
+<span class="fc" id="L226">		return -1;</span>
 	}
 
 	/**
@@ -274,9 +279,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L277">		removeOutEdgesOf(vertex);</span>
-<span class="fc" id="L278">		removeInEdgesOf(vertex);</span>
-<span class="fc" id="L279">	}</span>
+<span class="fc" id="L282">		removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L283">		removeInEdgesOf(vertex);</span>
+<span class="fc" id="L284">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -285,11 +290,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
-<span class="fc bfc" id="L288" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L289">			eit.nextInt();</span>
-<span class="fc" id="L290">			eit.remove();</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L294">			eit.nextInt();</span>
+<span class="fc" id="L295">			eit.remove();</span>
 		}
-<span class="fc" id="L292">	}</span>
+<span class="fc" id="L297">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -298,11 +303,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
-<span class="fc bfc" id="L301" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L302">			eit.nextInt();</span>
-<span class="fc" id="L303">			eit.remove();</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L307">			eit.nextInt();</span>
+<span class="fc" id="L308">			eit.remove();</span>
 		}
-<span class="fc" id="L305">	}</span>
+<span class="fc" id="L310">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -352,14 +357,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L355">		int u = edgeSource(edge);</span>
-<span class="fc" id="L356">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L358">			return v;</span>
-<span class="pc bpc" id="L359" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L360">			return u;</span>
+<span class="fc" id="L360">		int u = edgeSource(edge);</span>
+<span class="fc" id="L361">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L363">			return v;</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L365">			return u;</span>
 		} else {
-<span class="nc" id="L362">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L367">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -423,7 +428,7 @@ public interface Graph {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
-<span class="fc" id="L426">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L431">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -524,7 +529,7 @@ public interface Graph {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L527">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L532">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -655,7 +660,7 @@ public interface Graph {
 	 * @return an identical copy of this graph
 	 */
 	default Graph copy() {
-<span class="fc" id="L658">		return GraphFactory.newFrom(this).newCopyOf(this);</span>
+<span class="fc" id="L663">		return GraphFactory.newFrom(this).newCopyOf(this);</span>
 	}
 
 	/**
@@ -675,7 +680,7 @@ public interface Graph {
 	 * @return an immutable copy of this graph
 	 */
 	default Graph immutableCopy() {
-<span class="fc" id="L678">		return GraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L683">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -688,7 +693,7 @@ public interface Graph {
 	 * @return an immutable view of this graph
 	 */
 	default Graph immutableView() {
-<span class="fc" id="L691">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L696">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -703,7 +708,7 @@ public interface Graph {
 	 * @return a reversed view of this graph
 	 */
 	default Graph reverseView() {
-<span class="fc" id="L706">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L711">		return Graphs.reverseView(this);</span>
 	}
 
 }

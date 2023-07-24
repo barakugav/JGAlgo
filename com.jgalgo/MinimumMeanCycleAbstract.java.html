@@ -26,8 +26,8 @@ import com.jgalgo.graph.WeightFunction;
 
 	@Override
 	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L30">			return computeMinimumMeanCycle((IndexGraph) g, w);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L30">			return computeMinimumMeanCycle((IndexGraph) g, w);</span>
 
 <span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>

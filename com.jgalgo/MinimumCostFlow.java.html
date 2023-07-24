@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumCostFlow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MinimumCostFlow.java</span></div><h1>MinimumCostFlow.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Compute the minimum-cost (max) flow in a flow network.
+ * &lt;p&gt;
+ * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal nodes, and the
+ * objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite demand, and
+ * the objective is to find a minimum-cost flow satisfying the demand, namely that for each vertex the sum of flow units
+ * going into the vertex minus the sum of flow units going out of it is equal to its demand.
+ * &lt;p&gt;
+ * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
+ * be viewed as upper bounds.
+ *
+ * @see    MaximumFlow
+ * @see    FlowNetwork
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Minimum-cost_flow_problem&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface MinimumCostFlow {
+
+	/**
+	 * Compute the min-cost max-flow in a network between a source and a sink.
+	 *
+	 * @param g      the graph
+	 * @param net    the flow network. The result flow values will be set using this network
+	 * @param cost   an edge weight function representing the cost of each unit of flow along the edge
+	 * @param source a source vertex
+	 * @param sink   a sink vertex
+	 */
+	void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, int source, int sink);
+
+	/**
+	 * Compute the min-cost max-flow in a network between a source and a sink given a lower bound for the edges flows.
+	 *
+	 * @param g          the graph
+	 * @param net        the flow network. The result flow values will be set using this network
+	 * @param cost       an edge weight function representing the cost of each unit of flow along the edge
+	 * @param lowerBound an edge weight function representing a lower bound for the flow along each edge
+	 * @param source     a source vertex
+	 * @param sink       a sink vertex
+	 */
+	void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound, int source,
+			int sink);
+
+	/**
+	 * Compute the min-cost max-flow in a network between a set of sources and a set of sinks.
+	 *
+	 * @param g       the graph
+	 * @param net     the flow network. The result flow values will be set using this network
+	 * @param cost    an edge weight function representing the cost of each unit of flow along the edge
+	 * @param sources a set of source vertices
+	 * @param sinks   a set of sinks vertices
+	 */
+	void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, IntCollection sources,
+			IntCollection sinks);
+
+	/**
+	 * Compute the min-cost max-flow in a network between a set of sources and a set of sinks given a lower bound for
+	 * the edges flows.
+	 *
+	 * @param g          the graph
+	 * @param net        the flow network. The result flow values will be set using this network
+	 * @param cost       an edge weight function representing the cost of each unit of flow along the edge
+	 * @param lowerBound an edge weight function representing a lower bound for the flow along each edge
+	 * @param sources    a set of source vertices
+	 * @param sinks      a set of sinks vertices
+	 */
+	void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
+			IntCollection sources, IntCollection sinks);
+
+	/**
+	 * Compute the min-cost (not maximum!) flow in a network given a demand for each vertex.
+	 *
+	 * @param g      the graph
+	 * @param net    the flow network. The result flow values will be set using this network
+	 * @param cost   an edge weight function representing the cost of each unit of flow along the edge
+	 * @param demand a vertex weight function representing the demand for each vertex
+	 */
+	void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction demand);
+
+	/**
+	 * Compute the min-cost (not maximum!) flow in a network given a demand for each vertex and a lower bound for the
+	 * edges flows.
+	 *
+	 * @param g          the graph
+	 * @param net        the flow network. The result flow values will be set using this network
+	 * @param cost       an edge weight function representing the cost of each unit of flow along the edge
+	 * @param lowerBound an edge weight function representing a lower bound for the flow along each edge
+	 * @param demand     a vertex weight function representing the demand for each vertex
+	 */
+	void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
+			WeightFunction demand);
+
+	/**
+	 * Create a new minimum cost flow algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object.
+	 *
+	 * @return a new builder that can build {@link MinimumCostFlow} objects
+	 */
+	static MinimumCostFlow.Builder newBuilder() {
+<span class="nc" id="L122">		return MinimumCostFlowCycleCanceling::new;</span>
+	}
+
+	/**
+	 * A builder for {@link MinimumCostFlow} objects.
+	 *
+	 * @see    MinimumCostFlow#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;MinimumCostFlow.Builder&gt; {
+
+		/**
+		 * Create a new algorithm object for minimum cost flow computation.
+		 *
+		 * @return a new minimum cost flow algorithm
+		 */
+		MinimumCostFlow build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
