@@ -715,7 +715,7 @@ public class JGAlgoUtils {
 	}
 
 	public static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
-<span class="fc bfc" id="L718" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="pc bpc" id="L718" title="1 of 2 branches missed.">		for (int len = to - from; len &gt; 0;) {</span>
 <span class="fc" id="L719">			int half = len &gt;&gt; 1;</span>
 <span class="fc" id="L720">			int mid = from + half;</span>
 <span class="fc" id="L721">			int midKey = idx2key.applyAsInt(mid);</span>
@@ -731,7 +731,7 @@ public class JGAlgoUtils {
 <span class="fc" id="L731">				return IntIntPair.of(left, right);</span>
 			}
 <span class="fc" id="L733">		}</span>
-<span class="fc" id="L734">		return null;</span>
+<span class="nc" id="L734">		return null;</span>
 	}
 
 }
