@@ -23,10 +23,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implements MinimumCutSTUtils.AbstractImpl {
@@ -154,6 +152,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		int maxLayerActive;
 		private int maxLayerInactive;
 
+		private static final boolean HeuristicIncrementalRestart = Boolean.parseBoolean("false");
+		private int minTouchedLayer;
+
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
@@ -200,13 +201,38 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			assert visited.isEmpty();
 			assert queue.isEmpty();
 
-			Arrays.fill(label, n);
+			if (HeuristicIncrementalRestart && minTouchedLayer >= 2) {
+				assert minTouchedLayer != n;
+				for (int u = 0; u < n; u++) {
+					int l = label[u];
+					if (l < minTouchedLayer) {
+						if (u == sink)
+							continue;
+						onVertexLabelReCompute(u, l);
+						visited.set(u);
+						if (l == minTouchedLayer - 1)
+							queue.enqueue(u);
 
+					} else {
+						label[u] = n;
+					}
+				}
+				assert !queue.isEmpty();
+			} else {
+				Arrays.fill(label, n);
+				label[sink] = 0;
+				queue.enqueue(sink);
+			}
+			if (HeuristicIncrementalRestart)
+				minTouchedLayer = n;
+
+			// label[sink] = 0;
+			assert label[sink] == 0;
 			visited.set(sink);
-			label[sink] = 0;
+			// label[source] = n;
+			assert label[source] == n;
 			visited.set(source);
-			label[source] = n;
-			queue.enqueue(sink);
+
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
 				int vLabel = label[v];
@@ -228,6 +254,16 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			relabelsSinceLastLabelsRecompute = 0;
 		}
 
+		void touchVertex(int v) {
+			if (HeuristicIncrementalRestart && minTouchedLayer > label[v])
+				minTouchedLayer = label[v];
+		}
+
+		void touchLayer(int layer) {
+			if (HeuristicIncrementalRestart && minTouchedLayer > layer)
+				minTouchedLayer = layer;
+		}
+
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
 			edgeIters[u] = g.outEdges(u).iterator();
@@ -245,6 +281,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 			if (maxLayerActive < layer)
 				maxLayerActive = layer;
+			touchLayer(layer);
 		}
 
 		void addToLayerInactive(int u, int layer) {
@@ -255,18 +292,21 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 			if (maxLayerInactive < layer)
 				maxLayerInactive = layer;
+			touchLayer(layer);
 		}
 
 		void removeFromLayerActive(int u, int layer) {
 			if (layersHeadActive[layer] == u)
 				layersHeadActive[layer] = layers.next(u);
 			layers.disconnect(u);
+			touchLayer(layer);
 		}
 
 		void removeFromLayerInactive(int u, int layer) {
 			if (layersHeadInactive[layer] == u)
 				layersHeadInactive[layer] = layers.next(u);
 			layers.disconnect(u);
+			touchLayer(layer);
 		}
 
 		void activate(int v) {
@@ -288,7 +328,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		void relabel(int u, int newLabel) {
 			assert newLabel < n;
 			int oldLabel = label[u];
+			assert oldLabel < newLabel;
 			label[u] = newLabel;
+			touchLayer(oldLabel);
 
 			if (layersHeadActive[oldLabel] == LinkedListFixedSize.None
 					&& layersHeadInactive[oldLabel] == LinkedListFixedSize.None) {
@@ -479,10 +521,10 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				}
 			}
 			assert !visited.get(source);
-			IntList cut = new IntArrayList(n - visited.cardinality());
+			BitSet cut = new BitSet(n);
 			for (int n = gOrig.vertices().size(), u = 0; u < n; u++)
 				if (!visited.get(u))
-					cut.add(u);
+					cut.set(u);
 			visited.clear();
 			return new CutImpl(gOrig, cut);
 		}
