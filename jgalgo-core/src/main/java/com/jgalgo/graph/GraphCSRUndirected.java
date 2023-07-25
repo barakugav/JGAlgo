@@ -17,9 +17,6 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
@@ -30,27 +27,6 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 	GraphCSRUndirected(IndexGraph g) {
 		super(g);
 		Assertions.Graphs.onlyUndirected(g);
-
-		final int n = vertices().size();
-		for (int u = 0; u < n; u++) {
-			final int u0 = u;
-			IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
-				int c;
-				if ((c = Integer.compare(edgeEndpoint(e1, u0), edgeEndpoint(e2, u0))) != 0)
-					return c;
-				if ((c = Integer.compare(e1, e2)) != 0)
-					return c;
-				return 0;
-			});
-		}
-	}
-
-	@Override
-	public EdgeSet getEdges(int source, int target) {
-		IntIntPair edgeRange = JGAlgoUtils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target,
-				eIdx -> edgeEndpoint(edgesOut[eIdx], source));
-		return edgeRange == null ? Edges.EmptyEdgeSet
-				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());
 	}
 
 	@Override
@@ -112,19 +88,6 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterIn(target, edgesOut, edgesOutBegin[target], edgesOutBegin[target + 1]);
-		}
-	}
-
-	private class EdgeSetSourceTarget extends GraphCSRAbstractUnindexed.EdgeSetSourceTarget {
-
-		EdgeSetSourceTarget(int source, int target, int edgeIdxBegin, int edgeIdxEnd) {
-			super(source, target, edgeIdxBegin, edgeIdxEnd);
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			int u = edgeSource(edge), v = edgeTarget(edge);
-			return (u == source && v == target) || (u == target && v == source);
 		}
 	}
 

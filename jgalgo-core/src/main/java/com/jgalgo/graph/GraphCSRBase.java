@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, ImmutableGraph {
@@ -117,12 +116,6 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 	@Override
 	public void removeVertex(int vertex) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public int getEdge(int source, int target) {
-		EdgeSet edges = getEdges(source, target);
-		return edges.isEmpty() ? -1 : edges.iterator().nextInt();
 	}
 
 	@Override
@@ -295,18 +288,6 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 			for (int v = n - 1; v > 0; v--)
 				edgesOutBegin[v] = edgesOutBegin[v - 1];
 			edgesOutBegin[0] = 0;
-
-			for (int u = 0; u < n; u++) {
-				final int u0 = u;
-				IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
-					int c;
-					if ((c = Integer.compare(builder.edgeEndpoint(e1, u0), builder.edgeEndpoint(e2, u0))) != 0)
-						return c;
-					if ((c = Integer.compare(e1, e2)) != 0)
-						return c;
-					return 0;
-				});
-			}
 		}
 
 	}
@@ -366,27 +347,6 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 				edgesInBegin[v] = edgesInBegin[v - 1];
 			}
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
-
-			for (int u = 0; u < n; u++) {
-				IntArrays.quickSort(edgesOut, edgesOutBegin[u], edgesOutBegin[u + 1], (e1, e2) -> {
-					int c;
-					if ((c = Integer.compare(builder.edgeTarget(e1), builder.edgeTarget(e2))) != 0)
-						return c;
-					if ((c = Integer.compare(e1, e2)) != 0)
-						return c;
-					return 0;
-				});
-			}
-			for (int v = 0; v < n; v++) {
-				IntArrays.quickSort(edgesIn, edgesInBegin[v], edgesInBegin[v + 1], (e1, e2) -> {
-					int c;
-					if ((c = Integer.compare(builder.edgeSource(e1), builder.edgeSource(e2))) != 0)
-						return c;
-					if ((c = Integer.compare(e1, e2)) != 0)
-						return c;
-					return 0;
-				});
-			}
 		}
 
 	}

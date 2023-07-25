@@ -18,9 +18,6 @@ package com.jgalgo.graph;
 import java.util.Optional;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCSRDirectedReindexed extends GraphCSRBase {
 
@@ -67,14 +64,6 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(builder, processEdges, edgesReIndexing);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
-	}
-
-	@Override
-	public EdgeSet getEdges(int source, int target) {
-		IntIntPair edgeRange =
-				JGAlgoUtils.equalRange(edgesOutBegin[source], edgesOutBegin[source + 1], target, this::edgeTarget);
-		return edgeRange == null ? Edges.EmptyEdgeSet
-				: new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());
 	}
 
 	@Override
@@ -139,36 +128,6 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 	}
 
-	private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
-
-		private final int source;
-		private final int target;
-		private final int begin;
-		private final int end;
-
-		EdgeSetSourceTarget(int source, int target, int start, int end) {
-			this.source = source;
-			this.target = target;
-			this.begin = start;
-			this.end = end;
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			return source == edgeSource(edge) && target == edgeTarget(edge);
-		}
-
-		@Override
-		public int size() {
-			return end - begin;
-		}
-
-		@Override
-		public EdgeIter iterator() {
-			return new EdgeIterSourceTarget(source, target, begin, end);
-		}
-	}
-
 	private static abstract class EdgeIterOutAbstract implements EdgeIter {
 		private final int source;
 		int nextEdge;
@@ -226,21 +185,6 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		@Override
 		public int source() {
 			return edgeSource(lastEdge);
-		}
-
-		@Override
-		public int target() {
-			return target;
-		}
-	}
-
-	private static class EdgeIterSourceTarget extends EdgeIterOutAbstract {
-
-		private final int target;
-
-		EdgeIterSourceTarget(int source, int target, int beginEdge, int endEnd) {
-			super(source, beginEdge, endEnd);
-			this.target = target;
 		}
 
 		@Override
