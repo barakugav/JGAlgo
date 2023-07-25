@@ -30,8 +30,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighestFirst {
 
-	MaximumFlowPushRelabelPartialAugment() {}
-
 	@Override
 	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 		return new WorkerDouble(gOrig, net, source, sink);
@@ -81,12 +79,28 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 						if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == sink) {
 							if (v != sink && !hasExcess(v))
 								activate(v);
+
+							/* push along the admissible path */
+							assert !path.isEmpty();
 							pushOnPath(searchSource);
-							path.clear();
-							if (!hasExcess(searchSource))
+
+							/* If the 'source' does not have any excess, we are done */
+							if (!hasExcess(searchSource)) {
+								path.clear();
 								return;
-							u = searchSource;
+							}
+
+							/* back up in the DFS tree until all edges in the path are residual */
+							for (int i = 0; i < path.size(); i++) {
+								if (!isResidual(path.getInt(i))) {
+									path.removeElements(i, path.size());
+									break;
+								}
+							}
+							assert path.intStream().allMatch(this::isResidual);
+							u = path.isEmpty() ? searchSource : g.edgeTarget(path.getInt(path.size() - 1));
 						} else {
+							/* advance in the DFS */
 							u = v;
 						}
 						continue dfs;
@@ -140,20 +154,37 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 
 		private void pushOnPath(int pathSource) {
 			assert !path.isEmpty();
-			double f = excess[pathSource];
-			for (int e : path)
-				f = Math.min(f, getResidualCapacity(e));
-			assert f > 0;
+			int u, v = pathSource;
+			final byte Inactive = 0;
+			final byte Active = 1;
+			final byte SOURCE = 2;
+			byte uMark = SOURCE;
 			for (int e : path) {
+				u = v;
+				v = g.edgeTarget(e);
+				double f = Math.min(excess[u], residualCapacity[e]);
+				assert f >= 0;
+				boolean vWasActive = hasExcess(v);
+
 				int t = twin[e];
 				residualCapacity[e] -= f;
 				residualCapacity[t] += f;
 				assert residualCapacity[e] >= -EPS;
 				assert residualCapacity[t] >= -EPS;
+				excess[u] -= f;
+				excess[v] += f;
+				assert excess[u] >= 0;
+				assert excess[v] >= 0;
+
+				if (uMark == Active) {
+					if (!hasExcess(u))
+						deactivate(u);
+				} else if (uMark == Inactive) {
+					if (hasExcess(u))
+						activate(u);
+				}
+				uMark = vWasActive ? Active : Inactive;
 			}
-			int pathSink = g.edgeTarget(path.getInt(path.size() - 1));
-			excess[pathSource] -= f;
-			excess[pathSink] += f;
 		}
 
 	}
@@ -187,12 +218,28 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 						if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == sink) {
 							if (v != sink && !hasExcess(v))
 								activate(v);
+
+							/* push along the admissible path */
+							assert !path.isEmpty();
 							pushOnPath(searchSource);
-							path.clear();
-							if (!hasExcess(searchSource))
+
+							/* If the 'source' does not have any excess, we are done */
+							if (!hasExcess(searchSource)) {
+								path.clear();
 								return;
-							u = searchSource;
+							}
+
+							/* back up in the DFS tree until all edges in the path are residual */
+							for (int i = 0; i < path.size(); i++) {
+								if (!isResidual(path.getInt(i))) {
+									path.removeElements(i, path.size());
+									break;
+								}
+							}
+							assert path.intStream().allMatch(this::isResidual);
+							u = path.isEmpty() ? searchSource : g.edgeTarget(path.getInt(path.size() - 1));
 						} else {
+							/* advance in the DFS */
 							u = v;
 						}
 						continue dfs;
@@ -246,20 +293,37 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 
 		private void pushOnPath(int pathSource) {
 			assert !path.isEmpty();
-			int f = excess[pathSource];
-			for (int e : path)
-				f = Math.min(f, getResidualCapacity(e));
-			assert f > 0;
+			int u, v = pathSource;
+			final byte Inactive = 0;
+			final byte Active = 1;
+			final byte SOURCE = 2;
+			byte uMark = SOURCE;
 			for (int e : path) {
+				u = v;
+				v = g.edgeTarget(e);
+				int f = Math.min(excess[u], residualCapacity[e]);
+				assert f >= 0;
+				boolean vWasActive = hasExcess(v);
+
 				int t = twin[e];
 				residualCapacity[e] -= f;
 				residualCapacity[t] += f;
 				assert residualCapacity[e] >= 0;
 				assert residualCapacity[t] >= 0;
+				excess[u] -= f;
+				excess[v] += f;
+				assert excess[u] >= 0;
+				assert excess[v] >= 0;
+
+				if (uMark == Active) {
+					if (!hasExcess(u))
+						deactivate(u);
+				} else if (uMark == Inactive) {
+					if (hasExcess(u))
+						activate(u);
+				}
+				uMark = vWasActive ? Active : Inactive;
 			}
-			int pathSink = g.edgeTarget(path.getInt(path.size() - 1));
-			excess[pathSource] -= f;
-			excess[pathSink] += f;
 		}
 
 	}

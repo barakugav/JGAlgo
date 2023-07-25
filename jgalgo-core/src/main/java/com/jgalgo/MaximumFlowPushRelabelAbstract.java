@@ -275,6 +275,12 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			addToLayerActive(v, l);
 		}
 
+		void deactivate(int v) {
+			int l = label[v];
+			removeFromLayerActive(v, l);
+			addToLayerInactive(v, l);
+		}
+
 		abstract void pushAsMuchFromSource();
 
 		// abstract void push(int e, double f);
