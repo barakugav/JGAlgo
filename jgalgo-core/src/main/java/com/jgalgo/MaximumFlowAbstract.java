@@ -124,9 +124,18 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 		void initCapacitiesAndFlows(double[] flow, double[] capacity) {
 			Arrays.fill(flow, 0);
+			initCapacities(capacity);
+		}
+
+		void initCapacitiesAndFlows(int[] flow, int[] capacity) {
+			Arrays.fill(flow, 0);
+			initCapacities(capacity);
+		}
+
+		void initCapacities(double[] residualCapacity) {
 			if (gOrig.getCapabilities().directed()) {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					capacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;
+					residualCapacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -134,7 +143,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 					double cap =
 							(eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(eRef)
 									: 0;
-					capacity[e] = cap;
+					residualCapacity[e] = cap;
 				}
 			}
 			if (multiSourceMultiSink) {
@@ -145,16 +154,15 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 				/* init edges from super-source to sources and from sinks to super-sink */
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					if (edgeRef[e] == -1)
-						capacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
+						residualCapacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 			}
 		}
 
-		void initCapacitiesAndFlows(int[] flow, int[] capacity) {
-			Arrays.fill(flow, 0);
+		void initCapacities(int[] residualCapacity) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			if (gOrig.getCapabilities().directed()) {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					capacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
+					residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -162,7 +170,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 					int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 							? net.getCapacityInt(eRef)
 							: 0;
-					capacity[e] = cap;
+					residualCapacity[e] = cap;
 				}
 			}
 			if (multiSourceMultiSink) {
@@ -181,7 +189,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 				/* init edges from super-source to sources and from sinks to super-sink */
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					if (edgeRef[e] == -1)
-						capacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
+						residualCapacity[e] = source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 			}
 		}
 
@@ -230,6 +238,55 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 					for (int e : g.outEdges(s))
 						if (g.edgeTarget(e) != source)
 							totalFlow += flow[e];
+			}
+			return totalFlow;
+		}
+
+		double constructResult(double[] capacity, double[] residualCapacity) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				if (isOriginalEdge(e))
+					/* The flow of e might be negative if the original graph is undirected, which is fine */
+					net.setFlow(edgeRef[e], capacity[e] - residualCapacity[e]);
+			}
+
+			double totalFlow = 0;
+			if (gOrig.getCapabilities().directed()) {
+				for (int s : sources) {
+					for (int e : gOrig.outEdges(s))
+						totalFlow += net.getFlow(e);
+					for (int e : gOrig.inEdges(s))
+						totalFlow -= net.getFlow(e);
+				}
+			} else {
+				for (int s : sources)
+					for (int e : g.outEdges(s))
+						if (g.edgeTarget(e) != source)
+							totalFlow += capacity[e] - residualCapacity[e];
+			}
+			return totalFlow;
+		}
+
+		int constructResult(int[] capacity, int[] residualCapacity) {
+			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				if (isOriginalEdge(e))
+					/* The flow of e might be negative if the original graph is undirected, which is fine */
+					net.setFlow(edgeRef[e], capacity[e] - residualCapacity[e]);
+			}
+
+			int totalFlow = 0;
+			if (gOrig.getCapabilities().directed()) {
+				for (int s : sources) {
+					for (int e : gOrig.outEdges(s))
+						totalFlow += net.getFlowInt(e);
+					for (int e : gOrig.inEdges(s))
+						totalFlow -= net.getFlowInt(e);
+				}
+			} else {
+				for (int s : sources)
+					for (int e : g.outEdges(s))
+						if (g.edgeTarget(e) != source)
+							totalFlow += capacity[e] - residualCapacity[e];
 			}
 			return totalFlow;
 		}

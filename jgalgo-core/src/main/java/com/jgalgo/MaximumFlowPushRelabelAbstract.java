@@ -494,8 +494,8 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 	}
 
 	static abstract class WorkerDouble extends Worker {
-		final double[] flow;
 		final double[] capacity;
+		final double[] residualCapacity;
 
 		final double[] excess;
 
@@ -504,9 +504,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 
 			excess = new double[n];
 		}
@@ -514,9 +514,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
 			super(gOrig, net, sources, sinks);
 
-			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 
 			excess = new double[n];
 		}
@@ -539,10 +539,10 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			assert f > 0;
 
 			int t = twin[e];
-			flow[e] += f;
-			flow[t] -= f;
-			assert flow[e] <= capacity[e] + EPS;
-			assert flow[t] <= capacity[t] + EPS;
+			residualCapacity[e] -= f;
+			residualCapacity[t] += f;
+			assert residualCapacity[e] >= -EPS;
+			assert residualCapacity[t] >= -EPS;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
@@ -591,11 +591,11 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			assert hasNegativeFlow(e);
-			double f = -flow[e];
+			double f = -flow(e);
 			for (;;) {
 				e = edgeIters[v].peekNext();
 				assert hasNegativeFlow(e);
-				f = Math.min(f, -flow[e]);
+				f = Math.min(f, -flow(e));
 				if (v == u)
 					break;
 				v = g.edgeTarget(e);
@@ -605,8 +605,8 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			for (v = u;;) {
 				e = edgeIters[v].peekNext();
 				int t = twin[e];
-				flow[e] += f;
-				flow[t] -= f;
+				residualCapacity[e] -= f;
+				residualCapacity[t] += f;
 				v = g.edgeTarget(e);
 				if (v == u)
 					break;
@@ -619,7 +619,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				for (int e : g.outEdges(u)) {
 					if (!hasExcess(u))
 						break;
-					double f = flow[e];
+					double f = flow(e);
 					if (f < 0)
 						push(e, Math.min(excess[u], -f));
 				}
@@ -630,7 +630,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		double constructResult() {
-			return constructResult(flow);
+			return constructResult(capacity, residualCapacity);
 		}
 
 		@Override
@@ -639,7 +639,11 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		}
 
 		double getResidualCapacity(int e) {
-			return capacity[e] - flow[e];
+			return residualCapacity[e];
+		}
+
+		double flow(int e) {
+			return capacity[e] - residualCapacity[e];
 		}
 
 		@Override
@@ -654,12 +658,12 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-			return flow[e] < 0;
+			return flow(e) < 0;
 		}
 	}
 
 	static abstract class WorkerInt extends Worker {
-		final int[] flow;
+		final int[] residualCapacity;
 		final int[] capacity;
 
 		final int[] excess;
@@ -667,9 +671,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
-			flow = new int[g.edges().size()];
 			capacity = new int[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 
 			excess = new int[n];
 		}
@@ -677,9 +681,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
 			super(gOrig, net, sources, sinks);
 
-			flow = new int[g.edges().size()];
 			capacity = new int[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 
 			excess = new int[n];
 		}
@@ -702,10 +706,10 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			assert f > 0;
 
 			int t = twin[e];
-			flow[e] += f;
-			flow[t] -= f;
-			assert flow[e] <= capacity[e];
-			assert flow[t] <= capacity[t];
+			residualCapacity[e] -= f;
+			residualCapacity[t] += f;
+			assert residualCapacity[e] >= 0;
+			assert residualCapacity[t] >= 0;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
@@ -751,11 +755,11 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			assert hasNegativeFlow(e);
-			int f = -flow[e];
+			int f = -flow(e);
 			for (;;) {
 				e = edgeIters[v].peekNext();
 				assert hasNegativeFlow(e);
-				f = Math.min(f, -flow[e]);
+				f = Math.min(f, -flow(e));
 				if (v == u)
 					break;
 				v = g.edgeTarget(e);
@@ -765,8 +769,8 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			for (v = u;;) {
 				e = edgeIters[v].peekNext();
 				int t = twin[e];
-				flow[e] += f;
-				flow[t] -= f;
+				residualCapacity[e] -= f;
+				residualCapacity[t] += f;
 				v = g.edgeTarget(e);
 				if (v == u)
 					break;
@@ -779,7 +783,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				for (int e : g.outEdges(u)) {
 					if (!hasExcess(u))
 						break;
-					int f = flow[e];
+					int f = flow(e);
 					if (f < 0)
 						push(e, Math.min(excess[u], -f));
 				}
@@ -790,7 +794,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		double constructResult() {
-			return constructResult(flow);
+			return constructResult(capacity, residualCapacity);
 		}
 
 		@Override
@@ -799,7 +803,11 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		}
 
 		int getResidualCapacity(int e) {
-			return capacity[e] - flow[e];
+			return residualCapacity[e];
+		}
+
+		int flow(int e) {
+			return capacity[e] - residualCapacity[e];
 		}
 
 		@Override
@@ -814,7 +822,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-			return flow[e] < 0;
+			return flow(e) < 0;
 		}
 	}
 
