@@ -18,12 +18,13 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntIterators;
 
 /**
  * Dial's algorithm for Single Source Shortest Path for positive integer weights.
@@ -34,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  * depends on \(D\).
  * <p>
  * This algorithm should be used in case the maximal distance is known in advance, and its small. For example, its used
- * by {@link ShortestPathSingleSourceDial} as a subroutine, where the maximum distance is bounded by the number of
+ * by {@link ShortestPathSingleSourceGoldberg} as a subroutine, where the maximum distance is bounded by the number of
  * layers.
  * <p>
  * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by Dial, Robert B. (1969).
@@ -62,21 +63,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunction.Int w0 = (WeightFunction.Int) w;
 
-		int n = g.vertices().size(), m = g.edges().size();
-
-		int maxDistance = 0;
-		if (m <= n - 1) {
-			maxDistance = (int) GraphsUtils.weightSum(g.edges(), w0);
-
-		} else {
-			/* sum the n-1 heaviest weights */
-			int[] edges = g.edges().toIntArray();
-			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);
-			maxDistance = (int) GraphsUtils.weightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);
-		}
-
-		ShortestPathSingleSource.Result res = computeShortestPaths(g, w0, source, maxDistance);
-		return res;
+		return computeShortestPaths(g, w0, source, -1);
 	}
 
 	/**
@@ -85,7 +72,8 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 * @param  g           a graph
 	 * @param  w           an integer edge weight function with non negative values
 	 * @param  source      a source vertex
-	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph
+	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph, any negative number is treated as
+	 *                         'unknown'
 	 * @return             a result object containing the distances and shortest paths from the source to any other
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
@@ -134,26 +122,34 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	private static class DialHeap {
 
 		private final LinkedListFixedSize.Doubly heapBucketsNodes;
-		private final int[] heapBucketsHead;
+		private int[] heapBucketsHead;
 		private final int[] heapDistances;
-		private final int heapMaxKey;
 		private int heapScanIdx;
+		private int maxDistance;
 
-		DialHeap(int n, int maxDistance) {
-			heapBucketsHead = new int[maxDistance];
-			Arrays.fill(heapBucketsHead, 0, maxDistance, LinkedListFixedSize.None);
+		DialHeap(int n, int initialSize) {
+			heapBucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
+			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);
 			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
 			heapDistances = new int[n];
 			Arrays.fill(heapDistances, 0, n, -1);
 
-			heapMaxKey = maxDistance;
+			maxDistance = -1;
 			heapScanIdx = 0;
 		}
 
 		void insert(int v, int distance) {
 			heapDistances[v] = distance;
-			if (distance >= heapBucketsHead.length)
-				throw new IllegalStateException("distance too great");
+			if (distance >= heapBucketsHead.length) {
+				int oldLength = heapBucketsHead.length;
+				int newLength = Math.max(distance + 1, oldLength * 2);
+				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);
+				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);
+				maxDistance = distance;
+			} else if (distance > maxDistance) {
+				maxDistance = distance;
+			}
+
 			int h = heapBucketsHead[distance];
 			heapBucketsHead[distance] = v;
 			if (h != LinkedListFixedSize.None)
@@ -162,6 +158,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 
 		void decreaseKey(int v, int distance) {
 			int oldDistance = heapDistances[v];
+			assert distance < oldDistance;
 			if (v == heapBucketsHead[oldDistance])
 				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
 			heapBucketsNodes.disconnect(v);
@@ -170,8 +167,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 		}
 
 		IntIntPair extractMin() {
-			int distance;
-			for (distance = heapScanIdx; distance < heapMaxKey; distance++) {
+			for (int distance = heapScanIdx; distance <= maxDistance; distance++) {
 				int v = heapBucketsHead[distance];
 				if (v != LinkedListFixedSize.None) {
 					heapBucketsHead[distance] = heapBucketsNodes.next(v);
@@ -180,7 +176,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 					return IntIntPair.of(v, distance);
 				}
 			}
-			heapScanIdx = heapMaxKey;
+			heapScanIdx = maxDistance;
 			return null;
 		}
 
