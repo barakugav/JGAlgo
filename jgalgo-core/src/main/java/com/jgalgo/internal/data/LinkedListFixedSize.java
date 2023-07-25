@@ -129,8 +129,8 @@ public class LinkedListFixedSize {
 		}
 
 		public void insert(int prev, int id) {
-			if (hasNext(id) || hasPrev(id))
-				throw new IllegalArgumentException();
+//			if (hasNext(id) || hasPrev(id))
+//				throw new IllegalArgumentException();
 			int next = next(prev);
 			setNext(prev, id);
 			setPrev(id, prev);
@@ -141,8 +141,8 @@ public class LinkedListFixedSize {
 		}
 
 		public void connect(int prev, int next) {
-			if (hasNext(prev) || hasPrev(next))
-				throw new IllegalArgumentException();
+//			if (hasNext(prev) || hasPrev(next))
+//				throw new IllegalArgumentException();
 			setNext(prev, next);
 			setPrev(next, prev);
 		}

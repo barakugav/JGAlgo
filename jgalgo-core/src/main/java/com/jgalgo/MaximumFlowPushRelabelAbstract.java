@@ -296,8 +296,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		void emptyLayerGap(int emptyLayer) {
 			// Gap heuristic
 			// Set labels of all vertices in layers > emptyLayer to infinity (n)
-			int maxLayer = this.maxLayerActive;
-			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
+			for (int layer = emptyLayer + 1; layer <= maxLayerActive; layer++) {
 				int head = layersHeadActive[layer];
 				if (head == LinkedListFixedSize.None)
 					continue;
@@ -308,10 +307,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				}
 				layersHeadActive[layer] = LinkedListFixedSize.None;
 			}
-			this.maxLayerActive = emptyLayer - 1;
+			maxLayerActive = emptyLayer - 1;
 
-			maxLayer = this.maxLayerInactive;
-			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
+			for (int layer = emptyLayer + 1; layer <= maxLayerInactive; layer++) {
 				int head = layersHeadInactive[layer];
 				if (head == LinkedListFixedSize.None)
 					continue;
@@ -322,7 +320,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				}
 				layersHeadInactive[layer] = LinkedListFixedSize.None;
 			}
-			this.maxLayerInactive = emptyLayer - 1;
+			maxLayerInactive = emptyLayer - 1;
 		}
 
 		abstract void discharge(int u);
@@ -499,7 +497,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		final double[] excess;
 
-		private static final double EPS = 0.0001;
+		static final double EPS = 0.0001;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);

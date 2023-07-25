@@ -129,6 +129,11 @@ public class MaximumFlowBench {
 	}
 
 	@Benchmark
+	public void PushRelabelPartialAugment(Blackhole blackhole) {
+		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+	}
+
+	@Benchmark
 	public void PushRelabelLowestFirst(Blackhole blackhole) {
 		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
 	}

@@ -108,6 +108,8 @@ public interface MaximumFlow {
 							return new MaximumFlowPushRelabelFifo();
 						case "push-relabel-highest-first":
 							return new MaximumFlowPushRelabelHighestFirst();
+						case "push-relabel-partial-augment":
+							return new MaximumFlowPushRelabelPartialAugment();
 						case "push-relabel-lowest-first":
 							return new MaximumFlowPushRelabelLowestFirst();
 						case "push-relabel-move-to-front":

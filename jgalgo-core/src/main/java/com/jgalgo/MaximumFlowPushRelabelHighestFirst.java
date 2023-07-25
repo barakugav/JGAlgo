@@ -67,7 +67,7 @@ class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAbstract 
 		return new WorkerInt(gOrig, net, sources, sinks);
 	}
 
-	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
+	static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
@@ -94,7 +94,7 @@ class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAbstract 
 		}
 	}
 
-	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
+	static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
 		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
