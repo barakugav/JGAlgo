@@ -148,12 +148,10 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
-		final LinkedListFixedSize.Doubly layersActive;
+		private final LinkedListFixedSize.Doubly layers;
 		final int[] layersHeadActive;
-		int maxLayerActive;
-
-		private final LinkedListFixedSize.Doubly layersInactive;
 		private final int[] layersHeadInactive;
+		int maxLayerActive;
 		private int maxLayerInactive;
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
@@ -166,8 +164,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			relabelQueue = new FIFOQueueIntNoReduce();
 			labelsReComputeThreshold = n;
 
-			layersActive = new LinkedListFixedSize.Doubly(n);
-			layersInactive = new LinkedListFixedSize.Doubly(n);
+			layers = new LinkedListFixedSize.Doubly(n);
 			layersHeadActive = new int[n];
 			layersHeadInactive = new int[n];
 		}
@@ -182,8 +179,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			relabelQueue = new FIFOQueueIntNoReduce();
 			labelsReComputeThreshold = n;
 
-			layersActive = new LinkedListFixedSize.Doubly(n);
-			layersInactive = new LinkedListFixedSize.Doubly(n);
+			layers = new LinkedListFixedSize.Doubly(n);
 			layersHeadActive = new int[n];
 			layersHeadInactive = new int[n];
 		}
@@ -193,8 +189,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 			// perform backward BFS from sink on edges with flow < capacity (residual)
 			// perform another one from source to init unreachable vertices
 
-			layersActive.clear();
-			layersInactive.clear();
+			layers.clear();
 			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
 			Arrays.fill(layersHeadInactive, LinkedListFixedSize.None);
 			maxLayerActive = 0;
@@ -245,7 +240,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		void addToLayerActive(int u, int layer) {
 			assert u != source && u != sink;
 			if (layersHeadActive[layer] != LinkedListFixedSize.None)
-				layersActive.connect(u, layersHeadActive[layer]);
+				layers.connect(u, layersHeadActive[layer]);
 			layersHeadActive[layer] = u;
 
 			if (maxLayerActive < layer)
@@ -255,7 +250,7 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 		void addToLayerInactive(int u, int layer) {
 			assert u != source && u != sink;
 			if (layersHeadInactive[layer] != LinkedListFixedSize.None)
-				layersInactive.connect(u, layersHeadInactive[layer]);
+				layers.connect(u, layersHeadInactive[layer]);
 			layersHeadInactive[layer] = u;
 
 			if (maxLayerInactive < layer)
@@ -264,14 +259,14 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 
 		void removeFromLayerActive(int u, int layer) {
 			if (layersHeadActive[layer] == u)
-				layersHeadActive[layer] = layersActive.next(u);
-			layersActive.disconnect(u);
+				layersHeadActive[layer] = layers.next(u);
+			layers.disconnect(u);
 		}
 
 		void removeFromLayerInactive(int u, int layer) {
 			if (layersHeadInactive[layer] == u)
-				layersHeadInactive[layer] = layersInactive.next(u);
-			layersInactive.disconnect(u);
+				layersHeadInactive[layer] = layers.next(u);
+			layers.disconnect(u);
 		}
 
 		void activate(int v) {
@@ -306,9 +301,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				int head = layersHeadActive[layer];
 				if (head == LinkedListFixedSize.None)
 					continue;
-				for (IntIterator it = layersActive.iterator(head); it.hasNext();) {
+				for (IntIterator it = layers.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
-					layersActive.disconnect(u);
+					layers.disconnect(u);
 					label[u] = n;
 				}
 				layersHeadActive[layer] = LinkedListFixedSize.None;
@@ -320,9 +315,9 @@ abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implem
 				int head = layersHeadInactive[layer];
 				if (head == LinkedListFixedSize.None)
 					continue;
-				for (IntIterator it = layersInactive.iterator(head); it.hasNext();) {
+				for (IntIterator it = layers.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
-					layersInactive.disconnect(u);
+					layers.disconnect(u);
 					label[u] = n;
 				}
 				layersHeadInactive[layer] = LinkedListFixedSize.None;
