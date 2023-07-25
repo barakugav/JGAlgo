@@ -97,7 +97,7 @@ public interface MaximumFlow {
 			@Override
 			public MaximumFlow build() {
 <span class="pc bpc" id="L99" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L100" title="All 9 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L100" title="All 10 branches missed.">					switch (impl) {</span>
 						case &quot;edmonds-karp&quot;:
 <span class="nc" id="L102">							return new MaximumFlowEdmondsKarp();</span>
 						case &quot;dinic&quot;:
@@ -108,29 +108,31 @@ public interface MaximumFlow {
 <span class="nc" id="L108">							return new MaximumFlowPushRelabelFifo();</span>
 						case &quot;push-relabel-highest-first&quot;:
 <span class="nc" id="L110">							return new MaximumFlowPushRelabelHighestFirst();</span>
+						case &quot;push-relabel-partial-augment&quot;:
+<span class="nc" id="L112">							return new MaximumFlowPushRelabelPartialAugment();</span>
 						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L112">							return new MaximumFlowPushRelabelLowestFirst();</span>
+<span class="nc" id="L114">							return new MaximumFlowPushRelabelLowestFirst();</span>
 						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L114">							return new MaximumFlowPushRelabelToFront();</span>
+<span class="nc" id="L116">							return new MaximumFlowPushRelabelToFront();</span>
 						case &quot;push-relabel-fifo-dynamic-trees&quot;:
-<span class="nc" id="L116">							return new MaximumFlowPushRelabelDynamicTrees();</span>
+<span class="nc" id="L118">							return new MaximumFlowPushRelabelDynamicTrees();</span>
 						default:
-<span class="nc" id="L118">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L120">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L121">				return new MaximumFlowPushRelabelHighestFirst();</span>
+<span class="fc" id="L123">				return new MaximumFlowPushRelabelHighestFirst();</span>
 			}
 
 			@Override
 			public MaximumFlow.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L126" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L128">						impl = (String) value;</span>
-<span class="nc" id="L129">						break;</span>
+<span class="nc" id="L130">						impl = (String) value;</span>
+<span class="nc" id="L131">						break;</span>
 					default:
-<span class="nc" id="L131">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L133">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L133">				return this;</span>
+<span class="nc" id="L135">				return this;</span>
 			}
 		};
 	}

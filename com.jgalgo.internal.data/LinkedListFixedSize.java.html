@@ -129,8 +129,8 @@ public class LinkedListFixedSize {
 		}
 
 		public void insert(int prev, int id) {
-<span class="nc bnc" id="L132" title="All 4 branches missed.">			if (hasNext(id) || hasPrev(id))</span>
-<span class="nc" id="L133">				throw new IllegalArgumentException();</span>
+//			if (hasNext(id) || hasPrev(id))
+//				throw new IllegalArgumentException();
 <span class="nc" id="L134">			int next = next(prev);</span>
 <span class="nc" id="L135">			setNext(prev, id);</span>
 <span class="nc" id="L136">			setPrev(id, prev);</span>
@@ -141,8 +141,8 @@ public class LinkedListFixedSize {
 <span class="nc" id="L141">		}</span>
 
 		public void connect(int prev, int next) {
-<span class="pc bpc" id="L144" title="2 of 4 branches missed.">			if (hasNext(prev) || hasPrev(next))</span>
-<span class="nc" id="L145">				throw new IllegalArgumentException();</span>
+//			if (hasNext(prev) || hasPrev(next))
+//				throw new IllegalArgumentException();
 <span class="fc" id="L146">			setNext(prev, next);</span>
 <span class="fc" id="L147">			setPrev(next, prev);</span>
 <span class="fc" id="L148">		}</span>

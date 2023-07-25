@@ -823,23 +823,45 @@ public class IndexIdMaps {
 		}
 	}
 
+	/**
+	 * Create a weight function that accept elements indices, given a weight function that accept elements IDs.
+	 *
+	 * @param  w   a weight function that accept by elements IDs
+	 * @param  map index-id map
+	 * @return     a weight function that accept elements indices
+	 */
+	public static WeightFunction.Int idToIndexWeightFunc(WeightFunction.Int w, IndexIdMap map) {
+<span class="nc bnc" id="L834" title="All 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
+<span class="nc" id="L835">			return w;</span>
+
+<span class="nc bnc" id="L837" title="All 2 branches missed.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
+			/* The weight function is some implementation of a mapped weights container */
+			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
+<span class="nc" id="L840">			return (WeightFunction.Int) idToIndexWeights0((WeightsImpl&lt;?&gt;) w, map);</span>
+
+		} else {
+			/* Unknown weight function, return a mapped wrapper */
+<span class="nc" id="L844">			return idx -&gt; w.weightInt(map.indexToId(idx));</span>
+		}
+	}
+
 	private static class WeightsUnwrapper {
 		private boolean immutableView;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		&lt;V, WeightsT extends WeightsImpl&lt;V&gt;&gt; WeightsT unwrap(WeightsImpl&lt;?&gt; weights) {
-<span class="fc" id="L831">			WeightsImpl&lt;?&gt; weights0 = weights;</span>
-<span class="fc" id="L832">			immutableView = weights0 instanceof WeightsImpl.ImmutableView&lt;?&gt;;</span>
-<span class="pc bpc" id="L833" title="1 of 2 branches missed.">			if (immutableView)</span>
-<span class="nc" id="L834">				weights0 = ((WeightsImpl.ImmutableView&lt;?&gt;) weights0).weights;</span>
-<span class="fc" id="L835">			return (WeightsT) weights0;</span>
+<span class="fc" id="L853">			WeightsImpl&lt;?&gt; weights0 = weights;</span>
+<span class="fc" id="L854">			immutableView = weights0 instanceof WeightsImpl.ImmutableView&lt;?&gt;;</span>
+<span class="pc bpc" id="L855" title="1 of 2 branches missed.">			if (immutableView)</span>
+<span class="nc" id="L856">				weights0 = ((WeightsImpl.ImmutableView&lt;?&gt;) weights0).weights;</span>
+<span class="fc" id="L857">			return (WeightsT) weights0;</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		&lt;V, WeightsT extends WeightsImpl&lt;V&gt;&gt; WeightsT rewrap(WeightsImpl&lt;?&gt; weights) {
-<span class="pc bpc" id="L840" title="1 of 2 branches missed.">			if (immutableView)</span>
-<span class="nc" id="L841">				weights = (WeightsImpl&lt;?&gt;) WeightsImpl.immutableView(weights);</span>
-<span class="fc" id="L842">			return (WeightsT) weights;</span>
+<span class="pc bpc" id="L862" title="1 of 2 branches missed.">			if (immutableView)</span>
+<span class="nc" id="L863">				weights = (WeightsImpl&lt;?&gt;) WeightsImpl.immutableView(weights);</span>
+<span class="fc" id="L864">			return (WeightsT) weights;</span>
 		}
 
 	}

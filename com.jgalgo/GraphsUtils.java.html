@@ -99,11 +99,11 @@ public class GraphsUtils {
 	}
 
 	static double weightSum(IntIterator it, WeightFunction w) {
-<span class="pc bpc" id="L102" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
-<span class="fc" id="L103">			int cardinality = 0;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (; it.hasNext(); it.nextInt())</span>
-<span class="fc" id="L105">				cardinality++;</span>
-<span class="fc" id="L106">			return cardinality;</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
+<span class="nc" id="L103">			int cardinality = 0;</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">			for (; it.hasNext(); it.nextInt())</span>
+<span class="nc" id="L105">				cardinality++;</span>
+<span class="nc" id="L106">			return cardinality;</span>
 		}
 
 <span class="fc bfc" id="L109" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>

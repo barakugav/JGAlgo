@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumFlowPushRelabelPartialAugment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumFlowPushRelabelPartialAugment.java</span></div><h1>MaximumFlowPushRelabelPartialAugment.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * The Partial Augment–Relabel Algorithm for the Maximum Flow Problem.
+ * &lt;p&gt;
+ * Based on 'The Partial Augment–Relabel Algorithm for the Maximum Flow Problem' by Andrew V. Goldberg.
+ *
+ * @author Barak Ugav
+ */
+class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighestFirst {
+
+<span class="fc" id="L33">	MaximumFlowPushRelabelPartialAugment() {}</span>
+
+	@Override
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+<span class="fc" id="L37">		return new WorkerDouble(gOrig, net, source, sink);</span>
+	}
+
+	@Override
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+<span class="fc" id="L42">		return new WorkerInt(gOrig, net, source, sink);</span>
+	}
+
+	@Override
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L47">		return new WorkerDouble(gOrig, net, sources, sinks);</span>
+	}
+
+	@Override
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L52">		return new WorkerInt(gOrig, net, sources, sinks);</span>
+	}
+
+<span class="fc" id="L55">	private static class WorkerDouble extends MaximumFlowPushRelabelHighestFirst.WorkerDouble {</span>
+
+		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
+<span class="fc" id="L58">		private final IntArrayList path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
+
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+<span class="fc" id="L61">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L62">		}</span>
+
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L65">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L66">		}</span>
+
+		@Override
+		void discharge(int searchSource) {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">			assert hasExcess(searchSource);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
+
+<span class="fc" id="L73">			dfs: for (int u = searchSource;;) {</span>
+<span class="fc" id="L74">				int uLabel = label[u];</span>
+<span class="fc" id="L75">				for (EdgeIter it = edgeIters[u];;) {</span>
+<span class="fc" id="L76">					int e = it.peekNext();</span>
+<span class="fc" id="L77">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L78" title="All 4 branches covered.">					boolean isAdmissible = isResidual(e) &amp;&amp; uLabel == label[v] + 1;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">					if (isAdmissible) {</span>
+<span class="fc" id="L80">						path.add(e);</span>
+<span class="fc bfc" id="L81" title="All 4 branches covered.">						if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == sink) {</span>
+<span class="fc bfc" id="L82" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L83">								activate(v);</span>
+<span class="fc" id="L84">							pushOnPath(searchSource);</span>
+<span class="fc" id="L85">							path.clear();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">							if (!hasExcess(searchSource))</span>
+<span class="fc" id="L87">								return;</span>
+<span class="fc" id="L88">							u = searchSource;</span>
+						} else {
+<span class="fc" id="L90">							u = v;</span>
+						}
+<span class="fc" id="L92">						continue dfs;</span>
+					}
+<span class="fc" id="L94">					it.nextInt();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">					if (!it.hasNext()) {</span>
+						// Finished iterating over all vertex edges.
+						// relabel and Reset iterator
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">						boolean isSearchSource = u == searchSource, hasExcess = true;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc" id="L101">							hasExcess = hasExcess(u);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L103">								removeFromLayerActive(u, uLabel);</span>
+							} else {
+<span class="fc" id="L105">								removeFromLayerInactive(u, uLabel);</span>
+							}
+						}
+
+<span class="fc" id="L109">						relabel(u, uLabel + 1);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">						if ((uLabel = label[u]) &gt;= n) {</span>
+							/*
+							 * empty layer gap heuristic was activated, all vertices on the path have greater or equal
+							 * label as u, all are unreachable from sink
+							 */
+<span class="fc" id="L115">							path.clear();</span>
+<span class="fc" id="L116">							return;</span>
+						}
+
+<span class="fc bfc" id="L119" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L121">								addToLayerActive(u, uLabel);</span>
+							} else {
+<span class="fc" id="L123">								addToLayerInactive(u, uLabel);</span>
+							}
+						}
+
+<span class="fc" id="L127">						it = edgeIters[u] = g.outEdges(u).iterator();</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">						assert it.hasNext();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="fc" id="L131">							int lastEdge = path.popInt();</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
+<span class="fc" id="L133">							u = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L134">						}</span>
+						continue dfs;
+					}
+<span class="fc" id="L137">				}</span>
+			}
+		}
+
+		private void pushOnPath(int pathSource) {
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">			assert !path.isEmpty();</span>
+<span class="fc" id="L143">			double f = excess[pathSource];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (int e : path)</span>
+<span class="fc" id="L145">				f = Math.min(f, getResidualCapacity(e));</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (int e : path) {</span>
+<span class="fc" id="L148">				int t = twin[e];</span>
+<span class="fc" id="L149">				residualCapacity[e] -= f;</span>
+<span class="fc" id="L150">				residualCapacity[t] += f;</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">				assert residualCapacity[e] &gt;= -EPS;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				assert residualCapacity[t] &gt;= -EPS;</span>
+<span class="fc" id="L153">			}</span>
+<span class="fc" id="L154">			int pathSink = g.edgeTarget(path.getInt(path.size() - 1));</span>
+<span class="fc" id="L155">			excess[pathSource] -= f;</span>
+<span class="fc" id="L156">			excess[pathSink] += f;</span>
+<span class="fc" id="L157">		}</span>
+
+	}
+
+<span class="fc" id="L161">	private static class WorkerInt extends MaximumFlowPushRelabelHighestFirst.WorkerInt {</span>
+
+		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
+<span class="fc" id="L164">		private final IntArrayList path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+<span class="fc" id="L167">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L168">		}</span>
+
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L171">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L172">		}</span>
+
+		@Override
+		void discharge(int searchSource) {
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">			assert hasExcess(searchSource);</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
+
+<span class="fc" id="L179">			dfs: for (int u = searchSource;;) {</span>
+<span class="fc" id="L180">				int uLabel = label[u];</span>
+<span class="fc" id="L181">				for (EdgeIter it = edgeIters[u];;) {</span>
+<span class="fc" id="L182">					int e = it.peekNext();</span>
+<span class="fc" id="L183">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L184" title="All 4 branches covered.">					boolean isAdmissible = isResidual(e) &amp;&amp; uLabel == label[v] + 1;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">					if (isAdmissible) {</span>
+<span class="fc" id="L186">						path.add(e);</span>
+<span class="fc bfc" id="L187" title="All 4 branches covered.">						if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == sink) {</span>
+<span class="fc bfc" id="L188" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L189">								activate(v);</span>
+<span class="fc" id="L190">							pushOnPath(searchSource);</span>
+<span class="fc" id="L191">							path.clear();</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">							if (!hasExcess(searchSource))</span>
+<span class="fc" id="L193">								return;</span>
+<span class="fc" id="L194">							u = searchSource;</span>
+						} else {
+<span class="fc" id="L196">							u = v;</span>
+						}
+<span class="fc" id="L198">						continue dfs;</span>
+					}
+<span class="fc" id="L200">					it.nextInt();</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">					if (!it.hasNext()) {</span>
+						// Finished iterating over all vertex edges.
+						// relabel and Reset iterator
+
+<span class="fc bfc" id="L205" title="All 2 branches covered.">						boolean isSearchSource = u == searchSource, hasExcess = true;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc" id="L207">							hasExcess = hasExcess(u);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L209">								removeFromLayerActive(u, uLabel);</span>
+							} else {
+<span class="fc" id="L211">								removeFromLayerInactive(u, uLabel);</span>
+							}
+						}
+
+<span class="fc" id="L215">						relabel(u, uLabel + 1);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">						if ((uLabel = label[u]) &gt;= n) {</span>
+							/*
+							 * empty layer gap heuristic was activated, all vertices on the path have greater or equal
+							 * label as u, all are unreachable from sink
+							 */
+<span class="fc" id="L221">							path.clear();</span>
+<span class="fc" id="L222">							return;</span>
+						}
+
+<span class="fc bfc" id="L225" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L227">								addToLayerActive(u, uLabel);</span>
+							} else {
+<span class="fc" id="L229">								addToLayerInactive(u, uLabel);</span>
+							}
+						}
+
+<span class="fc" id="L233">						it = edgeIters[u] = g.outEdges(u).iterator();</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">						assert it.hasNext();</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="fc" id="L237">							int lastEdge = path.popInt();</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
+<span class="fc" id="L239">							u = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L240">						}</span>
+						continue dfs;
+					}
+<span class="fc" id="L243">				}</span>
+			}
+		}
+
+		private void pushOnPath(int pathSource) {
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			assert !path.isEmpty();</span>
+<span class="fc" id="L249">			int f = excess[pathSource];</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			for (int e : path)</span>
+<span class="fc" id="L251">				f = Math.min(f, getResidualCapacity(e));</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int e : path) {</span>
+<span class="fc" id="L254">				int t = twin[e];</span>
+<span class="fc" id="L255">				residualCapacity[e] -= f;</span>
+<span class="fc" id="L256">				residualCapacity[t] += f;</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">				assert residualCapacity[e] &gt;= 0;</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">				assert residualCapacity[t] &gt;= 0;</span>
+<span class="fc" id="L259">			}</span>
+<span class="fc" id="L260">			int pathSink = g.edgeTarget(path.getInt(path.size() - 1));</span>
+<span class="fc" id="L261">			excess[pathSource] -= f;</span>
+<span class="fc" id="L262">			excess[pathSink] += f;</span>
+<span class="fc" id="L263">		}</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
