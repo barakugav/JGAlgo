@@ -46,8 +46,8 @@ public class RMQStaticBench {
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+	@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
 	public static class PreProcess {
@@ -99,8 +99,8 @@ public class RMQStaticBench {
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+	@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
 	public static class PreProcessPlusMinusOne {
@@ -171,8 +171,8 @@ public class RMQStaticBench {
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-		@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class LookupTable extends Query {
@@ -214,8 +214,8 @@ public class RMQStaticBench {
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-		@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class PowerOf2Table extends Query {
@@ -257,8 +257,8 @@ public class RMQStaticBench {
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-		@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class PlusMinusOne extends Query {
@@ -309,8 +309,8 @@ public class RMQStaticBench {
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-		@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class CartesianTrees extends Query {

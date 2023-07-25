@@ -37,66 +37,146 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
-@Fork(value = 1, warmups = 0)
-@State(Scope.Benchmark)
 public class SSSPPositiveWeightsBench {
 
-	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
-	public String args;
-
-	private List<GraphArgs> graphs;
-	private final int graphsNum = 31;
+	List<GraphArgs> graphs;
+	final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
-	@Setup(Level.Iteration)
-	public void setup() {
-		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		int n = Integer.parseInt(argsMap.get("|V|"));
-		int m = Integer.parseInt(argsMap.get("|E|"));
-
-		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
-		Random rand = new Random(seedGen.nextSeed());
-		graphs = new ObjectArrayList<>(graphsNum);
-		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-			graphs.add(new GraphArgs(g, w, source));
-		}
-	}
-
-	private void benchSSSP(ShortestPathSingleSource.Builder builder, Blackhole blackhole) {
+	void benchSSSP(ShortestPathSingleSource.Builder builder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathSingleSource algo = builder.build();
 		ShortestPathSingleSource.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
 		blackhole.consume(result);
 	}
 
-	@Benchmark
-	public void Dijkstra(Blackhole blackhole) {
-		benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dijkstra"), blackhole);
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class Gnp extends SSSPPositiveWeightsBench {
+
+		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=4096 MaxWeight=200",
+				"|V|=4096 MaxWeight=6000" })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+			int maxWeight = Integer.parseInt(argsMap.get("MaxWeight"));
+
+			final SeedGenerator seedGen = new SeedGenerator(0x42eee7954114ebcaL);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
+				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				int[] vs = g.vertices().toIntArray();
+				int source = vs[rand.nextInt(vs.length)];
+				graphs.add(new GraphArgs(g, w, source));
+			}
+		}
+
+		@Benchmark
+		public void Dijkstra(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dijkstra"), blackhole);
+		}
+
+		@Benchmark
+		public void Dial(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dial"), blackhole);
+		}
 	}
 
-	@Benchmark
-	public void Dial(Blackhole blackhole) {
-		benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dial"), blackhole);
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class BarabasiAlbert extends SSSPPositiveWeightsBench {
+
+		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=4096 MaxWeight=200",
+				"|V|=4096 MaxWeight=6000" })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+			int maxWeight = Integer.parseInt(argsMap.get("MaxWeight"));
+
+			final SeedGenerator seedGen = new SeedGenerator(0x462e686a3a46d469L);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				int[] vs = g.vertices().toIntArray();
+				int source = vs[rand.nextInt(vs.length)];
+				graphs.add(new GraphArgs(g, w, source));
+			}
+		}
+
+		@Benchmark
+		public void Dijkstra(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dijkstra"), blackhole);
+		}
+
+		@Benchmark
+		public void Dial(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dial"), blackhole);
+		}
 	}
 
-	@Benchmark
-	public void BellmanFord(Blackhole blackhole) {
-		benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "bellman-ford"), blackhole);
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class RecursiveMatrix extends SSSPPositiveWeightsBench {
+
+		@Param({ "|V|=64 |E|=256 MaxWeight=64", "|V|=512 |E|=4096 MaxWeight=50", "|V|=512 |E|=4096 MaxWeight=600",
+				"|V|=4096 |E|=16384 MaxWeight=200", "|V|=4096 |E|=16384 MaxWeight=6000" })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+			int m = Integer.parseInt(argsMap.get("|E|"));
+			int maxWeight = Integer.parseInt(argsMap.get("MaxWeight"));
+
+			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
+				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				int[] vs = g.vertices().toIntArray();
+				int source = vs[rand.nextInt(vs.length)];
+				graphs.add(new GraphArgs(g, w, source));
+			}
+		}
+
+		@Benchmark
+		public void Dijkstra(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dijkstra"), blackhole);
+		}
+
+		@Benchmark
+		public void Dial(Blackhole blackhole) {
+			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "dial"), blackhole);
+		}
 	}
 
 	private static class GraphArgs {

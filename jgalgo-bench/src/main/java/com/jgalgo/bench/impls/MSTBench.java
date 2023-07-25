@@ -44,8 +44,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
 public class MSTBench {
@@ -63,7 +63,7 @@ public class MSTBench {
 		int n = Integer.parseInt(argsMap.get("|V|"));
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
-		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+		final SeedGenerator seedGen = new SeedGenerator(0x4453dff0c083fe6cL);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());

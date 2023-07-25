@@ -38,109 +38,268 @@ import com.jgalgo.FlowNetwork;
 import com.jgalgo.MaximumFlow;
 import com.jgalgo.Path;
 import com.jgalgo.bench.util.BenchUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
+import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
-@Fork(value = 1, warmups = 0)
-@State(Scope.Benchmark)
 public class MaximumFlowBench {
 
-	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
-	public String args;
+	List<MaxFlowTask> graphs;
+	final int graphsNum = 31;
+	final AtomicInteger graphIdx = new AtomicInteger();
 
-	private List<MaxFlowTask> graphs;
-	private final int graphsNum = 31;
-	private final AtomicInteger graphIdx = new AtomicInteger();
-
-	@Setup(Level.Trial)
-	public void setup() {
-		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		int n = Integer.parseInt(argsMap.get("|V|"));
-		int m = Integer.parseInt(argsMap.get("|E|"));
-
-		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
-		Random rand = new Random(seedGen.nextSeed());
-		graphs = new ObjectArrayList<>(graphsNum);
-		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
-			FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
-			int source, sink;
-			for (int[] vs = g.vertices().toIntArray();;) {
-				source = vs[rand.nextInt(vs.length)];
-				sink = vs[rand.nextInt(vs.length)];
-				if (source != sink && Path.findPath(g, source, sink) != null)
-					break;
-			}
-
-			graphs.add(new MaxFlowTask(g, flow, source, sink));
-		}
-	}
-
-	@Setup(Level.Invocation)
 	public void resetFlow() {
-		for (MaxFlowTask graph : graphs) {
+		for (MaxFlowTask graph : graphs)
 			for (int e : graph.g.edges())
 				graph.flow.setFlow(e, 0);
-		}
 	}
 
-	private void benchMaxFlow(MaximumFlow.Builder builder, Blackhole blackhole) {
+	void benchMaxFlow(MaximumFlow.Builder builder, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		MaximumFlow algo = builder.build();
 		double flow = algo.computeMaximumFlow(graph.g, graph.flow, graph.source, graph.sink);
 		blackhole.consume(flow);
 	}
 
-	@Benchmark
-	public void EdmondsKarp(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class Gnp extends MaximumFlowBench {
+
+		@Param({ "|V|=30", "|V|=200", "|V|=800" })
+		public String args;
+
+		@Setup(Level.Invocation)
+		public void resetFlow() {
+			super.resetFlow();
+		}
+
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+
+			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
+				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
+
+				IntIntPair sourceSink = chooseSourceSink(g, rand);
+				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+			}
+		}
+
+		@Benchmark
+		public void EdmondsKarp(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+		}
+
+		@Benchmark
+		public void Dinic(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+		}
+
+		@Benchmark
+		public void DinicDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelFifo(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelToFront(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelHighestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelPartialAugment(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelLowestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		}
 	}
 
-	@Benchmark
-	public void Dinic(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class BarabasiAlbert extends MaximumFlowBench {
+
+		@Param({ "|V|=30", "|V|=200", "|V|=800" })
+		public String args;
+
+		@Setup(Level.Invocation)
+		public void resetFlow() {
+			super.resetFlow();
+		}
+
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+
+			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
+
+				IntIntPair sourceSink = chooseSourceSink(g, rand);
+				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+			}
+		}
+
+		@Benchmark
+		public void EdmondsKarp(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+		}
+
+		@Benchmark
+		public void Dinic(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+		}
+
+		@Benchmark
+		public void DinicDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelFifo(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelToFront(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelHighestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelPartialAugment(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelLowestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		}
 	}
 
-	@Benchmark
-	public void DinicDynamicTrees(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
-	}
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+	public static class RecursiveMatrix extends MaximumFlowBench {
 
-	@Benchmark
-	public void PushRelabelFifo(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
-	}
+		@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
+		public String args;
 
-	@Benchmark
-	public void PushRelabelToFront(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
-	}
+		@Setup(Level.Invocation)
+		public void resetFlow() {
+			super.resetFlow();
+		}
 
-	@Benchmark
-	public void PushRelabelHighestFirst(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
-	}
+		@Setup(Level.Trial)
+		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			int n = Integer.parseInt(argsMap.get("|V|"));
+			int m = Integer.parseInt(argsMap.get("|E|"));
 
-	@Benchmark
-	public void PushRelabelPartialAugment(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
-	}
+			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);
+			Random rand = new Random(seedGen.nextSeed());
+			graphs = new ObjectArrayList<>(graphsNum);
+			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
+				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 
-	@Benchmark
-	public void PushRelabelLowestFirst(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
-	}
+				IntIntPair sourceSink = chooseSourceSink(g, rand);
+				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+			}
+		}
 
-	@Benchmark
-	public void PushRelabelDynamicTrees(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		@Benchmark
+		public void EdmondsKarp(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+		}
+
+		@Benchmark
+		public void Dinic(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+		}
+
+		@Benchmark
+		public void DinicDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelFifo(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelToFront(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelHighestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelPartialAugment(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelLowestFirst(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+		}
+
+		@Benchmark
+		public void PushRelabelDynamicTrees(Blackhole blackhole) {
+			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		}
 	}
 
 	private static class MaxFlowTask {
@@ -159,10 +318,22 @@ public class MaximumFlowBench {
 
 	private static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(g);
+		Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);
+		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
+		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
+	}
+
+	private static IntIntPair chooseSourceSink(Graph g, Random rand) {
+		int source, sink;
+		for (int[] vs = g.vertices().toIntArray();;) {
+			source = vs[rand.nextInt(vs.length)];
+			sink = vs[rand.nextInt(vs.length)];
+			if (source != sink && Path.findPath(g, source, sink) != null)
+				return IntIntPair.of(source, sink);
+		}
 	}
 
 }

@@ -71,7 +71,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0x2c942284cf26134dL);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
@@ -113,7 +113,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0xacff2ce7f7ee4fc9L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
@@ -160,7 +160,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0xd857250c5ffe0823L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
@@ -215,7 +215,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0x39a998645277eca3L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
@@ -270,7 +270,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0xd15309f552f84f10L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
@@ -341,7 +341,7 @@ public class MatchingBench {
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
 
-			final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+			final SeedGenerator seedGen = new SeedGenerator(0x6afda59c8a3dee81L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());

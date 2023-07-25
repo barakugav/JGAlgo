@@ -48,8 +48,9 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class DijkstraBench {
@@ -149,7 +150,8 @@ public class DijkstraBench {
 			static JGAlgoCSRArgs fromJGAlgoArgs(JGAlgoArgs args) {
 				IndexGraph ig = args.graph.indexGraph();
 				int source = args.graph.indexGraphVerticesMap().idToIndex(args.source);
-				Weights.Int w = ig.getEdgesWeights("weight");
+				IndexIdMap eiMap = args.graph.indexGraphEdgesMap();
+				WeightFunction.Int w = IndexIdMaps.idToIndexWeightFunc(args.w, eiMap);
 
 				IndexGraphBuilder.ReIndexedGraph gReindexed = IndexGraphBuilder.newFrom(ig).reIndexAndBuild(true, true);
 				IndexGraph g = gReindexed.graph();
@@ -187,7 +189,8 @@ public class DijkstraBench {
 			static JGraphTSparseArgs fromJGAlgoArgs(JGAlgoArgs args) {
 				IndexGraph ig = args.graph.indexGraph();
 				int source = args.graph.indexGraphVerticesMap().idToIndex(args.source);
-				Weights.Int w = ig.getEdgesWeights("weight");
+				IndexIdMap eiMap = args.graph.indexGraphEdgesMap();
+				WeightFunction.Int w = IndexIdMaps.idToIndexWeightFunc(args.w, eiMap);
 
 				org.jgrapht.Graph<Integer, Integer> jg = graph2jgraphtSparse(ig, w);
 				return new JGraphTSparseArgs(jg, source);
@@ -220,9 +223,7 @@ public class DijkstraBench {
 
 		@Override
 		Graph generateGraph(long seed) {
-			final int nInit = 20;
-			final int m = 10;
-			Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, nInit, m, seed);
+			Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seed);
 			return GraphFactory.newUndirected().newCopyOf(g);
 		}
 
@@ -252,8 +253,7 @@ public class DijkstraBench {
 
 		@Override
 		Graph generateGraph(long seed) {
-			final double p = 0.1;
-			Graph g = GraphsTestUtils.randomGraphGnp(n, p, false, seed);
+			Graph g = GraphsTestUtils.randomGraphGnp(n, false, seed);
 			return GraphFactory.newUndirected().newCopyOf(g);
 		}
 
@@ -284,11 +284,7 @@ public class DijkstraBench {
 		@Override
 		Graph generateGraph(long seed) {
 			int m = n * 16;
-			final double a = 0.57;
-			final double b = 0.19;
-			final double c = 0.19;
-			final double d = 0.05;
-			Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, a, b, c, d, seed);
+			Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seed);
 			return GraphFactory.newUndirected().newCopyOf(g);
 		}
 

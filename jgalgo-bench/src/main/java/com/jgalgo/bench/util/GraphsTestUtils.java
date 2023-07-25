@@ -73,13 +73,11 @@ public class GraphsTestUtils extends TestUtils {
 	public static Weights.Int assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < g.edges().size() / 2)
-			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
-		Weights.Int weight = g.addEdgesWeights("weight", int.class);
+		Random rand = new Random(seed);
+		Weights.Int weight = Weights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
-			weight.set(e, rand.next());
+			weight.set(e, rand.nextInt(maxWeight - minWeight) + minWeight);
 		return weight;
 	}
 
@@ -93,6 +91,11 @@ public class GraphsTestUtils extends TestUtils {
 				.selfEdges(false).cycles(true).connected(false).build();
 	}
 
+	public static Graph randomGraphGnp(int n, boolean directed, long seed) {
+		final double p = 0.1;
+		return randomGraphGnp(n, p, directed, seed);
+	}
+
 	public static Graph randomGraphGnp(int n, double p, boolean directed, long seed) {
 		if (n < 0)
 			throw new IllegalArgumentException();
@@ -102,7 +105,6 @@ public class GraphsTestUtils extends TestUtils {
 		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
-
 		if (p > 0) {
 			Random rand = new Random(seed);
 			if (directed) {
@@ -121,7 +123,13 @@ public class GraphsTestUtils extends TestUtils {
 		return builder.reIndexAndBuild(true, true).graph();
 	}
 
-	public static Graph randomGraphBarabasiAlbert(int n, int nInit, int m, long seed) {
+	public static Graph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
+		final int nInit = 20;
+		final int m = 10;
+		return randomGraphBarabasiAlbert(n, nInit, m, directed, seed);
+	}
+
+	public static Graph randomGraphBarabasiAlbert(int n, int nInit, int m, boolean directed, long seed) {
 		if (nInit <= 0 || nInit > n)
 			throw new IllegalArgumentException();
 		if (m > nInit)
@@ -153,18 +161,40 @@ public class GraphsTestUtils extends TestUtils {
 			}
 		}
 
-		IndexGraphBuilder builder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
 		for (int e = 0; e < edgeNum; e++) {
 			int u = endpoints[e * 2 + 0];
 			int v = endpoints[e * 2 + 1];
+			if (rand.nextBoolean()) {
+				int tmp = u;
+				u = v;
+				v = tmp;
+			}
 			builder.addEdge(u, v);
 		}
 		return builder.reIndexAndBuild(true, true).graph();
 	}
 
-	public static Graph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d, long seed) {
+	public static Graph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
+		if (directed) {
+			final double a = 0.57;
+			final double b = 0.21;
+			final double c = 0.17;
+			final double d = 0.05;
+			return randomGraphRecursiveMatrix(n, m, a, b, c, d, true, seed);
+		} else {
+			final double a = 0.57;
+			final double b = 0.19;
+			final double c = 0.19;
+			final double d = 0.05;
+			return randomGraphRecursiveMatrix(n, m, a, b, c, d, false, seed);
+		}
+	}
+
+	public static Graph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d,
+			boolean directed, long seed) {
 		if (n <= 0 || m < 0)
 			throw new IllegalArgumentException();
 		if (m >= 0.75 * n * (n - 1))
@@ -206,13 +236,20 @@ public class GraphsTestUtils extends TestUtils {
 			edgeNum++;
 		}
 
-		IndexGraphBuilder builder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newUndirected() : IndexGraphBuilder.newDirected();
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
-		for (int u = 0; u < n; u++)
-			for (int v = 0; v < n; v++)
-				if (edges.get(u * N + v))
-					builder.addEdge(u, v);
+		if (directed) {
+			for (int u = 0; u < n; u++)
+				for (int v = 0; v < n; v++)
+					if (edges.get(u * N + v))
+						builder.addEdge(u, v);
+		} else {
+			for (int u = 0; u < n; u++)
+				for (int v = u; v < n; v++)
+					if (edges.get(u * N + v))
+						builder.addEdge(u, v);
+		}
 		return builder.reIndexAndBuild(true, true).graph();
 	}
 

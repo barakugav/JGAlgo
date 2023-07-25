@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -98,15 +99,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
-			int source, sink;
-			for (int[] vs = g.vertices().toIntArray();;) {
-				source = vs[rand.nextInt(vs.length)];
-				sink = vs[rand.nextInt(vs.length)];
-				if (source != sink && Path.findPath(g, source, sink) != null)
-					break;
-			}
 
-			testNetwork(g, net, source, sink, algo);
+			IntIntPair sourceSink = chooseSourceSink(g, rand);
+			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
 		});
 	}
 
@@ -154,15 +149,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
-			int source, sink;
-			for (int[] vs = g.vertices().toIntArray();;) {
-				source = vs[rand.nextInt(vs.length)];
-				sink = vs[rand.nextInt(vs.length)];
-				if (source != sink && Path.findPath(g, source, sink) != null)
-					break;
-			}
 
-			testNetwork(g, net, source, sink, algo);
+			IntIntPair sourceSink = chooseSourceSink(g, rand);
+			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
 		});
 	}
 
@@ -209,16 +198,20 @@ public class MaximumFlowTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(false)
 					.cycles(true).connected(false).build();
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
-			int source, sink;
-			for (int[] vs = g.vertices().toIntArray();;) {
-				source = vs[rand.nextInt(vs.length)];
-				sink = vs[rand.nextInt(vs.length)];
-				if (source != sink && Path.findPath(g, source, sink) != null)
-					break;
-			}
 
-			testNetwork(g, net, source, sink, algo);
+			IntIntPair sourceSink = chooseSourceSink(g, rand);
+			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
 		});
+	}
+
+	static IntIntPair chooseSourceSink(Graph g, Random rand) {
+		int source, sink;
+		for (int[] vs = g.vertices().toIntArray();;) {
+			source = vs[rand.nextInt(vs.length)];
+			sink = vs[rand.nextInt(vs.length)];
+			if (source != sink && Path.findPath(g, source, sink) != null)
+				return IntIntPair.of(source, sink);
+		}
 	}
 
 	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaximumFlow algo) {

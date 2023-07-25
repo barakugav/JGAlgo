@@ -28,6 +28,8 @@ public class BenchUtils {
 			int idx = arg.indexOf('=');
 			String key = arg.substring(0, idx);
 			String value = arg.substring(idx + 1);
+			if (args.containsKey(key))
+				throw new IllegalArgumentException("Duplicate key: " + key);
 			args.put(key, value);
 		}
 		return args;

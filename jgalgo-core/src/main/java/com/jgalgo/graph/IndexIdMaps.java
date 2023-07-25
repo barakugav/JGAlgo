@@ -823,6 +823,28 @@ public class IndexIdMaps {
 		}
 	}
 
+	/**
+	 * Create a weight function that accept elements indices, given a weight function that accept elements IDs.
+	 *
+	 * @param  w   a weight function that accept by elements IDs
+	 * @param  map index-id map
+	 * @return     a weight function that accept elements indices
+	 */
+	public static WeightFunction.Int idToIndexWeightFunc(WeightFunction.Int w, IndexIdMap map) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+			return w;
+
+		} else if (w instanceof WeightsImpl<?>) {
+			/* The weight function is some implementation of a mapped weights container */
+			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
+			return (WeightFunction.Int) idToIndexWeights0((WeightsImpl<?>) w, map);
+
+		} else {
+			/* Unknown weight function, return a mapped wrapper */
+			return idx -> w.weightInt(map.indexToId(idx));
+		}
+	}
+
 	private static class WeightsUnwrapper {
 		private boolean immutableView;
 
