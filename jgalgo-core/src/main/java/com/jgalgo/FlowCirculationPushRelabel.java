@@ -205,8 +205,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				} else {
 					label[act] = minLayer + 1;
 					activate(act);
-					if (layersHeadActive[actLevel] == -1)
-						throw new IllegalArgumentException("no valid circulation exists");
+//					if (layersHeadActive[actLevel] == -1)
+//						throw new IllegalArgumentException("no valid circulation exists");
 				}
 			}
 			for (int v = 0; v < n; v++)
