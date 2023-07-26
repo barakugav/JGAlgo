@@ -110,9 +110,9 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction demand) {
+		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
 			if (g instanceof IndexGraph) {
-				computeMinCostFlow((IndexGraph) g, net, cost, demand);
+				computeMinCostFlow((IndexGraph) g, net, cost, supply);
 				return;
 			}
 
@@ -121,16 +121,16 @@ class MinimumCostFlows {
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			WeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			WeightFunction iDemand = IndexIdMaps.idToIndexWeightFunc(demand, viMap);
+			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
 
-			computeMinCostFlow(iGraph, iNet, iCost, iDemand);
+			computeMinCostFlow(iGraph, iNet, iCost, iSupply);
 		}
 
 		@Override
 		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand) {
+				WeightFunction supply) {
 			if (g instanceof IndexGraph) {
-				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, demand);
+				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, supply);
 				return;
 			}
 
@@ -140,9 +140,9 @@ class MinimumCostFlows {
 			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			WeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			WeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
-			WeightFunction iDemand = IndexIdMaps.idToIndexWeightFunc(demand, viMap);
+			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
 
-			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iDemand);
+			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);
 		}
 
 		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, int source, int sink);
@@ -156,10 +156,10 @@ class MinimumCostFlows {
 		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
 				WeightFunction lowerBound, IntCollection sources, IntCollection sinks);
 
-		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction demand);
+		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply);
 
 		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand);
+				WeightFunction supply);
 
 	}
 
@@ -181,17 +181,17 @@ class MinimumCostFlows {
 			 * To solve the problem of minimum-cost maximum-flow between a set of sources and sinks, with a flow lower
 			 * bound for each edge, we perform a reduction to min-cost max-flow between a single source and a sink sink
 			 * without lower bounds. To get rid of the lower bound, remove from each edge capacity its lower bound, and
-			 * add/remove demand from the edge endpoints. This reduction is slightly more complicated than the others,
-			 * as some vertices (the sources/sinks) require 'infinite' demand, while others (other vertices with demand)
-			 * require finite demand. We create a new graph with all the vertices and edges of the original graph, with
+			 * add/remove supply from the edge endpoints. This reduction is slightly more complicated than the others,
+			 * as some vertices (the sources/sinks) require 'infinite' supply, while others (other vertices with supply)
+			 * require finite supply. We create a new graph with all the vertices and edges of the original graph, with
 			 * addition of a new source and sink, and connect the source to the sources with high capacity edges, the
-			 * source to vertices with a positive demand with capacity equal to the demand, the sinks to the sink with
-			 * high capacity edges and lastly the vertices with negative demand to the sink with capacity equal to the
-			 * demand.
+			 * source to vertices with a positive supply with capacity equal to the supply, the sinks to the sink with
+			 * high capacity edges and lastly the vertices with negative supply to the sink with capacity equal to the
+			 * supply.
 			 */
 
-			/* For each edge with lower bound add/remove demand to the edge endpoints */
-			WeightFunction demand = computeDemand(gOrig, netOrig, lowerBound, null);
+			/* For each edge with lower bound add/remove supply to the edge endpoints */
+			WeightFunction supply = computeSupply(gOrig, netOrig, lowerBound, null);
 
 			/* Add all original vertices and edges */
 			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
@@ -231,17 +231,17 @@ class MinimumCostFlows {
 			/*
 			 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
 			 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
-			 * connecting a source to a vertex with positive demand or a vertex with negative demand to a sink.
+			 * connecting a source to a vertex with positive supply or a vertex with negative supply to a sink.
 			 */
 			final int sourcesSinksThreshold = builder.edges().size();
 
 			/*
-			 * Connect the source to all vertices with positive demand and the vertices with negative demand to the sink
+			 * Connect the source to all vertices with positive supply and the vertices with negative supply to the sink
 			 */
 			for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
 				if (origSourcesSinksSet.get(v))
 					continue;
-				double d = demand.weight(v);
+				double d = supply.weight(v);
 				if (d > 0) {
 					builder.addEdge(source, v);
 					capacities.add(d);
@@ -292,19 +292,19 @@ class MinimumCostFlows {
 
 			/*
 			 * Create a cost function for the new graph: original edges have their original costs, big negative cost for
-			 * edges that connect vertices with demand as we must satisfy them, and zero cost for edges connecting
+			 * edges that connect vertices with supply as we must satisfy them, and zero cost for edges connecting
 			 * source-sources or sinks-sink
 			 */
 			double maxCost = 0;
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				maxCost = Math.max(maxCost, Math.abs(costOrig.weight(e)));
-			final double demandEdgeCost = -maxCost * gOrig.vertices().size();
+			final double supplyEdgeCost = -maxCost * gOrig.vertices().size();
 			WeightFunction cost = e -> {
 				if (e < origEdgesThreshold)
 					return costOrig.weight(e); /* original edge */
 				if (e < sourcesSinksThreshold)
 					return 0; /* edge to source/sink */
-				return demandEdgeCost; /* edge to a non source/sink vertex with demand */
+				return supplyEdgeCost; /* edge to a non source/sink vertex with non-zero supply */
 			};
 
 			/* Compute a min-cost max-flow in the new graph and network */
@@ -312,15 +312,15 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, WeightFunction demand) {
+		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, WeightFunction supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
-			Assertions.Flows.checkDemand(gOrig, demand);
+			Assertions.Flows.checkSupply(gOrig, supply);
 
 			/*
-			 * To solve the minimum cost flow of given demand we use a reduction to minimum-cost maximum-flow between
+			 * To solve the minimum cost flow of given supply we use a reduction to minimum-cost maximum-flow between
 			 * two terminal vertices, source and sink. We add an edge from the source to each vertex with positive
-			 * demand with capacity equal to the demand, and an edge from each vertex with negative demand to the sink
-			 * with capacity equal to the demand.
+			 * supply with capacity equal to the supply, and an edge from each vertex with negative supply to the sink
+			 * with capacity equal to the supply.
 			 */
 
 			/* Add all original vertices and edges */
@@ -336,10 +336,10 @@ class MinimumCostFlows {
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 
-			/* Connect the source to vertices with positive demand and vertices with negative demand to the sink */
+			/* Connect the source to vertices with positive supply and vertices with negative supply to the sink */
 			DoubleArrayList capacities = new DoubleArrayList();
 			for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
-				double d = demand.weight(v);
+				double d = supply.weight(v);
 				if (d > 0) {
 					builder.addEdge(source, v);
 					capacities.add(d);
@@ -383,7 +383,7 @@ class MinimumCostFlows {
 				}
 			};
 			/*
-			 * All the artificial edges should not have a cost, if its possible to satisfy the demand they will be
+			 * All the artificial edges should not have a cost, if its possible to satisfy the supply they will be
 			 * saturated anyway
 			 */
 			WeightFunction cost = e -> e < origEdgesThreshold ? costOrig.weight(e) : 0;
@@ -394,15 +394,15 @@ class MinimumCostFlows {
 
 		@Override
 		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand) {
+				WeightFunction supply) {
 			Assertions.Graphs.onlyDirected(g);
 			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);
-			Assertions.Flows.checkDemand(g, demand);
+			Assertions.Flows.checkSupply(g, supply);
 
 			/*
-			 * To solve the minimum cost flow for a given demand and edges lower bounds, we perform a reduction to the
-			 * problem with given demand without any edges flow lower bounds. For each edge with lower bound we subtract
-			 * the lower bound from the capacity of the edge, and add/remove demand to the edge endpoints.
+			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
+			 * problem with given supply without any edges flow lower bounds. For each edge with lower bound we subtract
+			 * the lower bound from the capacity of the edge, and add/remove supply to the edge endpoints.
 			 */
 
 			/* Create a network by subtracting the lower bound from each edge capacity */
@@ -428,30 +428,30 @@ class MinimumCostFlows {
 				}
 			};
 
-			/* For each edge with lower bound we add/remove demand from the end endpoints */
-			WeightFunction demand2 = computeDemand(g, netOrig, lowerBound, demand);
+			/* For each edge with lower bound we add/remove supply from the end endpoints */
+			WeightFunction supply2 = computeSupply(g, netOrig, lowerBound, supply);
 
-			/* Solve the reduction problem with only demand without edges lower bounds */
-			computeMinCostFlow(g, net, cost, demand2);
+			/* Solve the reduction problem with only supply without edges lower bounds */
+			computeMinCostFlow(g, net, cost, supply2);
 		}
 
-		private static WeightFunction computeDemand(IndexGraph g, FlowNetwork netOrig, WeightFunction lowerBound,
-				WeightFunction demand) {
-			Weights.Double demand2 = Weights.createExternalVerticesWeights(g, double.class);
-			if (demand != null) {
+		private static WeightFunction computeSupply(IndexGraph g, FlowNetwork netOrig, WeightFunction lowerBound,
+				WeightFunction supply) {
+			Weights.Double supply2 = Weights.createExternalVerticesWeights(g, double.class);
+			if (supply != null) {
 				for (int n = g.vertices().size(), v = 0; v < n; v++)
-					demand2.set(v, demand.weight(v));
+					supply2.set(v, supply.weight(v));
 			}
 			if (lowerBound != null) {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					double l = lowerBound.weight(e);
 					netOrig.setFlow(e, l);
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					demand2.set(u, demand2.getDouble(u) + l);
-					demand2.set(v, demand2.getDouble(v) - l);
+					supply2.set(u, supply2.getDouble(u) - l);
+					supply2.set(v, supply2.getDouble(v) + l);
 				}
 			}
-			return demand2;
+			return supply2;
 		}
 
 	}

@@ -163,16 +163,16 @@ public class Assertions {
 			}
 		}
 
-		public static void checkDemand(IndexGraph g, WeightFunction demand) {
+		public static void checkSupply(IndexGraph g, WeightFunction supply) {
 			double sum = 0;
 			for (int n = g.vertices().size(), v = 0; v < n; v++) {
-				double d = demand.weight(v);
+				double d = supply.weight(v);
 				if (!Double.isFinite(d))
-					throw new IllegalArgumentException("Demand must be non-negative for vertex " + v);
+					throw new IllegalArgumentException("Supply must be non-negative for vertex " + v);
 				sum += d;
 			}
 			if (sum != 0)
-				throw new IllegalArgumentException("Sum of demand must be zero");
+				throw new IllegalArgumentException("Sum of supply must be zero");
 		}
 	}
 
