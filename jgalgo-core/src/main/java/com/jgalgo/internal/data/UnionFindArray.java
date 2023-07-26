@@ -34,10 +34,7 @@ import java.util.Arrays;
 class UnionFindArray implements UnionFind {
 
 	int[] parent;
-	byte[] rank;
 	int size;
-
-	static final int NO_PARENT = -1;
 
 	/**
 	 * Create an empty Union Find data structure with no elements.
@@ -56,9 +53,12 @@ class UnionFindArray implements UnionFind {
 			throw new IllegalArgumentException("negative expected size: " + expectedSize);
 		int arrSize = expectedSize == 0 ? 2 : expectedSize;
 		parent = new int[arrSize];
-		rank = new byte[arrSize];
-		Arrays.fill(parent, NO_PARENT);
+		Arrays.fill(parent, -1);
 		size = 0;
+	}
+
+	boolean hasParent(int x) {
+		return parent[x] >= 0;
 	}
 
 	@Override
@@ -66,8 +66,7 @@ class UnionFindArray implements UnionFind {
 		if (parent.length <= size) {
 			int oldLength = parent.length;
 			parent = Arrays.copyOf(parent, size * 2);
-			rank = Arrays.copyOf(rank, size * 2);
-			Arrays.fill(parent, oldLength, parent.length, NO_PARENT);
+			Arrays.fill(parent, oldLength, parent.length, -1);
 		}
 		return size++;
 	}
@@ -80,16 +79,14 @@ class UnionFindArray implements UnionFind {
 	}
 
 	int find0(int x) {
-		int[] p = parent;
-
 		/* Find root */
 		int r;
-		for (r = x; p[r] != NO_PARENT; r = p[r]);
+		for (r = x; hasParent(r); r = parent[r]);
 
 		/* path compression */
 		for (; x != r;) {
-			int next = p[x];
-			p[x] = r;
+			int next = parent[x];
+			parent[x] = r;
 			x = next;
 		}
 
@@ -102,14 +99,19 @@ class UnionFindArray implements UnionFind {
 		b = find(b);
 		if (a == b)
 			return a;
-		byte[] r = rank;
 
-		if (r[a] < r[b]) {
+		int aRank = -parent[a];
+		int bRank = -parent[b];
+		assert aRank > 0;
+		assert bRank > 0;
+		if (aRank < bRank) {
 			int temp = a;
 			a = b;
 			b = temp;
-		} else if (r[a] == r[b])
-			r[a]++;
+		} else if (aRank == bRank) {
+			aRank++;
+			parent[a] = -aRank;
+		}
 
 		unionSetParent(b, a);
 		return a;
@@ -126,7 +128,7 @@ class UnionFindArray implements UnionFind {
 
 	@Override
 	public void clear() {
-		Arrays.fill(parent, 0, size, NO_PARENT);
+		Arrays.fill(parent, 0, size, -1);
 		size = 0;
 	}
 

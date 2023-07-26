@@ -70,15 +70,12 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 	public double getValue(int x) {
 		if (x < 0 || x >= size)
 			throw new IndexOutOfBoundsException(x);
-		int[] p = parent;
 		double sum = 0;
-		for (int r = x;; r = p[r]) {
-			if (p[r] == NO_PARENT) {
-				pathCompression(x, r, sum);
-				return sum + deltas[r];
-			}
+		int r;
+		for (r = x; hasParent(r); r = parent[r])
 			sum += deltas[r];
-		}
+		pathCompression(x, r, sum);
+		return sum + deltas[r];
 	}
 
 	@Override
@@ -88,28 +85,24 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	@Override
 	int find0(int x) {
-		int[] p = parent;
-
 		/* Find root and calc delta sum (not including r's delta) */
 		double sum = 0;
 		int r;
-		for (r = x; p[r] != NO_PARENT; r = p[r])
+		for (r = x; hasParent(r); r = parent[r])
 			sum += deltas[r];
 		pathCompression(x, r, sum);
-
 		return r;
 	}
 
 	// deltaSum shouldn't include the delta of the root
 	private void pathCompression(int x, int r, double deltaSum) {
-		int[] p = parent;
 		for (; x != r;) {
 			double delta = deltas[x];
 			deltas[x] = deltaSum;
 			deltaSum -= delta;
 
-			int next = p[x];
-			p[x] = r;
+			int next = parent[x];
+			parent[x] = r;
 			x = next;
 		}
 	}
