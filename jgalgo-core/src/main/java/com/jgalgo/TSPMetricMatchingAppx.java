@@ -72,11 +72,11 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		for (int m = mG.edges().size(), e = 0; e < m; e++) {
 			int u = mVtoV[mG.edgeSource(e)];
 			int v = mVtoV[mG.edgeTarget(e)];
-			mGWeightsNeg.set(e, -w.weight(g.getEdge(u, v)));
+			mGWeightsNeg.set(e, w.weight(g.getEdge(u, v)));
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
+		Matching matching = matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
