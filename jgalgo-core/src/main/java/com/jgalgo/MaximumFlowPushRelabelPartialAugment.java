@@ -90,7 +90,7 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 								return;
 							}
 
-							/* back up in the DFS tree until all edges in the path are residual */
+							/* back up in the DFS tree until all edges in the path are admissible */
 							for (int i = 0; i < path.size(); i++) {
 								if (!isResidual(path.getInt(i))) {
 									path.removeElements(i, path.size());
@@ -229,7 +229,7 @@ class MaximumFlowPushRelabelPartialAugment extends MaximumFlowPushRelabelHighest
 								return;
 							}
 
-							/* back up in the DFS tree until all edges in the path are residual */
+							/* back up in the DFS tree until all edges in the path are admissible */
 							for (int i = 0; i < path.size(); i++) {
 								if (!isResidual(path.getInt(i))) {
 									path.removeElements(i, path.size());

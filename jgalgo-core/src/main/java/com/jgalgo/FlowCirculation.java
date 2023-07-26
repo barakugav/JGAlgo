@@ -15,19 +15,13 @@
  */
 package com.jgalgo;
 
-import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.TestBase;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 
-public class MinimumCostFlowCycleCancelingTest extends TestBase {
+interface FlowCirculation {
 
-	@Test
-	public void testRandDigGraphs() {
-		final long seed = 0xd4a5d9c74a4ff3d0L;
-		MinimumCostFlowTestUtils.testRandDiGraphs(algo(), seed);
-	}
+	void computeCirculation(Graph g, FlowNetwork net, WeightFunction supply);
 
-	private static MinimumCostFlow algo() {
-		return new MinimumCostFlowCycleCanceling();
-	}
+	// void computeCirculation(Graph g, FlowNetwork net, WeightFunction lowerBound, WeightFunction supply);
 
 }
