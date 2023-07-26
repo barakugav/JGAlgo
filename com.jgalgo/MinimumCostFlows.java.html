@@ -110,9 +110,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L110">		}</span>
 
 		@Override
-		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction demand) {
+		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
 <span class="nc bnc" id="L114" title="All 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L115">				computeMinCostFlow((IndexGraph) g, net, cost, demand);</span>
+<span class="nc" id="L115">				computeMinCostFlow((IndexGraph) g, net, cost, supply);</span>
 <span class="nc" id="L116">				return;</span>
 			}
 
@@ -121,16 +121,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L121">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 <span class="nc" id="L122">			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
 <span class="nc" id="L123">			WeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="nc" id="L124">			WeightFunction iDemand = IndexIdMaps.idToIndexWeightFunc(demand, viMap);</span>
+<span class="nc" id="L124">			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
 
-<span class="nc" id="L126">			computeMinCostFlow(iGraph, iNet, iCost, iDemand);</span>
+<span class="nc" id="L126">			computeMinCostFlow(iGraph, iNet, iCost, iSupply);</span>
 <span class="nc" id="L127">		}</span>
 
 		@Override
 		public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand) {
+				WeightFunction supply) {
 <span class="nc bnc" id="L132" title="All 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L133">				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, demand);</span>
+<span class="nc" id="L133">				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, supply);</span>
 <span class="nc" id="L134">				return;</span>
 			}
 
@@ -140,9 +140,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L140">			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
 <span class="nc" id="L141">			WeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
 <span class="nc" id="L142">			WeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
-<span class="nc" id="L143">			WeightFunction iDemand = IndexIdMaps.idToIndexWeightFunc(demand, viMap);</span>
+<span class="nc" id="L143">			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
 
-<span class="nc" id="L145">			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iDemand);</span>
+<span class="nc" id="L145">			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);</span>
 <span class="nc" id="L146">		}</span>
 
 		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, int source, int sink);
@@ -156,10 +156,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
 				WeightFunction lowerBound, IntCollection sources, IntCollection sinks);
 
-		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction demand);
+		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply);
 
 		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand);
+				WeightFunction supply);
 
 	}
 
@@ -175,23 +175,23 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig,
 				WeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
 <span class="nc" id="L177">			Assertions.Graphs.onlyDirected(gOrig);</span>
-<span class="nc" id="L178">			checkLowerBound(gOrig, netOrig, lowerBound);</span>
+<span class="nc" id="L178">			Assertions.Flows.checkLowerBound(gOrig, netOrig, lowerBound);</span>
 
 			/*
 			 * To solve the problem of minimum-cost maximum-flow between a set of sources and sinks, with a flow lower
 			 * bound for each edge, we perform a reduction to min-cost max-flow between a single source and a sink sink
 			 * without lower bounds. To get rid of the lower bound, remove from each edge capacity its lower bound, and
-			 * add/remove demand from the edge endpoints. This reduction is slightly more complicated than the others,
-			 * as some vertices (the sources/sinks) require 'infinite' demand, while others (other vertices with demand)
-			 * require finite demand. We create a new graph with all the vertices and edges of the original graph, with
+			 * add/remove supply from the edge endpoints. This reduction is slightly more complicated than the others,
+			 * as some vertices (the sources/sinks) require 'infinite' supply, while others (other vertices with supply)
+			 * require finite supply. We create a new graph with all the vertices and edges of the original graph, with
 			 * addition of a new source and sink, and connect the source to the sources with high capacity edges, the
-			 * source to vertices with a positive demand with capacity equal to the demand, the sinks to the sink with
-			 * high capacity edges and lastly the vertices with negative demand to the sink with capacity equal to the
-			 * demand.
+			 * source to vertices with a positive supply with capacity equal to the supply, the sinks to the sink with
+			 * high capacity edges and lastly the vertices with negative supply to the sink with capacity equal to the
+			 * supply.
 			 */
 
-			/* For each edge with lower bound add/remove demand to the edge endpoints */
-<span class="nc" id="L194">			WeightFunction demand = computeDemand(gOrig, netOrig, lowerBound, null);</span>
+			/* For each edge with lower bound add/remove supply to the edge endpoints */
+<span class="nc" id="L194">			WeightFunction supply = computeSupply(gOrig, netOrig, lowerBound, null);</span>
 
 			/* Add all original vertices and edges */
 <span class="nc" id="L197">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
@@ -231,17 +231,17 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			/*
 			 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
 			 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
-			 * connecting a source to a vertex with positive demand or a vertex with negative demand to a sink.
+			 * connecting a source to a vertex with positive supply or a vertex with negative supply to a sink.
 			 */
 <span class="nc" id="L236">			final int sourcesSinksThreshold = builder.edges().size();</span>
 
 			/*
-			 * Connect the source to all vertices with positive demand and the vertices with negative demand to the sink
+			 * Connect the source to all vertices with positive supply and the vertices with negative supply to the sink
 			 */
 <span class="nc bnc" id="L241" title="All 2 branches missed.">			for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
 <span class="nc bnc" id="L242" title="All 2 branches missed.">				if (origSourcesSinksSet.get(v))</span>
 <span class="nc" id="L243">					continue;</span>
-<span class="nc" id="L244">				double d = demand.weight(v);</span>
+<span class="nc" id="L244">				double d = supply.weight(v);</span>
 <span class="nc bnc" id="L245" title="All 2 branches missed.">				if (d &gt; 0) {</span>
 <span class="nc" id="L246">					builder.addEdge(source, v);</span>
 <span class="nc" id="L247">					capacities.add(d);</span>
@@ -292,19 +292,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 			/*
 			 * Create a cost function for the new graph: original edges have their original costs, big negative cost for
-			 * edges that connect vertices with demand as we must satisfy them, and zero cost for edges connecting
+			 * edges that connect vertices with supply as we must satisfy them, and zero cost for edges connecting
 			 * source-sources or sinks-sink
 			 */
 <span class="nc" id="L298">			double maxCost = 0;</span>
 <span class="nc bnc" id="L299" title="All 2 branches missed.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="nc" id="L300">				maxCost = Math.max(maxCost, Math.abs(costOrig.weight(e)));</span>
-<span class="nc" id="L301">			final double demandEdgeCost = -maxCost * gOrig.vertices().size();</span>
+<span class="nc" id="L301">			final double supplyEdgeCost = -maxCost * gOrig.vertices().size();</span>
 <span class="nc" id="L302">			WeightFunction cost = e -&gt; {</span>
 <span class="nc bnc" id="L303" title="All 2 branches missed.">				if (e &lt; origEdgesThreshold)</span>
 <span class="nc" id="L304">					return costOrig.weight(e); /* original edge */</span>
 <span class="nc bnc" id="L305" title="All 2 branches missed.">				if (e &lt; sourcesSinksThreshold)</span>
 <span class="nc" id="L306">					return 0; /* edge to source/sink */</span>
-<span class="nc" id="L307">				return demandEdgeCost; /* edge to a non source/sink vertex with demand */</span>
+<span class="nc" id="L307">				return supplyEdgeCost; /* edge to a non source/sink vertex with non-zero supply */</span>
 			};
 
 			/* Compute a min-cost max-flow in the new graph and network */
@@ -312,15 +312,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L312">		}</span>
 
 		@Override
-		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, WeightFunction demand) {
+		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, WeightFunction supply) {
 <span class="nc" id="L316">			Assertions.Graphs.onlyDirected(gOrig);</span>
-<span class="nc" id="L317">			checkDemand(gOrig, demand);</span>
+<span class="nc" id="L317">			Assertions.Flows.checkSupply(gOrig, supply);</span>
 
 			/*
-			 * To solve the minimum cost flow of given demand we use a reduction to minimum-cost maximum-flow between
+			 * To solve the minimum cost flow of given supply we use a reduction to minimum-cost maximum-flow between
 			 * two terminal vertices, source and sink. We add an edge from the source to each vertex with positive
-			 * demand with capacity equal to the demand, and an edge from each vertex with negative demand to the sink
-			 * with capacity equal to the demand.
+			 * supply with capacity equal to the supply, and an edge from each vertex with negative supply to the sink
+			 * with capacity equal to the supply.
 			 */
 
 			/* Add all original vertices and edges */
@@ -336,10 +336,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L336">			final int source = builder.addVertex();</span>
 <span class="nc" id="L337">			final int sink = builder.addVertex();</span>
 
-			/* Connect the source to vertices with positive demand and vertices with negative demand to the sink */
+			/* Connect the source to vertices with positive supply and vertices with negative supply to the sink */
 <span class="nc" id="L340">			DoubleArrayList capacities = new DoubleArrayList();</span>
 <span class="nc bnc" id="L341" title="All 2 branches missed.">			for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L342">				double d = demand.weight(v);</span>
+<span class="nc" id="L342">				double d = supply.weight(v);</span>
 <span class="nc bnc" id="L343" title="All 2 branches missed.">				if (d &gt; 0) {</span>
 <span class="nc" id="L344">					builder.addEdge(source, v);</span>
 <span class="nc" id="L345">					capacities.add(d);</span>
@@ -383,7 +383,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L383">				}</span>
 			};
 			/*
-			 * All the artificial edges should not have a cost, if its possible to satisfy the demand they will be
+			 * All the artificial edges should not have a cost, if its possible to satisfy the supply they will be
 			 * saturated anyway
 			 */
 <span class="nc bnc" id="L389" title="All 2 branches missed.">			WeightFunction cost = e -&gt; e &lt; origEdgesThreshold ? costOrig.weight(e) : 0;</span>
@@ -394,15 +394,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		@Override
 		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction demand) {
+				WeightFunction supply) {
 <span class="nc" id="L398">			Assertions.Graphs.onlyDirected(g);</span>
-<span class="nc" id="L399">			checkLowerBound(g, netOrig, lowerBound);</span>
-<span class="nc" id="L400">			checkDemand(g, demand);</span>
+<span class="nc" id="L399">			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);</span>
+<span class="nc" id="L400">			Assertions.Flows.checkSupply(g, supply);</span>
 
 			/*
-			 * To solve the minimum cost flow for a given demand and edges lower bounds, we perform a reduction to the
-			 * problem with given demand without any edges flow lower bounds. For each edge with lower bound we subtract
-			 * the lower bound from the capacity of the edge, and add/remove demand to the edge endpoints.
+			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
+			 * problem with given supply without any edges flow lower bounds. For each edge with lower bound we subtract
+			 * the lower bound from the capacity of the edge, and add/remove supply to the edge endpoints.
 			 */
 
 			/* Create a network by subtracting the lower bound from each edge capacity */
@@ -428,51 +428,31 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L428">				}</span>
 			};
 
-			/* For each edge with lower bound we add/remove demand from the end endpoints */
-<span class="nc" id="L432">			WeightFunction demand2 = computeDemand(g, netOrig, lowerBound, demand);</span>
+			/* For each edge with lower bound we add/remove supply from the end endpoints */
+<span class="nc" id="L432">			WeightFunction supply2 = computeSupply(g, netOrig, lowerBound, supply);</span>
 
-			/* Solve the reduction problem with only demand without edges lower bounds */
-<span class="nc" id="L435">			computeMinCostFlow(g, net, cost, demand2);</span>
+			/* Solve the reduction problem with only supply without edges lower bounds */
+<span class="nc" id="L435">			computeMinCostFlow(g, net, cost, supply2);</span>
 <span class="nc" id="L436">		}</span>
 
-		private static WeightFunction computeDemand(IndexGraph g, FlowNetwork netOrig, WeightFunction lowerBound,
-				WeightFunction demand) {
-<span class="nc" id="L440">			Weights.Double demand2 = Weights.createExternalVerticesWeights(g, double.class);</span>
-<span class="nc bnc" id="L441" title="All 2 branches missed.">			if (demand != null) {</span>
+		private static WeightFunction computeSupply(IndexGraph g, FlowNetwork netOrig, WeightFunction lowerBound,
+				WeightFunction supply) {
+<span class="nc" id="L440">			Weights.Double supply2 = Weights.createExternalVerticesWeights(g, double.class);</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">			if (supply != null) {</span>
 <span class="nc bnc" id="L442" title="All 2 branches missed.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L443">					demand2.set(v, demand.weight(v));</span>
+<span class="nc" id="L443">					supply2.set(v, supply.weight(v));</span>
 			}
 <span class="nc bnc" id="L445" title="All 2 branches missed.">			if (lowerBound != null) {</span>
 <span class="nc bnc" id="L446" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="nc" id="L447">					double l = lowerBound.weight(e);</span>
 <span class="nc" id="L448">					netOrig.setFlow(e, l);</span>
 <span class="nc" id="L449">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="nc" id="L450">					demand2.set(u, demand2.getDouble(u) + l);</span>
-<span class="nc" id="L451">					demand2.set(v, demand2.getDouble(v) - l);</span>
+<span class="nc" id="L450">					supply2.set(u, supply2.getDouble(u) - l);</span>
+<span class="nc" id="L451">					supply2.set(v, supply2.getDouble(v) + l);</span>
 				}
 			}
-<span class="nc" id="L454">			return demand2;</span>
+<span class="nc" id="L454">			return supply2;</span>
 		}
-
-		static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-<span class="nc bnc" id="L458" title="All 2 branches missed.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L459">				double l = lowerBound.weight(e);</span>
-<span class="nc bnc" id="L460" title="All 4 branches missed.">				if (!(0 &lt;= l &amp;&amp; l &lt;= net.getCapacity(e)))</span>
-<span class="nc" id="L461">					throw new IllegalArgumentException(&quot;Lower bound must be in [0, capacity] for edge &quot; + e);</span>
-			}
-<span class="nc" id="L463">		}</span>
-
-		static void checkDemand(IndexGraph g, WeightFunction demand) {
-<span class="nc" id="L466">			double sum = 0;</span>
-<span class="nc bnc" id="L467" title="All 2 branches missed.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L468">				double d = demand.weight(v);</span>
-<span class="nc bnc" id="L469" title="All 2 branches missed.">				if (!Double.isFinite(d))</span>
-<span class="nc" id="L470">					throw new IllegalArgumentException(&quot;Demand must be non-negative for vertex &quot; + v);</span>
-<span class="nc" id="L471">				sum += d;</span>
-			}
-<span class="nc bnc" id="L473" title="All 2 branches missed.">			if (sum != 0)</span>
-<span class="nc" id="L474">				throw new IllegalArgumentException(&quot;Sum of demand must be zero&quot;);</span>
-<span class="nc" id="L475">		}</span>
 
 	}
 

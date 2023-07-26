@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@Override
 	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
 <span class="fc" id="L45">		Assertions.Graphs.onlyDirected(gOrig);</span>
-<span class="fc" id="L46">		Assertions.Graphs.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L46">		Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
 
 		/* Compute maximum flow */
 <span class="fc" id="L49">		maxFlowAlg.computeMaximumFlow(gOrig, net, source, sink);</span>
@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, IntCollection sources,
 			IntCollection sinks) {
 <span class="nc" id="L71">		Assertions.Graphs.onlyDirected(gOrig);</span>
-<span class="nc" id="L72">		Assertions.Graphs.sourcesSinksNotTheSame(sources, sinks);</span>
+<span class="nc" id="L72">		Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
 
 		/* Compute maximum flow */
 <span class="nc" id="L75">		maxFlowAlg.computeMaximumFlow(gOrig, net, sources, sinks);</span>

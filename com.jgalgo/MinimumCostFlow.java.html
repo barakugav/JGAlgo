@@ -24,9 +24,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Compute the minimum-cost (max) flow in a flow network.
  * &lt;p&gt;
  * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal nodes, and the
- * objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite demand, and
- * the objective is to find a minimum-cost flow satisfying the demand, namely that for each vertex the sum of flow units
- * going into the vertex minus the sum of flow units going out of it is equal to its demand.
+ * objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply, and
+ * the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow units
+ * going out of the vertex minus the sum of flow units going into it is equal to its supply.
  * &lt;p&gt;
  * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
  * be viewed as upper bounds.
@@ -89,27 +89,35 @@ public interface MinimumCostFlow {
 			IntCollection sources, IntCollection sinks);
 
 	/**
-	 * Compute the min-cost (not maximum!) flow in a network given a demand for each vertex.
+	 * Compute the min-cost (not maximum!) flow in a network given a supply for each vertex.
+	 * &lt;p&gt;
+	 * The supply is a scalar for each vertex, and the objective is to find a minimum-cost flow satisfying the supply,
+	 * namely that for each vertex the sum of flow units going out of the vertex minus the sum of flow units going into
+	 * it is equal to its supply.
 	 *
 	 * @param g      the graph
 	 * @param net    the flow network. The result flow values will be set using this network
 	 * @param cost   an edge weight function representing the cost of each unit of flow along the edge
-	 * @param demand a vertex weight function representing the demand for each vertex
+	 * @param supply a vertex weight function representing the supply for each vertex
 	 */
-	void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction demand);
+	void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction supply);
 
 	/**
-	 * Compute the min-cost (not maximum!) flow in a network given a demand for each vertex and a lower bound for the
+	 * Compute the min-cost (not maximum!) flow in a network given a supply for each vertex and a lower bound for the
 	 * edges flows.
+	 * &lt;p&gt;
+	 * The supply is a scalar for each vertex, and the objective is to find a minimum-cost flow satisfying the supply,
+	 * namely that for each vertex the sum of flow units going out of the vertex minus the sum of flow units going into
+	 * it is equal to its supply.
 	 *
 	 * @param g          the graph
 	 * @param net        the flow network. The result flow values will be set using this network
 	 * @param cost       an edge weight function representing the cost of each unit of flow along the edge
 	 * @param lowerBound an edge weight function representing a lower bound for the flow along each edge
-	 * @param demand     a vertex weight function representing the demand for each vertex
+	 * @param supply     a vertex weight function representing the supply for each vertex
 	 */
 	void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-			WeightFunction demand);
+			WeightFunction supply);
 
 	/**
 	 * Create a new minimum cost flow algorithm builder.
@@ -119,7 +127,7 @@ public interface MinimumCostFlow {
 	 * @return a new builder that can build {@link MinimumCostFlow} objects
 	 */
 	static MinimumCostFlow.Builder newBuilder() {
-<span class="nc" id="L122">		return MinimumCostFlowCycleCanceling::new;</span>
+<span class="nc" id="L130">		return MinimumCostFlowCycleCanceling::new;</span>
 	}
 
 	/**

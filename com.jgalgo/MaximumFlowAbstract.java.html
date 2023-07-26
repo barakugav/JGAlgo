@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		final IntCollection sinks;
 
 <span class="fc" id="L78">		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
-<span class="fc" id="L79">			Assertions.Graphs.sourcesSinksNotTheSame(sources, sinks);</span>
+<span class="fc" id="L79">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
 <span class="fc" id="L80">			positiveCapacitiesOrThrow(gOrig, net);</span>
 <span class="fc" id="L81">			this.gOrig = gOrig;</span>
 <span class="fc" id="L82">			this.n = gOrig.vertices().size() + 2;</span>
@@ -102,7 +102,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L102">		}</span>
 
 <span class="fc" id="L104">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L105">			Assertions.Graphs.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L105">			Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
 <span class="fc" id="L106">			positiveCapacitiesOrThrow(gOrig, net);</span>
 <span class="fc" id="L107">			this.gOrig = gOrig;</span>
 <span class="fc" id="L108">			this.source = source;</span>

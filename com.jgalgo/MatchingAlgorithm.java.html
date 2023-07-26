@@ -156,16 +156,16 @@ public interface MatchingAlgorithm {
 
 						@Override
 						public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L159" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
-<span class="fc" id="L161">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
+<span class="nc bnc" id="L159" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="nc" id="L161">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
 						}
 
 						@Override
 						public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L166" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
-<span class="nc" id="L168">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
+<span class="pc bpc" id="L166" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L168">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
 						}
 
 					};

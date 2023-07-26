@@ -72,11 +72,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int m = mG.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L73">			int u = mVtoV[mG.edgeSource(e)];</span>
 <span class="fc" id="L74">			int v = mVtoV[mG.edgeTarget(e)];</span>
-<span class="fc" id="L75">			mGWeightsNeg.set(e, -w.weight(g.getEdge(u, v)));</span>
+<span class="fc" id="L75">			mGWeightsNeg.set(e, w.weight(g.getEdge(u, v)));</span>
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-<span class="fc" id="L79">		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
+<span class="fc" id="L79">		Matching matching = matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
 
 		/* Build a graph of the union of the MST and the matching result */
 <span class="fc" id="L82">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>

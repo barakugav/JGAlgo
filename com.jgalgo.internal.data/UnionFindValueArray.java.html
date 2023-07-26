@@ -70,55 +70,48 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 	public double getValue(int x) {
 <span class="pc bpc" id="L71" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
 <span class="nc" id="L72">			throw new IndexOutOfBoundsException(x);</span>
-<span class="fc" id="L73">		int[] p = parent;</span>
-<span class="fc" id="L74">		double sum = 0;</span>
-<span class="fc" id="L75">		for (int r = x;; r = p[r]) {</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (p[r] == NO_PARENT) {</span>
-<span class="fc" id="L77">				pathCompression(x, r, sum);</span>
-<span class="fc" id="L78">				return sum + deltas[r];</span>
-			}
-<span class="fc" id="L80">			sum += deltas[r];</span>
-		}
+<span class="fc" id="L73">		double sum = 0;</span>
+		int r;
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
+<span class="fc" id="L76">			sum += deltas[r];</span>
+<span class="fc" id="L77">		pathCompression(x, r, sum);</span>
+<span class="fc" id="L78">		return sum + deltas[r];</span>
 	}
 
 	@Override
 	public void addValue(int x, double value) {
-<span class="fc" id="L86">		deltas[find(x)] += value;</span>
-<span class="fc" id="L87">	}</span>
+<span class="fc" id="L83">		deltas[find(x)] += value;</span>
+<span class="fc" id="L84">	}</span>
 
 	@Override
 	int find0(int x) {
-<span class="fc" id="L91">		int[] p = parent;</span>
-
 		/* Find root and calc delta sum (not including r's delta) */
-<span class="fc" id="L94">		double sum = 0;</span>
+<span class="fc" id="L89">		double sum = 0;</span>
 		int r;
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r])</span>
-<span class="fc" id="L97">			sum += deltas[r];</span>
-<span class="fc" id="L98">		pathCompression(x, r, sum);</span>
-
-<span class="fc" id="L100">		return r;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
+<span class="fc" id="L92">			sum += deltas[r];</span>
+<span class="fc" id="L93">		pathCompression(x, r, sum);</span>
+<span class="fc" id="L94">		return r;</span>
 	}
 
 	// deltaSum shouldn't include the delta of the root
 	private void pathCompression(int x, int r, double deltaSum) {
-<span class="fc" id="L105">		int[] p = parent;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (; x != r;) {</span>
-<span class="fc" id="L107">			double delta = deltas[x];</span>
-<span class="fc" id="L108">			deltas[x] = deltaSum;</span>
-<span class="fc" id="L109">			deltaSum -= delta;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (; x != r;) {</span>
+<span class="fc" id="L100">			double delta = deltas[x];</span>
+<span class="fc" id="L101">			deltas[x] = deltaSum;</span>
+<span class="fc" id="L102">			deltaSum -= delta;</span>
 
-<span class="fc" id="L111">			int next = p[x];</span>
-<span class="fc" id="L112">			p[x] = r;</span>
-<span class="fc" id="L113">			x = next;</span>
-<span class="fc" id="L114">		}</span>
-<span class="fc" id="L115">	}</span>
+<span class="fc" id="L104">			int next = parent[x];</span>
+<span class="fc" id="L105">			parent[x] = r;</span>
+<span class="fc" id="L106">			x = next;</span>
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">	}</span>
 
 	@Override
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L119">		parent[c] = p;</span>
-<span class="fc" id="L120">		deltas[c] -= deltas[p];</span>
-<span class="fc" id="L121">	}</span>
+<span class="fc" id="L112">		parent[c] = p;</span>
+<span class="fc" id="L113">		deltas[c] -= deltas[p];</span>
+<span class="fc" id="L114">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

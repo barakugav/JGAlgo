@@ -22,6 +22,8 @@ import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -30,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
+public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable, IntIterable {
 
 	private static final long serialVersionUID = 0L;
 	/** The standard initial capacity of a queue. */
@@ -58,24 +60,24 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 	 * @param    capacity the initial capacity of this queue.
 	 */
 
-<span class="fc" id="L61">	public FIFOQueueIntNoReduce(final int capacity) {</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (capacity &gt; it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1)</span>
-<span class="nc" id="L63">			throw new IllegalArgumentException(</span>
+<span class="fc" id="L63">	public FIFOQueueIntNoReduce(final int capacity) {</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (capacity &gt; it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1)</span>
+<span class="nc" id="L65">			throw new IllegalArgumentException(</span>
 					&quot;Initial capacity (&quot; + capacity + &quot;) exceeds &quot; + (it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE - 1));
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (capacity &lt; 0)</span>
-<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;Initial capacity (&quot; + capacity + &quot;) is negative&quot;);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		if (capacity &lt; 0)</span>
+<span class="nc" id="L68">			throw new IllegalArgumentException(&quot;Initial capacity (&quot; + capacity + &quot;) is negative&quot;);</span>
 		// We never build a queue with a zero-sized backing array; moreover, to
 		// avoid resizing at the given capacity we need one additional element.
-<span class="fc" id="L69">		array = new int[Math.max(1, capacity + 1)];</span>
-<span class="fc" id="L70">		length = array.length;</span>
-<span class="fc" id="L71">	}</span>
+<span class="fc" id="L71">		array = new int[Math.max(1, capacity + 1)];</span>
+<span class="fc" id="L72">		length = array.length;</span>
+<span class="fc" id="L73">	}</span>
 
 	/**
 	 * Creates a new empty queue with standard {@linkplain #INITIAL_CAPACITY initial capacity}.
 	 */
 	public FIFOQueueIntNoReduce() {
-<span class="fc" id="L77">		this(INITIAL_CAPACITY);</span>
-<span class="fc" id="L78">	}</span>
+<span class="fc" id="L79">		this(INITIAL_CAPACITY);</span>
+<span class="fc" id="L80">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -84,17 +86,17 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 	 */
 	@Override
 	public IntComparator comparator() {
-<span class="nc" id="L87">		return null;</span>
+<span class="nc" id="L89">		return null;</span>
 	}
 
 	@Override
 	public int dequeueInt() {
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		if (start == end)</span>
-<span class="nc" id="L93">			throw new NoSuchElementException();</span>
-<span class="fc" id="L94">		final int t = array[start];</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (++start == length)</span>
-<span class="fc" id="L96">			start = 0;</span>
-<span class="fc" id="L97">		return t;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		if (start == end)</span>
+<span class="nc" id="L95">			throw new NoSuchElementException();</span>
+<span class="fc" id="L96">		final int t = array[start];</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (++start == length)</span>
+<span class="fc" id="L98">			start = 0;</span>
+<span class="fc" id="L99">		return t;</span>
 	}
 
 	/**
@@ -104,41 +106,41 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 	 * @throws NoSuchElementException if the queue is empty.
 	 */
 	int dequeueLastInt() {
-<span class="nc bnc" id="L107" title="All 2 branches missed.">		if (start == end)</span>
-<span class="nc" id="L108">			throw new NoSuchElementException();</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">		if (end == 0)</span>
-<span class="nc" id="L110">			end = length;</span>
-<span class="nc" id="L111">		final int t = array[--end];</span>
-<span class="nc" id="L112">		return t;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">		if (start == end)</span>
+<span class="nc" id="L110">			throw new NoSuchElementException();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">		if (end == 0)</span>
+<span class="nc" id="L112">			end = length;</span>
+<span class="nc" id="L113">		final int t = array[--end];</span>
+<span class="nc" id="L114">		return t;</span>
 	}
 
 	private final void resize(final int size, final int newLength) {
-<span class="fc" id="L116">		final int[] newArray = new int[newLength];</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		if (start &gt;= end) {</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (size != 0) {</span>
-<span class="fc" id="L119">				System.arraycopy(array, start, newArray, 0, length - start);</span>
-<span class="fc" id="L120">				System.arraycopy(array, 0, newArray, length - start, end);</span>
+<span class="fc" id="L118">		final int[] newArray = new int[newLength];</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		if (start &gt;= end) {</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (size != 0) {</span>
+<span class="fc" id="L121">				System.arraycopy(array, start, newArray, 0, length - start);</span>
+<span class="fc" id="L122">				System.arraycopy(array, 0, newArray, length - start, end);</span>
 			}
 		} else
-<span class="nc" id="L123">			System.arraycopy(array, start, newArray, 0, end - start);</span>
-<span class="fc" id="L124">		start = 0;</span>
-<span class="fc" id="L125">		end = size;</span>
-<span class="fc" id="L126">		array = newArray;</span>
-<span class="fc" id="L127">		length = newLength;</span>
-<span class="fc" id="L128">	}</span>
+<span class="nc" id="L125">			System.arraycopy(array, start, newArray, 0, end - start);</span>
+<span class="fc" id="L126">		start = 0;</span>
+<span class="fc" id="L127">		end = size;</span>
+<span class="fc" id="L128">		array = newArray;</span>
+<span class="fc" id="L129">		length = newLength;</span>
+<span class="fc" id="L130">	}</span>
 
 	private final void expand() {
-<span class="fc" id="L131">		resize(length, (int) Math.min(it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE, 2L * length));</span>
-<span class="fc" id="L132">	}</span>
+<span class="fc" id="L133">		resize(length, (int) Math.min(it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE, 2L * length));</span>
+<span class="fc" id="L134">	}</span>
 
 	@Override
 	public void enqueue(int x) {
-<span class="fc" id="L136">		array[end++] = x;</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (end == length)</span>
-<span class="fc" id="L138">			end = 0;</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (end == start)</span>
-<span class="fc" id="L140">			expand();</span>
-<span class="fc" id="L141">	}</span>
+<span class="fc" id="L138">		array[end++] = x;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (end == length)</span>
+<span class="fc" id="L140">			end = 0;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (end == start)</span>
+<span class="fc" id="L142">			expand();</span>
+<span class="fc" id="L143">	}</span>
 
 	/**
 	 * Enqueues a new element as the first element (in dequeuing order) of the queue.
@@ -146,71 +148,94 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 	 * @param x the element to enqueue.
 	 */
 	void enqueueFirst(int x) {
-<span class="nc bnc" id="L149" title="All 2 branches missed.">		if (start == 0)</span>
-<span class="nc" id="L150">			start = length;</span>
-<span class="nc" id="L151">		array[--start] = x;</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">		if (end == start)</span>
-<span class="nc" id="L153">			expand();</span>
-<span class="nc" id="L154">	}</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">		if (start == 0)</span>
+<span class="nc" id="L152">			start = length;</span>
+<span class="nc" id="L153">		array[--start] = x;</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">		if (end == start)</span>
+<span class="nc" id="L155">			expand();</span>
+<span class="nc" id="L156">	}</span>
 
 	@Override
 	public int firstInt() {
-<span class="nc bnc" id="L158" title="All 2 branches missed.">		if (start == end)</span>
-<span class="nc" id="L159">			throw new NoSuchElementException();</span>
-<span class="nc" id="L160">		return array[start];</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">		if (start == end)</span>
+<span class="nc" id="L161">			throw new NoSuchElementException();</span>
+<span class="nc" id="L162">		return array[start];</span>
 	}
 
 	@Override
 	public int lastInt() {
-<span class="nc bnc" id="L165" title="All 2 branches missed.">		if (start == end)</span>
-<span class="nc" id="L166">			throw new NoSuchElementException();</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">		return array[(end == 0 ? length : end) - 1];</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">		if (start == end)</span>
+<span class="nc" id="L168">			throw new NoSuchElementException();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">		return array[(end == 0 ? length : end) - 1];</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L172">		start = end = 0;</span>
-<span class="fc" id="L173">	}</span>
+<span class="fc" id="L174">		start = end = 0;</span>
+<span class="fc" id="L175">	}</span>
 
 	/** Trims the queue to the smallest possible size. */
 
 	void trim() {
-<span class="nc" id="L178">		final int size = size();</span>
-<span class="nc" id="L179">		final int[] newArray = new int[size + 1];</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">		if (start &lt;= end)</span>
-<span class="nc" id="L181">			System.arraycopy(array, start, newArray, 0, end - start);</span>
+<span class="nc" id="L180">		final int size = size();</span>
+<span class="nc" id="L181">		final int[] newArray = new int[size + 1];</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">		if (start &lt;= end)</span>
+<span class="nc" id="L183">			System.arraycopy(array, start, newArray, 0, end - start);</span>
 		else {
-<span class="nc" id="L183">			System.arraycopy(array, start, newArray, 0, length - start);</span>
-<span class="nc" id="L184">			System.arraycopy(array, 0, newArray, length - start, end);</span>
+<span class="nc" id="L185">			System.arraycopy(array, start, newArray, 0, length - start);</span>
+<span class="nc" id="L186">			System.arraycopy(array, 0, newArray, length - start, end);</span>
 		}
-<span class="nc" id="L186">		start = 0;</span>
-<span class="nc" id="L187">		length = (end = size) + 1;</span>
-<span class="nc" id="L188">		array = newArray;</span>
-<span class="nc" id="L189">	}</span>
+<span class="nc" id="L188">		start = 0;</span>
+<span class="nc" id="L189">		length = (end = size) + 1;</span>
+<span class="nc" id="L190">		array = newArray;</span>
+<span class="nc" id="L191">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L193">		final int apparentLength = end - start;</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">		return apparentLength &gt;= 0 ? apparentLength : length + apparentLength;</span>
+<span class="fc" id="L195">		final int apparentLength = end - start;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">		return apparentLength &gt;= 0 ? apparentLength : length + apparentLength;</span>
 	}
 
 	private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
-<span class="nc" id="L198">		s.defaultWriteObject();</span>
-<span class="nc" id="L199">		int size = size();</span>
-<span class="nc" id="L200">		s.writeInt(size);</span>
-<span class="nc bnc" id="L201" title="All 2 branches missed.">		for (int i = start; size-- != 0;) {</span>
-<span class="nc" id="L202">			s.writeInt(array[i++]);</span>
-<span class="nc bnc" id="L203" title="All 2 branches missed.">			if (i == length)</span>
-<span class="nc" id="L204">				i = 0;</span>
+<span class="nc" id="L200">		s.defaultWriteObject();</span>
+<span class="nc" id="L201">		int size = size();</span>
+<span class="nc" id="L202">		s.writeInt(size);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">		for (int i = start; size-- != 0;) {</span>
+<span class="nc" id="L204">			s.writeInt(array[i++]);</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">			if (i == length)</span>
+<span class="nc" id="L206">				i = 0;</span>
 		}
-<span class="nc" id="L206">	}</span>
+<span class="nc" id="L208">	}</span>
 
 	private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException {
-<span class="nc" id="L209">		s.defaultReadObject();</span>
-<span class="nc" id="L210">		end = s.readInt();</span>
-<span class="nc" id="L211">		array = new int[length = HashCommon.nextPowerOfTwo(end + 1)];</span>
-<span class="nc bnc" id="L212" title="All 2 branches missed.">		for (int i = 0; i &lt; end; i++)</span>
-<span class="nc" id="L213">			array[i] = s.readInt();</span>
-<span class="nc" id="L214">	}</span>
+<span class="nc" id="L211">		s.defaultReadObject();</span>
+<span class="nc" id="L212">		end = s.readInt();</span>
+<span class="nc" id="L213">		array = new int[length = HashCommon.nextPowerOfTwo(end + 1)];</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">		for (int i = 0; i &lt; end; i++)</span>
+<span class="nc" id="L215">			array[i] = s.readInt();</span>
+<span class="nc" id="L216">	}</span>
+
+	@Override
+	public IntIterator iterator() {
+<span class="fc" id="L220">		return new IntIterator() {</span>
+
+<span class="fc" id="L222">			int idx = start;</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L226" title="All 2 branches covered.">				return idx != end;</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="fc" id="L231">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L232">				int ret = array[idx];</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">				if (++idx == length)</span>
+<span class="fc" id="L234">					idx = 0;</span>
+<span class="fc" id="L235">				return ret;</span>
+			}
+
+		};
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
