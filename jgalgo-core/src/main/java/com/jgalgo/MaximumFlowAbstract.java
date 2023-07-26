@@ -76,7 +76,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		final IntCollection sinks;
 
 		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-			Assertions.Graphs.sourcesSinksNotTheSame(sources, sinks);
+			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
 			this.n = gOrig.vertices().size() + 2;
@@ -102,7 +102,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 		}
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
-			Assertions.Graphs.sourceSinkNotTheSame(source, sink);
+			Assertions.Flows.sourceSinkNotTheSame(source, sink);
 			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
 			this.source = source;

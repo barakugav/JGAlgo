@@ -43,7 +43,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImpl {
 	@Override
 	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
 		Assertions.Graphs.onlyDirected(gOrig);
-		Assertions.Graphs.sourceSinkNotTheSame(source, sink);
+		Assertions.Flows.sourceSinkNotTheSame(source, sink);
 
 		/* Compute maximum flow */
 		maxFlowAlg.computeMaximumFlow(gOrig, net, source, sink);
@@ -69,7 +69,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImpl {
 	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, IntCollection sources,
 			IntCollection sinks) {
 		Assertions.Graphs.onlyDirected(gOrig);
-		Assertions.Graphs.sourcesSinksNotTheSame(sources, sinks);
+		Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
 		/* Compute maximum flow */
 		maxFlowAlg.computeMaximumFlow(gOrig, net, sources, sinks);

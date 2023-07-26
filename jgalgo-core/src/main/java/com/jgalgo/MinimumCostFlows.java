@@ -175,7 +175,7 @@ class MinimumCostFlows {
 		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig,
 				WeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
 			Assertions.Graphs.onlyDirected(gOrig);
-			checkLowerBound(gOrig, netOrig, lowerBound);
+			Assertions.Flows.checkLowerBound(gOrig, netOrig, lowerBound);
 
 			/*
 			 * To solve the problem of minimum-cost maximum-flow between a set of sources and sinks, with a flow lower
@@ -314,7 +314,7 @@ class MinimumCostFlows {
 		@Override
 		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, WeightFunction demand) {
 			Assertions.Graphs.onlyDirected(gOrig);
-			checkDemand(gOrig, demand);
+			Assertions.Flows.checkDemand(gOrig, demand);
 
 			/*
 			 * To solve the minimum cost flow of given demand we use a reduction to minimum-cost maximum-flow between
@@ -396,8 +396,8 @@ class MinimumCostFlows {
 		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, WeightFunction cost, WeightFunction lowerBound,
 				WeightFunction demand) {
 			Assertions.Graphs.onlyDirected(g);
-			checkLowerBound(g, netOrig, lowerBound);
-			checkDemand(g, demand);
+			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);
+			Assertions.Flows.checkDemand(g, demand);
 
 			/*
 			 * To solve the minimum cost flow for a given demand and edges lower bounds, we perform a reduction to the
@@ -452,26 +452,6 @@ class MinimumCostFlows {
 				}
 			}
 			return demand2;
-		}
-
-		static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				double l = lowerBound.weight(e);
-				if (!(0 <= l && l <= net.getCapacity(e)))
-					throw new IllegalArgumentException("Lower bound must be in [0, capacity] for edge " + e);
-			}
-		}
-
-		static void checkDemand(IndexGraph g, WeightFunction demand) {
-			double sum = 0;
-			for (int n = g.vertices().size(), v = 0; v < n; v++) {
-				double d = demand.weight(v);
-				if (!Double.isFinite(d))
-					throw new IllegalArgumentException("Demand must be non-negative for vertex " + v);
-				sum += d;
-			}
-			if (sum != 0)
-				throw new IllegalArgumentException("Sum of demand must be zero");
 		}
 
 	}

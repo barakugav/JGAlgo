@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import com.jgalgo.FlowNetwork;
 import com.jgalgo.GraphsUtils;
 import com.jgalgo.JGAlgoConfig;
 import com.jgalgo.graph.Graph;
@@ -97,6 +98,32 @@ public class Assertions {
 				throw new IllegalArgumentException("only positive weights are supported: " + w);
 		}
 
+		public static void checkId(int id, int length) {
+			if (!AssertIdChecks)
+				return;
+			if (id < 0 || id >= length)
+				throw new IndexOutOfBoundsException(
+						"No such vertex/edge: " + id + " valid range [" + 0 + ", " + length + ")");
+		}
+
+		public static void checkVertex(int vertex, int n) {
+			if (!AssertIdChecks)
+				return;
+			if (vertex < 0 || vertex >= n)
+				throw new IndexOutOfBoundsException("No such vertex: " + vertex);
+		}
+
+		public static void checkEdge(int edge, int m) {
+			if (!AssertIdChecks)
+				return;
+			if (edge < 0 || edge >= m)
+				throw new IndexOutOfBoundsException("No such edge: " + edge);
+		}
+
+	}
+
+	public static class Flows {
+
 		public static void sourceSinkNotTheSame(int source, int sink) {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex (" + source + ")");
@@ -128,28 +155,25 @@ public class Assertions {
 			}
 		}
 
-		public static void checkId(int id, int length) {
-			if (!AssertIdChecks)
-				return;
-			if (id < 0 || id >= length)
-				throw new IndexOutOfBoundsException(
-						"No such vertex/edge: " + id + " valid range [" + 0 + ", " + length + ")");
+		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				double l = lowerBound.weight(e);
+				if (!(0 <= l && l <= net.getCapacity(e)))
+					throw new IllegalArgumentException("Lower bound must be in [0, capacity] for edge " + e);
+			}
 		}
 
-		public static void checkVertex(int vertex, int n) {
-			if (!AssertIdChecks)
-				return;
-			if (vertex < 0 || vertex >= n)
-				throw new IndexOutOfBoundsException("No such vertex: " + vertex);
+		public static void checkDemand(IndexGraph g, WeightFunction demand) {
+			double sum = 0;
+			for (int n = g.vertices().size(), v = 0; v < n; v++) {
+				double d = demand.weight(v);
+				if (!Double.isFinite(d))
+					throw new IllegalArgumentException("Demand must be non-negative for vertex " + v);
+				sum += d;
+			}
+			if (sum != 0)
+				throw new IllegalArgumentException("Sum of demand must be zero");
 		}
-
-		public static void checkEdge(int edge, int m) {
-			if (!AssertIdChecks)
-				return;
-			if (edge < 0 || edge >= m)
-				throw new IndexOutOfBoundsException("No such edge: " + edge);
-		}
-
 	}
 
 	public static class Arrays {
