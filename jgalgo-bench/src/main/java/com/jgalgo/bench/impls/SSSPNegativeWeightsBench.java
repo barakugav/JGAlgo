@@ -37,45 +37,16 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
-@Fork(value = 1, warmups = 0)
-@State(Scope.Benchmark)
 public class SSSPNegativeWeightsBench {
-
-	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
-	public String args;
 
 	List<GraphArgs> graphs;
 	final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
-
-	@Setup(Level.Iteration)
-	public void setup() {
-		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		int n = Integer.parseInt(argsMap.get("|V|"));
-		int m = Integer.parseInt(argsMap.get("|E|"));
-
-		final SeedGenerator seedGen = new SeedGenerator(0x9814dcfe5851ab08L);
-		Random rand = new Random(seedGen.nextSeed());
-		graphs = new ObjectArrayList<>(graphsNum);
-		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-			graphs.add(new GraphArgs(g, w, source));
-		}
-	}
 
 	void benchSSSP(ShortestPathSingleSource.Builder builder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
@@ -92,8 +63,8 @@ public class SSSPNegativeWeightsBench {
 	@State(Scope.Benchmark)
 	public static class Gnp extends SSSPNegativeWeightsBench {
 
-		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=4096 MaxWeight=200",
-				"|V|=4096 MaxWeight=6000" })
+		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=1024 MaxWeight=200",
+				"|V|=1024 MaxWeight=6000" })
 		public String args;
 
 		@Setup(Level.Trial)

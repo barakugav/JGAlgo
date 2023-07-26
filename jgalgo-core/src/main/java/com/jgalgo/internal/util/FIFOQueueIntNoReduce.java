@@ -22,6 +22,8 @@ import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -30,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
+public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable, IntIterable {
 
 	private static final long serialVersionUID = 0L;
 	/** The standard initial capacity of a queue. */
@@ -211,5 +213,28 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable {
 		array = new int[length = HashCommon.nextPowerOfTwo(end + 1)];
 		for (int i = 0; i < end; i++)
 			array[i] = s.readInt();
+	}
+
+	@Override
+	public IntIterator iterator() {
+		return new IntIterator() {
+
+			int idx = start;
+
+			@Override
+			public boolean hasNext() {
+				return idx != end;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.Iters.hasNext(this);
+				int ret = array[idx];
+				if (++idx == length)
+					idx = 0;
+				return ret;
+			}
+
+		};
 	}
 }
