@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
+class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -62,7 +62,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 		}
 	}
 
-	private abstract class Worker extends MaximumFlowAbstract.Worker {
+	private abstract class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);

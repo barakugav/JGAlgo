@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowDinic
  * @author Barak Ugav
  */
-class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
+class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph {
 
 	private final DebugPrinter debug = new DebugPrinter(false);
 	private static final double EPS = 0.0001;
@@ -62,7 +62,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 		return new Worker(g, net, sources, sinks).computeMaximumFlow();
 	}
 
-	private class Worker extends MaximumFlowAbstract.Worker {
+	private class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
 
 		final double[] capacity;
 		final double[] flow;

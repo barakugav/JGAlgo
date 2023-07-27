@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowPushRelabelFifo
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
+class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidualGraph {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -72,7 +72,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
-	private static abstract class AbstractWorker extends MaximumFlowAbstract.Worker {
+	private static abstract class AbstractWorker extends MaximumFlowAbstract.WithResidualGraph.Worker {
 
 		final DynamicTree dt;
 		final DynamicTreeExtension.TreeSize dtTreeSize;

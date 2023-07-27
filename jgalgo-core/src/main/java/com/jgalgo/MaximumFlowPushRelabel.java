@@ -26,7 +26,6 @@ import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -63,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlowAbstract {
+class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	private static enum ActiveOrderPolicy {
 		FIFO, HighestFirst, LowestFirst, MoveToFront;
@@ -117,16 +116,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, sources, sinks, activeOrderPolicy, dischargePolicy)
-					.computeMaxFlow();
-		} else {
-			return new WorkerDouble(g, net, sources, sinks, activeOrderPolicy, dischargePolicy).computeMaxFlow();
-		}
-	}
-
-	@Override
 	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 		FlowNetwork net = flowNetFromEdgeWeights(w);
 		if (w instanceof WeightFunction.Int) {
@@ -134,17 +123,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 					.computeMinimumCut();
 		} else {
 			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();
-		}
-	}
-
-	@Override
-	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
-		FlowNetwork net = flowNetFromEdgeWeights(w);
-		if (w instanceof WeightFunction.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, sources, sinks, activeOrderPolicy, dischargePolicy)
-					.computeMinimumCut();
-		} else {
-			return new WorkerDouble(g, net, sources, sinks, activeOrderPolicy, dischargePolicy).computeMinimumCut();
 		}
 	}
 
@@ -203,10 +181,11 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		}
 	}
 
-	static abstract class Worker extends MaximumFlowAbstract.Worker {
+	static abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
 		final int[] label;
-		final EdgeIter[] edgeIters;
+		final EdgeIter[] outEdgeIters;
+		final EdgeIter[] inEdgeIters;
 
 		private final BitSet relabelVisited;
 		private final IntPriorityQueue relabelQueue;
@@ -230,26 +209,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 			super(gOrig, net, source, sink);
 
 			label = new int[n];
-			edgeIters = new EdgeIter[n];
-
-			relabelVisited = new BitSet(n);
-			relabelQueue = new FIFOQueueIntNoReduce();
-			labelsReComputeThreshold = n;
-
-			layers = new LinkedListFixedSize.Doubly(n);
-			layersHeadActive = new int[n];
-			layersHeadInactive = new int[n];
-
-			this.activeOrderPolicy = ActiveOrderPolicyImpl.newInstance(this, activeOrderPolicy);
-			this.dischargePolicy = DischargePolicyImpl.newInstance(this, dischargePolicy);
-		}
-
-		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks,
-				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
-			super(gOrig, net, sources, sinks);
-
-			label = new int[n];
-			edgeIters = new EdgeIter[n];
+			outEdgeIters = new EdgeIter[n];
+			inEdgeIters = directed ? new EdgeIter[n] : null;
 
 			relabelVisited = new BitSet(n);
 			relabelQueue = new FIFOQueueIntNoReduce();
@@ -313,20 +274,63 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 			assert label[source] == n;
 			visited.set(source);
 
-			while (!queue.isEmpty()) {
-				int v = queue.dequeueInt();
-				int vLabel = label[v];
-				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					if (!isResidual(e))
-						continue;
-					int u = eit.source();
-					if (visited.get(u))
-						continue;
-					label[u] = vLabel + 1;
-					onVertexLabelReCompute(u, label[u]);
-					visited.set(u);
-					queue.enqueue(u);
+			if (directed) {
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					int vLabel = label[v];
+					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!isResidual(e))
+							continue;
+						int u = eit.source();
+						if (visited.get(u))
+							continue;
+						label[u] = vLabel + 1;
+						outEdgeIters[u] = g.outEdges(u).iterator();
+						inEdgeIters[u] = g.inEdges(u).iterator();
+						onVertexLabelReCompute(u, label[u]);
+						visited.set(u);
+						queue.enqueue(u);
+					}
+					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!hasFlow(e))
+							continue;
+						int u = eit.target();
+						if (visited.get(u))
+							continue;
+						label[u] = vLabel + 1;
+						outEdgeIters[u] = g.outEdges(u).iterator();
+						inEdgeIters[u] = g.inEdges(u).iterator();
+						onVertexLabelReCompute(u, label[u]);
+						visited.set(u);
+						queue.enqueue(u);
+					}
+				}
+			} else {
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					int vLabel = label[v];
+					for (int e : g.outEdges(v)) {
+						int u;
+						if (v == g.edgeSource(e)) {
+							if (!isTwinResidualUndirected(e))
+								continue;
+							u = g.edgeTarget(e);
+						} else {
+							assert v == g.edgeTarget(e);
+							if (!isResidual(e))
+								continue;
+							u = g.edgeSource(e);
+						}
+						if (visited.get(u))
+							continue;
+						label[u] = vLabel + 1;
+						outEdgeIters[u] = g.outEdges(u).iterator();
+						onVertexLabelReCompute(u, label[u]);
+						visited.set(u);
+						queue.enqueue(u);
+					}
 				}
 			}
 			visited.clear();
@@ -346,8 +350,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		}
 
 		void onVertexLabelReCompute(int u, int newLabel) {
-			// reset edge iterator
-			edgeIters[u] = g.outEdges(u).iterator();
 			if (hasExcess(u))
 				addToLayerActive(u, newLabel);
 			else
@@ -460,7 +462,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 		private static abstract class DischargePolicyImpl {
 
-			abstract void discharge(int u);
+			abstract void dischargeDirected(int u);
+
+			abstract void dischargeUndirected(int u);
 
 			static DischargePolicyImpl newInstance(MaximumFlowPushRelabel.Worker worker, DischargePolicy policy) {
 				assert worker instanceof MaximumFlowPushRelabel.WorkerInt
@@ -503,24 +507,99 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				@Override
-				void discharge(int u) {
-					for (EdgeIter it = worker.edgeIters[u];;) {
-						int e = it.peekNext();
-						int v = worker.g.edgeTarget(e);
-						int eAccess = worker().getResidualCapacity(e);
-						if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
-							if (v != worker.sink && !worker.hasExcess(v))
-								worker.activate(v);
+				void dischargeDirected(int u) {
+					for (;;) {
+						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNext();
+							int v = worker.g.edgeTarget(e);
+							int eAccess = worker().getResidualCapacity(e);
+							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
 
-							// e is admissible, push
-							if (worker().excess[u] > eAccess) {
-								// saturating push
-								worker().push(e, eAccess);
-							} else {
-								// non-saturating push
-								worker().push(e, worker().excess[u]);
-								assert !worker.hasExcess(u);
-								return;
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, eAccess);
+								} else {
+									// non-saturating push
+									worker().push(e, worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
+							}
+						}
+						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNext();
+							int v = worker.g.edgeSource(e);
+							int eAccess = worker().flow(e);
+							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, -eAccess);
+								} else {
+									// non-saturating push
+									worker().push(e, -worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
+							}
+						}
+						// Finished iterating over all vertex edges.
+						// relabel and Reset iterator
+						worker.relabel(u, worker.label[u] + 1);
+						if (worker.label[u] >= worker.n)
+							break;
+						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
+						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();
+					}
+				}
+
+				@Override
+				void dischargeUndirected(int u) {
+					for (EdgeIter it = worker.outEdgeIters[u];;) {
+						int e = it.peekNext();
+						if (u == worker.g.edgeSource(e)) {
+							int v = worker.g.edgeTarget(e);
+							int eAccess = worker().getResidualCapacity(e);
+							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, eAccess);
+								} else {
+									// non-saturating push
+									worker().push(e, worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
+							}
+						} else {
+							assert u == worker.g.edgeTarget(e);
+							int v = worker.g.edgeSource(e);
+							int eAccess = worker().getTwinResidualCapacity(e);
+							assert eAccess >= 0;
+							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, -eAccess);
+								} else {
+									// non-saturating push
+									worker().push(e, -worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
 							}
 						}
 						it.nextInt();
@@ -530,7 +609,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 							worker.relabel(u, worker.label[u] + 1);
 							if (worker.label[u] >= worker.n)
 								break;
-							it = worker.edgeIters[u] = worker.g.outEdges(u).iterator();
+							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
 							assert it.hasNext();
 						}
 					}
@@ -549,27 +628,109 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				@Override
-				void discharge(int u) {
-					for (EdgeIter it = worker.edgeIters[u];;) {
-						int e = it.peekNext();
-						int v = worker.g.edgeTarget(e);
-						double eAccess = worker().getResidualCapacity(e);
-						if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
-							if (v != worker.sink && !worker.hasExcess(v))
-								worker.activate(v);
+				void dischargeDirected(int u) {
+					for (;;) {
+						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNext();
+							int v = worker.g.edgeTarget(e);
+							double eAccess = worker().getResidualCapacity(e);
+							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
 
-							// e is admissible, push
-							if (worker().excess[u] > eAccess) {
-								// saturating push
-								worker().push(e, eAccess);
-								// Due to floating points, need to check again we have something to push
-								if (!worker.hasExcess(u))
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, eAccess);
+									// Due to floating points, need to check again we have something to push
+									if (!worker.hasExcess(u))
+										return;
+								} else {
+									// non-saturating push
+									worker().push(e, worker().excess[u]);
+									assert !worker.hasExcess(u);
 									return;
-							} else {
-								// non-saturating push
-								worker().push(e, worker().excess[u]);
-								assert !worker.hasExcess(u);
-								return;
+								}
+							}
+						}
+						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNext();
+							int v = worker.g.edgeSource(e);
+							double eAccess = worker().flow(e);
+							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, -eAccess);
+									// Due to floating points, need to check again we have something to push
+									if (!worker.hasExcess(u))
+										return;
+								} else {
+									// non-saturating push
+									worker().push(e, -worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
+							}
+						}
+						// Finished iterating over all vertex edges.
+						// relabel and Reset iterator
+						worker.relabel(u, worker.label[u] + 1);
+						if (worker.label[u] >= worker.n)
+							break;
+						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
+						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();
+					}
+				}
+
+				@Override
+				void dischargeUndirected(int u) {
+					for (EdgeIter it = worker.outEdgeIters[u];;) {
+						int e = it.peekNext();
+						if (u == worker.g.edgeSource(e)) {
+							int v = worker.g.edgeTarget(e);
+							double eAccess = worker().getResidualCapacity(e);
+							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, eAccess);
+									// Due to floating points, need to check again we have something to push
+									if (!worker.hasExcess(u))
+										return;
+								} else {
+									// non-saturating push
+									worker().push(e, worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
+							}
+						} else {
+							int v = worker.g.edgeSource(e);
+							double eAccess = worker().capacity[e] + worker().flow(e);
+							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+								if (v != worker.sink && !worker.hasExcess(v))
+									worker.activate(v);
+
+								// e is admissible, push
+								if (worker().excess[u] > eAccess) {
+									// saturating push
+									worker().push(e, -eAccess);
+									// Due to floating points, need to check again we have something to push
+									if (!worker.hasExcess(u))
+										return;
+								} else {
+									// non-saturating push
+									worker().push(e, -worker().excess[u]);
+									assert !worker.hasExcess(u);
+									return;
+								}
 							}
 						}
 						it.nextInt();
@@ -579,7 +740,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 							worker.relabel(u, worker.label[u] + 1);
 							if (worker.label[u] >= worker.n)
 								break;
-							it = worker.edgeIters[u] = worker.g.outEdges(u).iterator();
+							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
 							assert it.hasNext();
 						}
 					}
@@ -596,13 +757,14 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				@Override
-				void discharge(int searchSource) {
+				void dischargeDirected(int searchSource) {
 					assert worker.hasExcess(searchSource);
 					assert path.isEmpty();
 
 					dfs: for (int u = searchSource;;) {
 						int uLabel = worker.label[u];
-						for (EdgeIter it = worker.edgeIters[u];;) {
+
+						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
 							int e = it.peekNext();
 							int v = worker.g.edgeTarget(e);
 							boolean isAdmissible = worker.isResidual(e) && uLabel == worker.label[v] + 1;
@@ -614,7 +776,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 									/* push along the admissible path */
 									assert !path.isEmpty();
-									int firstNonResidual = pushOnPath(searchSource);
+									int firstNonResidual = pushOnPathDirected(searchSource);
 
 									/* If the 'source' does not have any excess, we are done */
 									if (!worker.hasExcess(searchSource)) {
@@ -624,9 +786,149 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 									/* back up in the DFS tree until all edges in the path are admissible */
 									path.removeElements(firstNonResidual, path.size());
-									assert path.intStream().allMatch(worker::isResidual);
-									u = path.isEmpty() ? searchSource
-											: worker.g.edgeTarget(path.getInt(path.size() - 1));
+									// assert path.intStream().allMatch(worker::isResidual);
+									if (path.isEmpty()) {
+										u = searchSource;
+									} else {
+										int lastEdge = path.getInt(path.size() - 1);
+										int u1 = worker.g.edgeSource(lastEdge);
+										int u2 = worker.g.edgeTarget(lastEdge);
+										u = worker.label[u1] < worker.label[u2] ? u1 : u2;
+									}
+								} else {
+									/* advance in the DFS */
+									u = v;
+								}
+								continue dfs;
+							}
+						}
+						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNext();
+							int v = worker.g.edgeSource(e);
+							boolean isAdmissible = worker.hasFlow(e) && uLabel == worker.label[v] + 1;
+							if (isAdmissible) {
+								path.add(e);
+								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {
+									if (v != worker.sink && !worker.hasExcess(v))
+										worker.activate(v);
+
+									/* push along the admissible path */
+									assert !path.isEmpty();
+									int firstNonResidual = pushOnPathDirected(searchSource);
+
+									/* If the 'source' does not have any excess, we are done */
+									if (!worker.hasExcess(searchSource)) {
+										path.clear();
+										return;
+									}
+
+									/* back up in the DFS tree until all edges in the path are admissible */
+									path.removeElements(firstNonResidual, path.size());
+									// assert path.intStream().allMatch(worker::isResidual);
+									if (path.isEmpty()) {
+										u = searchSource;
+									} else {
+										int lastEdge = path.getInt(path.size() - 1);
+										int u1 = worker.g.edgeSource(lastEdge);
+										int u2 = worker.g.edgeTarget(lastEdge);
+										u = worker.label[u1] < worker.label[u2] ? u1 : u2;
+									}
+								} else {
+									/* advance in the DFS */
+									u = v;
+								}
+								continue dfs;
+							}
+						}
+
+						// Finished iterating over all vertex edges.
+						// relabel and Reset iterator
+						boolean isSearchSource = u == searchSource, hasExcess = true;
+						if (!isSearchSource) {
+							hasExcess = worker.hasExcess(u);
+							if (hasExcess) {
+								worker.removeFromLayerActive(u, uLabel);
+							} else {
+								worker.removeFromLayerInactive(u, uLabel);
+							}
+						}
+
+						worker.relabel(u, uLabel + 1);
+						if ((uLabel = worker.label[u]) >= worker.n) {
+							/*
+							 * empty layer gap heuristic was activated, all vertices on the path have greater or equal
+							 * label as u, all are unreachable from sink
+							 */
+							path.clear();
+							return;
+						}
+
+						if (!isSearchSource) {
+							if (hasExcess) {
+								worker.addToLayerActive(u, uLabel);
+							} else {
+								worker.addToLayerInactive(u, uLabel);
+							}
+						}
+
+						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
+						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();
+						assert worker.outEdgeIters[u].hasNext();
+						assert worker.inEdgeIters[u].hasNext();
+						if (!isSearchSource) {
+							assert !path.isEmpty();
+							int lastEdge = path.popInt();
+							u = worker.g.edgeEndpoint(lastEdge, u);
+						}
+					}
+				}
+
+				@Override
+				void dischargeUndirected(int searchSource) {
+					assert worker.hasExcess(searchSource);
+					assert path.isEmpty();
+
+					dfs: for (int u = searchSource;;) {
+						int uLabel = worker.label[u];
+						for (EdgeIter it = worker.outEdgeIters[u];;) {
+							int e = it.peekNext();
+							int v;
+							boolean isAdmissible;
+							if (u == worker.g.edgeSource(e)) {
+								v = worker.g.edgeTarget(e);
+								isAdmissible = worker.isResidual(e) && uLabel == worker.label[v] + 1;
+							} else {
+								assert u == worker.g.edgeTarget(e);
+								v = worker.g.edgeSource(e);
+								isAdmissible = worker.isTwinResidualUndirected(e) && uLabel == worker.label[v] + 1;
+							}
+							if (isAdmissible) {
+								path.add(e);
+								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {
+									if (v != worker.sink && !worker.hasExcess(v))
+										worker.activate(v);
+
+									/* push along the admissible path */
+									assert !path.isEmpty();
+									int firstNonResidual = pushOnPathUndirected(searchSource);
+
+									/* If the 'source' does not have any excess, we are done */
+									if (!worker.hasExcess(searchSource)) {
+										path.clear();
+										return;
+									}
+
+									/* back up in the DFS tree until all edges in the path are admissible */
+									path.removeElements(firstNonResidual, path.size());
+									// assert path.intStream().allMatch(worker::isResidual);
+									if (path.isEmpty()) {
+										u = searchSource;
+									} else {
+										int lastEdge = path.getInt(path.size() - 1);
+										int u1 = worker.g.edgeSource(lastEdge);
+										int u2 = worker.g.edgeTarget(lastEdge);
+										u = worker.label[u1] < worker.label[u2] ? u1 : u2;
+									}
 								} else {
 									/* advance in the DFS */
 									u = v;
@@ -666,13 +968,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 									}
 								}
 
-								it = worker.edgeIters[u] = worker.g.outEdges(u).iterator();
+								it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();
 								assert it.hasNext();
 								if (!isSearchSource) {
 									assert !path.isEmpty();
 									int lastEdge = path.popInt();
-									assert u == worker.g.edgeTarget(lastEdge);
-									u = worker.g.edgeSource(lastEdge);
+									u = worker.g.edgeEndpoint(lastEdge, u);
 								}
 								continue dfs;
 							}
@@ -681,7 +982,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				/* return the first index of non-residual edge after the push */
-				abstract int pushOnPath(int pathSource);
+				abstract int pushOnPathDirected(int pathSource);
+
+				/* return the first index of non-residual edge after the push */
+				abstract int pushOnPathUndirected(int pathSource);
 			}
 
 			private static class PartialAugmentDouble extends PartialAugmentBase {
@@ -695,7 +999,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				@Override
-				int pushOnPath(int pathSource) {
+				int pushOnPathDirected(int pathSource) {
 					assert !path.isEmpty();
 					int u, v = pathSource;
 					final byte Inactive = 0;
@@ -706,16 +1010,31 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 					for (int i = 0; i < path.size(); i++) {
 						int e = path.getInt(i);
 						u = v;
-						v = worker.g.edgeTarget(e);
-						double f = Math.min(worker().excess[u], worker().residualCapacity[e]);
-						assert f >= 0;
-						boolean vWasActive = worker.hasExcess(v);
+						double f;
+						boolean vWasActive;
+						if (u == worker.g.edgeSource(e)) {
+							v = worker.g.edgeTarget(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().residualCapacity[e]);
+							assert f >= 0;
+							worker().residualCapacity[e] -= f;
+							assert worker().residualCapacity[e] >= 0;
 
-						int t = worker.twin[e];
-						worker().residualCapacity[e] -= f;
-						worker().residualCapacity[t] += f;
-						assert worker().residualCapacity[e] >= -WorkerDouble.EPS;
-						assert worker().residualCapacity[t] >= -WorkerDouble.EPS;
+							if (firstNonResidual == -1 && !worker.isResidual(e))
+								firstNonResidual = i;
+						} else {
+							assert u == worker.g.edgeTarget(e);
+							v = worker.g.edgeSource(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().flow(e));
+							assert f >= 0;
+							worker().residualCapacity[e] += f;
+							assert worker().residualCapacity[e] <= worker().capacity[e];
+
+							if (firstNonResidual == -1 && !worker.hasFlow(e))
+								firstNonResidual = i;
+						}
+
 						worker().excess[u] -= f;
 						worker().excess[v] += f;
 						assert worker().excess[u] >= 0;
@@ -729,9 +1048,60 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 								worker.activate(u);
 						}
 						uMark = vWasActive ? Active : Inactive;
+					}
+					return firstNonResidual;
+				}
 
-						if (firstNonResidual == -1 && !worker.isResidual(e))
-							firstNonResidual = i;
+				@Override
+				int pushOnPathUndirected(int pathSource) {
+					assert !path.isEmpty();
+					int u, v = pathSource;
+					final byte Inactive = 0;
+					final byte Active = 1;
+					final byte SOURCE = 2;
+					byte uMark = SOURCE;
+					int firstNonResidual = -1;
+					for (int i = 0; i < path.size(); i++) {
+						int e = path.getInt(i);
+						u = v;
+						double f;
+						boolean vWasActive;
+						if (u == worker.g.edgeSource(e)) {
+							v = worker.g.edgeTarget(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().residualCapacity[e]);
+							assert f >= 0;
+							worker().residualCapacity[e] -= f;
+							assert worker().residualCapacity[e] >= 0;
+
+							if (firstNonResidual == -1 && !worker.isResidual(e))
+								firstNonResidual = i;
+						} else {
+							assert u == worker.g.edgeTarget(e);
+							v = worker.g.edgeSource(e);
+							vWasActive = worker.hasExcess(v);
+							double twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];
+							f = Math.min(worker().excess[u], twinResidualCapacity);
+							assert f >= 0;
+							worker().residualCapacity[e] += f;
+
+							if (firstNonResidual == -1 && !worker.isTwinResidualUndirected(e))
+								firstNonResidual = i;
+						}
+
+						worker().excess[u] -= f;
+						worker().excess[v] += f;
+						assert worker().excess[u] >= 0;
+						assert worker().excess[v] >= 0;
+
+						if (uMark == Active) {
+							if (!worker.hasExcess(u))
+								worker.deactivate(u);
+						} else if (uMark == Inactive) {
+							if (worker.hasExcess(u))
+								worker.activate(u);
+						}
+						uMark = vWasActive ? Active : Inactive;
 					}
 					return firstNonResidual;
 				}
@@ -748,7 +1118,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 				}
 
 				@Override
-				int pushOnPath(int pathSource) {
+				int pushOnPathDirected(int pathSource) {
 					assert !path.isEmpty();
 					int u, v = pathSource;
 					final byte Inactive = 0;
@@ -759,16 +1129,31 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 					for (int i = 0; i < path.size(); i++) {
 						int e = path.getInt(i);
 						u = v;
-						v = worker.g.edgeTarget(e);
-						int f = Math.min(worker().excess[u], worker().residualCapacity[e]);
-						assert f >= 0;
-						boolean vWasActive = worker.hasExcess(v);
+						int f;
+						boolean vWasActive;
+						if (u == worker.g.edgeSource(e)) {
+							v = worker.g.edgeTarget(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().residualCapacity[e]);
+							assert f >= 0;
+							worker().residualCapacity[e] -= f;
+							assert worker().residualCapacity[e] >= 0;
 
-						int t = worker.twin[e];
-						worker().residualCapacity[e] -= f;
-						worker().residualCapacity[t] += f;
-						assert worker().residualCapacity[e] >= 0;
-						assert worker().residualCapacity[t] >= 0;
+							if (firstNonResidual == -1 && !worker.isResidual(e))
+								firstNonResidual = i;
+						} else {
+							assert u == worker.g.edgeTarget(e);
+							v = worker.g.edgeSource(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().flow(e));
+							assert f >= 0;
+							worker().residualCapacity[e] += f;
+							assert worker().residualCapacity[e] <= worker().capacity[e];
+
+							if (firstNonResidual == -1 && !worker.hasFlow(e))
+								firstNonResidual = i;
+						}
+
 						worker().excess[u] -= f;
 						worker().excess[v] += f;
 						assert worker().excess[u] >= 0;
@@ -782,9 +1167,60 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 								worker.activate(u);
 						}
 						uMark = vWasActive ? Active : Inactive;
+					}
+					return firstNonResidual;
+				}
 
-						if (firstNonResidual == -1 && !worker.isResidual(e))
-							firstNonResidual = i;
+				@Override
+				int pushOnPathUndirected(int pathSource) {
+					assert !path.isEmpty();
+					int u, v = pathSource;
+					final byte Inactive = 0;
+					final byte Active = 1;
+					final byte SOURCE = 2;
+					byte uMark = SOURCE;
+					int firstNonResidual = -1;
+					for (int i = 0; i < path.size(); i++) {
+						int e = path.getInt(i);
+						u = v;
+						int f;
+						boolean vWasActive;
+						if (u == worker.g.edgeSource(e)) {
+							v = worker.g.edgeTarget(e);
+							vWasActive = worker.hasExcess(v);
+							f = Math.min(worker().excess[u], worker().residualCapacity[e]);
+							assert f >= 0;
+							worker().residualCapacity[e] -= f;
+							assert worker().residualCapacity[e] >= 0;
+
+							if (firstNonResidual == -1 && !worker.isResidual(e))
+								firstNonResidual = i;
+						} else {
+							assert u == worker.g.edgeTarget(e);
+							v = worker.g.edgeSource(e);
+							vWasActive = worker.hasExcess(v);
+							int twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];
+							f = Math.min(worker().excess[u], twinResidualCapacity);
+							assert f >= 0;
+							worker().residualCapacity[e] += f;
+
+							if (firstNonResidual == -1 && !worker.isTwinResidualUndirected(e))
+								firstNonResidual = i;
+						}
+
+						worker().excess[u] -= f;
+						worker().excess[v] += f;
+						assert worker().excess[u] >= 0;
+						assert worker().excess[v] >= 0;
+
+						if (uMark == Active) {
+							if (!worker.hasExcess(u))
+								worker.deactivate(u);
+						} else if (uMark == Inactive) {
+							if (worker.hasExcess(u))
+								worker.activate(u);
+						}
+						uMark = vWasActive ? Active : Inactive;
 					}
 					return firstNonResidual;
 				}
@@ -796,18 +1232,36 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		private void calcMaxPreflow() {
 			recomputeLabels();
 			pushAsMuchFromSource();
-			while (activeOrderPolicy.hasMoreVerticesToDischarge()) {
-				int u = activeOrderPolicy.nextVertexToDischarge();
-				if (label[u] >= n)
-					continue;
-				assert hasExcess(u);
-				removeFromLayerActive(u, label[u]);
-				dischargePolicy.discharge(u);
-				if (label[u] < n)
-					addToLayerInactive(u, label[u]);
+			if (directed) {
+				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {
+					int u = activeOrderPolicy.nextVertexToDischarge();
+					if (label[u] >= n)
+						continue;
+					assert hasExcess(u);
 
-				if (relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
-					recomputeLabels();
+					removeFromLayerActive(u, label[u]);
+					dischargePolicy.dischargeDirected(u);
+					if (label[u] < n)
+						addToLayerInactive(u, label[u]);
+
+					if (relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
+						recomputeLabels();
+				}
+			} else {
+				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {
+					int u = activeOrderPolicy.nextVertexToDischarge();
+					if (label[u] >= n)
+						continue;
+					assert hasExcess(u);
+
+					removeFromLayerActive(u, label[u]);
+					dischargePolicy.dischargeUndirected(u);
+					if (label[u] < n)
+						addToLayerInactive(u, label[u]);
+
+					if (relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
+						recomputeLabels();
+				}
 			}
 		}
 
@@ -866,6 +1320,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 					return activeQueue.dequeueInt();
 				}
 
+				@Override
 				void afterActivate(int v) {
 					activeQueue.enqueue(v);
 				}
@@ -1005,80 +1460,167 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 			int[] topoNext = layersHeadActive; // reuse array
 			int topoEnd = -1, topoBegin = -1;
 
-			// reuse edgeIters array
-			for (int u = 0; u < n; u++)
-				edgeIters[u] = g.outEdges(u).iterator();
+			if (directed) {
+				// reuse inEdgeIters array
+				for (int u = 0; u < n; u++)
+					inEdgeIters[u] = g.inEdges(u).iterator();
 
-			for (int root = 0; root < n; root++) {
-				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
-					continue;
-				vState[root] = OnPath;
-				dfs: for (int u = root;;) {
-					edgeIteration: for (; edgeIters[u].hasNext(); edgeIters[u].nextInt()) {
-						int e = edgeIters[u].peekNext();
-						if (!hasNegativeFlow(e))
-							continue;
-						int v = g.edgeTarget(e);
-						if (vState[v] == Unvisited) {
-							vState[v] = OnPath;
-							parent[v] = u;
-							u = v;
-							continue dfs;
+				for (int root = 0; root < n; root++) {
+					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
+						continue;
+					vState[root] = OnPath;
+					dfs: for (int u = root;;) {
+						edgeIteration: for (; inEdgeIters[u].hasNext(); inEdgeIters[u].nextInt()) {
+							int e = inEdgeIters[u].peekNext();
+							if (!hasFlow(e))
+								continue;
+							int v = g.edgeSource(e);
+							if (vState[v] == Unvisited) {
+								vState[v] = OnPath;
+								parent[v] = u;
+								u = v;
+								continue dfs;
+							}
+							if (vState[v] == OnPath) {
+								// cycle found, find the minimum flow on it
+								// remove delta from all edges of the cycle
+								eliminateCycleDirected(e);
+
+								// back out the DFS up to the first saturated edge
+								int backOutTo = u;
+								for (int vw, w; v != u; v = w) {
+									vw = inEdgeIters[v].peekNext();
+									w = g.edgeSource(vw);
+									if (vState[v] != Unvisited && hasFlow(vw))
+										continue;
+									vState[w] = Unvisited;
+									if (vState[v] != Unvisited)
+										backOutTo = v;
+								}
+								if (backOutTo != u) {
+									u = backOutTo;
+									inEdgeIters[u].nextInt();
+									break edgeIteration;
+								}
+							}
+						} /* edgeIteration */
+
+						if (!inEdgeIters[u].hasNext()) {
+							// scan of u is complete
+							vState[u] = Visited;
+							if (u != source) {
+								if (topoBegin == -1) {
+									assert topoEnd == -1;
+									topoBegin = topoEnd = u;
+								} else {
+									topoNext[u] = topoBegin;
+									topoBegin = u;
+								}
+							}
+							if (u == root)
+								break dfs;
+							u = parent[u];
+							inEdgeIters[u].nextInt();
 						}
-						if (vState[v] == OnPath) {
-							// cycle found, find the minimum flow on it
-							// remove delta from all edges of the cycle
-							eliminateCycle(e);
+					} /* DFS */
+				} /* DFS roots */
 
-							// back out the DFS up to the first saturated edge
-							int backOutTo = u;
-							for (int vw, w; v != u; v = w) {
-								vw = edgeIters[v].peekNext();
-								w = g.edgeTarget(vw);
-								if (vState[v] != Unvisited && hasNegativeFlow(vw))
+			} else {
+				// reuse outEdgeIters array
+				for (int u = 0; u < n; u++)
+					outEdgeIters[u] = g.outEdges(u).iterator();
+
+				for (int root = 0; root < n; root++) {
+					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
+						continue;
+					vState[root] = OnPath;
+					dfs: for (int u = root;;) {
+						edgeIteration: for (; outEdgeIters[u].hasNext(); outEdgeIters[u].nextInt()) {
+							int e = outEdgeIters[u].peekNext();
+							int v;
+							if (u == g.edgeSource(e)) {
+								if (!hasNegativeFlow(e))
 									continue;
-								vState[w] = Unvisited;
-								if (vState[v] != Unvisited)
-									backOutTo = v;
-							}
-							if (backOutTo != u) {
-								u = backOutTo;
-								edgeIters[u].nextInt();
-								break edgeIteration;
-							}
-						}
-					} /* edgeIteration */
-
-					if (!edgeIters[u].hasNext()) {
-						// scan of u is complete
-						vState[u] = Visited;
-						if (u != source) {
-							if (topoBegin == -1) {
-								assert topoEnd == -1;
-								topoBegin = topoEnd = u;
+								v = g.edgeTarget(e);
 							} else {
-								topoNext[u] = topoBegin;
-								topoBegin = u;
+								assert u == g.edgeTarget(e);
+								if (!hasFlow(e))
+									continue;
+								v = g.edgeSource(e);
 							}
+							if (vState[v] == Unvisited) {
+								vState[v] = OnPath;
+								parent[v] = u;
+								u = v;
+								continue dfs;
+							}
+							if (vState[v] == OnPath) {
+								// cycle found, find the minimum flow on it
+								// remove delta from all edges of the cycle
+								eliminateCycleUndirected(u, e);
+
+								// back out the DFS up to the first saturated edge
+								int backOutTo = u;
+								for (int vw, w; v != u; v = w) {
+									vw = outEdgeIters[v].peekNext();
+									if (v == g.edgeSource(vw)) {
+										w = g.edgeTarget(vw);
+										if (vState[v] != Unvisited && hasNegativeFlow(vw))
+											continue;
+									} else {
+										assert v == g.edgeTarget(vw);
+										w = g.edgeSource(vw);
+										if (vState[v] != Unvisited && hasFlow(vw))
+											continue;
+									}
+									vState[w] = Unvisited;
+									if (vState[v] != Unvisited)
+										backOutTo = v;
+								}
+								if (backOutTo != u) {
+									u = backOutTo;
+									outEdgeIters[u].nextInt();
+									break edgeIteration;
+								}
+							}
+						} /* edgeIteration */
+
+						if (!outEdgeIters[u].hasNext()) {
+							// scan of u is complete
+							vState[u] = Visited;
+							if (u != source) {
+								if (topoBegin == -1) {
+									assert topoEnd == -1;
+									topoBegin = topoEnd = u;
+								} else {
+									topoNext[u] = topoBegin;
+									topoBegin = u;
+								}
+							}
+							if (u == root)
+								break dfs;
+							u = parent[u];
+							outEdgeIters[u].nextInt();
 						}
-						if (u == root)
-							break dfs;
-						u = parent[u];
-						edgeIters[u].nextInt();
-					}
-				} /* DFS */
-			} /* DFS roots */
+					} /* DFS */
+				} /* DFS roots */
+			}
 
 			// All cycles were eliminated, and we calculated a topological order of the
 			// vertices. Iterate over them using this order and return all excess flow to
 			// source.
 			if (topoBegin != -1)
 				eliminateExcessWithTopologicalOrder(topoBegin, topoEnd, topoNext);
+			// for (int u = 0; u < n; u++)
+			// if (u != source && u != sink)
+			// assert !hasExcess(u);
 		}
 
 		/* eliminated a cycle found during the DFS of convertPreflowToFlow */
 		/* the cycle can be found by following e and edgeIters[u].peekNext() */
-		abstract void eliminateCycle(int e);
+		abstract void eliminateCycleDirected(int e);
+
+		abstract void eliminateCycleUndirected(int cycleSource, int e);
 
 		abstract void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext);
 
@@ -1103,33 +1645,70 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 			visited.set(sink);
 			queue.enqueue(sink);
-			while (!queue.isEmpty()) {
-				int v = queue.dequeueInt();
-				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					if (!isResidual(e))
-						continue;
-					int u = eit.source();
-					if (visited.get(u))
-						continue;
-					visited.set(u);
-					queue.enqueue(u);
+			if (directed) {
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!isResidual(e))
+							continue;
+						int u = eit.source();
+						if (visited.get(u))
+							continue;
+						visited.set(u);
+						queue.enqueue(u);
+					}
+					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!hasFlow(e))
+							continue;
+						int u = eit.target();
+						if (visited.get(u))
+							continue;
+						visited.set(u);
+						queue.enqueue(u);
+					}
+				}
+			} else {
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					for (int e : g.outEdges(v)) {
+						int u;
+						if (v == g.edgeSource(e)) {
+							if (!isTwinResidualUndirected(e))
+								continue;
+							u = g.edgeTarget(e);
+						} else {
+							assert v == g.edgeTarget(e);
+							if (!isResidual(e))
+								continue;
+							u = g.edgeSource(e);
+						}
+						if (visited.get(u))
+							continue;
+						visited.set(u);
+						queue.enqueue(u);
+					}
 				}
 			}
 			assert !visited.get(source);
 			BitSet cut = new BitSet(n);
-			for (int n = gOrig.vertices().size(), u = 0; u < n; u++)
+			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				if (!visited.get(u))
 					cut.set(u);
 			visited.clear();
-			return new CutImpl(gOrig, cut);
+			return new CutImpl(g, cut);
 		}
 
 		abstract boolean hasExcess(int u);
 
 		abstract boolean isResidual(int e);
 
+		abstract boolean isTwinResidualUndirected(int e);
+
 		abstract boolean isSaturated(int e);
+
+		abstract boolean hasFlow(int e);
 
 		abstract boolean hasNegativeFlow(int e);
 
@@ -1154,39 +1733,44 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 			excess = new double[n];
 		}
 
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks,
-				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
-			super(gOrig, net, sources, sinks, activeOrderPolicy, dischargePolicy);
-
-			capacity = new double[g.edges().size()];
-			initCapacities(capacity);
-			residualCapacity = capacity.clone();
-
-			excess = new double[n];
-		}
-
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				double f = getResidualCapacity(e);
-				if (f > 0 && label[source] > label[v]) {
-					if (v != sink && !hasExcess(v))
-						activate(v);
-					push(e, f);
+			if (directed) {
+				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+					int e = eit.nextInt(), v;
+					double f = getResidualCapacity(e);
+					if (f > 0 && label[source] > label[v = eit.target()]) {
+						if (v != sink && !hasExcess(v))
+							activate(v);
+						push(e, f);
+					}
+				}
+			} else {
+				for (int e : g.outEdges(source)) {
+					int v;
+					if (source == g.edgeSource(e)) {
+						double f = getResidualCapacity(e);
+						if (f > 0 && label[source] > label[v = g.edgeTarget(e)]) {
+							if (v != sink && !hasExcess(v))
+								activate(v);
+							push(e, f);
+						}
+					} else {
+						assert source == g.edgeTarget(e);
+						double f = getTwinResidualCapacity(e);
+						if (f > 0 && label[source] > label[v = g.edgeSource(e)]) {
+							if (v != sink && !hasExcess(v))
+								activate(v);
+							push(e, -f);
+						}
+					}
 				}
 			}
 		}
 
 		private void push(int e, double f) {
-			assert f > 0;
-
-			int t = twin[e];
 			residualCapacity[e] -= f;
-			residualCapacity[t] += f;
 			assert residualCapacity[e] >= -EPS;
-			assert residualCapacity[t] >= -EPS;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
@@ -1194,27 +1778,77 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		};
 
 		@Override
-		void eliminateCycle(int e) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
-			assert hasNegativeFlow(e);
-			double f = -flow(e);
+		void eliminateCycleDirected(int e) {
+			assert directed;
+			int u = g.edgeTarget(e);
+			int v = g.edgeSource(e);
+			assert hasFlow(e);
+			double f = flow(e);
 			for (;;) {
-				e = edgeIters[v].peekNext();
-				assert hasNegativeFlow(e);
-				f = Math.min(f, -flow(e));
+				e = inEdgeIters[v].peekNext();
+				assert hasFlow(e);
+				f = Math.min(f, flow(e));
 				if (v == u)
 					break;
-				v = g.edgeTarget(e);
+				v = g.edgeSource(e);
 			}
+			assert f > 0;
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = edgeIters[v].peekNext();
-				int t = twin[e];
-				residualCapacity[e] -= f;
-				residualCapacity[t] += f;
+				e = inEdgeIters[v].peekNext();
+				residualCapacity[e] += f;
+				v = g.edgeSource(e);
+				if (v == u)
+					break;
+			}
+		}
+
+		@Override
+		void eliminateCycleUndirected(int cycleSource, int e) {
+			int u = cycleSource;
+			int v;
+			double f;
+			if (u == g.edgeSource(e)) {
 				v = g.edgeTarget(e);
+				assert hasNegativeFlow(e);
+				f = -flow(e);
+			} else {
+				assert u == g.edgeTarget(e);
+				v = g.edgeSource(e);
+				assert hasFlow(e);
+				f = flow(e);
+			}
+			for (int w;;) {
+				e = outEdgeIters[v].peekNext();
+				double ef = flow(e);
+				if (v == g.edgeSource(e)) {
+					assert ef < 0;
+					ef = -ef;
+					w = g.edgeTarget(e);
+				} else {
+					assert v == g.edgeTarget(e);
+					assert ef > 0;
+					w = g.edgeSource(e);
+				}
+				f = Math.min(f, ef);
+				if (v == u)
+					break;
+				v = w;
+			}
+			assert f > 0;
+
+			// remove delta from all edges of the cycle
+			for (v = u;;) {
+				e = outEdgeIters[v].peekNext();
+				if (v == g.edgeSource(e)) {
+					residualCapacity[e] -= f;
+					v = g.edgeTarget(e);
+				} else {
+					assert v == g.edgeTarget(e);
+					residualCapacity[e] += f;
+					v = g.edgeSource(e);
+				}
 				if (v == u)
 					break;
 			}
@@ -1222,16 +1856,36 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
-			for (int u = topoBegin;; u = topoNext[u]) {
-				for (int e : g.outEdges(u)) {
-					if (!hasExcess(u))
+			if (directed) {
+				for (int u = topoBegin;; u = topoNext[u]) {
+					for (int e : g.inEdges(u)) {
+						if (!hasExcess(u))
+							break;
+						double f = flow(e);
+						if (f > 0)
+							push(e, -Math.min(excess[u], f));
+					}
+					if (u == topoEnd)
 						break;
-					double f = flow(e);
-					if (f < 0)
-						push(e, Math.min(excess[u], -f));
 				}
-				if (u == topoEnd)
-					break;
+			} else {
+				for (int u = topoBegin;; u = topoNext[u]) {
+					for (int e : g.outEdges(u)) {
+						if (!hasExcess(u))
+							break;
+						double f = flow(e);
+						if (u == g.edgeSource(e)) {
+							if (f < 0)
+								push(e, Math.min(excess[u], -f));
+						} else {
+							assert u == g.edgeTarget(e);
+							if (f > 0)
+								push(e, -Math.min(excess[u], f));
+						}
+					}
+					if (u == topoEnd)
+						break;
+				}
 			}
 		}
 
@@ -1259,14 +1913,31 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		}
 
 		@Override
+		boolean isTwinResidualUndirected(int e) {
+			return getTwinResidualCapacity(e) > EPS;
+		}
+
+		double getTwinResidualCapacity(int e) {
+			assert !directed;
+			return 2 * capacity[e] - residualCapacity[e];
+		}
+
+		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) <= EPS;
 		}
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-			return flow(e) < 0;
+			assert !directed;
+			return flow(e) < -EPS;
 		}
+
+		@Override
+		boolean hasFlow(int e) {
+			return flow(e) > EPS;
+		}
+
 	}
 
 	static class WorkerInt extends Worker {
@@ -1286,39 +1957,44 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 			excess = new int[n];
 		}
 
-		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks,
-				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
-			super(gOrig, net, sources, sinks, activeOrderPolicy, dischargePolicy);
-
-			capacity = new int[g.edges().size()];
-			initCapacities(capacity);
-			residualCapacity = capacity.clone();
-
-			excess = new int[n];
-		}
-
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				int f = getResidualCapacity(e);
-				if (f > 0 && label[source] > label[v]) {
-					if (v != sink && !hasExcess(v))
-						activate(v);
-					push(e, f);
+			if (directed) {
+				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+					int e = eit.nextInt(), v;
+					int f = getResidualCapacity(e);
+					if (f > 0 && label[source] > label[v = eit.target()]) {
+						if (v != sink && !hasExcess(v))
+							activate(v);
+						push(e, f);
+					}
+				}
+			} else {
+				for (int e : g.outEdges(source)) {
+					int v;
+					if (source == g.edgeSource(e)) {
+						int f = getResidualCapacity(e);
+						if (f > 0 && label[source] > label[v = g.edgeTarget(e)]) {
+							if (v != sink && !hasExcess(v))
+								activate(v);
+							push(e, f);
+						}
+					} else {
+						assert source == g.edgeTarget(e);
+						int f = getTwinResidualCapacity(e);
+						if (f > 0 && label[source] > label[v = g.edgeSource(e)]) {
+							if (v != sink && !hasExcess(v))
+								activate(v);
+							push(e, -f);
+						}
+					}
 				}
 			}
 		}
 
 		private void push(int e, int f) {
-			assert f > 0;
-
-			int t = twin[e];
 			residualCapacity[e] -= f;
-			residualCapacity[t] += f;
 			assert residualCapacity[e] >= 0;
-			assert residualCapacity[t] >= 0;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
@@ -1326,27 +2002,77 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		}
 
 		@Override
-		void eliminateCycle(int e) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
-			assert hasNegativeFlow(e);
-			int f = -flow(e);
+		void eliminateCycleDirected(int e) {
+			assert directed;
+			int u = g.edgeTarget(e);
+			int v = g.edgeSource(e);
+			assert hasFlow(e);
+			int f = flow(e);
 			for (;;) {
-				e = edgeIters[v].peekNext();
-				assert hasNegativeFlow(e);
-				f = Math.min(f, -flow(e));
+				e = inEdgeIters[v].peekNext();
+				assert hasFlow(e);
+				f = Math.min(f, flow(e));
 				if (v == u)
 					break;
-				v = g.edgeTarget(e);
+				v = g.edgeSource(e);
 			}
+			assert f > 0;
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = edgeIters[v].peekNext();
-				int t = twin[e];
-				residualCapacity[e] -= f;
-				residualCapacity[t] += f;
+				e = inEdgeIters[v].peekNext();
+				residualCapacity[e] += f;
+				v = g.edgeSource(e);
+				if (v == u)
+					break;
+			}
+		}
+
+		@Override
+		void eliminateCycleUndirected(int cycleSource, int e) {
+			int u = cycleSource;
+			int v;
+			int f;
+			if (u == g.edgeSource(e)) {
 				v = g.edgeTarget(e);
+				assert hasNegativeFlow(e);
+				f = -flow(e);
+			} else {
+				assert u == g.edgeTarget(e);
+				v = g.edgeSource(e);
+				assert hasFlow(e);
+				f = flow(e);
+			}
+			for (int w;;) {
+				e = outEdgeIters[v].peekNext();
+				int ef = flow(e);
+				if (v == g.edgeSource(e)) {
+					assert ef < 0;
+					ef = -ef;
+					w = g.edgeTarget(e);
+				} else {
+					assert v == g.edgeTarget(e);
+					assert ef > 0;
+					w = g.edgeSource(e);
+				}
+				f = Math.min(f, ef);
+				if (v == u)
+					break;
+				v = w;
+			}
+			assert f > 0;
+
+			// remove delta from all edges of the cycle
+			for (v = u;;) {
+				e = outEdgeIters[v].peekNext();
+				if (v == g.edgeSource(e)) {
+					residualCapacity[e] -= f;
+					v = g.edgeTarget(e);
+				} else {
+					assert v == g.edgeTarget(e);
+					residualCapacity[e] += f;
+					v = g.edgeSource(e);
+				}
 				if (v == u)
 					break;
 			}
@@ -1354,16 +2080,36 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
-			for (int u = topoBegin;; u = topoNext[u]) {
-				for (int e : g.outEdges(u)) {
-					if (!hasExcess(u))
+			if (directed) {
+				for (int u = topoBegin;; u = topoNext[u]) {
+					for (int e : g.inEdges(u)) {
+						if (!hasExcess(u))
+							break;
+						int f = flow(e);
+						if (f > 0)
+							push(e, -Math.min(excess[u], f));
+					}
+					if (u == topoEnd)
 						break;
-					int f = flow(e);
-					if (f < 0)
-						push(e, Math.min(excess[u], -f));
 				}
-				if (u == topoEnd)
-					break;
+			} else {
+				for (int u = topoBegin;; u = topoNext[u]) {
+					for (int e : g.outEdges(u)) {
+						if (!hasExcess(u))
+							break;
+						int f = flow(e);
+						if (u == g.edgeSource(e)) {
+							if (f < 0)
+								push(e, Math.min(excess[u], -f));
+						} else {
+							assert u == g.edgeTarget(e);
+							if (f > 0)
+								push(e, -Math.min(excess[u], f));
+						}
+					}
+					if (u == topoEnd)
+						break;
+				}
 			}
 		}
 
@@ -1391,14 +2137,31 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 		}
 
 		@Override
+		boolean isTwinResidualUndirected(int e) {
+			return getTwinResidualCapacity(e) > 0;
+		}
+
+		int getTwinResidualCapacity(int e) {
+			assert !directed;
+			return 2 * capacity[e] - residualCapacity[e];
+		}
+
+		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) == 0;
 		}
 
 		@Override
 		boolean hasNegativeFlow(int e) {
+			assert !directed;
 			return flow(e) < 0;
 		}
+
+		@Override
+		boolean hasFlow(int e) {
+			return flow(e) > 0;
+		}
+
 	}
 
 }

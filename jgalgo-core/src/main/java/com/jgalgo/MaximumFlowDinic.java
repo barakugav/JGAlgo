@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowDinic extends MaximumFlowAbstract {
+class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 
 	private GraphFactory layerGraphFactory = GraphFactory.newDirected().setOption("impl", "GraphLinked");
 
@@ -73,7 +73,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 		return new Worker(g, net, sources, sinks).computeMaximumFlow();
 	}
 
-	private class Worker extends MaximumFlowAbstract.Worker {
+	private class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
 
 		final double[] flow;
 		final double[] capacity;
