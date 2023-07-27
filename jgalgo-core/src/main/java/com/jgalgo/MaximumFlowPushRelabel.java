@@ -69,7 +69,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	private static enum DischargePolicy {
-		SingleStep, PartialAugment
+		SingleStep,
+
+		/**
+		 * Based on 'The Partial Augment–Relabel Algorithm for the Maximum Flow Problem' by Andrew V. Goldberg.
+		 */
+		PartialAugment
 	}
 
 	private final ActiveOrderPolicy activeOrderPolicy;

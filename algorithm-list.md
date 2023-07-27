@@ -14,10 +14,13 @@
 | Max flow Push/Relabel (FIFO order) | $O(n^3)$ | with global relabeling and gap heuristics |
 | Max flow Push/Relabel-to-Front | $O(n^3)$ | with global relabeling and gap heuristics |
 | Max flow Push/Relabel Highest First | $O(n^2 \sqrt{m})$ | with global relabeling and gap heuristics |
+| Max flow Push/Relabel Partial Augment | $O(n^2 \sqrt{m})$ | based on 'highest first', with global relabeling and gap heuristics |
 | Max flow Push/Relabel Lowest First | $O(n^2 m)$ | with global relabeling and gap heuristics |
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ | |
 | Max flow Dinic | $O(m n^2)$ | |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ | |
+| Min cost flow Cycle Canceling | $O(CC) \cdot O(mCU)$ | $O(CC)$ is the running time of the algorithm used to find a cycle in the graph, $C$ is the maximum (absolute) edge cost and $U$ is the maximum edge capacity |
+| Min cost flow Cost-Scaling Push-Relabel Partial-Augment | $O(n^2 m \log (n C))$ | $C$ is the maximum (absolute) edge cost. |
 | Minimum Cut S-T using any maximum flow algorithm | $O(MF)$ | where $MF$ is the running time of the maximum flow algorithm |
 | Minimum Cut Global Stoer-Wagner | $O(m n + n^2 \log n)$ | |
 | MST Boruvka | $O(m \log n)$ | |

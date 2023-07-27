@@ -31,6 +31,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * Minimum-cost flow computation using the cost-scaling algorithm with partial-augmentations push-relabel variant.
  * <p>
+ * The algorithm runs in \(O(n^2 m \log (n C))\) where \(C\) is the maximum (absolute) edge cost.
+ * <p>
  * Based on 'Efficient implementations of minimum-cost flow algorithms' by Z. Kiraly, P. Kovacs (2012).
  *
  * @see    MaximumFlowPushRelabelPartialAugment
