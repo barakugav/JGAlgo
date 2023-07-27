@@ -21,8 +21,8 @@ import com.jgalgo.internal.util.TestBase;
 
 public class MaximumFlowPushRelabelPartialAugmentTest extends TestBase {
 
-	private static MaximumFlowPushRelabelPartialAugment algo() {
-		return new MaximumFlowPushRelabelPartialAugment();
+	private static MaximumFlowPushRelabel algo() {
+		return MaximumFlowPushRelabel.newInstancePartialAugment();
 	}
 
 	@Test

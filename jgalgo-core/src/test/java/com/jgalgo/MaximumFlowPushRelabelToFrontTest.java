@@ -21,8 +21,8 @@ import com.jgalgo.internal.util.TestBase;
 
 public class MaximumFlowPushRelabelToFrontTest extends TestBase {
 
-	private static MaximumFlowPushRelabelToFront algo() {
-		return new MaximumFlowPushRelabelToFront();
+	private static MaximumFlowPushRelabel algo() {
+		return MaximumFlowPushRelabel.newInstanceMoveToFront();
 	}
 
 	@Test

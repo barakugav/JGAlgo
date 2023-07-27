@@ -21,8 +21,8 @@ import com.jgalgo.internal.util.TestBase;
 
 public class MaximumFlowPushRelabelFifoTest extends TestBase {
 
-	private static MaximumFlowPushRelabelFifo algo() {
-		return new MaximumFlowPushRelabelFifo();
+	private static MaximumFlowPushRelabel algo() {
+		return MaximumFlowPushRelabel.newInstanceFifo();
 	}
 
 	@Test

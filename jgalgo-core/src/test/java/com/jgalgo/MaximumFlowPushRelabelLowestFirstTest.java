@@ -21,8 +21,8 @@ import com.jgalgo.internal.util.TestBase;
 
 public class MaximumFlowPushRelabelLowestFirstTest extends TestBase {
 
-	private static MaximumFlowPushRelabelLowestFirst algo() {
-		return new MaximumFlowPushRelabelLowestFirst();
+	private static MaximumFlowPushRelabel algo() {
+		return MaximumFlowPushRelabel.newInstanceLowestFirst();
 	}
 
 	@Test

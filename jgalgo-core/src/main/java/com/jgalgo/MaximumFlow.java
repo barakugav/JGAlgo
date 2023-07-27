@@ -105,22 +105,22 @@ public interface MaximumFlow {
 						case "dinic-dynamic-trees":
 							return new MaximumFlowDinicDynamicTrees();
 						case "push-relabel-fifo":
-							return new MaximumFlowPushRelabelFifo();
+							return MaximumFlowPushRelabel.newInstanceFifo();
 						case "push-relabel-highest-first":
-							return new MaximumFlowPushRelabelHighestFirst();
+							return MaximumFlowPushRelabel.newInstanceHighestFirst();
 						case "push-relabel-partial-augment":
-							return new MaximumFlowPushRelabelPartialAugment();
+							return MaximumFlowPushRelabel.newInstancePartialAugment();
 						case "push-relabel-lowest-first":
-							return new MaximumFlowPushRelabelLowestFirst();
+							return MaximumFlowPushRelabel.newInstanceLowestFirst();
 						case "push-relabel-move-to-front":
-							return new MaximumFlowPushRelabelToFront();
+							return MaximumFlowPushRelabel.newInstanceMoveToFront();
 						case "push-relabel-fifo-dynamic-trees":
 							return new MaximumFlowPushRelabelDynamicTrees();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				return new MaximumFlowPushRelabelHighestFirst();
+				return MaximumFlowPushRelabel.newInstanceHighestFirst();
 			}
 
 			@Override

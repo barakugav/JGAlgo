@@ -178,9 +178,9 @@ class MinimumCutSTTestUtils extends TestUtils {
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabelAbstract
+			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel
 					? MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp())
-					: new MaximumFlowPushRelabelHighestFirst();
+					:  MaximumFlowPushRelabel.newInstanceHighestFirst();
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
 			double minCutWeightExpected = minCutExpected.weight(w);
 
@@ -227,9 +227,9 @@ class MinimumCutSTTestUtils extends TestUtils {
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabelAbstract
+			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel
 					? MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp())
-					: new MaximumFlowPushRelabelHighestFirst();
+					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
 			double minCutWeightExpected = minCutExpected.weight(w);
 

@@ -80,7 +80,7 @@ public interface MinimumCutST {
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-		return MaximumFlowPushRelabelHighestFirst::new;
+		return MaximumFlowPushRelabel::newInstanceHighestFirst;
 	}
 
 	/**
