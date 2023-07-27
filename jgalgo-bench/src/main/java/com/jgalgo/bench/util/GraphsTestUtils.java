@@ -236,7 +236,7 @@ public class GraphsTestUtils extends TestUtils {
 			edgeNum++;
 		}
 
-		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newUndirected() : IndexGraphBuilder.newDirected();
+		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
 		if (directed) {

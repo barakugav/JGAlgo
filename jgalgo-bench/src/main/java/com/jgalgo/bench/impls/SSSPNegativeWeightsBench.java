@@ -162,7 +162,7 @@ public class SSSPNegativeWeightsBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, false, seedGen.nextSeed());
+				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
 				WeightFunction.Int w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
