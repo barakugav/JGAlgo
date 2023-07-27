@@ -105,22 +105,22 @@ public interface MaximumFlow {
 						case &quot;dinic-dynamic-trees&quot;:
 <span class="nc" id="L106">							return new MaximumFlowDinicDynamicTrees();</span>
 						case &quot;push-relabel-fifo&quot;:
-<span class="nc" id="L108">							return new MaximumFlowPushRelabelFifo();</span>
+<span class="nc" id="L108">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
 						case &quot;push-relabel-highest-first&quot;:
-<span class="nc" id="L110">							return new MaximumFlowPushRelabelHighestFirst();</span>
+<span class="nc" id="L110">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 						case &quot;push-relabel-partial-augment&quot;:
-<span class="nc" id="L112">							return new MaximumFlowPushRelabelPartialAugment();</span>
+<span class="nc" id="L112">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
 						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L114">							return new MaximumFlowPushRelabelLowestFirst();</span>
+<span class="nc" id="L114">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
 						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L116">							return new MaximumFlowPushRelabelToFront();</span>
+<span class="nc" id="L116">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
 						case &quot;push-relabel-fifo-dynamic-trees&quot;:
 <span class="nc" id="L118">							return new MaximumFlowPushRelabelDynamicTrees();</span>
 						default:
 <span class="nc" id="L120">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L123">				return new MaximumFlowPushRelabelHighestFirst();</span>
+<span class="fc" id="L123">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 			}
 
 			@Override
