@@ -72,9 +72,13 @@ public class MaximumFlowBench {
 	@State(Scope.Benchmark)
 	public static class Gnp extends MaximumFlowBench {
 
-		@Param({ "|V|=30", "|V|=200", "|V|=800" })
+		@Param({ "|V|=1000", "|V|=2000", "|V|=2500" })
 		public String args;
 
+		// @Param({ "directed", "undirected" })
+		public String directed = "directed";
+
+		@Override
 		@Setup(Level.Invocation)
 		public void resetFlow() {
 			super.resetFlow();
@@ -84,12 +88,13 @@ public class MaximumFlowBench {
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
+			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
+				Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());
 				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -105,11 +110,6 @@ public class MaximumFlowBench {
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
 			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
-		}
-
-		@Benchmark
-		public void DinicDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
 		}
 
 		@Benchmark
@@ -136,11 +136,6 @@ public class MaximumFlowBench {
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
 			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
 		}
-
-		@Benchmark
-		public void PushRelabelDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
-		}
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
@@ -151,9 +146,13 @@ public class MaximumFlowBench {
 	@State(Scope.Benchmark)
 	public static class BarabasiAlbert extends MaximumFlowBench {
 
-		@Param({ "|V|=30", "|V|=200", "|V|=800" })
+		@Param({ "|V|=3000", "|V|=4500", "|V|=6000" })
 		public String args;
 
+		// @Param({ "directed", "undirected" })
+		public String directed = "directed";
+
+		@Override
 		@Setup(Level.Invocation)
 		public void resetFlow() {
 			super.resetFlow();
@@ -163,12 +162,13 @@ public class MaximumFlowBench {
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
+			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());
 				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -230,9 +230,13 @@ public class MaximumFlowBench {
 	@State(Scope.Benchmark)
 	public static class RecursiveMatrix extends MaximumFlowBench {
 
-		@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
+		@Param({ "|V|=1500 |E|=5000", "|V|=2500 |E|=8000", "|V|=4000 |E|=16000" })
 		public String args;
 
+		// @Param({ "directed", "undirected" })
+		public String directed = "directed";
+
+		@Override
 		@Setup(Level.Invocation)
 		public void resetFlow() {
 			super.resetFlow();
@@ -243,12 +247,13 @@ public class MaximumFlowBench {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
+			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
+				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
 				FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -322,7 +327,7 @@ public class MaximumFlowBench {
 		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
 		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
-			flow.setCapacity(e, rand.nextInt(16384));
+			flow.setCapacity(e, 5000 + rand.nextInt(16384));
 		return flow;
 	}
 

@@ -108,10 +108,12 @@ public class DijkstraBench {
 		public void jgrapht(Blackhole blackhole) {
 			JGraphTArgs args = jgraphtGraphs.get(nextGraphIdx());
 			DijkstraShortestPath<Integer, DefaultWeightedEdge> algo = new DijkstraShortestPath<>(args.graph);
+			@SuppressWarnings("boxing")
 			SingleSourcePaths<Integer, DefaultWeightedEdge> result = algo.getPaths(args.source);
 			blackhole.consume(result);
 		}
 
+		@SuppressWarnings("boxing")
 		@Benchmark
 		public void jgraphtSparse(Blackhole blackhole) {
 			JGraphTSparseArgs args = jgraphtSparseGraphs.get(nextGraphIdx());
@@ -214,6 +216,7 @@ public class DijkstraBench {
 		public String args;
 		private int n;
 
+		@Override
 		@Setup(Level.Iteration)
 		public void generateGraphs() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -244,6 +247,7 @@ public class DijkstraBench {
 		public String args;
 		private int n;
 
+		@Override
 		@Setup(Level.Iteration)
 		public void generateGraphs() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -274,6 +278,7 @@ public class DijkstraBench {
 		public String args;
 		private int n;
 
+		@Override
 		@Setup(Level.Iteration)
 		public void generateGraphs() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -290,6 +295,7 @@ public class DijkstraBench {
 
 	}
 
+	@SuppressWarnings("boxing")
 	private static org.jgrapht.Graph<Integer, DefaultWeightedEdge> graph2jgrapht(Graph g,
 			WeightFunction edgeWeightFunc) {
 		org.jgrapht.Graph<Integer, DefaultWeightedEdge> jg = GraphTypeBuilder.undirected().weighted(true)
@@ -304,6 +310,7 @@ public class DijkstraBench {
 		return jg;
 	}
 
+	@SuppressWarnings("boxing")
 	private static org.jgrapht.Graph<Integer, Integer> graph2jgraphtSparse(IndexGraph g,
 			WeightFunction edgeWeightFunc) {
 		return new SparseIntUndirectedWeightedGraph(g.vertices().size(), g.edges().size(),
