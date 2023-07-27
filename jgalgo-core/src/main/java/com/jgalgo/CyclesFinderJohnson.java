@@ -158,6 +158,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 		int nSub = nFull - subToFull;
 
 		IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();
+		gSubBuilder.expectedVerticesNum(nSub);
 		for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
 			int uIdx = gSubBuilder.addVertex();
 			assert uIdx == uSubIdx;

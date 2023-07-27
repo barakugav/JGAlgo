@@ -101,8 +101,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++) {
-			int source = builder.endpoints[e * 2 + 0];
-			int target = builder.endpoints[e * 2 + 1];
+			int source = builder.edgeSource(e);
+			int target = builder.edgeTarget(e);
 
 			addEdgeToList(edges, edgesNum, source, e);
 			if (source != target)

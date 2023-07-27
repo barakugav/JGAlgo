@@ -203,6 +203,9 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			IndexGraphBuilder builder = gOrig.getCapabilities().directed() ? IndexGraphBuilder.newDirected()
 					: IndexGraphBuilder.newUndirected();
+			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
+			builder.expectedVerticesNum(gOrig.edges().size() + sources.size() + sinks.size());
+
 			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
 				builder.addVertex();
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)

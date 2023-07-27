@@ -265,6 +265,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			IntArrayList depths = new IntArrayList();
 
 			IndexGraphBuilder treeBuilder = IndexGraphBuilder.newUndirected();
+			treeBuilder.expectedVerticesNum(2 * n);
+			treeBuilder.expectedEdgesNum(2 * n);
 			int[] edgeRef = IntArrays.EMPTY_ARRAY;
 
 			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */
@@ -425,7 +427,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				IntIntPair query = queries.getQuery(q);
 				int u = query.firstInt(), v = query.secondInt();
 				if (u == v)
-					throw new IllegalArgumentException("Tree path maxima query can not be composed of two identical vertices");
+					throw new IllegalArgumentException(
+							"Tree path maxima query can not be composed of two identical vertices");
 				int lca = lcaDS.findLowestCommonAncestor(u, v);
 				lcaQueries[q * 4] = u;
 				lcaQueries[q * 4 + 1] = lca;

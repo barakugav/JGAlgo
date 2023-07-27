@@ -56,11 +56,8 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 
-		for (int e = 0; e < m; e++) {
-			int source = builder.endpoints[e * 2 + 0];
-			int target = builder.endpoints[e * 2 + 1];
-			setEndpoints(e, source, target);
-		}
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
 	@Override

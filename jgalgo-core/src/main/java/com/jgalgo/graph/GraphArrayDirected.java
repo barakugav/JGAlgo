@@ -137,10 +137,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++) {
-			int source = builder.endpoints[e * 2 + 0];
-			int target = builder.endpoints[e * 2 + 1];
-			addEdgeToList(edgesOut, edgesOutNum, source, e);
-			addEdgeToList(edgesIn, edgesInNum, target, e);
+			addEdgeToList(edgesOut, edgesOutNum, builder.edgeSource(e), e);
+			addEdgeToList(edgesIn, edgesInNum, builder.edgeTarget(e), e);
 		}
 	}
 

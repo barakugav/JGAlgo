@@ -148,10 +148,13 @@ class FlowNetworks {
 			}
 
 			void addAllOriginalEdges() {
+				gBuilder.expectedVerticesNum(gOrig.vertices().size());
 				for (int n = gOrig.vertices().size(), u = 0; u < n; u++) {
 					int vBuilder = gBuilder.addVertex();
 					assert u == vBuilder;
 				}
+
+				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);
 				if (gOrig.getCapabilities().directed()) {
 					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 						int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);

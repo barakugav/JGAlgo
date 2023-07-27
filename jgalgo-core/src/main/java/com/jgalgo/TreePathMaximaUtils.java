@@ -159,6 +159,9 @@ class TreePathMaximaUtils {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		IndexGraphBuilder mstBuilder = IndexGraphBuilder.newUndirected();
+		mstBuilder.expectedVerticesNum(n);
+		mstBuilder.expectedEdgesNum(mstEdges.size());
+
 		for (int v = 0; v < n; v++) {
 			int vBuilder = mstBuilder.addVertex();
 			assert v == vBuilder;

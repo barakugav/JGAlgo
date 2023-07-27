@@ -31,7 +31,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	private int m;
 	final IdStrategy.Default verticesIdStrat;
 	final IdStrategy.Default edgesIdStrat;
-	int[] endpoints = IntArrays.EMPTY_ARRAY;
+	private int[] endpoints = IntArrays.EMPTY_ARRAY;
 	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;
 	private IntSet edgesSet;
 	private boolean userProvideEdgesIds;
@@ -118,7 +118,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		int eFromIdStrat = edgesIdStrat.newIdx();
 		assert e == eFromIdStrat;
 		if (e * 2 == endpoints.length)
-			endpoints = Arrays.copyOf(endpoints, Math.max(2, 2 * endpoints.length));
+			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
 		setEdgeSource(e, source);
 		setEdgeTarget(e, target);
 		edgesUserWeights.ensureCapacity(e + 1);
@@ -135,15 +135,29 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		int eIdx = m++;
 		while (eIdx >= edgesIdStrat.size())
 			edgesIdStrat.newIdx();
-		if (eIdx * 2 == endpoints.length)
-			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
-		if (eIdx == edgesUserIds.length)
-			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, 2 * edgesUserIds.length));
+		if (eIdx * 2 >= endpoints.length)
+			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, (eIdx + 1) * 2)));
+		if (eIdx >= edgesUserIds.length)
+			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, eIdx + 1)));
 		setEdgeSource(eIdx, source);
 		setEdgeTarget(eIdx, target);
 		edgesUserIds[eIdx] = edge;
 		edgesUserWeights.ensureCapacity(edge + 1);
 		userProvideEdgesIds = true;
+	}
+
+	@Override
+	public void expectedVerticesNum(int verticesNum) {
+		verticesUserWeights.ensureCapacity(verticesNum);
+	}
+
+	@Override
+	public void expectedEdgesNum(int edgesNum) {
+		edgesUserWeights.ensureCapacity(edgesNum);
+		if (edgesNum * 2 > endpoints.length)
+			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));
+		if (edgesNum > edgesUserIds.length)
+			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, edgesNum)));
 	}
 
 	@Override
@@ -159,11 +173,11 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	int edgeSource(int e) {
-		return endpoints[e * 2 + 0];
+		return endpoints[edgeSourceIndex(e)];
 	}
 
 	int edgeTarget(int e) {
-		return endpoints[e * 2 + 1];
+		return endpoints[edgeTargetIndex(e)];
 	}
 
 	int edgeEndpoint(int e, int endpoint) {
@@ -178,11 +192,19 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	private void setEdgeSource(int e, int source) {
-		endpoints[e * 2 + 0] = source;
+		endpoints[edgeSourceIndex(e)] = source;
 	}
 
 	private void setEdgeTarget(int e, int target) {
-		endpoints[e * 2 + 1] = target;
+		endpoints[edgeTargetIndex(e)] = target;
+	}
+
+	private static int edgeSourceIndex(int e) {
+		return e * 2 + 0;
+	}
+
+	private static int edgeTargetIndex(int e) {
+		return e * 2 + 1;
 	}
 
 	void validateUserProvidedIdsBeforeBuild() {

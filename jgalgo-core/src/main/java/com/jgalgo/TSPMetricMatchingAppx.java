@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -80,23 +79,21 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
+		g1Builder.expectedVerticesNum(n);
+		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());
 		for (int v = 0; v < n; v++) {
 			int vBuilder = g1Builder.addVertex();
 			assert vBuilder == v;
 		}
-		int[] g1EdgeRef = new int[mst.size()];
+		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];
 		for (int e : mst) {
 			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			if (g1Edge == g1EdgeRef.length)
-				g1EdgeRef = Arrays.copyOf(g1EdgeRef, Math.max(2, 2 * g1EdgeRef.length));
 			g1EdgeRef[g1Edge] = e;
 		}
 		for (int mGedge : matching.edges()) {
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];
 			int g1Edge = g1Builder.addEdge(u, v);
-			if (g1Edge == g1EdgeRef.length)
-				g1EdgeRef = Arrays.copyOf(g1EdgeRef, Math.max(2, 2 * g1EdgeRef.length));
 			g1EdgeRef[g1Edge] = g.getEdge(u, v);
 		}
 		IndexGraph g1 = g1Builder.build();
