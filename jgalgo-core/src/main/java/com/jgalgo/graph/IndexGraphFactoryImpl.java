@@ -47,6 +47,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraph newCopyOf(IndexGraph g) {
+		setDirected(g.getCapabilities().directed());
 		return chooseImpl().newCopyOf(g);
 	}
 
