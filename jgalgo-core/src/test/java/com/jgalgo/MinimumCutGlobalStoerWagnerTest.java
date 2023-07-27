@@ -93,8 +93,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 			}
 
 		} else {
-			MinimumCutGlobal validationAlgo = MinimumCutSTUtils
-					.globalMinCutFromStMinCut(MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp()));
+			MinimumCutGlobal validationAlgo = MinimumCutSTUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) minCutExpected.weight(w);
 

@@ -35,10 +35,10 @@ class MinimumCutSTUtils {
 
 	private MinimumCutSTUtils() {}
 
-	static interface AbstractImpl extends MinimumCutST {
+	static abstract class AbstractImpl implements MinimumCutST {
 
 		@Override
-		default Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+		public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, source, sink);
 
@@ -55,7 +55,7 @@ class MinimumCutSTUtils {
 		}
 
 		@Override
-		default Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+		public Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, sources, sinks);
 
@@ -77,97 +77,107 @@ class MinimumCutSTUtils {
 
 	}
 
+	static Cut computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, int source, int sink,
+			MaximumFlow maxFlowAlg) {
+		/* create a flow network with weights as capacities */
+		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
+
+		/* compute max flow */
+		maxFlowAlg.computeMaximumFlow(g, net, source, sink);
+
+		return minCutFromMaxFlow(g, IntLists.singleton(source), net);
+	}
+
+	static Cut computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks,
+			MaximumFlow maxFlowAlg) {
+		/* create a flow network with weights as capacities */
+		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
+
+		/* compute max flow */
+		maxFlowAlg.computeMaximumFlow(g, net, sources, sinks);
+
+		return minCutFromMaxFlow(g, sources, net);
+	}
+
+	private static Cut minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
+		final int n = g.vertices().size();
+		BitSet visited = new BitSet(n);
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+
+		/* perform a BFS from source and use only non saturated edges */
+		IntList cut = new IntArrayList();
+		final double eps = 0.00001;
+		for (int source : sources) {
+			cut.add(source);
+			visited.set(source);
+			queue.enqueue(source);
+		}
+
+		if (g.getCapabilities().directed()) {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+
+				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int v = it.target();
+					if (visited.get(v))
+						continue;
+					if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
+						continue; // saturated edge
+					cut.add(v);
+					visited.set(v);
+					queue.enqueue(v);
+				}
+				/*
+				 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over the
+				 * in-edges and search for edges with non zero flow which imply an existent of an out edge in the
+				 * residual network
+				 */
+				for (EdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int v = it.source();
+					if (visited.get(v))
+						continue;
+					if (net.getFlow(e) < eps)
+						continue; // saturated edge
+					cut.add(v);
+					visited.set(v);
+					queue.enqueue(v);
+				}
+			}
+		} else {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+
+				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int v = it.target();
+					if (visited.get(v))
+						continue;
+					double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
+					if (Math.abs(net.getCapacity(e) - directedFlow) < eps)
+						continue; // saturated edge
+					cut.add(v);
+					visited.set(v);
+					queue.enqueue(v);
+				}
+			}
+		}
+
+		return new CutImpl(g, cut);
+	}
+
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
 		return new AbstractImpl() {
 
 			@Override
 			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
-				/* create a flow network with weights as capacities */
-				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
-
-				/* compute max flow */
-				maxFlowAlg.computeMaximumFlow(g, net, source, sink);
-
-				return minCutFromMaxFlow(g, IntLists.singleton(source), net);
+				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);
 			}
 
 			@Override
 			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
-				/* create a flow network with weights as capacities */
-				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
-
-				/* compute max flow */
-				maxFlowAlg.computeMaximumFlow(g, net, sources, sinks);
-
-				return minCutFromMaxFlow(g, sources, net);
-			}
-
-			private Cut minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
-				final int n = g.vertices().size();
-				BitSet visited = new BitSet(n);
-				IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-
-				/* perform a BFS from source and use only non saturated edges */
-				IntList cut = new IntArrayList();
-				final double eps = 0.00001;
-				for (int source : sources) {
-					cut.add(source);
-					visited.set(source);
-					queue.enqueue(source);
-				}
-
-				if (g.getCapabilities().directed()) {
-					while (!queue.isEmpty()) {
-						int u = queue.dequeueInt();
-
-						for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
-							int e = it.nextInt();
-							int v = it.target();
-							if (visited.get(v))
-								continue;
-							if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
-								continue; // saturated edge
-							cut.add(v);
-							visited.set(v);
-							queue.enqueue(v);
-						}
-						/*
-						 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over
-						 * the in-edges and search for edges with non zero flow which imply an existent of an out edge
-						 * in the residual network
-						 */
-						for (EdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {
-							int e = it.nextInt();
-							int v = it.source();
-							if (visited.get(v))
-								continue;
-							if (net.getFlow(e) < eps)
-								continue; // saturated edge
-							cut.add(v);
-							visited.set(v);
-							queue.enqueue(v);
-						}
-					}
-				} else {
-					while (!queue.isEmpty()) {
-						int u = queue.dequeueInt();
-
-						for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
-							int e = it.nextInt();
-							int v = it.target();
-							if (visited.get(v))
-								continue;
-							double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
-							if (Math.abs(net.getCapacity(e) - directedFlow) < eps)
-								continue; // saturated edge
-							cut.add(v);
-							visited.set(v);
-							queue.enqueue(v);
-						}
-					}
-				}
-
-				return new CutImpl(g, cut);
+				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);
 			}
 
 		};

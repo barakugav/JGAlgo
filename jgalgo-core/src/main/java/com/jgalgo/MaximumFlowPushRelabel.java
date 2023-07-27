@@ -63,7 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlowAbstract implements MinimumCutSTUtils.AbstractImpl {
+class MaximumFlowPushRelabel extends MaximumFlowAbstract {
 
 	private static enum ActiveOrderPolicy {
 		FIFO, HighestFirst, LowestFirst, MoveToFront;

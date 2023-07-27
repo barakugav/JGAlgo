@@ -20,11 +20,12 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-abstract class MaximumFlowAbstract implements MaximumFlow {
+abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implements MaximumFlow {
 
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
@@ -59,6 +60,16 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink);
 
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
+
+	@Override
+	Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
+	}
+
+	@Override
+	Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
+	}
 
 	static class Worker {
 		final IndexGraph gOrig;
