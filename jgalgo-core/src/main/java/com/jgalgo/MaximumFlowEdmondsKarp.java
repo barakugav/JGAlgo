@@ -78,34 +78,35 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 			BitSet visited = new BitSet(n);
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
-			for (;;) {
-				queue.clear();
-				visited.clear();
-				visited.set(source);
-				backtrack[sink] = -1;
+			// perform BFS and find a path of non saturated edges from source to sink
+			queue.enqueue(source);
+			visited.set(source);
+			bfs: for (;;) {
+				if (queue.isEmpty())
+					return; /* no path to sink, we are done */
+				int u = queue.dequeueInt();
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					if (isSaturated(e))
+						continue;
+					int v = eit.target();
+					if (visited.get(v))
+						continue;
+					backtrack[v] = e;
+					if (v == sink) {
+						/* found an augmenting path, push flow on it */
+						pushAlongPath(backtrack);
 
-				// perform BFS and find a path of non saturated edges from source to sink
-				queue.enqueue(source);
-				bfs: while (!queue.isEmpty()) {
-					int u = queue.dequeueInt();
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
-						int v = eit.target();
-
-						if (visited.get(v) || isSaturated(e))
-							continue;
-						backtrack[v] = e;
-						if (v == sink)
-							break bfs;
-						visited.set(v);
-						queue.enqueue(v);
+						/* reset BFS */
+						queue.clear();
+						visited.clear();
+						visited.set(source);
+						queue.enqueue(source);
+						continue bfs;
 					}
+					visited.set(v);
+					queue.enqueue(v);
 				}
-
-				// no path to sink
-				if (backtrack[sink] == -1)
-					break;
-				pushAlongPath(backtrack);
 			}
 		}
 
