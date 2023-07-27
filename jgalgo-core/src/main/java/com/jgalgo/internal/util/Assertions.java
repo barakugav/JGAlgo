@@ -155,6 +155,23 @@ public class Assertions {
 			}
 		}
 
+		public static void positiveCapacities(Graph g, FlowNetwork net) {
+			if (net instanceof FlowNetwork.Int) {
+				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					int cap = netInt.getCapacityInt(e);
+					if (cap < 0)
+						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+				}
+			} else {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					double cap = net.getCapacity(e);
+					if (cap < 0)
+						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+				}
+			}
+		}
+
 		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				double l = lowerBound.weight(e);

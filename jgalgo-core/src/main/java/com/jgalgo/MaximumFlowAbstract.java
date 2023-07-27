@@ -84,7 +84,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			Worker(IndexGraph g, FlowNetwork net, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				positiveCapacitiesOrThrow(g, net);
+				Assertions.Flows.positiveCapacities(g, net);
 				this.g = g;
 				this.source = source;
 				this.sink = sink;
@@ -323,7 +323,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				positiveCapacitiesOrThrow(gOrig, net);
+				Assertions.Flows.positiveCapacities(gOrig, net);
 				this.gOrig = gOrig;
 				this.source = source;
 				this.sink = sink;
@@ -344,7 +344,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
 				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
-				positiveCapacitiesOrThrow(gOrig, net);
+				Assertions.Flows.positiveCapacities(gOrig, net);
 				this.gOrig = gOrig;
 				this.n = gOrig.vertices().size() + 2;
 				this.sources = sources;
@@ -546,23 +546,6 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 		}
 
-	}
-
-	static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {
-		if (net instanceof FlowNetwork.Int) {
-			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				int cap = netInt.getCapacityInt(e);
-				if (cap < 0)
-					throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
-			}
-		} else {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				double cap = net.getCapacity(e);
-				if (cap < 0)
-					throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
-			}
-		}
 	}
 
 }
