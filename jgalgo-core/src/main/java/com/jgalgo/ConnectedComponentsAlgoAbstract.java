@@ -37,7 +37,22 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
+	@Override
+	public ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(Graph g) {
+		if (g instanceof IndexGraph)
+			return computeWeaklyConnectivityComponents((IndexGraph) g);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
+
+		ConnectedComponentsAlgo.Result indexResult = computeWeaklyConnectivityComponents(iGraph);
+		return new ResultFromIndexResult(indexResult, viMap, eiMap);
+	}
+
 	abstract ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g);
+
+	abstract ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(IndexGraph g);
 
 	private static class ResultFromIndexResult implements ConnectedComponentsAlgo.Result {
 

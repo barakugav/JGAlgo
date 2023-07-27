@@ -22,6 +22,7 @@ import java.util.BitSet;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
@@ -29,13 +30,14 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ConnectedComponentsAlgoTest extends TestBase {
 
 	@Test
-	public void randGraphUndirected() {
+	public void strongCCUGraph() {
 		final long seed = 0xb3f19acd0e1041deL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
@@ -68,7 +70,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 	}
 
 	@Test
-	public void randGraphDirected() {
+	public void strongCCsDiGraph() {
 		final long seed = 0xd21f8ca761bc1aaeL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
@@ -110,6 +112,36 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 					vertexToCC.put(v, ccIdx);
 		}
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
+	}
+
+	@Test
+	public void weakCCsDiGraph() {
+		final long seed = 0;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+
+		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
+
+			ConnectedComponentsAlgo.Result actual =
+					ConnectedComponentsAlgo.newBuilder().build().computeWeaklyConnectivityComponents(g);
+
+			/* create a undirected copy of the original directed graph */
+			GraphBuilder gb = GraphBuilder.newUndirected();
+			for (int u : g.vertices())
+				gb.addVertex(u);
+			for (int e : g.edges())
+				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+			ConnectedComponentsAlgo.Result expected =
+					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(gb.build());
+			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
+			for (int v : g.vertices())
+				expectedMap.put(v, expected.getVertexCc(v));
+			Pair<Integer, Int2IntMap> expectedPair = IntObjectPair.of(expected.getNumberOfCcs(), expectedMap);
+			assertConnectivityResultsEqual(g, expectedPair, actual);
+		});
 	}
 
 	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, Int2IntMap> r1,

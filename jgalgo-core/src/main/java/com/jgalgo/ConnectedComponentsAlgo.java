@@ -39,6 +39,17 @@ public interface ConnectedComponentsAlgo {
 	ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g);
 
 	/**
+	 * Compute all weakly connected components in a directed graph.
+	 * <p>
+	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strong)
+	 * connected components in the result undirected graph.
+	 *
+	 * @param  g a graph
+	 * @return   a result object containing the partition of the vertices into weakly connected components
+	 */
+	ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(Graph g);
+
+	/**
 	 * Result object for connectivity components calculation.
 	 * <p>
 	 * The result object contains the partition of the vertices into the connectivity components (strongly for directed

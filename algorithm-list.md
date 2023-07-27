@@ -47,7 +47,7 @@
 | Minimum Mean Cycle Howard | $O(m N)$ | where $N$ is product of the out-degrees of all the vertices. Perform well in practice |
 | Minimum Mean Cycle Dasdan-Gupta | $O(m n)$ | |
 | Vertex Cover Ben Yehuda | $O(n + m)$ | |
-| Connected components calculation (undirected), strongly connected (directed) | $O(n + m)$ | |
+| Connected components calculation (undirected), strongly/weakly connected (directed) | $O(n + m)$ | |
 | Bi-Connected components calculation (undirected) | $O(n + m)$ | |
 | Topological sort calculation (DAG) | $O(n + m)$ |
 | Euler Tour calculation | $O(n + m)$ |
