@@ -29,15 +29,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
- * Compute the minimum-cost (max) flow in a flow network using cycle canceling.
+ * Minimum-cost flow computation using the cost-scaling algorithm with partial-augmentations push-relabel variant.
  * <p>
- * Firstly, a maximum flow is computed using {@link MaximumFlow}. Then, the residual graph is constructed from the max
- * flow (containing only non-saturated edges), and negative cycles (with respect to the cost function) are eliminated
- * from it repeatedly until no negative cycles remain.
- * <p>
- * Based on 'A Primal Method for Minimal Cost Flows with Applications to the Assignment and Transportation Problems' by
- * M Klein (1966).
+ * Based on 'Efficient implementations of minimum-cost flow algorithms' by Z. Kiraly, P. Kovacs (2012).
  *
+ * @see    MaximumFlowPushRelabelPartialAugment
  * @author Barak Ugav
  */
 class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
@@ -55,35 +51,46 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 	private static class Worker {
 
+		/* g is a residual graph, duplicating each edge in the original graph */
 		private final IndexGraph g;
 		private final ResidualGraph resGraph;
 		private final FlowNetwork.Int net;
 
+		/* per-edge information */
 		private final int[] residualCapacity;
 		private final int[] cost;
 		private final int[] twin;
 
+		/* 'potential' is similar to 'label' in the push-relabel max-flow algorithms */
 		private final int[] potential;
 		private final int[] excess;
 		private int eps;
 
+		/* we use a simple FIFO queue for the active vertices */
 		private final IntPriorityQueue activeQueue;
+
+		/* DFS path used during partial-augmentation during discharge */
 		private final IntArrayList path;
+		/* Bitmap of the vertices on the path, for fast cycle detection */
 		private final BitSet onPath;
+		/* Per vertex iterator, corresponding to 'current edge' in the paper */
 		private final EdgeIter[] edgeIter;
 
+		/* global updated should be performed each O(n) relabels */
 		private int relabelsSinceLastGlobalUpdate;
 		private final int globalUpdateThreshold;
 
+		/* The maximum length of an augmentation path, similar to {@link MaximumFlowPushRelabelPartialAugment} */
 		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
+		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
 		Worker(IndexGraph gOrig, FlowNetwork.Int net, WeightFunction.Int costOrig, WeightFunction.Int supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
+			Assertions.Flows.checkSupply(gOrig, supply);
 			this.net = net;
 
-			// TODO verify valid supply
-
+			/* Build the residual graph by duplicating each edge in the original graph */
 			FlowNetworks.ResidualGraph.Builder b = new FlowNetworks.ResidualGraph.Builder(gOrig);
 			b.addAllOriginalEdges();
 			resGraph = b.build();
@@ -108,9 +115,11 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			}
 			eps = maxCost / alpha;
 
+			/* Find a valid circulation that satisfy the supply, without considering costs */
 			FlowCirculation circulation = new FlowCirculationPushRelabel();
 			circulation.computeCirculation(gOrig, net, supply);
 
+			/* init residual capacities */
 			residualCapacity = new int[m];
 			for (int e = 0; e < m; e++) {
 				int eRef = edgeRef[e];
@@ -130,7 +139,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		}
 
 		void solve() {
-			startAugment();
+			solveWithPartialAugment();
 
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				potential[u] /= n * alpha;
@@ -153,13 +162,13 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			}
 		}
 
-		private void startAugment() {
+		private void solveWithPartialAugment() {
 			for (int eps_iter = 0; eps >= 1; eps = ((eps < alpha && eps > 1) ? 1 : eps / alpha), eps_iter++) {
 				if (eps_iter >= POTENTIAL_REFINEMENT_ITERATION_SKIP)
 					if (potentialRefinement())
 						continue;
 
-				// Saturate arcs not satisfying the optimality condition
+				/* Saturate all edges with negative cost */
 				for (int n = g.vertices().size(), u = 0; u < n; u++) {
 					int uPotential = potential[u];
 					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -177,8 +186,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 						}
 					}
 				}
-				// Find active nodes (i.e. nodes with positive excess)
-				// Initialize the next arcs
+
+				/* Find all active nodes */
 				assert activeQueue.isEmpty();
 				for (int n = g.vertices().size(), u = 0; u < n; u++) {
 					if (excess[u] > 0)
@@ -187,6 +196,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 				}
 
 				activeVerticesLoop: for (;;) {
+					/* Find next active node in FIFO queue */
 					final int searchSource;
 					for (;;) {
 						if (activeQueue.isEmpty())
@@ -198,6 +208,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 						}
 					}
 
+					/* Discharge the vertex, namely push its excess to other vertices */
 					discharge(searchSource);
 					if (excess[searchSource] > 0)
 						activeQueue.enqueue(searchSource);
@@ -209,22 +220,34 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		}
 
 		private void discharge(int searchSource) {
+
+			/*
+			 * We perform a DFS from the 'searchSource' node, using only admissible edges. If we manage to reach path of
+			 * length MAX_AUGMENT_PATH_LENGTH, or we reached a vertex with negative excess, or we closed a cycle, we
+			 * push flow on the DFS path. If we were not able to advance the search from some vertex, we 'relabel' it
+			 * (change it potential) and back up the DFS.
+			 */
+
 			assert path.isEmpty();
 			assert onPath.isEmpty();
 			onPath.set(searchSource);
-			dfs: for (int tip = searchSource;;) {
-				int tipPotential = potential[tip];
+			dfs: for (int u = searchSource;;) {
+
+				/* Find an admissible edge from u */
+				int uPotential = potential[u];
 				int minResidualCost = Integer.MAX_VALUE;
-				assert edgeIter[tip].hasNext();
-				final int firstEdge = edgeIter[tip].peekNext();
-				for (EdgeIter eit = edgeIter[tip]; /* eit.hasNext() */;) {
+				assert edgeIter[u].hasNext();
+				final int firstEdge = edgeIter[u].peekNext();
+				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
 					assert eit.hasNext();
 					int e = eit.peekNext();
 					if (residualCapacity[e] > 0) {
 						int v = g.edgeTarget(e);
-						int residualCost = cost[e] + tipPotential - potential[v];
+						int residualCost = cost[e] + uPotential - potential[v];
 						if (residualCost < 0) {
+							/* Extend the DFS search by the found edge */
 							path.add(e);
+
 							if (path.size() == MAX_AUGMENT_PATH_LENGTH || excess[v] < 0 || onPath.get(v)) {
 								/* augmentation path (maybe cycle) was found */
 								pushOnPath(searchSource);
@@ -232,52 +255,59 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							}
 
 							/* continue down in the DFS */
-							tip = v;
+							u = v;
 							onPath.set(v);
 							continue dfs;
+
 						} else if (minResidualCost > residualCost) {
+							/* Cache the minimum change in the potential required for the edge to become admissible */
 							minResidualCost = residualCost;
 						}
 					}
+
+					/* Advance to the next edge */
 					eit.nextInt();
 					if (!eit.hasNext()) {
 						/* we finish iterating over all edges of the vertex, relabel it */
-						if (tip != searchSource) {
+
+						/* Find the minimum change in the potential required for an admissible edge to appear */
+						if (u != searchSource) {
 							assert !path.isEmpty();
 							int lastEdge = path.getInt(path.size() - 1);
 							int lastTwin = twin[lastEdge];
-							int residualCost = cost[lastTwin] + tipPotential - potential[g.edgeTarget(lastTwin)];
+							int residualCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
 							if (minResidualCost > residualCost)
 								minResidualCost = residualCost;
 						}
-						for (EdgeIter eit2 = g.outEdges(tip).iterator();;) {
+						for (EdgeIter eit2 = g.outEdges(u).iterator();;) {
 							assert eit2.hasNext();
 							int e2 = eit2.nextInt();
 							if (e2 == firstEdge)
 								break;
 							if (residualCapacity[e2] > 0) {
-								int residualCost = cost[e2] + tipPotential - potential[g.edgeTarget(e2)];
+								int residualCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
 								if (minResidualCost > residualCost)
 									minResidualCost = residualCost;
 							}
 
 						}
-						/* actual 'relabel' */
 						assert minResidualCost != Integer.MAX_VALUE;
-						potential[tip] -= minResidualCost + eps;
-						relabelsSinceLastGlobalUpdate++;
-						/* reset tip iterator */
-						edgeIter[tip] = g.outEdges(tip).iterator();
-						assert edgeIter[tip].hasNext();
 
-						if (tip != searchSource) {
-							/* step up in the DFS path */
+						/* 'relabel', change potential */
+						potential[u] -= minResidualCost + eps;
+						relabelsSinceLastGlobalUpdate++;
+						/* Reset u iterator */
+						edgeIter[u] = g.outEdges(u).iterator();
+						assert edgeIter[u].hasNext();
+
+						if (u != searchSource) {
+							/* step up once in the DFS path */
 							assert !path.isEmpty();
 							int lastEdge = path.popInt();
-							assert tip == g.edgeTarget(lastEdge);
-							assert onPath.get(tip);
-							onPath.clear(tip);
-							tip = g.edgeSource(lastEdge);
+							assert u == g.edgeTarget(lastEdge);
+							assert onPath.get(u);
+							onPath.clear(u);
+							u = g.edgeSource(lastEdge);
 						}
 						continue dfs;
 					}
