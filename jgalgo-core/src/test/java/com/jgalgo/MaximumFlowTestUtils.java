@@ -223,20 +223,6 @@ public class MaximumFlowTestUtils extends TestUtils {
 		assertEquals(expectedTotalFlow, actualTotalFlow, 1E-3, "Unexpected max flow");
 	}
 
-	static void assertValidFlow(Graph g, FlowNetwork net, int source, int sink, double totalFlow) {
-		int n = g.vertices().size();
-		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			vertexFlowOut.put(u, vertexFlowOut.get(u) + net.getFlow(e));
-			vertexFlowOut.put(v, vertexFlowOut.get(v) - net.getFlow(e));
-		}
-		for (int v : g.vertices()) {
-			double expected = v == source ? totalFlow : v == sink ? -totalFlow : 0;
-			assertEquals(expected, vertexFlowOut.get(v), 1E-3, "Invalid vertex(" + v + ") flow");
-		}
-	}
-
 	private static void testNetwork(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks,
 			MaximumFlow algo) {
 		double actualMaxFlow = algo.computeMaximumFlow(g, net, sources, sinks);
@@ -271,6 +257,72 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, sources, sinks);
 		assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
+	}
+
+	static void assertValidFlow(Graph g, FlowNetwork net, int source, int sink, double totalFlow) {
+		int n = g.vertices().size();
+		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
+		for (int e : g.edges()) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			vertexFlowOut.put(u, vertexFlowOut.get(u) + net.getFlow(e));
+			vertexFlowOut.put(v, vertexFlowOut.get(v) - net.getFlow(e));
+		}
+		for (int v : g.vertices()) {
+			double expected = v == source ? totalFlow : v == sink ? -totalFlow : 0;
+			assertEquals(expected, vertexFlowOut.get(v), 1E-3, "Invalid vertex(" + v + ") flow");
+		}
+	}
+
+	static void assertValidFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks,
+			double totalFlow) {
+		int n = g.vertices().size();
+		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
+		for (int e : g.edges()) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			vertexFlowOut.put(u, vertexFlowOut.get(u) + net.getFlow(e));
+			vertexFlowOut.put(v, vertexFlowOut.get(v) - net.getFlow(e));
+		}
+		sources = new IntOpenHashSet(sources);
+		sinks = new IntOpenHashSet(sinks);
+		for (int v : g.vertices()) {
+			if (sources.contains(v))
+				assertTrue(vertexFlowOut.get(v) >= 0);
+			if (sinks.contains(v))
+				assertTrue(vertexFlowOut.get(v) <= 0);
+		}
+		double sourcesFlowSum = 0;
+		double sinksFlowSum = 0;
+		for (int v : sources)
+			sourcesFlowSum += vertexFlowOut.get(v);
+		for (int v : sinks)
+			sinksFlowSum += vertexFlowOut.get(v);
+		assertEquals(sourcesFlowSum, totalFlow, 1E-3);
+		assertEquals(sinksFlowSum, -totalFlow, 1E-3);
+	}
+
+	static void assertValidFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		int n = g.vertices().size();
+		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
+		for (int e : g.edges()) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			vertexFlowOut.put(u, vertexFlowOut.get(u) + net.getFlow(e));
+			vertexFlowOut.put(v, vertexFlowOut.get(v) - net.getFlow(e));
+		}
+		sources = new IntOpenHashSet(sources);
+		sinks = new IntOpenHashSet(sinks);
+		for (int v : g.vertices()) {
+			if (sources.contains(v))
+				assertTrue(vertexFlowOut.get(v) >= 0);
+			if (sinks.contains(v))
+				assertTrue(vertexFlowOut.get(v) <= 0);
+		}
+		double sourcesFlowSum = 0;
+		double sinksFlowSum = 0;
+		for (int v : sources)
+			sourcesFlowSum += vertexFlowOut.get(v);
+		for (int v : sinks)
+			sinksFlowSum += vertexFlowOut.get(v);
+		assertEquals(sourcesFlowSum, -sinksFlowSum, 1E-3);
 	}
 
 	/* implementation taken from the Internet */

@@ -20,7 +20,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Compute the minimum-cost (max) flow in a flow network using cycle canceling.
@@ -50,32 +49,6 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImpl {
 
 		/* Compute maximum flow */
 		maxFlowAlg.computeMaximumFlow(gOrig, net, source, sink);
-
-		/* Construct the residual graph from the maximum flow */
-		FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);
-		builder.addAllOriginalEdges();
-		FlowNetworks.ResidualGraph resGraph = builder.build();
-		IndexGraph g = resGraph.g;
-		double[] capacity = new double[g.edges().size()];
-		double[] flow = new double[g.edges().size()];
-
-		/* eliminate negative cycles in the residual network repeatedly */
-		initResidualCapacitiesAndFlows(gOrig, net, resGraph, capacity, flow);
-		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost);
-
-		for (int m = g.edges().size(), e = 0; e < m; e++)
-			if (resGraph.isOriginalEdge(e))
-				net.setFlow(resGraph.edgeRef[e], flow[e]);
-	}
-
-	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, IntCollection sources,
-			IntCollection sinks) {
-		Assertions.Graphs.onlyDirected(gOrig);
-		Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
-
-		/* Compute maximum flow */
-		maxFlowAlg.computeMaximumFlow(gOrig, net, sources, sinks);
 
 		/* Construct the residual graph from the maximum flow */
 		FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);
@@ -135,10 +108,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImpl {
 		 */
 
 		BitSet saturated = new BitSet(g.edges().size());
-		double maxCost = 0;
-		for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-			maxCost = Math.max(maxCost, Math.abs(cost.weight(e)));
-		final double saturatedCost = maxCost * g.vertices().size();
+		final double saturatedCost = hugeCost(gOrig, cost);
 
 		/* Init costs for edges */
 		/* cost(e) for original edges */

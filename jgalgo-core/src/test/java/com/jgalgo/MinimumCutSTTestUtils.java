@@ -118,10 +118,21 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	private static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
+	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
 		final int n = g.vertices().size();
-		final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
-		final int sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
+		final int sourcesNum;
+		final int sinksNum;
+		if (n < 2) {
+			throw new IllegalArgumentException("too few vertices");
+		} else if (n < 4) {
+			sourcesNum = sinksNum = 1;
+		} else if (n <= 6) {
+			sourcesNum = sinksNum = 2;
+		} else {
+			sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
+			sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
+		}
+
 		IntCollection sources = new IntOpenHashSet(sourcesNum);
 		IntCollection sinks = new IntOpenHashSet(sinksNum);
 		for (int[] vs = g.vertices().toIntArray();;) {

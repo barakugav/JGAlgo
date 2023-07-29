@@ -60,13 +60,13 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 		/* per-edge information */
 		private final int[] residualCapacity;
-		private final int[] cost;
+		private final long[] cost;
 		private final int[] twin;
 
 		/* 'potential' is similar to 'label' in the push-relabel max-flow algorithms */
-		private final int[] potential;
+		private final long[] potential;
 		private final int[] excess;
-		private int eps;
+		private long eps;
 
 		/* we use a simple FIFO queue for the active vertices */
 		private final IntPriorityQueue activeQueue;
@@ -102,14 +102,14 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 
-			potential = new int[n];
+			potential = new long[n];
 			excess = new int[n];
 			/* we don't init excess to the 'supply' function because the circulation will zero it */
 
-			cost = new int[m];
-			int maxCost = 1;
+			cost = new long[m];
+			long maxCost = 1;
 			for (int e = 0; e < m; e++) {
-				int c = costOrig.weightInt(edgeRef[e]);
+				long c = costOrig.weightInt(edgeRef[e]);
 				c = resGraph.isOriginalEdge(e) ? c : -c;
 				/* multiply all costs by \alpha n so costs will be integers when we scale them */
 				cost[e] = c * n * alpha;
@@ -146,7 +146,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				potential[u] /= n * alpha;
 
-			int maxPotential = 0;
+			long maxPotential = 0;
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				if (maxPotential < potential[u])
 					maxPotential = potential[u];
@@ -172,7 +172,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 				/* Saturate all edges with negative cost */
 				for (int n = g.vertices().size(), u = 0; u < n; u++) {
-					int uPotential = potential[u];
+					long uPotential = potential[u];
 					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int delta = residualCapacity[e];
@@ -211,7 +211,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 					}
 
 					/* Discharge the vertex, namely push its excess to other vertices */
-					discharge(searchSource);
+					dischargePartialAugment(searchSource);
 					if (excess[searchSource] > 0)
 						activeQueue.enqueue(searchSource);
 
@@ -221,7 +221,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			}
 		}
 
-		private void discharge(int searchSource) {
+		private void dischargePartialAugment(int searchSource) {
 
 			/*
 			 * We perform a DFS from the 'searchSource' node, using only admissible edges. If we manage to reach path of
@@ -236,8 +236,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			dfs: for (int u = searchSource;;) {
 
 				/* Find an admissible edge from u */
-				int uPotential = potential[u];
-				int minResidualCost = Integer.MAX_VALUE;
+				long uPotential = potential[u];
+				long minResidualCost = Long.MAX_VALUE;
 				assert edgeIter[u].hasNext();
 				final int firstEdge = edgeIter[u].peekNext();
 				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
@@ -245,7 +245,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 					int e = eit.peekNext();
 					if (residualCapacity[e] > 0) {
 						int v = g.edgeTarget(e);
-						int residualCost = cost[e] + uPotential - potential[v];
+						long residualCost = cost[e] + uPotential - potential[v];
 						if (residualCost < 0) {
 							/* Extend the DFS search by the found edge */
 							path.add(e);
@@ -277,7 +277,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							assert !path.isEmpty();
 							int lastEdge = path.getInt(path.size() - 1);
 							int lastTwin = twin[lastEdge];
-							int residualCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
+							long residualCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
 							if (minResidualCost > residualCost)
 								minResidualCost = residualCost;
 						}
@@ -287,13 +287,13 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							if (e2 == firstEdge)
 								break;
 							if (residualCapacity[e2] > 0) {
-								int residualCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
+								long residualCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
 								if (minResidualCost > residualCost)
 									minResidualCost = residualCost;
 							}
 
 						}
-						assert minResidualCost != Integer.MAX_VALUE;
+						assert minResidualCost != Long.MAX_VALUE;
 
 						/* 'relabel', change potential */
 						potential[u] -= minResidualCost + eps;
@@ -335,7 +335,6 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 				if (excess[v] > 0 && excess[v] <= delta)
 					activeQueue.enqueue(v);
 			}
-			assert onPath.get(searchSource);
 			onPath.clear(searchSource);
 			assert onPath.isEmpty();
 			path.clear();
@@ -373,20 +372,9 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
 		WeightFunction.Int costOrigInt = (WeightFunction.Int) costOrig;
 
-		int sourcesOutCapacity = 0;
-		int sinksInCapacity = 0;
-		for (int source : sources)
-			for (int e : gOrig.outEdges(source))
-				sourcesOutCapacity += netOrigInt.getCapacityInt(e);
-		for (int sink : sinks)
-			for (int e : gOrig.inEdges(sink))
-				sinksInCapacity += netOrigInt.getCapacityInt(e);
-		final int hugeCapacity = 1 + Math.max(10, Math.max(sourcesOutCapacity, sinksInCapacity));
+		final int hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrigInt, sources, sinks);
 
-		int costSum = 0;
-		for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-			costSum += Math.abs(costOrigInt.weightInt(e));
-		final int hugeCost = 1 + costSum;
+		final int hugeCost = hugeCost(gOrig, costOrigInt);
 
 		IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
 		for (int n = gOrig.vertices().size(), v = 0; v < n; v++)

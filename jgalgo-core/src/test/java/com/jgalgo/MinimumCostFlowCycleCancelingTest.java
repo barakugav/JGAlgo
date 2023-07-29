@@ -21,9 +21,39 @@ import com.jgalgo.internal.util.TestBase;
 public class MinimumCostFlowCycleCancelingTest extends TestBase {
 
 	@Test
-	public void testRandDigGraphs() {
+	public void testMinCostMaxFlowWithSourceSink() {
 		final long seed = 0xd4a5d9c74a4ff3d0L;
-		MinimumCostFlowTestUtils.testRandDiGraphs(algo(), seed);
+		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourceSink(algo(), seed);
+	}
+
+	@Test
+	public void testMinCostMaxFlowWithSourceSinkLowerBound() {
+		final long seed = 0x1d5f848407f40c2dL;
+		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourceSinkLowerBound(algo(), seed);
+	}
+
+	@Test
+	public void testMinCostMaxFlowWithSourcesSinks() {
+		final long seed = 0x6957bbef1e9f7546L;
+		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourcesSinks(algo(), seed);
+	}
+
+	@Test
+	public void testMinCostMaxFlowWithSourcesSinksLowerBound() {
+		final long seed = 0x66fc23c1024348aeL;
+		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourcesSinksLowerBound(algo(), seed);
+	}
+
+	@Test
+	public void testMinCostFlowWithSupply() {
+		final long seed = 0x1e7f3802930a9f8bL;
+		MinimumCostFlowTestUtils.testMinCostFlowWithSupply(algo(), seed);
+	}
+
+	@Test
+	public void testMinCostFlowWithSupplyLowerBound() {
+		final long seed = 0x4942cca716edeee2L;
+		MinimumCostFlowTestUtils.testMinCostFlowWithSupplyLowerBound(algo(), seed);
 	}
 
 	private static MinimumCostFlow algo() {

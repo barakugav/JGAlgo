@@ -144,9 +144,9 @@ public interface FlowNetwork {
 		} else {
 			for (int source : sources) {
 				for (int e : g.outEdges(source)) {
-					if (g.edgeSource(e) == source) {
+					if (source != g.edgeTarget(e)) {
 						sum += getFlow(e);
-					} else {
+					} else if (source != g.edgeSource(e)) {
 						sum -= getFlow(e);
 					}
 				}
@@ -167,8 +167,14 @@ public interface FlowNetwork {
 	 */
 	default double getCostSum(IntCollection edges, WeightFunction cost) {
 		double sum = 0;
-		for (int e : edges)
-			sum += getFlow(e) * cost.weight(e);
+		if (cost instanceof WeightFunction.Int) {
+			WeightFunction.Int costInt = (WeightFunction.Int) cost;
+			for (int e : edges)
+				sum += getFlow(e) * costInt.weightInt(e);
+		} else {
+			for (int e : edges)
+				sum += getFlow(e) * cost.weight(e);
+		}
 		return sum;
 	}
 
@@ -286,6 +292,22 @@ public interface FlowNetwork {
 		@Override
 		default void setFlow(int edge, double flow) {
 			setFlow(edge, (int) flow);
+		}
+
+		@Override
+		default double getCostSum(IntCollection edges, WeightFunction cost) {
+			if (cost instanceof WeightFunction.Int) {
+				WeightFunction.Int costInt = (WeightFunction.Int) cost;
+				int sum = 0;
+				for (int e : edges)
+					sum += getFlowInt(e) * costInt.weightInt(e);
+				return sum;
+			} else {
+				double sum = 0;
+				for (int e : edges)
+					sum += getFlowInt(e) * cost.weight(e);
+				return sum;
+			}
 		}
 
 		/**
