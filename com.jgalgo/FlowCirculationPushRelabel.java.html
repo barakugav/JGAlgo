@@ -192,7 +192,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L192">						flow[e] = lowerBound;</span>
 <span class="fc" id="L193">						exc -= fc; // no need to update excess[act], it will be updated later</span>
 <span class="fc" id="L194">						excess[v] += fc;</span>
-<span class="pc bpc" id="L195" title="1 of 4 branches missed.">						if (!isActive.get(v) &amp;&amp; excess[v] &gt; 0)</span>
+<span class="fc bfc" id="L195" title="All 4 branches covered.">						if (!isActive.get(v) &amp;&amp; excess[v] &gt; 0)</span>
 <span class="fc" id="L196">							activate(v);</span>
 					}
 <span class="fc" id="L198">				}</span>

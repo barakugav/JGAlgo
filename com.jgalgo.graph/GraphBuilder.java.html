@@ -173,7 +173,7 @@ public interface GraphBuilder {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="nc" id="L176">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L176">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**

@@ -111,7 +111,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		}
 
 		private boolean canAddEdgeWithoutId() {
-<span class="nc bnc" id="L114" title="All 4 branches missed.">			return eIdToIndex.isEmpty() || !userProvideEdgesIds;</span>
+<span class="pc bpc" id="L114" title="1 of 4 branches missed.">			return eIdToIndex.isEmpty() || !userProvideEdgesIds;</span>
 		}
 
 		private boolean canAddEdgeWithId() {
@@ -149,23 +149,23 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 		@Override
 		public int addEdge(int source, int target) {
-<span class="nc bnc" id="L152" title="All 2 branches missed.">			if (!canAddEdgeWithoutId())</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">			if (!canAddEdgeWithoutId())</span>
 <span class="nc" id="L153">				throw new IllegalArgumentException(</span>
 						&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
-<span class="nc" id="L155">			int sourceIdx = vIdToIndex.get(source);</span>
-<span class="nc" id="L156">			int targetIdx = vIdToIndex.get(target);</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
+<span class="fc" id="L155">			int sourceIdx = vIdToIndex.get(source);</span>
+<span class="fc" id="L156">			int targetIdx = vIdToIndex.get(target);</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
 <span class="nc" id="L158">				throw new IndexOutOfBoundsException(target);</span>
-<span class="nc bnc" id="L159" title="All 2 branches missed.">			if (sourceIdx == vIdToIndex.defaultReturnValue())</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">			if (sourceIdx == vIdToIndex.defaultReturnValue())</span>
 <span class="nc" id="L160">				throw new IndexOutOfBoundsException(source);</span>
 
-<span class="nc" id="L162">			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);</span>
-<span class="nc" id="L163">			int eId = eIndex + 1; // avoid null key in open hash maps</span>
-<span class="nc bnc" id="L164" title="All 2 branches missed.">			assert eIndex == eIndexToId.size();</span>
-<span class="nc" id="L165">			eIndexToId.add(eId);</span>
-<span class="nc" id="L166">			int oldVal = eIdToIndex.put(eId, eIndex);</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">			assert oldVal == eIdToIndex.defaultReturnValue();</span>
-<span class="nc" id="L168">			return eId;</span>
+<span class="fc" id="L162">			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);</span>
+<span class="fc" id="L163">			int eId = eIndex + 1; // avoid null key in open hash maps</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">			assert eIndex == eIndexToId.size();</span>
+<span class="fc" id="L165">			eIndexToId.add(eId);</span>
+<span class="fc" id="L166">			int oldVal = eIdToIndex.put(eId, eIndex);</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert oldVal == eIdToIndex.defaultReturnValue();</span>
+<span class="fc" id="L168">			return eId;</span>
 		}
 
 		@Override

@@ -173,148 +173,150 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="fc" id="L173">		}</span>
 
 		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-<span class="nc bnc" id="L176" title="All 2 branches missed.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L177">				double l = lowerBound.weight(e);</span>
-<span class="nc bnc" id="L178" title="All 4 branches missed.">				if (!(0 &lt;= l &amp;&amp; l &lt;= net.getCapacity(e)))</span>
-<span class="nc" id="L179">					throw new IllegalArgumentException(&quot;Lower bound must be in [0, capacity] for edge &quot; + e);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L177">				double l = lowerBound.weight(e);</span>
+<span class="fc" id="L178">				double cap = net.getCapacity(e);</span>
+<span class="pc bpc" id="L179" title="2 of 4 branches missed.">				if (!(0 &lt;= l &amp;&amp; l &lt;= cap))</span>
+<span class="nc" id="L180">					throw new IllegalArgumentException(</span>
+							&quot;Lower bound &quot; + l + &quot; of edge &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
 			}
-<span class="nc" id="L181">		}</span>
+<span class="fc" id="L183">		}</span>
 
 		public static void checkSupply(IndexGraph g, WeightFunction supply) {
-<span class="fc" id="L184">			double sum = 0;</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L186">				double d = supply.weight(v);</span>
-<span class="pc bpc" id="L187" title="1 of 2 branches missed.">				if (!Double.isFinite(d))</span>
-<span class="nc" id="L188">					throw new IllegalArgumentException(&quot;Supply must be non-negative for vertex &quot; + v);</span>
-<span class="fc" id="L189">				sum += d;</span>
+<span class="fc" id="L186">			double sum = 0;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L188">				double d = supply.weight(v);</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">				if (!Double.isFinite(d))</span>
+<span class="nc" id="L190">					throw new IllegalArgumentException(&quot;Supply must be non-negative for vertex &quot; + v);</span>
+<span class="fc" id="L191">				sum += d;</span>
 			}
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">			if (sum != 0)</span>
-<span class="nc" id="L192">				throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
-<span class="fc" id="L193">		}</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">			if (sum != 0)</span>
+<span class="nc" id="L194">				throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
+<span class="fc" id="L195">		}</span>
 	}
 
-<span class="nc" id="L196">	public static class Arrays {</span>
+<span class="nc" id="L198">	public static class Arrays {</span>
 		public static void checkFromTo(int from, int to, int length) {
-<span class="fc" id="L198">			Objects.checkFromToIndex(from, to, length);</span>
-<span class="fc" id="L199">		}</span>
+<span class="fc" id="L200">			Objects.checkFromToIndex(from, to, length);</span>
+<span class="fc" id="L201">		}</span>
 
 		public static void checkIndex(int index, int from, int to) {
-<span class="pc bpc" id="L202" title="2 of 4 branches missed.">			if (index &lt; from || index &gt;= to)</span>
-<span class="nc" id="L203">				throw new IndexOutOfBoundsException(</span>
+<span class="pc bpc" id="L204" title="2 of 4 branches missed.">			if (index &lt; from || index &gt;= to)</span>
+<span class="nc" id="L205">				throw new IndexOutOfBoundsException(</span>
 						&quot;Index &quot; + index + &quot; out of bounds for range Range [&quot; + from + &quot;, &quot; + to + &quot;)&quot;);
-<span class="fc" id="L205">		}</span>
+<span class="fc" id="L207">		}</span>
 	}
 
-<span class="nc" id="L208">	public static class Iters {</span>
+<span class="nc" id="L210">	public static class Iters {</span>
 
-<span class="fc" id="L210">		private static final boolean AssertNotEmpty = getBoolConfig(&quot;AssertionsIterNotEmpty&quot;);</span>
+<span class="fc" id="L212">		private static final boolean AssertNotEmpty = getBoolConfig(&quot;AssertionsIterNotEmpty&quot;);</span>
 
 		public static final String ERR_NO_NEXT = &quot;Iterator has no next element&quot;;
 		public static final String ERR_NO_PREVIOUS = &quot;Iterator has no previous element&quot;;
 
 		public static void hasNext(Iterator&lt;?&gt; it) {
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
-<span class="nc" id="L217">				return;</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">			if (!it.hasNext())</span>
-<span class="nc" id="L219">				throw new NoSuchElementException(ERR_NO_NEXT);</span>
-<span class="fc" id="L220">		}</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
+<span class="nc" id="L219">				return;</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">			if (!it.hasNext())</span>
+<span class="nc" id="L221">				throw new NoSuchElementException(ERR_NO_NEXT);</span>
+<span class="fc" id="L222">		}</span>
 
 		public static void hasPrevious(ListIterator&lt;?&gt; it) {
-<span class="nc bnc" id="L223" title="All 2 branches missed.">			if (!AssertNotEmpty)</span>
-<span class="nc" id="L224">				return;</span>
-<span class="nc bnc" id="L225" title="All 2 branches missed.">			if (!it.hasPrevious())</span>
-<span class="nc" id="L226">				throw new NoSuchElementException(ERR_NO_PREVIOUS);</span>
-<span class="nc" id="L227">		}</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">			if (!AssertNotEmpty)</span>
+<span class="nc" id="L226">				return;</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">			if (!it.hasPrevious())</span>
+<span class="nc" id="L228">				throw new NoSuchElementException(ERR_NO_PREVIOUS);</span>
+<span class="nc" id="L229">		}</span>
 
 	}
 
-<span class="nc" id="L231">	public static class Heaps {</span>
+<span class="nc" id="L233">	public static class Heaps {</span>
 
-<span class="fc" id="L233">		private static final boolean AssertDecreaseKeyLegal = getBoolConfig(&quot;AssertionsHeapsDecreaseKeyLegal&quot;);</span>
-<span class="fc" id="L234">		private static final boolean AssertNotEmpty = getBoolConfig(&quot;AssertionsHeapsNotEmpty&quot;);</span>
-<span class="fc" id="L235">		private static final boolean AssertMeldLegal = getBoolConfig(&quot;AssertionsHeapsMeldLegal&quot;);</span>
+<span class="fc" id="L235">		private static final boolean AssertDecreaseKeyLegal = getBoolConfig(&quot;AssertionsHeapsDecreaseKeyLegal&quot;);</span>
+<span class="fc" id="L236">		private static final boolean AssertNotEmpty = getBoolConfig(&quot;AssertionsHeapsNotEmpty&quot;);</span>
+<span class="fc" id="L237">		private static final boolean AssertMeldLegal = getBoolConfig(&quot;AssertionsHeapsMeldLegal&quot;);</span>
 
 		public static &lt;E&gt; void decreaseKeyIsSmaller(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
-<span class="nc" id="L239">				return;</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">			int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
-<span class="nc" id="L242">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
-<span class="fc" id="L243">		}</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
+<span class="nc" id="L241">				return;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">			int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L244">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L245">		}</span>
 
 		public static void decreaseKeyIsSmaller(int oldKey, int newKey, IntComparator cmp) {
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
-<span class="nc" id="L247">				return;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">			int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
-<span class="nc" id="L250">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
-<span class="fc" id="L251">		}</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
+<span class="nc" id="L249">				return;</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L252">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L253">		}</span>
 
 		public static void decreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
-<span class="nc" id="L255">				return;</span>
-<span class="pc bpc" id="L256" title="1 of 2 branches missed.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
-<span class="nc" id="L258">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
-<span class="fc" id="L259">		}</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">			if (!AssertDecreaseKeyLegal)</span>
+<span class="nc" id="L257">				return;</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L260">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L261">		}</span>
 
 		public static &lt;E&gt; void noMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
-<span class="nc" id="L263">				return;</span>
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (heap == other)</span>
-<span class="nc" id="L265">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-<span class="fc" id="L266">		}</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
+<span class="nc" id="L265">				return;</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">			if (heap == other)</span>
+<span class="nc" id="L267">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="fc" id="L268">		}</span>
 
 		public static &lt;K, V&gt; void noMeldWithSelf(HeapReferenceable&lt;K, V&gt; heap,
 				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L270" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
-<span class="nc" id="L271">				return;</span>
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			if (heap == other)</span>
-<span class="nc" id="L273">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-<span class="fc" id="L274">		}</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
+<span class="nc" id="L273">				return;</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">			if (heap == other)</span>
+<span class="nc" id="L275">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="fc" id="L276">		}</span>
 
 		@SuppressWarnings(&quot;rawtypes&quot;)
 		public static &lt;K, V&gt; void meldWithSameImpl(Class&lt;? extends HeapReferenceable&gt; impl,
 				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
-<span class="nc" id="L280">				return;</span>
-<span class="pc bpc" id="L281" title="1 of 2 branches missed.">			if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="nc" id="L282">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
-<span class="fc" id="L283">		}</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
+<span class="nc" id="L282">				return;</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">			if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="nc" id="L284">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="fc" id="L285">		}</span>
 
 		public static &lt;E&gt; void equalComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
-<span class="nc" id="L287">				return;</span>
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L289">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-<span class="fc" id="L290">		}</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
+<span class="nc" id="L289">				return;</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L291">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L292">		}</span>
 
 		public static &lt;K, V&gt; void equalComparatorBeforeMeld(HeapReferenceable&lt;K, V&gt; heap,
 				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L294" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
-<span class="nc" id="L295">				return;</span>
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L297">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-<span class="fc" id="L298">		}</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">			if (!AssertMeldLegal)</span>
+<span class="nc" id="L297">				return;</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L299">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L300">		}</span>
 
 		public static void notEmpty(Heap&lt;?&gt; heap) {
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
-<span class="nc" id="L302">				return;</span>
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
-<span class="nc" id="L304">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-<span class="fc" id="L305">		}</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
+<span class="nc" id="L304">				return;</span>
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
+<span class="nc" id="L306">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="fc" id="L307">		}</span>
 
 		public static void notEmpty(HeapReferenceable&lt;?, ?&gt; heap) {
-<span class="pc bpc" id="L308" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
-<span class="nc" id="L309">				return;</span>
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
-<span class="nc" id="L311">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-<span class="fc" id="L312">		}</span>
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">			if (!AssertNotEmpty)</span>
+<span class="nc" id="L311">				return;</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
+<span class="nc" id="L313">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="fc" id="L314">		}</span>
 
 	}
 
 	private static boolean getBoolConfig(String name) {
-<span class="fc" id="L317">		return ((Boolean) JGAlgoConfig.getOption(name).get()).booleanValue();</span>
+<span class="fc" id="L319">		return ((Boolean) JGAlgoConfig.getOption(name).get()).booleanValue();</span>
 	}
 
 }
