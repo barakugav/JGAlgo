@@ -15,18 +15,21 @@
  */
 package com.jgalgo;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.FlowNetworks.ResidualGraph;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Minimum-cost flow computation using the cost-scaling algorithm with partial-augmentations push-relabel variant.
@@ -78,12 +81,19 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		/* Per vertex iterator, corresponding to 'current edge' in the paper */
 		private final EdgeIter[] edgeIter;
 
+		/* The maximum length of an augmentation path, similar to {@link MaximumFlowPushRelabelPartialAugment} */
+		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
+
 		/* global updated should be performed each O(n) relabels */
 		private int relabelsSinceLastGlobalUpdate;
 		private final int globalUpdateThreshold;
 
-		/* The maximum length of an augmentation path, similar to {@link MaximumFlowPushRelabelPartialAugment} */
-		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
+		/* Potential refinement heuristic fields */
+		private final IntStack topologicalOrder;
+		private final int[] rank;
+		private final int rankUpperBound;
+		private final LinkedListFixedSize.Doubly buckets;
+		private final int[] bucketsHeads;
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
@@ -138,6 +148,12 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			edgeIter = new EdgeIter[n];
 
 			globalUpdateThreshold = n;
+
+			topologicalOrder = new IntArrayList(n);
+			rank = new int[n];
+			rankUpperBound = alpha * n;
+			buckets = new LinkedListFixedSize.Doubly(n + 1);
+			bucketsHeads = new int[rankUpperBound];
 		}
 
 		void solve() {
@@ -165,8 +181,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		}
 
 		private void solveWithPartialAugment() {
-			for (int eps_iter = 0; eps >= 1; eps = ((eps < alpha && eps > 1) ? 1 : eps / alpha), eps_iter++) {
-				if (eps_iter >= POTENTIAL_REFINEMENT_ITERATION_SKIP)
+			for (int epsIter = 0; eps >= 1; eps = ((eps < alpha && eps > 1) ? 1 : eps / alpha), epsIter++) {
+				if (epsIter >= POTENTIAL_REFINEMENT_ITERATION_SKIP)
 					if (potentialRefinement())
 						continue;
 
@@ -237,7 +253,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 				/* Find an admissible edge from u */
 				long uPotential = potential[u];
-				long minResidualCost = Long.MAX_VALUE;
+				long minReducedCost = Long.MAX_VALUE;
 				assert edgeIter[u].hasNext();
 				final int firstEdge = edgeIter[u].peekNext();
 				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
@@ -245,8 +261,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 					int e = eit.peekNext();
 					if (residualCapacity[e] > 0) {
 						int v = g.edgeTarget(e);
-						long residualCost = cost[e] + uPotential - potential[v];
-						if (residualCost < 0) {
+						long reducedCost = cost[e] + uPotential - potential[v];
+						if (reducedCost < 0) {
 							/* Extend the DFS search by the found edge */
 							path.add(e);
 
@@ -261,9 +277,9 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							onPath.set(v);
 							continue dfs;
 
-						} else if (minResidualCost > residualCost) {
+						} else {
 							/* Cache the minimum change in the potential required for the edge to become admissible */
-							minResidualCost = residualCost;
+							minReducedCost = Math.min(minReducedCost, reducedCost);
 						}
 					}
 
@@ -277,9 +293,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							assert !path.isEmpty();
 							int lastEdge = path.getInt(path.size() - 1);
 							int lastTwin = twin[lastEdge];
-							long residualCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
-							if (minResidualCost > residualCost)
-								minResidualCost = residualCost;
+							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
+							minReducedCost = Math.min(minReducedCost, reducedCost);
 						}
 						for (EdgeIter eit2 = g.outEdges(u).iterator();;) {
 							assert eit2.hasNext();
@@ -287,16 +302,15 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							if (e2 == firstEdge)
 								break;
 							if (residualCapacity[e2] > 0) {
-								long residualCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
-								if (minResidualCost > residualCost)
-									minResidualCost = residualCost;
+								long reducedCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
+								minReducedCost = Math.min(minReducedCost, reducedCost);
 							}
 
 						}
-						assert minResidualCost != Long.MAX_VALUE;
+						assert minReducedCost != Long.MAX_VALUE;
 
 						/* 'relabel', change potential */
-						potential[u] -= minResidualCost + eps;
+						potential[u] -= minReducedCost + eps;
 						relabelsSinceLastGlobalUpdate++;
 						/* Reset u iterator */
 						edgeIter[u] = g.outEdges(u).iterator();
@@ -348,10 +362,175 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		}
 
 		private boolean potentialRefinement() {
-			// TODO optimization, implement this func
-			return false;
+			for (;;) {
+				boolean topologicalOrderFound = computeTopologicalOrder();
+				if (!topologicalOrderFound)
+					return false;
+
+				Arrays.fill(rank, 0);
+				final int bucketEnd = g.vertices().size();
+				Arrays.fill(bucketsHeads, bucketEnd);
+
+				int maxRank = 0;
+				while (!topologicalOrder.isEmpty()) {
+					int u = topologicalOrder.popInt();
+
+					int uRank = rank[u];
+					long uPotential = potential[u];
+					for (int e : g.outEdges(u)) {
+						if (residualCapacity[e] <= 0)
+							continue;
+						int v = g.edgeTarget(e);
+						long reducedCost = cost[e] + uPotential - potential[v];
+						if (reducedCost >= 0)
+							continue;
+						long k = (long) ((-reducedCost - 0.5) / eps);
+						if (k < rankUpperBound) {
+							int vRankNew = uRank + (int) k;
+							rank[v] = Math.max(rank[v], vRankNew);
+						}
+					}
+
+					if (uRank > 0) {
+						maxRank = Math.max(maxRank, uRank);
+						buckets.connect(u, bucketsHeads[uRank]);
+						bucketsHeads[uRank] = u;
+					}
+				}
+
+				if (maxRank == 0)
+					/* current flow is epsilon-optimal, we are done */
+					return true;
+
+				for (int r = maxRank; r > 0; r--) {
+					while (bucketsHeads[r] != bucketEnd) {
+						int u = bucketsHeads[r];
+						bucketsHeads[r] = buckets.next(u);
+
+						long uPotential = potential[u];
+						for (int e : g.outEdges(u)) {
+							if (residualCapacity[e] <= 0)
+								continue;
+							int v = g.edgeTarget(e);
+							int vRankOld = rank[v];
+							if (vRankOld >= r)
+								continue;
+
+							long reducedCost = cost[e] + uPotential - potential[v];
+							int vRankNew;
+							if (reducedCost < 0) {
+								vRankNew = r;
+							} else {
+								long k = reducedCost / eps;
+								vRankNew = 0;
+								if (k < rankUpperBound)
+									vRankNew = r - 1 - (int) k;
+							}
+
+							if (vRankNew > vRankOld) {
+								rank[v] = vRankNew;
+
+								if (vRankOld > 0) {
+									if (bucketsHeads[vRankOld] == v) {
+										bucketsHeads[vRankOld] = buckets.next(v);
+									} else {
+										buckets.disconnect(v);
+									}
+								}
+
+								buckets.connect(v, bucketsHeads[vRankNew]);
+								bucketsHeads[vRankNew] = v;
+							}
+						}
+
+						/* update potential of u */
+						potential[u] -= r * eps;
+					}
+				}
+			}
 		}
 
+		/* returns true if a full topological order was computed in the admissible network */
+		private boolean computeTopologicalOrder() {
+			final int n = g.vertices().size();
+			BitSet visited = new BitSet(n);
+			BitSet processed = new BitSet(n);
+			int[] backtrack = new int[n];
+
+			for (int v = 0; v < n; v++)
+				edgeIter[v] = g.outEdges(v).iterator();
+
+			assert topologicalOrder.isEmpty();
+			for (int root = 0; root < n; ++root) {
+				if (visited.get(root))
+					continue;
+
+				/* Perform a DFS from the current root, trying to find cycles */
+				backtrack[root] = -1;
+				dfs: for (int u = root;;) {
+					visited.set(u);
+					long uPotential = potential[u];
+					for (EdgeIter it = edgeIter[u];; it.nextInt()) {
+						if (!it.hasNext()) {
+							/* No admissible edge from u, go up once in the DFS path */
+							assert !processed.get(u);
+							processed.set(u);
+							topologicalOrder.push(u);
+							u = backtrack[u];
+							if (u < 0)
+								/* No more paths from current root */
+								break dfs;
+
+							/* advance edge iterator to next child */
+							assert edgeIter[u].hasNext();
+							edgeIter[u].nextInt();
+							continue dfs;
+						}
+
+						/* Use only admissible edges */
+						int e = it.peekNext();
+						if (residualCapacity[e] <= 0)
+							continue;
+						int v = g.edgeTarget(e);
+						if (cost[e] + uPotential - potential[v] >= 0)
+							continue;
+
+						if (!visited.get(v)) {
+							/* Continue down the DFS in v */
+							visited.set(v);
+							backtrack[v] = u;
+							u = v;
+							continue dfs;
+
+						}
+						if (!processed.get(v)) {
+							/* a cycle was found, no valid topological order exists */
+
+							/* Find the minimum residual capacity along the cycle */
+							int delta = residualCapacity[e];
+							for (int w = u; w != v;) {
+								w = backtrack[w];
+								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNext()]);
+							}
+
+							/* Augment along the cycle */
+							residualCapacity[e] -= delta;
+							residualCapacity[twin[e]] += delta;
+							for (int w = u; w != v;) {
+								w = backtrack[w];
+								int ca = edgeIter[w].peekNext();
+								residualCapacity[ca] -= delta;
+								residualCapacity[twin[ca]] += delta;
+							}
+
+							((IntList) topologicalOrder).clear();
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
 	}
 
 	@Override
