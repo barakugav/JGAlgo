@@ -46,12 +46,12 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 	private static final int alpha = 16;
 
 	@Override
-	void computeMinCostFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
+	void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
 		if (!(net instanceof FlowNetwork.Int && supply instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
 		if (!(cost instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("only integer costs are supported");
-		new Worker(gOrig, (FlowNetwork.Int) net, (WeightFunction.Int) cost, (WeightFunction.Int) supply).solve();
+		new Worker(g, (FlowNetwork.Int) net, (WeightFunction.Int) cost, (WeightFunction.Int) supply).solve();
 	}
 
 	private static class Worker {
@@ -152,7 +152,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			topologicalOrder = new IntArrayList(n);
 			rank = new int[n];
 			rankUpperBound = alpha * n;
-			buckets = new LinkedListFixedSize.Doubly(n + 1);
+			buckets = new LinkedListFixedSize.Doubly(n + 2);
 			bucketsHeads = new int[rankUpperBound];
 		}
 
@@ -259,7 +259,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
 					assert eit.hasNext();
 					int e = eit.peekNext();
-					if (residualCapacity[e] > 0) {
+					if (isResidual(e)) {
 						int v = g.edgeTarget(e);
 						long reducedCost = cost[e] + uPotential - potential[v];
 						if (reducedCost < 0) {
@@ -301,7 +301,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 							int e2 = eit2.nextInt();
 							if (e2 == firstEdge)
 								break;
-							if (residualCapacity[e2] > 0) {
+							if (isResidual(e2)) {
 								long reducedCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];
 								minReducedCost = Math.min(minReducedCost, reducedCost);
 							}
@@ -356,7 +356,91 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 		}
 
 		private void globalUpdate() {
-			// TODO optimization, implement this func
+			final int n = g.vertices().size();
+			final int bucketEnd = n + 1;
+
+			/* Set all ranks of vertices with demand to zero, and other vertices to rankUpperBound */
+			Arrays.fill(bucketsHeads, bucketEnd);
+			int excessSum = 0;
+			int demandVerticesListHead = bucketEnd;
+			for (int v = 0; v < n; v++) {
+				if (excess[v] < 0) {
+					rank[v] = 0;
+					buckets.setNext(v, demandVerticesListHead);
+					buckets.setPrev(demandVerticesListHead, v);
+					demandVerticesListHead = v;
+				} else {
+					excessSum += excess[v];
+					rank[v] = rankUpperBound;
+				}
+			}
+			if (excessSum == 0)
+				return;
+			bucketsHeads[0] = demandVerticesListHead;
+
+			int r;
+			for (r = 0; r < rankUpperBound; r++) {
+				while (bucketsHeads[r] != bucketEnd) {
+					int u = bucketsHeads[r];
+					bucketsHeads[r] = buckets.next(u);
+
+					long uPotential = potential[u];
+					for (EdgeIter it = edgeIter[u];;) {
+						if (!it.hasNext()) {
+							edgeIter[u] = g.outEdges(u).iterator();
+							break;
+						}
+						/* e is an in-edge of u */
+						int e = twin[it.nextInt()];
+						if (!isResidual(e))
+							continue;
+						int v = g.edgeSource(e);
+						int vRankOld = rank[v];
+						if (r >= vRankOld)
+							continue;
+
+						long nrc = (cost[e] + potential[v] - uPotential) / eps;
+						int vRankNew = vRankOld;
+						if (nrc < rankUpperBound)
+							vRankNew = r + 1 + (int) nrc;
+
+						/* Change the rank of v */
+						if (vRankNew < vRankOld) {
+							rank[v] = vRankNew;
+							edgeIter[v] = g.outEdges(v).iterator();
+
+							if (vRankOld < rankUpperBound) {
+								if (bucketsHeads[vRankOld] == v) {
+									bucketsHeads[vRankOld] = buckets.next(v);
+								} else {
+									buckets.disconnect(v);
+								}
+							}
+
+							buckets.connect(v, bucketsHeads[vRankNew]);
+							bucketsHeads[vRankNew] = v;
+						}
+					}
+
+					if (excess[u] > 0) {
+						excessSum -= excess[u];
+						if (excessSum <= 0)
+							/* no active nodes, we are done */
+							break;
+					}
+				}
+				if (excessSum <= 0)
+					break;
+			}
+
+			/* relabel vertices */
+			for (int v = 0; v < n; v++) {
+				int k = Math.min(rank[v], r);
+				if (k > 0) {
+					potential[v] -= eps * k;
+					edgeIter[v] = g.outEdges(v).iterator();
+				}
+			}
 
 			relabelsSinceLastGlobalUpdate = 0;
 		}
@@ -378,7 +462,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 					int uRank = rank[u];
 					long uPotential = potential[u];
 					for (int e : g.outEdges(u)) {
-						if (residualCapacity[e] <= 0)
+						if (!isResidual(e))
 							continue;
 						int v = g.edgeTarget(e);
 						long reducedCost = cost[e] + uPotential - potential[v];
@@ -409,7 +493,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 						long uPotential = potential[u];
 						for (int e : g.outEdges(u)) {
-							if (residualCapacity[e] <= 0)
+							if (!isResidual(e))
 								continue;
 							int v = g.edgeTarget(e);
 							int vRankOld = rank[v];
@@ -489,7 +573,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 
 						/* Use only admissible edges */
 						int e = it.peekNext();
-						if (residualCapacity[e] <= 0)
+						if (!isResidual(e))
 							continue;
 						int v = g.edgeTarget(e);
 						if (cost[e] + uPotential - potential[v] >= 0)
@@ -531,6 +615,11 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			}
 			return true;
 		}
+
+		private boolean isResidual(int e) {
+			return residualCapacity[e] > 0;
+		}
+
 	}
 
 	@Override
