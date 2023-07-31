@@ -83,12 +83,12 @@ public class TreePathMaximaBench {
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.FALSE), blackhole);
+		benchTPM(TreePathMaxima.newBuilder().setOption("bits-lookup-tables-enable", Boolean.FALSE), blackhole);
 	}
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.TRUE), blackhole);
+		benchTPM(TreePathMaxima.newBuilder().setOption("bits-lookup-tables-enable", Boolean.TRUE), blackhole);
 	}
 
 	private static class TPMArgs {
