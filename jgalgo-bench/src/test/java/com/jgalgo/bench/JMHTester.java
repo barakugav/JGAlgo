@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Setup;
@@ -42,11 +43,22 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 public class JMHTester {
 
 	public static void testBenchmarksInPackage(String packageName) {
-		for (Class<?> clazz : getClasses(packageName)) {
+		for (Class<?> clazz : getPackageClasses(packageName)) {
 			List<Method> benchs = getBenchmarksMethods(clazz);
 			if (benchs.isEmpty() || Modifier.isAbstract(clazz.getModifiers()))
 				continue;
 			System.out.println("Testing benchmarks in class " + clazz.getName());
+			for (Method bench : benchs)
+				testBenchmark(bench);
+		}
+	}
+
+	public static void testBenchmarksInClass(Class<?> clazz) {
+		for (Class<?> clazz2 : getClassSubClasses(clazz)) {
+			List<Method> benchs = getBenchmarksMethods(clazz2);
+			if (benchs.isEmpty() || Modifier.isAbstract(clazz2.getModifiers()))
+				continue;
+			System.out.println("Testing benchmarks in class " + clazz2.getName());
 			for (Method bench : benchs)
 				testBenchmark(bench);
 		}
@@ -144,7 +156,7 @@ public class JMHTester {
 		}
 	}
 
-	private static Collection<Class<?>> getClasses(String packageName) {
+	private static Collection<Class<?>> getPackageClasses(String packageName) {
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			assert classLoader != null;
@@ -162,6 +174,11 @@ public class JMHTester {
 		} catch (ClassNotFoundException | IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static Collection<Class<?>> getClassSubClasses(Class<?> clazz) {
+		return getPackageClasses(clazz.getPackageName()).stream().filter(c -> clazz.isAssignableFrom(c))
+				.collect(Collectors.toList());
 	}
 
 	private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {

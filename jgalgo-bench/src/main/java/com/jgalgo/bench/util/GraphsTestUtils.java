@@ -197,8 +197,9 @@ public class GraphsTestUtils extends TestUtils {
 			boolean directed, long seed) {
 		if (n <= 0 || m < 0)
 			throw new IllegalArgumentException();
-		if (m >= 0.75 * n * (n - 1))
-			throw new IllegalArgumentException();
+		if (m > 0.75 * n * (n - 1))
+			throw new IllegalArgumentException(
+					"too many edges for random sampling (max=" + (int) (0.75 * n * (n - 1)) + ")");
 		if (a < 0 || b < 0 || c < 0 || d < 0)
 			throw new IllegalArgumentException();
 		if (a + b + c + d != 1)

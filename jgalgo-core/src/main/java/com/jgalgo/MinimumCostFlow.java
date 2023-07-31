@@ -16,6 +16,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -127,7 +128,101 @@ public interface MinimumCostFlow {
 	 * @return a new builder that can build {@link MinimumCostFlow} objects
 	 */
 	static MinimumCostFlow.Builder newBuilder() {
-		return MinimumCostFlowCycleCanceling::new;
+		return new MinimumCostFlow.Builder() {
+			String impl;
+			boolean integerNetwork;
+			boolean integerCosts;
+
+			@Override
+			public MinimumCostFlow build() {
+				if (impl != null) {
+					switch (impl) {
+						case "cycle-canceling":
+							return new MinimumCostFlowCycleCanceling();
+						case "cost-scaling":
+							return new MinimumCostFlowCostScaling();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				if (integerNetwork && integerCosts) {
+					return new MinimumCostFlowCostScaling();
+				} else {
+					return new MinimumCostFlows.AbstractImpl() {
+
+						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();
+						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();
+
+						@Override
+						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, int source,
+								int sink) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);
+							} else {
+								floatsAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);
+							}
+						}
+
+						@Override
+						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+								IntCollection sources, IntCollection sinks) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);
+							} else {
+								floatsAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);
+							}
+						}
+
+						@Override
+						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+								WeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
+									&& lowerBound instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);
+							} else {
+								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);
+							}
+						}
+
+						@Override
+						void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+								WeightFunction supply) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
+									&& supply instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostFlow(g, net, cost, supply);
+							} else {
+								floatsAlgo.computeMinCostFlow(g, net, cost, supply);
+							}
+						}
+
+					};
+				}
+			}
+
+			@Override
+			public MinimumCostFlow.Builder integerNetwork(boolean enable) {
+				integerNetwork = enable;
+				return this;
+			}
+
+			@Override
+			public MinimumCostFlow.Builder integerCosts(boolean enable) {
+				integerCosts = enable;
+				return this;
+			}
+
+			@Override
+			public MinimumCostFlow.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
@@ -144,6 +239,32 @@ public interface MinimumCostFlow {
 		 * @return a new minimum cost flow algorithm
 		 */
 		MinimumCostFlow build();
+
+		/**
+		 * Enable/disable integer network (capacities, flows, vertices supplies and edges flow lower bound).
+		 * <p>
+		 * More efficient and accurate implementations may be supported if the network is known to be integral. If the
+		 * option is enabled, non-integer networks will not be supported by the built algorithms.
+		 * <p>
+		 * The default value of this option is {@code false}.
+		 *
+		 * @param  enable if {@code true}, algorithms built by this builder will support integer networks only
+		 * @return        this builder
+		 */
+		MinimumCostFlow.Builder integerNetwork(boolean enable);
+
+		/**
+		 * Enable/disable integer costs.
+		 * <p>
+		 * More efficient and accurate implementations may be supported if the cost function is known to be integral. If
+		 * the option is enabled, non-integer cost functions will not be supported by the built algorithms.
+		 * <p>
+		 * The default value of this option is {@code false}.
+		 *
+		 * @param  enable if {@code true}, algorithms built by this builder will support integer cost functions only
+		 * @return        this builder
+		 */
+		MinimumCostFlow.Builder integerCosts(boolean enable);
 	}
 
 }

@@ -42,7 +42,10 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class MaximumFlowBench {
@@ -325,10 +328,10 @@ public class MaximumFlowBench {
 		Random rand = new Random(seed);
 		Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);
 		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
-		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
+		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
-			flow.setCapacity(e, 5000 + rand.nextInt(16384));
-		return flow;
+			net.setCapacity(e, 5000 + rand.nextInt(16384));
+		return net;
 	}
 
 	private static IntIntPair chooseSourceSink(Graph g, Random rand) {
@@ -339,6 +342,40 @@ public class MaximumFlowBench {
 			if (source != sink && Path.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
 		}
+	}
+
+	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
+		final int n = g.vertices().size();
+		final int sourcesNum;
+		final int sinksNum;
+		if (n < 2) {
+			throw new IllegalArgumentException("too few vertices");
+		} else if (n < 4) {
+			sourcesNum = sinksNum = 1;
+		} else if (n <= 6) {
+			sourcesNum = sinksNum = 2;
+		} else {
+			sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
+			sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
+		}
+
+		IntCollection sources = new IntOpenHashSet(sourcesNum);
+		IntCollection sinks = new IntOpenHashSet(sinksNum);
+		for (int[] vs = g.vertices().toIntArray();;) {
+			if (sources.size() < sourcesNum) {
+				int source = vs[rand.nextInt(vs.length)];
+				if (!sinks.contains(source))
+					sources.add(source);
+
+			} else if (sinks.size() < sinksNum) {
+				int sink = vs[rand.nextInt(vs.length)];
+				if (!sources.contains(sink))
+					sinks.add(sink);
+			} else {
+				break;
+			}
+		}
+		return Pair.of(sources, sinks);
 	}
 
 }
