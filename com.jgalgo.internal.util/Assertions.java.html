@@ -49,8 +49,8 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="fc" id="L49">		}</span>
 
 		public static void onlyUndirected(Graph g) {
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			if (g.getCapabilities().directed())</span>
-<span class="nc" id="L53">				throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			if (g.getCapabilities().directed())</span>
+<span class="fc" id="L53">				throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
 <span class="fc" id="L54">		}</span>
 
 		public static void onlyBipartite(IndexGraph g, Weights.Bool partition) {
@@ -62,8 +62,8 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="fc" id="L62">		}</span>
 
 		public static void noSelfEdges(Graph g, String msg) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			if (GraphsUtils.containsSelfEdges(g))</span>
-<span class="nc" id="L66">				throw new IllegalArgumentException(msg);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (GraphsUtils.containsSelfEdges(g))</span>
+<span class="fc" id="L66">				throw new IllegalArgumentException(msg);</span>
 <span class="fc" id="L67">		}</span>
 
 		public static void noParallelEdges(Graph g, String msg) {

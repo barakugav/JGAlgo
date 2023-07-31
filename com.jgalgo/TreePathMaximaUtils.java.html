@@ -41,10 +41,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L41">			IndexGraph iGraph = tree.indexGraph();</span>
 <span class="fc" id="L42">			IndexIdMap viMap = tree.indexGraphVerticesMap();</span>
 <span class="fc" id="L43">			IndexIdMap eiMap = tree.indexGraphEdgesMap();</span>
-<span class="fc" id="L44">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L45">			queries = new IndexQueriesFromQueries(queries, viMap);</span>
+<span class="fc" id="L44">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L45">			TreePathMaxima.Queries iQueries = new IndexQueriesFromQueries(queries, viMap);</span>
 
-<span class="fc" id="L47">			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, w, queries);</span>
+<span class="fc" id="L47">			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);</span>
 <span class="fc" id="L48">			return new ResultFromIndexResult(indexResult, eiMap);</span>
 		}
 
@@ -146,7 +146,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public int getHeaviestEdge(int queryIdx) {
 <span class="fc" id="L148">			int eIdx = res.getHeaviestEdge(queryIdx);</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);</span>
 		}
 
 		@Override
@@ -170,22 +170,28 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L170">			edgeRef[ne] = e;</span>
 <span class="fc" id="L171">		}</span>
 <span class="fc" id="L172">		IndexGraph mst = mstBuilder.build();</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
-<span class="fc" id="L174">			return false;</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">		if (!Trees.isTree(mst))</span>
+<span class="nc" id="L174">			return false;</span>
 
 <span class="fc" id="L176">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L178">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L179">		WeightFunction w0 = e -&gt; w.weight(edgeRef[e]);</span>
-<span class="fc" id="L180">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
-
-<span class="fc" id="L182">		int i = 0;</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L184">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
-<span class="pc bpc" id="L185" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
-<span class="fc" id="L186">				return false;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L178">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L179">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (u != v)</span>
+<span class="fc" id="L181">				queries.addQuery(u, v);</span>
 		}
-<span class="fc" id="L188">		return true;</span>
+<span class="fc" id="L183">		WeightFunction w0 = e -&gt; w.weight(edgeRef[e]);</span>
+<span class="fc" id="L184">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
+
+<span class="fc" id="L186">		int i = 0;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (g.edgeSource(e) == g.edgeTarget(e))</span>
+<span class="fc" id="L189">				continue;</span>
+<span class="fc" id="L190">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
+<span class="pc bpc" id="L191" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
+<span class="fc" id="L192">				return false;</span>
+		}
+<span class="fc" id="L194">		return true;</span>
 	}
 
 }

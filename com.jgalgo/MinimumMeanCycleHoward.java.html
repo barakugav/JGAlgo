@@ -189,42 +189,44 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L189">			}</span>
 		}
 
-		/* handle self loops separately, as the algorithm skip SCC of size one */
-<span class="fc" id="L193">		int bestSelfLoop = 1;</span>
-<span class="fc" id="L194">		double bestSelfLoopWeight = Double.POSITIVE_INFINITY;</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="pc bpc" id="L196" title="3 of 4 branches missed.">			if (g.edgeSource(e) == g.edgeTarget(e) &amp;&amp; w.weight(e) &lt; bestSelfLoopWeight) {</span>
-<span class="nc" id="L197">				bestSelfLoop = e;</span>
-<span class="nc" id="L198">				bestSelfLoopWeight = w.weight(e);</span>
+		/* handle self edges separately, as the algorithm skip SCC of size one */
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (g.getCapabilities().selfEdges()) {</span>
+<span class="fc" id="L194">			int bestSelfEdge = 1;</span>
+<span class="fc" id="L195">			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L197" title="All 4 branches covered.">				if (g.edgeSource(e) == g.edgeTarget(e) &amp;&amp; w.weight(e) &lt; bestSelfEdgeWeight) {</span>
+<span class="fc" id="L198">					bestSelfEdge = e;</span>
+<span class="fc" id="L199">					bestSelfEdgeWeight = w.weight(e);</span>
+				}
+			}
+<span class="pc bpc" id="L202" title="1 of 4 branches missed.">			if (bestSelfEdge != -1 &amp;&amp; bestSelfEdgeWeight &lt; overallBestCycleMeanWeight) {</span>
+<span class="fc" id="L203">				int cycleVertex = g.edgeSource(bestSelfEdge);</span>
+<span class="fc" id="L204">				return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));</span>
 			}
 		}
-<span class="pc bpc" id="L201" title="2 of 4 branches missed.">		if (bestSelfLoop != -1 &amp;&amp; bestSelfLoopWeight &lt; overallBestCycleMeanWeight) {</span>
-<span class="nc" id="L202">			int cycleVertex = g.edgeSource(bestSelfLoop);</span>
-<span class="nc" id="L203">			return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfLoop));</span>
-		}
 
-<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (overallBestCycleVertex == -1)</span>
-<span class="fc" id="L207">			return null;</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">		if (overallBestCycleVertex == -1)</span>
+<span class="fc" id="L209">			return null;</span>
 
-<span class="fc" id="L209">		IntList cycle = new IntArrayList();</span>
-<span class="fc" id="L210">		for (int cycleVertex = overallBestCycleVertex, v = cycleVertex;;) {</span>
-<span class="fc" id="L211">			int e = policy[v];</span>
-<span class="fc" id="L212">			cycle.add(e);</span>
-<span class="fc" id="L213">			v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			if (v == cycleVertex)</span>
-<span class="fc" id="L215">				return new PathImpl(g, cycleVertex, cycleVertex, cycle);</span>
+<span class="fc" id="L211">		IntList cycle = new IntArrayList();</span>
+<span class="fc" id="L212">		for (int cycleVertex = overallBestCycleVertex, v = cycleVertex;;) {</span>
+<span class="fc" id="L213">			int e = policy[v];</span>
+<span class="fc" id="L214">			cycle.add(e);</span>
+<span class="fc" id="L215">			v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (v == cycleVertex)</span>
+<span class="fc" id="L217">				return new PathImpl(g, cycleVertex, cycleVertex, cycle);</span>
 
-<span class="fc bfc" id="L217" title="All 2 branches covered.">			if (cycle.size() &gt; n) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			if (cycle.size() &gt; n) {</span>
 				/**
 				 * In case we have multiple cycles with the same minimum mean weight, the original
 				 * overallBestCycleVertex might point to tail that leads to minimum mean cycle. For example:
 				 * v1-&gt;v2,v2-&gt;v3,v3-&gt;v2, if start at v1 and search for a cycle ending at v1 we will never find it. If
 				 * the cycle length is greater than n, we will not reach our original cycle.
 				 */
-<span class="fc" id="L224">				cycle.clear();</span>
-<span class="fc" id="L225">				cycleVertex = v;</span>
+<span class="fc" id="L226">				cycle.clear();</span>
+<span class="fc" id="L227">				cycleVertex = v;</span>
 			}
-<span class="fc" id="L227">		}</span>
+<span class="fc" id="L229">		}</span>
 	}
 
 }

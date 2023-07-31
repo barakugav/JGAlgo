@@ -32,9 +32,9 @@ import com.jgalgo.graph.WeightFunction;
 <span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L34">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L35">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L35">		WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="fc" id="L37">		Path indexPath = computeMinimumMeanCycle(iGraph, w);</span>
+<span class="fc" id="L37">		Path indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
 <span class="fc" id="L38">		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
 	}
 

@@ -867,7 +867,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 
 		boolean isInTree(Blossom b) {
-<span class="pc bpc" id="L870" title="2 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root != -1;</span>
+<span class="pc bpc" id="L870" title="1 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root != -1;</span>
 		}
 
 		Blossom topBlossom(int v) {
@@ -999,7 +999,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bpc" id="L999" title="1 of 2 branches missed.">					assert odds.findMin(v) == event;</span>
 
 <span class="fc" id="L1001">					Blossom V = odds.findBlossom(v);</span>
-<span class="pc bpc" id="L1002" title="1 of 2 branches missed.">					if (!isInTree(V)) {</span>
+<span class="fc bfc" id="L1002" title="All 2 branches covered.">					if (!isInTree(V)) {</span>
 <span class="fc bfc" id="L1003" title="All 2 branches covered.">						if (V.growRef == null)</span>
 <span class="fc" id="L1004">							V.growRef = growEvents.insert(event);</span>
 						else
