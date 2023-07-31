@@ -129,7 +129,21 @@ public interface ShortestPathAllPairs {
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				return cardinalityWeight ? new ShortestPathAllPairsCardinality() : new ShortestPathAllPairsJohnson();
+				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();
+				if (cardinalityWeight)
+					return cardinalityAlgo;
+				return new ShortestPathAllPairs() {
+					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();
+
+					@Override
+					public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
+						if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);
+						} else {
+							return weightedAlgo.computeAllShortestPaths(g, w);
+						}
+					}
+				};
 			}
 
 			@Override

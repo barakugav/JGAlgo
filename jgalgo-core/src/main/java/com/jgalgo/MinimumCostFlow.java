@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -148,13 +147,13 @@ public interface MinimumCostFlow {
 				if (integerNetwork && integerCosts) {
 					return new MinimumCostFlowCostScaling();
 				} else {
-					return new MinimumCostFlows.AbstractImpl() {
+					return new MinimumCostFlow() {
 
 						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();
 						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();
 
 						@Override
-						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, int source,
+						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, int source,
 								int sink) {
 							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);
@@ -164,7 +163,18 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
+								WeightFunction lowerBound, int source, int sink) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
+									&& lowerBound instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);
+							} else {
+								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);
+							}
+						}
+
+						@Override
+						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								IntCollection sources, IntCollection sinks) {
 							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);
@@ -174,7 +184,7 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
 							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
 									&& lowerBound instanceof WeightFunction.Int) {
@@ -185,13 +195,25 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost,
+						public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction supply) {
 							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
 									&& supply instanceof WeightFunction.Int) {
 								integerAlgo.computeMinCostFlow(g, net, cost, supply);
 							} else {
 								floatsAlgo.computeMinCostFlow(g, net, cost, supply);
+							}
+						}
+
+						@Override
+						public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost,
+								WeightFunction lowerBound, WeightFunction supply) {
+							if (net instanceof FlowNetwork.Int && cost instanceof WeightFunction.Int
+									&& lowerBound instanceof WeightFunction.Int
+									&& supply instanceof WeightFunction.Int) {
+								integerAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);
+							} else {
+								floatsAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);
 							}
 						}
 
