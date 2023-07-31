@@ -44,8 +44,7 @@ public class SplayTreeTest extends TestBase {
 	}
 
 	private static BinarySearchTree.Builder<Integer, Void> createBuilder() {
-		return BinarySearchTree.newBuilder().setOption("impl", "SplayTree").keysTypePrimitive(int.class)
-				.valuesTypeVoid();
+		return BinarySearchTree.newBuilder().setOption("impl", "splay").keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
 	@Test

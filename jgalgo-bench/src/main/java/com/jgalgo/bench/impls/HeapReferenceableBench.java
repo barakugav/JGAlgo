@@ -152,12 +152,12 @@ public class HeapReferenceableBench {
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "RedBlackTree"), blackhole);
+		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "red-black"), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "SplayTree"), blackhole);
+		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "splay"), blackhole);
 	}
 
 	private static class GraphArgs {

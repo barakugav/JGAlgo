@@ -144,14 +144,13 @@ public class HeapBench {
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "RedBlackTree"))),
+		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "red-black"))),
 				blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "SplayTree"))),
-				blackhole);
+		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "splay"))), blackhole);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

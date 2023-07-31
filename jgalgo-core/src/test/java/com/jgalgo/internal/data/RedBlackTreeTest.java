@@ -44,7 +44,7 @@ public class RedBlackTreeTest extends TestBase {
 	}
 
 	private static BinarySearchTree.Builder<Integer, Void> createBuilder() {
-		return BinarySearchTree.newBuilder().setOption("impl", "RedBlackTree").keysTypePrimitive(int.class)
+		return BinarySearchTree.newBuilder().setOption("impl", "red-black").keysTypePrimitive(int.class)
 				.valuesTypeVoid();
 	}
 

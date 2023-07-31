@@ -175,9 +175,9 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 			public BinarySearchTree build(Comparator cmp) {
 				if (impl != null) {
 					switch (impl) {
-						case "SplayTree":
+						case "splay":
 							return new SplayTree(cmp);
-						case "RedBlackTree":
+						case "red-black":
 							return new RedBlackTree(cmp);
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
