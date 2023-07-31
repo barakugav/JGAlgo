@@ -56,8 +56,10 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 		/* g is a residual graph, duplicating each edge in the original graph */
 		private final IndexGraph g;
+		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
 		private final FlowNetwork.Int net;
+		private final WeightFunction.Int costOrig;
 
 		/* per-edge information */
 		private final int[] residualCapacity;
@@ -98,7 +100,9 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		Worker(IndexGraph gOrig, FlowNetwork.Int net, WeightFunction.Int costOrig, WeightFunction.Int supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
+			this.gOrig = gOrig;
 			this.net = net;
+			this.costOrig = costOrig;
 
 			/* Build the residual graph by duplicating each edge in the original graph */
 			FlowNetworks.ResidualGraph.Builder b = new FlowNetworks.ResidualGraph.Builder(gOrig);
@@ -176,6 +180,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 					net.setFlow(eRef, capacity - residualCapacity[e]);
 				}
 			}
+
+			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, costOrig);
 		}
 
 		private void solveWithPartialAugment() {

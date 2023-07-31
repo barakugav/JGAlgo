@@ -53,7 +53,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			WeightFunction.Int cost = randCost(g, rand);
@@ -71,7 +71,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			IntIntPair sourceSink = MinimumCutSTTestUtils.chooseSourceSink(g, rand);
@@ -92,7 +92,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			WeightFunction.Int cost = randCost(g, rand);
@@ -110,7 +110,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			Pair<IntCollection, IntCollection> sourcesSinks = MinimumCutSTTestUtils.chooseMultiSourceMultiSink(g, rand);
@@ -131,7 +131,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			WeightFunction.Int cost = randCost(g, rand);
@@ -149,7 +149,7 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			WeightFunction.Int supply = randSupply(g, net, rand);

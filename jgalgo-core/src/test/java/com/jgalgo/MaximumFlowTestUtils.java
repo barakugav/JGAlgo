@@ -43,8 +43,17 @@ public class MaximumFlowTestUtils extends TestUtils {
 	private MaximumFlowTestUtils() {}
 
 	private static Graph randGraph(int n, int m, Boolean2ObjectFunction<Graph> graphImpl, long seed, boolean directed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(false).selfEdges(false)
-				.cycles(true).connected(false).graphImpl(graphImpl).build();
+		for (SeedGenerator seedGen = new SeedGenerator(seed);;) {
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+
+			boolean allSelfEdges = true;
+			for (int e : g.edges())
+				if (g.edgeSource(e) != g.edgeTarget(e))
+					allSelfEdges = false;
+			if (!allSelfEdges)
+				return g;
+		}
 	}
 
 	static FlowNetwork randNetwork(Graph g, long seed) {
@@ -195,7 +204,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 3, 30), phase(256, 6, 150), phase(64, 10, 450), phase(64, 18, 1530));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(false)
+			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 
@@ -205,12 +214,22 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	static IntIntPair chooseSourceSink(Graph g, Random rand) {
-		int source, sink;
-		for (int[] vs = g.vertices().toIntArray();;) {
-			source = vs[rand.nextInt(vs.length)];
-			sink = vs[rand.nextInt(vs.length)];
+		int[] vs = g.vertices().toIntArray();
+		for (int retry = 0;; retry++) {
+			int source = vs[rand.nextInt(vs.length)];
+			int sink = vs[rand.nextInt(vs.length)];
 			if (source != sink && Path.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
+			if (retry > 1000) {
+				boolean allSelfEdges = true;
+				for (int e : g.edges())
+					if (g.edgeSource(e) != g.edgeTarget(e))
+						allSelfEdges = false;
+				if (allSelfEdges)
+					throw new IllegalArgumentException(
+							"all edges of the graph are self edges, no valid source and sink");
+				throw new RuntimeException("failed to find source and sink after " + retry + " retries in graph: " + g);
+			}
 		}
 	}
 

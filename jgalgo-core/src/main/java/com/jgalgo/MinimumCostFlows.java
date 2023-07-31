@@ -1172,4 +1172,33 @@ class MinimumCostFlows {
 
 	}
 
+	static void saturateNegativeCostSelfEdges(IndexGraph g, FlowNetwork net, WeightFunction cost) {
+		if (!g.getCapabilities().selfEdges())
+			return;
+		if (net instanceof FlowNetwork.Int) {
+			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+			if (cost instanceof WeightFunction.Int) {
+				WeightFunction.Int costInt = (WeightFunction.Int) cost;
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)
+						netInt.setFlow(e, netInt.getCapacityInt(e));
+			} else {
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (g.edgeSource(e) == g.edgeTarget(e) && cost.weight(e) < 0)
+						netInt.setFlow(e, netInt.getCapacityInt(e));
+			}
+		} else {
+			if (cost instanceof WeightFunction.Int) {
+				WeightFunction.Int costInt = (WeightFunction.Int) cost;
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)
+						net.setFlow(e, net.getCapacity(e));
+			} else {
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (g.edgeSource(e) == g.edgeTarget(e) && cost.weight(e) < 0)
+						net.setFlow(e, net.getCapacity(e));
+			}
+		}
+	}
+
 }

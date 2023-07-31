@@ -68,6 +68,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			final double lowerBound = 0;
 			for (int e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
+				if (u == v)
+					continue;
 				if (-excess[v] >= capacity[e]) {
 					flow[e] = capacity[e];
 					excess[u] -= capacity[e];
@@ -88,7 +90,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			label = new int[n];
 			isActive = new BitSet(n);
 			layersActive = new LinkedListFixedSize.Doubly(n);
-			layersHeadActive = new int[n];
+			layersHeadActive = new int[n + 1];
 			maxLayerActive = 0;
 			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
 			for (int v = 0; v < n; v++) {
@@ -205,8 +207,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				} else {
 					label[act] = minLayer + 1;
 					activate(act);
-//					if (layersHeadActive[actLevel] == -1)
-//						throw new IllegalArgumentException("no valid circulation exists");
 				}
 			}
 			for (int v = 0; v < n; v++)

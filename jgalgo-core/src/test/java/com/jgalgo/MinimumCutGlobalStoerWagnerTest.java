@@ -48,7 +48,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			Weights.Int w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
