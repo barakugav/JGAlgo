@@ -97,6 +97,24 @@ public interface GraphBuilder {
 	void addEdge(int source, int target, int edge);
 
 	/**
+	 * Hint about the number of vertices expected to be added to the builder.
+	 * <p>
+	 * This method does not affect the built graph, only the builder itself.
+	 *
+	 * @param verticesNum the expected number of vertices to be added to the builder
+	 */
+	void expectedVerticesNum(int verticesNum);
+
+	/**
+	 * Hint about the number of edges expected to be added to the builder.
+	 * <p>
+	 * This method does not affect the built graph, only the builder itself.
+	 *
+	 * @param edgesNum the expected number of edges to be added to the builder
+	 */
+	void expectedEdgesNum(int edgesNum);
+
+	/**
 	 * Get the vertices weights of some key.
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.

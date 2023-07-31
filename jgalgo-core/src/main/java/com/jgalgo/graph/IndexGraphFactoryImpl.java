@@ -23,8 +23,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	private boolean directed;
 	private boolean selfEdges;
 	private boolean parallelEdges;
-	private int expectedVerticesNum;
-	private int expectedEdgesNum;
+	int expectedVerticesNum;
+	int expectedEdgesNum;
 	private final EnumSet<GraphFactory.Hint> hints = EnumSet.noneOf(GraphFactory.Hint.class);
 	private String impl;
 

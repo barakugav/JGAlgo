@@ -39,24 +39,19 @@ abstract class GraphImpl extends GraphBase {
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights = new IdentityHashMap<>();
 
-	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
-		this.indexGraph = (IndexGraphImpl) indexGraph;
-		if (viMap == null) {
-			this.viMap = IdIdxMapImpl.newInstance(this.indexGraph.getVerticesIdStrategy());
-		} else {
-			this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy());
-		}
-		if (viMap == null) {
-			this.eiMap = IdIdxMapImpl.newInstance(this.indexGraph.getEdgesIdStrategy());
-		} else {
-			this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy());
-		}
+	GraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
+		assert g.vertices().isEmpty();
+		assert g.edges().isEmpty();
+
+		indexGraph = (IndexGraphImpl) g;
+		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy(), expectedVerticesNum);
+		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy(), expectedEdgesNum);
 	}
 
-	GraphImpl(IndexGraph g) {
-		this(g, null, null);
-		assert indexGraph.getVerticesIdStrategy().size() == 0;
-		assert indexGraph.getEdgesIdStrategy().size() == 0;
+	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
+		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy());
+		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy());
 	}
 
 	/* copy constructor */
@@ -374,13 +369,13 @@ abstract class GraphImpl extends GraphBase {
 
 	static class Directed extends GraphImpl {
 
-		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
-			super(indexGraph, viMap, eiMap);
+		Directed(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
+			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
-		Directed(IndexGraph indexGraph) {
-			super(indexGraph);
+		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+			super(indexGraph, viMap, eiMap);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
@@ -405,8 +400,8 @@ abstract class GraphImpl extends GraphBase {
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
-		Undirected(IndexGraph indexGraph) {
-			super(indexGraph);
+		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
+			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
@@ -431,8 +426,8 @@ abstract class GraphImpl extends GraphBase {
 		private final WeightsImpl.Index.Int indexToId;
 		private int userChosenId = -1;
 
-		IdIdxMapImpl(IdStrategy idStrat) {
-			idToIndex = new Int2IntOpenHashMap();
+		IdIdxMapImpl(IdStrategy idStrat, int expectedSize) {
+			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
@@ -476,8 +471,9 @@ abstract class GraphImpl extends GraphBase {
 			return IsGraphIdRandom.get().booleanValue();
 		}
 
-		static IdIdxMapImpl newInstance(IdStrategy idStrat) {
-			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(idStrat) : new GraphImpl.IdIdxMapCounter(idStrat);
+		static IdIdxMapImpl newInstance(IdStrategy idStrat, int expectedSize) {
+			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize)
+					: new GraphImpl.IdIdxMapCounter(idStrat, expectedSize);
 		}
 
 		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat) {
@@ -558,8 +554,8 @@ abstract class GraphImpl extends GraphBase {
 
 		private int counter;
 
-		IdIdxMapCounter(IdStrategy idStrat) {
-			super(idStrat);
+		IdIdxMapCounter(IdStrategy idStrat, int expectedSize) {
+			super(idStrat, expectedSize);
 			// We prefer non zero IDs because fastutil handle zero (null) keys separately
 			counter = 1;
 		}
@@ -587,8 +583,8 @@ abstract class GraphImpl extends GraphBase {
 
 		private final Random rand = new Random();
 
-		IdIdxMapRand(IdStrategy idStrat) {
-			super(idStrat);
+		IdIdxMapRand(IdStrategy idStrat, int expectedSize) {
+			super(idStrat, expectedSize);
 		}
 
 		IdIdxMapRand(IndexIdMap orig, IdStrategy idStrat) {
@@ -607,7 +603,7 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	static class Factory implements GraphFactory {
-		private final IndexGraphFactory factory;
+		private final IndexGraphFactoryImpl factory;
 
 		Factory(boolean directed) {
 			this.factory = new IndexGraphFactoryImpl(directed);
@@ -621,9 +617,9 @@ abstract class GraphImpl extends GraphBase {
 		public Graph newGraph() {
 			IndexGraph indexGraph = factory.newGraph();
 			if (indexGraph.getCapabilities().directed()) {
-				return new GraphImpl.Directed(indexGraph);
+				return new GraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			} else {
-				return new GraphImpl.Undirected(indexGraph);
+				return new GraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			}
 		}
 

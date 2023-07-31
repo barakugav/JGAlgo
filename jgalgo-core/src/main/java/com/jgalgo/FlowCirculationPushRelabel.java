@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
@@ -40,7 +39,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final double[] excess;
 
 		final int[] label;
-		final BitSet isActive;
 		final LinkedListFixedSize.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
@@ -65,7 +63,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				throw new IllegalArgumentException();
 
 			/* init greedily */
-			final double lowerBound = 0;
 			for (int e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
@@ -74,11 +71,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 					flow[e] = capacity[e];
 					excess[u] -= capacity[e];
 					excess[v] += capacity[e];
-				} else if (-excess[v] < lowerBound) {
-					flow[e] = lowerBound;
-					excess[u] -= lowerBound;
-					excess[v] += lowerBound;
-				} else {
+				} else if (excess[v] <= 0) {
 					double fc = -excess[v];
 					flow[e] = fc;
 					excess[u] -= fc;
@@ -88,7 +81,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 			/* init labels */
 			label = new int[n];
-			isActive = new BitSet(n);
 			layersActive = new LinkedListFixedSize.Doubly(n);
 			layersHeadActive = new int[n + 1];
 			maxLayerActive = 0;
@@ -103,7 +95,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 		private void activate(int v) {
 			int layer = label[v];
-			isActive.set(v);
 			if (layersHeadActive[layer] != LinkedListFixedSize.None)
 				layersActive.connect(v, layersHeadActive[layer]);
 			layersHeadActive[layer] = v;
@@ -113,7 +104,6 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 		private void deactivate(int v) {
 			int layer = label[v];
-			isActive.clear(v);
 			if (layersHeadActive[layer] == v)
 				layersHeadActive[layer] = layersActive.next(v);
 			layersActive.disconnect(v);
@@ -153,9 +143,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						/* saturated push */
 						flow[e] += exc;
 						excess[act] = 0;
-						// deactivate(act);
+
 						excess[v] += exc;
-						if (!isActive.get(v) && excess[v] > 0)
+						if (excess[v] > 0 && excess[v] <= exc)
 							activate(v);
 						continue mainLoop;
 
@@ -164,7 +154,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						flow[e] = capacity[e];
 						exc -= fc; // no need to update excess[act], it will be updated later
 						excess[v] += fc;
-						if (!isActive.get(v) && excess[v] > 0)
+						if (excess[v] > 0 && excess[v] <= fc)
 							activate(v);
 					}
 				}
@@ -183,9 +173,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						/* saturated push */
 						flow[e] -= exc;
 						excess[act] = 0;
-						// deactivate(act);
 						excess[v] += exc;
-						if (!isActive.get(v) && excess[v] > 0)
+						if (excess[v] > 0 && excess[v] <= exc)
 							activate(v);
 						continue mainLoop;
 
@@ -194,7 +183,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						flow[e] = lowerBound;
 						exc -= fc; // no need to update excess[act], it will be updated later
 						excess[v] += fc;
-						if (!isActive.get(v) && excess[v] > 0)
+						if (excess[v] > 0 && excess[v] <= fc)
 							activate(v);
 					}
 				}

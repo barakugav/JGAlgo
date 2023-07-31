@@ -37,16 +37,16 @@ class GraphBuilderImpl {
 	private static abstract class Abstract implements GraphBuilder {
 
 		final IndexGraphBuilder ibuilder;
-		private final Int2IntMap vIdToIndex;
-		private final IntList vIndexToId;
+		private final Int2IntOpenHashMap vIdToIndex;
+		private final IntArrayList vIndexToId;
 		private final IntSet vertices;
-		private final Int2IntMap eIdToIndex;
-		private final IntList eIndexToId;
+		private final Int2IntOpenHashMap eIdToIndex;
+		private final IntArrayList eIndexToId;
 		private final IntSet edges;
 		private boolean userProvideVerticesIds;
 		private boolean userProvideEdgesIds;
-		final IndexIdMap viMap;
-		final IndexIdMap eiMap;
+		final IndexIdMapImpl viMap;
+		final IndexIdMapImpl eiMap;
 		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights = new IdentityHashMap<>();
 		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights = new IdentityHashMap<>();
 
@@ -189,6 +189,20 @@ class GraphBuilderImpl {
 			if (oldVal != eIdToIndex.defaultReturnValue())
 				throw new IllegalArgumentException("duplicate edge: " + edge);
 			userProvideEdgesIds = true;
+		}
+
+		@Override
+		public void expectedVerticesNum(int verticesNum) {
+			ibuilder.expectedVerticesNum(verticesNum);
+			vIdToIndex.ensureCapacity(verticesNum);
+			vIndexToId.ensureCapacity(verticesNum);
+		}
+
+		@Override
+		public void expectedEdgesNum(int edgesNum) {
+			ibuilder.expectedEdgesNum(edgesNum);
+			eIdToIndex.ensureCapacity(edgesNum);
+			eIndexToId.ensureCapacity(edgesNum);
 		}
 
 		@Override
