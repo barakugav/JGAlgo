@@ -24,7 +24,21 @@ public class ColoringRecursiveLargestFirstTest extends TestBase {
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0xc6f079efd56fc216L;
-		ColoringTestUtils.testRandGraphs(new ColoringRecursiveLargestFirst(), seed);
+		ColoringTestUtils.testRandGraphs(algo(), seed);
+	}
+
+	@Test
+	public void testWithSelfLoops() {
+		ColoringTestUtils.testWithSelfLoops(algo());
+	}
+
+	@Test
+	public void testDirectedGraph() {
+		ColoringTestUtils.testDirectedGraph(algo());
+	}
+
+	private static Coloring algo() {
+		return new ColoringRecursiveLargestFirst();
 	}
 
 }

@@ -19,8 +19,10 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -39,6 +41,29 @@ class ColoringTestUtils extends TestUtils {
 			Coloring.Result coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
+	}
+
+	static void testWithSelfLoops(Coloring algo) {
+		Graph g = GraphFactory.newUndirected().newGraph();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int v3 = g.addVertex();
+		g.addEdge(v1, v2);
+		g.addEdge(v2, v3);
+		g.addEdge(v3, v1);
+		g.addEdge(v3, v3);
+		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
+	}
+
+	static void testDirectedGraph(Coloring algo) {
+		Graph g = GraphFactory.newDirected().newGraph();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int v3 = g.addVertex();
+		g.addEdge(v1, v2);
+		g.addEdge(v2, v3);
+		g.addEdge(v3, v1);
+		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
 	static void validateColoring(Graph g, Coloring.Result coloring) {

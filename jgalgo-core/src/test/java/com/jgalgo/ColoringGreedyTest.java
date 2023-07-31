@@ -24,8 +24,22 @@ public class ColoringGreedyTest extends TestBase {
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0xc09142094f9b1e04L;
-		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ColoringTestUtils.testRandGraphs(new ColoringGreedy(seedGen.nextSeed()), seedGen.nextSeed());
+		ColoringTestUtils.testRandGraphs(algo(), seed);
+	}
+
+	@Test
+	public void testWithSelfLoops() {
+		ColoringTestUtils.testWithSelfLoops(algo());
+	}
+
+	@Test
+	public void testDirectedGraph() {
+		ColoringTestUtils.testDirectedGraph(algo());
+	}
+
+	private static Coloring algo() {
+		final long seed = 0x1e86629cfff1ccacL;
+		return new ColoringGreedy(seed);
 	}
 
 }

@@ -24,7 +24,21 @@ public class ColoringDSaturTest extends TestBase {
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0x899cb1808437b167L;
-		ColoringTestUtils.testRandGraphs(new ColoringDSatur(), seed);
+		ColoringTestUtils.testRandGraphs(algo(), seed);
+	}
+
+	@Test
+	public void testWithSelfLoops() {
+		ColoringTestUtils.testWithSelfLoops(algo());
+	}
+
+	@Test
+	public void testDirectedGraph() {
+		ColoringTestUtils.testDirectedGraph(algo());
+	}
+
+	private static Coloring algo() {
+		return new ColoringDSatur();
 	}
 
 }
