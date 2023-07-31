@@ -279,6 +279,30 @@ class FlowNetworks {
 		public void setFlow(int edge, int flow) {
 			idNet().setFlow(eiMap.indexToId(edge), flow);
 		}
+
+		@Deprecated
+		@Override
+		public double getCapacity(int edge) {
+			return FlowNetwork.Int.super.getCapacity(edge);
+		}
+
+		@Deprecated
+		@Override
+		public void setCapacity(int edge, double capacity) {
+			FlowNetwork.Int.super.setCapacity(edge, capacity);
+		}
+
+		@Deprecated
+		@Override
+		public double getFlow(int edge) {
+			return FlowNetwork.Int.super.getFlow(edge);
+		}
+
+		@Deprecated
+		@Override
+		public void setFlow(int edge, double flow) {
+			FlowNetwork.Int.super.setFlow(edge, flow);
+		}
 	}
 
 	static FlowNetwork.Int indexNetFromNet(FlowNetwork.Int net, IndexIdMap eiMap) {
@@ -316,7 +340,7 @@ class FlowNetworks {
 
 	static double hugeCapacity(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
 		if (net instanceof FlowNetwork.Int)
-			return hugeCapacity(g, (FlowNetwork.Int) net, sources, sinks);
+			return hugeCapacityLong(g, (FlowNetwork.Int) net, sources, sinks);
 
 		double sourcesOutCapacity = 0;
 		double sinksOutCapacity = 0;
@@ -330,6 +354,14 @@ class FlowNetworks {
 	}
 
 	static int hugeCapacity(IndexGraph g, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+		long hugeCapacity = hugeCapacityLong(g, net, sources, sinks);
+		int hugeCapacityInt = (int) hugeCapacity;
+		if (hugeCapacityInt != hugeCapacity)
+			throw new AssertionError("integer overflow, huge capacity can't fit in 32bit int");
+		return hugeCapacityInt;
+	}
+
+	static long hugeCapacityLong(IndexGraph g, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
 		long sourcesOutCapacity = 0;
 		long sinksOutCapacity = 0;
 		for (int s : sources)
@@ -338,10 +370,47 @@ class FlowNetworks {
 		for (int s : sinks)
 			for (int e : g.inEdges(s))
 				sinksOutCapacity += net.getCapacityInt(e);
-		long res0 = Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;
-		int res = (int) res0;
-		assert res == res0;
-		return res;
+		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;
+	}
+
+	static double vertexMaxSupply(IndexGraph g, FlowNetwork net, int v) {
+		if (net instanceof FlowNetwork.Int)
+			return vertexMaxSupply(g, (FlowNetwork.Int) net, v);
+
+		double maxSupply = 0;
+		for (int e : g.outEdges(v))
+			maxSupply += net.getCapacity(e);
+		return maxSupply;
+	}
+
+	static int vertexMaxSupply(IndexGraph g, FlowNetwork.Int net, int v) {
+		long maxSupply = 0;
+		for (int e : g.outEdges(v))
+			maxSupply += net.getCapacityInt(e);
+		int maxSupplyInt = (int) maxSupply;
+		if (maxSupplyInt != maxSupply)
+			throw new AssertionError("integer overflow, vertex max supply can't fit in 32bit int");
+		return maxSupplyInt;
+	}
+
+	static double vertexMaxDemand(IndexGraph g, FlowNetwork net, int v) {
+		if (net instanceof FlowNetwork.Int)
+			return vertexMaxDemand(g, (FlowNetwork.Int) net, v);
+
+		double maxDemand = 0;
+		for (int e : g.inEdges(v))
+			maxDemand += net.getCapacity(e);
+		return maxDemand;
+	}
+
+	static int vertexMaxDemand(IndexGraph g, FlowNetwork.Int net, int v) {
+		long maxDemand = 0;
+		for (int e : g.inEdges(v))
+			maxDemand += net.getCapacityInt(e);
+		int maxDemandInt = (int) maxDemand;
+		if (maxDemandInt != maxDemand)
+			throw new AssertionError("integer overflow, vertex max supply can't fit in 32bit int");
+		return maxDemandInt;
 	}
 
 }

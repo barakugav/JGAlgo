@@ -197,6 +197,8 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 		@Override
 		double computeMaximumFlow(IndexGraph gOrig, FlowNetwork netOrig, IntCollection sources, IntCollection sinks) {
+			if (sources.size() == 1 && sinks.size() == 1)
+				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
 			IndexGraphBuilder builder = gOrig.getCapabilities().directed() ? IndexGraphBuilder.newDirected()
@@ -209,23 +211,47 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
-			for (int s : sources)
-				builder.addEdge(source, s);
-			for (int t : sinks)
-				builder.addEdge(t, sink);
+			Object capacities;
+			if (netOrig instanceof FlowNetwork.Int) {
+				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+				int[] capacities0 = new int[sources.size() + sinks.size()];
+				int capIdx = 0;
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrigInt, s);
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrigInt, t);
+				}
+				capacities = capacities0;
+			} else {
+				double[] capacities0 = new double[sources.size() + sinks.size()];
+				int capIdx = 0;
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrig, s);
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrig, t);
+				}
+				capacities = capacities0;
+			}
 			IndexGraph g = builder.build();
 
 			FlowNetwork net;
 			if (netOrig instanceof FlowNetwork.Int) {
 				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
-				final int hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrigInt, sources, sinks);
 
 				FlowNetwork.Int netInt = new FlowNetwork.Int() {
-					final int[] flows = new int[g.edges().size() - originalEdgesThreshold];
+					final int[] caps = (int[]) capacities;
+					final int[] flows = new int[caps.length];
 
 					@Override
 					public int getCapacityInt(int edge) {
-						return edge < originalEdgesThreshold ? netOrigInt.getCapacityInt(edge) : hugeCapacity;
+						return edge < originalEdgesThreshold ? netOrigInt.getCapacityInt(edge)
+								: caps[edge - originalEdgesThreshold];
 					}
 
 					@Override
@@ -251,14 +277,14 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				net = netInt;
 
 			} else {
-				final double hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
-
 				net = new FlowNetwork() {
-					final double[] flows = new double[g.edges().size() - originalEdgesThreshold];
+					final double[] caps = (double[]) capacities;
+					final double[] flows = new double[caps.length];
 
 					@Override
 					public double getCapacity(int edge) {
-						return edge < originalEdgesThreshold ? netOrig.getCapacity(edge) : hugeCapacity;
+						return edge < originalEdgesThreshold ? netOrig.getCapacity(edge)
+								: caps[edge - originalEdgesThreshold];
 					}
 
 					@Override

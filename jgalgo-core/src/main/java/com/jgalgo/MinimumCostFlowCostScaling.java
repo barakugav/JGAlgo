@@ -20,13 +20,11 @@ import java.util.BitSet;
 import com.jgalgo.FlowNetworks.ResidualGraph;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.data.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -41,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * @see    MaximumFlowPushRelabelPartialAugment
  * @author Barak Ugav
  */
-class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
+class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSupply {
 
 	private static final int alpha = 16;
 
@@ -620,99 +618,6 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImpl {
 			return residualCapacity[e] > 0;
 		}
 
-	}
-
-	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
-		computeMinCostMaxFlow(gOrig, net, cost, IntList.of(source), IntList.of(sink));
-	}
-
-	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig, IntCollection sources,
-			IntCollection sinks) {
-		Assertions.Graphs.onlyDirected(gOrig);
-		Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
-
-		if (!(netOrig instanceof FlowNetwork.Int))
-			throw new IllegalArgumentException("only integer capacities and flows are supported");
-		if (!(costOrig instanceof WeightFunction.Int))
-			throw new IllegalArgumentException("only integer costs are supported");
-		FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
-		WeightFunction.Int costOrigInt = (WeightFunction.Int) costOrig;
-
-		final int hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrigInt, sources, sinks);
-
-		final int hugeCost = hugeCost(gOrig, costOrigInt);
-
-		IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
-		for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-			builder.addVertex();
-		for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-			builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
-		/* any edge with index smaller than this threshold is an original edge of the graph */
-		final int origEdgesThreshold = builder.edges().size();
-
-		int source = builder.addVertex();
-		int sink = builder.addVertex();
-		for (int v : sources)
-			builder.addEdge(source, v);
-		for (int v : sinks)
-			builder.addEdge(v, sink);
-		/*
-		 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
-		 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
-		 * connecting the super source and the super sink.
-		 */
-		final int sourcesSinksThreshold = builder.edges().size();
-
-		builder.addEdge(source, sink);
-		builder.addEdge(sink, source);
-
-		IndexGraph g = builder.build();
-
-		FlowNetwork.Int net = new FlowNetwork.Int() {
-			int[] flows = new int[builder.edges().size() - origEdgesThreshold];
-
-			@Override
-			public int getCapacityInt(int edge) {
-				return edge < origEdgesThreshold ? netOrigInt.getCapacityInt(edge) : hugeCapacity;
-			}
-
-			@Override
-			public void setCapacity(int edge, int capacity) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public int getFlowInt(int edge) {
-				return edge < origEdgesThreshold ? netOrigInt.getFlowInt(edge) : flows[edge - origEdgesThreshold];
-			}
-
-			@Override
-			public void setFlow(int edge, int flow) {
-				if (edge < origEdgesThreshold) {
-					netOrigInt.setFlow(edge, flow);
-				} else {
-					flows[edge - origEdgesThreshold] = flow;
-				}
-			}
-		};
-		WeightFunction.Int cost = e -> {
-			if (e < origEdgesThreshold)
-				return costOrigInt.weightInt(e);
-			if (e < sourcesSinksThreshold)
-				return 0;
-			return hugeCost;
-		};
-		WeightFunction.Int supply = v -> {
-			if (v == source)
-				return hugeCapacity;
-			if (v == sink)
-				return -hugeCapacity;
-			return 0;
-		};
-
-		computeMinCostFlow(g, net, cost, supply);
 	}
 
 }

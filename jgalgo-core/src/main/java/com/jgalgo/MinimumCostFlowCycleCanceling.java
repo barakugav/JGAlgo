@@ -36,7 +36,7 @@ import com.jgalgo.internal.util.Assertions;
  *
  * @author Barak Ugav
  */
-class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImpl {
+class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSourceSink {
 
 	private final MaximumFlow maxFlowAlg = MaximumFlow.newBuilder().build();
 	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newBuilder().build();

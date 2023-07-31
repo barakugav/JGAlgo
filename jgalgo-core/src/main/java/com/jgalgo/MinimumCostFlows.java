@@ -169,6 +169,173 @@ class MinimumCostFlows {
 	static abstract class AbstractImpl extends AbstractImplBase {
 
 		@Override
+		void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
+				int source, int sink) {
+			Objects.requireNonNull(lowerBound);
+			computeMinCostMaxFlow(g, net, cost, lowerBound, IntList.of(source), IntList.of(sink));
+		}
+
+		@Override
+		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, WeightFunction cost, WeightFunction lowerBound,
+				WeightFunction supply) {
+			Objects.requireNonNull(g);
+			Objects.requireNonNull(netOrig);
+			Objects.requireNonNull(cost);
+			Objects.requireNonNull(lowerBound);
+
+			Assertions.Graphs.onlyDirected(g);
+			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);
+			Assertions.Flows.checkSupply(g, supply);
+
+			final boolean integerFlow = netOrig instanceof FlowNetwork.Int && lowerBound instanceof WeightFunction.Int;
+
+			/*
+			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
+			 * problem with given supply without any edges flow lower bounds. For each edge with lower bound we subtract
+			 * the lower bound from the capacity of the edge, and add/remove supply to the edge endpoints.
+			 */
+
+			/* Create a network by subtracting the lower bound from each edge capacity */
+			FlowNetwork net;
+			if (integerFlow) {
+				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+				WeightFunction.Int lowerBoundInt = (WeightFunction.Int) lowerBound;
+				net = new FlowNetwork.Int() {
+					@Override
+					public int getCapacityInt(int edge) {
+						return netOrigInt.getCapacityInt(edge) - lowerBoundInt.weightInt(edge);
+					}
+
+					@Override
+					public void setCapacity(int edge, int capacity) {
+						throw new UnsupportedOperationException();
+					}
+
+					@Override
+					public int getFlowInt(int edge) {
+						return netOrigInt.getFlowInt(edge) - lowerBoundInt.weightInt(edge);
+					}
+
+					@Override
+					public void setFlow(int edge, int flow) {
+						netOrigInt.setFlow(edge, flow + lowerBoundInt.weightInt(edge));
+					}
+				};
+			} else {
+				net = new FlowNetwork() {
+					@Override
+					public double getCapacity(int edge) {
+						return netOrig.getCapacity(edge) - lowerBound.weight(edge);
+					}
+
+					@Override
+					public void setCapacity(int edge, double capacity) {
+						throw new UnsupportedOperationException();
+					}
+
+					@Override
+					public double getFlow(int edge) {
+						return netOrig.getFlow(edge) - lowerBound.weight(edge);
+					}
+
+					@Override
+					public void setFlow(int edge, double flow) {
+						netOrig.setFlow(edge, flow + lowerBound.weight(edge));
+					}
+				};
+			}
+
+			/* For each edge with lower bound we add/remove supply from the end endpoints */
+			WeightFunction supply2 = computeSupply(g, netOrig, lowerBound, supply);
+
+			/* Solve the reduction problem with only supply without edges lower bounds */
+			computeMinCostFlow(g, net, cost, supply2);
+		}
+
+		static double hugeCost(IndexGraph g, WeightFunction cost) {
+			if (cost instanceof WeightFunction.Int)
+				return hugeCostLong(g, (WeightFunction.Int) cost);
+
+			double costSum = 0;
+			for (int m = g.edges().size(), e = 0; e < m; e++)
+				costSum += Math.abs(cost.weight(e));
+			return 1 + costSum;
+		}
+
+		static int hugeCost(IndexGraph g, WeightFunction.Int cost) {
+			long costSum = hugeCostLong(g, cost);
+			int costSumInt = (int) costSum;
+			if (costSum != costSumInt)
+				throw new AssertionError("integer overflow, huge cost can't fit in 32bit int");
+			return costSumInt;
+		}
+
+		private static long hugeCostLong(IndexGraph g, WeightFunction.Int cost) {
+			long costSum = 0;
+			for (int m = g.edges().size(), e = 0; e < m; e++)
+				costSum += Math.abs(cost.weightInt(e));
+			return costSum + 1;
+		}
+
+		static WeightFunction computeSupply(IndexGraph g, FlowNetwork net, WeightFunction lowerBound,
+				WeightFunction supply) {
+			boolean isInt = net instanceof FlowNetwork.Int;
+			if (lowerBound != null)
+				isInt = isInt && lowerBound instanceof WeightFunction.Int;
+			if (supply != null)
+				isInt = isInt && lowerBound instanceof WeightFunction.Int;
+			if (isInt)
+				return computeSupply(g, (FlowNetwork.Int) net, (WeightFunction.Int) lowerBound,
+						(WeightFunction.Int) supply);
+
+			Weights.Double supply2 = Weights.createExternalVerticesWeights(g, double.class);
+			if (supply != null) {
+				for (int n = g.vertices().size(), v = 0; v < n; v++)
+					supply2.set(v, supply.weight(v));
+			}
+			if (lowerBound != null) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					double l = lowerBound.weight(e);
+					if (l == 0)
+						continue;
+					net.setFlow(e, l);
+					int u = g.edgeSource(e), v = g.edgeTarget(e);
+					supply2.set(u, supply2.getDouble(u) - l);
+					supply2.set(v, supply2.getDouble(v) + l);
+				}
+			}
+			return supply2;
+		}
+
+		static WeightFunction.Int computeSupply(IndexGraph g, FlowNetwork.Int net, WeightFunction.Int lowerBound,
+				WeightFunction.Int supply) {
+			Weights.Int supply2 = Weights.createExternalVerticesWeights(g, int.class);
+			if (supply != null) {
+				for (int n = g.vertices().size(), v = 0; v < n; v++)
+					supply2.set(v, supply.weightInt(v));
+			}
+			if (lowerBound != null) {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					int l = lowerBound.weightInt(e);
+					if (l == 0)
+						continue;
+					net.setFlow(e, l);
+					int u = g.edgeSource(e), v = g.edgeTarget(e);
+					supply2.set(u, supply2.getInt(u) - l);
+					supply2.set(v, supply2.getInt(v) + l);
+				}
+			}
+			return supply2;
+		}
+
+	}
+
+	static abstract class AbstractImplBasedSourceSink extends AbstractImpl {
+
+		@Override
+		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, int source, int sink);
+
+		@Override
 		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig,
 				IntCollection sources, IntCollection sinks) {
 			Assertions.Graphs.onlyDirected(gOrig);
@@ -185,19 +352,39 @@ class MinimumCostFlows {
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 
-			/* determine a great enough capacity ('infinite') for edges to sources (from sinks) */
-			final double sourceSinkEdgeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
-
 			/* Add two artificial terminal vertices, a source and a sink */
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 
 			/* Connect the source to the sources with high capacity edges */
-			for (int s : sources)
-				builder.addEdge(source, s);
 			/* Connect the sinks to the sink with high capacity edges */
-			for (int t : sinks)
-				builder.addEdge(t, sink);
+			Object capacities;
+			if (integerFlow) {
+				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+				int[] capacities0 = new int[sources.size() + sinks.size()];
+				int capIdx = 0;
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrigInt, s);
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrigInt, t);
+				}
+				capacities = capacities0;
+			} else {
+				double[] capacities0 = new double[sources.size() + sinks.size()];
+				int capIdx = 0;
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrig, s);
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrig, t);
+				}
+				capacities = capacities0;
+			}
 
 			IndexGraph g = builder.build();
 
@@ -208,14 +395,14 @@ class MinimumCostFlows {
 			FlowNetwork net;
 			if (integerFlow) {
 				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
-				final int sourceSinkEdgeCapacityInt = (int) sourceSinkEdgeCapacity;
-				assert sourceSinkEdgeCapacityInt == sourceSinkEdgeCapacity;
 				net = new FlowNetwork.Int() {
-					int[] flows = new int[g.edges().size() - origEdgesThreshold];
+					final int[] caps = (int[]) capacities;
+					final int[] flows = new int[caps.length];
 
 					@Override
 					public int getCapacityInt(int edge) {
-						return edge < origEdgesThreshold ? netOrigInt.getCapacityInt(edge) : sourceSinkEdgeCapacityInt;
+						return edge < origEdgesThreshold ? netOrigInt.getCapacityInt(edge)
+								: caps[edge - origEdgesThreshold];
 					}
 
 					@Override
@@ -240,11 +427,12 @@ class MinimumCostFlows {
 				};
 			} else {
 				net = new FlowNetwork() {
-					double[] flows = new double[g.edges().size() - origEdgesThreshold];
+					final double[] caps = (double[]) capacities;
+					final double[] flows = new double[caps.length];
 
 					@Override
 					public double getCapacity(int edge) {
-						return edge < origEdgesThreshold ? netOrig.getCapacity(edge) : sourceSinkEdgeCapacity;
+						return edge < origEdgesThreshold ? netOrig.getCapacity(edge) : caps[edge - origEdgesThreshold];
 					}
 
 					@Override
@@ -279,12 +467,6 @@ class MinimumCostFlows {
 
 			/* Compute a min-cost max-flow in the new graph and network */
 			computeMinCostMaxFlow(g, net, cost, source, sink);
-		}
-
-		@Override
-		void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction lowerBound,
-				int source, int sink) {
-			computeMinCostMaxFlow(g, net, cost, lowerBound, IntList.of(source), IntList.of(sink));
 		}
 
 		@Override
@@ -327,18 +509,38 @@ class MinimumCostFlows {
 			final int origEdgesThreshold = builder.edges().size();
 
 			/* determine a great enough capacity ('infinite') for edges to sources (from sinks) */
-			final double sourceSinkEdgeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
 
 			/* Add two artificial terminal vertices, a source and a sink */
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 
 			/* Connect the source to the sources with high capacity edges */
-			for (int s : sources)
-				builder.addEdge(source, s);
 			/* Connect the sinks to the sink with high capacity edges */
-			for (int t : sinks)
-				builder.addEdge(t, sink);
+			final List<?> capacities;
+			if (integerFlow) {
+				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+				IntList capacities0 = new IntArrayList(sources.size() + sinks.size());
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0.add(FlowNetworks.vertexMaxSupply(gOrig, netOrigInt, s));
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0.add(FlowNetworks.vertexMaxDemand(gOrig, netOrigInt, t));
+				}
+				capacities = capacities0;
+			} else {
+				DoubleList capacities0 = new DoubleArrayList(sources.size() + sinks.size());
+				for (int s : sources) {
+					builder.addEdge(source, s);
+					capacities0.add(FlowNetworks.vertexMaxSupply(gOrig, netOrig, s));
+				}
+				for (int t : sinks) {
+					builder.addEdge(t, sink);
+					capacities0.add(FlowNetworks.vertexMaxDemand(gOrig, netOrig, t));
+				}
+				capacities = capacities0;
+			}
 			/*
 			 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
 			 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
@@ -349,10 +551,9 @@ class MinimumCostFlows {
 			/*
 			 * Connect the source to all vertices with positive supply and the vertices with negative supply to the sink
 			 */
-			List<?> capacities;
 			if (integerFlow) {
 				WeightFunction.Int supplyInt = (WeightFunction.Int) supply;
-				IntList capacities0 = new IntArrayList();
+				IntList capacities0 = (IntList) capacities;
 				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
 					int sup = supplyInt.weightInt(v);
 					if (sup > 0) {
@@ -363,9 +564,8 @@ class MinimumCostFlows {
 						capacities0.add(-sup);
 					}
 				}
-				capacities = capacities0;
 			} else {
-				DoubleList capacities0 = new DoubleArrayList();
+				DoubleList capacities0 = (DoubleList) capacities;
 				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
 					double sup = supply.weight(v);
 					if (sup > 0) {
@@ -376,7 +576,6 @@ class MinimumCostFlows {
 						capacities0.add(-sup);
 					}
 				}
-				capacities = capacities0;
 			}
 
 			IndexGraph g = builder.build();
@@ -389,19 +588,15 @@ class MinimumCostFlows {
 			if (integerFlow) {
 				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
 				WeightFunction.Int lowerBoundInt = (WeightFunction.Int) lowerBound;
-				int sourceSinkEdgeCapacityInt = (int) sourceSinkEdgeCapacity;
-				assert sourceSinkEdgeCapacityInt == sourceSinkEdgeCapacity;
 				net = new FlowNetwork.Int() {
 					int[] caps = ((IntArrayList) capacities).elements();
 					int[] flows = new int[g.edges().size() - origEdgesThreshold];
 
 					@Override
 					public int getCapacityInt(int edge) {
-						if (edge < origEdgesThreshold)
-							return netOrigInt.getCapacityInt(edge) - lowerBoundInt.weightInt(edge);
-						if (edge < sourcesSinksThreshold)
-							return sourceSinkEdgeCapacityInt;
-						return caps[edge - sourcesSinksThreshold];
+						return edge < origEdgesThreshold
+								? netOrigInt.getCapacityInt(edge) - lowerBoundInt.weightInt(edge)
+								: caps[edge - origEdgesThreshold];
 					}
 
 					@Override
@@ -432,11 +627,8 @@ class MinimumCostFlows {
 
 					@Override
 					public double getCapacity(int edge) {
-						if (edge < origEdgesThreshold)
-							return netOrig.getCapacity(edge) - lowerBound.weight(edge);
-						if (edge < sourcesSinksThreshold)
-							return sourceSinkEdgeCapacity;
-						return caps[edge - sourcesSinksThreshold];
+						return edge < origEdgesThreshold ? netOrig.getCapacity(edge) - lowerBound.weight(edge)
+								: caps[edge - origEdgesThreshold];
 					}
 
 					@Override
@@ -653,33 +845,67 @@ class MinimumCostFlows {
 			computeMinCostMaxFlow(g, net, cost, source, sink);
 		}
 
-		@Override
-		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, WeightFunction cost, WeightFunction lowerBound,
-				WeightFunction supply) {
-			Objects.requireNonNull(g);
-			Objects.requireNonNull(netOrig);
-			Objects.requireNonNull(cost);
-			Objects.requireNonNull(lowerBound);
+	}
 
-			Assertions.Graphs.onlyDirected(g);
-			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);
-			Assertions.Flows.checkSupply(g, supply);
+	static abstract class AbstractImplBasedSupply extends AbstractImpl {
+
+		@Override
+		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply);
+
+		@Override
+		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
+			computeMinCostMaxFlow(gOrig, net, cost, IntList.of(source), IntList.of(sink));
+		}
+
+		@Override
+		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig,
+				IntCollection sources, IntCollection sinks) {
+			Assertions.Graphs.onlyDirected(gOrig);
+			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
+
+			final boolean integerFlow = netOrig instanceof FlowNetwork.Int;
+			final boolean integerCost = costOrig instanceof WeightFunction.Int;
+
+			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
+				builder.addVertex();
+			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			/* any edge with index smaller than this threshold is an original edge of the graph */
+			final int origEdgesThreshold = builder.edges().size();
+
+			final int source = builder.addVertex();
+			final int sink = builder.addVertex();
+			for (int v : sources)
+				builder.addEdge(source, v);
+			for (int v : sinks)
+				builder.addEdge(v, sink);
 
 			/*
-			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
-			 * problem with given supply without any edges flow lower bounds. For each edge with lower bound we subtract
-			 * the lower bound from the capacity of the edge, and add/remove supply to the edge endpoints.
+			 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
+			 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
+			 * connecting the super source and the super sink.
 			 */
+			final int sourcesSinksThreshold = builder.edges().size();
 
-			/* Create a network by subtracting the lower bound from each edge capacity */
+			builder.addEdge(source, sink);
+			builder.addEdge(sink, source);
+
+			IndexGraph g = builder.build();
+
+			final double hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
 			FlowNetwork net;
-			if (netOrig instanceof FlowNetwork.Int && lowerBound instanceof WeightFunction.Int) {
+			if (integerFlow) {
 				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
-				WeightFunction.Int lowerBoundInt = (WeightFunction.Int) lowerBound;
+				int hugeCapacityInt = (int) hugeCapacity;
+				if (hugeCapacityInt != hugeCapacity)
+					throw new AssertionError("integer overflow");
 				net = new FlowNetwork.Int() {
+					int[] flows = new int[builder.edges().size() - origEdgesThreshold];
+
 					@Override
 					public int getCapacityInt(int edge) {
-						return netOrigInt.getCapacityInt(edge) - lowerBoundInt.weightInt(edge);
+						return edge < origEdgesThreshold ? netOrigInt.getCapacityInt(edge) : hugeCapacityInt;
 					}
 
 					@Override
@@ -689,19 +915,26 @@ class MinimumCostFlows {
 
 					@Override
 					public int getFlowInt(int edge) {
-						return netOrigInt.getFlowInt(edge) - lowerBoundInt.weightInt(edge);
+						return edge < origEdgesThreshold ? netOrigInt.getFlowInt(edge)
+								: flows[edge - origEdgesThreshold];
 					}
 
 					@Override
 					public void setFlow(int edge, int flow) {
-						netOrigInt.setFlow(edge, flow + lowerBoundInt.weightInt(edge));
+						if (edge < origEdgesThreshold) {
+							netOrigInt.setFlow(edge, flow);
+						} else {
+							flows[edge - origEdgesThreshold] = flow;
+						}
 					}
 				};
 			} else {
 				net = new FlowNetwork() {
+					double[] flows = new double[builder.edges().size() - origEdgesThreshold];
+
 					@Override
 					public double getCapacity(int edge) {
-						return netOrig.getCapacity(edge) - lowerBound.weight(edge);
+						return edge < origEdgesThreshold ? netOrig.getCapacity(edge) : hugeCapacity;
 					}
 
 					@Override
@@ -711,89 +944,230 @@ class MinimumCostFlows {
 
 					@Override
 					public double getFlow(int edge) {
-						return netOrig.getFlow(edge) - lowerBound.weight(edge);
+						return edge < origEdgesThreshold ? netOrig.getFlow(edge) : flows[edge - origEdgesThreshold];
 					}
 
 					@Override
 					public void setFlow(int edge, double flow) {
-						netOrig.setFlow(edge, flow + lowerBound.weight(edge));
+						if (edge < origEdgesThreshold) {
+							netOrig.setFlow(edge, flow);
+						} else {
+							flows[edge - origEdgesThreshold] = flow;
+						}
 					}
 				};
 			}
 
-			/* For each edge with lower bound we add/remove supply from the end endpoints */
-			WeightFunction supply2 = computeSupply(g, netOrig, lowerBound, supply);
-
-			/* Solve the reduction problem with only supply without edges lower bounds */
-			computeMinCostFlow(g, net, cost, supply2);
-		}
-
-		static double hugeCost(IndexGraph g, WeightFunction cost) {
-			if (cost instanceof WeightFunction.Int)
-				return hugeCost(g, (WeightFunction.Int) cost);
-
-			double costSum = 0;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				costSum += Math.abs(cost.weight(e));
-			return 1 + costSum;
-		}
-
-		static int hugeCost(IndexGraph g, WeightFunction.Int cost) {
-			int costSum = 0;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				costSum += Math.abs(cost.weightInt(e));
-			return 1 + costSum;
-		}
-
-		private static WeightFunction computeSupply(IndexGraph g, FlowNetwork net, WeightFunction lowerBound,
-				WeightFunction supply) {
-			boolean isInt = net instanceof FlowNetwork.Int;
-			if (lowerBound != null)
-				isInt = isInt && lowerBound instanceof WeightFunction.Int;
-			if (supply != null)
-				isInt = isInt && lowerBound instanceof WeightFunction.Int;
-			if (isInt)
-				return computeSupply(g, (FlowNetwork.Int) net, (WeightFunction.Int) lowerBound,
-						(WeightFunction.Int) supply);
-
-			Weights.Double supply2 = Weights.createExternalVerticesWeights(g, double.class);
-			if (supply != null) {
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
-					supply2.set(v, supply.weight(v));
+			WeightFunction supply;
+			if (integerFlow) {
+				int hugeCapacityInt = (int) hugeCapacity;
+				if (hugeCapacityInt != hugeCapacity)
+					throw new AssertionError("integer overflow");
+				WeightFunction.Int supplyInt = v -> {
+					if (v == source)
+						return hugeCapacityInt;
+					if (v == sink)
+						return -hugeCapacityInt;
+					return 0;
+				};
+				supply = supplyInt;
+			} else {
+				supply = v -> {
+					if (v == source)
+						return hugeCapacity;
+					if (v == sink)
+						return -hugeCapacity;
+					return 0;
+				};
 			}
-			if (lowerBound != null) {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					double l = lowerBound.weight(e);
-					if (l == 0)
-						continue;
-					net.setFlow(e, l);
-					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					supply2.set(u, supply2.getDouble(u) - l);
-					supply2.set(v, supply2.getDouble(v) + l);
+
+			WeightFunction cost;
+			if (integerCost) {
+				WeightFunction.Int costOrigInt = (WeightFunction.Int) costOrig;
+				final int hugeCost = hugeCost(gOrig, costOrigInt);
+				WeightFunction.Int costInt = e -> {
+					if (e < origEdgesThreshold)
+						return costOrigInt.weightInt(e);
+					if (e < sourcesSinksThreshold)
+						return 0;
+					return hugeCost;
+				};
+				cost = costInt;
+			} else {
+				final double hugeCost = hugeCost(gOrig, costOrig);
+				cost = e -> {
+					if (e < origEdgesThreshold)
+						return costOrig.weight(e);
+					if (e < sourcesSinksThreshold)
+						return 0;
+					return hugeCost;
+				};
+			}
+
+			computeMinCostFlow(g, net, cost, supply);
+		}
+
+		@Override
+		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, WeightFunction costOrig,
+				WeightFunction lowerBoundOrig, IntCollection sources, IntCollection sinks) {
+			Assertions.Graphs.onlyDirected(gOrig);
+			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
+
+			final boolean integerFlow = netOrig instanceof FlowNetwork.Int
+					&& (lowerBoundOrig == null || lowerBoundOrig instanceof WeightFunction.Int);
+			final boolean integerCost = costOrig instanceof WeightFunction.Int;
+
+			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
+				builder.addVertex();
+			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			/* any edge with index smaller than this threshold is an original edge of the graph */
+			final int origEdgesThreshold = builder.edges().size();
+
+			final int source = builder.addVertex();
+			final int sink = builder.addVertex();
+			for (int v : sources)
+				builder.addEdge(source, v);
+			for (int v : sinks)
+				builder.addEdge(v, sink);
+
+			/*
+			 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
+			 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
+			 * connecting the super source and the super sink.
+			 */
+			final int sourcesSinksThreshold = builder.edges().size();
+
+			builder.addEdge(source, sink);
+			builder.addEdge(sink, source);
+
+			IndexGraph g = builder.build();
+
+			final double hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
+			FlowNetwork net;
+			if (integerFlow) {
+				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+				int hugeCapacityInt = (int) hugeCapacity;
+				if (hugeCapacityInt != hugeCapacity)
+					throw new AssertionError("integer overflow");
+				net = new FlowNetwork.Int() {
+					int[] flows = new int[builder.edges().size() - origEdgesThreshold];
+
+					@Override
+					public int getCapacityInt(int edge) {
+						return edge < origEdgesThreshold ? netOrigInt.getCapacityInt(edge) : hugeCapacityInt;
+					}
+
+					@Override
+					public void setCapacity(int edge, int capacity) {
+						throw new UnsupportedOperationException();
+					}
+
+					@Override
+					public int getFlowInt(int edge) {
+						return edge < origEdgesThreshold ? netOrigInt.getFlowInt(edge)
+								: flows[edge - origEdgesThreshold];
+					}
+
+					@Override
+					public void setFlow(int edge, int flow) {
+						if (edge < origEdgesThreshold) {
+							netOrigInt.setFlow(edge, flow);
+						} else {
+							flows[edge - origEdgesThreshold] = flow;
+						}
+					}
+				};
+			} else {
+				net = new FlowNetwork() {
+					double[] flows = new double[builder.edges().size() - origEdgesThreshold];
+
+					@Override
+					public double getCapacity(int edge) {
+						return edge < origEdgesThreshold ? netOrig.getCapacity(edge) : hugeCapacity;
+					}
+
+					@Override
+					public void setCapacity(int edge, double capacity) {
+						throw new UnsupportedOperationException();
+					}
+
+					@Override
+					public double getFlow(int edge) {
+						return edge < origEdgesThreshold ? netOrig.getFlow(edge) : flows[edge - origEdgesThreshold];
+					}
+
+					@Override
+					public void setFlow(int edge, double flow) {
+						if (edge < origEdgesThreshold) {
+							netOrig.setFlow(edge, flow);
+						} else {
+							flows[edge - origEdgesThreshold] = flow;
+						}
+					}
+				};
+			}
+
+			WeightFunction supply;
+			if (integerFlow) {
+				int hugeCapacityInt = (int) hugeCapacity;
+				if (hugeCapacityInt != hugeCapacity)
+					throw new AssertionError("integer overflow");
+				WeightFunction.Int supplyInt = v -> {
+					if (v == source)
+						return hugeCapacityInt;
+					if (v == sink)
+						return -hugeCapacityInt;
+					return 0;
+				};
+				supply = supplyInt;
+			} else {
+				supply = v -> {
+					if (v == source)
+						return hugeCapacity;
+					if (v == sink)
+						return -hugeCapacity;
+					return 0;
+				};
+			}
+
+			WeightFunction cost;
+			if (integerCost) {
+				WeightFunction.Int costOrigInt = (WeightFunction.Int) costOrig;
+				final int hugeCost = hugeCost(gOrig, costOrigInt);
+				WeightFunction.Int costInt = e -> {
+					if (e < origEdgesThreshold)
+						return costOrigInt.weightInt(e);
+					if (e < sourcesSinksThreshold)
+						return 0;
+					return hugeCost;
+				};
+				cost = costInt;
+			} else {
+				final double hugeCost = hugeCost(gOrig, costOrig);
+				cost = e -> {
+					if (e < origEdgesThreshold)
+						return costOrig.weight(e);
+					if (e < sourcesSinksThreshold)
+						return 0;
+					return hugeCost;
+				};
+			}
+
+			if (lowerBoundOrig == null) {
+				computeMinCostFlow(g, net, cost, supply);
+			} else {
+				WeightFunction lowerBound;
+				if (integerFlow) {
+					WeightFunction.Int lowerBoundOrigInt = (WeightFunction.Int) lowerBoundOrig;
+					WeightFunction.Int lowerBoundInt = e -> e < origEdgesThreshold ? lowerBoundOrigInt.weightInt(e) : 0;
+					lowerBound = lowerBoundInt;
+				} else {
+					lowerBound = e -> e < origEdgesThreshold ? lowerBoundOrig.weight(e) : 0;
 				}
+				computeMinCostFlow(g, net, cost, lowerBound, supply);
 			}
-			return supply2;
-		}
-
-		private static WeightFunction.Int computeSupply(IndexGraph g, FlowNetwork.Int net,
-				WeightFunction.Int lowerBound, WeightFunction.Int supply) {
-			Weights.Int supply2 = Weights.createExternalVerticesWeights(g, int.class);
-			if (supply != null) {
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
-					supply2.set(v, supply.weightInt(v));
-			}
-			if (lowerBound != null) {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					int l = lowerBound.weightInt(e);
-					if (l == 0)
-						continue;
-					net.setFlow(e, l);
-					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					supply2.set(u, supply2.getInt(u) - l);
-					supply2.set(v, supply2.getInt(v) + l);
-				}
-			}
-			return supply2;
 		}
 
 	}

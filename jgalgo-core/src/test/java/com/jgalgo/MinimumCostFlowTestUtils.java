@@ -169,19 +169,17 @@ class MinimumCostFlowTestUtils extends TestUtils {
 		});
 	}
 
-	private static final int MIN_CAPACITY = 400;
-
 	private static FlowNetwork.Int randNetwork(Graph g, Random rand) {
 		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(g);
 		for (int e : g.edges())
-			net.setCapacity(e, MIN_CAPACITY + rand.nextInt(1024));
+			net.setCapacity(e, 400 + rand.nextInt(1024));
 		return net;
 	}
 
 	private static WeightFunction.Int randCost(Graph g, Random rand) {
 		Weights.Int cost = Weights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
-			cost.set(e, rand.nextInt(2424) - 256);
+			cost.set(e, rand.nextInt(2424) - 600);
 		return cost;
 	}
 
