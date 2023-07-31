@@ -61,18 +61,16 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 			addInternalVerticesContainer(edgesContainer);
 
-			for (int u = 0; u < n; u++) {
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					int oldVal = edges[u].put(v, e);
-					if (oldVal != -1)
-						throw new IllegalStateException("Parallel edge (" + u + "," + eit.target()
-								+ ") already exists. Parallel edges are not allowed.");
-					if (u != v) {
-						int oldVal2 = edges[v].put(u, e);
-						assert oldVal2 == -1;
-					}
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				int u = g.edgeSource(e);
+				int v = g.edgeTarget(e);
+				int oldVal = ensureEdgesMapMutable(edges, u).put(v, e);
+				if (oldVal != -1)
+					throw new IllegalStateException(
+							"Parallel edge (" + u + "," + v + ") already exists. Parallel edges are not allowed.");
+				if (u != v) {
+					int oldVal2 = ensureEdgesMapMutable(edges, v).put(u, e);
+					assert oldVal2 == -1;
 				}
 			}
 		}

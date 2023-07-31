@@ -75,9 +75,9 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 			final int m = edgesIdStrat.size();
 			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
 					newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
-			addInternalEdgesContainer(edgeEndpointsContainer);
 		}
 	}
 

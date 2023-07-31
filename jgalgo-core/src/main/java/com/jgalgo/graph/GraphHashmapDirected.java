@@ -78,14 +78,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			for (int v = 0; v < n; v++) {
 				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int oldVal = edgesOut[v].put(eit.target(), e);
+					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.target(), e);
 					if (oldVal != -1)
 						throw new IllegalStateException("Parallel edge (" + v + "," + eit.target()
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int oldVal = edgesIn[v].put(eit.source(), e);
+					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.source(), e);
 					if (oldVal != -1)
 						throw new IllegalStateException("Parallel edge (" + eit.source() + "," + v
 								+ ") already exists. Parallel edges are not allowed.");
