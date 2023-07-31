@@ -470,7 +470,7 @@ class GraphImplTestUtils extends TestUtils {
 		for (boolean directed : new boolean[] { true, false }) {
 			/* Create a random graph g */
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
@@ -569,7 +569,7 @@ class GraphImplTestUtils extends TestUtils {
 		for (boolean directed : new boolean[] { true, false }) {
 			/* Create a random graph g */
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
@@ -685,7 +685,7 @@ class GraphImplTestUtils extends TestUtils {
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+				.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 		final int opsNum = 128;
 		testRandOps(g, opsNum, seedGen.nextSeed());
 	}

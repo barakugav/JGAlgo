@@ -87,7 +87,7 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static Graph randGraph(int n, int m, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).build();
+				.selfEdges(true).cycles(true).connected(false).build();
 	}
 
 }

@@ -97,7 +97,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			int n = args[0], m = args[1];
 
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			testRandGraph(algo, g, w);
