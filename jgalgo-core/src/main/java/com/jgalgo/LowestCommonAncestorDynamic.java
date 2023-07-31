@@ -128,10 +128,10 @@ public interface LowestCommonAncestorDynamic {
 			public LowestCommonAncestorDynamic build() {
 				if (impl != null) {
 					switch (impl) {
-						case "GabowLinear":
-							return new LowestCommonAncestorDynamicGabowLinear();
-						case "GabowSimple":
+						case "gabow-simple":
 							return new LowestCommonAncestorDynamicGabowSimple();
+						case "gabow-linear":
+							return new LowestCommonAncestorDynamicGabowLinear();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
