@@ -32,9 +32,9 @@ abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-		Path indexPath = computeMinimumMeanCycle(iGraph, w);
+		Path indexPath = computeMinimumMeanCycle(iGraph, iw);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 

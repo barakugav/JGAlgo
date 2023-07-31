@@ -189,18 +189,20 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 			}
 		}
 
-		/* handle self loops separately, as the algorithm skip SCC of size one */
-		int bestSelfLoop = 1;
-		double bestSelfLoopWeight = Double.POSITIVE_INFINITY;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
-			if (g.edgeSource(e) == g.edgeTarget(e) && w.weight(e) < bestSelfLoopWeight) {
-				bestSelfLoop = e;
-				bestSelfLoopWeight = w.weight(e);
+		/* handle self edges separately, as the algorithm skip SCC of size one */
+		if (g.getCapabilities().selfEdges()) {
+			int bestSelfEdge = 1;
+			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				if (g.edgeSource(e) == g.edgeTarget(e) && w.weight(e) < bestSelfEdgeWeight) {
+					bestSelfEdge = e;
+					bestSelfEdgeWeight = w.weight(e);
+				}
 			}
-		}
-		if (bestSelfLoop != -1 && bestSelfLoopWeight < overallBestCycleMeanWeight) {
-			int cycleVertex = g.edgeSource(bestSelfLoop);
-			return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfLoop));
+			if (bestSelfEdge != -1 && bestSelfEdgeWeight < overallBestCycleMeanWeight) {
+				int cycleVertex = g.edgeSource(bestSelfEdge);
+				return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));
+			}
 		}
 
 		if (overallBestCycleVertex == -1)

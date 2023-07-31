@@ -61,24 +61,24 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 		Path cycle = computeMinimumMeanCycle0(g, w);
 
-		/* The regular algorithm doesn't handle self loops (and specifically skip CC with a single vertex) */
+		/* The regular algorithm doesn't handle self edges (and specifically skip CC with a single vertex) */
 		if (g.getCapabilities().selfEdges()) {
-			int bestSelfLoop = -1;
-			double bestSelfLoopWeight = Double.POSITIVE_INFINITY;
+			int bestSelfEdge = -1;
+			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (g.edgeSource(e) != g.edgeTarget(e))
 					continue;
 				double ew = w.weight(e);
-				if (ew < bestSelfLoopWeight) {
-					bestSelfLoop = e;
-					bestSelfLoopWeight = ew;
+				if (ew < bestSelfEdgeWeight) {
+					bestSelfEdge = e;
+					bestSelfEdgeWeight = ew;
 				}
 			}
-			if (bestSelfLoop != -1) {
-				double bestCycleWeight = cycle != null ? cycle.weight(w) : Double.POSITIVE_INFINITY;
-				if (bestCycleWeight > bestCycleWeight) {
-					int loopVertex = g.edgeSource(bestSelfLoop);
-					cycle = new PathImpl(g, loopVertex, loopVertex, IntList.of(bestSelfLoop));
+			if (bestSelfEdge != -1) {
+				double bestCycleWeight = cycle != null ? cycle.weight(w) / cycle.size() : Double.POSITIVE_INFINITY;
+				if (bestSelfEdgeWeight < bestCycleWeight) {
+					int selfEdgeVertex = g.edgeSource(bestSelfEdge);
+					cycle = new PathImpl(g, selfEdgeVertex, selfEdgeVertex, IntList.of(bestSelfEdge));
 				}
 			}
 		}

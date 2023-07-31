@@ -17,8 +17,8 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -58,7 +58,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -72,7 +72,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+					.selfEdges(true).cycles(true).connected(false).build();
 
 			Weights.Double w = g.addEdgesWeights("weights", double.class);
 			for (int e : new IntArrayList(g.edges())) {
@@ -91,7 +91,8 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		Path cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
 			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
-			assertFalse(cycles.hasNext(), "failed to find a cycle");
+			Path missedCycle = cycles.hasNext() ? cycles.next() : null;
+			assertNull(missedCycle, "failed to find a cycle");
 			return;
 		}
 		double cycleMeanWeight = getMeanWeight(cycle, w);
