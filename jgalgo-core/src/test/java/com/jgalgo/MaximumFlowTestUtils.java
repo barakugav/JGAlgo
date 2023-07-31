@@ -305,9 +305,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 		sinks = new IntOpenHashSet(sinks);
 		for (int v : g.vertices()) {
 			if (sources.contains(v))
-				assertTrue(vertexFlowOut.get(v) >= 0);
+				assertTrue(vertexFlowOut.get(v) >= -1e-9);
 			if (sinks.contains(v))
-				assertTrue(vertexFlowOut.get(v) <= 0);
+				assertTrue(vertexFlowOut.get(v) <= 1e-9);
 		}
 		double sourcesFlowSum = 0;
 		double sinksFlowSum = 0;

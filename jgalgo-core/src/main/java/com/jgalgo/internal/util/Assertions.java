@@ -173,12 +173,24 @@ public class Assertions {
 		}
 
 		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				double l = lowerBound.weight(e);
-				double cap = net.getCapacity(e);
-				if (!(0 <= l && l <= cap))
-					throw new IllegalArgumentException(
-							"Lower bound " + l + " of edge " + e + " must be in [0, " + cap + "]");
+			if (net instanceof FlowNetwork.Int && lowerBound instanceof WeightFunction.Int) {
+				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+				WeightFunction.Int lowerBoundInt = (WeightFunction.Int) lowerBound;
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					int l = lowerBoundInt.weightInt(e);
+					int cap = netInt.getCapacityInt(e);
+					if (!(0 <= l && l <= cap))
+						throw new IllegalArgumentException(
+								"Lower bound " + l + " of edge " + e + " must be in [0, " + cap + "]");
+				}
+			} else {
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					double l = lowerBound.weight(e);
+					double cap = net.getCapacity(e);
+					if (!(0 <= l && l <= cap))
+						throw new IllegalArgumentException(
+								"Lower bound " + l + " of edge " + e + " must be in [0, " + cap + "]");
+				}
 			}
 		}
 
@@ -190,7 +202,7 @@ public class Assertions {
 					throw new IllegalArgumentException("Supply must be non-negative for vertex " + v);
 				sum += d;
 			}
-			if (sum != 0)
+			if (Math.abs(sum) > 1e-6)
 				throw new IllegalArgumentException("Sum of supply must be zero");
 		}
 	}

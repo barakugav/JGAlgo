@@ -65,7 +65,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			if (resGraph.isOriginalEdge(e))
 				net.setFlow(resGraph.edgeRef[e], flow[e]);
-		
+
 		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);
 	}
 
@@ -85,7 +85,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 					capacity[e] = 0;
 					flow[e] = -eFlow;
 				}
-				assert flow[e] <= capacity[e];
+				assert flow[e] <= capacity[e] + 1e-9;
 			}
 		} else {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -93,7 +93,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				double eFlow = net.getFlow(eRef);
 				capacity[e] = net.getCapacity(eRef);
 				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;
-				assert flow[e] <= capacity[e];
+				assert flow[e] <= capacity[e] + 1e-9;
 			}
 		}
 	}

@@ -23,37 +23,37 @@ public class MinimumCostFlowCostScalingTest extends TestBase {
 	@Test
 	public void testMinCostMaxFlowWithSourceSink() {
 		final long seed = 0x9d87eacac2f9fd14L;
-		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourceSink(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostMaxFlowWithSourceSink(algo(), seed);
 	}
 
 	@Test
 	public void testMinCostMaxFlowWithSourceSinkLowerBound() {
 		final long seed = 0x0af5c8180fcbeca2L;
-		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourceSinkLowerBound(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostMaxFlowWithSourceSinkLowerBound(algo(), seed);
 	}
 
 	@Test
 	public void testMinCostMaxFlowWithSourcesSinks() {
 		final long seed = 0xaa9f96849c7e279eL;
-		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourcesSinks(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostMaxFlowWithSourcesSinks(algo(), seed);
 	}
 
 	@Test
 	public void testMinCostMaxFlowWithSourcesSinksLowerBound() {
 		final long seed = 0xbe29e6f664b78400L;
-		MinimumCostFlowTestUtils.testMinCostMaxFlowWithSourcesSinksLowerBound(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostMaxFlowWithSourcesSinksLowerBound(algo(), seed);
 	}
 
 	@Test
 	public void testMinCostFlowWithSupply() {
 		final long seed = 0x1f3f752a90c159ccL;
-		MinimumCostFlowTestUtils.testMinCostFlowWithSupply(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostFlowWithSupply(algo(), seed);
 	}
 
 	@Test
 	public void testMinCostFlowWithSupplyLowerBound() {
 		final long seed = 0x18ce22e8f434beddL;
-		MinimumCostFlowTestUtils.testMinCostFlowWithSupplyLowerBound(algo(), seed);
+		MinimumCostFlowTestUtilsInt.testMinCostFlowWithSupplyLowerBound(algo(), seed);
 	}
 
 	private static MinimumCostFlow algo() {

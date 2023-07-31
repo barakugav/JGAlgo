@@ -697,8 +697,14 @@ class MinimumCostFlows {
 			computeMinCostMaxFlow(g, net, cost, source, sink);
 
 			/* assert all supply was provided */
-			for (int m = g.edges().size(), e = sourcesSinksThreshold; e < m; e++)
-				assert net.getFlow(e) == net.getCapacity(e);
+			if (integerFlow) {
+				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+				for (int m = g.edges().size(), e = sourcesSinksThreshold; e < m; e++)
+					assert netInt.getFlowInt(e) == netInt.getCapacityInt(e);
+			} else {
+				for (int m = g.edges().size(), e = sourcesSinksThreshold; e < m; e++)
+					assert Math.abs(net.getFlow(e) - net.getCapacity(e)) < 1e-9;
+			}
 		}
 
 		@Override

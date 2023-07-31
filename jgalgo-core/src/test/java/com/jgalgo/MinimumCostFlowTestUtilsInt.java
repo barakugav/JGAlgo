@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-class MinimumCostFlowTestUtils extends TestUtils {
+class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 	static void testMinCostMaxFlowWithSourceSink(MinimumCostFlow algo, long seed) {
 		final boolean directed = true;
