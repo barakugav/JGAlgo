@@ -19,20 +19,20 @@ package com.jgalgo.graph;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
 /**
- * A undirected graph implementation using a two dimensional table to store all edges.
+ * A undirected graph implementation using a two dimensional matrix to store all edges.
  * <p>
- * If the graph contains \(n\) vertices, table of size {@code [n][n]} stores the edges of the graph. The implementation
+ * If the graph contains \(n\) vertices, matrix of size {@code [n][n]} stores the edges of the graph. The implementation
  * does not support multiple edges with identical source and target.
  * <p>
  * This implementation is efficient for use cases where fast lookups of edge \((u,v)\) are required, as they can be
  * answered in \(O(1)\) time, but it should not be the default choice for an undirected graph.
  *
- * @see    GraphTableDirected
+ * @see    GraphMatrixDirected
  * @author Barak Ugav
  */
-class GraphTableUndirected extends GraphTableAbstract {
+class GraphMatrixUndirected extends GraphMatrixAbstract {
 
-	GraphTableUndirected() {
+	GraphMatrixUndirected() {
 		this(0, 0);
 	}
 
@@ -42,11 +42,11 @@ class GraphTableUndirected extends GraphTableAbstract {
 	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
-	GraphTableUndirected(int expectedVerticesNum, int expectedEdgesNum) {
+	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphTableUndirected(IndexGraph g) {
+	GraphMatrixUndirected(IndexGraph g) {
 		super(g);
 	}
 

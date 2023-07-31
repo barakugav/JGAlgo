@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 
-	private GraphFactory layerGraphFactory = GraphFactory.newDirected().setOption("impl", "GraphLinked");
+	private GraphFactory layerGraphFactory = GraphFactory.newDirected().setOption("impl", "linked-list");
 
 	/**
 	 * Create a new maximum flow algorithm object.

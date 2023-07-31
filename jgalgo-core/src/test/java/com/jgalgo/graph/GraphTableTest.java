@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 public class GraphTableTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphTable").setDirected(directed)
+		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "matrix").setDirected(directed)
 				.newGraph();
 	}
 

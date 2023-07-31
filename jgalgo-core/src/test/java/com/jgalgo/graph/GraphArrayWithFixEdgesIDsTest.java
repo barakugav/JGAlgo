@@ -23,8 +23,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
 	static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> GraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
-				.newGraph();
+		return directed -> GraphFactory.newUndirected().setOption("impl", "array").setDirected(directed).newGraph();
 	}
 
 	@Test

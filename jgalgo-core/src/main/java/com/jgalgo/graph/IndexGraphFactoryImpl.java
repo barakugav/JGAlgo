@@ -106,7 +106,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				return new GraphLinkedUndirected(graph);
 			}
 		};
-		Impl hashmapImpl = directed ? new Impl() {
+		Impl hashtableImpl = directed ? new Impl() {
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -129,58 +129,56 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				return new GraphHashmapUndirected(graph);
 			}
 		};
-		Impl tableImpl = directed ? new Impl() {
+		Impl matrixImpl = directed ? new Impl() {
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphTableDirected(expectedVerticesNum, expectedEdgesNum);
+				return new GraphMatrixDirected(expectedVerticesNum, expectedEdgesNum);
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-				return new GraphTableDirected(graph);
+				return new GraphMatrixDirected(graph);
 			}
 		} : new Impl() {
 
 			@Override
 			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphTableUndirected(expectedVerticesNum, expectedEdgesNum);
+				return new GraphMatrixUndirected(expectedVerticesNum, expectedEdgesNum);
 			}
 
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph) {
-				return new GraphTableUndirected(graph);
+				return new GraphMatrixUndirected(graph);
 			}
 		};
 
-		Impl impl;
-		if (this.impl != null) {
-			if ("GraphArray".equals(this.impl))
-				impl = arrayImpl;
-			else if ("GraphLinked".equals(this.impl))
-				impl = linkedImpl;
-			else if ("GraphHashmap".equals(this.impl))
-				impl = hashmapImpl;
-			else if ("GraphTable".equals(this.impl))
-				impl = tableImpl;
-			else
-				throw new IllegalArgumentException("unknown 'impl' value: " + this.impl);
-
+		if (impl != null) {
+			switch (impl) {
+				case "array":
+					return arrayImpl;
+				case "linked-list":
+					return linkedImpl;
+				case "hashtable":
+					return hashtableImpl;
+				case "matrix":
+					return matrixImpl;
+				default:
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+			}
 		} else {
 			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
-				impl = hashmapImpl;
+				return hashtableImpl;
 
 			if (hints.containsAll(List.of(GraphFactory.Hint.FastEdgeLookup, GraphFactory.Hint.DenseGraph)) && !selfEdges
 					&& !parallelEdges)
-				impl = tableImpl;
+				return matrixImpl;
 
-			else if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
-				impl = linkedImpl;
+			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
+				return linkedImpl;
 
-			else
-				impl = arrayImpl;
+			return arrayImpl;
 		}
-		return impl;
 	}
 
 	@Override

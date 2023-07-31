@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 public class GraphArrayTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "GraphArray").setDirected(directed)
+		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "array").setDirected(directed)
 				.newGraph();
 	}
 

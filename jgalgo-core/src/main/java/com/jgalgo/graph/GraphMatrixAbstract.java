@@ -20,7 +20,7 @@ import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class GraphTableAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
+abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
 
 	final DataContainer.Obj<DataContainer.Int> edges;
 	private long[] edgeEndpoints;
@@ -30,7 +30,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 
 	private static final DataContainer.Int[] EmptyEdgesArr = new DataContainer.Int[0];
 
-	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
+	GraphMatrixAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
 		edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
@@ -41,12 +41,12 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphTableAbstract(IndexGraph g) {
+	GraphMatrixAbstract(IndexGraph g) {
 		super(g);
 		final int n = g.vertices().size();
 
-		if (g instanceof GraphTableAbstract) {
-			GraphTableAbstract g0 = (GraphTableAbstract) g;
+		if (g instanceof GraphMatrixAbstract) {
+			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
 			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
 			for (int v = 0; v < n; v++) {

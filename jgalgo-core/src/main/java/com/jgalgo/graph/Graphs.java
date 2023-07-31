@@ -1354,13 +1354,13 @@ public class Graphs {
 			if (g instanceof ImmutableIndexGraphView)
 				g = ((ImmutableIndexGraphView) g).graph();
 			if (g instanceof GraphArrayAbstract)
-				return "GraphArray";
+				return "array";
 			if (g instanceof GraphLinkedAbstract)
-				return "GraphLinked";
+				return "linked-list";
 			if (g instanceof GraphHashmapAbstract)
-				return "GraphHashmap";
-			if (g instanceof GraphTableAbstract)
-				return "GraphTable";
+				return "hashtable";
+			if (g instanceof GraphMatrixAbstract)
+				return "matrix";
 			if (g == g0)
 				return null;
 		}
