@@ -24,10 +24,8 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 		edgesOut = processEdges.edgesOut;
 
 		final int m = builder.edges().size();
-		for (int e = 0; e < m; e++) {
-			endpoints[e * 2 + 0] = builder.edgeSource(e);
-			endpoints[e * 2 + 1] = builder.edgeTarget(e);
-		}
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
 	GraphCSRAbstractUnindexed(IndexGraph g) {
@@ -52,10 +50,8 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 		}
 		edgesOutBegin[n] = edgesOutArrLen;
 
-		for (int e = 0; e < m; e++) {
-			endpoints[e * 2 + 0] = g.edgeSource(e);
-			endpoints[e * 2 + 1] = g.edgeTarget(e);
-		}
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
 }

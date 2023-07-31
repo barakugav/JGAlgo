@@ -45,7 +45,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 					newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
-				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
+				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
 	}
 
@@ -59,14 +59,14 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		for (int e = 0; e < m; e++) {
 			int source = builder.endpoints[e * 2 + 0];
 			int target = builder.endpoints[e * 2 + 1];
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
+			setEndpoints(e, source, target);
 		}
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
+		setEndpoints(e, source, target);
 		return e;
 	}
 

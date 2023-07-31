@@ -176,28 +176,28 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 
 		if (v1v1 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v1v1, v2, v2);
+			setEndpoints(v1v1, v2, v2);
 			int oldVal1 = edgesOut[v1].put(v2, v1v1);
 			int oldVal2 = edgesIn[v1].put(v2, v1v1);
 			assert oldVal1 == -1;
 			assert oldVal2 == -1;
 		}
 		if (v1v2 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v1v2, v2, v1);
+			setEndpoints(v1v2, v2, v1);
 			int oldVal1 = edgesOut[v1].put(v1, v1v2);
 			int oldVal2 = edgesIn[v1].put(v1, v1v2);
 			assert oldVal1 == -1;
 			assert oldVal2 == -1;
 		}
 		if (v2v1 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v2v1, v1, v2);
+			setEndpoints(v2v1, v1, v2);
 			int oldVal1 = edgesOut[v2].put(v2, v2v1);
 			int oldVal2 = edgesIn[v2].put(v2, v2v1);
 			assert oldVal1 == -1;
 			assert oldVal2 == -1;
 		}
 		if (v2v2 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v2v2, v1, v1);
+			setEndpoints(v2v2, v1, v1);
 			int oldVal1 = edgesOut[v2].put(v1, v2v2);
 			int oldVal2 = edgesIn[v2].put(v1, v2v2);
 			assert oldVal1 == -1;

@@ -45,8 +45,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 		for (int eCsr = 0; eCsr < m; eCsr++) {
 			int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
-			endpoints[eCsr * 2 + 0] = builder.edgeSource(eOrig);
-			endpoints[eCsr * 2 + 1] = builder.edgeTarget(eOrig);
+			setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
 		}
 	}
 

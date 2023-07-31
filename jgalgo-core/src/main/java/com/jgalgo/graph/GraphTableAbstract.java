@@ -76,7 +76,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
 					newArr -> edgeEndpoints = newArr);
 			for (int e = 0; e < m; e++)
-				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
+				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 			addInternalEdgesContainer(edgeEndpointsContainer);
 		}
 	}
@@ -135,7 +135,7 @@ abstract class GraphTableAbstract extends GraphBaseIndexMutable implements Graph
 		if (edges.get(source).getInt(target) != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(source, target);
-		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
+		setEndpoints(e, source, target);
 		return e;
 	}
 

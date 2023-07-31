@@ -17,17 +17,19 @@ package com.jgalgo.graph;
 
 import java.util.Map;
 import java.util.Set;
+import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, ImmutableGraph {
+abstract class GraphCSRBase extends GraphBase
+		implements IndexGraphImpl, GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
 	final IdStrategy.FixedSize verticesIdStrat;
 	final IdStrategy.FixedSize edgesIdStrat;
 
 	final int[] edgesOutBegin;
-	final int[] endpoints;
+	private final long[] endpoints;
 
 	final Map<Object, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<Object, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
@@ -41,7 +43,7 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 		edgesIdStrat = new IdStrategy.FixedSize(m);
 
 		edgesOutBegin = processEdges.edgesOutBegin;
-		endpoints = new int[m * 2];
+		endpoints = new long[m];
 		assert edgesOutBegin.length == n + 1;
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
@@ -69,12 +71,10 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 		edgesIdStrat = new IdStrategy.FixedSize(m);
 
 		edgesOutBegin = new int[n + 1];
-		endpoints = new int[m * 2];
+		endpoints = new long[m];
 
-		for (int e = 0; e < m; e++) {
-			endpoints[e * 2 + 0] = g.edgeSource(e);
-			endpoints[e * 2 + 1] = g.edgeTarget(e);
-		}
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
@@ -99,16 +99,6 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 	}
 
 	@Override
-	public int edgeSource(int edge) {
-		return endpoints[edge * 2 + 0];
-	}
-
-	@Override
-	public int edgeTarget(int edge) {
-		return endpoints[edge * 2 + 1];
-	}
-
-	@Override
 	public int addVertex() {
 		throw new UnsupportedOperationException();
 	}
@@ -121,6 +111,11 @@ abstract class GraphCSRBase extends GraphBase implements IndexGraphImpl, Immutab
 	@Override
 	public int addEdge(int source, int target) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public long[] edgeEndpoints() {
+		return endpoints;
 	}
 
 	@Override

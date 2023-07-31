@@ -121,19 +121,19 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		if (v1v1 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v1v1, v2, v2);
+			setEndpoints(v1v1, v2, v2);
 			int oldVal = edges[v1].put(v2, v1v1);
 			assert oldVal == -1;
 		}
 		if (v1v2 != -1) {
-			EdgeEndpointsContainer.reverseEdge(edgeEndpoints(), v1v2);
+			reverseEdge(v1v2);
 			int oldVal1 = edges[v1].put(v1, v1v2);
 			int oldVal2 = edges[v2].put(v2, v1v2);
 			assert oldVal1 == -1;
 			assert oldVal2 == -1;
 		}
 		if (v2v2 != -1) {
-			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v2v2, v1, v1);
+			setEndpoints(v2v2, v1, v1);
 			int oldVal = edges[v2].put(v1, v2v2);
 			assert oldVal == -1;
 		}

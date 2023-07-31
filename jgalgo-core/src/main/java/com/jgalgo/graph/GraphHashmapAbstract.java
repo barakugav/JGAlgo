@@ -50,7 +50,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 					newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
-				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));
+				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
 	}
 
@@ -67,7 +67,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);
+		setEndpoints(e, source, target);
 		return e;
 	}
 
