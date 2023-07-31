@@ -25,7 +25,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -62,7 +61,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
 		for (int i = 0; i < vs.length; i++)
-			for (int j = i; j < vs.length; j++)
+			for (int j = i + 1; j < vs.length; j++)
 				queries.addQuery(vs[i], vs[j]);
 		return queries;
 	}
@@ -71,8 +70,14 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		Random rand = new Random(seed);
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
-		for (int q = 0; q < m; q++)
-			queries.addQuery(vs[rand.nextInt(vs.length)], vs[rand.nextInt(vs.length)]);
+		for (int q = 0; q < m; q++) {
+			int i, j;
+			do {
+				i = rand.nextInt(vs.length);
+				j = rand.nextInt(vs.length);
+			} while (i == j);
+			queries.addQuery(vs[i], vs[j]);
+		}
 		return queries;
 	}
 
@@ -118,7 +123,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(false).cycles(true).connected(true).build();
+					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
 
@@ -135,38 +140,31 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(false).cycles(true).connected(true).build();
+					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
 			Graph mst = GraphFactory.newUndirected().newGraph();
-			Weights.Int g2MstVMap = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
-			for (int v : g.vertices()) {
-				int vMst = mst.addVertex();
-				g2MstVMap.set(v, vMst);
-			}
-			Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
-			for (int e : mstEdges) {
-				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				int e0 = mst.addEdge(g2MstVMap.getInt(u), g2MstVMap.getInt(v));
-				edgeRef.set(e0, e);
-			}
+			for (int v : g.vertices())
+				mst.addVertex(v);
+			for (int e : mstEdges)
+				mst.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 
 			Random rand = new Random(seedGen.nextSeed());
-			int[] edges = g.edges().toIntArray();
-			for (;;) {
-				int badEdge;
-				do {
-					badEdge = edges[rand.nextInt(edges.length)];
-				} while (mstEdges.contains(badEdge));
+			for (int[] edges = g.edges().toIntArray();;) {
+				int badEdge = edges[rand.nextInt(edges.length)];
+				if (mstEdges.contains(badEdge))
+					continue;
+				int badEdgeSource = g.edgeSource(badEdge);
+				int badEdgeTarget = g.edgeTarget(badEdge);
+				if (badEdgeSource == badEdgeTarget)
+					continue;
 
-				int badEdgeSource = g2MstVMap.getInt(g.edgeSource(badEdge));
-				int badEdgeTarget = g2MstVMap.getInt(g.edgeTarget(badEdge));
 				Path mstPath = Path.findPath(mst, badEdgeSource, badEdgeTarget);
 				int goodEdge = mstPath.getInt(rand.nextInt(mstPath.size()));
 
-				if (w.weightInt(edgeRef.getInt(goodEdge)) < w.weightInt(badEdge)) {
+				if (w.weightInt(goodEdge) < w.weightInt(badEdge)) {
 					mstEdges.rem(goodEdge);
 					mstEdges.add(badEdge);
 					break;

@@ -107,8 +107,14 @@ public class TreePathMaximaBench {
 		Random rand = new Random(seed);
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
-		for (int q = 0; q < m; q++)
-			queries.addQuery(vs[rand.nextInt(vs.length)], vs[rand.nextInt(vs.length)]);
+		for (int q = 0; q < m; q++) {
+			int i, j;
+			do {
+				i = rand.nextInt(vs.length);
+				j = rand.nextInt(vs.length);
+			} while (i == j);
+			queries.addQuery(vs[i], vs[j]);
+		}
 		return queries;
 	}
 

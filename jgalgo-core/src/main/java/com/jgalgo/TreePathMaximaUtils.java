@@ -41,10 +41,10 @@ class TreePathMaximaUtils {
 			IndexGraph iGraph = tree.indexGraph();
 			IndexIdMap viMap = tree.indexGraphVerticesMap();
 			IndexIdMap eiMap = tree.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			queries = new IndexQueriesFromQueries(queries, viMap);
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			TreePathMaxima.Queries iQueries = new IndexQueriesFromQueries(queries, viMap);
 
-			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, w, queries);
+			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
@@ -174,13 +174,19 @@ class TreePathMaximaUtils {
 			return false;
 
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
-		for (int m = g.edges().size(), e = 0; e < m; e++)
-			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
+			int u = g.edgeSource(e);
+			int v = g.edgeTarget(e);
+			if (u != v)
+				queries.addQuery(u, v);
+		}
 		WeightFunction w0 = e -> w.weight(edgeRef[e]);
 		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
+			if (g.edgeSource(e) == g.edgeTarget(e))
+				continue;
 			int mstEdge = tpmResults.getHeaviestEdge(i++);
 			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;
