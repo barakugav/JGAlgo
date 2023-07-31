@@ -77,13 +77,13 @@ public interface RMQStatic {
 			public RMQStatic build() {
 				if (impl != null) {
 					switch (impl) {
-						case "LookupTable":
-							return new RMQStaticLookupTable();
-						case "PowerOf2Table":
+						case "simple-lookup-table":
+							return new RMQStaticSimpleLookupTable();
+						case "power-of-2-table":
 							return new RMQStaticPowerOf2Table();
-						case "CartesianTrees":
+						case "cartesian-trees":
 							return new RMQStaticCartesianTrees();
-						case "PlusMinusOne":
+						case "plus-minus-one":
 							return new RMQStaticPlusMinusOne();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);

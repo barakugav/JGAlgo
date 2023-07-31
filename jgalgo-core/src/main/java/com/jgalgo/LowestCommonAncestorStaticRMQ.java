@@ -38,7 +38,7 @@ import com.jgalgo.internal.util.Assertions;
  */
 class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
-	private final RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "PlusMinusOne").build();
+	private final RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "plus-minus-one").build();
 
 	/**
 	 * Create a new static LCA algorithm object.

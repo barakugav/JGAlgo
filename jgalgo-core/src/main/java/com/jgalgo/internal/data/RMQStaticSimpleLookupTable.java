@@ -29,12 +29,12 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-class RMQStaticLookupTable implements RMQStatic {
+class RMQStaticSimpleLookupTable implements RMQStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	RMQStaticLookupTable() {}
+	RMQStaticSimpleLookupTable() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
