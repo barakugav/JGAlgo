@@ -66,6 +66,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
+		assert v1 != v2;
+
 		final int tempV = -2;
 		for (Node p = edges[v1], next; p != null; p = next) {
 			next = p.next(v1);
@@ -108,8 +110,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("self edges are not supported");
 		Node e = (Node) addEdgeNode(source, target);
 		addEdgeToLists(e);
 		return e.id;
@@ -123,11 +123,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			next.prevSet(source, e);
 		}
 		edges[source] = e;
-		if ((next = edges[target]) != null) {
-			e.nextSet(target, next);
-			next.prevSet(target, e);
+		if (source != target) {
+			if ((next = edges[target]) != null) {
+				e.nextSet(target, next);
+				next.prevSet(target, e);
+			}
+			edges[target] = e;
 		}
-		edges[target] = e;
 	}
 
 	@Override
@@ -144,11 +146,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	void removeEdgeImpl(int edge) {
 		Node node = getNode(edge);
 		removeEdgeNodePointers(node, node.source);
-		removeEdgeNodePointers(node, node.target);
+		if (node.source != node.target)
+			removeEdgeNodePointers(node, node.target);
 		super.removeEdgeImpl(edge);
 	}
 
-	void removeEdgeNodePointers(Node e, int w) {
+	private void removeEdgeNodePointers(Node e, int w) {
 		Node next = e.next(w), prev = e.prev(w);
 		if (prev == null) {
 			edges[w] = next;
@@ -172,8 +175,11 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			p.prevSet(source, null);
 
 			// update v list
-			int v = p.getEndpoint(source);
-			removeEdgeNodePointers(p, v);
+			if (p.source != p.target) {
+				int target = p.getEndpoint(source);
+				removeEdgeNodePointers(p, target);
+			}
+
 			edgeSwapBeforeRemove(p.id);
 			super.removeEdgeImpl(p.id);
 		}
@@ -211,7 +217,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(false).build();
+			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();
 
 	private static class Node extends GraphLinkedAbstract.Node {
 
@@ -228,29 +234,39 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 
 		void nextSet(int w, Node n) {
-			assert w == source || w == target;
-			if (w == source)
+			if (w == source) {
 				nextu = n;
-			else
+			} else {
+				assert w == target;
 				nextv = n;
+			}
 		}
 
 		Node prev(int w) {
-			assert w == source || w == target;
-			return w == source ? prevu : prevv;
+			if (w == source) {
+				return prevu;
+			} else {
+				assert w == target;
+				return prevv;
+			}
 		}
 
 		void prevSet(int w, Node n) {
-			assert w == source || w == target;
-			if (w == source)
+			if (w == source) {
 				prevu = n;
-			else
+			} else {
+				assert w == target;
 				prevv = n;
+			}
 		}
 
 		int getEndpoint(int w) {
-			assert w == source || w == target;
-			return w == source ? target : source;
+			if (w == source) {
+				return target;
+			} else {
+				assert w == target;
+				return source;
+			}
 		}
 	}
 
