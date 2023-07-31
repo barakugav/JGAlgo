@@ -46,8 +46,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphMatrixUndirected(IndexGraph g) {
-		super(g);
+	GraphMatrixUndirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 	}
 
 	@Override

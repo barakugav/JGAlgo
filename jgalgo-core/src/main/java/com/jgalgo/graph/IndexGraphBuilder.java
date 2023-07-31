@@ -368,15 +368,30 @@ public interface IndexGraphBuilder {
 	}
 
 	/**
-	 * Create a new builder initialized with an existing graph vertices, edges and weights.
+	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
 	 * @param  g a graph
-	 * @return   a builder initialized with the given graph vertices, edges and weights
+	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
+	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-		return IndexGraphBuilderImpl.newFrom(g);
+		return newFrom(g, false);
+	}
+
+	/**
+	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 * <p>
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g           a graph
+	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
+	 * @return             a builder initialized with the given graph vertices and edges, with/without the original
+	 *                     graph vertices/edges weights.
+	 */
+	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyWeights) {
+		return IndexGraphBuilderImpl.newFrom(g, copyWeights);
 	}
 
 }

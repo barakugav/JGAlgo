@@ -55,8 +55,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		addInternalVerticesContainer(edgesNumContainer);
 	}
 
-	GraphArrayUndirected(IndexGraph g) {
-		super(g);
+	GraphArrayUndirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayUndirected) {

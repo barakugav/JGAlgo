@@ -29,8 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 class GraphBuilderImpl {
 
-	static GraphBuilder newFrom(Graph g) {
-		return g.getCapabilities().directed() ? new GraphBuilderImpl.Directed(g) : new GraphBuilderImpl.Undirected(g);
+	static GraphBuilder newFrom(Graph g, boolean copyWeights) {
+		return g.getCapabilities().directed() ? new GraphBuilderImpl.Directed(g, copyWeights)
+				: new GraphBuilderImpl.Undirected(g, copyWeights);
 	}
 
 	private static abstract class Abstract implements GraphBuilder {
@@ -63,10 +64,10 @@ class GraphBuilderImpl {
 			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId);
 		}
 
-		Abstract(Graph g) {
+		Abstract(Graph g, boolean copyWeights) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
-			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph());
+			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);
 			vIdToIndex = new Int2IntOpenHashMap(n);
 			vIdToIndex.defaultReturnValue(-1);
 			vIndexToId = new IntArrayList(n);
@@ -286,8 +287,8 @@ class GraphBuilderImpl {
 			super(IndexGraphBuilder.newUndirected());
 		}
 
-		Undirected(Graph g) {
-			super(g);
+		Undirected(Graph g, boolean copyWeights) {
+			super(g, copyWeights);
 			Assertions.Graphs.onlyUndirected(g);
 		}
 
@@ -320,8 +321,8 @@ class GraphBuilderImpl {
 			super(IndexGraphBuilder.newDirected());
 		}
 
-		Directed(Graph g) {
-			super(g);
+		Directed(Graph g, boolean copyWeights) {
+			super(g, copyWeights);
 			Assertions.Graphs.onlyDirected(g);
 		}
 

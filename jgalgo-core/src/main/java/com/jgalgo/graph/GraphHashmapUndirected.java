@@ -43,8 +43,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		addInternalVerticesContainer(edgesContainer);
 	}
 
-	GraphHashmapUndirected(IndexGraph g) {
-		super(g);
+	GraphHashmapUndirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphHashmapUndirected) {

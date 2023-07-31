@@ -32,8 +32,8 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphArrayAbstract(IndexGraph g) {
-		super(g);
+	GraphArrayAbstract(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		if (g instanceof GraphArrayAbstract) {
 			GraphArrayAbstract g0 = (GraphArrayAbstract) g;
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);

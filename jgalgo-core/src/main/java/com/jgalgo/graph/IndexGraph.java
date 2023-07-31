@@ -222,6 +222,11 @@ public interface IndexGraph extends Graph {
 	}
 
 	@Override
+	default IndexGraph copy(boolean copyWeights) {
+		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	}
+
+	@Override
 	default IndexGraph immutableCopy() {
 		return IndexGraphBuilder.newFrom(this).build();
 	}

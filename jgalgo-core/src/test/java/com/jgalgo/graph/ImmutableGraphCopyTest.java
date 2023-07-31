@@ -311,7 +311,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig0 = createGraph(directed);
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gImmutable = gOrig.immutableCopy();
+				Graph gImmutable = gOrig.immutableCopy(true);
 
 				assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
 				Weights.Int wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
@@ -337,7 +337,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 			for (boolean index : BooleanList.of(false, true)) {
 				Graph gOrig0 = createGraph(directed);
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gImmutable = gOrig.immutableCopy();
+				Graph gImmutable = gOrig.immutableCopy(true);
 
 				assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
 				Weights.Int wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);

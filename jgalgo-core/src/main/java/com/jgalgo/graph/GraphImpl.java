@@ -60,8 +60,9 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	/* copy constructor */
-	GraphImpl(Graph orig, IndexGraphFactory indexGraphFactory) {
-		this(indexGraphFactory.newCopyOf(orig.indexGraph()), orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap());
+	GraphImpl(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
+				orig.indexGraphEdgesMap());
 	}
 
 	@Override
@@ -384,8 +385,8 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		/* copy constructor */
-		Directed(Graph orig, IndexGraphFactory indexGraphFactory) {
-			super(orig, indexGraphFactory);
+		Directed(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+			super(orig, indexGraphFactory, copyWeights);
 			Assertions.Graphs.onlyDirected(orig);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
@@ -410,8 +411,8 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		/* copy constructor */
-		Undirected(Graph orig, IndexGraphFactory indexGraphFactory) {
-			super(orig, indexGraphFactory);
+		Undirected(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+			super(orig, indexGraphFactory, copyWeights);
 			Assertions.Graphs.onlyUndirected(orig);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
@@ -627,11 +628,11 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		public Graph newCopyOf(Graph g) {
+		public Graph newCopyOf(Graph g, boolean copyWeights) {
 			if (g.getCapabilities().directed()) {
-				return new GraphImpl.Directed(g, factory);
+				return new GraphImpl.Directed(g, factory, copyWeights);
 			} else {
-				return new GraphImpl.Undirected(g, factory);
+				return new GraphImpl.Undirected(g, factory, copyWeights);
 			}
 		}
 

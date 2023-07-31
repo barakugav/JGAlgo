@@ -648,39 +648,79 @@ public interface Graph {
 	IndexIdMap indexGraphEdgesMap();
 
 	/**
-	 * Create a copy of this graph.
+	 * Create a copy of this graph, with the same vertices and edges, without copying weights.
 	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities
-	 * (inclusive). The returned Graph will always be modifiable, with no side affects on the original graph.
-	 * <p>
-	 * Note that although {@code g.equals(g.copy())} is always {@code true}, there is no guarantee that
-	 * {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is copied, new indices may be
-	 * assigned to the vertices and edges.
+	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive), without
+	 * copying the vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the
+	 * original graph.
 	 *
-	 * @return an identical copy of this graph
+	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph copy() {
-		return GraphFactory.newFrom(this).newCopyOf(this);
+		return copy(false);
 	}
 
 	/**
-	 * Create an immutable copy of this graph.
+	 * Create a copy of this graph, with the same vertices and edges, with/without copying weights.
 	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges and weights. The returned graph
-	 * will be immutable, and no vertices/edges/weights can be added or removed from it.
+	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive),
+	 * with/without copying the vertices/edges weights. The returned Graph will always be modifiable, with no side
+	 * affects on the original graph.
+	 * <p>
+	 * Note that although {@code g.equals(g.copy())} is always {@code true} if {@code copyWeights} is {@code true},
+	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
+	 * copied, new indices may be assigned to the vertices and edges.
+	 *
+	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
+	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
+	 *                     graph weights
+	 */
+	default Graph copy(boolean copyWeights) {
+		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	}
+
+	/**
+	 * Create an immutable copy of this graph, with the same vertices and edges, without copying weights.
+	 * <p>
+	 * An identical copy of this graph will be created, with the same vertices and edges, without copying the
+	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
+	 * removed from it.
 	 * <p>
 	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
-	 * in the future. It may be more efficient to create an immutable copy of a graph and passing the copy to algorithms
+	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
 	 * instead of using the original graph.
 	 * <p>
 	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true}, there is no guarantee that
 	 * {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely, when the graph is copied, new indices may
 	 * be assigned to the vertices and edges.
 	 *
-	 * @return an immutable copy of this graph
+	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph immutableCopy() {
 		return GraphBuilder.newFrom(this).build();
+	}
+
+	/**
+	 * Create an immutable copy of this graph, with the same vertices and edges, with/without copying weights.
+	 * <p>
+	 * An identical copy of this graph will be created, with the same vertices and edges, with/without copying the
+	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
+	 * removed from it.
+	 * <p>
+	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
+	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
+	 * instead of using the original graph.
+	 * <p>
+	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true} if {@code copyWeights} is
+	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
+	 * when the graph is copied, new indices may be assigned to the vertices and edges.
+	 *
+	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
+	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
+	 *                     weights
+	 */
+	default Graph immutableCopy(boolean copyWeights) {
+		return GraphBuilder.newFrom(this, copyWeights).build();
 	}
 
 	/**

@@ -37,8 +37,8 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphHashmapAbstract(IndexGraph g) {
-		super(g);
+	GraphHashmapAbstract(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		if (g instanceof GraphHashmapAbstract) {
 			GraphHashmapAbstract g0 = (GraphHashmapAbstract) g;
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);

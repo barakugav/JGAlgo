@@ -81,9 +81,21 @@ public class GraphHashmapTest extends TestBase {
 	}
 
 	@Test
+	public void testCopyWithWeights() {
+		final long seed = 0x8d8eb7bf35defaecL;
+		GraphImplTestUtils.testCopyWithWeights(graphImpl(), seed);
+	}
+
+	@Test
 	public void testImmutableCopy() {
 		final long seed = 0xe11e9cb0706b5ddcL;
 		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+	}
+
+	@Test
+	public void testImmutableCopyWithWeights() {
+		final long seed = 0xaa3e9481acc6d705L;
+		GraphImplTestUtils.testImmutableCopyWithWeights(graphImpl(), seed);
 	}
 
 	@Test

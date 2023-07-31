@@ -46,8 +46,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphMatrixDirected(IndexGraph g) {
-		super(g);
+	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 	}
 
 	@Override

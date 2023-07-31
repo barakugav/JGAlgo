@@ -34,10 +34,10 @@ public interface GraphFactory extends BuilderAbstract<GraphFactory> {
 	Graph newGraph();
 
 	/**
-	 * Create a copy of a given graph.
+	 * Create a copy of a given graph, with the same vertices and edges, without copying weights.
 	 * <p>
-	 * An identical copy of the given graph will be created, with the same vertices, edges and weights. The returned
-	 * Graph will always be modifiable, with no side affects on the original graph.
+	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
+	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
 	 * <p>
 	 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
@@ -46,9 +46,31 @@ public interface GraphFactory extends BuilderAbstract<GraphFactory> {
 	 * exception.
 	 *
 	 * @param  g the original graph to copy
-	 * @return   an identical copy of the given graph
+	 * @return   an identical copy of the given graph, with the same vertices and edges, without the original graph
+	 *           weights
 	 */
-	Graph newCopyOf(Graph g);
+	default Graph newCopyOf(Graph g) {
+		return newCopyOf(g, false);
+	}
+
+	/**
+	 * Create a copy of a given graph, with the same vertices and edges, with/without copying weights.
+	 * <p>
+	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
+	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 * <p>
+	 * Differing from {@link Graph#copy(boolean)}, the capabilities of the new graph are determined by the factory
+	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
+	 * implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not called
+	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
+	 * exception.
+	 *
+	 * @param  g           the original graph to copy
+	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
+	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without the
+	 *                     original graph weights
+	 */
+	Graph newCopyOf(Graph g, boolean copyWeights);
 
 	/**
 	 * Determine if graphs built by this factory should be directed or not.

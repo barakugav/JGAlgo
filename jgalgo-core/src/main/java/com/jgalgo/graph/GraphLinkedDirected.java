@@ -52,8 +52,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		addInternalVerticesContainer(edgesInContainer);
 	}
 
-	GraphLinkedDirected(IndexGraph g) {
-		super(g);
+	GraphLinkedDirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 
 		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesOut = newArr);

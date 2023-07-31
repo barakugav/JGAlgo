@@ -42,8 +42,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		addInternalVerticesContainer(edgesInContainer);
 	}
 
-	GraphHashmapDirected(IndexGraph g) {
-		super(g);
+	GraphHashmapDirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphHashmapDirected) {

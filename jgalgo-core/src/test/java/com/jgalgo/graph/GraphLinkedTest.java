@@ -81,9 +81,21 @@ public class GraphLinkedTest extends TestBase {
 	}
 
 	@Test
+	public void testCopyWithWeights() {
+		final long seed = 0x5c51c3fa807b25bcL;
+		GraphImplTestUtils.testCopyWithWeights(graphImpl(), seed);
+	}
+
+	@Test
 	public void testImmutableCopy() {
 		final long seed = 0x9f77f9dfded3f6fL;
 		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+	}
+
+	@Test
+	public void testImmutableCopyWithWeights() {
+		final long seed = 0x6966e624022a1540L;
+		GraphImplTestUtils.testImmutableCopyWithWeights(graphImpl(), seed);
 	}
 
 	@Test

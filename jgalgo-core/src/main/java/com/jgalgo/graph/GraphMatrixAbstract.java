@@ -41,8 +41,8 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphMatrixAbstract(IndexGraph g) {
-		super(g);
+	GraphMatrixAbstract(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphMatrixAbstract) {

@@ -116,7 +116,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 
 	@Test
 	public void weakCCsDiGraph() {
-		final long seed = 0;
+		final long seed = 0x715a81d58dcf65deL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));

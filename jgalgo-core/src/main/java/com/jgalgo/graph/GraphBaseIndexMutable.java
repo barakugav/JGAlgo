@@ -38,7 +38,7 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseIndexMutable(IndexGraph g) {
+	GraphBaseIndexMutable(IndexGraph g, boolean copyWeights) {
 		if (getCapabilities().directed()) {
 			Assertions.Graphs.onlyDirected(g);
 		} else {
@@ -53,12 +53,14 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 		edgesIdStrat = new IdStrategy.Default(g.edges().size());
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
-		for (Object key : g.getVerticesWeightsKeys())
-			verticesUserWeights.addWeights(key,
-					WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());
-		for (Object key : g.getEdgesWeightsKeys())
-			edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));
+		if (copyWeights) {
+			for (Object key : g.getVerticesWeightsKeys())
+				verticesUserWeights.addWeights(key,
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));
+			for (Object key : g.getEdgesWeightsKeys())
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));
+		}
 
 		/* internal data containers should be copied manually */
 		// verticesInternalContainers = g.verticesInternalContainers.copy(verticesIdStrategy);

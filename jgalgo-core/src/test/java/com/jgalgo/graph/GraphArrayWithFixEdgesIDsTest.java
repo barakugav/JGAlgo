@@ -80,9 +80,21 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 	}
 
 	@Test
+	public void testCopyWithWeights() {
+		final long seed = 0x9cbb6ad02c86e5f3L;
+		GraphImplTestUtils.testCopyWithWeights(graphImpl(), seed);
+	}
+
+	@Test
 	public void testImmutableCopy() {
 		final long seed = 0xb8cf51194c0f860fL;
 		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+	}
+
+	@Test
+	public void testImmutableCopyWithWeights() {
+		final long seed = 0x8ae4d465f8d7e7eaL;
+		GraphImplTestUtils.testImmutableCopyWithWeights(graphImpl(), seed);
 	}
 
 	@Test
