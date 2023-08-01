@@ -1074,10 +1074,10 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1074">						b.setEven();</span>
 <span class="fc" id="L1075">						b.tree = tree;</span>
 <span class="fc" id="L1076">						b.dual -= eps;</span>
-<span class="pc bpc" id="L1077" title="1 of 2 branches missed.">						if (prev == null) {</span>
+<span class="fc bfc" id="L1077" title="All 2 branches covered.">						if (prev == null) {</span>
 <span class="fc" id="L1078">							firstChild = b;</span>
 						} else {
-<span class="nc" id="L1080">							prev.firstTreeChild = b;</span>
+<span class="fc" id="L1080">							prev.firstTreeChild = b;</span>
 						}
 <span class="fc" id="L1082">						prev = b;</span>
 <span class="fc" id="L1083">						b.treeSiblingPrev = b;</span>
@@ -1087,11 +1087,11 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1087">						b.tree = tree;</span>
 <span class="fc" id="L1088">						b.dual += eps;</span>
 <span class="fc" id="L1089">						b.treeParentEdge = aa;</span>
-<span class="pc bpc" id="L1090" title="1 of 2 branches missed.">						if (b == base) {</span>
+<span class="fc bfc" id="L1090" title="All 2 branches covered.">						if (b == base) {</span>
 <span class="fc" id="L1091">							prev.firstTreeChild = base.match.getOtherEndpoint(base);</span>
 <span class="fc" id="L1092">							break;</span>
 						}
-<span class="pc" id="L1094">					}</span>
+<span class="fc" id="L1094">					}</span>
 
 				} else {
 <span class="fc" id="L1097">					Blossom child = base.match.getOtherEndpoint(base);</span>
@@ -1196,8 +1196,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc bfc" id="L1197" title="All 2 branches covered.">				if (b.isOut()) {</span>
 <span class="fc" id="L1198">					e.slack += eps;</span>
-<span class="pc bpc" id="L1199" title="1 of 2 branches missed.">					if (bOther.isEven())</span>
-<span class="nc" id="L1200">						bOther.tree.pqInsertEvenOut(e);</span>
+<span class="fc bfc" id="L1199" title="All 2 branches covered.">					if (bOther.isEven())</span>
+<span class="fc" id="L1200">						bOther.tree.pqInsertEvenOut(e);</span>
 				} else {
 <span class="fc" id="L1202">					e.slack += 2 * eps;</span>
 <span class="fc bfc" id="L1203" title="All 2 branches covered.">					if (bOther.isOut()) {</span>
@@ -1234,8 +1234,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc bfc" id="L1235" title="All 2 branches covered.">				if (b.isOut()) {</span>
 <span class="fc" id="L1236">					e.slack += eps;</span>
-<span class="pc bpc" id="L1237" title="1 of 2 branches missed.">					if (bOther.isEven())</span>
-<span class="nc" id="L1238">						bOther.tree.pqInsertEvenOut(e);</span>
+<span class="fc bfc" id="L1237" title="All 2 branches covered.">					if (bOther.isEven())</span>
+<span class="fc" id="L1238">						bOther.tree.pqInsertEvenOut(e);</span>
 				} else {
 <span class="fc" id="L1240">					e.slack += 2 * eps;</span>
 <span class="fc bfc" id="L1241" title="All 2 branches covered.">					if (bOther.isOut()) {</span>

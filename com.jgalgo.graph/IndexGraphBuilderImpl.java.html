@@ -61,12 +61,12 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 <span class="fc" id="L62">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());</span>
 <span class="fc" id="L63">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (copyWeights) {</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			for (Object key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L66">				verticesUserWeights.addWeights(key,</span>
-<span class="fc" id="L67">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (Object key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L69">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (copyWeights) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">			for (Object key : g.getVerticesWeightsKeys())</span>
+<span class="nc" id="L66">				verticesUserWeights.addWeights(key,</span>
+<span class="nc" id="L67">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">			for (Object key : g.getEdgesWeightsKeys())</span>
+<span class="nc" id="L69">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
 		}
 <span class="fc" id="L71">	}</span>
 
@@ -325,7 +325,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		public IndexGraph build() {
 <span class="fc" id="L326">			validateUserProvidedIdsBeforeBuild();</span>
 <span class="fc" id="L327">			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =</span>
-					new GraphCSRBase.BuilderProcessEdgesUndirected(this);
+<span class="fc" id="L328">					GraphCSRBase.BuilderProcessEdgesUndirected.valueOf(this);</span>
 <span class="fc" id="L329">			return new GraphCSRUndirected(this, processEdges);</span>
 		}
 
@@ -359,29 +359,30 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public IndexGraph build() {
 <span class="fc" id="L361">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L362">			GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(this);</span>
-<span class="fc" id="L363">			return new GraphCSRDirected(this, processEdges);</span>
+<span class="fc" id="L362">			GraphCSRBase.BuilderProcessEdgesDirected processEdges =</span>
+<span class="fc" id="L363">					GraphCSRBase.BuilderProcessEdgesDirected.valueOf(this);</span>
+<span class="fc" id="L364">			return new GraphCSRDirected(this, processEdges);</span>
 		}
 
 		@Override
 		public IndexGraph buildMutable() {
-<span class="fc" id="L368">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L369">			return new GraphArrayDirected(this);</span>
+<span class="fc" id="L369">			validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L370">			return new GraphArrayDirected(this);</span>
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">			if (reIndexEdges) {</span>
-<span class="fc" id="L375">				validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L376">				return GraphCSRDirectedReindexed.newInstance(this);</span>
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">			if (reIndexEdges) {</span>
+<span class="fc" id="L376">				validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L377">				return GraphCSRDirectedReindexed.newInstance(this);</span>
 			} else {
-<span class="nc" id="L378">				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
+<span class="nc" id="L379">				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
 			}
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L384">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L385">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
 		}
 
 	}
@@ -393,25 +394,25 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		private final Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing;
 
 		ReIndexedGraphImpl(IndexGraph graph, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing,
-<span class="fc" id="L396">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
-<span class="fc" id="L397">			this.graph = Objects.requireNonNull(graph);</span>
-<span class="fc" id="L398">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
-<span class="fc" id="L399">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
-<span class="fc" id="L400">		}</span>
+<span class="fc" id="L397">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
+<span class="fc" id="L398">			this.graph = Objects.requireNonNull(graph);</span>
+<span class="fc" id="L399">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
+<span class="fc" id="L400">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
+<span class="fc" id="L401">		}</span>
 
 		@Override
 		public IndexGraph graph() {
-<span class="fc" id="L404">			return graph;</span>
+<span class="fc" id="L405">			return graph;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing() {
-<span class="fc" id="L409">			return verticesReIndexing;</span>
+<span class="fc" id="L410">			return verticesReIndexing;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing() {
-<span class="fc" id="L414">			return edgesReIndexing;</span>
+<span class="fc" id="L415">			return edgesReIndexing;</span>
 		}
 	}
 
@@ -420,19 +421,19 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		private final int[] origToReIndexed;
 		private final int[] reIndexedToOrig;
 
-<span class="fc" id="L423">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
-<span class="fc" id="L424">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
-<span class="fc" id="L425">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
-<span class="fc" id="L426">		}</span>
+<span class="fc" id="L424">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
+<span class="fc" id="L425">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
+<span class="fc" id="L426">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
+<span class="fc" id="L427">		}</span>
 
 		@Override
 		public int origToReIndexed(int orig) {
-<span class="fc" id="L430">			return origToReIndexed[orig];</span>
+<span class="fc" id="L431">			return origToReIndexed[orig];</span>
 		}
 
 		@Override
 		public int reIndexedToOrig(int reindexed) {
-<span class="fc" id="L435">			return reIndexedToOrig[reindexed];</span>
+<span class="fc" id="L436">			return reIndexedToOrig[reindexed];</span>
 		}
 	}
 

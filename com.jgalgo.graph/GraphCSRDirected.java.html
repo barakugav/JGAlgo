@@ -29,22 +29,22 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L29">		edgesInBegin = processEdges.edgesInBegin;</span>
 <span class="fc" id="L30">	}</span>
 
-	GraphCSRDirected(IndexGraph g) {
-<span class="nc" id="L33">		super(g);</span>
-<span class="nc" id="L34">		Assertions.Graphs.onlyDirected(g);</span>
-<span class="nc" id="L35">		final int n = g.vertices().size();</span>
-<span class="nc" id="L36">		final int m = g.edges().size();</span>
+	GraphCSRDirected(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L33">		super(g, copyWeights);</span>
+<span class="fc" id="L34">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L35">		final int n = g.vertices().size();</span>
+<span class="fc" id="L36">		final int m = g.edges().size();</span>
 
-<span class="nc" id="L38">		edgesIn = new int[m];</span>
-<span class="nc" id="L39">		edgesInBegin = new int[n + 1];</span>
+<span class="fc" id="L38">		edgesIn = new int[m];</span>
+<span class="fc" id="L39">		edgesInBegin = new int[n + 1];</span>
 
-<span class="nc bnc" id="L41" title="All 2 branches missed.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L42">			edgesInBegin[v] = eIdx;</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">			for (int e : g.inEdges(v))</span>
-<span class="nc" id="L44">				edgesIn[eIdx++] = e;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L42">			edgesInBegin[v] = eIdx;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			for (int e : g.inEdges(v))</span>
+<span class="fc" id="L44">				edgesIn[eIdx++] = e;</span>
 		}
-<span class="nc" id="L46">		edgesInBegin[n] = m;</span>
-<span class="nc" id="L47">	}</span>
+<span class="fc" id="L46">		edgesInBegin[n] = m;</span>
+<span class="fc" id="L47">	}</span>
 
 	@Override
 	public EdgeSet outEdges(int source) {

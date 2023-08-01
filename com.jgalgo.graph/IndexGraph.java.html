@@ -228,17 +228,26 @@ public interface IndexGraph extends Graph {
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L231">		return IndexGraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L231">		return immutableCopy(false);</span>
+	}
+
+	@Override
+	default IndexGraph immutableCopy(boolean copyWeights) {
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
+<span class="fc" id="L237">			return new GraphCSRDirected(this, copyWeights);</span>
+		} else {
+<span class="fc" id="L239">			return new GraphCSRUndirected(this, copyWeights);</span>
+		}
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L236">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L245">		return Graphs.immutableView(this);</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="nc" id="L241">		return Graphs.reverseView(this);</span>
+<span class="nc" id="L250">		return Graphs.reverseView(this);</span>
 	}
 
 }

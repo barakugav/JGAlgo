@@ -24,10 +24,10 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L24">		super(builder, processEdges);</span>
 <span class="fc" id="L25">	}</span>
 
-	GraphCSRUndirected(IndexGraph g) {
-<span class="nc" id="L28">		super(g);</span>
-<span class="nc" id="L29">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="nc" id="L30">	}</span>
+	GraphCSRUndirected(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L28">		super(g, copyWeights);</span>
+<span class="fc" id="L29">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L30">	}</span>
 
 	@Override
 	public EdgeSet outEdges(int source) {
