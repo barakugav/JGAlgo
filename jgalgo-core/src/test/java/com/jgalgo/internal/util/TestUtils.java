@@ -17,9 +17,12 @@
 package com.jgalgo.internal.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
+
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 public class TestUtils {
@@ -57,27 +60,32 @@ public class TestUtils {
 		}
 
 		public void run(RunnableTestWith1Args test) {
-			for (Phase phase : phases) {
-				assertArgsNum(phase, 1);
-				for (int repeat = phase.repeat; repeat > 0; repeat--)
-					test.run(phase.args[0]);
-			}
+			runPhases(phase -> test.run(phase.args[0]), 1);
 		}
 
 		public void run(RunnableTestWith2Args test) {
-			for (Phase phase : phases) {
-				assertArgsNum(phase, 2);
-				for (int repeat = phase.repeat; repeat > 0; repeat--)
-					test.run(phase.args[0], phase.args[1]);
-			}
+			runPhases(phase -> test.run(phase.args[0], phase.args[1]), 2);
 		}
 
 		public void run(RunnableTestWith3Args test) {
-			for (Phase phase : phases) {
-				assertArgsNum(phase, 3);
-				for (int repeat = phase.repeat; repeat > 0; repeat--)
-					test.run(phase.args[0], phase.args[1], phase.args[2]);
+			runPhases(phase -> test.run(phase.args[0], phase.args[1], phase.args[2]), 3);
+		}
+
+		private void runPhases(Consumer<Phase> test, int runnableArgs) {
+			for (int pIdx = 0; pIdx < phases.size(); pIdx++) {
+				Phase phase = phases.get(pIdx);
+				assertArgsNum(phase, runnableArgs);
+				for (int repeat = phase.repeat; repeat > 0; repeat--) {
+					try {
+						test.accept(phase);
+					} catch (Throwable ex) {
+						System.err.println("failed at phase " + pIdx + " args=" + Arrays.toString(phase.args)
+								+ " iteration " + repeat);
+						throw ex;
+					}
+				}
 			}
+
 		}
 
 		private static void assertArgsNum(Phase phase, int runnableArgs) {

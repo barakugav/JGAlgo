@@ -131,7 +131,7 @@ public class FormatDIMACSTest {
 			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
 				int source = vs[rand.nextInt(n)];
 				int target = vs[rand.nextInt(n)];
-				/* DIMACS format support edges with labels 1..0 only */
+				/* DIMACS format support edges with labels 1..m only */
 				int e = g.edges().size() + 1;
 				g.addEdge(source, target, e);
 			}
@@ -164,7 +164,7 @@ public class FormatDIMACSTest {
 			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
 				int source = vs[rand.nextInt(n)];
 				int target = vs[rand.nextInt(n)];
-				/* DIMACS format support edges with labels 1..0 only */
+				/* DIMACS format support edges with labels 1..m only */
 				int e = g.edges().size() + 1;
 				g.addEdge(source, target, e);
 			}
