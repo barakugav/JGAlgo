@@ -95,6 +95,24 @@ public interface IndexGraphBuilder {
 	void addEdge(int source, int target, int edge);
 
 	/**
+	 * Hint about the number of vertices expected to be added to the builder.
+	 * &lt;p&gt;
+	 * This method does not affect the built graph, only the builder itself.
+	 *
+	 * @param verticesNum the expected number of vertices to be added to the builder
+	 */
+	void expectedVerticesNum(int verticesNum);
+
+	/**
+	 * Hint about the number of edges expected to be added to the builder.
+	 * &lt;p&gt;
+	 * This method does not affect the built graph, only the builder itself.
+	 *
+	 * @param edgesNum the expected number of edges to be added to the builder
+	 */
+	void expectedEdgesNum(int edgesNum);
+
+	/**
 	 * Get the vertices weights of some key.
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -119,7 +137,7 @@ public interface IndexGraphBuilder {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
-<span class="nc" id="L122">		return addVerticesWeights(key, type, null);</span>
+<span class="nc" id="L140">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -171,7 +189,7 @@ public interface IndexGraphBuilder {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="nc" id="L174">		return addEdgesWeights(key, type, null);</span>
+<span class="nc" id="L192">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -355,7 +373,7 @@ public interface IndexGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-<span class="fc" id="L358">		return new IndexGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L376">		return new IndexGraphBuilderImpl.Undirected();</span>
 	}
 
 	/**
@@ -364,19 +382,34 @@ public interface IndexGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-<span class="fc" id="L367">		return new IndexGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L385">		return new IndexGraphBuilderImpl.Directed();</span>
 	}
 
 	/**
-	 * Create a new builder initialized with an existing graph vertices, edges and weights.
+	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
 	 * @param  g a graph
-	 * @return   a builder initialized with the given graph vertices, edges and weights
+	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
+	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="fc" id="L379">		return IndexGraphBuilderImpl.newFrom(g);</span>
+<span class="fc" id="L398">		return newFrom(g, false);</span>
+	}
+
+	/**
+	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 * &lt;p&gt;
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g           a graph
+	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
+	 * @return             a builder initialized with the given graph vertices and edges, with/without the original
+	 *                     graph vertices/edges weights.
+	 */
+	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L412">		return IndexGraphBuilderImpl.newFrom(g, copyWeights);</span>
 	}
 
 }

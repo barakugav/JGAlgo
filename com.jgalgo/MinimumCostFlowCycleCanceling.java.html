@@ -65,7 +65,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">			if (resGraph.isOriginalEdge(e))</span>
 <span class="fc" id="L67">				net.setFlow(resGraph.edgeRef[e], flow[e]);</span>
-		
+
 <span class="fc" id="L69">		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);</span>
 <span class="fc" id="L70">	}</span>
 
@@ -85,7 +85,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L85">					capacity[e] = 0;</span>
 <span class="fc" id="L86">					flow[e] = -eFlow;</span>
 				}
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				assert flow[e] &lt;= capacity[e];</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				assert flow[e] &lt;= capacity[e] + 1e-9;</span>
 			}
 		} else {
 <span class="nc bnc" id="L91" title="All 2 branches missed.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
@@ -93,7 +93,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="nc" id="L93">				double eFlow = net.getFlow(eRef);</span>
 <span class="nc" id="L94">				capacity[e] = net.getCapacity(eRef);</span>
 <span class="nc bnc" id="L95" title="All 2 branches missed.">				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">				assert flow[e] &lt;= capacity[e];</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">				assert flow[e] &lt;= capacity[e] + 1e-9;</span>
 			}
 		}
 <span class="fc" id="L99">	}</span>

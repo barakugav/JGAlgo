@@ -91,7 +91,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L91">				capacitySum += net.getCapacity(e);</span>
 <span class="fc" id="L92">			capacitySum *= 16;</span>
 
-<span class="fc" id="L94">			GraphFactory factory = GraphFactory.newDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
+<span class="fc" id="L94">			GraphFactory factory = GraphFactory.newDirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;);</span>
 <span class="fc" id="L95">			Graph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* &gt;= */ n).newGraph();</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L97">				L.addVertex(v);</span>

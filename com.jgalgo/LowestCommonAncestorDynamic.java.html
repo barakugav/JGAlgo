@@ -128,10 +128,10 @@ public interface LowestCommonAncestorDynamic {
 			public LowestCommonAncestorDynamic build() {
 <span class="pc bpc" id="L129" title="1 of 2 branches missed.">				if (impl != null) {</span>
 <span class="nc bnc" id="L130" title="All 3 branches missed.">					switch (impl) {</span>
-						case &quot;GabowLinear&quot;:
-<span class="nc" id="L132">							return new LowestCommonAncestorDynamicGabowLinear();</span>
-						case &quot;GabowSimple&quot;:
-<span class="nc" id="L134">							return new LowestCommonAncestorDynamicGabowSimple();</span>
+						case &quot;gabow-simple&quot;:
+<span class="nc" id="L132">							return new LowestCommonAncestorDynamicGabowSimple();</span>
+						case &quot;gabow-linear&quot;:
+<span class="nc" id="L134">							return new LowestCommonAncestorDynamicGabowLinear();</span>
 						default:
 <span class="nc" id="L136">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}

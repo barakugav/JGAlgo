@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	private int m;
 	final IdStrategy.Default verticesIdStrat;
 	final IdStrategy.Default edgesIdStrat;
-<span class="fc" id="L34">	int[] endpoints = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L34">	private int[] endpoints = IntArrays.EMPTY_ARRAY;</span>
 <span class="fc" id="L35">	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;</span>
 	private IntSet edgesSet;
 	private boolean userProvideEdgesIds;
@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="fc" id="L46">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);</span>
 <span class="fc" id="L47">	}</span>
 
-<span class="fc" id="L49">	private IndexGraphBuilderImpl(IndexGraph g) {</span>
+<span class="fc" id="L49">	private IndexGraphBuilderImpl(IndexGraph g, boolean copyWeights) {</span>
 <span class="fc" id="L50">		final int n = g.vertices().size();</span>
 <span class="fc" id="L51">		m = g.edges().size();</span>
 
@@ -60,228 +60,252 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		}
 
 <span class="fc" id="L62">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (Object key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L64">			verticesUserWeights.addWeights(key,</span>
-<span class="fc" id="L65">					WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
-<span class="fc" id="L66">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (Object key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L68">			edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
-<span class="fc" id="L69">	}</span>
+<span class="fc" id="L63">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (copyWeights) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			for (Object key : g.getVerticesWeightsKeys())</span>
+<span class="fc" id="L66">				verticesUserWeights.addWeights(key,</span>
+<span class="fc" id="L67">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), verticesIdStrat));</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (Object key : g.getEdgesWeightsKeys())</span>
+<span class="fc" id="L69">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edgesIdStrat));</span>
+		}
+<span class="fc" id="L71">	}</span>
 
-	static IndexGraphBuilderImpl newFrom(IndexGraph g) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		return g.getCapabilities().directed() ? new IndexGraphBuilderImpl.Directed(g)</span>
-<span class="fc" id="L73">				: new IndexGraphBuilderImpl.Undirected(g);</span>
+	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyWeights) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		return g.getCapabilities().directed() ? new IndexGraphBuilderImpl.Directed(g, copyWeights)</span>
+<span class="fc" id="L75">				: new IndexGraphBuilderImpl.Undirected(g, copyWeights);</span>
 	}
 
 	@Override
 	public IntSet vertices() {
-<span class="fc" id="L78">		return verticesIdStrat.indices();</span>
+<span class="fc" id="L80">		return verticesIdStrat.indices();</span>
 	}
 
 	@Override
 	public IntSet edges() {
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (edgesSet == null) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (m == 0)</span>
-<span class="fc" id="L85">				return IntSets.emptySet();</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (userProvideEdgesIds) {</span>
-<span class="fc" id="L87">				edgesSet = new EdgesSetProvidedIdx();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (edgesSet == null) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (m == 0)</span>
+<span class="fc" id="L87">				return IntSets.emptySet();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (userProvideEdgesIds) {</span>
+<span class="fc" id="L89">				edgesSet = new EdgesSetProvidedIdx();</span>
 			} else {
-<span class="fc" id="L89">				edgesSet = edgesIdStrat.indices();</span>
+<span class="fc" id="L91">				edgesSet = edgesIdStrat.indices();</span>
 			}
 		}
-<span class="fc" id="L92">		return edgesSet;</span>
+<span class="fc" id="L94">		return edgesSet;</span>
 	}
 
 	@Override
 	public int addVertex() {
-<span class="fc" id="L97">		int u = verticesIdStrat.newIdx();</span>
-<span class="fc" id="L98">		verticesUserWeights.ensureCapacity(u + 1);</span>
-<span class="fc" id="L99">		return u;</span>
+<span class="fc" id="L99">		int u = verticesIdStrat.newIdx();</span>
+<span class="fc" id="L100">		verticesUserWeights.ensureCapacity(u + 1);</span>
+<span class="fc" id="L101">		return u;</span>
 	}
 
 	private boolean canAddEdgeWithoutId() {
-<span class="pc bpc" id="L103" title="1 of 4 branches missed.">		return m == 0 || !userProvideEdgesIds;</span>
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">		return m == 0 || !userProvideEdgesIds;</span>
 	}
 
 	private boolean canAddEdgeWithId() {
-<span class="pc bpc" id="L107" title="1 of 4 branches missed.">		return m == 0 || userProvideEdgesIds;</span>
+<span class="pc bpc" id="L109" title="1 of 4 branches missed.">		return m == 0 || userProvideEdgesIds;</span>
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (!canAddEdgeWithoutId())</span>
-<span class="nc" id="L113">			throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		if (!canAddEdgeWithoutId())</span>
+<span class="nc" id="L115">			throw new IllegalArgumentException(</span>
 					&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
-<span class="fc" id="L115">		int e = m++;</span>
-<span class="fc" id="L116">		int eFromIdStrat = edgesIdStrat.newIdx();</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		assert e == eFromIdStrat;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (e * 2 == endpoints.length)</span>
-<span class="fc" id="L119">			endpoints = Arrays.copyOf(endpoints, Math.max(2, 2 * endpoints.length));</span>
-<span class="fc" id="L120">		setEdgeSource(e, source);</span>
-<span class="fc" id="L121">		setEdgeTarget(e, target);</span>
-<span class="fc" id="L122">		edgesUserWeights.ensureCapacity(e + 1);</span>
-<span class="fc" id="L123">		return e;</span>
+<span class="fc" id="L117">		int e = m++;</span>
+<span class="fc" id="L118">		int eFromIdStrat = edgesIdStrat.newIdx();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		assert e == eFromIdStrat;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (e * 2 == endpoints.length)</span>
+<span class="fc" id="L121">			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));</span>
+<span class="fc" id="L122">		setEdgeSource(e, source);</span>
+<span class="fc" id="L123">		setEdgeTarget(e, target);</span>
+<span class="fc" id="L124">		edgesUserWeights.ensureCapacity(e + 1);</span>
+<span class="fc" id="L125">		return e;</span>
 	}
 
 	@Override
 	public void addEdge(int source, int target, int edge) {
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (edge &lt; 0)</span>
-<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;edge ID must be non negative integer&quot;);</span>
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (!canAddEdgeWithId())</span>
-<span class="nc" id="L131">			throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (edge &lt; 0)</span>
+<span class="nc" id="L131">			throw new IllegalArgumentException(&quot;edge ID must be non negative integer&quot;);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (!canAddEdgeWithId())</span>
+<span class="nc" id="L133">			throw new IllegalArgumentException(</span>
 					&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
-<span class="fc" id="L133">		int eIdx = m++;</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">		while (eIdx &gt;= edgesIdStrat.size())</span>
-<span class="fc" id="L135">			edgesIdStrat.newIdx();</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (eIdx * 2 == endpoints.length)</span>
-<span class="fc" id="L137">			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (eIdx == edgesUserIds.length)</span>
-<span class="fc" id="L139">			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, 2 * edgesUserIds.length));</span>
-<span class="fc" id="L140">		setEdgeSource(eIdx, source);</span>
-<span class="fc" id="L141">		setEdgeTarget(eIdx, target);</span>
-<span class="fc" id="L142">		edgesUserIds[eIdx] = edge;</span>
-<span class="fc" id="L143">		edgesUserWeights.ensureCapacity(edge + 1);</span>
-<span class="fc" id="L144">		userProvideEdgesIds = true;</span>
-<span class="fc" id="L145">	}</span>
+<span class="fc" id="L135">		int eIdx = m++;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		while (eIdx &gt;= edgesIdStrat.size())</span>
+<span class="fc" id="L137">			edgesIdStrat.newIdx();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (eIdx * 2 &gt;= endpoints.length)</span>
+<span class="fc" id="L139">			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, (eIdx + 1) * 2)));</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (eIdx &gt;= edgesUserIds.length)</span>
+<span class="fc" id="L141">			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, eIdx + 1)));</span>
+<span class="fc" id="L142">		setEdgeSource(eIdx, source);</span>
+<span class="fc" id="L143">		setEdgeTarget(eIdx, target);</span>
+<span class="fc" id="L144">		edgesUserIds[eIdx] = edge;</span>
+<span class="fc" id="L145">		edgesUserWeights.ensureCapacity(edge + 1);</span>
+<span class="fc" id="L146">		userProvideEdgesIds = true;</span>
+<span class="fc" id="L147">	}</span>
+
+	@Override
+	public void expectedVerticesNum(int verticesNum) {
+<span class="fc" id="L151">		verticesUserWeights.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L152">	}</span>
+
+	@Override
+	public void expectedEdgesNum(int edgesNum) {
+<span class="fc" id="L156">		edgesUserWeights.ensureCapacity(edgesNum);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (edgesNum * 2 &gt; endpoints.length)</span>
+<span class="fc" id="L158">			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (edgesNum &gt; edgesUserIds.length)</span>
+<span class="fc" id="L160">			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, edgesNum)));</span>
+<span class="fc" id="L161">	}</span>
 
 	@Override
 	public void clear() {
-<span class="nc" id="L149">		m = 0;</span>
-<span class="nc" id="L150">		verticesIdStrat.clear();</span>
-<span class="nc" id="L151">		edgesIdStrat.clear();</span>
-<span class="nc" id="L152">		edgesSet = null;</span>
-<span class="nc" id="L153">		userProvideEdgesIds = false;</span>
-<span class="nc" id="L154">		verticesUserWeights.clearContainers();</span>
-<span class="nc" id="L155">		edgesUserWeights.clearContainers();</span>
+<span class="nc" id="L165">		m = 0;</span>
+<span class="nc" id="L166">		verticesIdStrat.clear();</span>
+<span class="nc" id="L167">		edgesIdStrat.clear();</span>
+<span class="nc" id="L168">		edgesSet = null;</span>
+<span class="nc" id="L169">		userProvideEdgesIds = false;</span>
+<span class="nc" id="L170">		verticesUserWeights.clearContainers();</span>
+<span class="nc" id="L171">		edgesUserWeights.clearContainers();</span>
 
-<span class="nc" id="L157">	}</span>
+<span class="nc" id="L173">	}</span>
 
 	int edgeSource(int e) {
-<span class="fc" id="L160">		return endpoints[e * 2 + 0];</span>
+<span class="fc" id="L176">		return endpoints[edgeSourceIndex(e)];</span>
 	}
 
 	int edgeTarget(int e) {
-<span class="fc" id="L164">		return endpoints[e * 2 + 1];</span>
+<span class="fc" id="L180">		return endpoints[edgeTargetIndex(e)];</span>
 	}
 
 	int edgeEndpoint(int e, int endpoint) {
-<span class="nc" id="L168">		int u = edgeSource(e);</span>
-<span class="nc" id="L169">		int v = edgeTarget(e);</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">		if (u == endpoint) {</span>
-<span class="nc" id="L171">			return v;</span>
+<span class="nc" id="L184">		int u = edgeSource(e);</span>
+<span class="nc" id="L185">		int v = edgeTarget(e);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">		if (u == endpoint) {</span>
+<span class="nc" id="L187">			return v;</span>
 		} else {
-<span class="nc bnc" id="L173" title="All 2 branches missed.">			assert v == endpoint;</span>
-<span class="nc" id="L174">			return u;</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">			assert v == endpoint;</span>
+<span class="nc" id="L190">			return u;</span>
 		}
 	}
 
 	private void setEdgeSource(int e, int source) {
-<span class="fc" id="L179">		endpoints[e * 2 + 0] = source;</span>
-<span class="fc" id="L180">	}</span>
+<span class="fc" id="L195">		endpoints[edgeSourceIndex(e)] = source;</span>
+<span class="fc" id="L196">	}</span>
 
 	private void setEdgeTarget(int e, int target) {
-<span class="fc" id="L183">		endpoints[e * 2 + 1] = target;</span>
-<span class="fc" id="L184">	}</span>
+<span class="fc" id="L199">		endpoints[edgeTargetIndex(e)] = target;</span>
+<span class="fc" id="L200">	}</span>
+
+	private static int edgeSourceIndex(int e) {
+<span class="fc" id="L203">		return e * 2 + 0;</span>
+	}
+
+	private static int edgeTargetIndex(int e) {
+<span class="fc" id="L207">		return e * 2 + 1;</span>
+	}
 
 	void validateUserProvidedIdsBeforeBuild() {
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		if (!userProvideEdgesIds)</span>
-<span class="fc" id="L188">			return;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		if (!userProvideEdgesIds)</span>
+<span class="fc" id="L212">			return;</span>
 
 		/* Rearrange edges such that edgesUserIds[e]==e */
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		for (int startIdx = 0; startIdx &lt; m; startIdx++) {</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">			if (startIdx == edgesUserIds[startIdx])</span>
-<span class="fc" id="L193">				continue;</span>
-<span class="fc" id="L194">			int e = edgesUserIds[startIdx];</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			if (e &gt;= m)</span>
-<span class="nc" id="L196">				throw new IllegalArgumentException(&quot;Edges IDs should be 0,1,2,...,m-1. id &gt;= m: &quot; + e + &quot; &gt;= &quot; + m);</span>
-<span class="fc" id="L197">			int u = edgeSource(startIdx), v = edgeTarget(startIdx);</span>
-<span class="fc" id="L198">			edgesUserIds[startIdx] = -1;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (int startIdx = 0; startIdx &lt; m; startIdx++) {</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (startIdx == edgesUserIds[startIdx])</span>
+<span class="fc" id="L217">				continue;</span>
+<span class="fc" id="L218">			int e = edgesUserIds[startIdx];</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">			if (e &gt;= m)</span>
+<span class="nc" id="L220">				throw new IllegalArgumentException(&quot;Edges IDs should be 0,1,2,...,m-1. id &gt;= m: &quot; + e + &quot; &gt;= &quot; + m);</span>
+<span class="fc" id="L221">			int u = edgeSource(startIdx), v = edgeTarget(startIdx);</span>
+<span class="fc" id="L222">			edgesUserIds[startIdx] = -1;</span>
 			for (;;) {
-<span class="fc" id="L200">				int nextE = edgesUserIds[e];</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">				if (nextE == -1) {</span>
+<span class="fc" id="L224">				int nextE = edgesUserIds[e];</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">				if (nextE == -1) {</span>
 					/* we completed a cycle */
-<span class="fc" id="L203">					edgesUserIds[e] = e;</span>
-<span class="fc" id="L204">					setEdgeSource(e, u);</span>
-<span class="fc" id="L205">					setEdgeTarget(e, v);</span>
-<span class="fc" id="L206">					break;</span>
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">				} else if (nextE == e)</span>
-<span class="nc" id="L208">					throw new IllegalArgumentException(&quot;duplicate edge id: &quot; + e);</span>
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">				if (nextE &gt;= m)</span>
-<span class="nc" id="L210">					throw new IllegalArgumentException(</span>
+<span class="fc" id="L227">					edgesUserIds[e] = e;</span>
+<span class="fc" id="L228">					setEdgeSource(e, u);</span>
+<span class="fc" id="L229">					setEdgeTarget(e, v);</span>
+<span class="fc" id="L230">					break;</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">				} else if (nextE == e)</span>
+<span class="nc" id="L232">					throw new IllegalArgumentException(&quot;duplicate edge id: &quot; + e);</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">				if (nextE &gt;= m)</span>
+<span class="nc" id="L234">					throw new IllegalArgumentException(</span>
 							&quot;Edges IDs should be 0,1,2,...,m-1. id &gt;= m: &quot; + nextE + &quot; &gt;= &quot; + m);
-<span class="fc" id="L212">				int nextU = edgeSource(e);</span>
-<span class="fc" id="L213">				int nextV = edgeTarget(e);</span>
-<span class="fc" id="L214">				setEdgeSource(e, u);</span>
-<span class="fc" id="L215">				setEdgeTarget(e, v);</span>
-<span class="fc" id="L216">				edgesUserIds[e] = e;</span>
-<span class="fc" id="L217">				u = nextU;</span>
-<span class="fc" id="L218">				v = nextV;</span>
-<span class="fc" id="L219">				e = nextE;</span>
-<span class="fc" id="L220">			}</span>
+<span class="fc" id="L236">				int nextU = edgeSource(e);</span>
+<span class="fc" id="L237">				int nextV = edgeTarget(e);</span>
+<span class="fc" id="L238">				setEdgeSource(e, u);</span>
+<span class="fc" id="L239">				setEdgeTarget(e, v);</span>
+<span class="fc" id="L240">				edgesUserIds[e] = e;</span>
+<span class="fc" id="L241">				u = nextU;</span>
+<span class="fc" id="L242">				v = nextV;</span>
+<span class="fc" id="L243">				e = nextE;</span>
+<span class="fc" id="L244">			}</span>
 		}
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L223" title="1 of 2 branches missed.">			assert e == edgesUserIds[e];</span>
-<span class="fc" id="L224">	}</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			assert e == edgesUserIds[e];</span>
+<span class="fc" id="L248">	}</span>
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="fc" id="L228">		return verticesUserWeights.getWeights(key);</span>
+<span class="fc" id="L252">		return verticesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal) {
-<span class="fc" id="L233">		WeightsImpl.IndexMutable&lt;V&gt; weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);</span>
-<span class="fc" id="L234">		verticesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L257">		WeightsImpl.IndexMutable&lt;V&gt; weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);</span>
+<span class="fc" id="L258">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L236">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L237">		return weights0;</span>
+<span class="fc" id="L260">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L261">		return weights0;</span>
 	}
 
 	@Override
 	public Set&lt;Object&gt; getVerticesWeightsKeys() {
-<span class="nc" id="L242">		return verticesUserWeights.weightsKeys();</span>
+<span class="nc" id="L266">		return verticesUserWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="fc" id="L247">		return edgesUserWeights.getWeights(key);</span>
+<span class="fc" id="L271">		return edgesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L252">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);</span>
-<span class="fc" id="L253">		edgesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L276">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);</span>
+<span class="fc" id="L277">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L255">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L256">		return weights0;</span>
+<span class="fc" id="L279">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L280">		return weights0;</span>
 	}
 
 	@Override
 	public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L261">		return edgesUserWeights.weightsKeys();</span>
+<span class="nc" id="L285">		return edgesUserWeights.weightsKeys();</span>
 	}
 
-<span class="fc" id="L264">	private class EdgesSetProvidedIdx extends AbstractIntSet {</span>
+<span class="fc" id="L288">	private class EdgesSetProvidedIdx extends AbstractIntSet {</span>
 		@Override
 		public int size() {
-<span class="fc" id="L267">			return m;</span>
+<span class="fc" id="L291">			return m;</span>
 		}
 
 		@Override
 		public IntIterator iterator() {
-<span class="nc" id="L272">			return new IntIterator() {</span>
+<span class="nc" id="L296">			return new IntIterator() {</span>
 
-<span class="nc" id="L274">				int idx = 0;</span>
+<span class="nc" id="L298">				int idx = 0;</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="nc bnc" id="L278" title="All 2 branches missed.">					return idx &lt; m;</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">					return idx &lt; m;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="nc" id="L283">					Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L284">					return edgesUserIds[idx++];</span>
+<span class="nc" id="L307">					Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L308">					return edgesUserIds[idx++];</span>
 				}
 
 			};
@@ -290,74 +314,74 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 	static class Undirected extends IndexGraphBuilderImpl {
 
-<span class="fc" id="L293">		Undirected() {}</span>
+<span class="fc" id="L317">		Undirected() {}</span>
 
-		Undirected(IndexGraph g) {
-<span class="fc" id="L296">			super(g);</span>
-<span class="fc" id="L297">			Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L298">		}</span>
+		Undirected(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L320">			super(g, copyWeights);</span>
+<span class="fc" id="L321">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L322">		}</span>
 
 		@Override
 		public IndexGraph build() {
-<span class="fc" id="L302">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L303">			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =</span>
+<span class="fc" id="L326">			validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L327">			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =</span>
 					new GraphCSRBase.BuilderProcessEdgesUndirected(this);
-<span class="fc" id="L305">			return new GraphCSRUndirected(this, processEdges);</span>
+<span class="fc" id="L329">			return new GraphCSRUndirected(this, processEdges);</span>
 		}
 
 		@Override
 		public IndexGraph buildMutable() {
-<span class="fc" id="L310">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L311">			return new GraphArrayUndirected(this);</span>
+<span class="fc" id="L334">			validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L335">			return new GraphArrayUndirected(this);</span>
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L316">			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L340">			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L321">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L345">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
 		}
 
 	}
 
 	static class Directed extends IndexGraphBuilderImpl {
 
-<span class="fc" id="L328">		Directed() {}</span>
+<span class="fc" id="L352">		Directed() {}</span>
 
-		Directed(IndexGraph g) {
-<span class="fc" id="L331">			super(g);</span>
-<span class="fc" id="L332">			Assertions.Graphs.onlyDirected(g);</span>
-<span class="fc" id="L333">		}</span>
+		Directed(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L355">			super(g, copyWeights);</span>
+<span class="fc" id="L356">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L357">		}</span>
 
 		@Override
 		public IndexGraph build() {
-<span class="fc" id="L337">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L338">			GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(this);</span>
-<span class="fc" id="L339">			return new GraphCSRDirected(this, processEdges);</span>
+<span class="fc" id="L361">			validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L362">			GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(this);</span>
+<span class="fc" id="L363">			return new GraphCSRDirected(this, processEdges);</span>
 		}
 
 		@Override
 		public IndexGraph buildMutable() {
-<span class="fc" id="L344">			validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L345">			return new GraphArrayDirected(this);</span>
+<span class="fc" id="L368">			validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L369">			return new GraphArrayDirected(this);</span>
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="pc bpc" id="L350" title="1 of 2 branches missed.">			if (reIndexEdges) {</span>
-<span class="fc" id="L351">				validateUserProvidedIdsBeforeBuild();</span>
-<span class="fc" id="L352">				return GraphCSRDirectedReindexed.newInstance(this);</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">			if (reIndexEdges) {</span>
+<span class="fc" id="L375">				validateUserProvidedIdsBeforeBuild();</span>
+<span class="fc" id="L376">				return GraphCSRDirectedReindexed.newInstance(this);</span>
 			} else {
-<span class="nc" id="L354">				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
+<span class="nc" id="L378">				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());</span>
 			}
 		}
 
 		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L360">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L384">			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());</span>
 		}
 
 	}
@@ -369,25 +393,25 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		private final Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing;
 
 		ReIndexedGraphImpl(IndexGraph graph, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing,
-<span class="fc" id="L372">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
-<span class="fc" id="L373">			this.graph = Objects.requireNonNull(graph);</span>
-<span class="fc" id="L374">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
-<span class="fc" id="L375">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
-<span class="fc" id="L376">		}</span>
+<span class="fc" id="L396">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
+<span class="fc" id="L397">			this.graph = Objects.requireNonNull(graph);</span>
+<span class="fc" id="L398">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
+<span class="fc" id="L399">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
+<span class="fc" id="L400">		}</span>
 
 		@Override
 		public IndexGraph graph() {
-<span class="fc" id="L380">			return graph;</span>
+<span class="fc" id="L404">			return graph;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing() {
-<span class="fc" id="L385">			return verticesReIndexing;</span>
+<span class="fc" id="L409">			return verticesReIndexing;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing() {
-<span class="fc" id="L390">			return edgesReIndexing;</span>
+<span class="fc" id="L414">			return edgesReIndexing;</span>
 		}
 	}
 
@@ -396,19 +420,19 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		private final int[] origToReIndexed;
 		private final int[] reIndexedToOrig;
 
-<span class="fc" id="L399">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
-<span class="fc" id="L400">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
-<span class="fc" id="L401">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
-<span class="fc" id="L402">		}</span>
+<span class="fc" id="L423">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
+<span class="fc" id="L424">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
+<span class="fc" id="L425">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
+<span class="fc" id="L426">		}</span>
 
 		@Override
 		public int origToReIndexed(int orig) {
-<span class="fc" id="L406">			return origToReIndexed[orig];</span>
+<span class="fc" id="L430">			return origToReIndexed[orig];</span>
 		}
 
 		@Override
 		public int reIndexedToOrig(int reindexed) {
-<span class="fc" id="L411">			return reIndexedToOrig[reindexed];</span>
+<span class="fc" id="L435">			return reIndexedToOrig[reindexed];</span>
 		}
 	}
 

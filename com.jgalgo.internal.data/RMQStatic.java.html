@@ -77,13 +77,13 @@ public interface RMQStatic {
 			public RMQStatic build() {
 <span class="pc bpc" id="L78" title="1 of 2 branches missed.">				if (impl != null) {</span>
 <span class="pc bpc" id="L79" title="4 of 5 branches missed.">					switch (impl) {</span>
-						case &quot;LookupTable&quot;:
-<span class="nc" id="L81">							return new RMQStaticLookupTable();</span>
-						case &quot;PowerOf2Table&quot;:
+						case &quot;simple-lookup-table&quot;:
+<span class="nc" id="L81">							return new RMQStaticSimpleLookupTable();</span>
+						case &quot;power-of-2-table&quot;:
 <span class="nc" id="L83">							return new RMQStaticPowerOf2Table();</span>
-						case &quot;CartesianTrees&quot;:
+						case &quot;cartesian-trees&quot;:
 <span class="nc" id="L85">							return new RMQStaticCartesianTrees();</span>
-						case &quot;PlusMinusOne&quot;:
+						case &quot;plus-minus-one&quot;:
 <span class="fc" id="L87">							return new RMQStaticPlusMinusOne();</span>
 						default:
 <span class="nc" id="L89">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>

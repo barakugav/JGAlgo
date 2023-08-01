@@ -1354,13 +1354,13 @@ public class Graphs {
 <span class="pc bpc" id="L1354" title="1 of 2 branches missed.">			if (g instanceof ImmutableIndexGraphView)</span>
 <span class="nc" id="L1355">				g = ((ImmutableIndexGraphView) g).graph();</span>
 <span class="fc bfc" id="L1356" title="All 2 branches covered.">			if (g instanceof GraphArrayAbstract)</span>
-<span class="fc" id="L1357">				return &quot;GraphArray&quot;;</span>
+<span class="fc" id="L1357">				return &quot;array&quot;;</span>
 <span class="fc bfc" id="L1358" title="All 2 branches covered.">			if (g instanceof GraphLinkedAbstract)</span>
-<span class="fc" id="L1359">				return &quot;GraphLinked&quot;;</span>
+<span class="fc" id="L1359">				return &quot;linked-list&quot;;</span>
 <span class="fc bfc" id="L1360" title="All 2 branches covered.">			if (g instanceof GraphHashmapAbstract)</span>
-<span class="fc" id="L1361">				return &quot;GraphHashmap&quot;;</span>
-<span class="fc bfc" id="L1362" title="All 2 branches covered.">			if (g instanceof GraphTableAbstract)</span>
-<span class="fc" id="L1363">				return &quot;GraphTable&quot;;</span>
+<span class="fc" id="L1361">				return &quot;hashtable&quot;;</span>
+<span class="fc bfc" id="L1362" title="All 2 branches covered.">			if (g instanceof GraphMatrixAbstract)</span>
+<span class="fc" id="L1363">				return &quot;matrix&quot;;</span>
 <span class="pc bpc" id="L1364" title="1 of 2 branches missed.">			if (g == g0)</span>
 <span class="fc" id="L1365">				return null;</span>
 <span class="nc" id="L1366">		}</span>
@@ -1476,7 +1476,7 @@ public class Graphs {
 	private static class IndexGraphMapIdentify implements IndexIdMap {
 		@Override
 		public int indexToId(int index) {
-<span class="nc" id="L1479">			return index;</span>
+<span class="fc" id="L1479">			return index;</span>
 		}
 
 		@Override

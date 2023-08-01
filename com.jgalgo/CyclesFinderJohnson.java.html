@@ -158,37 +158,38 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 <span class="fc" id="L158">		int nSub = nFull - subToFull;</span>
 
 <span class="fc" id="L160">		IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">		for (int uSubIdx = 0; uSubIdx &lt; nSub; uSubIdx++) {</span>
-<span class="fc" id="L162">			int uIdx = gSubBuilder.addVertex();</span>
-<span class="pc bpc" id="L163" title="1 of 2 branches missed.">			assert uIdx == uSubIdx;</span>
+<span class="fc" id="L161">		gSubBuilder.expectedVerticesNum(nSub);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		for (int uSubIdx = 0; uSubIdx &lt; nSub; uSubIdx++) {</span>
+<span class="fc" id="L163">			int uIdx = gSubBuilder.addVertex();</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">			assert uIdx == uSubIdx;</span>
 		}
-<span class="fc bfc" id="L165" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
-<span class="fc" id="L166">			int uFull = uSub + subToFull;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L168">				it.nextInt();</span>
-<span class="fc" id="L169">				int vSub = it.target() - subToFull;</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
-<span class="fc" id="L171">					gSubBuilder.addEdge(uSub, vSub);</span>
-<span class="fc" id="L172">			}</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
+<span class="fc" id="L167">			int uFull = uSub + subToFull;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L169">				it.nextInt();</span>
+<span class="fc" id="L170">				int vSub = it.target() - subToFull;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
+<span class="fc" id="L172">					gSubBuilder.addEdge(uSub, vSub);</span>
+<span class="fc" id="L173">			}</span>
 		}
-<span class="fc" id="L174">		IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
+<span class="fc" id="L175">		IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
 
-<span class="fc" id="L176">		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);</span>
+<span class="fc" id="L177">		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);</span>
 
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
-<span class="fc" id="L179">			int uSub = startIdx - subToFull;</span>
-<span class="fc" id="L180">			int ccIdx = connectivityResult.getVertexCc(uSub);</span>
-<span class="fc bfc" id="L181" title="All 4 branches covered.">			if (connectivityResult.getCcVertices(ccIdx).size() &gt; 1 || hasSelfEdge(gSub, uSub))</span>
-<span class="fc" id="L182">				break;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
+<span class="fc" id="L180">			int uSub = startIdx - subToFull;</span>
+<span class="fc" id="L181">			int ccIdx = connectivityResult.getVertexCc(uSub);</span>
+<span class="fc bfc" id="L182" title="All 4 branches covered.">			if (connectivityResult.getCcVertices(ccIdx).size() &gt; 1 || hasSelfEdge(gSub, uSub))</span>
+<span class="fc" id="L183">				break;</span>
 		}
-<span class="fc bfc" id="L184" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
-<span class="fc" id="L185">			return null;</span>
-<span class="fc" id="L186">		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);</span>
-<span class="fc" id="L187">		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
+<span class="fc" id="L186">			return null;</span>
+<span class="fc" id="L187">		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);</span>
+<span class="fc" id="L188">		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);</span>
 	}
 
 	private static boolean hasSelfEdge(IndexGraph g, int u) {
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		return g.getEdge(u, u) != -1;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">		return g.getEdge(u, u) != -1;</span>
 	}
 
 	private static class StronglyConnectedComponent {
@@ -197,17 +198,17 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 		private final ConnectedComponentsAlgo.Result connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L200">		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {</span>
-<span class="fc" id="L201">			this.subToFull = subToFull;</span>
-<span class="fc" id="L202">			this.connectivityResult = connectivityResult;</span>
-<span class="fc" id="L203">			this.ccIdx = ccIdx;</span>
-<span class="fc" id="L204">		}</span>
+<span class="fc" id="L201">		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L202">			this.subToFull = subToFull;</span>
+<span class="fc" id="L203">			this.connectivityResult = connectivityResult;</span>
+<span class="fc" id="L204">			this.ccIdx = ccIdx;</span>
+<span class="fc" id="L205">		}</span>
 
 		boolean contains(int v) {
-<span class="fc" id="L207">			int vSub = v - subToFull;</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
-<span class="fc" id="L209">				return false;</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCc(vSub);</span>
+<span class="fc" id="L208">			int vSub = v - subToFull;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
+<span class="fc" id="L210">				return false;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCc(vSub);</span>
 		}
 
 	}

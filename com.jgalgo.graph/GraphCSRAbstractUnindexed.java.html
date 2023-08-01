@@ -24,39 +24,35 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 <span class="fc" id="L24">		edgesOut = processEdges.edgesOut;</span>
 
 <span class="fc" id="L26">		final int m = builder.edges().size();</span>
-<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L28">			endpoints[e * 2 + 0] = builder.edgeSource(e);</span>
-<span class="fc" id="L29">			endpoints[e * 2 + 1] = builder.edgeTarget(e);</span>
-		}
-<span class="fc" id="L31">	}</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L28">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
+<span class="fc" id="L29">	}</span>
 
 	GraphCSRAbstractUnindexed(IndexGraph g) {
-<span class="nc" id="L34">		super(g);</span>
-<span class="nc" id="L35">		final int n = g.vertices().size();</span>
-<span class="nc" id="L36">		final int m = g.edges().size();</span>
+<span class="nc" id="L32">		super(g);</span>
+<span class="nc" id="L33">		final int n = g.vertices().size();</span>
+<span class="nc" id="L34">		final int m = g.edges().size();</span>
 
 		int edgesOutArrLen;
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (getCapabilities().directed()) {</span>
-<span class="nc" id="L40">			edgesOutArrLen = m;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (getCapabilities().directed()) {</span>
+<span class="nc" id="L38">			edgesOutArrLen = m;</span>
 		} else {
-<span class="nc" id="L42">			edgesOutArrLen = 0;</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="nc" id="L44">				edgesOutArrLen += g.outEdges(u).size();</span>
+<span class="nc" id="L40">			edgesOutArrLen = 0;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="nc" id="L42">				edgesOutArrLen += g.outEdges(u).size();</span>
 		}
-<span class="nc" id="L46">		edgesOut = new int[edgesOutArrLen];</span>
+<span class="nc" id="L44">		edgesOut = new int[edgesOutArrLen];</span>
 
-<span class="nc bnc" id="L48" title="All 2 branches missed.">		for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
-<span class="nc" id="L49">			edgesOutBegin[u] = eIdx;</span>
-<span class="nc bnc" id="L50" title="All 2 branches missed.">			for (int e : g.outEdges(u))</span>
-<span class="nc" id="L51">				edgesOut[eIdx++] = e;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
+<span class="nc" id="L47">			edgesOutBegin[u] = eIdx;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">			for (int e : g.outEdges(u))</span>
+<span class="nc" id="L49">				edgesOut[eIdx++] = e;</span>
 		}
-<span class="nc" id="L53">		edgesOutBegin[n] = edgesOutArrLen;</span>
+<span class="nc" id="L51">		edgesOutBegin[n] = edgesOutArrLen;</span>
 
-<span class="nc bnc" id="L55" title="All 2 branches missed.">		for (int e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L56">			endpoints[e * 2 + 0] = g.edgeSource(e);</span>
-<span class="nc" id="L57">			endpoints[e * 2 + 1] = g.edgeTarget(e);</span>
-		}
-<span class="nc" id="L59">	}</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L54">			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="nc" id="L55">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

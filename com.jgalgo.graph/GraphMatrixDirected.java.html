@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphTableDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphTableDirected.java</span></div><h1>GraphTableDirected.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphMatrixDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphMatrixDirected.java</span></div><h1>GraphMatrixDirected.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -19,20 +19,20 @@ package com.jgalgo.graph;
 import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 
 /**
- * A directed graph implementation using a two dimensional table to store all edges.
+ * A directed graph implementation using a two dimensional matrix to store all edges.
  * &lt;p&gt;
- * If the graph contains \(n\) vertices, table of size {@code [n][n]} stores the edges of the graph. The implementation
+ * If the graph contains \(n\) vertices, matrix of size {@code [n][n]} stores the edges of the graph. The implementation
  * does not support multiple edges with identical source and target.
  * &lt;p&gt;
  * This implementation is efficient for use cases where fast lookups of edge \((u,v)\) are required, as they can be
  * answered in \(O(1)\) time, but it should not be the default choice for a directed graph.
  *
- * @see    GraphTableUndirected
+ * @see    GraphMatrixUndirected
  * @author Barak Ugav
  */
-class GraphTableDirected extends GraphTableAbstract {
+class GraphMatrixDirected extends GraphMatrixAbstract {
 
-	GraphTableDirected() {
+	GraphMatrixDirected() {
 <span class="nc" id="L36">		this(0, 0);</span>
 <span class="nc" id="L37">	}</span>
 
@@ -42,12 +42,12 @@ class GraphTableDirected extends GraphTableAbstract {
 	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
-	GraphTableDirected(int expectedVerticesNum, int expectedEdgesNum) {
+	GraphMatrixDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L46">		super(expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L47">	}</span>
 
-	GraphTableDirected(IndexGraph g) {
-<span class="fc" id="L50">		super(g);</span>
+	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L50">		super(g, copyWeights);</span>
 <span class="fc" id="L51">	}</span>
 
 	@Override

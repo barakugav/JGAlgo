@@ -27,19 +27,19 @@ import com.jgalgo.graph.WeightFunction;
 
 		@Override
 		public void computeCirculation(Graph g, FlowNetwork net, WeightFunction supply) {
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
 <span class="fc" id="L31">				computeCirculation((IndexGraph) g, net, supply);</span>
 <span class="fc" id="L32">				return;</span>
 			}
 
-<span class="nc" id="L35">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L36">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L37">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L38">			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
-<span class="nc" id="L39">			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
+<span class="fc" id="L35">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L36">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L37">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L38">			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
+<span class="fc" id="L39">			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
 
-<span class="nc" id="L41">			computeCirculation(iGraph, iNet, iSupply);</span>
-<span class="nc" id="L42">		}</span>
+<span class="fc" id="L41">			computeCirculation(iGraph, iNet, iSupply);</span>
+<span class="fc" id="L42">		}</span>
 
 		abstract void computeCirculation(IndexGraph g, FlowNetwork net, WeightFunction supply);
 

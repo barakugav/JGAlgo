@@ -1745,7 +1745,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1745">					int e = eit.nextInt(), v;</span>
 <span class="fc" id="L1746">					double f = getResidualCapacity(e);</span>
 <span class="fc bfc" id="L1747" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.target()]) {</span>
-<span class="pc bpc" id="L1748" title="1 of 4 branches missed.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc bfc" id="L1748" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
 <span class="fc" id="L1749">							activate(v);</span>
 <span class="fc" id="L1750">						push(e, f);</span>
 					}

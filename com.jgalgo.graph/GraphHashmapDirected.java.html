@@ -42,11 +42,11 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L42">		addInternalVerticesContainer(edgesInContainer);</span>
 <span class="fc" id="L43">	}</span>
 
-	GraphHashmapDirected(IndexGraph g) {
-<span class="fc" id="L46">		super(g);</span>
+	GraphHashmapDirected(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L46">		super(g, copyWeights);</span>
 <span class="fc" id="L47">		final int n = g.vertices().size();</span>
 
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (g instanceof GraphHashmapDirected) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (g instanceof GraphHashmapDirected) {</span>
 <span class="fc" id="L50">			GraphHashmapDirected g0 = (GraphHashmapDirected) g;</span>
 
 <span class="fc" id="L52">			edgesOutContainer =</span>
@@ -67,29 +67,29 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				}
 			}
 <span class="fc" id="L69">		} else {</span>
-<span class="nc" id="L70">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="nc" id="L71">					EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="nc" id="L72">			edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="nc" id="L73">					EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L70">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L71">					EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L72">			edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L73">					EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
 
-<span class="nc" id="L75">			addInternalVerticesContainer(edgesOutContainer);</span>
-<span class="nc" id="L76">			addInternalVerticesContainer(edgesInContainer);</span>
+<span class="fc" id="L75">			addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L76">			addInternalVerticesContainer(edgesInContainer);</span>
 
-<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L80">					int e = eit.nextInt();</span>
-<span class="nc" id="L81">					int oldVal = edgesOut[v].put(eit.target(), e);</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">					if (oldVal != -1)</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L80">					int e = eit.nextInt();</span>
+<span class="fc" id="L81">					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.target(), e);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
 <span class="nc" id="L83">						throw new IllegalStateException(&quot;Parallel edge (&quot; + v + &quot;,&quot; + eit.target()</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="nc" id="L85">				}</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L87">					int e = eit.nextInt();</span>
-<span class="nc" id="L88">					int oldVal = edgesIn[v].put(eit.source(), e);</span>
-<span class="nc bnc" id="L89" title="All 2 branches missed.">					if (oldVal != -1)</span>
+<span class="fc" id="L85">				}</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L87">					int e = eit.nextInt();</span>
+<span class="fc" id="L88">					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.source(), e);</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
 <span class="nc" id="L90">						throw new IllegalStateException(&quot;Parallel edge (&quot; + eit.source() + &quot;,&quot; + v</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="nc" id="L92">				}</span>
+<span class="fc" id="L92">				}</span>
 			}
 		}
 <span class="fc" id="L95">	}</span>
@@ -176,28 +176,28 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L176">		}</span>
 
 <span class="pc bpc" id="L178" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
-<span class="nc" id="L179">			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v1v1, v2, v2);</span>
+<span class="nc" id="L179">			setEndpoints(v1v1, v2, v2);</span>
 <span class="nc" id="L180">			int oldVal1 = edgesOut[v1].put(v2, v1v1);</span>
 <span class="nc" id="L181">			int oldVal2 = edgesIn[v1].put(v2, v1v1);</span>
 <span class="nc bnc" id="L182" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
 <span class="nc bnc" id="L183" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 		}
 <span class="pc bpc" id="L185" title="1 of 2 branches missed.">		if (v1v2 != -1) {</span>
-<span class="nc" id="L186">			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v1v2, v2, v1);</span>
+<span class="nc" id="L186">			setEndpoints(v1v2, v2, v1);</span>
 <span class="nc" id="L187">			int oldVal1 = edgesOut[v1].put(v1, v1v2);</span>
 <span class="nc" id="L188">			int oldVal2 = edgesIn[v1].put(v1, v1v2);</span>
 <span class="nc bnc" id="L189" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
 <span class="nc bnc" id="L190" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 		}
 <span class="pc bpc" id="L192" title="1 of 2 branches missed.">		if (v2v1 != -1) {</span>
-<span class="nc" id="L193">			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v2v1, v1, v2);</span>
+<span class="nc" id="L193">			setEndpoints(v2v1, v1, v2);</span>
 <span class="nc" id="L194">			int oldVal1 = edgesOut[v2].put(v2, v2v1);</span>
 <span class="nc" id="L195">			int oldVal2 = edgesIn[v2].put(v2, v2v1);</span>
 <span class="nc bnc" id="L196" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
 <span class="nc bnc" id="L197" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 		}
 <span class="fc bfc" id="L199" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
-<span class="fc" id="L200">			EdgeEndpointsContainer.setEndpoints(edgeEndpoints(), v2v2, v1, v1);</span>
+<span class="fc" id="L200">			setEndpoints(v2v2, v1, v1);</span>
 <span class="fc" id="L201">			int oldVal1 = edgesOut[v2].put(v1, v2v2);</span>
 <span class="fc" id="L202">			int oldVal2 = edgesIn[v2].put(v1, v2v2);</span>
 <span class="pc bpc" id="L203" title="1 of 2 branches missed.">			assert oldVal1 == -1;</span>

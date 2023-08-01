@@ -37,20 +37,20 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 <span class="fc" id="L37">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L38">	}</span>
 
-	GraphHashmapAbstract(IndexGraph g) {
-<span class="fc" id="L41">		super(g);</span>
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (g instanceof GraphHashmapAbstract) {</span>
+	GraphHashmapAbstract(IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L41">		super(g, copyWeights);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (g instanceof GraphHashmapAbstract) {</span>
 <span class="fc" id="L43">			GraphHashmapAbstract g0 = (GraphHashmapAbstract) g;</span>
 <span class="fc" id="L44">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L45">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L46">		} else {</span>
 
-<span class="nc" id="L48">			final int m = edgesIdStrat.size();</span>
-<span class="nc" id="L49">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
-<span class="nc" id="L50">					newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="nc" id="L51">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L53">				EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L48">			final int m = edgesIdStrat.size();</span>
+<span class="fc" id="L49">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
+<span class="fc" id="L50">					newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L51">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L53">				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
 		}
 <span class="fc" id="L55">	}</span>
 
@@ -67,7 +67,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	@Override
 	public int addEdge(int source, int target) {
 <span class="fc" id="L69">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L70">		EdgeEndpointsContainer.setEndpoints(edgeEndpoints, e, source, target);</span>
+<span class="fc" id="L70">		setEndpoints(e, source, target);</span>
 <span class="fc" id="L71">		return e;</span>
 	}
 
