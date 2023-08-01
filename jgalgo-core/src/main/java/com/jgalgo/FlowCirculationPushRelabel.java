@@ -86,6 +86,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final double[] flow;
 		final double[] excess;
 
+		private static final double eps = 1e-9;
+
 		WorkerDouble(IndexGraph g, FlowNetwork net, WeightFunction supply) {
 			super(g, net, supply);
 
@@ -101,7 +103,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			double excessSum = 0;
 			for (int v = 0; v < n; v++)
 				excessSum += excess[v] = supply.weight(v);
-			if (excessSum != 0)
+			if (Math.abs(excessSum) > eps)
 				throw new IllegalArgumentException();
 
 			/* init greedily */
@@ -124,7 +126,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			/* init labels */
 			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
 			for (int v = 0; v < n; v++) {
-				if (excess[v] > 0) {
+				if (excess[v] > eps) {
 					label[v] = 1;
 					activate(v);
 				}
@@ -138,14 +140,14 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			mainLoop: for (int act; (act = highestActive()) != -1;) {
 				deactivate(act);
 				double exc = excess[act];
-				assert exc > 0;
+				assert exc > eps;
 				int actLevel = maxLayerActive;
 				int minLayer = n;
 				for (EdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					double fc = capacity[e] - flow[e];
-					if (fc <= 0)
+					if (fc <= eps)
 						continue;
 					if (label[v] >= actLevel) {
 						if (label[v] < minLayer)
@@ -158,7 +160,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						excess[act] = 0;
 
 						excess[v] += exc;
-						if (excess[v] > 0 && excess[v] <= exc)
+						if (excess[v] > eps && excess[v] <= exc + eps)
 							activate(v);
 						continue mainLoop;
 
@@ -167,7 +169,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						flow[e] = capacity[e];
 						exc -= fc; // no need to update excess[act], it will be updated later
 						excess[v] += fc;
-						if (excess[v] > 0 && excess[v] <= fc)
+						if (excess[v] > eps && excess[v] <= fc + eps)
 							activate(v);
 					}
 				}
@@ -175,7 +177,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 					int e = eit.nextInt();
 					int v = eit.source();
 					double fc = flow[e] - lowerBound;
-					if (fc <= 0)
+					if (fc <= eps)
 						continue;
 					if (label[v] >= actLevel) {
 						if (label[v] < minLayer)
@@ -187,7 +189,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						flow[e] -= exc;
 						excess[act] = 0;
 						excess[v] += exc;
-						if (excess[v] > 0 && excess[v] <= exc)
+						if (excess[v] > eps && excess[v] <= exc + eps)
 							activate(v);
 						continue mainLoop;
 
@@ -196,13 +198,13 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 						flow[e] = lowerBound;
 						exc -= fc; // no need to update excess[act], it will be updated later
 						excess[v] += fc;
-						if (excess[v] > 0 && excess[v] <= fc)
+						if (excess[v] > eps && excess[v] <= fc + eps)
 							activate(v);
 					}
 				}
 
 				excess[act] = exc;
-				if (exc <= 0) {
+				if (exc <= eps) {
 					// deactivate(act);
 				} else if (minLayer == n) {
 					throw new IllegalArgumentException("no valid circulation exists");
@@ -213,9 +215,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			}
 
 			for (int v = 0; v < n; v++)
-				assert excess[v] == 0;
+				assert Math.abs(excess[v]) < eps;
 			for (int m = g.edges().size(), e = 0; e < m; e++)
-				net.setFlow(e, flow[e]);
+				net.setFlow(e, Math.max(0, Math.min(flow[e], net.getCapacity(e))));
 		}
 	}
 

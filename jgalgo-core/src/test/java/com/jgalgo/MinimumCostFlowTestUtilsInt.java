@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
@@ -135,7 +134,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 			FlowNetwork.Int net = randNetwork(g, rand);
 			WeightFunction.Int cost = randCost(g, rand);
-			WeightFunction.Int supply = randSupply(g, net, rand);
+			WeightFunction.Int supply = FlowCirculationTestUtils.randSupplyInt(g, net, rand);
 
 			testMinCostFlowWithSupply(g, net, cost, supply, algo);
 		});
@@ -152,7 +151,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork.Int net = randNetwork(g, rand);
-			WeightFunction.Int supply = randSupply(g, net, rand);
+			WeightFunction.Int supply = FlowCirculationTestUtils.randSupplyInt(g, net, rand);
 
 			/* build a 'random' lower bound by solving min-cost flow with a different cost function and use the flows */
 			WeightFunction.Int cost1 = randCost(g, rand);
@@ -270,104 +269,6 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		}
 	}
 
-	private static WeightFunction.Int randSupply(Graph g, FlowNetwork.Int net, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
-
-		IntList suppliers = new IntArrayList();
-		IntList demanders = new IntArrayList();
-		int[] vertices = g.vertices().toIntArray();
-		IntArrays.shuffle(vertices, rand);
-		assert vertices.length >= 2;
-		suppliers.add(vertices[0]);
-		demanders.add(vertices[1]);
-		for (int i = 2; i < vertices.length; i++) {
-			int r = rand.nextInt(3);
-			if (r == 0) {
-				suppliers.add(vertices[i]);
-			} else if (r == 1) {
-				demanders.add(vertices[i]);
-			} else {
-				/* do nothing */
-			}
-		}
-
-		Int2IntMap capacity = new Int2IntOpenHashMap();
-		for (int e : g.edges())
-			capacity.put(e, net.getCapacityInt(e));
-
-		IntSet demandersSet = new IntOpenHashSet(demanders);
-		IntList suppliersList = new IntArrayList(suppliers);
-
-		Weights.Int supply = Weights.createExternalVerticesWeights(g, int.class);
-		IntArrayList path = new IntArrayList();
-		IntSet visited = new IntOpenHashSet();
-		suppliersLoop: for (;;) {
-			if (suppliersList.isEmpty()) {
-				assert g.vertices().intStream().map(supply::weightInt).sum() == 0;
-				return supply;
-			}
-
-			path.clear();
-			visited.clear();
-
-			int supplierIdx = rand.nextInt(suppliersList.size());
-			int supplier = suppliersList.getInt(supplierIdx);
-			visited.add(supplier);
-			dfs: for (int u = supplier;;) {
-
-				/* Find a random edge to deepen the DFS */
-				int[] es = g.outEdges(u).toIntArray();
-				IntArrays.shuffle(es, rand);
-				for (int e : es) {
-					if (capacity.get(e) == 0)
-						continue;
-					assert u == g.edgeSource(e);
-					int v = g.edgeTarget(e);
-					if (visited.contains(v))
-						continue;
-					path.add(e);
-
-					if (demandersSet.contains(v))
-						/* found an residual path from a supplier to a demander */
-						break dfs;
-
-					/* Continue down in the DFS */
-					visited.add(v);
-					u = v;
-					continue dfs;
-				}
-
-				/* No more edges to explore */
-				if (path.isEmpty()) {
-					/* No more residual paths from supplier to any demander, remove supplier from suppliers list */
-					suppliersList.set(supplierIdx, suppliersList.getInt(suppliersList.size() - 1));
-					suppliersList.removeInt(suppliersList.size() - 1);
-					continue suppliersLoop;
-				}
-
-				/* Back up in the DFS path one vertex */
-				int lastEdge = path.popInt();
-				assert u == g.edgeTarget(lastEdge);
-				u = g.edgeSource(lastEdge);
-			}
-
-			/* Found a residual path from a supplier to a demander */
-			int delta = path.intStream().map(capacity::get).min().getAsInt();
-			assert delta > 0;
-			for (int e : path)
-				capacity.put(e, capacity.get(e) - delta);
-
-			/* Add lower bounds to some of the edges */
-			int source = g.edgeSource(path.getInt(0));
-			int sink = g.edgeTarget(path.getInt(path.size() - 1));
-			if (rand.nextBoolean()) {
-				int s = rand.nextInt((delta + 1) / 2);
-				supply.set(source, supply.weightInt(source) + s);
-				supply.set(sink, supply.weightInt(sink) - s);
-			}
-		}
-	}
-
 	private static void testMinCostMaxFlowWithSourceSink(Graph g, FlowNetwork.Int net, WeightFunction.Int cost,
 			int source, int sink, MinimumCostFlow algo) {
 		for (int e : g.edges())
@@ -424,10 +325,11 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostFlow(g, net, cost, supply);
-		MaximumFlowTestUtils.assertValidFlow(g, net, verticesWithPositiveSupply(g.vertices(), supply),
-				verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils.assertValidFlow(g, net,
+				FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
+				FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
 
-		assertSupplySatisfied(g, net, supply);
+		FlowCirculationTestUtils.assertSupplySatisfied(g, net, supply);
 		assertOptimalCirculation(g, net, cost, null);
 	}
 
@@ -436,10 +338,11 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostFlow(g, net, cost, lowerBound, supply);
-		MaximumFlowTestUtils.assertValidFlow(g, net, verticesWithPositiveSupply(g.vertices(), supply),
-				verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils.assertValidFlow(g, net,
+				FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
+				FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
 
-		assertSupplySatisfied(g, net, supply);
+		FlowCirculationTestUtils.assertSupplySatisfied(g, net, supply);
 		assertLowerBound(g, net, lowerBound);
 		assertOptimalCirculation(g, net, cost, lowerBound);
 	}
@@ -447,33 +350,6 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 	private static void assertLowerBound(Graph g, FlowNetwork net, WeightFunction lowerBound) {
 		for (int e : g.edges())
 			assertTrue(net.getFlow(e) >= lowerBound.weight(e));
-	}
-
-	private static IntSet verticesWithPositiveSupply(IntCollection vertices, WeightFunction supply) {
-		IntSet sources = new IntOpenHashSet();
-		for (int v : vertices)
-			if (supply.weight(v) > 0)
-				sources.add(v);
-		return sources;
-	}
-
-	private static IntSet verticesWithNegativeSupply(IntCollection vertices, WeightFunction supply) {
-		IntSet sources = new IntOpenHashSet();
-		for (int v : vertices)
-			if (supply.weight(v) < 0)
-				sources.add(v);
-		return sources;
-	}
-
-	private static void assertSupplySatisfied(Graph g, FlowNetwork net, WeightFunction supply) {
-		for (int v : g.vertices()) {
-			int supplySum = 0;
-			for (int e : g.outEdges(v))
-				supplySum += net.getFlow(e);
-			for (int e : g.inEdges(v))
-				supplySum -= net.getFlow(e);
-			assertEquals(supply.weight(v), supplySum);
-		}
 	}
 
 	private static void assertMaximumFlow(Graph g, FlowNetwork.Int net, WeightFunction.Int lowerBound,
