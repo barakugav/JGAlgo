@@ -29,8 +29,8 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		edgesInBegin = processEdges.edgesInBegin;
 	}
 
-	GraphCSRDirected(IndexGraph g) {
-		super(g);
+	GraphCSRDirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

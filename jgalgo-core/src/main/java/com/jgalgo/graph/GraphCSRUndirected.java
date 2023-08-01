@@ -24,8 +24,8 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		super(builder, processEdges);
 	}
 
-	GraphCSRUndirected(IndexGraph g) {
-		super(g);
+	GraphCSRUndirected(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		Assertions.Graphs.onlyUndirected(g);
 	}
 

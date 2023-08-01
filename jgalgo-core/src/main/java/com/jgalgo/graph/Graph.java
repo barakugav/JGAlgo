@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import java.util.Optional;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -720,7 +721,21 @@ public interface Graph {
 	 *                     weights
 	 */
 	default Graph immutableCopy(boolean copyWeights) {
-		return GraphBuilder.newFrom(this, copyWeights).build();
+		IndexIdMap viMap = indexGraphVerticesMap();
+		IndexIdMap eiMap = indexGraphEdgesMap();
+		if (getCapabilities().directed()) {
+			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
+					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);
+			IndexGraph iGraph = reIndexedGraph.graph();
+			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
+			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());
+			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());
+			return new GraphImpl.Directed(iGraph, viMap, eiMap);
+		} else {
+			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
+			return new GraphImpl.Undirected(iGraph, viMap, eiMap);
+		}
 	}
 
 	/**

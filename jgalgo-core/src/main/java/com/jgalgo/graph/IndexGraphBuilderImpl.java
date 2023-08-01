@@ -325,7 +325,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		public IndexGraph build() {
 			validateUserProvidedIdsBeforeBuild();
 			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =
-					new GraphCSRBase.BuilderProcessEdgesUndirected(this);
+					GraphCSRBase.BuilderProcessEdgesUndirected.valueOf(this);
 			return new GraphCSRUndirected(this, processEdges);
 		}
 
@@ -359,7 +359,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		@Override
 		public IndexGraph build() {
 			validateUserProvidedIdsBeforeBuild();
-			GraphCSRBase.BuilderProcessEdgesDirected processEdges = new GraphCSRBase.BuilderProcessEdgesDirected(this);
+			GraphCSRBase.BuilderProcessEdgesDirected processEdges =
+					GraphCSRBase.BuilderProcessEdgesDirected.valueOf(this);
 			return new GraphCSRDirected(this, processEdges);
 		}
 

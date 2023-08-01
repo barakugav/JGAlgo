@@ -15,21 +15,22 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.JGAlgoUtils.Variant;
+
 abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 	final int[] edgesOut;
 
 	GraphCSRAbstractUnindexed(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-		super(builder, processEdges, null);
+		super(Variant.Of2.withB(builder), processEdges, null, true);
 		edgesOut = processEdges.edgesOut;
 
-		final int m = builder.edges().size();
-		for (int e = 0; e < m; e++)
+		for (int m = builder.edges().size(), e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
-	GraphCSRAbstractUnindexed(IndexGraph g) {
-		super(g);
+	GraphCSRAbstractUnindexed(IndexGraph g, boolean copyWeights) {
+		super(g, copyWeights);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

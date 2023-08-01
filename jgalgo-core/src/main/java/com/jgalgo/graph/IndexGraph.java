@@ -228,7 +228,16 @@ public interface IndexGraph extends Graph {
 
 	@Override
 	default IndexGraph immutableCopy() {
-		return IndexGraphBuilder.newFrom(this).build();
+		return immutableCopy(false);
+	}
+
+	@Override
+	default IndexGraph immutableCopy(boolean copyWeights) {
+		if (getCapabilities().directed()) {
+			return new GraphCSRDirected(this, copyWeights);
+		} else {
+			return new GraphCSRUndirected(this, copyWeights);
+		}
 	}
 
 	@Override

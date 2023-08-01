@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
@@ -732,6 +733,42 @@ public class JGAlgoUtils {
 			}
 		}
 		return null;
+	}
+
+	public static class Variant {
+
+		final Object val;
+
+		private Variant(Object val) {
+			this.val = Objects.requireNonNull(val);
+		}
+
+		public boolean contains(Class<?> type) {
+			return type.isInstance(val);
+		}
+
+		@SuppressWarnings("unchecked")
+		public <E> Optional<E> get(Class<E> type) {
+			return contains(type) ? Optional.of((E) val) : Optional.empty();
+		}
+
+		@SuppressWarnings("unused")
+		public static class Of2<A, B> extends Variant {
+
+			private Of2(Object val) {
+				super(val);
+			}
+
+			public static <A, B> Variant.Of2<A, B> withA(A val) {
+				return new Variant.Of2<>(val);
+			}
+
+			public static <A, B> Variant.Of2<A, B> withB(B val) {
+				return new Variant.Of2<>(val);
+			}
+
+		}
+
 	}
 
 }

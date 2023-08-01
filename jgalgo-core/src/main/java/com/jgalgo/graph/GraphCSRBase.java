@@ -20,6 +20,7 @@ import java.util.Set;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCSRBase extends GraphBase
@@ -34,10 +35,10 @@ abstract class GraphCSRBase extends GraphBase
 	final Map<Object, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<Object, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
 
-	GraphCSRBase(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges,
-			IndexGraphBuilder.ReIndexingMap edgesReIndexing) {
-		final int n = builder.vertices().size();
-		final int m = builder.edges().size();
+	GraphCSRBase(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyWeights) {
+		final int n = verticesNum(graphOrBuilder);
+		final int m = edgesNum(graphOrBuilder);
 
 		verticesIdStrat = new IdStrategy.FixedSize(n);
 		edgesIdStrat = new IdStrategy.FixedSize(m);
@@ -50,20 +51,38 @@ abstract class GraphCSRBase extends GraphBase
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
 		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
-		for (var entry : builder.verticesUserWeights.weights.entrySet())
-			verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
-		if (edgesReIndexing == null) {
-			for (var entry : builder.edgesUserWeights.weights.entrySet())
-				edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
-		} else {
-			for (var entry : builder.edgesUserWeights.weights.entrySet())
-				edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(), edgesReIndexing);
+		if (copyWeights) {
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+				for (Object weightKey : g.getVerticesWeightsKeys())
+					verticesUserWeightsBuilder.copyAndAddWeights(weightKey, g.getVerticesWeights(weightKey));
+				if (edgesReIndexing == null) {
+					for (Object weightKey : g.getEdgesWeightsKeys())
+						edgesUserWeightsBuilder.copyAndAddWeights(weightKey, g.getEdgesWeights(weightKey));
+				} else {
+					for (Object weightKey : g.getEdgesWeightsKeys())
+						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(weightKey, g.getEdgesWeights(weightKey),
+								edgesReIndexing);
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (var entry : builder.verticesUserWeights.weights.entrySet())
+					verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+				if (edgesReIndexing == null) {
+					for (var entry : builder.edgesUserWeights.weights.entrySet())
+						edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+				} else {
+					for (var entry : builder.edgesUserWeights.weights.entrySet())
+						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(),
+								edgesReIndexing);
+				}
+			}
 		}
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
-	GraphCSRBase(IndexGraph g) {
+	GraphCSRBase(IndexGraph g, boolean copyWeights) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -80,10 +99,12 @@ abstract class GraphCSRBase extends GraphBase
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
 		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
-		for (Object key : g.getVerticesWeightsKeys())
-			verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesWeights(key));
-		for (Object key : g.getEdgesWeightsKeys())
-			edgesUserWeightsBuilder.copyAndAddWeights(key, g.getEdgesWeights(key));
+		if (copyWeights) {
+			for (Object key : g.getVerticesWeightsKeys())
+				verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesWeights(key));
+			for (Object key : g.getEdgesWeightsKeys())
+				edgesUserWeightsBuilder.copyAndAddWeights(key, g.getEdgesWeights(key));
+		}
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
@@ -235,21 +256,36 @@ abstract class GraphCSRBase extends GraphBase
 
 	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {
 
-		BuilderProcessEdgesUndirected(IndexGraphBuilderImpl builder) {
-			final int n = builder.vertices().size();
-			final int m = builder.edges().size();
+		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
+			return new BuilderProcessEdgesUndirected(Variant.Of2.withB(builder));
+		}
+
+		static BuilderProcessEdgesUndirected valueOf(IndexGraph g) {
+			return new BuilderProcessEdgesUndirected(Variant.Of2.withA(g));
+		}
+
+		private BuilderProcessEdgesUndirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+			final int n = verticesNum(graphOrBuilder);
+			final int m = edgesNum(graphOrBuilder);
 
 			/* Count how many out/in edges each vertex has */
 			edgesOutBegin = new int[n + 1];
-			for (int e = 0; e < m; e++) {
-				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
-				if (!(0 <= u && u < n))
-					throw new IndexOutOfBoundsException(u);
-				if (!(0 <= v && v < n))
-					throw new IndexOutOfBoundsException(v);
-				edgesOutBegin[u]++;
-				if (u != v)
-					edgesOutBegin[v]++;
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+				for (int e = 0; e < m; e++) {
+					int u = g.edgeSource(e), v = g.edgeTarget(e);
+					edgesOutBegin[u]++;
+					if (u != v)
+						edgesOutBegin[v]++;
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (int e = 0; e < m; e++) {
+					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
+					edgesOutBegin[u]++;
+					if (u != v)
+						edgesOutBegin[v]++;
+				}
 			}
 			if (n == 0)
 				return;
@@ -270,13 +306,27 @@ abstract class GraphCSRBase extends GraphBase
 				nextOutNum = nextOutNum0;
 			}
 			edgesOutBegin[n] = outNumSum;
-			for (int e = 0; e < m; e++) {
-				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
-				int uOutIdx = edgesOutBegin[u]++;
-				edgesOut[uOutIdx] = e;
-				if (u != v) {
-					int vInIdx = edgesOutBegin[v]++;
-					edgesOut[vInIdx] = e;
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+				for (int e = 0; e < m; e++) {
+					int u = g.edgeSource(e), v = g.edgeTarget(e);
+					int uOutIdx = edgesOutBegin[u]++;
+					edgesOut[uOutIdx] = e;
+					if (u != v) {
+						int vInIdx = edgesOutBegin[v]++;
+						edgesOut[vInIdx] = e;
+					}
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (int e = 0; e < m; e++) {
+					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
+					int uOutIdx = edgesOutBegin[u]++;
+					edgesOut[uOutIdx] = e;
+					if (u != v) {
+						int vInIdx = edgesOutBegin[v]++;
+						edgesOut[vInIdx] = e;
+					}
 				}
 			}
 			assert edgesOutBegin[n - 1] == outNumSum;
@@ -292,9 +342,17 @@ abstract class GraphCSRBase extends GraphBase
 		int[] edgesIn;
 		int[] edgesInBegin;
 
-		BuilderProcessEdgesDirected(IndexGraphBuilderImpl builder) {
-			final int n = builder.vertices().size();
-			final int m = builder.edges().size();
+		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
+			return new BuilderProcessEdgesDirected(Variant.Of2.withB(builder));
+		}
+
+		static BuilderProcessEdgesDirected valueOf(IndexGraph g) {
+			return new BuilderProcessEdgesDirected(Variant.Of2.withA(g));
+		}
+
+		BuilderProcessEdgesDirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+			final int n = verticesNum(graphOrBuilder);
+			final int m = edgesNum(graphOrBuilder);
 
 			edgesOut = new int[m];
 			edgesOutBegin = new int[n + 1];
@@ -302,15 +360,21 @@ abstract class GraphCSRBase extends GraphBase
 			edgesInBegin = new int[n + 1];
 
 			/* Count how many out/in edges each vertex has */
-			for (int e = 0; e < m; e++) {
-				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
-				if (!(0 <= u && u < n))
-					throw new IndexOutOfBoundsException(u);
-				if (!(0 <= v && v < n))
-					throw new IndexOutOfBoundsException(v);
-				edgesOutBegin[u]++;
-				edgesInBegin[v]++;
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+				for (int e = 0; e < m; e++) {
+					edgesOutBegin[g.edgeSource(e)]++;
+					edgesInBegin[g.edgeTarget(e)]++;
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (int e = 0; e < m; e++) {
+					edgesOutBegin[builder.edgeSource(e)]++;
+					edgesInBegin[builder.edgeTarget(e)]++;
+				}
 			}
+			if (edgesOutBegin[n] != 0 || edgesInBegin[n] != 0)
+				throw new IndexOutOfBoundsException(n);
 			if (n == 0)
 				return;
 
@@ -329,11 +393,22 @@ abstract class GraphCSRBase extends GraphBase
 				nextInNum = nextInNum0;
 			}
 			edgesOutBegin[n] = edgesInBegin[n] = m;
-			for (int e = 0; e < m; e++) {
-				int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
-				int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
-				edgesOut[uOutIdx] = e;
-				edgesIn[vInIdx] = e;
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+				for (int e = 0; e < m; e++) {
+					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;
+					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;
+					edgesOut[uOutIdx] = e;
+					edgesIn[vInIdx] = e;
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (int e = 0; e < m; e++) {
+					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
+					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
+					edgesOut[uOutIdx] = e;
+					edgesIn[vInIdx] = e;
+				}
 			}
 			assert edgesOutBegin[n - 1] == m;
 			assert edgesInBegin[n - 1] == m;
@@ -344,6 +419,16 @@ abstract class GraphCSRBase extends GraphBase
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
 		}
 
+	}
+
+	static int verticesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).get().vertices().size()
+				: graphOrBuilder.get(IndexGraphBuilderImpl.class).get().vertices().size();
+	}
+
+	static int edgesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).get().edges().size()
+				: graphOrBuilder.get(IndexGraphBuilderImpl.class).get().edges().size();
 	}
 
 }

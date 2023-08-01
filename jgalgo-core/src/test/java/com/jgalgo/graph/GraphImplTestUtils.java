@@ -152,6 +152,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	}
 
+	@SuppressWarnings("boxing")
 	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
@@ -181,9 +182,13 @@ class GraphImplTestUtils extends TestUtils {
 				if (directed) {
 					assertEquals(outEdges.get(u), g.outEdges(u));
 					assertEquals(inEdges.get(u), g.inEdges(u));
+					assertEquals(outEdges.get(u).isEmpty(), g.outEdges(u).isEmpty());
+					assertEquals(inEdges.get(u).isEmpty(), g.inEdges(u).isEmpty());
 				} else {
 					assertEquals(outEdges.get(u), g.outEdges(u));
 					assertEquals(outEdges.get(u), g.inEdges(u));
+					assertEquals(outEdges.get(u).isEmpty(), g.outEdges(u).isEmpty());
+					assertEquals(outEdges.get(u).isEmpty(), g.inEdges(u).isEmpty());
 				}
 			}
 			if (directed) {
