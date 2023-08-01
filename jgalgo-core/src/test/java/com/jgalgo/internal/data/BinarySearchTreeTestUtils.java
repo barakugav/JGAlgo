@@ -42,10 +42,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		IntComparator compare = null;
-		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.run(n -> {
 			BSTTracker tracker = new BSTTracker(treeBuilder.build(compare), 0, compare, seedGen.nextSeed());
 			HeapReferenceableTestUtils.testHeap(tracker, n, TestMode.InsertFirst,
 					randArray(n / 2, 0, Integer.MAX_VALUE, seedGen.nextSeed()), compare, seedGen.nextSeed());
@@ -77,9 +80,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	private static void testFindSmaller(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.run(n -> {
 			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, true);
 		});
 	}
@@ -95,9 +102,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	private static void testFindGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.run(n -> {
 			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, false);
 		});
 	}
@@ -154,9 +165,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	private static void testGetPredecessors(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.run(n -> {
 			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), true);
 		});
 	}
@@ -173,9 +188,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.run(n -> {
 			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), false);
 		});
 	}
@@ -233,9 +252,13 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	private static void testSplit(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(128);
+		tester.addPhase().withArgs(32).repeat(64);
+		tester.addPhase().withArgs(128).repeat(16);
+		tester.addPhase().withArgs(256).repeat(8);
+		tester.addPhase().withArgs(1024).repeat(4);
+		tester.run(n -> {
 			BinarySearchTreeTestUtils.testSplit(treeBuilder, n, compare, seedGen.nextSeed());
 		});
 	}

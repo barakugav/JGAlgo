@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -43,9 +42,11 @@ public class TopologicalOrderTest extends TestBase {
 
 	private static void topologicalSort(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(2, 1024, 2048));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(256);
+		tester.addPhase().withArgs(32, 64).repeat(128);
+		tester.addPhase().withArgs(1024, 2048).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 

@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -44,12 +43,13 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 
 	public static void randBipartiteGraphs(MatchingAlgorithm algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));
-		runTestMultiple(phases, (testIter, args) -> {
-			int sn = args[0];
-			int tn = args[1];
-			int m = args[2];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(4, 4, 4).repeat(128);
+		tester.addPhase().withArgs(16, 16, 64).repeat(64);
+		tester.addPhase().withArgs(128, 128, 128).repeat(8);
+		tester.addPhase().withArgs(128, 128, 512).repeat(8);
+		tester.addPhase().withArgs(300, 300, 1100).repeat(1);
+		tester.run((sn, tn, m) -> {
 			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			int expected = calcExpectedMaxMatching(g);

@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -40,17 +39,19 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 	}
 
 	private static void testSSSPPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed) {
-		List<Phase> phases =
-				List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096), phase(1, 4096, 16384));
-		testSSSPPositiveInt(algo, directed, seed, phases);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 4096).repeat(8);
+		tester.addPhase().withArgs(4096, 16384).repeat(1);
+		testSSSPPositiveInt(algo, directed, seed, tester);
 	}
 
-	static void testSSSPPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed, List<Phase> phases) {
+	static void testSSSPPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed, PhasedTester tester) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -67,10 +68,12 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 	static void testSSSPPositive(ShortestPathSingleSource algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096), phase(1, 3542, 25436));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 4096).repeat(8);
+		tester.addPhase().withArgs(3542, 25436).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
@@ -85,10 +88,12 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 	static void testSSSPCardinality(ShortestPathSingleSource algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096), phase(1, 4096, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 4096).repeat(8);
+		tester.addPhase().withArgs(4096, 16384).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			int[] vs = g.vertices().toIntArray();
@@ -103,10 +108,13 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 
 	static void testSSSPDirectedNegativeInt(ShortestPathSingleSource algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
-				phase(2, 1024, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(4, 4).repeat(512);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 4096).repeat(8);
+		tester.addPhase().withArgs(1024, 4096).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());

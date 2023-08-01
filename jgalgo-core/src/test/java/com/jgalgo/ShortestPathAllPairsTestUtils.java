@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
@@ -40,9 +39,11 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 
 	private static void testAPSPPositiveInt(ShortestPathAllPairs algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 6, 20), phase(128, 16, 32), phase(64, 64, 256));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 20).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -52,9 +53,11 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 
 	static void testAPSPCardinality(ShortestPathAllPairs algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 6, 20), phase(128, 16, 32), phase(64, 64, 256));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 20).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			testAPSP(g, null, algo, new ShortestPathSingleSourceDijkstra());
@@ -63,9 +66,11 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 
 	static void testAPSPDirectedNegativeInt(ShortestPathAllPairs algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 6, 20), phase(64, 16, 32), phase(10, 64, 256));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 20).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 256).repeat(10);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());

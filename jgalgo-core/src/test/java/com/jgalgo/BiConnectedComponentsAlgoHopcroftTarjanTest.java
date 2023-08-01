@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
@@ -37,9 +36,12 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 	public void randGraphUndirected() {
 		final long seed = 0xda9272921794ecfaL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 5, 6), phase(64, 16, 32), phase(32, 64, 256), phase(1, 165, 666));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(5, 6).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 256).repeat(32);
+		tester.addPhase().withArgs(165, 666).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			testUGraph(BiConnectedComponentsAlgo.newBuilder().build(), g);

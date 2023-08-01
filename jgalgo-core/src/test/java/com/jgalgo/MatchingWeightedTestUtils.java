@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -40,13 +39,12 @@ public class MatchingWeightedTestUtils extends TestUtils {
 	public static void randGraphsBipartiteWeighted(MatchingAlgorithm algo, Boolean2ObjectFunction<Graph> graphImpl,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(2, 256, 256, 1200));
-		runTestMultiple(phases, (testIter, args) -> {
-			int sn = args[0];
-			int tn = args[1];
-			int m = args[2];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 8, 8).repeat(256);
+		tester.addPhase().withArgs(16, 16, 64).repeat(128);
+		tester.addPhase().withArgs(128, 128, 128).repeat(12);
+		tester.addPhase().withArgs(256, 256, 1200).repeat(2);
+		tester.run((sn, tn, m) -> {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
@@ -59,13 +57,13 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	static void randBipartiteGraphsWeightedPerfect(MatchingAlgorithm algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(64, 8, 8, 8), phase(32, 16, 16, 64), phase(8, 128, 128, 128),
-				phase(4, 128, 128, 512), phase(1, 1024, 1024, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int sn = args[0];
-			int tn = args[1];
-			int m = args[2];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 8, 8).repeat(64);
+		tester.addPhase().withArgs(16, 16, 64).repeat(32);
+		tester.addPhase().withArgs(128, 128, 128).repeat(8);
+		tester.addPhase().withArgs(128, 128, 512).repeat(4);
+		tester.addPhase().withArgs(1024, 1024, 1024).repeat(1);
+		tester.run((sn, tn, m) -> {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphsTestUtils.defaultGraphImpl(),
 					seedGen.nextSeed());
 			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
@@ -99,11 +97,13 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	static void randGraphsWeighted(MatchingAlgorithm algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(6, 128, 128, 512), phase(1, 1024, 1024, 2300));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 8).repeat(256);
+		tester.addPhase().withArgs(16, 64).repeat(128);
+		tester.addPhase().withArgs(128, 128).repeat(12);
+		tester.addPhase().withArgs(128, 512).repeat(6);
+		tester.addPhase().withArgs(1024, 2300).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
@@ -134,11 +134,13 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	static void randGraphsWeightedPerfect(MatchingAlgorithm algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(2, 1024, 1024, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 8).repeat(256);
+		tester.addPhase().withArgs(16, 64).repeat(128);
+		tester.addPhase().withArgs(128, 128).repeat(12);
+		tester.addPhase().withArgs(128, 512).repeat(8);
+		tester.addPhase().withArgs(1024, 1024).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			if (g.vertices().size() % 2 != 0)
 				throw new IllegalArgumentException("there is no perfect matching");

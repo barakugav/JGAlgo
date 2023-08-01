@@ -20,30 +20,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
-
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
 
 	static void testRandGraphs(MinimumMeanCycle algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(3, 2).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(500, 2010).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -54,9 +52,12 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 
 	static void testRandGraphsSimilarWeights(MinimumMeanCycle algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(3, 2).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(500, 2010).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
@@ -68,9 +69,12 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	static void testRandGraphsEqualWeightCycles(MinimumMeanCycle algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(3, 2).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(500, 2010).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 

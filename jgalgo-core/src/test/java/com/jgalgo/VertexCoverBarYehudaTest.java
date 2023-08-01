@@ -17,7 +17,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
@@ -40,10 +39,12 @@ public class VertexCoverBarYehudaTest extends TestBase {
 
 		final long seed = 0x3c94d9694bd37614L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048), phase(2, 8096, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 16).repeat(256);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(1024, 2048).repeat(16);
+		tester.addPhase().withArgs(8096, 16384).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 			RandomIntUnique rand = new RandomIntUnique(0, 163454, seedGen.nextSeed());

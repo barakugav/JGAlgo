@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -59,9 +58,11 @@ public class EulerianTourTest extends TestBase {
 
 	private static void testRandGraphUndirected(boolean allEvenVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
 			Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
@@ -70,9 +71,11 @@ public class EulerianTourTest extends TestBase {
 
 	private static void testRandGraphDirected(boolean allEqualInOutDegree, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
 			Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);

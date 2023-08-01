@@ -29,10 +29,13 @@ public class SplitFindMinArrayTest extends TestBase {
 
 	private static void testSplitFind(Supplier<? extends SplitFind> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(32, 512, 512), phase(8, 4096, 4096),
-				phase(2, 16384, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(64, 64).repeat(64);
+		tester.addPhase().withArgs(512, 512).repeat(32);
+		tester.addPhase().withArgs(4096, 4096).repeat(8);
+		tester.addPhase().withArgs(16384, 16384).repeat(2);
+		tester.run((n, m) -> {
 			testSplitFind(builder, n, m, seedGen.nextSeed());
 		});
 	}
@@ -77,9 +80,12 @@ public class SplitFindMinArrayTest extends TestBase {
 
 	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(8, 512, 512), phase(1, 4096, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(64, 64).repeat(64);
+		tester.addPhase().withArgs(512, 512).repeat(8);
+		tester.addPhase().withArgs(4096, 4096).repeat(1);
+		tester.run((n, m) -> {
 			testSplitFindMin(builder, n, m, seedGen.nextSeed());
 		});
 	}

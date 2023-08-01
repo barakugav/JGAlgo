@@ -789,10 +789,16 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testRandOps(Boolean2ObjectFunction<Graph> graphImpl, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(2056, 6, 6), phase(32, 16, 16), phase(32, 16, 32), phase(16, 64, 64),
-				phase(16, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(2056);
+		tester.addPhase().withArgs(16, 16).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(32);
+		tester.addPhase().withArgs(64, 64).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 1324).repeat(2);
+		tester.addPhase().withArgs(1025, 2016).repeat(1);
+		tester.run((n, m) -> {
 			testRandOps(graphImpl, directed, n, m, seedGen.nextSeed());
 		});
 	}

@@ -17,7 +17,6 @@
 package com.jgalgo.internal.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
@@ -34,10 +33,12 @@ public class UnionFindValueArrayTest extends TestBase {
 	public void testRandOps() {
 		final long seed = 0x8c06f8977b257d8cL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048), phase(2, 8096, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 16).repeat(256);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(1024, 2048).repeat(16);
+		tester.addPhase().withArgs(8096, 16384).repeat(2);
+		tester.run((n, m) -> {
 			randOps(n, m, seedGen.nextSeed());
 		});
 	}

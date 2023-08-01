@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -39,9 +38,12 @@ class MinimumCutSTTestUtils extends TestUtils {
 	static void testRandGraphs(MinimumCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(32, 6, 6), phase(16, 16, 32), phase(16, 64, 128), phase(1, 512, 1324));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
@@ -57,9 +59,12 @@ class MinimumCutSTTestUtils extends TestUtils {
 	static void testRandGraphsInt(MinimumCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(32, 6, 6), phase(16, 16, 32), phase(16, 64, 128), phase(1, 512, 1324));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
@@ -85,9 +90,12 @@ class MinimumCutSTTestUtils extends TestUtils {
 	static void testRandGraphsMultiSourceMultiSink(MinimumCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(32, 6, 6), phase(16, 16, 32), phase(16, 64, 128), phase(1, 512, 1324));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
@@ -103,9 +111,12 @@ class MinimumCutSTTestUtils extends TestUtils {
 	static void testRandGraphsMultiSourceMultiSinkInt(MinimumCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(32, 6, 6), phase(16, 16, 32), phase(16, 64, 128), phase(1, 512, 1324));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 

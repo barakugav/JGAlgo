@@ -54,10 +54,16 @@ public class DynamicTreeSplayTest extends TestBase {
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops,
 			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16), phase(64, 32), phase(64, 64), phase(32, 128), phase(16, 512),
-				phase(16, 2048), phase(8, 4096), phase(4, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int m = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(256);
+		tester.addPhase().withArgs(32).repeat(64);
+		tester.addPhase().withArgs(64).repeat(64);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(512).repeat(16);
+		tester.addPhase().withArgs(2048).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(8);
+		tester.addPhase().withArgs(16384).repeat(4);
+		tester.run(m -> {
 			testRandOps(builder, m, ops, sizeFunc, seedGen.nextSeed());
 		});
 	}

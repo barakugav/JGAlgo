@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.BitSet;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
@@ -40,9 +39,11 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 	public void strongCCUGraph() {
 		final long seed = 0xb3f19acd0e1041deL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			ConnectedComponentsAlgo.Result actual =
@@ -74,9 +75,11 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		final long seed = 0xd21f8ca761bc1aaeL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
@@ -119,9 +122,11 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		final long seed = 0x715a81d58dcf65deL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 256).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 

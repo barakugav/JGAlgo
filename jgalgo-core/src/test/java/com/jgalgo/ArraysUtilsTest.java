@@ -18,11 +18,8 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
@@ -33,10 +30,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testIntGetKthElementRandArrayUnique() {
 		final long seed = 0xedf92ed1b59ae1e1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			int[] a = randPermutation(n, seedGen.nextSeed());
 			testGetKthElement(a, seedGen.nextSeed());
 		});
@@ -46,10 +47,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testObjGetKthElementRandArrayUnique() {
 		final long seed = 0x7f7871365f84b52eL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			Integer[] a = toIntegerArr(randPermutation(n, seedGen.nextSeed()));
 			testGetKthElement(a, seedGen.nextSeed());
 		});
@@ -59,10 +64,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testIntGetKthElementRandArrayNonUnique() {
 		final long seed = 0x97e45458f8daefd2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			testGetKthElement(a, seedGen.nextSeed());
 		});
@@ -72,10 +81,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testObjGetKthElementRandArrayNonUnique() {
 		final long seed = 0x6ee2228e9064ab3eL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
 			testGetKthElement(a, seedGen.nextSeed());
 		});
@@ -85,10 +98,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testIntGetKthElementRandArraySameElm() {
 		final long seed = 0x77b8bdd802380333L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(1, 8), phase(1, 32), phase(1, 128), phase(1, 256), phase(1, 1024), phase(1, 3849));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(1);
+		tester.addPhase().withArgs(32).repeat(1);
+		tester.addPhase().withArgs(128).repeat(1);
+		tester.addPhase().withArgs(256).repeat(1);
+		tester.addPhase().withArgs(1024).repeat(1);
+		tester.addPhase().withArgs(3849).repeat(1);
+		tester.run(n -> {
 			int[] a = new int[n];
 			Arrays.fill(a, 6);
 			testGetKthElement(a, seedGen.nextSeed());
@@ -99,10 +116,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testObjGetKthElementRandArraySameElm() {
 		final long seed = 0x656f2a7fcad2e9e8L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(1, 8), phase(1, 32), phase(1, 128), phase(1, 256), phase(1, 1024), phase(1, 3849));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(1);
+		tester.addPhase().withArgs(32).repeat(1);
+		tester.addPhase().withArgs(128).repeat(1);
+		tester.addPhase().withArgs(256).repeat(1);
+		tester.addPhase().withArgs(1024).repeat(1);
+		tester.addPhase().withArgs(3849).repeat(1);
+		tester.run(n -> {
 			int[] a = new int[n];
 			Arrays.fill(a, 6);
 			testGetKthElement(toIntegerArr(a), seedGen.nextSeed());
@@ -129,10 +150,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testIntBucketPartition() {
 		final SeedGenerator seedGen = new SeedGenerator(0x90fc97e52265ff44L);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			int bucketSize = rand.nextInt(n / 2) + 1;
 			ArraysUtils.bucketPartition(a, 0, n, null, bucketSize);
@@ -154,10 +179,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testObjBucketPartition() {
 		final SeedGenerator seedGen = new SeedGenerator(0x275079aa6f2fc7d7L);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
 			int bucketSize = rand.nextInt(n / 2) + 1;
 			ArraysUtils.bucketPartition(a, 0, n, null, bucketSize);
@@ -179,10 +208,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testIntPivotPartition() {
 		final SeedGenerator seedGen = new SeedGenerator(0x92f173634ff49309L);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			int pivot = a[rand.nextInt(a.length)];
 			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
@@ -205,10 +238,14 @@ public class ArraysUtilsTest extends TestBase {
 	public void testObjPivotPartition() {
 		final SeedGenerator seedGen = new SeedGenerator(0xd693bcfe6327104L);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases =
-				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4567));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(16);
+		tester.addPhase().withArgs(1024).repeat(8);
+		tester.addPhase().withArgs(4567).repeat(2);
+		tester.run(n -> {
 			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
 			int pivot = a[rand.nextInt(a.length)];
 			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);

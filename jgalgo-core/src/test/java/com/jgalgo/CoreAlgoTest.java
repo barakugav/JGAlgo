@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -66,9 +65,12 @@ public class CoreAlgoTest extends TestBase {
 
 	private static void testCoreAlgo(CoreAlgo.DegreeType degreeType, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256), phase(8, 1024, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(128, 256).repeat(32);
+		tester.addPhase().withArgs(1024, 4096).repeat(8);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 

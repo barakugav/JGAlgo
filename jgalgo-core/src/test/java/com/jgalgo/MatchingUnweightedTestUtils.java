@@ -35,10 +35,17 @@ class MatchingUnweightedTestUtils extends TestUtils {
 
 	static void randGraphs(MatchingAlgorithm algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 8), phase(128, 16, 16), phase(64, 32, 32), phase(32, 32, 64),
-				phase(16, 64, 64), phase(12, 64, 128), phase(4, 256, 256), phase(4, 256, 512), phase(1, 1000, 2500));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 8).repeat(128);
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(32, 32).repeat(64);
+		tester.addPhase().withArgs(32, 64).repeat(32);
+		tester.addPhase().withArgs(64, 64).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(12);
+		tester.addPhase().withArgs(256, 256).repeat(4);
+		tester.addPhase().withArgs(256, 512).repeat(4);
+		tester.addPhase().withArgs(1000, 2500).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);

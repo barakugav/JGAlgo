@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -42,9 +40,11 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 	private static void distancesDAG(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDag();
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(256);
+		tester.addPhase().withArgs(32, 64).repeat(128);
+		tester.addPhase().withArgs(512, 1024).repeat(16);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 			WeightFunction w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -69,9 +69,11 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 	private static void distancesDAGCardinality(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDag();
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(256);
+		tester.addPhase().withArgs(32, 64).repeat(128);
+		tester.addPhase().withArgs(512, 1024).repeat(16);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 			int source = g.vertices().iterator().nextInt();

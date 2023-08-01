@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
@@ -96,10 +95,15 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	static void testTPM(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
-				phase(2, 512), phase(1, 1234));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(64);
+		tester.addPhase().withArgs(32).repeat(32);
+		tester.addPhase().withArgs(64).repeat(16);
+		tester.addPhase().withArgs(128).repeat(8);
+		tester.addPhase().withArgs(256).repeat(4);
+		tester.addPhase().withArgs(512).repeat(2);
+		tester.addPhase().withArgs(1234).repeat(1);
+		tester.run(n -> {
 			testTPM(algo, n, seedGen.nextSeed());
 		});
 	}
@@ -118,10 +122,14 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	static void verifyMSTPositive(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
-				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 16).repeat(256);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(128, 256).repeat(32);
+		tester.addPhase().withArgs(2048, 4096).repeat(8);
+		tester.addPhase().withArgs(8192, 16384).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -134,11 +142,14 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	static void verifyMSTNegative(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
-				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 16).repeat(256);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(128, 256).repeat(32);
+		tester.addPhase().withArgs(2048, 4096).repeat(8);
+		tester.addPhase().withArgs(8192, 16384).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());

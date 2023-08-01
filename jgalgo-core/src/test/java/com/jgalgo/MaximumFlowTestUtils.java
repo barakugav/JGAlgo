@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
@@ -102,10 +101,16 @@ public class MaximumFlowTestUtils extends TestUtils {
 			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 64).repeat(32);
+		tester.addPhase().withArgs(64, 128).repeat(32);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 1324).repeat(2);
+		tester.addPhase().withArgs(1025, 2016).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 
@@ -117,10 +122,16 @@ public class MaximumFlowTestUtils extends TestUtils {
 	public static void testRandGraphsMultiSourceMultiSink(MaximumFlow algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 64).repeat(32);
+		tester.addPhase().withArgs(64, 128).repeat(32);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 1324).repeat(2);
+		tester.addPhase().withArgs(1025, 2016).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 
@@ -152,10 +163,16 @@ public class MaximumFlowTestUtils extends TestUtils {
 			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 3, 3), phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32),
-				phase(32, 64, 64), phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(3, 3).repeat(256);
+		tester.addPhase().withArgs(6, 6).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 64).repeat(32);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(512, 512).repeat(2);
+		tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 
@@ -167,10 +184,16 @@ public class MaximumFlowTestUtils extends TestUtils {
 	public static void testRandGraphsMultiSourceMultiSinkInt(MaximumFlow algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 64).repeat(32);
+		tester.addPhase().withArgs(64, 128).repeat(32);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 1324).repeat(2);
+		tester.addPhase().withArgs(1025, 2016).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 
@@ -201,9 +224,12 @@ public class MaximumFlowTestUtils extends TestUtils {
 	static void testRandGraphsWithALotOfParallelEdges(MaximumFlow algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 3, 30), phase(256, 6, 150), phase(64, 10, 450), phase(64, 18, 1530));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(3, 30).repeat(256);
+		tester.addPhase().withArgs(6, 150).repeat(256);
+		tester.addPhase().withArgs(10, 450).repeat(64);
+		tester.addPhase().withArgs(18, 1530).repeat(64);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());

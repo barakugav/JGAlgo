@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -98,10 +97,13 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 	public void testRandTrees() {
 		final long seed = 0x16f0491558fa62f8L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
-				phase(1, 16384, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(64, 64).repeat(64);
+		tester.addPhase().withArgs(512, 512).repeat(16);
+		tester.addPhase().withArgs(4096, 4096).repeat(4);
+		tester.addPhase().withArgs(16384, 16384).repeat(1);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			int root = g.vertices().iterator().nextInt();
 			int[][] queries = randLCAQueries(g, root, m, seedGen.nextSeed());

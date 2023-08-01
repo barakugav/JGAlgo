@@ -47,10 +47,13 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	private static void testRandOps(HeapReferenceable.Builder<Integer, Void> heapBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
-				phase(4, 16384, 32768));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(32);
+		tester.addPhase().withArgs(4096, 8096).repeat(8);
+		tester.addPhase().withArgs(16384, 32768).repeat(4);
+		tester.run((n, m) -> {
 			HeapReferenceable<Integer, Void> heap = heapBuilder.build(compare);
 			testHeap(heap, n, m, TestMode.Normal, compare, seedGen.nextSeed());
 		});
@@ -59,12 +62,15 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	static void testRandOpsAfterManyInserts(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final IntComparator compare = null;
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
-				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = n;
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(256);
+		tester.addPhase().withArgs(64, 128).repeat(128);
+		tester.addPhase().withArgs(512, 1024).repeat(64);
+		tester.addPhase().withArgs(4096, 8096).repeat(16);
+		tester.addPhase().withArgs(16384, 32768).repeat(8);
+		tester.run(n -> {
+			int m = n;
 			HeapReferenceable<Integer, Void> heap = heapBuilder.build(compare);
-
 			testHeap(heap, n, m, TestMode.InsertFirst, compare, seedGen.nextSeed());
 		});
 	}
@@ -90,9 +96,12 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	private static void testMeld(HeapReferenceable.Builder<Integer, Void> heapBuilder, boolean orderedValues,
 			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
-		runTestMultiple(phases, (testIter, args) -> {
-			int hCount = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(64);
+		tester.addPhase().withArgs(32).repeat(64);
+		tester.addPhase().withArgs(256).repeat(8);
+		tester.addPhase().withArgs(2048).repeat(1);
+		tester.run(hCount -> {
 			testMeld(heapBuilder, orderedValues, hCount, compare, seedGen.nextSeed());
 		});
 	}
@@ -154,9 +163,13 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	private static void testDecreaseKey(HeapReferenceable.Builder<Integer, Void> heapBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(256);
+		tester.addPhase().withArgs(64).repeat(128);
+		tester.addPhase().withArgs(512).repeat(64);
+		tester.addPhase().withArgs(4096).repeat(16);
+		tester.addPhase().withArgs(16384).repeat(2);
+		tester.run(n -> {
 			int m = n;
 			HeapReferenceable<Integer, Void> heap = heapBuilder.build(compare);
 			testHeap(heap, n, m, TestMode.DecreaseKey, compare, seedGen.nextSeed());

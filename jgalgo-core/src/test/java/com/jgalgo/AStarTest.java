@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
@@ -31,7 +30,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class AStarTest extends TestBase {
 
-	private static List<Phase> SsspPhases = List.of(phase(64, 16, 32), phase(32, 64, 256), phase(4, 300, 900));
+	private static PhasedTester SsspPhases;
+	static {
+		SsspPhases = new PhasedTester();
+		SsspPhases.addPhase().withArgs(16, 32).repeat(64);
+		SsspPhases.addPhase().withArgs(64, 256).repeat(32);
+		SsspPhases.addPhase().withArgs(300, 900).repeat(4);
+	}
 
 	@Test
 	public void testRandGraphDirectedNoHeuristic() {

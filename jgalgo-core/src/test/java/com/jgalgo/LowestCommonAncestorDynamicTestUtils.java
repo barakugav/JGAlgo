@@ -31,10 +31,15 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
 	static void fullBinaryTreesRandOps(LowestCommonAncestorDynamic.Builder builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64), phase(32, 64, 128),
-				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(64, 64).repeat(32);
+		tester.addPhase().withArgs(64, 128).repeat(32);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 2048).repeat(4);
+		tester.addPhase().withArgs(1000, 4096).repeat(1);
+		tester.run((n, m) -> {
 			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m, seedGen.nextSeed());
 			testLCA(builder, n, ops);
 		});
@@ -42,10 +47,16 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
 	static void randTrees(LowestCommonAncestorDynamic.Builder builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
-				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096), phase(1, 4100, 8000));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 64).repeat(64);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(512, 512).repeat(4);
+		tester.addPhase().withArgs(512, 2048).repeat(4);
+		tester.addPhase().withArgs(1000, 4096).repeat(1);
+		tester.addPhase().withArgs(4100, 8000).repeat(1);
+		tester.run((n, m) -> {
 			Collection<Op> ops = generateRandOps(n, m, seedGen.nextSeed());
 			testLCA(builder, n, ops);
 		});

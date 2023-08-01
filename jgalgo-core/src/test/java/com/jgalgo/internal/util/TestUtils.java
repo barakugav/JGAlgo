@@ -16,90 +16,91 @@
 
 package com.jgalgo.internal.util;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
-@SuppressWarnings("boxing")
 public class TestUtils {
 
-	public static class Phase {
-		private final int repeat;
-		private final int[] args;
+	public static class PhasedTester {
 
-		private Phase(int repeat, int[] args) {
-			if (repeat < 0)
-				throw new IllegalArgumentException();
-			this.repeat = repeat;
-			this.args = args;
-		}
+		public static class Phase {
 
-		static Phase of(int repeat, int... args) {
-			return new Phase(repeat, args);
-		}
-	}
+			int repeat;
+			int[] args;
 
-	public static Phase phase(int repeat, int... args) {
-		return Phase.of(repeat, args);
-	}
+			Phase() {}
 
-	@FunctionalInterface
-	public static interface TestRunnable {
-		public void run(TestIterIdx testIter, int[] args);
-	}
-
-	public static void runTestMultiple(Collection<Phase> phases, TestRunnable test) {
-		int phaseIdx = 0;
-		for (Phase phase : phases) {
-			for (int iter = 0; iter < phase.repeat; iter++) {
-				try {
-					test.run(new TestIterIdx(phaseIdx, iter), phase.args);
-				} catch (Throwable e) {
-					System.err.println("Failed at phase " + phaseIdx + " iter " + iter);
-					throw e;
-				}
+			public Phase repeat(int r) {
+				if (r <= 0)
+					throw new IllegalArgumentException();
+				this.repeat = r;
+				return this;
 			}
-			phaseIdx++;
-		}
-	}
 
-	public static class TestIterIdx {
-		public final int phase, iter;
-
-		private TestIterIdx(int phase, int iter) {
-			this.phase = phase;
-			this.iter = iter;
+			public Phase withArgs(int... args) {
+				if (args.length == 0)
+					throw new IllegalArgumentException();
+				this.args = args;
+				return this;
+			}
 		}
 
-		@Override
-		public String toString() {
-			return "P" + phase + " I" + iter;
+		private final List<Phase> phases = new ArrayList<>();
+
+		public Phase addPhase() {
+			Phase phase = new Phase();
+			phases.add(phase);
+			return phase;
 		}
-	}
 
-	public static boolean doubleEql(double a, double b, double precise) {
-		if (a < b)
-			return b - a < precise;
-		if (a > b)
-			return a - b < precise;
-		return true;
-	}
-
-	public static void printArr(int a[]) {
-		printArr(a, true);
-	}
-
-	public static void printArr(int a[], boolean printIndicies) {
-		for (int i = 0; i < a.length; i++)
-			System.out.print("" + String.format("%03d", a[i]) + ", ");
-		System.out.println();
-		if (printIndicies) {
-			for (int i = 0; i < a.length; i++)
-				System.out.print("" + String.format("%03d", i) + ", ");
-			System.out.println();
+		public void run(RunnableTestWith1Args test) {
+			for (Phase phase : phases) {
+				assertArgsNum(phase, 1);
+				for (int repeat = phase.repeat; repeat > 0; repeat--)
+					test.run(phase.args[0]);
+			}
 		}
+
+		public void run(RunnableTestWith2Args test) {
+			for (Phase phase : phases) {
+				assertArgsNum(phase, 2);
+				for (int repeat = phase.repeat; repeat > 0; repeat--)
+					test.run(phase.args[0], phase.args[1]);
+			}
+		}
+
+		public void run(RunnableTestWith3Args test) {
+			for (Phase phase : phases) {
+				assertArgsNum(phase, 3);
+				for (int repeat = phase.repeat; repeat > 0; repeat--)
+					test.run(phase.args[0], phase.args[1], phase.args[2]);
+			}
+		}
+
+		private static void assertArgsNum(Phase phase, int runnableArgs) {
+			if (phase.args.length != runnableArgs)
+				throw new IllegalArgumentException(
+						"Phase had " + phase.args.length + " arguments, but runnable accept " + runnableArgs);
+		}
+
+		@FunctionalInterface
+		public static interface RunnableTestWith1Args {
+			public void run(int arg1);
+		}
+
+		@FunctionalInterface
+		public static interface RunnableTestWith2Args {
+			public void run(int arg1, int arg2);
+		}
+
+		@FunctionalInterface
+		public static interface RunnableTestWith3Args {
+			public void run(int arg1, int arg2, int arg3);
+		}
+
 	}
 
 	public static int[] randArray(int n, long seed) {

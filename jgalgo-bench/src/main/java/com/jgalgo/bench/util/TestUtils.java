@@ -16,91 +16,11 @@
 
 package com.jgalgo.bench.util;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
-@SuppressWarnings("boxing")
 public class TestUtils {
-
-	public static class Phase {
-		private final int repeat;
-		private final int[] args;
-
-		private Phase(int repeat, int[] args) {
-			if (repeat < 0)
-				throw new IllegalArgumentException();
-			this.repeat = repeat;
-			this.args = args;
-		}
-
-		static Phase of(int repeat, int... args) {
-			return new Phase(repeat, args);
-		}
-	}
-
-	public static Phase phase(int repeat, int... args) {
-		return Phase.of(repeat, args);
-	}
-
-	@FunctionalInterface
-	public static interface TestRunnable {
-		public void run(TestIterIdx testIter, int[] args);
-	}
-
-	public static void runTestMultiple(Collection<Phase> phases, TestRunnable test) {
-		int phaseIdx = 0;
-		for (Phase phase : phases) {
-			for (int iter = 0; iter < phase.repeat; iter++) {
-				try {
-					test.run(new TestIterIdx(phaseIdx, iter), phase.args);
-				} catch (Throwable e) {
-					System.err.println("Failed at phase " + phaseIdx + " iter " + iter);
-					throw e;
-				}
-			}
-			phaseIdx++;
-		}
-	}
-
-	public static class TestIterIdx {
-		public final int phase, iter;
-
-		private TestIterIdx(int phase, int iter) {
-			this.phase = phase;
-			this.iter = iter;
-		}
-
-		@Override
-		public String toString() {
-			return "P" + phase + " I" + iter;
-		}
-	}
-
-	static boolean doubleEql(double a, double b, double precise) {
-		if (a < b)
-			return b - a < precise;
-		if (a > b)
-			return a - b < precise;
-		return true;
-	}
-
-	static void printArr(int a[]) {
-		printArr(a, true);
-	}
-
-	static void printArr(int a[], boolean printIndicies) {
-		for (int i = 0; i < a.length; i++)
-			System.out.print("" + String.format("%03d", a[i]) + ", ");
-		System.out.println();
-		if (printIndicies) {
-			for (int i = 0; i < a.length; i++)
-				System.out.print("" + String.format("%03d", i) + ", ");
-			System.out.println();
-		}
-	}
 
 	public static int[] randArray(int n, long seed) {
 		return randArray(n, 0, Integer.MAX_VALUE, seed);

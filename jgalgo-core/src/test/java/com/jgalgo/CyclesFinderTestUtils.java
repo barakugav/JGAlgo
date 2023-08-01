@@ -25,9 +25,9 @@ import java.util.function.IntSupplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -56,10 +56,13 @@ class CyclesFinderTestUtils extends TestUtils {
 	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
 
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
-				phase(64, 64, 64));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 8).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(256);
+		tester.addPhase().withArgs(32, 32).repeat(128);
+		tester.addPhase().withArgs(32, 64).repeat(128);
+		tester.addPhase().withArgs(64, 64).repeat(64);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 			testGraph(g, cyclesFinder);

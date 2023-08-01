@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.BitSet;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
@@ -33,10 +32,14 @@ public class TSPMetricTest extends TestBase {
 	public void testMstAppxAndMatchingAppxRandGraphs() {
 		final long seed = 0x6c019c0fba54c10fL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases =
-				List.of(phase(512, 4), phase(64, 15), phase(32, 32), phase(8, 59), phase(4, 128), phase(3, 256));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(4).repeat(512);
+		tester.addPhase().withArgs(15).repeat(64);
+		tester.addPhase().withArgs(32).repeat(32);
+		tester.addPhase().withArgs(59).repeat(8);
+		tester.addPhase().withArgs(128).repeat(4);
+		tester.addPhase().withArgs(256).repeat(3);
+		tester.run(n -> {
 			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());
 		});
 	}

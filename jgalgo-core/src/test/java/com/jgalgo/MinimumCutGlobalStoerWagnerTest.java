@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -43,10 +42,14 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 	static void testRandGraphs(MinimumCutGlobal algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(16, 16, 16), phase(16, 16, 32), phase(16, 64, 64),
-				phase(16, 64, 128), phase(2, 200, 800));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(6, 6).repeat(256);
+		tester.addPhase().withArgs(16, 16).repeat(16);
+		tester.addPhase().withArgs(16, 32).repeat(16);
+		tester.addPhase().withArgs(64, 64).repeat(16);
+		tester.addPhase().withArgs(64, 128).repeat(16);
+		tester.addPhase().withArgs(200, 800).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 

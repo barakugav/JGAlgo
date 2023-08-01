@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
@@ -38,11 +37,13 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	public static void testRandGraph(MinimumSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256), phase(8, 1024, 4096),
-				phase(2, 4096, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0], m = args[1];
-
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(128, 256).repeat(32);
+		tester.addPhase().withArgs(1024, 4096).repeat(8);
+		tester.addPhase().withArgs(4096, 16384).repeat(2);
+		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
