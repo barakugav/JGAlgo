@@ -40,7 +40,7 @@ public class FormatDIMACSTest {
 		data += "e 3 4\n";
 		data += "e 4 5\n";
 		final Graph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
-	
+
 		final StringWriter writer = new StringWriter();
 		GraphWriter.newInstance("dimacs").writeGraph(g, writer);
 		String data2 = writer.toString();
@@ -113,6 +113,88 @@ public class FormatDIMACSTest {
 			assertEquals(data2.trim(), check_data3.trim());
 		else
 			assertEquals(data2.trim(), check_data2.trim());
+	}
+
+	@Test
+	public void writeAndReadRandomGraphs() {
+		final long seed = 0x428fcf43adbd26e6L;
+		Random rand = new Random(seed);
+		for (int repeat = 0; repeat < 32; repeat++) {
+			final int n = 10 + rand.nextInt(20);
+			final int m = 15 + rand.nextInt(30);
+			Graph g = GraphFactory.newUndirected().newGraph();
+
+			/* DIMACS format support vertices with labels 1..n only */
+			for (int v = 1; v <= n; v++)
+				g.addVertex(v);
+
+			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
+				int source = vs[rand.nextInt(n)];
+				int target = vs[rand.nextInt(n)];
+				/* DIMACS format support edges with labels 1..0 only */
+				int e = g.edges().size() + 1;
+				g.addEdge(source, target, e);
+			}
+
+			StringWriter writer = new StringWriter();
+			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+			String data = writer.toString();
+
+			GraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			Graph gImmutable = gb.build();
+			Graph gMutable = gb.buildMutable();
+			assertEquals(g, gImmutable);
+			assertEquals(g, gMutable);
+		}
+	}
+
+	@Test
+	public void writeAndReadRandomGraphsWithWeights() {
+		final long seed = 0x203078ae64766b7cL;
+		Random rand = new Random(seed);
+		for (int repeat = 0; repeat < 32; repeat++) {
+			final int n = 10 + rand.nextInt(20);
+			final int m = 15 + rand.nextInt(30);
+			Graph g = GraphFactory.newUndirected().newGraph();
+
+			/* DIMACS format support vertices with labels 1..n only */
+			for (int v = 1; v <= n; v++)
+				g.addVertex(v);
+
+			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
+				int source = vs[rand.nextInt(n)];
+				int target = vs[rand.nextInt(n)];
+				/* DIMACS format support edges with labels 1..0 only */
+				int e = g.edges().size() + 1;
+				g.addEdge(source, target, e);
+			}
+
+			Weights.Int we1 = g.addEdgesWeights("weightsEdges", int.class);
+			for (int e : g.edges())
+				we1.set(e, n + rand.nextInt(m * 3));
+
+			StringWriter writer = new StringWriter();
+			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+			String data = writer.toString();
+
+			GraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			Graph gImmutable = gb.build();
+			Graph gMutable = gb.buildMutable();
+			assertEquals(g, gImmutable);
+			assertEquals(g, gMutable);
+		}
+	}
+
+	@Test
+	public void writeDirectedGraphUnsupported() {
+		Graph g = GraphFactory.newDirected().newGraph();
+		g.addVertex(1);
+		g.addVertex(6);
+		g.addVertex(78);
+		g.addEdge(78, 1);
+		g.addEdge(1, 6);
+		assertThrows(IllegalArgumentException.class,
+				() -> GraphWriter.newInstance("dimacs").writeGraph(g, new StringWriter()));
 	}
 
 }

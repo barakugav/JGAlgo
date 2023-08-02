@@ -54,10 +54,17 @@ class FormatDIMACS implements GraphFormat {
 		public void writeGraph(Graph graph, Writer writer) {
 			if (graph.getCapabilities().directed())
 				throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
+			final int numVertices = graph.vertices().size();
+			final int numEdges = graph.edges().size();
+			for (int v = 1; v <= numVertices; v++)
+				if (!graph.vertices().contains(v))
+					throw new IllegalArgumentException("the DIMACS format support graphs with vertices 1..n only");
+			for (int e = 1; e <= numEdges; e++)
+				if (!graph.edges().contains(e))
+					throw new IllegalArgumentException("the DIMACS format support graphs with edges 1..m only");
+
 			try {
 				writer.append("c DIMACS written graph by JGAlgo").append(System.lineSeparator());
-				final int numVertices = graph.vertices().size();
-				final int numEdges = graph.edges().size();
 				final Weights.Int w = graph.getEdgesWeights("weightsEdges");
 				final boolean hasWeights = w != null;
 
@@ -68,7 +75,7 @@ class FormatDIMACS implements GraphFormat {
 				}
 
 				// writes all edges, optional with weights
-				for (int e : graph.edges()) {
+				for (int e = 1; e <= numEdges; e++) {
 					/* e {source} {target} */
 					writer.append("e ").append(Integer.toString(graph.edgeSource(e))).append(' ')
 							.append(Integer.toString(graph.edgeTarget(e)));
@@ -183,8 +190,8 @@ class FormatDIMACS implements GraphFormat {
 
 							if (graph_format.equals("sp"))
 								w = gb.addEdgesWeights("weightsEdges", int.class);
-							for (int i = 0; i < num_vertices; i++)
-								gb.addVertex(i + 1); // vertices are labeled as 1,2,3,4...
+							for (int v = 1; v <= num_vertices; v++)
+								gb.addVertex(v); // vertices are labeled as 1,2,3,4...
 							break;
 						}
 
@@ -215,8 +222,8 @@ class FormatDIMACS implements GraphFormat {
 							if (vertexSource < 1 || vertexSource > num_vertices || vertexTarget < 1
 									|| vertexTarget > num_vertices)
 								throw new IllegalArgumentException("vertex number must be between 1 and num_vertices");
-							// vertices labels 1..num_vertices are mapped to 0..num_vertices-1
-							final int e = gb.addEdge(vertexSource, vertexTarget);
+							final int e = gb.edges().size() + 1;
+							gb.addEdge(vertexSource, vertexTarget, e);
 
 							/* parse edge weight */
 							if (hasWeights) {
