@@ -22,39 +22,43 @@ public class AllExamplesTest {
 
 	@Test
 	public void ShortestPathExample() {
-		ShortestPathExample.shortestPathExample();
+		ShortestPathExample.main(mainArgs());
 	}
 
 	@Test
 	public void BfsDfsExample() {
-		BfsDfsExample.BFSExample();
-		BfsDfsExample.DFSExample();
+		BfsDfsExample.main(mainArgs());
+		BfsDfsExample.main(mainArgs());
 	}
 
 	@Test
 	public void ColoringExample() {
-		ColoringExample.coloringExample();
+		ColoringExample.main(mainArgs());
 	}
 
 	@Test
 	public void EdgeIterationExample() {
-		EdgeIterationExample.edgeIterationExample();
+		EdgeIterationExample.main(mainArgs());
 	}
 
 	@Test
 	public void MinimumSpanningTreeExample() {
-		MinimumSpanningTreeExample.MSTExample();
+		MinimumSpanningTreeExample.main(mainArgs());
 	}
 
 	@Test
 	public void MaximumMatchingExample() {
-		MaximumMatchingExample.maximumMatchingExample();
+		MaximumMatchingExample.main(mainArgs());
 	}
 
 	@Test
 	public void LowestCommonAncestorExample() {
-		LowestCommonAncestorExample.staticLCAExample();
-		LowestCommonAncestorExample.dynamicLCAExample();
+		LowestCommonAncestorExample.main(mainArgs());
+		LowestCommonAncestorExample.main(mainArgs());
+	}
+
+	private static String[] mainArgs() {
+		return new String[] { "executable_name" };
 	}
 
 }
