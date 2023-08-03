@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterables;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L27">abstract class GraphBase implements Graph {</span>
@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		public int size() {
-<span class="fc" id="L164">			return JGAlgoUtils.size(this);</span>
+<span class="fc" id="L164">			return (int) IntIterables.size(this);</span>
 		}
 
 		@Override
