@@ -10,11 +10,6 @@
   <name>JGAlgo - Core</name>
   <packaging>jar</packaging>
 
-  <properties>
-    <!-- Default argLine in case Jacoco agent was not run -->
-    <argLine />
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>it.unimi.dsi</groupId>
@@ -22,7 +17,6 @@
       <version>${fastutil.version}</version>
     </dependency>
 
-    <!-- JUnit5 tests -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
@@ -58,7 +52,6 @@
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <forkCount>1</forkCount>
-          <argLine>@{argLine}</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -88,7 +81,7 @@
         <version>${jacoco-maven-plugin.version}</version>
         <configuration>
           <excludes>
-            <exclude>com/jgalgo/internal/data/FIFOQueueIntNoReduce**</exclude>
+            <exclude>com/jgalgo/internal/util/FIFOQueueIntNoReduce**</exclude>
             <exclude>com/jgalgo/internal/util/DebugPrinter**</exclude>
           </excludes>
         </configuration>

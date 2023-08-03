@@ -22,24 +22,57 @@ jobs:
       run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: Run JUnit Tests with Jacoco coverage
-      run: mvn --batch-mode -pl jgalgo-core clean jacoco:prepare-agent test jacoco:report
+      run: mvn --batch-mode test jacoco:report
+
+    - name: Aggregate Reports from Sub Modules
+      run: |
+        mkdir coverage
+        mv jgalgo-core/target/site/jacoco coverage/jgalgo-core
+        mv jgalgo-io/target/site/jacoco coverage/jgalgo-io
+        mv jgalgo-example/target/site/jacoco coverage/jgalgo-example
+        mv jgalgo-bench/target/site/jacoco coverage/jgalgo-bench
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
-        jacoco-csv-file: jgalgo-core/target/site/jacoco/jacoco.csv
+        jacoco-csv-file: >
+          coverage/jgalgo-core/jacoco.csv
+          coverage/jgalgo-io/jacoco.csv
+
         generate-coverage-badge: true
-        badges-directory: jgalgo-core/target/site/jacoco/badges
+        badges-directory: coverage/badges
 
     - name: Zip coverage artifacts
       run: |
-        tar -czf jgalgo-core/target/site/jacoco.tar.gz jgalgo-core/target/site/jacoco/
+        mkdir artifacts/
+        tar -czf artifacts/jgalgo-core.tar.gz coverage/jgalgo-core/
+        tar -czf artifacts/jgalgo-io.tar.gz coverage/jgalgo-io/
+        tar -czf artifacts/jgalgo-example.tar.gz coverage/jgalgo-example/
+        tar -czf artifacts/jgalgo-bench.tar.gz coverage/jgalgo-bench/
 
-    - name: Upload artifacts
+    - name: Upload jgalgo-core artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: jacoco-coverage-report
-        path: jgalgo-core/target/site/jacoco.tar.gz
+        name: jgalgo-core-jacoco-coverage-report
+        path: artifacts/jgalgo-core.tar.gz
+
+    - name: Upload jgalgo-io artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jgalgo-io-jacoco-coverage-report
+        path: artifacts/jgalgo-io.tar.gz
+
+    - name: Upload jgalgo-example artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jgalgo-example-jacoco-coverage-report
+        path: artifacts/jgalgo-example.tar.gz
+
+    - name: Upload jgalgo-bench artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jgalgo-bench-jacoco-coverage-report
+        path: artifacts/jgalgo-bench.tar.gz
 
     - name: Publish Jacoco Coverage Report
       uses: JamesIves/github-pages-deploy-action@v4.4.1
@@ -47,5 +80,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: coverage
         clean: true
-        folder: jgalgo-core/target/site/jacoco
+        folder: coverage
         target-folder: .
