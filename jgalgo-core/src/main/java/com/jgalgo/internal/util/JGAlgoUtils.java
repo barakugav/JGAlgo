@@ -515,13 +515,6 @@ public class JGAlgoUtils {
 		};
 	}
 
-	public static int size(IntIterable c) {
-		int count = 0;
-		for (IntIterator it = c.iterator(); it.hasNext(); it.nextInt())
-			count++;
-		return count;
-	}
-
 	@FunctionalInterface
 	public static interface BiInt2IntFunction {
 		int apply(int a1, int a2);

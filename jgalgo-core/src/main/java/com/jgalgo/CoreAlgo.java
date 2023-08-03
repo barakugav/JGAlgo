@@ -16,6 +16,7 @@
 package com.jgalgo;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -134,7 +135,7 @@ public interface CoreAlgo {
 	 * @see    CoreAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<CoreAlgo.Builder> {
 
 		/**
 		 * Build a new {@link CoreAlgo} object.

@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -79,7 +80,36 @@ public interface MaximalCliques {
 	 * @return a new builder for maximal cliques algorithms
 	 */
 	static MaximalCliques.Builder newBuilder() {
-		return MaximalCliquesBronKerbosch::new;
+		return new MaximalCliques.Builder() {
+			String impl;
+
+			@Override
+			public MaximalCliques build() {
+				if (impl != null) {
+					switch (impl) {
+						case "bron-kerbosch":
+							return new MaximalCliquesBronKerbosch();
+						case "bron-kerbosch-pivot":
+							return new MaximalCliquesBronKerboschPivot();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new MaximalCliquesBronKerbosch();
+			}
+
+			@Override
+			public MaximalCliques.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
@@ -88,7 +118,7 @@ public interface MaximalCliques {
 	 * @see    MaximalCliques#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<MaximalCliques.Builder> {
 
 		/**
 		 * Build a new {@link MaximalCliques} object.
