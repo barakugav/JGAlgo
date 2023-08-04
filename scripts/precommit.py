@@ -26,7 +26,7 @@ def main(args):
 
     print("\n\n ============ SpotBugs ============\n")
     if not args.skip_static:
-        run_cmd("mvn --batch-mode spotbugs:check -pl jgalgo-core")
+        run_cmd("mvn --batch-mode compile spotbugs:check -pl -jgalgo-bench")
     else:
         print("skipping...")
 

@@ -16,6 +16,7 @@
 package com.jgalgo.io;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import com.jgalgo.graph.Graph;
@@ -75,5 +76,7 @@ class GraphIO {
 		}
 		FileExtensionToFormat = Object2ObjectMaps.unmodifiable(fileExtensionToFormat);
 	}
+
+	static final Charset JGALGO_CHARSET = Charset.forName("UTF-8");
 
 }

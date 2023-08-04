@@ -52,7 +52,7 @@ public interface GraphReader {
 	 * @return      a new graph read from the file
 	 */
 	default Graph readGraph(File file) {
-		try (Reader reader = new FileReader(file)) {
+		try (Reader reader = new FileReader(file, GraphIO.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -66,7 +66,7 @@ public interface GraphReader {
 	 * @return      a new graph read from the file
 	 */
 	default Graph readGraph(String path) {
-		try (Reader reader = new FileReader(path)) {
+		try (Reader reader = new FileReader(path, GraphIO.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

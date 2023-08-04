@@ -21,4 +21,4 @@ jobs:
       run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: statically analyze code using SpotBugs
-      run: mvn --batch-mode spotbugs:check -pl jgalgo-core
+      run: mvn --batch-mode compile spotbugs:check -pl -jgalgo-bench
