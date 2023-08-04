@@ -59,6 +59,8 @@
     <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
     <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+
+    <asserts.enable>false</asserts.enable>
   </properties>
 
   <modules>
@@ -123,6 +125,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <forkCount>1</forkCount>
+          <enableAssertions>${asserts.enable}</enableAssertions>
+        </configuration>
       </plugin>
 
       <plugin>
