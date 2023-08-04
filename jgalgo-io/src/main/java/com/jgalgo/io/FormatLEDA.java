@@ -57,6 +57,15 @@ class FormatLEDA implements GraphFormat {
 
 		@Override
 		public void writeGraph(Graph graph, Writer writer) {
+			final int numVertices = graph.vertices().size();
+			final int numEdges = graph.edges().size();
+			for (int v = 1; v <= numVertices; v++)
+				if (!graph.vertices().contains(v))
+					throw new IllegalArgumentException("the LEDA format support graphs with vertices 1..n only");
+			for (int e = 1; e <= numEdges; e++)
+				if (!graph.edges().contains(e))
+					throw new IllegalArgumentException("the LEDA format support graphs with edges 1..m only");
+
 			try {
 				String info_type_for_vertices; // can be void, string, int etc
 				Weights<?> w_vertices; // weights for vertices
@@ -113,42 +122,41 @@ class FormatLEDA implements GraphFormat {
 				writer.append(is_directed ? "-1" : "-2").append(System.lineSeparator());
 
 				writer.append("# section nodes/vertices").append(System.lineSeparator());
-				final int num_vertices = graph.vertices().size();
-				writer.append(Integer.toString(num_vertices)).append(System.lineSeparator());
+				writer.append(Integer.toString(numVertices)).append(System.lineSeparator());
 				// write all vertices info
 				// --> LEDA expects 1..num_vertices
 				// for (int ix = 1; ix <= num_vertices; ix++)
 				// but just in case, we are consistent with our labels etc
 				if (info_type_for_vertices.equals("void")) {
-					for (int vertex : graph.vertices())
+					for (int vertex = 1; vertex <= numVertices; vertex++)
 						writer.append("|{}|").append(System.lineSeparator());
 				} else if (info_type_for_vertices.equals("int")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						int weight = ((Weights.Int) w_vertices).getInt(vertex);
 						writer.append("|{").append(String.valueOf(weight)).append("}|").append(System.lineSeparator());
 					}
 				} else if (info_type_for_vertices.equals("short")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						short weight = ((Weights.Short) w_vertices).getShort(vertex);
 						writer.append("|{").append(String.valueOf(weight)).append("}|").append(System.lineSeparator());
 					}
 				} else if (info_type_for_vertices.equals("long")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						long weight = ((Weights.Long) w_vertices).getLong(vertex);
 						writer.append("|{").append(String.valueOf(weight)).append("}|").append(System.lineSeparator());
 					}
 				} else if (info_type_for_vertices.equals("float")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						float weight = ((Weights.Float) w_vertices).getFloat(vertex);
 						writer.append("|{").append(String.valueOf(weight)).append("}|").append(System.lineSeparator());
 					}
 				} else if (info_type_for_vertices.equals("double")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						double weight = ((Weights.Double) w_vertices).getDouble(vertex);
 						writer.append("|{").append(String.valueOf(weight)).append("}|").append(System.lineSeparator());
 					}
 				} else if (info_type_for_vertices.equals("string")) {
-					for (int vertex : graph.vertices()) {
+					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						String weight = ((Weights<String>) w_vertices).get(vertex);
 						writer.append("|{").append(weight).append("}|").append(System.lineSeparator());
 					}
@@ -156,10 +164,9 @@ class FormatLEDA implements GraphFormat {
 					throw new IllegalArgumentException("Leda file format: unknown weight format");
 
 				writer.append("# section edges").append(System.lineSeparator());
-				final int num_edges = graph.edges().size();
-				writer.append(Integer.toString(num_edges)).append(System.lineSeparator());
+				writer.append(Integer.toString(numEdges)).append(System.lineSeparator());
 				// write all edges info
-				for (int edge : graph.edges()) {
+				for (int edge = 1; edge <= numEdges; edge++) {
 					int source_vertex = graph.edgeSource(edge);
 					int target_vertex = graph.edgeTarget(edge);
 					String edgeWeight = w_edges != null ? String.valueOf(w_edges.get(edge)) : "";
@@ -180,7 +187,7 @@ class FormatLEDA implements GraphFormat {
 
 		@Override
 		public GraphBuilder readIntoBuilder(Reader reader) {
-			GraphBuilder builder = GraphBuilder.newUndirected();
+			GraphBuilder builder = null;
 
 			// list_nodes keep the label/name of each node/vertex
 			// we do not need it, but for future use
@@ -345,7 +352,8 @@ class FormatLEDA implements GraphFormat {
 						String label = line.substring(2, line.length() - 2);
 						// debug
 						list_nodes.add(label);
-						final int id = builder.addVertex(); // 1,2,3...
+						final int id = builder.vertices().size() + 1; // 1,2,3...
+						builder.addVertex(id);
 
 						// record label/weight
 						switch (info_type_for_vertices) {
@@ -447,7 +455,8 @@ class FormatLEDA implements GraphFormat {
 					label = label.substring(2, label.length() - 2);
 
 					// add the edge
-					final int id = builder.addEdge(from_vertex, to_vertex);
+					final int id = builder.edges().size() + 1; // 1,2,3...
+					builder.addEdge(from_vertex, to_vertex, id);
 
 					// record label/weight
 					switch (info_type_for_edges) {

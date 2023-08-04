@@ -16,11 +16,15 @@
 
 package com.jgalgo.io;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class FormatLedaTest {
 
@@ -100,6 +104,41 @@ public class FormatLedaTest {
 		wr_leda1.writeGraph(graph1, sw);
 		System.out.println("The exported LEDA graph is:");
 		System.out.println(sw.toString());
+	}
+
+	@Test
+	public void writeAndReadRandomGraphs() {
+		final long seed = 0x71a78c3b16b1e662L;
+		Random rand = new Random(seed);
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (int repeat = 0; repeat < 32; repeat++) {
+				final int n = 10 + rand.nextInt(20);
+				final int m = 15 + rand.nextInt(30);
+				Graph g = directed ? GraphFactory.newDirected().newGraph() : GraphFactory.newUndirected().newGraph();
+
+				/* LEDA format support vertices with labels 1..n only */
+				for (int v = 1; v <= n; v++)
+					g.addVertex(v);
+
+				for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
+					int source = vs[rand.nextInt(n)];
+					int target = vs[rand.nextInt(n)];
+					/* LEDA format support edges with labels 1..m only */
+					int e = g.edges().size() + 1;
+					g.addEdge(source, target, e);
+				}
+
+				StringWriter writer = new StringWriter();
+				GraphWriter.newInstance("leda").writeGraph(g, writer);
+				String data = writer.toString();
+
+				GraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
+				Graph gImmutable = gb.build();
+				Graph gMutable = gb.buildMutable();
+				assertEquals(g, gImmutable);
+				assertEquals(g, gMutable);
+			}
+		}
 	}
 
 }
