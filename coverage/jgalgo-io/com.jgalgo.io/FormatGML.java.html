@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FormatGML.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">FormatGML.java</span></div><h1>FormatGML.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * The GML format.
+ * &lt;p&gt;
+ * According to 'GML: A portable Graph File Format'
+ *
+ * @author Barak Ugav
+ */
+class FormatGML implements GraphFormat {
+
+	private FormatGML() {}
+
+<span class="fc" id="L47">	static final FormatGML Instance = new FormatGML();</span>
+
+	@Override
+	public GraphWriter newWriter() {
+<span class="fc" id="L51">		return new WriterImpl();</span>
+	}
+
+	@Override
+	public GraphReader newReader() {
+<span class="fc" id="L56">		return new ReaderImpl();</span>
+	}
+
+<span class="fc" id="L59">	private static final List&lt;String&gt; FILE_EXTENSIONS = List.of(&quot;gml&quot;);</span>
+
+	@Override
+	public List&lt;String&gt; getFileExtensions() {
+<span class="nc" id="L63">		return FILE_EXTENSIONS;</span>
+	}
+
+	private static class WriterImpl implements GraphWriter {
+
+		@Override
+		public void writeGraph(Graph graph, Writer writer) {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (graph.getCapabilities().directed())</span>
+<span class="fc" id="L71">				throw new IllegalArgumentException(&quot;GML format support undirected graphs only&quot;);</span>
+
+			try {
+<span class="fc" id="L74">				List&lt;Pair&lt;String, WeightsStringer&gt;&gt; vWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L75">				List&lt;Pair&lt;String, WeightsStringer&gt;&gt; eWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">				for (Object keyObj : graph.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L77">					Weights&lt;?&gt; w = graph.getVerticesWeights(keyObj);</span>
+<span class="fc" id="L78">					String key = Objects.toString(keyObj);</span>
+<span class="fc" id="L79">					checkValidWeightsKey(key);</span>
+<span class="fc" id="L80">					vWeights.add(Pair.of(key, WeightsStringer.newInstance(w, &quot;\&quot;&quot;, &quot;\&quot;&quot;)));</span>
+<span class="fc" id="L81">				}</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (Object keyObj : graph.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L83">					Weights&lt;?&gt; w = graph.getEdgesWeights(keyObj);</span>
+<span class="fc" id="L84">					String key = Objects.toString(keyObj);</span>
+<span class="fc" id="L85">					checkValidWeightsKey(key);</span>
+<span class="fc" id="L86">					eWeights.add(Pair.of(key, WeightsStringer.newInstance(w, &quot;\&quot;&quot;, &quot;\&quot;&quot;)));</span>
+<span class="fc" id="L87">				}</span>
+
+<span class="fc" id="L89">				writer.append(&quot;graph [&quot;).append(System.lineSeparator());</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				for (int v : graph.vertices()) {</span>
+<span class="fc" id="L91">					writer.append(&quot;\tnode [&quot;).append(System.lineSeparator());</span>
+<span class="fc" id="L92">					writer.append(&quot;\t\tid &quot;).append(Integer.toString(v)).append(System.lineSeparator());</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					for (Pair&lt;String, WeightsStringer&gt; weights : vWeights) {</span>
+<span class="fc" id="L94">						writer.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L95">						String key = weights.first();</span>
+<span class="fc" id="L96">						String weightStr = weights.right().getWeightAsString(v);</span>
+<span class="fc" id="L97">						writer.append(key).append(' ').append(weightStr);</span>
+<span class="fc" id="L98">						writer.append(System.lineSeparator());</span>
+<span class="fc" id="L99">					}</span>
+<span class="fc" id="L100">					writer.append(&quot;\t]&quot;).append(System.lineSeparator());</span>
+<span class="fc" id="L101">				}</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				for (int e : graph.edges()) {</span>
+<span class="fc" id="L103">					writer.append(&quot;\tedge [&quot;).append(System.lineSeparator());</span>
+<span class="fc" id="L104">					writer.append(&quot;\t\tid &quot;).append(Integer.toString(e)).append(System.lineSeparator());</span>
+<span class="fc" id="L105">					writer.append(&quot;\t\tsource &quot;).append(Integer.toString(graph.edgeSource(e)))</span>
+<span class="fc" id="L106">							.append(System.lineSeparator());</span>
+<span class="fc" id="L107">					writer.append(&quot;\t\ttarget &quot;).append(Integer.toString(graph.edgeTarget(e)))</span>
+<span class="fc" id="L108">							.append(System.lineSeparator());</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					for (Pair&lt;String, WeightsStringer&gt; weights : eWeights) {</span>
+<span class="fc" id="L110">						writer.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L111">						String key = weights.first();</span>
+<span class="fc" id="L112">						String weightStr = weights.right().getWeightAsString(e);</span>
+<span class="fc" id="L113">						writer.append(key).append(' ').append(weightStr);</span>
+<span class="fc" id="L114">						writer.append(System.lineSeparator());</span>
+<span class="fc" id="L115">					}</span>
+<span class="fc" id="L116">					writer.append(&quot;\t]&quot;).append(System.lineSeparator());</span>
+<span class="fc" id="L117">				}</span>
+<span class="fc" id="L118">				writer.append(']').append(System.lineSeparator());</span>
+
+<span class="nc" id="L120">			} catch (IOException e) {</span>
+<span class="nc" id="L121">				throw new UncheckedIOException(e);</span>
+<span class="fc" id="L122">			}</span>
+<span class="fc" id="L123">		}</span>
+
+	}
+
+<span class="fc" id="L127">	private static class ReaderImpl implements GraphReader {</span>
+
+		@Override
+		public GraphBuilder readIntoBuilder(Reader reader) {
+			try (BufferedReader r0 =
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {</span>
+
+<span class="fc" id="L134">				List&lt;Node&gt; roots = parseIntoHierarchy(new CharReader(r0));</span>
+<span class="fc" id="L135">				return readIntoBuilder(roots);</span>
+
+<span class="nc" id="L137">			} catch (IOException e) {</span>
+<span class="nc" id="L138">				throw new UncheckedIOException(e);</span>
+			}
+		}
+
+		private static GraphBuilder readIntoBuilder(List&lt;Node&gt; roots) {
+			Node root;
+<span class="pc bpc" id="L144" title="2 of 4 branches missed.">			if (roots.size() != 1 || !(root = roots.get(0)).key.equals(&quot;graph&quot;))</span>
+<span class="nc" id="L145">				throw new IllegalArgumentException(&quot;expected a single root list 'graph'&quot;);</span>
+
+<span class="fc" id="L147">			GraphBuilder b = GraphBuilder.newUndirected();</span>
+<span class="fc" id="L148">			Map&lt;String, List&lt;IntObjectPair&lt;Object&gt;&gt;&gt; vWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L149">			Map&lt;String, List&lt;IntObjectPair&lt;Object&gt;&gt;&gt; eWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			for (Node n : root.children()) {</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (&quot;node&quot;.equals(n.key)) {</span>
+<span class="fc" id="L152">					int id = -1;</span>
+<span class="fc" id="L153">					boolean idFound = false;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">					for (Node prop : n.children()) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">						if (&quot;id&quot;.equals(prop.key)) {</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">							if (idFound)</span>
+<span class="nc" id="L157">								throw new IllegalArgumentException(&quot;duplicate 'id' property&quot;);</span>
+<span class="fc" id="L158">							idFound = true;</span>
+<span class="fc" id="L159">							id = ((Integer) prop.value).intValue();</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">						} else if (prop.value instanceof List&lt;?&gt;) {</span>
+<span class="nc" id="L161">							throw new IllegalArgumentException(&quot;unexpected nested vertex weight&quot;);</span>
+						}
+<span class="fc" id="L163">					}</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">					if (!idFound)</span>
+<span class="nc" id="L165">						throw new IllegalArgumentException(&quot;no 'id' property for node&quot;);</span>
+<span class="fc" id="L166">					b.addVertex(id);</span>
+
+<span class="fc bfc" id="L168" title="All 2 branches covered.">					for (Node prop : n.children())</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">						if (!List.of(&quot;id&quot;).contains(prop.key))</span>
+<span class="fc" id="L170">							vWeights.computeIfAbsent(prop.key, k -&gt; new ArrayList&lt;&gt;())</span>
+<span class="fc" id="L171">									.add(IntObjectPair.of(id, prop.value));</span>
+
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">				} else if (&quot;edge&quot;.equals(n.key)) {</span>
+<span class="fc" id="L174">					int id = -1;</span>
+<span class="fc" id="L175">					int source = -1, target = -1;</span>
+<span class="fc" id="L176">					boolean idFound = false;</span>
+<span class="fc" id="L177">					boolean sourceFound = false;</span>
+<span class="fc" id="L178">					boolean targetFound = false;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">					for (Node prop : n.children()) {</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">						if (&quot;id&quot;.equals(prop.key)) {</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">							if (idFound)</span>
+<span class="nc" id="L182">								throw new IllegalArgumentException(&quot;duplicate 'id' property&quot;);</span>
+<span class="fc" id="L183">							idFound = true;</span>
+<span class="fc" id="L184">							id = ((Integer) prop.value).intValue();</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">						} else if (&quot;source&quot;.equals(prop.key)) {</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">							if (sourceFound)</span>
+<span class="nc" id="L187">								throw new IllegalArgumentException(&quot;duplicate 'source' property&quot;);</span>
+<span class="fc" id="L188">							sourceFound = true;</span>
+<span class="fc" id="L189">							source = ((Integer) prop.value).intValue();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">						} else if (&quot;target&quot;.equals(prop.key)) {</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">							if (targetFound)</span>
+<span class="nc" id="L192">								throw new IllegalArgumentException(&quot;duplicate 'target' property&quot;);</span>
+<span class="fc" id="L193">							targetFound = true;</span>
+<span class="fc" id="L194">							target = ((Integer) prop.value).intValue();</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">						} else if (prop.value instanceof List&lt;?&gt;) {</span>
+<span class="nc" id="L196">							throw new IllegalArgumentException(&quot;unexpected nested vertex weight&quot;);</span>
+						}
+<span class="fc" id="L198">					}</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">					if (!sourceFound)</span>
+<span class="nc" id="L200">						throw new IllegalArgumentException(&quot;no 'source' property for edge&quot;);</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">					if (!targetFound)</span>
+<span class="nc" id="L202">						throw new IllegalArgumentException(&quot;no 'target' property for edge&quot;);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">					if (idFound) {</span>
+<span class="fc" id="L204">						b.addEdge(source, target, id);</span>
+					} else {
+<span class="fc" id="L206">						id = b.addEdge(source, target);</span>
+					}
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">					for (Node prop : n.children())</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">						if (!List.of(&quot;id&quot;, &quot;source&quot;, &quot;target&quot;).contains(prop.key))</span>
+<span class="fc" id="L211">							eWeights.computeIfAbsent(prop.key, k -&gt; new ArrayList&lt;&gt;())</span>
+<span class="fc" id="L212">									.add(IntObjectPair.of(id, prop.value));</span>
+
+<span class="fc" id="L214">				} else {</span>
+<span class="nc" id="L215">					throw new IllegalArgumentException(&quot;unexpected key: '&quot; + n.key + &quot;'&quot;);</span>
+				}
+<span class="fc" id="L217">			}</span>
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (var entry : vWeights.entrySet()) {</span>
+<span class="fc" id="L220">				String key = entry.getKey();</span>
+<span class="fc" id="L221">				Class&lt;?&gt; weightType = chooseWeightType(entry.getValue());</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">				if (weightType == int.class) {</span>
+<span class="fc" id="L223">					Weights.Int w = b.addVerticesWeights(key, int.class);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L225">						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				} else if (weightType == double.class) {</span>
+<span class="fc" id="L228">					Weights.Double w = b.addVerticesWeights(key, double.class);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L230">						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());</span>
+
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">				} else if (weightType == String.class) {</span>
+<span class="fc" id="L233">					Weights&lt;String&gt; w = b.addVerticesWeights(key, String.class);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L235">						w.set(pair.firstInt(), (String) pair.second());</span>
+
+<span class="fc" id="L237">				} else {</span>
+<span class="nc" id="L238">					Weights&lt;Object&gt; w = b.addVerticesWeights(key, Object.class);</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">					for (var pair : entry.getValue())</span>
+<span class="nc" id="L240">						w.set(pair.firstInt(), pair.second());</span>
+				}
+<span class="fc" id="L242">			}</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">			for (var entry : eWeights.entrySet()) {</span>
+<span class="fc" id="L244">				String key = entry.getKey();</span>
+<span class="fc" id="L245">				Class&lt;?&gt; weightType = chooseWeightType(entry.getValue());</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				if (weightType == int.class) {</span>
+<span class="fc" id="L247">					Weights.Int w = b.addEdgesWeights(key, int.class);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L249">						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());</span>
+
+<span class="fc bfc" id="L251" title="All 2 branches covered.">				} else if (weightType == double.class) {</span>
+<span class="fc" id="L252">					Weights.Double w = b.addEdgesWeights(key, double.class);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L254">						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());</span>
+
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">				} else if (weightType == String.class) {</span>
+<span class="fc" id="L257">					Weights&lt;String&gt; w = b.addEdgesWeights(key, String.class);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">					for (var pair : entry.getValue())</span>
+<span class="fc" id="L259">						w.set(pair.firstInt(), (String) pair.second());</span>
+
+<span class="fc" id="L261">				} else {</span>
+<span class="nc" id="L262">					Weights&lt;Object&gt; w = b.addEdgesWeights(key, Object.class);</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">					for (var pair : entry.getValue())</span>
+<span class="nc" id="L264">						w.set(pair.firstInt(), pair.second());</span>
+				}
+<span class="fc" id="L266">			}</span>
+
+<span class="fc" id="L268">			return b;</span>
+		}
+
+		private static Class&lt;?&gt; chooseWeightType(List&lt;IntObjectPair&lt;Object&gt;&gt; weights) {
+<span class="fc" id="L272">			Class&lt;?&gt; weightType = null;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">			for (var pair : weights) {</span>
+<span class="fc" id="L274">				Object weightVal = pair.second();</span>
+				Class&lt;?&gt; weightValType;
+<span class="fc bfc" id="L276" title="All 2 branches covered.">				if (weightVal instanceof Integer) {</span>
+<span class="fc" id="L277">					weightValType = int.class;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">				} else if (weightVal instanceof Double) {</span>
+<span class="fc" id="L279">					weightValType = double.class;</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">				} else if (weightVal instanceof String) {</span>
+<span class="fc" id="L281">					weightValType = String.class;</span>
+				} else {
+<span class="nc" id="L283">					throw new IllegalArgumentException(&quot;unexpected value type: &quot; + weightVal.getClass());</span>
+				}
+
+<span class="fc bfc" id="L286" title="All 2 branches covered.">				if (weightType == null)</span>
+<span class="fc" id="L287">					weightType = weightValType;</span>
+<span class="pc bpc" id="L288" title="2 of 4 branches missed.">				else if (weightType == Object.class || weightValType == Object.class)</span>
+<span class="nc" id="L289">					weightType = Object.class;</span>
+<span class="pc bpc" id="L290" title="1 of 4 branches missed.">				else if (weightType == String.class &amp;&amp; weightValType == String.class)</span>
+<span class="fc" id="L291">					weightType = String.class;</span>
+<span class="pc bpc" id="L292" title="2 of 4 branches missed.">				else if (weightType == String.class || weightValType == String.class)</span>
+<span class="nc" id="L293">					weightType = Object.class;</span>
+<span class="pc bpc" id="L294" title="1 of 4 branches missed.">				else if (weightType == double.class || weightValType == double.class)</span>
+<span class="fc" id="L295">					weightType = double.class;</span>
+<span class="pc bpc" id="L296" title="3 of 4 branches missed.">				else if (weightType == int.class || weightValType == int.class)</span>
+<span class="fc" id="L297">					weightType = int.class;</span>
+				else
+<span class="nc" id="L299">					throw new IllegalArgumentException(&quot;unexpected weight type &quot; + weightValType + &quot; &quot; + weightType);</span>
+<span class="fc" id="L300">			}</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">			assert weightType != null;</span>
+<span class="fc" id="L302">			return weightType;</span>
+		}
+
+		private static List&lt;Node&gt; parseIntoHierarchy(CharReader reader) throws IOException {
+<span class="fc" id="L306">			StringBuilder strBuilder = new StringBuilder();</span>
+<span class="fc" id="L307">			List&lt;Node&gt; roots = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L308">			Stack&lt;Node&gt; s = new ObjectArrayList&lt;&gt;();</span>
+			mainLoop: for (;;) {
+<span class="fc" id="L310">				char c = reader.getChar(&quot;&quot;);</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">				if (!isKeyCharPrefix(c))</span>
+<span class="nc" id="L312">					throw new IllegalArgumentException(&quot;invalid character for key: &quot; + c);</span>
+
+<span class="fc" id="L314">				Node node = new Node();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">				if (s.isEmpty()) {</span>
+<span class="fc" id="L316">					roots.add(node);</span>
+				} else {
+<span class="fc" id="L318">					s.top().children().add(node);</span>
+				}
+
+				// parse key
+<span class="fc" id="L322">				StringBuilder key = strBuilder;</span>
+<span class="fc" id="L323">				key.append(c);</span>
+<span class="fc" id="L324">				reader.advance();</span>
+				for (;;) {
+<span class="fc" id="L326">					c = reader.getChar(&quot;no value of key: &quot; + key);</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">					if (!isKeyChar(c))</span>
+<span class="fc" id="L328">						break;</span>
+<span class="fc" id="L329">					key.append(c);</span>
+<span class="fc" id="L330">					reader.advance();</span>
+				}
+<span class="fc" id="L332">				node.key = key.toString();</span>
+<span class="fc" id="L333">				key.setLength(0);</span>
+
+<span class="fc" id="L335">				readWhitespace(reader, true);</span>
+
+<span class="fc" id="L337">				c = reader.getChar(&quot;no value for key&quot;);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">				if (c == '&quot;') { // string</span>
+<span class="fc" id="L339">					reader.advance();</span>
+
+<span class="fc" id="L341">					StringBuilder strVal = strBuilder;</span>
+					for (;;) {
+<span class="fc" id="L343">						c = reader.getCharAndAdvance(&quot;string value without terminating character&quot;);</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">						if (c == '&quot;')</span>
+<span class="fc" id="L345">							break;</span>
+<span class="fc" id="L346">						strVal.append(c);</span>
+					}
+<span class="fc" id="L348">					node.value = strVal.toString();</span>
+<span class="fc" id="L349">					strVal.setLength(0);</span>
+
+<span class="fc bfc" id="L351" title="All 2 branches covered.">				} else if (c == '[') { // list</span>
+<span class="fc" id="L352">					reader.advance();</span>
+<span class="fc" id="L353">					node.value = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L354">					s.push(node);</span>
+<span class="fc" id="L355">					readWhitespace(reader, false);</span>
+<span class="fc" id="L356">					continue;</span>
+
+				} else { // number
+<span class="fc" id="L359">					StringBuilder num = strBuilder;</span>
+
+<span class="pc bpc" id="L361" title="2 of 4 branches missed.">					if (reader.hasChar() &amp;&amp; isNumSign(c = reader.getChar())) {</span>
+<span class="nc" id="L362">						num.append(c);</span>
+<span class="nc" id="L363">						reader.advance();</span>
+					}
+<span class="pc bpc" id="L365" title="1 of 4 branches missed.">					while (reader.hasChar() &amp;&amp; isDigit(c = reader.getChar())) {</span>
+<span class="fc" id="L366">						num.append(c);</span>
+<span class="fc" id="L367">						reader.advance();</span>
+					}
+<span class="pc bpc" id="L369" title="1 of 4 branches missed.">					boolean isFloat = reader.hasChar() &amp;&amp; (c = reader.getChar()) == '.';</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">					if (!isFloat) {</span>
+<span class="fc" id="L371">						node.value = Integer.valueOf(num.toString());</span>
+					} else {
+
+<span class="fc" id="L374">						num.append('.');</span>
+<span class="fc" id="L375">						reader.advance();</span>
+
+<span class="pc bpc" id="L377" title="1 of 4 branches missed.">						while (reader.hasChar() &amp;&amp; isDigit(c = reader.getChar())) {</span>
+<span class="fc" id="L378">							num.append(c);</span>
+<span class="fc" id="L379">							reader.advance();</span>
+						}
+<span class="pc bpc" id="L381" title="2 of 4 branches missed.">						if (reader.hasChar() &amp;&amp; (c = reader.getChar()) == 'E') {</span>
+<span class="nc" id="L382">							num.append(c);</span>
+<span class="nc" id="L383">							reader.advance();</span>
+
+<span class="nc bnc" id="L385" title="All 4 branches missed.">							if (!(reader.hasChar() &amp;&amp; isNumSign(c = reader.getChar())))</span>
+<span class="nc" id="L386">								throw new IllegalArgumentException(&quot;expected a sign in float num mantissa&quot;);</span>
+<span class="nc" id="L387">							num.append(c);</span>
+<span class="nc" id="L388">							reader.advance();</span>
+<span class="nc bnc" id="L389" title="All 4 branches missed.">							while (reader.hasChar() &amp;&amp; isDigit(c = reader.getChar())) {</span>
+<span class="nc" id="L390">								num.append(c);</span>
+<span class="nc" id="L391">								reader.advance();</span>
+							}
+						}
+
+<span class="fc" id="L395">						node.value = Double.valueOf(num.toString());</span>
+					}
+
+<span class="fc" id="L398">					num.setLength(0);</span>
+				}
+
+<span class="fc" id="L401">				boolean hadWhitespace = readWhitespace(reader, false);</span>
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">				if (!reader.hasChar())</span>
+<span class="nc" id="L403">					break mainLoop;</span>
+<span class="pc bpc" id="L404" title="3 of 4 branches missed.">				if (!hadWhitespace &amp;&amp; reader.getChar() != ']')</span>
+<span class="nc" id="L405">					throw new IllegalArgumentException(&quot;expected ']&quot;);</span>
+				for (;;) {
+<span class="fc bfc" id="L407" title="All 2 branches covered.">					if (!reader.hasChar())</span>
+<span class="fc" id="L408">						break mainLoop;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">					if (reader.getChar() == ']') {</span>
+<span class="fc" id="L410">						reader.advance();</span>
+<span class="fc" id="L411">						readWhitespace(reader, false);</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">						if (s.isEmpty())</span>
+<span class="nc" id="L413">							throw new IllegalArgumentException(&quot;']' without list in scope&quot;);</span>
+<span class="fc" id="L414">						s.pop();</span>
+					} else {
+						break;
+					}
+				}
+<span class="fc" id="L419">			}</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">			if (!s.isEmpty())</span>
+<span class="nc" id="L421">				throw new IllegalArgumentException(&quot;lists without termination&quot;);</span>
+<span class="fc" id="L422">			return roots;</span>
+		}
+
+		private static boolean readWhitespace(CharReader reader, boolean required) throws IOException {
+<span class="fc" id="L426">			int count = 0;</span>
+			for (;;) {
+<span class="fc bfc" id="L428" title="All 2 branches covered.">				if (!reader.hasChar())</span>
+<span class="fc" id="L429">					break;</span>
+<span class="fc" id="L430">				char c = reader.getChar();</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">				if (!Character.isWhitespace(c))</span>
+<span class="fc" id="L432">					break;</span>
+<span class="fc" id="L433">				reader.advance();</span>
+<span class="fc" id="L434">				count++;</span>
+<span class="fc" id="L435">			}</span>
+<span class="pc bpc" id="L436" title="1 of 4 branches missed.">			if (required &amp;&amp; count == 0)</span>
+<span class="nc" id="L437">				throw new IllegalArgumentException(&quot;expected whitespace&quot;);</span>
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">			return count &gt; 0;</span>
+		}
+
+		private static class Node {
+			String key;
+			Object value;
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			List&lt;Node&gt; children() {
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">				if (!(value instanceof List&lt;?&gt;))</span>
+<span class="nc" id="L448">					throw new IllegalArgumentException(&quot;node doesn't have a list as value&quot;);</span>
+<span class="fc" id="L449">				return (List&lt;Node&gt;) value;</span>
+			}
+		}
+
+		private static class CharReader {
+			private final Reader reader;
+			private int nextChar;
+
+<span class="fc" id="L457">			CharReader(Reader reader) throws IOException {</span>
+<span class="fc" id="L458">				this.reader = Objects.requireNonNull(reader);</span>
+<span class="fc" id="L459">				advance();</span>
+<span class="fc" id="L460">			}</span>
+
+			char getChar() {
+<span class="fc" id="L463">				return getChar(&quot;&quot;);</span>
+			}
+
+			char getChar(String errMsgOnEOF) {
+<span class="pc bpc" id="L467" title="1 of 2 branches missed.">				if (!hasChar())</span>
+<span class="nc" id="L468">					throw new IllegalArgumentException(errMsgOnEOF);</span>
+<span class="fc" id="L469">				return (char) nextChar;</span>
+			}
+
+			boolean hasChar() {
+<span class="fc bfc" id="L473" title="All 2 branches covered.">				return nextChar != -1;</span>
+			}
+
+			void advance() throws IOException {
+<span class="fc" id="L477">				nextChar = reader.read();</span>
+<span class="fc" id="L478">			}</span>
+
+			char getCharAndAdvance(String errMsgOnEOF) throws IOException {
+<span class="fc" id="L481">				char c = getChar(errMsgOnEOF);</span>
+<span class="fc" id="L482">				advance();</span>
+<span class="fc" id="L483">				return c;</span>
+			}
+
+			// char getCharAndAdvance() throws IOException {
+			// return getCharAndAdvance(&quot;&quot;);
+			// }
+		}
+
+	}
+
+	private static void checkValidWeightsKey(String key) {
+<span class="pc bpc" id="L494" title="2 of 4 branches missed.">		if (key == null || key.isEmpty())</span>
+<span class="nc" id="L495">			throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="pc bpc" id="L496" title="1 of 2 branches missed.">		if (!isKeyCharPrefix(key.charAt(0)))</span>
+<span class="nc" id="L497">			throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">		for (int i = 1; i &lt; key.length(); i++)</span>
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">			if (!isKeyChar(key.charAt(i)))</span>
+<span class="nc" id="L500">				throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="fc" id="L501">	}</span>
+
+	private static boolean isKeyCharPrefix(char c) {
+<span class="pc bpc" id="L504" title="6 of 8 branches missed.">		return ('a' &lt;= c &amp;&amp; c &lt;= 'z') || ('A' &lt;= c &amp;&amp; c &lt;= 'Z');</span>
+	}
+
+	private static boolean isKeyChar(char c) {
+<span class="pc bpc" id="L508" title="5 of 12 branches missed.">		return ('a' &lt;= c &amp;&amp; c &lt;= 'z') || ('A' &lt;= c &amp;&amp; c &lt;= 'Z') || ('0' &lt;= c &amp;&amp; c &lt;= '9');</span>
+	}
+
+	private static boolean isNumSign(char c) {
+<span class="pc bpc" id="L512" title="2 of 4 branches missed.">		return c == '+' || c == '-';</span>
+	}
+
+	private static boolean isDigit(char c) {
+<span class="pc bpc" id="L516" title="1 of 4 branches missed.">		return '0' &lt;= c &amp;&amp; c &lt;= '9';</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

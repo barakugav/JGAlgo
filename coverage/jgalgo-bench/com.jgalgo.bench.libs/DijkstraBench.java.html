@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DijkstraBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.libs</a> &gt; <span class="el_source">DijkstraBench.java</span></div><h1>DijkstraBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.bench.libs;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm.SingleSourcePaths;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.builder.GraphTypeBuilder;
+import org.jgrapht.opt.graph.sparse.SparseIntUndirectedWeightedGraph;
+import org.jgrapht.util.SupplierUtil;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.ShortestPathSingleSource;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="nc" id="L56">public class DijkstraBench {</span>
+
+<span class="fc" id="L58">	private static abstract class Base {</span>
+
+		List&lt;JGAlgoArgs&gt; jgalgoGraphs;
+		List&lt;JGAlgoCSRArgs&gt; jgalgoCSRGraphs;
+		List&lt;JGraphTArgs&gt; jgraphtGraphs;
+		List&lt;JGraphTSparseArgs&gt; jgraphtSparseGraphs;
+
+<span class="fc" id="L65">		private final int graphsNum = 10;</span>
+<span class="fc" id="L66">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		void generateGraphs() {
+<span class="fc" id="L69">			final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);</span>
+<span class="fc" id="L70">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L71">			jgalgoGraphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc" id="L72">			jgalgoCSRGraphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc" id="L73">			jgraphtGraphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc" id="L74">			jgraphtSparseGraphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L77">				Graph g = generateGraph(seedGen.nextSeed());</span>
+<span class="fc" id="L78">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L79">				int source = g.vertices().toIntArray()[rand.nextInt(g.vertices().size())];</span>
+
+<span class="fc" id="L81">				JGAlgoArgs gArgs = new JGAlgoArgs(g, w, source);</span>
+<span class="fc" id="L82">				jgalgoGraphs.add(gArgs);</span>
+<span class="fc" id="L83">				jgalgoCSRGraphs.add(JGAlgoCSRArgs.fromJGAlgoArgs(gArgs));</span>
+<span class="fc" id="L84">				jgraphtGraphs.add(JGraphTArgs.fromJGAlgoArgs(gArgs));</span>
+<span class="fc" id="L85">				jgraphtSparseGraphs.add(JGraphTSparseArgs.fromJGAlgoArgs(gArgs));</span>
+			}
+<span class="fc" id="L87">		}</span>
+
+		abstract Graph generateGraph(long seed);
+
+		@Benchmark
+		public void jgalgo(Blackhole blackhole) {
+<span class="fc" id="L93">			JGAlgoArgs args = jgalgoGraphs.get(nextGraphIdx());</span>
+<span class="fc" id="L94">			ShortestPathSingleSource algo = ShortestPathSingleSource.newBuilder().build();</span>
+<span class="fc" id="L95">			ShortestPathSingleSource.Result result = algo.computeShortestPaths(args.graph, args.w, args.source);</span>
+<span class="fc" id="L96">			blackhole.consume(result);</span>
+<span class="fc" id="L97">		}</span>
+
+		@Benchmark
+		public void jgalgoCSR(Blackhole blackhole) {
+<span class="fc" id="L101">			JGAlgoCSRArgs args = jgalgoCSRGraphs.get(nextGraphIdx());</span>
+<span class="fc" id="L102">			ShortestPathSingleSource algo = ShortestPathSingleSource.newBuilder().build();</span>
+<span class="fc" id="L103">			ShortestPathSingleSource.Result result = algo.computeShortestPaths(args.graph, args.w, args.source);</span>
+<span class="fc" id="L104">			blackhole.consume(result);</span>
+<span class="fc" id="L105">		}</span>
+
+		@Benchmark
+		public void jgrapht(Blackhole blackhole) {
+<span class="fc" id="L109">			JGraphTArgs args = jgraphtGraphs.get(nextGraphIdx());</span>
+<span class="fc" id="L110">			DijkstraShortestPath&lt;Integer, DefaultWeightedEdge&gt; algo = new DijkstraShortestPath&lt;&gt;(args.graph);</span>
+			@SuppressWarnings(&quot;boxing&quot;)
+<span class="fc" id="L112">			SingleSourcePaths&lt;Integer, DefaultWeightedEdge&gt; result = algo.getPaths(args.source);</span>
+<span class="fc" id="L113">			blackhole.consume(result);</span>
+<span class="fc" id="L114">		}</span>
+
+		@SuppressWarnings(&quot;boxing&quot;)
+		@Benchmark
+		public void jgraphtSparse(Blackhole blackhole) {
+<span class="fc" id="L119">			JGraphTSparseArgs args = jgraphtSparseGraphs.get(nextGraphIdx());</span>
+<span class="fc" id="L120">			DijkstraShortestPath&lt;Integer, Integer&gt; algo = new DijkstraShortestPath&lt;&gt;(args.graph);</span>
+<span class="fc" id="L121">			SingleSourcePaths&lt;Integer, Integer&gt; result = algo.getPaths(args.source);</span>
+<span class="fc" id="L122">			blackhole.consume(result);</span>
+<span class="fc" id="L123">		}</span>
+
+		private int nextGraphIdx() {
+<span class="fc" id="L126">			return graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum);</span>
+		}
+
+		static class JGAlgoArgs {
+			final Graph graph;
+			final WeightFunction.Int w;
+			final int source;
+
+<span class="fc" id="L134">			JGAlgoArgs(Graph graph, WeightFunction.Int w, int source) {</span>
+<span class="fc" id="L135">				this.graph = graph;</span>
+<span class="fc" id="L136">				this.w = w;</span>
+<span class="fc" id="L137">				this.source = source;</span>
+<span class="fc" id="L138">			}</span>
+		}
+
+		static class JGAlgoCSRArgs {
+			final IndexGraph graph;
+			final WeightFunction.Int w;
+			final int source;
+
+<span class="fc" id="L146">			JGAlgoCSRArgs(IndexGraph graph, WeightFunction.Int w, int source) {</span>
+<span class="fc" id="L147">				this.graph = graph;</span>
+<span class="fc" id="L148">				this.w = w;</span>
+<span class="fc" id="L149">				this.source = source;</span>
+<span class="fc" id="L150">			}</span>
+
+			static JGAlgoCSRArgs fromJGAlgoArgs(JGAlgoArgs args) {
+<span class="fc" id="L153">				IndexGraph ig = args.graph.indexGraph();</span>
+<span class="fc" id="L154">				int source = args.graph.indexGraphVerticesMap().idToIndex(args.source);</span>
+<span class="fc" id="L155">				IndexIdMap eiMap = args.graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L156">				WeightFunction.Int w = IndexIdMaps.idToIndexWeightFunc(args.w, eiMap);</span>
+
+<span class="fc" id="L158">				IndexGraphBuilder.ReIndexedGraph gReindexed = IndexGraphBuilder.newFrom(ig).reIndexAndBuild(true, true);</span>
+<span class="fc" id="L159">				IndexGraph g = gReindexed.graph();</span>
+<span class="fc" id="L160">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vsMap = gReindexed.verticesReIndexing();</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				source = vsMap.isPresent() ? vsMap.get().origToReIndexed(source) : source;</span>
+<span class="fc" id="L162">				return new JGAlgoCSRArgs(g, w, source);</span>
+			}
+
+		}
+
+		static class JGraphTArgs {
+			final org.jgrapht.Graph&lt;Integer, DefaultWeightedEdge&gt; graph;
+			final int source;
+
+<span class="fc" id="L171">			JGraphTArgs(org.jgrapht.Graph&lt;Integer, DefaultWeightedEdge&gt; graph, int source) {</span>
+<span class="fc" id="L172">				this.graph = graph;</span>
+<span class="fc" id="L173">				this.source = source;</span>
+<span class="fc" id="L174">			}</span>
+
+			static JGraphTArgs fromJGAlgoArgs(JGAlgoArgs args) {
+<span class="fc" id="L177">				org.jgrapht.Graph&lt;Integer, DefaultWeightedEdge&gt; jg = graph2jgrapht(args.graph, args.w);</span>
+<span class="fc" id="L178">				return new JGraphTArgs(jg, args.source);</span>
+			}
+		}
+
+		static class JGraphTSparseArgs {
+			final org.jgrapht.Graph&lt;Integer, Integer&gt; graph;
+			final int source;
+
+<span class="fc" id="L186">			JGraphTSparseArgs(org.jgrapht.Graph&lt;Integer, Integer&gt; graph, int source) {</span>
+<span class="fc" id="L187">				this.graph = graph;</span>
+<span class="fc" id="L188">				this.source = source;</span>
+<span class="fc" id="L189">			}</span>
+
+			static JGraphTSparseArgs fromJGAlgoArgs(JGAlgoArgs args) {
+<span class="fc" id="L192">				IndexGraph ig = args.graph.indexGraph();</span>
+<span class="fc" id="L193">				int source = args.graph.indexGraphVerticesMap().idToIndex(args.source);</span>
+<span class="fc" id="L194">				IndexIdMap eiMap = args.graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L195">				WeightFunction.Int w = IndexIdMaps.idToIndexWeightFunc(args.w, eiMap);</span>
+
+<span class="fc" id="L197">				org.jgrapht.Graph&lt;Integer, Integer&gt; jg = graph2jgraphtSparse(ig, w);</span>
+<span class="fc" id="L198">				return new JGraphTSparseArgs(jg, source);</span>
+			}
+		}
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L210">	public static class BarabasiAlbert extends Base {</span>
+
+		@Param({ &quot;|V|=64&quot;, &quot;|V|=300&quot;, &quot;|V|=700&quot;, &quot;|V|=1600&quot;, &quot;|V|=2500&quot;, &quot;|V|=4000&quot;, &quot;|V|=6000&quot;, &quot;|V|=9000&quot;,
+				&quot;|V|=13500&quot;, &quot;|V|=21000&quot;, &quot;|V|=32000&quot;, &quot;|V|=48000&quot;, &quot;|V|=75000&quot;,
+				// &quot;|V|=115000&quot;, &quot;|V|=175000&quot;, &quot;|V|=250000&quot;
+		})
+		public String args;
+		private int n;
+
+		@Override
+		@Setup(Level.Iteration)
+		public void generateGraphs() {
+<span class="fc" id="L222">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L223">			n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L224">			super.generateGraphs();</span>
+<span class="fc" id="L225">		}</span>
+
+		@Override
+		Graph generateGraph(long seed) {
+<span class="fc" id="L229">			Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seed);</span>
+<span class="fc" id="L230">			return GraphFactory.newUndirected().newCopyOf(g);</span>
+		}
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L241">	public static class Gnp extends Base {</span>
+
+		@Param({ &quot;|V|=64&quot;, &quot;|V|=300&quot;, &quot;|V|=700&quot;, &quot;|V|=1200&quot;, &quot;|V|=1600&quot;, &quot;|V|=2000&quot;, &quot;|V|=2500&quot;, &quot;|V|=3000&quot;, &quot;|V|=3500&quot;,
+				&quot;|V|=4000&quot;,
+				// &quot;|V|=4500&quot;, &quot;|V|=5000&quot;, &quot;|V|=5500&quot;, &quot;|V|=6000&quot;
+		})
+		public String args;
+		private int n;
+
+		@Override
+		@Setup(Level.Iteration)
+		public void generateGraphs() {
+<span class="fc" id="L253">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L254">			n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L255">			super.generateGraphs();</span>
+<span class="fc" id="L256">		}</span>
+
+		@Override
+		Graph generateGraph(long seed) {
+<span class="fc" id="L260">			Graph g = GraphsTestUtils.randomGraphGnp(n, false, seed);</span>
+<span class="fc" id="L261">			return GraphFactory.newUndirected().newCopyOf(g);</span>
+		}
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L272">	public static class RecursiveMatrix extends Base {</span>
+
+		@Param({ &quot;|V|=64&quot;, &quot;|V|=128&quot;, &quot;|V|=256&quot;, &quot;|V|=512&quot;, &quot;|V|=1024&quot;, &quot;|V|=2048&quot;, &quot;|V|=4096&quot;, &quot;|V|=8192&quot;, &quot;|V|=16384&quot;,
+				&quot;|V|=32768&quot;,
+				// &quot;|V|=65536&quot;, &quot;|V|=131072&quot;, &quot;|V|=262144&quot;
+		})
+		public String args;
+		private int n;
+
+		@Override
+		@Setup(Level.Iteration)
+		public void generateGraphs() {
+<span class="fc" id="L284">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L285">			n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L286">			super.generateGraphs();</span>
+<span class="fc" id="L287">		}</span>
+
+		@Override
+		Graph generateGraph(long seed) {
+<span class="fc" id="L291">			int m = n * 16;</span>
+<span class="fc" id="L292">			Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seed);</span>
+<span class="fc" id="L293">			return GraphFactory.newUndirected().newCopyOf(g);</span>
+		}
+
+	}
+
+	@SuppressWarnings(&quot;boxing&quot;)
+	private static org.jgrapht.Graph&lt;Integer, DefaultWeightedEdge&gt; graph2jgrapht(Graph g,
+			WeightFunction edgeWeightFunc) {
+<span class="fc" id="L301">		org.jgrapht.Graph&lt;Integer, DefaultWeightedEdge&gt; jg = GraphTypeBuilder.undirected().weighted(true)</span>
+<span class="fc" id="L302">				.edgeClass(DefaultWeightedEdge.class).vertexSupplier(SupplierUtil.createIntegerSupplier())</span>
+<span class="fc" id="L303">				.allowingMultipleEdges(true).allowingSelfLoops(true).buildGraph();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		for (int v : g.vertices())</span>
+<span class="fc" id="L305">			jg.addVertex(v);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L307">			var je = jg.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L308">			jg.setEdgeWeight(je, edgeWeightFunc.weight(e));</span>
+<span class="fc" id="L309">		}</span>
+<span class="fc" id="L310">		return jg;</span>
+	}
+
+	@SuppressWarnings(&quot;boxing&quot;)
+	private static org.jgrapht.Graph&lt;Integer, Integer&gt; graph2jgraphtSparse(IndexGraph g,
+			WeightFunction edgeWeightFunc) {
+<span class="fc" id="L316">		return new SparseIntUndirectedWeightedGraph(g.vertices().size(), g.edges().size(),</span>
+<span class="fc" id="L317">				() -&gt; g.edges().intStream().mapToObj(e -&gt; new org.jgrapht.alg.util.Triple&lt;&gt;(g.edgeSource(e),</span>
+<span class="fc" id="L318">						g.edgeTarget(e), edgeWeightFunc.weight(e))));</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

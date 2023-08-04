@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- we dont care about serialization (currently) -->
+    <Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" />
+  </Match>
+  <Match>
+    <!-- Heap element in DSatur coloring implementation is only used in a heap, in which the
+    compareTo() method is used and the equals() is not -->
+    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+  </Match>
+  <Match>
+    <!-- DSatur coloring heap SHOULD negate the comparison result, as we want vertices with GREATER
+    degree to be extracted first from the heap -->
+    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Method name="compareTo" />
+    <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
+  </Match>
+  <Match>
+    <!-- BFS iterator indeed store a mutable reference to the graph and the user should not modify
+    the graph while the BFS iterator is in use -->
+    <Class name="com.jgalgo.BFSIter" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
+    the graph while the DFS iterator is in use -->
+    <Class name="com.jgalgo.DFSIter" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- Intended -->
+    <Class name="com.jgalgo.internal.util.DebugPrinter" />
+    <Method name="setPrintStream" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The Path object indeed store a mutable reference to the graph and the user should not
+    modify the graph while the Path object is in use -->
+    <Class name="com.jgalgo.Path" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The retuned list is an unmodifiable view of the real list -->
+    <Class name="com.jgalgo.DFSIter" />
+    <Method name="edgePath" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapBinomial" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapFibonacci" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
+    <Class name="com.jgalgo.RedBlackTree" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
+    <Class name="com.jgalgo.SplayTree" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is reference to the minimum root node, and its desire to expose it -->
+    <Class name="com.jgalgo.HeapFibonacci" />
+    <Method name="findMin" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is reference to the root node, and its desire to expose it -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="findMin" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- the provided reference is already internal object -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="remove" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- should be fine -->
+    <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker" />
+    <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
+  </Match>
+  <Match>
+    <!-- intentional -->
+    <Class name="com.jgalgo.SSSPDial$DialHeap" />
+    <Method name="extractMin" />
+    <Field name="scanIdx" />
+    <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
+  </Match>
+  <Match>
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.graph.DataContainer$Obj" />
+      <Class name="com.jgalgo.graph.DataContainer$Int" />
+      <Class name="com.jgalgo.graph.DataContainer$Long" />
+    </Or>
+    <Bug pattern="HE_EQUALS_NO_HASHCODE" />
+  </Match>
+  <Match>
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
+    </Or>
+    <Bug pattern="HE_EQUALS_NO_HASHCODE" />
+  </Match>
+  <Match>
+    <!-- the returned view is unmodifiable, its ok to expose it -->
+    <Or>
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
+    </Or>
+    <Method name="values" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- this is internal API, its ok to expose it -->
+    <Class name="com.jgalgo.graph.WeightsImpl$Abstract" />
+    <Method name="container" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.AStar" />
+      <Class name="com.jgalgo.ColoringDSaturHeap" />
+      <Class name="com.jgalgo.MSTFredmanTarjan" />
+      <Class name="com.jgalgo.MSTPrim" />
+      <Class name="com.jgalgo.MatchingWeightedBipartiteHungarianMethod" />
+    </Or>
+    <Method name="setHeapBuilder" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
+    <Or>
+      <Class name="com.jgalgo.internal.data.BinarySearchTrees$BSTIterator" />
+      <Class name="com.jgalgo.internal.data.HeapBinary$It" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$1" />
+      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$2" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$1$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$2$1" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$3$1" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$IterPeekableImpl" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
+    </Or>
+    <Method name="next" />
+    <Bug pattern="IT_NO_SUCH_ELEMENT" />
+  </Match>
+  <Match>
+    <!-- used when Debug=trues -->
+    <Or>
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug" />
+      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug$Impl" />
+    </Or>
+    <Or>
+      <Bug pattern="UC_USELESS_VOID_METHOD" />
+      <Bug pattern="UUF_UNUSED_FIELD" />
+    </Or>
+  </Match>
+
+
+</FindBugsFilter>

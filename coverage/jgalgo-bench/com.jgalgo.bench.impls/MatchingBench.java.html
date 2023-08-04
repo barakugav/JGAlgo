@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchingBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">MatchingBench.java</span></div><h1>MatchingBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.bench.impls;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.Matching;
+import com.jgalgo.MatchingAlgorithm;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="nc" id="L51">public class MatchingBench {</span>
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L59">	public static class MaximumCardinality {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Graph&gt; graphs;
+<span class="fc" id="L65">		private final int graphsNum = 31;</span>
+<span class="fc" id="L66">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L70">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L71">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L72">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L74">			final SeedGenerator seedGen = new SeedGenerator(0x2c942284cf26134dL);</span>
+<span class="fc" id="L75">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L77">				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L78">				graphs.add(g);</span>
+			}
+<span class="fc" id="L80">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L83">			Graph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L84">			Matching matching = algo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L85">			blackhole.consume(matching);</span>
+<span class="fc" id="L86">		}</span>
+
+		@Benchmark
+		public void CardinalityGabow1976(Blackhole blackhole) {
+<span class="fc" id="L90">			benchAlgo(getAlgo(&quot;CardinalityGabow1976&quot;), blackhole);</span>
+<span class="fc" id="L91">		}</span>
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L101">	public static class MaximumCardinalityBipartite {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Graph&gt; graphs;
+<span class="fc" id="L107">		private final int graphsNum = 31;</span>
+<span class="fc" id="L108">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L112">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L113">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L114">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L116">			final SeedGenerator seedGen = new SeedGenerator(0xacff2ce7f7ee4fc9L);</span>
+<span class="fc" id="L117">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L119">				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());</span>
+<span class="fc" id="L120">				graphs.add(g);</span>
+			}
+<span class="fc" id="L122">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L125">			Graph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L126">			Matching matching = algo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L127">			blackhole.consume(matching);</span>
+<span class="fc" id="L128">		}</span>
+
+		@Benchmark
+		public void CardinalityBipartiteHopcroftKarp(Blackhole blackhole) {
+<span class="fc" id="L132">			benchAlgo(getAlgo(&quot;CardinalityBipartiteHopcroftKarp&quot;), blackhole);</span>
+<span class="fc" id="L133">		}</span>
+
+		@Benchmark
+		public void CardinalityGabow1976(Blackhole blackhole) {
+<span class="fc" id="L137">			benchAlgo(getAlgo(&quot;CardinalityGabow1976&quot;), blackhole);</span>
+<span class="fc" id="L138">		}</span>
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L148">	public static class MaximumWeighted {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Pair&lt;Graph, WeightFunction&gt;&gt; graphs;
+<span class="fc" id="L154">		private final int graphsNum = 31;</span>
+<span class="fc" id="L155">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L159">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L160">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L161">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L163">			final SeedGenerator seedGen = new SeedGenerator(0xd857250c5ffe0823L);</span>
+<span class="fc" id="L164">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L166">				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L167">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
+<span class="fc" id="L168">				graphs.add(Pair.of(g, w));</span>
+			}
+<span class="fc" id="L170">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L173">			Pair&lt;Graph, WeightFunction&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L174">			Graph g = gw.first();</span>
+<span class="fc" id="L175">			WeightFunction w = gw.second();</span>
+<span class="fc" id="L176">			Matching matching = algo.computeMaximumWeightedMatching(g, w);</span>
+<span class="fc" id="L177">			blackhole.consume(matching);</span>
+<span class="fc" id="L178">		}</span>
+
+		@Benchmark
+		public void Gabow1990Simpler(Blackhole blackhole) {
+<span class="fc" id="L182">			benchAlgo(getAlgo(&quot;Gabow1990Simpler&quot;), blackhole);</span>
+<span class="fc" id="L183">		}</span>
+
+		@Benchmark
+		public void Gabow1990(Blackhole blackhole) {
+<span class="fc" id="L187">			benchAlgo(getAlgo(&quot;Gabow1990&quot;), blackhole);</span>
+<span class="fc" id="L188">		}</span>
+
+		@Benchmark
+		public void BlossomV(Blackhole blackhole) {
+<span class="fc" id="L192">			benchAlgo(getAlgo(&quot;BlossomV&quot;), blackhole);</span>
+<span class="fc" id="L193">		}</span>
+
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L203">	public static class MaximumWeightedBipartite {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Pair&lt;Graph, WeightFunction&gt;&gt; graphs;
+<span class="fc" id="L209">		private final int graphsNum = 31;</span>
+<span class="fc" id="L210">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L214">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L215">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L216">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L218">			final SeedGenerator seedGen = new SeedGenerator(0x39a998645277eca3L);</span>
+<span class="fc" id="L219">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L221">				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());</span>
+<span class="fc" id="L222">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
+<span class="fc" id="L223">				graphs.add(Pair.of(g, w));</span>
+			}
+<span class="fc" id="L225">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L228">			Pair&lt;Graph, WeightFunction&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L229">			Graph g = gw.first();</span>
+<span class="fc" id="L230">			WeightFunction w = gw.second();</span>
+<span class="fc" id="L231">			Matching matching = algo.computeMaximumWeightedMatching(g, w);</span>
+<span class="fc" id="L232">			blackhole.consume(matching);</span>
+<span class="fc" id="L233">		}</span>
+
+		@Benchmark
+		public void BipartiteHungarianMethod(Blackhole blackhole) {
+<span class="fc" id="L237">			benchAlgo(getAlgo(&quot;BipartiteHungarianMethod&quot;), blackhole);</span>
+<span class="fc" id="L238">		}</span>
+
+		@Benchmark
+		public void BipartiteSSSP(Blackhole blackhole) {
+<span class="fc" id="L242">			benchAlgo(getAlgo(&quot;BipartiteSSSP&quot;), blackhole);</span>
+<span class="fc" id="L243">		}</span>
+
+		@Benchmark
+		public void BlossomV(Blackhole blackhole) {
+<span class="fc" id="L247">			benchAlgo(getAlgo(&quot;BlossomV&quot;), blackhole);</span>
+<span class="fc" id="L248">		}</span>
+
+	}
+
+<span class="fc" id="L252">	@BenchmarkMode(Mode.AverageTime)</span>
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L258">	public static class MinimumPerfect {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Pair&lt;Graph, WeightFunction&gt;&gt; graphs;
+<span class="fc" id="L264">		private final int graphsNum = 31;</span>
+<span class="fc" id="L265">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L269">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L270">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L271">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L273">			final SeedGenerator seedGen = new SeedGenerator(0xd15309f552f84f10L);</span>
+<span class="fc" id="L274">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L276">				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">				if (g.vertices().size() % 2 != 0)</span>
+<span class="nc" id="L279">					throw new IllegalArgumentException(&quot;there is no perfect matching&quot;);</span>
+
+<span class="fc" id="L281">				MatchingAlgorithm cardinalityAlgo = MatchingAlgorithm.newBuilder().setCardinality(true).build();</span>
+<span class="fc" id="L282">				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L283">				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">				assert unmatchedVertices.size() % 2 == 0;</span>
+<span class="fc" id="L285">				IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">				for (int i = 0; i &lt; unmatchedVertices.size() / 2; i++) {</span>
+<span class="nc" id="L287">					int u = unmatchedVertices.getInt(i * 2 + 0);</span>
+<span class="nc" id="L288">					int v = unmatchedVertices.getInt(i * 2 + 1);</span>
+<span class="nc" id="L289">					g.addEdge(u, v);</span>
+				}
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
+
+<span class="fc" id="L293">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
+<span class="fc" id="L294">				graphs.add(Pair.of(g, w));</span>
+			}
+<span class="fc" id="L296">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L299">			Pair&lt;Graph, WeightFunction&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L300">			Graph g = gw.first();</span>
+<span class="fc" id="L301">			WeightFunction w = gw.second();</span>
+<span class="fc" id="L302">			Matching matching = algo.computeMinimumWeightedPerfectMatching(g, w);</span>
+<span class="fc" id="L303">			blackhole.consume(matching);</span>
+<span class="fc" id="L304">		}</span>
+
+		@Benchmark
+		public void Gabow1990Simpler(Blackhole blackhole) {
+<span class="fc" id="L308">			benchAlgo(getAlgo(&quot;Gabow1990Simpler&quot;), blackhole);</span>
+<span class="fc" id="L309">		}</span>
+
+		@Benchmark
+		public void Gabow1990(Blackhole blackhole) {
+<span class="fc" id="L313">			benchAlgo(getAlgo(&quot;Gabow1990&quot;), blackhole);</span>
+<span class="fc" id="L314">		}</span>
+
+		@Benchmark
+		public void BlossomV(Blackhole blackhole) {
+<span class="fc" id="L318">			benchAlgo(getAlgo(&quot;BlossomV&quot;), blackhole);</span>
+<span class="fc" id="L319">		}</span>
+
+	}
+
+<span class="fc" id="L323">	@BenchmarkMode(Mode.AverageTime)</span>
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L329">	public static class MinimumPerfectBipartite {</span>
+
+		@Param({ &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot;, &quot;|V|=1500 |E|=3000&quot; })
+		public String args;
+
+		private List&lt;Pair&lt;Graph, WeightFunction&gt;&gt; graphs;
+<span class="fc" id="L335">		private final int graphsNum = 31;</span>
+<span class="fc" id="L336">		private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L340">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L341">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L342">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L344">			final SeedGenerator seedGen = new SeedGenerator(0x6afda59c8a3dee81L);</span>
+<span class="fc" id="L345">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L347">				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());</span>
+<span class="fc" id="L348">				Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);</span>
+
+				MatchingAlgorithm cardinalityAlgo =
+<span class="fc" id="L351">						MatchingAlgorithm.newBuilder().setCardinality(true).setBipartite(true).build();</span>
+<span class="fc" id="L352">				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L353">				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
+<span class="fc" id="L354">				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
+<span class="pc" id="L355">				unmatchedVerticesS.removeIf(v -&gt; partition.getBool(v));</span>
+<span class="pc bnc" id="L356" title="All 2 branches missed.">				unmatchedVerticesT.removeIf(v -&gt; !partition.getBool(v));</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();</span>
+<span class="fc" id="L358">				IntLists.shuffle(unmatchedVerticesS, new Random(seedGen.nextSeed()));</span>
+<span class="fc" id="L359">				IntLists.shuffle(unmatchedVerticesT, new Random(seedGen.nextSeed()));</span>
+<span class="pc bpc" id="L360" title="1 of 2 branches missed.">				for (int i = 0; i &lt; unmatchedVerticesS.size(); i++) {</span>
+<span class="nc" id="L361">					int u = unmatchedVerticesS.getInt(i);</span>
+<span class="nc" id="L362">					int v = unmatchedVerticesT.getInt(i);</span>
+<span class="nc" id="L363">					g.addEdge(u, v);</span>
+				}
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
+
+<span class="fc" id="L367">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
+<span class="fc" id="L368">				graphs.add(Pair.of(g, w));</span>
+			}
+<span class="fc" id="L370">		}</span>
+
+		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+<span class="fc" id="L373">			Pair&lt;Graph, WeightFunction&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L374">			Graph g = gw.first();</span>
+<span class="fc" id="L375">			WeightFunction w = gw.second();</span>
+<span class="fc" id="L376">			Matching matching = algo.computeMinimumWeightedPerfectMatching(g, w);</span>
+<span class="fc" id="L377">			blackhole.consume(matching);</span>
+<span class="fc" id="L378">		}</span>
+
+		@Benchmark
+		public void BipartiteHungarianMethod(Blackhole blackhole) {
+<span class="fc" id="L382">			benchAlgo(getAlgo(&quot;BipartiteHungarianMethod&quot;), blackhole);</span>
+<span class="fc" id="L383">		}</span>
+
+		@Benchmark
+		public void Gabow1990Simpler(Blackhole blackhole) {
+<span class="fc" id="L387">			benchAlgo(getAlgo(&quot;Gabow1990Simpler&quot;), blackhole);</span>
+<span class="fc" id="L388">		}</span>
+
+		@Benchmark
+		public void BlossomV(Blackhole blackhole) {
+<span class="fc" id="L392">			benchAlgo(getAlgo(&quot;BlossomV&quot;), blackhole);</span>
+<span class="fc" id="L393">		}</span>
+
+	}
+
+	private static MatchingAlgorithm getAlgo(String name) {
+<span class="fc" id="L398">		return MatchingAlgorithm.newBuilder().setOption(&quot;impl&quot;, name).build();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

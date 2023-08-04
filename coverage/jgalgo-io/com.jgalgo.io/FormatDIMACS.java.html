@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FormatDIMACS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">FormatDIMACS.java</span></div><h1>FormatDIMACS.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.util.List;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.Weights;
+
+class FormatDIMACS implements GraphFormat {
+
+	private FormatDIMACS() {}
+
+<span class="fc" id="L32">	static final FormatDIMACS Instance = new FormatDIMACS();</span>
+
+	@Override
+	public GraphWriter newWriter() {
+<span class="fc" id="L36">		return new WriterImpl();</span>
+	}
+
+	@Override
+	public GraphReader newReader() {
+<span class="fc" id="L41">		return new ReaderImpl();</span>
+	}
+
+<span class="fc" id="L44">	private static final List&lt;String&gt; FILE_EXTENSIONS = List.of(&quot;col&quot;, &quot;gr&quot;);</span>
+
+	@Override
+	public List&lt;String&gt; getFileExtensions() {
+<span class="nc" id="L48">		return FILE_EXTENSIONS;</span>
+	}
+
+	private static class WriterImpl implements GraphWriter {
+
+		@Override
+		public void writeGraph(Graph graph, Writer writer) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			if (graph.getCapabilities().directed())</span>
+<span class="fc" id="L56">				throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
+<span class="fc" id="L57">			final int numVertices = graph.vertices().size();</span>
+<span class="fc" id="L58">			final int numEdges = graph.edges().size();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int v = 1; v &lt;= numVertices; v++)</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">				if (!graph.vertices().contains(v))</span>
+<span class="nc" id="L61">					throw new IllegalArgumentException(&quot;the DIMACS format support graphs with vertices 1..n only&quot;);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			for (int e = 1; e &lt;= numEdges; e++)</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">				if (!graph.edges().contains(e))</span>
+<span class="nc" id="L64">					throw new IllegalArgumentException(&quot;the DIMACS format support graphs with edges 1..m only&quot;);</span>
+
+			try {
+<span class="fc" id="L67">				writer.append(&quot;c DIMACS written graph by JGAlgo&quot;).append(System.lineSeparator());</span>
+<span class="fc" id="L68">				final Weights.Int w = graph.getEdgesWeights(&quot;weightsEdges&quot;);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				final boolean hasWeights = w != null;</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				if (hasWeights) {</span>
+<span class="fc" id="L72">					writer.append(&quot;p sp &quot; + numVertices + &quot; &quot; + numEdges).append(System.lineSeparator());</span>
+				} else {
+<span class="fc" id="L74">					writer.append(&quot;p edge &quot; + numVertices + &quot; &quot; + numEdges).append(System.lineSeparator());</span>
+				}
+
+				// writes all edges, optional with weights
+<span class="fc bfc" id="L78" title="All 2 branches covered.">				for (int e = 1; e &lt;= numEdges; e++) {</span>
+					/* e {source} {target} */
+<span class="fc" id="L80">					writer.append(&quot;e &quot;).append(Integer.toString(graph.edgeSource(e))).append(' ')</span>
+<span class="fc" id="L81">							.append(Integer.toString(graph.edgeTarget(e)));</span>
+					/* e {source} {target} {weight} */
+<span class="fc bfc" id="L83" title="All 2 branches covered.">					if (hasWeights)</span>
+<span class="fc" id="L84">						writer.append(' ').append(Integer.toString(w.getInt(e)));</span>
+<span class="fc" id="L85">					writer.append(System.lineSeparator());</span>
+				}
+<span class="nc" id="L87">			} catch (IOException e) {</span>
+<span class="nc" id="L88">				throw new UncheckedIOException(e);</span>
+<span class="fc" id="L89">			}</span>
+<span class="fc" id="L90">		}</span>
+
+	}
+
+	private static class ReaderImpl implements GraphReader {
+
+		/**
+		 * Support 2 DIMACS formats:&lt;br&gt;
+		 * The &quot;DIMACS edge format&quot; and &quot;DIMACS sp format&quot;&lt;br&gt;
+		 * &lt;br&gt;
+		 * 1. Basic DIMACS format: &lt;br&gt;
+		 * see https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format
+		 *
+		 * &lt;pre&gt;
+		 * p edge &lt;NumVertices&gt; &lt;NumEdges&gt;
+		 * e &lt;VertexName1&gt; &lt;VertexName2&gt;
+		 * Example:
+		 * c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}
+		 * p edge 5 5
+		 * e 1 2
+		 * e 2 3
+		 * e 2 4
+		 * e 3 4
+		 * e 4 5
+		 * &lt;/pre&gt;
+		 *
+		 * 2. Shortest path format (with weights)&lt;br&gt;
+		 * Two assumptions:&lt;br&gt;
+		 * (1) Undirected graph.&lt;br&gt;
+		 * (2) Weights are integers.&lt;br&gt;
+		 * &lt;br&gt;
+		 * The .gr files:&lt;br&gt;
+		 * see http://www.diag.uniroma1.it/challenge9/format.shtml#graph
+		 *
+		 * &lt;pre&gt;
+		 * c
+		 * p sp n nm
+		 * a u v w
+		 * &lt;/pre&gt;
+		 */
+		@Override
+		public GraphBuilder readIntoBuilder(Reader reader) {
+			try (BufferedReader br =
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {</span>
+<span class="fc" id="L134">				GraphBuilder gb = GraphBuilder.newUndirected();</span>
+<span class="fc" id="L135">				Weights.Int w = null;</span>
+<span class="fc" id="L136">				int num_vertices = -1;</span>
+<span class="fc" id="L137">				int num_edges = -1;</span>
+<span class="fc" id="L138">				boolean hasWeights = false;</span>
+<span class="fc" id="L139">				boolean problemLineSeen = false;</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				for (String line; (line = br.readLine()) != null;) {</span>
+<span class="fc" id="L142">					line = line.trim();</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">					if (line.isEmpty())</span>
+<span class="nc" id="L144">						continue;</span>
+
+					// replace multiple spaces with just one space
+<span class="fc" id="L147">					line = line.replaceAll(&quot;\\s+&quot;, &quot; &quot;);</span>
+
+<span class="fc" id="L149">					char firstChar = line.charAt(0);</span>
+<span class="pc bpc" id="L150" title="1 of 4 branches missed.">					switch (firstChar) {</span>
+						case 'c': /* comment line */
+<span class="fc" id="L152">							continue;</span>
+
+						case 'p': /* problem line */ {
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">							if (problemLineSeen)</span>
+<span class="nc" id="L156">								throw new IllegalArgumentException(&quot;more than one problem line ('p' prefix) in file&quot;);</span>
+<span class="fc" id="L157">							problemLineSeen = true;</span>
+
+<span class="fc" id="L159">							String[] arr = line.split(&quot; &quot;);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">							if (arr.length != 4)</span>
+<span class="nc" id="L161">								throw new IllegalArgumentException(</span>
+										&quot;p lines must have 4 parameters: p edge &lt;NumVertices&gt; &lt;NumEdges&gt; or p sp &lt;NumVertices&gt; &lt;NumEdges&gt;&quot;);
+<span class="fc" id="L163">							String graph_format = arr[1].toLowerCase();</span>
+<span class="pc bpc" id="L164" title="1 of 3 branches missed.">							switch (graph_format) {</span>
+								case &quot;edge&quot;:
+<span class="fc" id="L166">									hasWeights = false;</span>
+<span class="fc" id="L167">									break;</span>
+								case &quot;sp&quot;:
+<span class="fc" id="L169">									hasWeights = true;</span>
+<span class="fc" id="L170">									break;</span>
+								default:
+<span class="nc" id="L172">									throw new IllegalArgumentException(</span>
+											&quot;support only: p edge &lt;NumVertices&gt; &lt;NumEdges&gt; or p sp &lt;NumVertices&gt; &lt;NumEdges&gt;&quot;);
+							}
+
+							try {
+<span class="fc" id="L177">								num_vertices = Integer.parseInt(arr[2]);</span>
+<span class="fc" id="L178">								num_edges = Integer.parseInt(arr[3]);</span>
+<span class="nc" id="L179">							} catch (Exception e) {</span>
+<span class="nc" id="L180">								throw new IllegalArgumentException(</span>
+										&quot;expect numbers: p edge &lt;NumVertices&gt; &lt;NumEdges&gt; or p sp &lt;NumVertices&gt; &lt;NumEdges&gt;&quot;,
+										e);
+<span class="fc" id="L183">							}</span>
+
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">							if (num_vertices &lt; 0 || num_edges &lt; 0)</span>
+<span class="nc" id="L186">								throw new IllegalArgumentException(</span>
+										&quot;negative vertices/edges num: &quot; + num_vertices + &quot; &quot; + num_edges);
+<span class="fc" id="L188">							gb.expectedVerticesNum(num_vertices);</span>
+<span class="fc" id="L189">							gb.expectedEdgesNum(num_edges);</span>
+
+<span class="fc bfc" id="L191" title="All 2 branches covered.">							if (graph_format.equals(&quot;sp&quot;))</span>
+<span class="fc" id="L192">								w = gb.addEdgesWeights(&quot;weightsEdges&quot;, int.class);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">							for (int v = 1; v &lt;= num_vertices; v++)</span>
+<span class="fc" id="L194">								gb.addVertex(v); // vertices are labeled as 1,2,3,4...</span>
+<span class="fc" id="L195">							break;</span>
+						}
+
+						case 'e': /* edge line */ {
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">							if (!problemLineSeen)</span>
+<span class="nc" id="L200">								throw new IllegalArgumentException(&quot;problem line ('p' prefix) was not seen yet&quot;);</span>
+
+<span class="fc" id="L202">							String[] arr = line.split(&quot; &quot;);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">							if (!hasWeights) {</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">								if (arr.length != 3)</span>
+<span class="nc" id="L205">									throw new IllegalArgumentException(</span>
+											&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt;&quot;);
+							} else {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">								if (arr.length != 4)</span>
+<span class="nc" id="L209">									throw new IllegalArgumentException(</span>
+											&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt; &lt;weight&gt;&quot;);
+							}
+
+							/* parse edge source and target vertices */
+<span class="fc" id="L214">							int vertexSource = -1;</span>
+<span class="fc" id="L215">							int vertexTarget = -1;</span>
+							try {
+<span class="fc" id="L217">								vertexSource = Integer.parseInt(arr[1]);</span>
+<span class="fc" id="L218">								vertexTarget = Integer.parseInt(arr[2]);</span>
+<span class="nc" id="L219">							} catch (Exception e) {</span>
+<span class="nc" id="L220">								throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers&quot;, e);</span>
+<span class="fc" id="L221">							}</span>
+<span class="pc bpc" id="L222" title="4 of 8 branches missed.">							if (vertexSource &lt; 1 || vertexSource &gt; num_vertices || vertexTarget &lt; 1</span>
+									|| vertexTarget &gt; num_vertices)
+<span class="nc" id="L224">								throw new IllegalArgumentException(&quot;vertex number must be between 1 and num_vertices&quot;);</span>
+<span class="fc" id="L225">							final int e = gb.edges().size() + 1;</span>
+<span class="fc" id="L226">							gb.addEdge(vertexSource, vertexTarget, e);</span>
+
+							/* parse edge weight */
+<span class="fc bfc" id="L229" title="All 2 branches covered.">							if (hasWeights) {</span>
+<span class="fc" id="L230">								int edgeWeight = -1;</span>
+								try {
+<span class="fc" id="L232">									edgeWeight = Integer.parseInt(arr[3]);</span>
+<span class="nc" id="L233">								} catch (Exception ex) {</span>
+<span class="nc" id="L234">									throw new IllegalArgumentException(</span>
+											&quot;edge must have 2 vertices as numbers and a weight&quot;, ex);
+<span class="fc" id="L236">								}</span>
+<span class="fc" id="L237">								w.set(e, edgeWeight);</span>
+<span class="fc" id="L238">							}</span>
+							break;
+						}
+						default:
+<span class="nc" id="L242">							throw new IllegalArgumentException(&quot;unknown line: &quot; + line);</span>
+					}
+<span class="fc" id="L244">				}</span>
+<span class="fc" id="L245">				return gb;</span>
+<span class="nc" id="L246">			} catch (IOException e) {</span>
+<span class="nc" id="L247">				throw new UncheckedIOException(e);</span>
+			}
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

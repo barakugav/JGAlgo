@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinCostFlowBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">MinCostFlowBench.java</span></div><h1>MinCostFlowBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.bench.impls;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.FlowNetwork;
+import com.jgalgo.MinimumCostFlow;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="fc" id="L59">public class MinCostFlowBench {</span>
+
+<span class="fc" id="L61">	final int graphsNum = 31;</span>
+<span class="fc" id="L62">	final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+<span class="fc" id="L64">	public static class Supply extends MinCostFlowBench {</span>
+
+		List&lt;Supply.Task&gt; graphs;
+
+<span class="fc" id="L68">		static class Task {</span>
+			Graph g;
+			FlowNetwork.Int net;
+			WeightFunction.Int cost;
+			WeightFunction.Int lowerBound;
+			WeightFunction.Int supply;
+
+			static Task newRand(Graph g, Random rand) {
+<span class="fc" id="L76">				FlowNetwork.Int net = randNetwork(g, rand);</span>
+<span class="fc" id="L77">				WeightFunction.Int supply = randSupply(g, net, rand);</span>
+
+				/*
+				 * build a 'random' lower bound by solving min-cost flow with a different cost function and use the
+				 * flows
+				 */
+<span class="fc" id="L83">				WeightFunction.Int cost1 = randCost(g, rand);</span>
+<span class="fc" id="L84">				MinimumCostFlow.newBuilder().build().computeMinCostFlow(g, net, cost1, supply);</span>
+<span class="fc" id="L85">				Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc" id="L87">					lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));</span>
+<span class="fc" id="L88">					net.setFlow(e, 0);</span>
+<span class="fc" id="L89">				}</span>
+
+<span class="fc" id="L91">				WeightFunction.Int cost = randCost(g, rand);</span>
+
+<span class="fc" id="L93">				Task t = new Task();</span>
+<span class="fc" id="L94">				t.g = g;</span>
+<span class="fc" id="L95">				t.net = net;</span>
+<span class="fc" id="L96">				t.cost = cost;</span>
+<span class="fc" id="L97">				t.lowerBound = lowerBound;</span>
+<span class="fc" id="L98">				t.supply = supply;</span>
+<span class="fc" id="L99">				return t;</span>
+			}
+		}
+
+		public void resetFlow() {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (Task task : graphs)</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">				for (int e : task.g.edges())</span>
+<span class="fc" id="L106">					task.net.setFlow(e, 0);</span>
+<span class="fc" id="L107">		}</span>
+
+		void benchMinCostFlow(MinimumCostFlow.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L110">			Task t = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L111">			MinimumCostFlow algo = builder.build();</span>
+<span class="fc" id="L112">			algo.computeMinCostFlow(t.g, t.net, t.cost, t.lowerBound, t.supply);</span>
+<span class="fc" id="L113">			blackhole.consume(t.net);</span>
+<span class="fc" id="L114">		}</span>
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L122">		public static class Gnp extends MinCostFlowBench.Supply {</span>
+
+			// @Param({ &quot;|V|=1000&quot;, &quot;|V|=2000&quot;, &quot;|V|=2500&quot; })
+			@Param({ &quot;|V|=100&quot; })
+			public String args;
+
+<span class="fc" id="L128">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L133">				super.resetFlow();</span>
+<span class="fc" id="L134">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L138">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L139">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L140">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L142">				final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);</span>
+<span class="fc" id="L143">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L144">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L146">					Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L147">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L149">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L153">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L154">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L158">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L159">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L168">		public static class BarabasiAlbert extends MinCostFlowBench.Supply {</span>
+
+			// @Param({ &quot;|V|=3000&quot;, &quot;|V|=4500&quot;, &quot;|V|=6000&quot; })
+			@Param({ &quot;|V|=100&quot; })
+			public String args;
+
+<span class="fc" id="L174">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L179">				super.resetFlow();</span>
+<span class="fc" id="L180">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L184">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L185">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L186">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L188">				final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);</span>
+<span class="fc" id="L189">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L190">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L192">					Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L193">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L195">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L199">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L200">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L204">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L205">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L214">		public static class RecursiveMatrix extends MinCostFlowBench.Supply {</span>
+
+			// @Param({ &quot;|V|=1500 |E|=5000&quot;, &quot;|V|=2500 |E|=8000&quot;, &quot;|V|=4000 |E|=16000&quot; })
+			// @Param({ &quot;|V|=15 |E|=50&quot; })
+			@Param({ &quot;|V|=3 |E|=3&quot; })
+			public String args;
+
+<span class="fc" id="L221">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L226">				super.resetFlow();</span>
+<span class="fc" id="L227">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L231">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L232">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L233">				int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L234">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L236">				final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);</span>
+<span class="fc" id="L237">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L238">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">					if (gIdx == 5)</span>
+<span class="fc" id="L241">						System.out.println();</span>
+<span class="fc" id="L242">					Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L243">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L245">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L249">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L250">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L254">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L255">			}</span>
+		}
+	}
+
+<span class="fc" id="L259">	public static class MaxFlow extends MinCostFlowBench {</span>
+
+		List&lt;MaxFlow.Task&gt; graphs;
+
+<span class="fc" id="L263">		static class Task {</span>
+			Graph g;
+			FlowNetwork.Int net;
+			WeightFunction.Int cost;
+			WeightFunction.Int lowerBound;
+			IntCollection sources;
+			IntCollection sinks;
+
+			static Task newRand(Graph g, Random rand) {
+<span class="fc" id="L272">				FlowNetwork.Int net = randNetwork(g, rand);</span>
+<span class="fc" id="L273">				Pair&lt;IntCollection, IntCollection&gt; sourcesSinks = MaximumFlowBench.chooseMultiSourceMultiSink(g, rand);</span>
+<span class="fc" id="L274">				IntCollection sources = sourcesSinks.first();</span>
+<span class="fc" id="L275">				IntCollection sinks = sourcesSinks.second();</span>
+<span class="fc" id="L276">				WeightFunction.Int cost = randCost(g, rand);</span>
+<span class="fc" id="L277">				WeightFunction.Int lowerBound = randLowerBound(g, net, sources, sinks, rand);</span>
+
+<span class="fc" id="L279">				Task t = new Task();</span>
+<span class="fc" id="L280">				t.g = g;</span>
+<span class="fc" id="L281">				t.net = net;</span>
+<span class="fc" id="L282">				t.cost = cost;</span>
+<span class="fc" id="L283">				t.lowerBound = lowerBound;</span>
+<span class="fc" id="L284">				t.sources = sources;</span>
+<span class="fc" id="L285">				t.sinks = sinks;</span>
+<span class="fc" id="L286">				return t;</span>
+			}
+		}
+
+		public void resetFlow() {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			for (Task task : graphs)</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">				for (int e : task.g.edges())</span>
+<span class="fc" id="L293">					task.net.setFlow(e, 0);</span>
+<span class="fc" id="L294">		}</span>
+
+		void benchMinCostFlow(MinimumCostFlow.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L297">			Task t = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L298">			MinimumCostFlow algo = builder.build();</span>
+<span class="fc" id="L299">			algo.computeMinCostMaxFlow(t.g, t.net, t.cost, t.lowerBound, t.sources, t.sinks);</span>
+<span class="fc" id="L300">			blackhole.consume(t.net);</span>
+<span class="fc" id="L301">		}</span>
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L309">		public static class Gnp extends MinCostFlowBench.MaxFlow {</span>
+
+			// @Param({ &quot;|V|=1000&quot;, &quot;|V|=2000&quot;, &quot;|V|=2500&quot; })
+			@Param({ &quot;|V|=100&quot; })
+			public String args;
+
+<span class="fc" id="L315">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L320">				super.resetFlow();</span>
+<span class="fc" id="L321">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L325">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L326">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L327">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L329">				final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);</span>
+<span class="fc" id="L330">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L331">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L333">					Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L334">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L336">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L340">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L341">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L345">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L346">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L355">		public static class BarabasiAlbert extends MinCostFlowBench.MaxFlow {</span>
+
+			// @Param({ &quot;|V|=3000&quot;, &quot;|V|=4500&quot;, &quot;|V|=6000&quot; })
+			@Param({ &quot;|V|=100&quot; })
+			public String args;
+
+<span class="fc" id="L361">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L366">				super.resetFlow();</span>
+<span class="fc" id="L367">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L371">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L372">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L373">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L375">				final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);</span>
+<span class="fc" id="L376">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L377">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L379">					Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L380">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L382">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L386">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L387">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L391">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L392">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L401">		public static class RecursiveMatrix extends MinCostFlowBench.MaxFlow {</span>
+
+			// @Param({ &quot;|V|=1500 |E|=5000&quot;, &quot;|V|=2500 |E|=8000&quot;, &quot;|V|=4000 |E|=16000&quot; })
+			@Param({ &quot;|V|=15 |E|=50&quot; })
+			public String args;
+
+<span class="fc" id="L407">			public String directed = &quot;directed&quot;;</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void resetFlow() {
+<span class="fc" id="L412">				super.resetFlow();</span>
+<span class="fc" id="L413">			}</span>
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L417">				Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L418">				int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L419">				int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L420">				boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+
+<span class="fc" id="L422">				final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);</span>
+<span class="fc" id="L423">				Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L424">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L426">					Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L427">					graphs.add(Task.newRand(g, rand));</span>
+				}
+<span class="fc" id="L429">			}</span>
+
+			@Benchmark
+			public void CycleCanceling(Blackhole blackhole) {
+<span class="fc" id="L433">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cycle-canceling&quot;), blackhole);</span>
+<span class="fc" id="L434">			}</span>
+
+			@Benchmark
+			public void CostScaling(Blackhole blackhole) {
+<span class="fc" id="L438">				benchMinCostFlow(MinimumCostFlow.newBuilder().setOption(&quot;impl&quot;, &quot;cost-scaling&quot;), blackhole);</span>
+<span class="fc" id="L439">			}</span>
+		}
+	}
+
+	private static FlowNetwork.Int randNetwork(Graph g, Random rand) {
+<span class="fc" id="L444">		Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L445">		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L446">		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L448">			net.setCapacity(e, 400 + rand.nextInt(1024));</span>
+<span class="fc" id="L449">		return net;</span>
+	}
+
+	private static WeightFunction.Int randCost(Graph g, Random rand) {
+<span class="fc" id="L453">		Weights.Int cost = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L455">			cost.set(e, rand.nextInt(2424) - 600);</span>
+<span class="fc" id="L456">		return cost;</span>
+	}
+
+	private static WeightFunction.Int randLowerBound(Graph g, FlowNetwork.Int net, IntCollection sources,
+			IntCollection sinks, Random rand) {
+<span class="fc" id="L461">		Assertions.Graphs.onlyDirected(g);</span>
+
+<span class="fc" id="L463">		Int2IntMap capacity = new Int2IntOpenHashMap();</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L465">			capacity.put(e, net.getCapacityInt(e));</span>
+
+<span class="fc" id="L467">		IntSet sinksSet = new IntOpenHashSet(sinks);</span>
+<span class="fc" id="L468">		IntList sourcesList = new IntArrayList(sources);</span>
+
+<span class="fc" id="L470">		Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L471">		IntArrayList path = new IntArrayList();</span>
+<span class="fc" id="L472">		IntSet visited = new IntOpenHashSet();</span>
+
+<span class="fc" id="L474">		int lowerBoundCount = 0;</span>
+		sourcesLoop: for (;;) {
+<span class="fc bfc" id="L476" title="All 4 branches covered.">			if (sourcesList.isEmpty() || lowerBoundCount &gt;= g.vertices().size() / 2)</span>
+<span class="fc" id="L477">				return lowerBound;</span>
+
+<span class="fc" id="L479">			class EdgeIterator {</span>
+				int[] es;
+				int idx;
+			}
+
+<span class="fc" id="L484">			path.clear();</span>
+<span class="fc" id="L485">			visited.clear();</span>
+<span class="fc" id="L486">			Int2ObjectMap&lt;EdgeIterator&gt; edgeIters = new Int2ObjectOpenHashMap&lt;&gt;(g.vertices().size());</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">			for (int u : g.vertices()) {</span>
+<span class="fc" id="L488">				int[] es = g.outEdges(u).toIntArray();</span>
+<span class="fc" id="L489">				IntArrays.shuffle(es, rand);</span>
+<span class="fc" id="L490">				EdgeIterator iter = new EdgeIterator();</span>
+<span class="fc" id="L491">				iter.es = es;</span>
+<span class="fc" id="L492">				iter.idx = 0;</span>
+<span class="fc" id="L493">				edgeIters.put(u, iter);</span>
+<span class="fc" id="L494">			}</span>
+
+<span class="fc" id="L496">			int sourceIdx = rand.nextInt(sourcesList.size());</span>
+<span class="fc" id="L497">			int source = sourcesList.getInt(sourceIdx);</span>
+<span class="fc" id="L498">			visited.add(source);</span>
+<span class="fc" id="L499">			dfs: for (int u = source;;) {</span>
+
+				/* Find a random edge to deepen the DFS */
+<span class="fc bfc" id="L502" title="All 2 branches covered.">				for (EdgeIterator edgeIter = edgeIters.get(u); edgeIter.idx &lt; edgeIter.es.length; edgeIter.idx++) {</span>
+<span class="fc" id="L503">					int e = edgeIter.es[edgeIter.idx];</span>
+<span class="fc bfc" id="L504" title="All 2 branches covered.">					if (capacity.get(e) == 0)</span>
+<span class="fc" id="L505">						continue;</span>
+<span class="pc bpc" id="L506" title="1 of 2 branches missed.">					assert u == g.edgeSource(e);</span>
+<span class="fc" id="L507">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">					if (visited.contains(v))</span>
+<span class="fc" id="L509">						continue;</span>
+<span class="fc" id="L510">					path.add(e);</span>
+
+<span class="fc bfc" id="L512" title="All 2 branches covered.">					if (sinksSet.contains(v))</span>
+						/* found an residual path from source to sink */
+<span class="fc" id="L514">						break dfs;</span>
+
+					/* Continue down in the DFS */
+<span class="fc" id="L517">					visited.add(v);</span>
+<span class="fc" id="L518">					u = v;</span>
+<span class="fc" id="L519">					continue dfs;</span>
+				}
+
+				/* No more edges to explore */
+<span class="fc bfc" id="L523" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
+					/* No more residual paths from source to any sink, remove source from sources list */
+<span class="fc" id="L525">					sourcesList.set(sourceIdx, sourcesList.getInt(sourcesList.size() - 1));</span>
+<span class="fc" id="L526">					sourcesList.removeInt(sourcesList.size() - 1);</span>
+<span class="fc" id="L527">					continue sourcesLoop;</span>
+				}
+
+				/* Back up in the DFS path one vertex */
+<span class="fc" id="L531">				int lastEdge = path.popInt();</span>
+<span class="pc bpc" id="L532" title="1 of 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
+<span class="fc" id="L533">				u = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L534">			}</span>
+
+			/* Found a residual path from source to sink */
+<span class="fc" id="L537">			int delta = path.intStream().map(capacity::get).min().getAsInt();</span>
+<span class="pc bpc" id="L538" title="1 of 2 branches missed.">			assert delta &gt; 0;</span>
+<span class="fc bfc" id="L539" title="All 2 branches covered.">			for (int e : path)</span>
+<span class="fc" id="L540">				capacity.put(e, capacity.get(e) - delta);</span>
+
+			/* Add lower bounds to some of the edges */
+<span class="fc" id="L543">			IntList lowerBoundEdges = new IntArrayList(path);</span>
+<span class="fc" id="L544">			IntLists.shuffle(lowerBoundEdges, rand);</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">			if (lowerBoundEdges.size() &gt; 1)</span>
+<span class="fc" id="L546">				lowerBoundEdges.removeElements(Math.max(1, lowerBoundEdges.size() / 3), lowerBoundEdges.size());</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">			for (int e : lowerBoundEdges) {</span>
+<span class="fc" id="L548">				int boundDelta = delta / 2 + rand.nextInt((delta + 1) / 2);</span>
+<span class="fc" id="L549">				lowerBound.set(e, lowerBound.weightInt(e) + boundDelta);</span>
+<span class="fc" id="L550">				lowerBoundCount++;</span>
+<span class="fc" id="L551">			}</span>
+<span class="fc" id="L552">		}</span>
+	}
+
+	private static WeightFunction.Int randSupply(Graph g, FlowNetwork.Int net, Random rand) {
+<span class="fc" id="L556">		Assertions.Graphs.onlyDirected(g);</span>
+
+<span class="fc" id="L558">		IntList suppliers = new IntArrayList();</span>
+<span class="fc" id="L559">		IntList demanders = new IntArrayList();</span>
+<span class="fc" id="L560">		int[] vertices = g.vertices().toIntArray();</span>
+<span class="fc" id="L561">		IntArrays.shuffle(vertices, rand);</span>
+<span class="pc bpc" id="L562" title="1 of 2 branches missed.">		assert vertices.length &gt;= 2;</span>
+<span class="fc" id="L563">		suppliers.add(vertices[0]);</span>
+<span class="fc" id="L564">		demanders.add(vertices[1]);</span>
+<span class="fc bfc" id="L565" title="All 2 branches covered.">		for (int i = 2; i &lt; vertices.length; i++) {</span>
+<span class="fc" id="L566">			int r = rand.nextInt(3);</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">			if (r == 0) {</span>
+<span class="fc" id="L568">				suppliers.add(vertices[i]);</span>
+<span class="fc bfc" id="L569" title="All 2 branches covered.">			} else if (r == 1) {</span>
+<span class="fc" id="L570">				demanders.add(vertices[i]);</span>
+			} else {
+				/* do nothing */
+			}
+		}
+
+<span class="fc" id="L576">		Int2IntMap capacity = new Int2IntOpenHashMap();</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L578">			capacity.put(e, net.getCapacityInt(e));</span>
+
+<span class="fc" id="L580">		IntSet demandersSet = new IntOpenHashSet(demanders);</span>
+<span class="fc" id="L581">		IntList suppliersList = new IntArrayList(suppliers);</span>
+
+<span class="fc" id="L583">		Weights.Int supply = Weights.createExternalVerticesWeights(g, int.class);</span>
+<span class="fc" id="L584">		IntArrayList path = new IntArrayList();</span>
+<span class="fc" id="L585">		IntSet visited = new IntOpenHashSet();</span>
+		suppliersLoop: for (;;) {
+<span class="fc bfc" id="L587" title="All 2 branches covered.">			if (suppliersList.isEmpty()) {</span>
+<span class="pc bpc" id="L588" title="1 of 2 branches missed.">				assert g.vertices().intStream().map(supply::weightInt).sum() == 0;</span>
+<span class="fc" id="L589">				return supply;</span>
+			}
+
+<span class="fc" id="L592">			path.clear();</span>
+<span class="fc" id="L593">			visited.clear();</span>
+
+<span class="fc" id="L595">			int supplierIdx = rand.nextInt(suppliersList.size());</span>
+<span class="fc" id="L596">			int supplier = suppliersList.getInt(supplierIdx);</span>
+<span class="fc" id="L597">			visited.add(supplier);</span>
+<span class="fc" id="L598">			dfs: for (int u = supplier;;) {</span>
+
+				/* Find a random edge to deepen the DFS */
+<span class="fc" id="L601">				int[] es = g.outEdges(u).toIntArray();</span>
+<span class="fc" id="L602">				IntArrays.shuffle(es, rand);</span>
+<span class="fc bfc" id="L603" title="All 2 branches covered.">				for (int e : es) {</span>
+<span class="fc bfc" id="L604" title="All 2 branches covered.">					if (capacity.get(e) == 0)</span>
+<span class="fc" id="L605">						continue;</span>
+<span class="pc bpc" id="L606" title="1 of 2 branches missed.">					assert u == g.edgeSource(e);</span>
+<span class="fc" id="L607">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L608" title="All 2 branches covered.">					if (visited.contains(v))</span>
+<span class="fc" id="L609">						continue;</span>
+<span class="fc" id="L610">					path.add(e);</span>
+
+<span class="fc bfc" id="L612" title="All 2 branches covered.">					if (demandersSet.contains(v))</span>
+						/* found an residual path from a supplier to a demander */
+<span class="fc" id="L614">						break dfs;</span>
+
+					/* Continue down in the DFS */
+<span class="fc" id="L617">					visited.add(v);</span>
+<span class="fc" id="L618">					u = v;</span>
+<span class="fc" id="L619">					continue dfs;</span>
+				}
+
+				/* No more edges to explore */
+<span class="fc bfc" id="L623" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
+					/* No more residual paths from supplier to any demander, remove supplier from suppliers list */
+<span class="fc" id="L625">					suppliersList.set(supplierIdx, suppliersList.getInt(suppliersList.size() - 1));</span>
+<span class="fc" id="L626">					suppliersList.removeInt(suppliersList.size() - 1);</span>
+<span class="fc" id="L627">					continue suppliersLoop;</span>
+				}
+
+				/* Back up in the DFS path one vertex */
+<span class="fc" id="L631">				int lastEdge = path.popInt();</span>
+<span class="pc bpc" id="L632" title="1 of 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
+<span class="fc" id="L633">				u = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L634">			}</span>
+
+			/* Found a residual path from a supplier to a demander */
+<span class="fc" id="L637">			int delta = path.intStream().map(capacity::get).min().getAsInt();</span>
+<span class="pc bpc" id="L638" title="1 of 2 branches missed.">			assert delta &gt; 0;</span>
+<span class="fc bfc" id="L639" title="All 2 branches covered.">			for (int e : path)</span>
+<span class="fc" id="L640">				capacity.put(e, capacity.get(e) - delta);</span>
+
+			/* Add lower bounds to some of the edges */
+<span class="fc" id="L643">			int source = g.edgeSource(path.getInt(0));</span>
+<span class="fc" id="L644">			int sink = g.edgeTarget(path.getInt(path.size() - 1));</span>
+<span class="fc bfc" id="L645" title="All 2 branches covered.">			if (rand.nextBoolean()) {</span>
+<span class="fc" id="L646">				int s = rand.nextInt((delta + 1) / 2);</span>
+<span class="fc" id="L647">				supply.set(source, supply.weightInt(source) + s);</span>
+<span class="fc" id="L648">				supply.set(sink, supply.weightInt(sink) - s);</span>
+			}
+<span class="fc" id="L650">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

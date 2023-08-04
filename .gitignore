@@ -1,0 +1,11 @@
+build/
+bin/
+.classpath
+.project
+.settings
+*.bak
+**/target/
+/.apt_generated/
+/.apt_generated_tests/
+/.vscode/
+**/__pycache__/

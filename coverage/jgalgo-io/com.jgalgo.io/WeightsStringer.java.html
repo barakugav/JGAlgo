@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightsStringer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">WeightsStringer.java</span></div><h1>WeightsStringer.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import com.jgalgo.graph.Weights;
+
+interface WeightsStringer {
+
+	String getWeightAsString(int id);
+
+	static WeightsStringer newInstance(Weights&lt;?&gt; weights) {
+<span class="fc" id="L25">		return newInstance(weights, null, null);</span>
+	}
+
+	static WeightsStringer newInstance(Weights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
+<span class="fc" id="L29">		boolean nonNumberEnclosing = false;</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">		if (nonNumberPrefix != null || nonNumberSuffix != null) {</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">			if (nonNumberPrefix == null)</span>
+<span class="nc" id="L32">				nonNumberPrefix = &quot;&quot;;</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">			if (nonNumberSuffix == null)</span>
+<span class="nc" id="L34">				nonNumberSuffix = &quot;&quot;;</span>
+<span class="fc" id="L35">			nonNumberEnclosing = true;</span>
+		}
+
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (weights instanceof Weights.Byte) {</span>
+<span class="nc" id="L39">			Weights.Byte ws = (Weights.Byte) weights;</span>
+<span class="nc" id="L40">			return elm -&gt; String.valueOf(ws.getByte(elm));</span>
+
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		} else if (weights instanceof Weights.Short) {</span>
+<span class="nc" id="L43">			Weights.Short ws = (Weights.Short) weights;</span>
+<span class="nc" id="L44">			return elm -&gt; String.valueOf(ws.getShort(elm));</span>
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		} else if (weights instanceof Weights.Int) {</span>
+<span class="fc" id="L47">			Weights.Int ws = (Weights.Int) weights;</span>
+<span class="fc" id="L48">			return elm -&gt; String.valueOf(ws.getInt(elm));</span>
+
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		} else if (weights instanceof Weights.Long) {</span>
+<span class="nc" id="L51">			Weights.Long ws = (Weights.Long) weights;</span>
+<span class="nc" id="L52">			return elm -&gt; String.valueOf(ws.getLong(elm));</span>
+
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		} else if (weights instanceof Weights.Float) {</span>
+<span class="nc" id="L55">			Weights.Float ws = (Weights.Float) weights;</span>
+<span class="nc" id="L56">			return elm -&gt; String.valueOf(ws.getFloat(elm));</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		} else if (weights instanceof Weights.Double) {</span>
+<span class="fc" id="L59">			Weights.Double ws = (Weights.Double) weights;</span>
+<span class="fc" id="L60">			return elm -&gt; String.valueOf(ws.getDouble(elm));</span>
+
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		} else if (weights instanceof Weights.Bool) {</span>
+<span class="nc" id="L63">			Weights.Bool ws = (Weights.Bool) weights;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
+<span class="nc" id="L65">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
+<span class="nc" id="L66">				return elm -&gt; pre + String.valueOf(ws.getBool(elm)) + post;</span>
+			} else {
+<span class="nc" id="L68">				return elm -&gt; String.valueOf(ws.getBool(elm));</span>
+			}
+
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		} else if (weights instanceof Weights.Char) {</span>
+<span class="nc" id="L72">			Weights.Char ws = (Weights.Char) weights;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
+<span class="nc" id="L74">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
+<span class="nc" id="L75">				return elm -&gt; pre + String.valueOf(ws.getChar(elm)) + post;</span>
+			} else {
+<span class="nc" id="L77">				return elm -&gt; String.valueOf(ws.getChar(elm));</span>
+			}
+
+		} else {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (nonNumberEnclosing) {</span>
+<span class="fc" id="L82">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
+<span class="fc" id="L83">				return elm -&gt; pre + String.valueOf(weights.get(elm)) + post;</span>
+			} else {
+<span class="fc" id="L85">				return elm -&gt; String.valueOf(weights.get(elm));</span>
+			}
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

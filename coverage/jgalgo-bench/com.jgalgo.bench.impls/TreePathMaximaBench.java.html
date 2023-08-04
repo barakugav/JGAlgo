@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TreePathMaximaBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">TreePathMaximaBench.java</span></div><h1>TreePathMaximaBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.bench.impls;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.TreePathMaxima;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1, warmups = 0)
+@State(Scope.Benchmark)
+<span class="fc" id="L51">public class TreePathMaximaBench {</span>
+
+	@Param({ &quot;N=128 M=128&quot;, &quot;N=2500 M=2500&quot;, &quot;N=15000 M=15000&quot; })
+	public String args;
+	public int n, m;
+
+	private List&lt;TPMArgs&gt; graphs;
+<span class="fc" id="L58">	private final int graphsNum = 31;</span>
+<span class="fc" id="L59">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+	@Setup(Level.Iteration)
+	public void setup() {
+<span class="fc" id="L63">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L64">		n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
+<span class="fc" id="L65">		m = Integer.parseInt(argsMap.get(&quot;M&quot;));</span>
+
+<span class="fc" id="L67">		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);</span>
+<span class="fc" id="L68">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L70">			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());</span>
+<span class="fc" id="L71">			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());</span>
+<span class="fc" id="L72">			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());</span>
+<span class="fc" id="L73">			graphs.add(new TPMArgs(tree, w, queries));</span>
+		}
+<span class="fc" id="L75">	}</span>
+
+	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L78">		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L79">		TreePathMaxima algo = builder.build();</span>
+<span class="fc" id="L80">		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);</span>
+<span class="fc" id="L81">		blackhole.consume(result);</span>
+<span class="fc" id="L82">	}</span>
+
+	@Benchmark
+	public void TPMHagerup(Blackhole blackhole) {
+<span class="fc" id="L86">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.FALSE), blackhole);</span>
+<span class="fc" id="L87">	}</span>
+
+	@Benchmark
+	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
+<span class="fc" id="L91">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.TRUE), blackhole);</span>
+<span class="fc" id="L92">	}</span>
+
+	private static class TPMArgs {
+		final Graph tree;
+		final WeightFunction w;
+		final TreePathMaxima.Queries queries;
+
+<span class="fc" id="L99">		TPMArgs(Graph tree, WeightFunction w, TreePathMaxima.Queries queries) {</span>
+<span class="fc" id="L100">			this.tree = tree;</span>
+<span class="fc" id="L101">			this.w = w;</span>
+<span class="fc" id="L102">			this.queries = queries;</span>
+<span class="fc" id="L103">		}</span>
+	}
+
+	private static TreePathMaxima.Queries generateRandQueries(Graph tree, int m, long seed) {
+<span class="fc" id="L107">		Random rand = new Random(seed);</span>
+<span class="fc" id="L108">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
+<span class="fc" id="L109">		int[] vs = tree.vertices().toIntArray();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int q = 0; q &lt; m; q++) {</span>
+			int i, j;
+			do {
+<span class="fc" id="L113">				i = rand.nextInt(vs.length);</span>
+<span class="fc" id="L114">				j = rand.nextInt(vs.length);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			} while (i == j);</span>
+<span class="fc" id="L116">			queries.addQuery(vs[i], vs[j]);</span>
+		}
+<span class="fc" id="L118">		return queries;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximalCliquesBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">MaximalCliquesBench.java</span></div><h1>MaximalCliquesBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.bench.impls;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.MaximalCliques;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="fc" id="L48">public class MaximalCliquesBench {</span>
+
+	List&lt;Graph&gt; graphs;
+<span class="fc" id="L51">	final int graphsNum = 31;</span>
+<span class="fc" id="L52">	final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+	void benchMaximalCliques(MaximalCliques.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L55">		Graph graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L56">		MaximalCliques algo = builder.build();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (Iterator&lt;IntCollection&gt; cliqueIter = algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)</span>
+<span class="fc" id="L58">			blackhole.consume(cliqueIter.next());</span>
+<span class="fc" id="L59">	}</span>
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L67">	public static class Gnp extends MaximalCliquesBench {</span>
+
+		@Param({ &quot;|V|=150&quot;, &quot;|V|=500&quot;, &quot;|V|=1000&quot; })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L74">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L75">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+
+<span class="fc" id="L77">			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);</span>
+<span class="fc" id="L78">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L80">				Graph g = GraphsTestUtils.randomGraphGnp(n, false, seedGen.nextSeed());</span>
+<span class="fc" id="L81">				graphs.add(g);</span>
+			}
+<span class="fc" id="L83">		}</span>
+
+		@Benchmark
+		public void BronKerbosch(Blackhole blackhole) {
+<span class="fc" id="L87">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch&quot;), blackhole);</span>
+<span class="fc" id="L88">		}</span>
+
+		@Benchmark
+		public void BronKerboschPivot(Blackhole blackhole) {
+<span class="fc" id="L92">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch-pivot&quot;), blackhole);</span>
+<span class="fc" id="L93">		}</span>
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L102">	public static class BarabasiAlbert extends MaximalCliquesBench {</span>
+
+		@Param({ &quot;|V|=100&quot;, &quot;|V|=400&quot;, &quot;|V|=1000&quot; })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L109">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L110">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+
+<span class="fc" id="L112">			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);</span>
+<span class="fc" id="L113">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L115">				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
+<span class="fc" id="L116">				graphs.add(g);</span>
+			}
+<span class="fc" id="L118">		}</span>
+
+		@Benchmark
+		public void BronKerbosch(Blackhole blackhole) {
+<span class="fc" id="L122">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch&quot;), blackhole);</span>
+<span class="fc" id="L123">		}</span>
+
+		@Benchmark
+		public void BronKerboschPivot(Blackhole blackhole) {
+<span class="fc" id="L127">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch-pivot&quot;), blackhole);</span>
+<span class="fc" id="L128">		}</span>
+	}
+
+	@BenchmarkMode(Mode.AverageTime)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
+	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Fork(value = 1, warmups = 0)
+	@State(Scope.Benchmark)
+<span class="fc" id="L137">	public static class RecursiveMatrix extends MaximalCliquesBench {</span>
+
+		@Param({ &quot;|V|=300 |E|=1000&quot;, &quot;|V|=300 |E|=2500&quot;, &quot;|V|=800 |E|=5000&quot; })
+		public String args;
+
+		@Setup(Level.Trial)
+		public void setup() {
+<span class="fc" id="L144">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L145">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L146">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L148">			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);</span>
+<span class="fc" id="L149">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L151">				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, false, seedGen.nextSeed());</span>
+<span class="fc" id="L152">				graphs.add(g);</span>
+			}
+<span class="fc" id="L154">		}</span>
+
+		@Benchmark
+		public void BronKerbosch(Blackhole blackhole) {
+<span class="fc" id="L158">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch&quot;), blackhole);</span>
+<span class="fc" id="L159">		}</span>
+
+		@Benchmark
+		public void BronKerboschPivot(Blackhole blackhole) {
+<span class="fc" id="L163">			benchMaximalCliques(MaximalCliques.newBuilder().setOption(&quot;impl&quot;, &quot;bron-kerbosch-pivot&quot;), blackhole);</span>
+<span class="fc" id="L164">		}</span>
+	}
+
+	static Pair&lt;IntCollection, IntCollection&gt; chooseMultiSourceMultiSink(Graph g, Random rand) {
+<span class="nc" id="L168">		final int n = g.vertices().size();</span>
+		final int sourcesNum;
+		final int sinksNum;
+<span class="nc bnc" id="L171" title="All 2 branches missed.">		if (n &lt; 2) {</span>
+<span class="nc" id="L172">			throw new IllegalArgumentException(&quot;too few vertices&quot;);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		} else if (n &lt; 4) {</span>
+<span class="nc" id="L174">			sourcesNum = sinksNum = 1;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">		} else if (n &lt;= 6) {</span>
+<span class="nc" id="L176">			sourcesNum = sinksNum = 2;</span>
+		} else {
+<span class="nc" id="L178">			sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
+<span class="nc" id="L179">			sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
+		}
+
+<span class="nc" id="L182">		IntCollection sources = new IntOpenHashSet(sourcesNum);</span>
+<span class="nc" id="L183">		IntCollection sinks = new IntOpenHashSet(sinksNum);</span>
+<span class="nc" id="L184">		for (int[] vs = g.vertices().toIntArray();;) {</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">			if (sources.size() &lt; sourcesNum) {</span>
+<span class="nc" id="L186">				int source = vs[rand.nextInt(vs.length)];</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">				if (!sinks.contains(source))</span>
+<span class="nc" id="L188">					sources.add(source);</span>
+
+<span class="nc bnc" id="L190" title="All 2 branches missed.">			} else if (sinks.size() &lt; sinksNum) {</span>
+<span class="nc" id="L191">				int sink = vs[rand.nextInt(vs.length)];</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">				if (!sources.contains(sink))</span>
+<span class="nc" id="L193">					sinks.add(sink);</span>
+<span class="nc" id="L194">			} else {</span>
+				break;
+			}
+		}
+<span class="nc" id="L198">		return Pair.of(sources, sinks);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

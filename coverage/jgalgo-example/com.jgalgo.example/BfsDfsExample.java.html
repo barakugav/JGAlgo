@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BfsDfsExample.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Examples</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.example</a> &gt; <span class="el_source">BfsDfsExample.java</span></div><h1>BfsDfsExample.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.example;
+
+import com.jgalgo.BFSIter;
+import com.jgalgo.DFSIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+<span class="nc" id="L24">public class BfsDfsExample {</span>
+
+	public static void BFSExample() {
+		/* Create a graph and choose an arbitrary source vertex */
+<span class="fc" id="L28">		Graph g = createGraph();</span>
+<span class="fc" id="L29">		int source = g.vertices().iterator().nextInt();</span>
+
+		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		for (BFSIter iter = BFSIter.newInstance(g, source); iter.hasNext();) {</span>
+			/* v is a vertex the iterator didn't visit before */
+<span class="fc" id="L34">			int v = iter.nextInt();</span>
+			/* e is the edge used to reach v */
+			/* In a directed graph, v is the 'target' of e */
+<span class="fc" id="L37">			int e = iter.lastEdge();</span>
+			/* the layer is the distance of v from the source vertex */
+<span class="fc" id="L39">			int layer = iter.layer();</span>
+<span class="fc" id="L40">			System.out.println(&quot;BFS reached vertex &quot; + v + &quot; at layer &quot; + layer + &quot; using edge &quot; + e);</span>
+<span class="fc" id="L41">		}</span>
+<span class="fc" id="L42">	}</span>
+
+	public static void DFSExample() {
+		/* Create a graph and choose an arbitrary source vertex */
+<span class="fc" id="L46">		Graph g = createGraph();</span>
+<span class="fc" id="L47">		int source = g.vertices().iterator().nextInt();</span>
+
+		/* Iterate over the graph vertices in a depth-first search (DFS) order */
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (DFSIter iter = DFSIter.newInstance(g, source); iter.hasNext();) {</span>
+			/* v is a vertex the iterator didn't visit before */
+<span class="fc" id="L52">			int v = iter.nextInt();</span>
+			/* edgePath is a list of edges, forming a path from the source to v */
+<span class="fc" id="L54">			IntList edgePath = iter.edgePath();</span>
+<span class="fc" id="L55">			System.out.println(&quot;Reached vertex &quot; + v + &quot; using the edges: &quot; + edgePath);</span>
+<span class="fc" id="L56">		}</span>
+<span class="fc" id="L57">	}</span>
+
+	public static Graph createGraph() {
+<span class="fc" id="L60">		Graph g = GraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L61">		int v1 = g.addVertex();</span>
+<span class="fc" id="L62">		int v2 = g.addVertex();</span>
+<span class="fc" id="L63">		int v3 = g.addVertex();</span>
+<span class="fc" id="L64">		int v4 = g.addVertex();</span>
+<span class="fc" id="L65">		int v5 = g.addVertex();</span>
+<span class="fc" id="L66">		int v6 = g.addVertex();</span>
+<span class="fc" id="L67">		int v7 = g.addVertex();</span>
+
+<span class="fc" id="L69">		g.addEdge(v1, v2);</span>
+<span class="fc" id="L70">		g.addEdge(v2, v3);</span>
+<span class="fc" id="L71">		g.addEdge(v1, v3);</span>
+<span class="fc" id="L72">		g.addEdge(v7, v5);</span>
+<span class="fc" id="L73">		g.addEdge(v6, v1);</span>
+<span class="fc" id="L74">		g.addEdge(v3, v4);</span>
+
+<span class="fc" id="L76">		return g;</span>
+	}
+
+	public static void main(String[] args) {
+<span class="fc" id="L80">		BFSExample();</span>
+<span class="fc" id="L81">		DFSExample();</span>
+<span class="fc" id="L82">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

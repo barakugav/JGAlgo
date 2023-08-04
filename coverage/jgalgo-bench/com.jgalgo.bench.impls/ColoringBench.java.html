@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColoringBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">ColoringBench.java</span></div><h1>ColoringBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.bench.impls;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.Coloring;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graph;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1, warmups = 0)
+@State(Scope.Benchmark)
+<span class="fc" id="L49">public class ColoringBench {</span>
+
+	@Param({ &quot;|V|=100 |E|=100&quot;, &quot;|V|=200 |E|=1000&quot;, &quot;|V|=1600 |E|=10000&quot; })
+	public String args;
+
+	private List&lt;Graph&gt; graphs;
+<span class="fc" id="L55">	private final int graphsNum = 31;</span>
+<span class="fc" id="L56">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+	@Setup(Level.Iteration)
+	public void setup() {
+<span class="fc" id="L60">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L61">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L62">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L64">		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);</span>
+<span class="fc" id="L65">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L67">			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L68">			graphs.add(g);</span>
+		}
+<span class="fc" id="L70">	}</span>
+
+	private void benchColoring(Coloring.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L73">		Graph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L74">		Coloring algo = builder.build();</span>
+<span class="fc" id="L75">		Coloring.Result res = algo.computeColoring(g);</span>
+<span class="fc" id="L76">		blackhole.consume(res);</span>
+<span class="fc" id="L77">	}</span>
+
+	@Benchmark
+	public void Greedy(Blackhole blackhole) {
+<span class="fc" id="L81">		final long seed = 0xefeae78aba502d4aL;</span>
+<span class="fc" id="L82">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;greedy&quot;).setOption(&quot;seed&quot;, Long.valueOf(seed)),</span>
+				blackhole);
+<span class="fc" id="L84">	}</span>
+
+	@Benchmark
+	public void DSatur(Blackhole blackhole) {
+<span class="fc" id="L88">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;dsatur&quot;), blackhole);</span>
+<span class="fc" id="L89">	}</span>
+
+	@Benchmark
+	public void RecursiveLargestFirst(Blackhole blackhole) {
+<span class="fc" id="L93">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;rlf&quot;), blackhole);</span>
+<span class="fc" id="L94">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
