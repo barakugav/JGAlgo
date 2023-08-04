@@ -21,34 +21,68 @@ import com.jgalgo.internal.util.TestBase;
 
 class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 
+	private static ShortestPathAllPairs algo() {
+		return new ShortestPathAllPairsFloydWarshall();
+	}
+
 	@Test
-	public void testRandGraphDirectedPositiveInt() {
+	public void testRandGraphDirectedPositive() {
 		final long seed = 0x80b8af9bfbd5e5d5L;
-		ShortestPathAllPairsTestUtils.testAPSPDirectedPositiveInt(new ShortestPathAllPairsFloydWarshall(), seed);
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), true, true, seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedPositiveInt() {
+	public void testSSSPUndirectedPositive() {
 		final long seed = 0x307fc7bb8684a8b5L;
-		ShortestPathAllPairsTestUtils.testAPSPUndirectedPositiveInt(new ShortestPathAllPairsFloydWarshall(), seed);
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, true, seed);
 	}
 
 	@Test
-	public void testRandGraphDirectedNegativeInt() {
+	public void testRandGraphDirectedNegative() {
 		final long seed = 0xd3037473c85e47b3L;
-		ShortestPathAllPairsTestUtils.testAPSPDirectedNegativeInt(new ShortestPathAllPairsFloydWarshall(), seed);
+		ShortestPathAllPairsTestUtils.testAPSPDirectedNegative(algo(), true, seed);
 	}
 
 	@Test
 	public void testRandGraphDirectedCardinality() {
 		final long seed = 0xefc29ae984ef7a07L;
-		ShortestPathAllPairsTestUtils.testAPSPCardinality(new ShortestPathAllPairsFloydWarshall(), true, seed);
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), true, true, seed);
 	}
 
 	@Test
 	public void testRandGraphUndirectedCardinality() {
 		final long seed = 0xf301a8a350bea7c9L;
-		ShortestPathAllPairsTestUtils.testAPSPCardinality(new ShortestPathAllPairsFloydWarshall(), false, seed);
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), false, true, seed);
+	}
+
+	@Test
+	public void testRandGraphDirectedPositiveVerticesSubset() {
+		final long seed = 0xe80baf0d3f8d6c9fL;
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), true, false, seed);
+	}
+
+	@Test
+	public void testSSSPUndirectedPositiveVerticesSubset() {
+		final long seed = 0xc3387b0aa27e9e2eL;
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, false, seed);
+	}
+
+	@Test
+	public void testRandGraphDirectedNegativeVerticesSubset() {
+		final long seed = 0xf61927b74f792b85L;
+		ShortestPathAllPairsTestUtils.testAPSPDirectedNegative(algo(), false, seed);
+	}
+
+	@Test
+	public void testRandGraphDirectedCardinalityVerticesSubset() {
+		final long seed = 0xb470820d21c06fe3L;
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), true, false, seed);
+	}
+
+	@Test
+	public void testRandGraphUndirectedCardinalityVerticesSubset() {
+		final long seed = 0xecb005fa68a74e0dL;
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), false, false, seed);
 	}
 
 }

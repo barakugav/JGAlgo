@@ -18,12 +18,15 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.ShortestPathSingleSource.Result;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class ShortestPathAllPairsUtils {
@@ -38,9 +41,24 @@ class ShortestPathAllPairsUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-			ShortestPathAllPairs.Result indexResult = computeAllShortestPaths(iGraph, w);
+			ShortestPathAllPairs.Result indexResult = computeAllShortestPaths(iGraph, iw);
+			return new ResultFromIndexResult(indexResult, viMap, eiMap);
+		}
+
+		@Override
+		public ShortestPathAllPairs.Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset,
+				WeightFunction w) {
+			if (g instanceof IndexGraph)
+				return computeSubsetShortestPaths((IndexGraph) g, verticesSubset, w);
+
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+
+			ShortestPathAllPairs.Result indexResult = computeSubsetShortestPaths(iGraph, verticesSubset, iw);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
@@ -57,13 +75,50 @@ class ShortestPathAllPairsUtils {
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
+		@Override
+		public ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(Graph g,
+				IntCollection verticesSubset) {
+			if (g instanceof IndexGraph)
+				return computeSubsetCardinalityShortestPaths((IndexGraph) g, verticesSubset);
+
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+
+			ShortestPathAllPairs.Result indexResult = computeSubsetCardinalityShortestPaths(iGraph, verticesSubset);
+			return new ResultFromIndexResult(indexResult, viMap, eiMap);
+		}
+
 		abstract ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w);
+
+		abstract ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+				WeightFunction w);
 
 		ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
 			return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);
 		}
 
+		ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
+			return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.CardinalityWeightFunction);
+		}
+
 	}
+
+	static int[] vToResIdx(IndexGraph g, IntCollection verticesSubset) {
+		int[] vToResIdx = new int[g.vertices().size()];
+		Arrays.fill(vToResIdx, -1);
+		boolean allVertices = verticesSubset == null;
+		if (allVertices) {
+			for (int n = g.vertices().size(), v = 0; v < n; v++)
+				vToResIdx[v] = v;
+		} else {
+			int resIdx = 0;
+			for (int v : verticesSubset)
+				vToResIdx[v] = resIdx++;
+		}
+		return vToResIdx;
+	}
+
 	static abstract class ResultImpl implements ShortestPathAllPairs.Result {
 
 		private ResultImpl() {}
@@ -74,19 +129,17 @@ class ShortestPathAllPairsUtils {
 
 		abstract void setEdgeTo(int source, int target, int edge);
 
-		static abstract class Abstract extends ResultImpl {
+		static abstract class AllVertices extends ResultImpl {
 
-			private final IndexGraph g;
+			final IndexGraph g;
 			private final int[][] edges;
 			private Path negCycle;
 
-			Abstract(IndexGraph g) {
+			AllVertices(IndexGraph g) {
 				this.g = g;
 				int n = g.vertices().size();
 				edges = new int[n][n];
-				for (int v = 0; v < n; v++) {
-					Arrays.fill(edges[v], -1);
-				}
+				BigArrays.fill(edges, -1);
 			}
 
 			@Override
@@ -116,12 +169,9 @@ class ShortestPathAllPairsUtils {
 				return negCycle;
 			}
 
-			IndexGraph graph() {
-				return g;
-			}
 		}
 
-		static class Undirected extends Abstract {
+		static class Undirected extends AllVertices {
 
 			private final int n;
 			private final double[] distances;
@@ -167,14 +217,13 @@ class ShortestPathAllPairsUtils {
 					int e = getEdgeTo(v, target);
 					assert e != -1;
 					path.add(e);
-					v = graph().edgeEndpoint(e, v);
+					v = g.edgeEndpoint(e, v);
 				}
-				return new PathImpl(graph(), source, target, path);
+				return new PathImpl(g, source, target, path);
 			}
-
 		}
 
-		static class Directed extends Abstract {
+		static class Directed extends AllVertices {
 			private final double[][] distances;
 
 			Directed(IndexGraph g) {
@@ -209,33 +258,22 @@ class ShortestPathAllPairsUtils {
 				for (int v = source; v != target;) {
 					int e = getEdgeTo(v, target);
 					assert e != -1;
-					assert v == graph().edgeSource(e);
+					assert v == g.edgeSource(e);
 					path.add(e);
-					v = graph().edgeTarget(e);
+					v = g.edgeTarget(e);
 				}
-				return new PathImpl(graph(), source, target, path);
+				return new PathImpl(g, source, target, path);
 			}
-
 		}
 
 	}
 
-	static class ResFromSSSP implements ShortestPathAllPairs.Result {
+	static abstract class ResFromSSSP implements ShortestPathAllPairs.Result {
 
 		final ShortestPathSingleSource.Result[] ssspResults;
 
-		ResFromSSSP(int n) {
-			ssspResults = new ShortestPathSingleSource.Result[n];
-		}
-
-		@Override
-		public double distance(int source, int target) {
-			return ssspResults[source].distance(target);
-		}
-
-		@Override
-		public Path getPath(int source, int target) {
-			return ssspResults[source].getPath(target);
+		ResFromSSSP(ShortestPathSingleSource.Result[] ssspResults) {
+			this.ssspResults = ssspResults;
 		}
 
 		@Override
@@ -246,6 +284,45 @@ class ShortestPathAllPairsUtils {
 		@Override
 		public Path getNegativeCycle() {
 			throw new IllegalStateException();
+		}
+
+		static class AllVertices extends ResFromSSSP {
+
+			AllVertices(Result[] ssspResults) {
+				super(ssspResults);
+			}
+
+			@Override
+			public double distance(int source, int target) {
+				return ssspResults[source].distance(target);
+			}
+
+			@Override
+			public Path getPath(int source, int target) {
+				return ssspResults[source].getPath(target);
+			}
+
+		}
+
+		static class VerticesSubset extends ResFromSSSP {
+
+			final int[] vToResIdx;
+
+			VerticesSubset(Result[] ssspResults, int[] vToResIdx) {
+				super(ssspResults);
+				this.vToResIdx = vToResIdx;
+			}
+
+			@Override
+			public double distance(int source, int target) {
+				return ssspResults[vToResIdx[source]].distance(target);
+			}
+
+			@Override
+			public Path getPath(int source, int target) {
+				return ssspResults[vToResIdx[source]].getPath(target);
+			}
+
 		}
 
 	}

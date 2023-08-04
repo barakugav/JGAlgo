@@ -20,6 +20,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -45,8 +46,14 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
+	@Override
+	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			WeightFunction w) {
+		return computeAllShortestPaths(g, w);
+	}
+
 	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, WeightFunction w) {
-		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
+		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -92,7 +99,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	}
 
 	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, WeightFunction w) {
-		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
+		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -133,7 +140,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static boolean detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.Abstract res, int n, int k) {
+	private static boolean detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.AllVertices res, int n, int k) {
 		for (int u = 0; u < n; u++) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);
@@ -143,7 +150,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 				IntList negCycle = new IntArrayList();
 				negCycle.addAll(res.getPath(u, k));
 				negCycle.addAll(res.getPath(k, u));
-				res.setNegCycle(new PathImpl(res.graph(), u, u, negCycle));
+				res.setNegCycle(new PathImpl(res.g, u, u, negCycle));
 				return true;
 			}
 		}

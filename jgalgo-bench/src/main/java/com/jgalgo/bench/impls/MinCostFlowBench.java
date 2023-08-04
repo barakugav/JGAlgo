@@ -237,8 +237,6 @@ public class MinCostFlowBench {
 				Random rand = new Random(seedGen.nextSeed());
 				graphs = new ObjectArrayList<>(graphsNum);
 				for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-					if (gIdx == 5)
-						System.out.println();
 					Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
 					graphs.add(Task.newRand(g, rand));
 				}

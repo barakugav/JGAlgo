@@ -28,6 +28,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -62,6 +63,22 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	 */
 	@Override
 	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
+		return computeSubsetShortestPaths0(g, g.vertices(), w, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			WeightFunction w) {
+		return computeSubsetShortestPaths0(g, verticesSubset, w, false);
+	}
+
+	private ShortestPathAllPairs.Result computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
+			WeightFunction w, boolean allVertices) {
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
@@ -78,7 +95,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		if (!negWeight) {
 			/* No negative weights, no need for potential */
-			SuccessRes res = computeAPSPPositive(g, w);
+			SuccessRes res = computeAPSPPositive(g, verticesSubset, w, allVertices);
 			res.potential = new double[n];
 			return res;
 		}
@@ -89,38 +106,45 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		double[] potential = potential0.first();
 
 		WeightFunction wPotential = JGAlgoUtils.potentialWeightFunc(g, w, potential);
-		SuccessRes res = computeAPSPPositive(g, wPotential);
+		SuccessRes res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);
 		res.potential = potential;
 		return res;
 	}
 
-	private SuccessRes computeAPSPPositive(IndexGraph g, WeightFunction w) {
-		final int n = g.vertices().size();
-		SuccessRes res = new SuccessRes(n);
+	private SuccessRes computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, WeightFunction w,
+			boolean allVertices) {
+		final int verticesSubsetSize = verticesSubset.size();
+		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
+		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
-		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
+		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();
-			for (int source = 0; source < n; source++)
-				res.ssspResults[source] = sssp.computeShortestPaths(g, w, source);
+			for (int source : verticesSubset)
+				ssspResults[vToResIdx[source]] = sssp.computeShortestPaths(g, w, source);
 
 		} else {
 			/* parallel */
-			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
+			List<RecursiveAction> tasks = new ObjectArrayList<>(verticesSubsetSize);
 			ThreadLocal<ShortestPathSingleSource> sssp =
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().build());
-			for (int source = 0; source < n; source++) {
+			for (int source : verticesSubset) {
 				final int source0 = source;
 				tasks.add(JGAlgoUtils.recursiveAction(
-						() -> res.ssspResults[source0] = sssp.get().computeShortestPaths(g, w, source0)));
+						() -> ssspResults[vToResIdx[source0]] = sssp.get().computeShortestPaths(g, w, source0)));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
 			for (RecursiveAction task : tasks)
 				task.join();
 		}
-		return res;
+
+		if (allVertices) {
+			return new SuccessRes.AllVertices(ssspResults);
+		} else {
+			return new SuccessRes.VerticesSubset(ssspResults, vToResIdx);
+		}
 	}
 
 	private Pair<double[], Path> calcPotential(IndexGraph g, WeightFunction w) {
@@ -203,23 +227,13 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	}
 
-	private static class SuccessRes implements ShortestPathAllPairs.Result {
+	private static abstract class SuccessRes implements ShortestPathAllPairs.Result {
 
 		final ShortestPathSingleSource.Result[] ssspResults;
 		double[] potential;
 
-		SuccessRes(int n) {
-			ssspResults = new ShortestPathSingleSource.Result[n];
-		}
-
-		@Override
-		public double distance(int source, int target) {
-			return ssspResults[source].distance(target) + potential[target] - potential[source];
-		}
-
-		@Override
-		public Path getPath(int source, int target) {
-			return ssspResults[source].getPath(target);
+		SuccessRes(ShortestPathSingleSource.Result[] ssspResults) {
+			this.ssspResults = ssspResults;
 		}
 
 		@Override
@@ -230,6 +244,45 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		@Override
 		public Path getNegativeCycle() {
 			throw new IllegalStateException();
+		}
+
+		private static class AllVertices extends SuccessRes {
+
+			AllVertices(ShortestPathSingleSource.Result[] ssspResults) {
+				super(ssspResults);
+			}
+
+			@Override
+			public double distance(int source, int target) {
+				return ssspResults[source].distance(target) + potential[target] - potential[source];
+			}
+
+			@Override
+			public Path getPath(int source, int target) {
+				return ssspResults[source].getPath(target);
+			}
+
+		}
+
+		private static class VerticesSubset extends SuccessRes {
+
+			final int[] vToResIdx;
+
+			VerticesSubset(ShortestPathSingleSource.Result[] ssspResults, int[] vToResIdx) {
+				super(ssspResults);
+				this.vToResIdx = vToResIdx;
+			}
+
+			@Override
+			public double distance(int source, int target) {
+				return ssspResults[vToResIdx[source]].distance(target) + potential[target] - potential[source];
+			}
+
+			@Override
+			public Path getPath(int source, int target) {
+				return ssspResults[vToResIdx[source]].getPath(target);
+			}
+
 		}
 
 	}

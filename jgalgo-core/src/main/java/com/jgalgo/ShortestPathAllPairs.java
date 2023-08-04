@@ -19,6 +19,7 @@ package com.jgalgo;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
@@ -43,6 +44,19 @@ public interface ShortestPathAllPairs {
 	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w);
 
 	/**
+	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
+	 *
+	 * @param  g              a graph
+	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
+	 *                            of vertices from the subset
+	 * @param  w              as edge weight function
+	 * @return                a result object containing information on the shortest path between each pair of vertices
+	 *                        in the subset
+	 */
+	public ShortestPathAllPairs.Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset,
+			WeightFunction w);
+
+	/**
 	 * Compute the cardinality shortest path between each pair of vertices in a graph.
 	 * <p>
 	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
@@ -53,6 +67,23 @@ public interface ShortestPathAllPairs {
 	 */
 	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
 		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);
+	}
+
+	/**
+	 * Compute the cardinality shortest path between each pair of vertices in a given subset of the vertices of the
+	 * graph.
+	 * <p>
+	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
+	 * to some other vertex is the path with the minimum number of edges.
+	 *
+	 * @param  g              a graph
+	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
+	 *                            of vertices from the subset
+	 * @return                a result object containing information on the cardinality shortest path between each pair
+	 *                        of vertices in the subset
+	 */
+	default ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(Graph g, IntCollection verticesSubset) {
+		return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.CardinalityWeightFunction);
 	}
 
 	/**
@@ -141,6 +172,15 @@ public interface ShortestPathAllPairs {
 							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);
 						} else {
 							return weightedAlgo.computeAllShortestPaths(g, w);
+						}
+					}
+
+					@Override
+					public Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset, WeightFunction w) {
+						if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+							return cardinalityAlgo.computeSubsetCardinalityShortestPaths(g, verticesSubset);
+						} else {
+							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);
 						}
 					}
 				};

@@ -21,6 +21,7 @@ import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -48,32 +49,48 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 
 	@Override
 	ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
-		final int n = g.vertices().size();
-		ShortestPathAllPairsUtils.ResFromSSSP res = new ShortestPathAllPairsUtils.ResFromSSSP(n);
+		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
+	}
+
+	@Override
+	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
+		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
+	}
+
+	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			boolean allVertices) {
+		final int verticesSubsetSize = verticesSubset.size();
+		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
+		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
-		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
+		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();
-			for (int source = 0; source < n; source++)
-				res.ssspResults[source] = sssp.computeCardinalityShortestPaths(g, source);
+			for (int source : verticesSubset)
+				ssspResults[vToResIdx[source]] = sssp.computeCardinalityShortestPaths(g, source);
 
 		} else {
 			/* parallel */
-			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
+			List<RecursiveAction> tasks = new ObjectArrayList<>(verticesSubsetSize);
 			ThreadLocal<ShortestPathSingleSource> sssp =
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().setCardinality(true).build());
-			for (int source = 0; source < n; source++) {
+			for (int source : verticesSubset) {
 				final int source0 = source;
-				tasks.add(JGAlgoUtils.recursiveAction(
-						() -> res.ssspResults[source0] = sssp.get().computeCardinalityShortestPaths(g, source0)));
+				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
+						sssp.get().computeCardinalityShortestPaths(g, source0)));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
 			for (RecursiveAction task : tasks)
 				task.join();
 		}
-		return res;
+
+		if (allVertices) {
+			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);
+		} else {
+			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);
+		}
 	}
 
 	/**
@@ -87,6 +104,20 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeAllCardinalityShortestPaths(g);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
+	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 */
+	@Override
+	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			WeightFunction w) {
+		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
+			throw new IllegalArgumentException("only cardinality shortest paths are supported");
+		return computeSubsetCardinalityShortestPaths(g, verticesSubset);
 	}
 
 }

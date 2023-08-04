@@ -19,25 +19,21 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class ShortestPathAllPairsTestUtils extends TestUtils {
 
 	private ShortestPathAllPairsTestUtils() {}
 
-	static void testAPSPDirectedPositiveInt(ShortestPathAllPairs algo, long seed) {
-		testAPSPPositiveInt(algo, true, seed);
-	}
-
-	static void testAPSPUndirectedPositiveInt(ShortestPathAllPairs algo, long seed) {
-		testAPSPPositiveInt(algo, false, seed);
-	}
-
-	private static void testAPSPPositiveInt(ShortestPathAllPairs algo, boolean directed, long seed) {
+	static void testAPSPPositive(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 20).repeat(128);
@@ -46,12 +42,13 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
+			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			testAPSP(g, w, algo, new ShortestPathSingleSourceDijkstra());
+			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
 
-	static void testAPSPCardinality(ShortestPathAllPairs algo, boolean directed, long seed) {
+	static void testAPSPCardinality(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 20).repeat(128);
@@ -60,11 +57,12 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			testAPSP(g, null, algo, new ShortestPathSingleSourceDijkstra());
+			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
+			testAPSP(g, verticesSubset, null, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
 
-	static void testAPSPDirectedNegativeInt(ShortestPathAllPairs algo, long seed) {
+	static void testAPSPDirectedNegative(ShortestPathAllPairs algo, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 20).repeat(128);
@@ -73,16 +71,28 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
+			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			testAPSP(g, w, algo, new ShortestPathSingleSourceGoldberg());
+			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceGoldberg());
 		});
 	}
 
-	static void testAPSP(Graph g, WeightFunction w, ShortestPathAllPairs algo,
+	private static IntCollection verticesSubset(Graph g, boolean allVertices, long seed) {
+		int n = g.vertices().size();
+		if (allVertices || n <= 3)
+			return g.vertices();
+		Random rand = new Random(seed);
+		IntSet subset = new IntOpenHashSet();
+		for (int[] vs = g.vertices().toIntArray(); subset.size() < n / 2;)
+			subset.add(vs[rand.nextInt(n)]);
+		return subset;
+	}
+
+	static void testAPSP(Graph g, IntCollection verticesSubset, WeightFunction w, ShortestPathAllPairs algo,
 			ShortestPathSingleSource validationAlgo) {
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(g, w);
 
-		for (int source : g.vertices()) {
+		for (int source : verticesSubset) {
 			ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 			if (result.foundNegativeCycle()) {
@@ -104,7 +114,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			}
 			assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
-			for (int target : g.vertices()) {
+			for (int target : verticesSubset) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
 				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");

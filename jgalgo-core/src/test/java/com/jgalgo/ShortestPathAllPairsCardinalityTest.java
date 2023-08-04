@@ -20,16 +20,32 @@ import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathAllPairsCardinalityTest extends TestBase {
 
+	private static ShortestPathAllPairs algo() {
+		return new ShortestPathAllPairsCardinality();
+	}
+
 	@Test
 	public void testRandGraphDirectedCardinality() {
 		final long seed = 0xd44bfe45a5769997L;
-		ShortestPathAllPairsTestUtils.testAPSPCardinality(new ShortestPathAllPairsCardinality(), true, seed);
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), true, true, seed);
 	}
 
 	@Test
 	public void testRandGraphUndirectedCardinality() {
 		final long seed = 0x59723abb525e643dL;
-		ShortestPathAllPairsTestUtils.testAPSPCardinality(new ShortestPathAllPairsCardinality(), false, seed);
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), false, true, seed);
+	}
+
+	@Test
+	public void testRandGraphDirectedCardinalityVerticesSubset() {
+		final long seed = 0x48ac52279ba45290L;
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), true, false, seed);
+	}
+
+	@Test
+	public void testRandGraphUndirectedCardinalityVerticesSubset() {
+		final long seed = 0xd534ea2c78484622L;
+		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), false, false, seed);
 	}
 
 }
