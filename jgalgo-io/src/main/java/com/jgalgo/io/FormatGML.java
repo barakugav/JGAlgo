@@ -27,6 +27,7 @@ import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -70,24 +71,30 @@ class FormatGML implements GraphFormat {
 				throw new IllegalArgumentException("GML format support undirected graphs only");
 
 			try {
-				List<AppendOp> appendVWeights = new ArrayList<>();
-				List<AppendOp> appendEWeights = new ArrayList<>();
-				for (Object key : graph.getVerticesWeightsKeys()) {
-					Weights<?> w = graph.getVerticesWeights(key);
-					appendVWeights.add(AppendOp.fromWeights(Objects.toString(key), w, writer));
+				List<Pair<String, WeightsStringer>> vWeights = new ArrayList<>();
+				List<Pair<String, WeightsStringer>> eWeights = new ArrayList<>();
+				for (Object keyObj : graph.getVerticesWeightsKeys()) {
+					Weights<?> w = graph.getVerticesWeights(keyObj);
+					String key = Objects.toString(keyObj);
+					checkValidWeightsKey(key);
+					vWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}
-				for (Object key : graph.getEdgesWeightsKeys()) {
-					Weights<?> w = graph.getEdgesWeights(key);
-					appendEWeights.add(AppendOp.fromWeights(Objects.toString(key), w, writer));
+				for (Object keyObj : graph.getEdgesWeightsKeys()) {
+					Weights<?> w = graph.getEdgesWeights(keyObj);
+					String key = Objects.toString(keyObj);
+					checkValidWeightsKey(key);
+					eWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}
 
 				writer.append("graph [").append(System.lineSeparator());
 				for (int v : graph.vertices()) {
 					writer.append("\tnode [").append(System.lineSeparator());
 					writer.append("\t\tid ").append(Integer.toString(v)).append(System.lineSeparator());
-					for (AppendOp appendOp : appendVWeights) {
+					for (Pair<String, WeightsStringer> weights : vWeights) {
 						writer.append("\t\t");
-						appendOp.append(v);
+						String key = weights.first();
+						String weightStr = weights.right().getWeightAsString(v);
+						writer.append(key).append(' ').append(weightStr);
 						writer.append(System.lineSeparator());
 					}
 					writer.append("\t]").append(System.lineSeparator());
@@ -99,9 +106,11 @@ class FormatGML implements GraphFormat {
 							.append(System.lineSeparator());
 					writer.append("\t\ttarget ").append(Integer.toString(graph.edgeTarget(e)))
 							.append(System.lineSeparator());
-					for (AppendOp appendOp : appendEWeights) {
+					for (Pair<String, WeightsStringer> weights : eWeights) {
 						writer.append("\t\t");
-						appendOp.append(e);
+						String key = weights.first();
+						String weightStr = weights.right().getWeightAsString(e);
+						writer.append(key).append(' ').append(weightStr);
 						writer.append(System.lineSeparator());
 					}
 					writer.append("\t]").append(System.lineSeparator());
@@ -110,59 +119,6 @@ class FormatGML implements GraphFormat {
 
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
-			}
-		}
-
-		@FunctionalInterface
-		private static interface AppendOp {
-			default void append(int id) {
-				try {
-					append0(id);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-			}
-
-			void append0(int elm) throws IOException;
-
-			static AppendOp fromWeights(String key, Weights<?> w0, Writer writer) {
-				if (key == null || key.isEmpty())
-					throw new IllegalArgumentException("invalid key: '" + key + "'");
-				if (!isKeyCharPrefix(key.charAt(0)))
-					throw new IllegalArgumentException("invalid key: '" + key + "'");
-				for (int i = 1; i < key.length(); i++)
-					if (!isKeyChar(key.charAt(i)))
-						throw new IllegalArgumentException("invalid key: '" + key + "'");
-
-				if (w0 instanceof Weights.Byte) {
-					Weights.Byte w = (Weights.Byte) w0;
-					return v -> writer.append(key).append(' ').append(Byte.toString(w.getByte(v)));
-				} else if (w0 instanceof Weights.Short) {
-					Weights.Short w = (Weights.Short) w0;
-					return v -> writer.append(key).append(' ').append(Short.toString(w.getShort(v)));
-				} else if (w0 instanceof Weights.Int) {
-					Weights.Int w = (Weights.Int) w0;
-					return v -> writer.append(key).append(' ').append(Integer.toString(w.getInt(v)));
-				} else if (w0 instanceof Weights.Long) {
-					Weights.Long w = (Weights.Long) w0;
-					return v -> writer.append(key).append(' ').append(Long.toString(w.getLong(v)));
-				} else if (w0 instanceof Weights.Float) {
-					Weights.Float w = (Weights.Float) w0;
-					return v -> writer.append(key).append(' ').append(Float.toString(w.getFloat(v)));
-				} else if (w0 instanceof Weights.Double) {
-					Weights.Double w = (Weights.Double) w0;
-					return v -> writer.append(key).append(' ').append(Double.toString(w.getDouble(v)));
-				} else if (w0 instanceof Weights.Bool) {
-					Weights.Bool w = (Weights.Bool) w0;
-					return v -> writer.append(key).append(' ').append('"').append(Boolean.toString(w.getBool(v)))
-							.append('"');
-				} else if (w0 instanceof Weights.Char) {
-					Weights.Char w = (Weights.Char) w0;
-					return v -> writer.append(key).append(' ').append('"').append(w.getChar(v)).append('"');
-				} else {
-					return v -> writer.append(key).append(' ').append('"').append(Objects.toString(w0.get(v)))
-							.append('"');
-				}
 			}
 		}
 
@@ -532,6 +488,16 @@ class FormatGML implements GraphFormat {
 			// }
 		}
 
+	}
+
+	private static void checkValidWeightsKey(String key) {
+		if (key == null || key.isEmpty())
+			throw new IllegalArgumentException("invalid key: '" + key + "'");
+		if (!isKeyCharPrefix(key.charAt(0)))
+			throw new IllegalArgumentException("invalid key: '" + key + "'");
+		for (int i = 1; i < key.length(); i++)
+			if (!isKeyChar(key.charAt(i)))
+				throw new IllegalArgumentException("invalid key: '" + key + "'");
 	}
 
 	private static boolean isKeyCharPrefix(char c) {
