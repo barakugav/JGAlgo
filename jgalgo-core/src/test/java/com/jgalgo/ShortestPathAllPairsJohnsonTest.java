@@ -32,6 +32,12 @@ class ShortestPathAllPairsJohnsonTest extends TestBase {
 	}
 
 	@Test
+	public void testRandGraphUndirectedPositive() {
+		final long seed = 0x45c53265fe3ea65cL;
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, true, seed);
+	}
+
+	@Test
 	public void testRandGraphDirectedNegative() {
 		final long seed = 0xbf0dd8e7294b5cecL;
 		ShortestPathAllPairsTestUtils.testAPSPDirectedNegative(algo(), true, seed);
@@ -47,6 +53,12 @@ class ShortestPathAllPairsJohnsonTest extends TestBase {
 	public void testRandGraphDirectedPositiveVerticesSubset() {
 		final long seed = 0xdab34a03464cb638L;
 		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), true, false, seed);
+	}
+
+	@Test
+	public void testRandGraphUndirectedPositiveVerticesSubset() {
+		final long seed = 0xca2c2c3d3eb686cfL;
+		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, false, seed);
 	}
 
 	@Test
