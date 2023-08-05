@@ -98,12 +98,11 @@ public class Assertions {
 				throw new IllegalArgumentException("only positive weights are supported: " + w);
 		}
 
-		public static void checkId(int id, int length) {
+		public static void checkId(int id, int length, boolean isEdge) {
 			if (!AssertIdChecks)
 				return;
 			if (id < 0 || id >= length)
-				throw new IndexOutOfBoundsException(
-						"No such vertex/edge: " + id + " valid range [" + 0 + ", " + length + ")");
+				throw new IndexOutOfBoundsException("No such " + (isEdge ? "edge" : "vertex") + ": " + id);
 		}
 
 		public static void checkVertex(int vertex, int n) {

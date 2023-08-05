@@ -44,14 +44,14 @@ abstract class GraphImpl extends GraphBase {
 		assert g.edges().isEmpty();
 
 		indexGraph = (IndexGraphImpl) g;
-		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy(), expectedVerticesNum);
-		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy(), expectedEdgesNum);
+		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy(), expectedVerticesNum, false);
+		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy(), expectedEdgesNum, true);
 	}
 
 	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy());
-		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy());
+		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy(), false);
+		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy(), true);
 	}
 
 	/* copy constructor */
@@ -425,16 +425,18 @@ abstract class GraphImpl extends GraphBase {
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private final WeightsImpl.Index.Int indexToId;
 		private int userChosenId = -1;
+		private final boolean isEdges;
 
-		IdIdxMapImpl(IdStrategy idStrat, int expectedSize) {
+		IdIdxMapImpl(IdStrategy idStrat, int expectedSize, boolean isEdges) {
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
+			this.isEdges = isEdges;
 			initListeners(idStrat);
 		}
 
-		IdIdxMapImpl(IndexIdMap orig, IdStrategy idStrat) {
+		IdIdxMapImpl(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
 			if (orig instanceof IdIdxMapImpl) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
@@ -460,6 +462,7 @@ abstract class GraphImpl extends GraphBase {
 					}
 				}
 			}
+			this.isEdges = isEdges;
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			initListeners(idStrat);
 		}
@@ -471,14 +474,14 @@ abstract class GraphImpl extends GraphBase {
 			return IsGraphIdRandom.get().booleanValue();
 		}
 
-		static IdIdxMapImpl newInstance(IdStrategy idStrat, int expectedSize) {
-			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize)
-					: new GraphImpl.IdIdxMapCounter(idStrat, expectedSize);
+		static IdIdxMapImpl newInstance(IdStrategy idStrat, int expectedSize, boolean isEdges) {
+			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize, isEdges)
+					: new GraphImpl.IdIdxMapCounter(idStrat, expectedSize, isEdges);
 		}
 
-		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat) {
-			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(orig, idStrat)
-					: new GraphImpl.IdIdxMapCounter(orig, idStrat);
+		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
+			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(orig, idStrat, isEdges)
+					: new GraphImpl.IdIdxMapCounter(orig, idStrat, isEdges);
 		}
 
 		private void initListeners(IdStrategy idStrat) {
@@ -540,7 +543,7 @@ abstract class GraphImpl extends GraphBase {
 		public int idToIndex(int id) {
 			int idx = idToIndex.get(id);
 			if (idx < 0)
-				throw new IndexOutOfBoundsException(id);
+				throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
 			return idx;
 		}
 
@@ -554,14 +557,14 @@ abstract class GraphImpl extends GraphBase {
 
 		private int counter;
 
-		IdIdxMapCounter(IdStrategy idStrat, int expectedSize) {
-			super(idStrat, expectedSize);
+		IdIdxMapCounter(IdStrategy idStrat, int expectedSize, boolean isEdges) {
+			super(idStrat, expectedSize, isEdges);
 			// We prefer non zero IDs because fastutil handle zero (null) keys separately
 			counter = 1;
 		}
 
-		IdIdxMapCounter(IndexIdMap orig, IdStrategy idStrat) {
-			super(orig, idStrat);
+		IdIdxMapCounter(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
+			super(orig, idStrat, isEdges);
 			if (orig instanceof IdIdxMapCounter) {
 				counter = ((IdIdxMapCounter) orig).counter;
 			} else {
@@ -583,12 +586,12 @@ abstract class GraphImpl extends GraphBase {
 
 		private final Random rand = new Random();
 
-		IdIdxMapRand(IdStrategy idStrat, int expectedSize) {
-			super(idStrat, expectedSize);
+		IdIdxMapRand(IdStrategy idStrat, int expectedSize, boolean isEdges) {
+			super(idStrat, expectedSize, isEdges);
 		}
 
-		IdIdxMapRand(IndexIdMap orig, IdStrategy idStrat) {
-			super(orig, idStrat);
+		IdIdxMapRand(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
+			super(orig, idStrat, isEdges);
 		}
 
 		@Override

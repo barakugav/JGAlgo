@@ -40,8 +40,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
 	private IndexGraphBuilderImpl() {
-		verticesIdStrat = new IdStrategy.Default(0);
-		edgesIdStrat = new IdStrategy.Default(0);
+		verticesIdStrat = new IdStrategy.Default(0, false);
+		edgesIdStrat = new IdStrategy.Default(0, true);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
 	}
@@ -50,8 +50,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		final int n = g.vertices().size();
 		m = g.edges().size();
 
-		verticesIdStrat = new IdStrategy.Default(n);
-		edgesIdStrat = new IdStrategy.Default(m);
+		verticesIdStrat = new IdStrategy.Default(n, false);
+		edgesIdStrat = new IdStrategy.Default(m, true);
 
 		endpoints = new int[m * 2];
 		for (int e = 0; e < m; e++) {

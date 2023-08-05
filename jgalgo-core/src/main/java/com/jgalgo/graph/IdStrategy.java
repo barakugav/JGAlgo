@@ -29,12 +29,14 @@ abstract class IdStrategy {
 
 	int size;
 	private final IntSet indices;
+	final boolean isEdges;
 
-	IdStrategy(int initSize) {
+	IdStrategy(int initSize, boolean isEdges) {
 		if (initSize < 0)
 			throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 		size = initSize;
 		indices = new IndicesSet();
+		this.isEdges = isEdges;
 	}
 
 	int size() {
@@ -43,6 +45,10 @@ abstract class IdStrategy {
 
 	IntSet indices() {
 		return indices;
+	}
+
+	void checkIdx(int idx) {
+		Assertions.Graphs.checkId(idx, size, isEdges);
 	}
 
 	abstract void addIdSwapListener(IndexSwapListener listener);
@@ -93,8 +99,8 @@ abstract class IdStrategy {
 
 	static class FixedSize extends IdStrategy {
 
-		FixedSize(int initSize) {
-			super(initSize);
+		FixedSize(int initSize, boolean isEdges) {
+			super(initSize, isEdges);
 		}
 
 		@Override
@@ -119,8 +125,8 @@ abstract class IdStrategy {
 		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
 		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
-		Default(int initSize) {
-			super(initSize);
+		Default(int initSize, boolean isEdges) {
+			super(initSize, isEdges);
 		}
 
 		int newIdx() {
@@ -142,18 +148,18 @@ abstract class IdStrategy {
 		}
 
 		int isSwapNeededBeforeRemove(int idx) {
-			Assertions.Graphs.checkId(idx, size);
+			checkIdx(idx);
 			return size - 1;
 		}
 
 		void idxSwap(int idx1, int idx2) {
-			Assertions.Graphs.checkId(idx1, size);
-			Assertions.Graphs.checkId(idx2, size);
+			checkIdx(idx1);
+			checkIdx(idx2);
 			notifyIDSwap(idx1, idx2);
 		}
 
 		IdStrategy.Default copy() {
-			return new IdStrategy.Default(size);
+			return new IdStrategy.Default(size, isEdges);
 		}
 
 		void notifyIDSwap(int id1, int id2) {
@@ -197,7 +203,8 @@ abstract class IdStrategy {
 		}
 	}
 
-	static final IdStrategy Empty = new IdStrategy.FixedSize(0);
+	static final IdStrategy EmptyVertices = new IdStrategy.FixedSize(0, false);
+	static final IdStrategy EmptyEdges = new IdStrategy.FixedSize(0, true);
 
 	/**
 	 * A listener that will be notified each time a strategy add or remove an id.

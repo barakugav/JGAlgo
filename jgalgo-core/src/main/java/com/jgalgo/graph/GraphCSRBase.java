@@ -40,8 +40,8 @@ abstract class GraphCSRBase extends GraphBase
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
-		verticesIdStrat = new IdStrategy.FixedSize(n);
-		edgesIdStrat = new IdStrategy.FixedSize(m);
+		verticesIdStrat = new IdStrategy.FixedSize(n, false);
+		edgesIdStrat = new IdStrategy.FixedSize(m, true);
 
 		edgesOutBegin = processEdges.edgesOutBegin;
 		endpoints = new long[m];
@@ -86,8 +86,8 @@ abstract class GraphCSRBase extends GraphBase
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
-		verticesIdStrat = new IdStrategy.FixedSize(n);
-		edgesIdStrat = new IdStrategy.FixedSize(m);
+		verticesIdStrat = new IdStrategy.FixedSize(n, false);
+		edgesIdStrat = new IdStrategy.FixedSize(m, true);
 
 		edgesOutBegin = new int[n + 1];
 		endpoints = new long[m];

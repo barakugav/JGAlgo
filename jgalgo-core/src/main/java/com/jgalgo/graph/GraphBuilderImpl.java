@@ -60,8 +60,8 @@ class GraphBuilderImpl {
 			eIdToIndex.defaultReturnValue(-1);
 			eIndexToId = new IntArrayList();
 			edges = IntSets.unmodifiable(eIdToIndex.keySet());
-			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId);
-			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId);
+			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId, false);
+			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
 		}
 
 		Abstract(Graph g, boolean copyWeights) {
@@ -76,8 +76,8 @@ class GraphBuilderImpl {
 			eIdToIndex.defaultReturnValue(-1);
 			eIndexToId = new IntArrayList(m);
 			edges = IntSets.unmodifiable(eIdToIndex.keySet());
-			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId);
-			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId);
+			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId, false);
+			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
 
 			IndexIdMap gViMap = g.indexGraphVerticesMap();
 			IndexIdMap gEiMap = g.indexGraphEdgesMap();
@@ -156,9 +156,9 @@ class GraphBuilderImpl {
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException(target);
+				throw new IndexOutOfBoundsException("invalid vertex: " + target);
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException(source);
+				throw new IndexOutOfBoundsException("invalid vertex: " + source);
 
 			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
 			int eId = eIndex + 1; // avoid null key in open hash maps
@@ -177,9 +177,9 @@ class GraphBuilderImpl {
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException(target);
+				throw new IndexOutOfBoundsException("invalid vertex: " + target);
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException(source);
+				throw new IndexOutOfBoundsException("invalid vertex: " + source);
 
 			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
 			int eId = edge;
@@ -262,10 +262,12 @@ class GraphBuilderImpl {
 		private static class IndexIdMapImpl implements IndexIdMap {
 			private final Int2IntMap idToIndex;
 			private final IntList indexToId;
+			private final boolean isEdges;
 
-			IndexIdMapImpl(Int2IntMap idToIndex, IntList indexToId) {
+			IndexIdMapImpl(Int2IntMap idToIndex, IntList indexToId, boolean isEdges) {
 				this.idToIndex = idToIndex;
 				this.indexToId = indexToId;
+				this.isEdges = isEdges;
 			}
 
 			@Override
@@ -275,7 +277,10 @@ class GraphBuilderImpl {
 
 			@Override
 			public int idToIndex(int id) {
-				return idToIndex.get(id);
+				int idx = idToIndex.get(id);
+				if (idx < 0)
+					throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
+				return idx;
 			}
 		}
 

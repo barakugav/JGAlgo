@@ -30,8 +30,8 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
 	GraphBaseIndexMutable(int expectedVerticesNum, int expectedEdgesNum) {
-		verticesIdStrat = new IdStrategy.Default(0);
-		edgesIdStrat = new IdStrategy.Default(0);
+		verticesIdStrat = new IdStrategy.Default(0, false);
+		edgesIdStrat = new IdStrategy.Default(0, true);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);
@@ -49,8 +49,8 @@ abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl
 		if (!getCapabilities().parallelEdges())
 			Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
 
-		verticesIdStrat = new IdStrategy.Default(g.vertices().size());
-		edgesIdStrat = new IdStrategy.Default(g.edges().size());
+		verticesIdStrat = new IdStrategy.Default(g.vertices().size(), false);
+		edgesIdStrat = new IdStrategy.Default(g.edges().size(), true);
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(verticesIdStrat.size());
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edgesIdStrat.size());

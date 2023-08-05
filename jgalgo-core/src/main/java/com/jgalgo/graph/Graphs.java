@@ -33,8 +33,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {
 
-		private final IdStrategy verticesIdStrat = IdStrategy.Empty;
-		private final IdStrategy edgesIdStrat = IdStrategy.Empty;
+		private final IdStrategy verticesIdStrat = IdStrategy.EmptyVertices;
+		private final IdStrategy edgesIdStrat = IdStrategy.EmptyEdges;
 
 		@Override
 		public IntSet vertices() {
@@ -457,8 +457,8 @@ public class Graphs {
 		private final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIdStrat = new IdStrategy.Default(n);
-			edgesIdStrat = new IdStrategy.Default(m);
+			verticesIdStrat = new IdStrategy.Default(n, false);
+			edgesIdStrat = new IdStrategy.Default(m, true);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -468,8 +468,8 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIdStrat = new IdStrategy.Default(g.n);
-			edgesIdStrat = new IdStrategy.Default(g.m);
+			verticesIdStrat = new IdStrategy.Default(g.n, false);
+			edgesIdStrat = new IdStrategy.Default(g.m, true);
 			this.n = g.n;
 			this.m = g.m;
 			verticesWeights = new WeightsImpl.IndexMutable.Manager(g.verticesWeights, verticesIdStrat);

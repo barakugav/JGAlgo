@@ -126,7 +126,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			void checkIdx(int idx) {
-				Assertions.Graphs.checkId(idx, idStrat.size());
+				idStrat.checkIdx(idx);
 			}
 		}
 
