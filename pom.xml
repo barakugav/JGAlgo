@@ -164,6 +164,11 @@
           <show>protected</show>
           <source>${java.version}</source>
 
+          <!-- Link fastutil from our documentation -->
+          <links>
+            <link>https://fastutil.di.unimi.it/docs/</link>
+          </links>
+
           <!-- Allow javascipts for Latex -->
           <additionalJOption>--allow-script-in-comments</additionalJOption>
 
