@@ -158,7 +158,7 @@ import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors
 				}
 			}
 
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">			assert x1.subTree == y1.subTree;</span>
+<span class="pc bnc" id="L161" title="All 2 branches missed.">			assert x1.subTree == y1.subTree;</span>
 			/* calculate LCA within sub tree */
 <span class="fc" id="L163">			int commonAncestors1 = x1.ancestorsBitmap &amp; y1.ancestorsBitmap;</span>
 <span class="fc" id="L164">			Node1 a1 = x1.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors1)];</span>
@@ -181,7 +181,7 @@ import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors
 <span class="fc" id="L181">				y2 = ay1.top.parent;</span>
 		}
 
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">		assert x2.subTree == y2.subTree;</span>
+<span class="pc bnc" id="L184" title="All 2 branches missed.">		assert x2.subTree == y2.subTree;</span>
 		/* calculate LCA within sub tree */
 <span class="fc" id="L186">		int commonAncestors = x2.ancestorsBitmap &amp; y2.ancestorsBitmap;</span>
 <span class="fc" id="L187">		return x2.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors)];</span>
@@ -257,7 +257,7 @@ import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors
 		}
 
 		void addNode(Node2 node) {
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="pc bnc" id="L260" title="All 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
 <span class="fc" id="L261">			node.idWithinSubTree = size++;</span>
 <span class="fc bfc" id="L262" title="All 2 branches covered.">			if (node.idWithinSubTree &gt;= nodes.length)</span>
 <span class="fc" id="L263">				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
@@ -289,7 +289,7 @@ import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors
 <span class="fc" id="L289">		}</span>
 
 		void addNode(Node1 node) {
-<span class="pc bpc" id="L292" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="pc bnc" id="L292" title="All 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
 <span class="fc" id="L293">			node.idWithinSubTree = size++;</span>
 <span class="fc bfc" id="L294" title="All 2 branches covered.">			if (node.idWithinSubTree &gt;= nodes.length)</span>
 <span class="fc" id="L295">				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
@@ -306,7 +306,7 @@ import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors
 	}
 
 	private static int ithBit(int b) {
-<span class="pc bpc" id="L309" title="2 of 4 branches missed.">		assert 0 &lt;= b &amp;&amp; b &lt; Integer.SIZE;</span>
+<span class="pc bnc" id="L309" title="All 4 branches missed.">		assert 0 &lt;= b &amp;&amp; b &lt; Integer.SIZE;</span>
 <span class="fc" id="L310">		return 1 &lt;&lt; b;</span>
 	}
 

@@ -63,7 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L63">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
 		} else {
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			assert degreeType == DegreeType.OutAndInDegree;</span>
+<span class="pc bnc" id="L66" title="All 2 branches missed.">			assert degreeType == DegreeType.OutAndInDegree;</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L68">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
 <span class="fc" id="L69">				maxDegree = Math.max(maxDegree, degree[v]);</span>
@@ -111,7 +111,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		/* iterate over the vertices in increase order of their degree */
 <span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int p = 0; p &lt; n; p++) {</span>
 <span class="fc" id="L113">			int u = vertices[p];</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">			assert pos[u] == p;</span>
+<span class="pc bnc" id="L114" title="All 2 branches missed.">			assert pos[u] == p;</span>
 <span class="fc" id="L115">			int uDegree = degree[u];</span>
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
@@ -130,7 +130,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L130">						decreaseDegree.accept(v);</span>
 <span class="fc" id="L131">				}</span>
 			} else {
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">				assert degreeType == DegreeType.OutAndInDegree;</span>
+<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert degreeType == DegreeType.OutAndInDegree;</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L135">					eit.nextInt();</span>
 <span class="fc" id="L136">					int v = eit.target();</span>

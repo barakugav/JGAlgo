@@ -90,8 +90,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L90">	}</span>
 
 	static &lt;K, V, Node extends NodeBase&lt;K, V, Node&gt;&gt; void addChild(Node parent, Node newChild) {
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		assert newChild.prevOrParent == null;</span>
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		assert newChild.next == null;</span>
+<span class="pc bnc" id="L93" title="All 2 branches missed.">		assert newChild.prevOrParent == null;</span>
+<span class="pc bnc" id="L94" title="All 2 branches missed.">		assert newChild.next == null;</span>
 <span class="fc" id="L95">		Node oldChild = parent.child;</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">		if (oldChild != null) {</span>
 <span class="fc" id="L97">			oldChild.prevOrParent = newChild;</span>
@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	void insertNode(NodeImpl n) {
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		if (minRoot == null) {</span>
 <span class="fc" id="L106">			minRoot = n;</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			assert size == 0;</span>
+<span class="pc bnc" id="L107" title="All 2 branches missed.">			assert size == 0;</span>
 		} else {
 <span class="fc" id="L109">			minRoot = meld(minRoot, n);</span>
 		}
@@ -122,7 +122,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	public void remove(HeapReference&lt;K, V&gt; ref) {
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L124">		NodeImpl n = (NodeImpl) ref;</span>
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		assert minRoot != null;</span>
+<span class="pc bnc" id="L125" title="All 2 branches missed.">		assert minRoot != null;</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">		if (n != minRoot) {</span>
 <span class="fc" id="L127">			cut(n);</span>
 <span class="fc" id="L128">			addChild(n, minRoot);</span>
@@ -143,7 +143,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L143">		HeapPairing&lt;K, V, NodeImpl&gt; h = (HeapPairing&lt;K, V, NodeImpl&gt;) heap;</span>
 
 <span class="fc bfc" id="L145" title="All 2 branches covered.">		if (size == 0) {</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			assert minRoot == null;</span>
+<span class="pc bnc" id="L146" title="All 2 branches missed.">			assert minRoot == null;</span>
 <span class="fc" id="L147">			minRoot = h.minRoot;</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">		} else if (h.minRoot != null) {</span>
 <span class="fc" id="L149">			minRoot = meld(minRoot, h.minRoot);</span>
@@ -165,7 +165,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Override
 	public void clear() {
 <span class="fc bfc" id="L167" title="All 2 branches covered.">		if (minRoot == null) {</span>
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">			assert size == 0;</span>
+<span class="pc bnc" id="L168" title="All 2 branches missed.">			assert size == 0;</span>
 <span class="fc" id="L169">			return;</span>
 		}
 
@@ -411,10 +411,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		Node&lt;K, V&gt; meldCustomCmp(Node&lt;K, V&gt; n1, Node&lt;K, V&gt; n2) {
-<span class="pc bpc" id="L414" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L415" title="1 of 2 branches missed.">			assert n1.next == null;</span>
-<span class="pc bpc" id="L416" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L417" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+<span class="pc bnc" id="L414" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bnc" id="L415" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bnc" id="L416" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bnc" id="L417" title="All 2 branches missed.">			assert n2.next == null;</span>
 
 			/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L420" title="All 2 branches covered.">			if (c.compare(n1.key, n2.key) &gt; 0) {</span>
@@ -675,10 +675,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		Node&lt;V&gt; meldDefaultCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
-<span class="pc bpc" id="L678" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L679" title="1 of 2 branches missed.">			assert n1.next == null;</span>
-<span class="pc bpc" id="L680" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L681" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+<span class="pc bnc" id="L678" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bnc" id="L679" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bnc" id="L680" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bnc" id="L681" title="All 2 branches missed.">			assert n2.next == null;</span>
 
 			/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L684" title="All 2 branches covered.">			if (Double.compare(n1.key, n2.key) &gt; 0) {</span>
@@ -955,10 +955,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		Node&lt;V&gt; meldDefaultCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
-<span class="pc bpc" id="L958" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L959" title="1 of 2 branches missed.">			assert n1.next == null;</span>
-<span class="pc bpc" id="L960" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L961" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+<span class="pc bnc" id="L958" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bnc" id="L959" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bnc" id="L960" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bnc" id="L961" title="All 2 branches missed.">			assert n2.next == null;</span>
 
 			/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L964" title="All 2 branches covered.">			if (Integer.compare(n1.key, n2.key) &gt; 0) {</span>
@@ -973,10 +973,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		Node&lt;V&gt; meldCustomCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
-<span class="pc bpc" id="L976" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L977" title="1 of 2 branches missed.">			assert n1.next == null;</span>
-<span class="pc bpc" id="L978" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L979" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+<span class="pc bnc" id="L976" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bnc" id="L977" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bnc" id="L978" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bnc" id="L979" title="All 2 branches missed.">			assert n2.next == null;</span>
 
 			/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L982" title="All 2 branches covered.">			if (intCmp.compare(n1.key, n2.key) &gt; 0) {</span>

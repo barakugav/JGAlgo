@@ -71,8 +71,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L72">			int v1 = b.addVertex();</span>
 <span class="fc" id="L73">			int v2 = b.addVertex();</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">			assert v1 == v * 2 + 0;</span>
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">			assert v2 == v * 2 + 1;</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">			assert v1 == v * 2 + 0;</span>
+<span class="pc bnc" id="L75" title="All 2 branches missed.">			assert v2 == v * 2 + 1;</span>
 		}
 		/* Add two edges for each original edge */
 <span class="fc" id="L78">		final int dummyEdgesThreshold = g.edges().size() * 2;</span>
@@ -81,10 +81,10 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L81">			int target = g.edgeTarget(e);</span>
 <span class="fc" id="L82">			int e1 = b.addEdge(source * 2 + 0, target * 2 + 0);</span>
 <span class="fc" id="L83">			int e2 = b.addEdge(source * 2 + 1, target * 2 + 1);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			assert e1 == e * 2 + 0;</span>
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			assert e2 == e * 2 + 1;</span>
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">			assert e1 &lt; dummyEdgesThreshold;</span>
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			assert e2 &lt; dummyEdgesThreshold;</span>
+<span class="pc bnc" id="L84" title="All 2 branches missed.">			assert e1 == e * 2 + 0;</span>
+<span class="pc bnc" id="L85" title="All 2 branches missed.">			assert e2 == e * 2 + 1;</span>
+<span class="pc bnc" id="L86" title="All 2 branches missed.">			assert e1 &lt; dummyEdgesThreshold;</span>
+<span class="pc bnc" id="L87" title="All 2 branches missed.">			assert e2 &lt; dummyEdgesThreshold;</span>
 		}
 
 		/* Add dummy edges between each pair of duplicated vertices */
@@ -92,7 +92,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L92">			int v1 = v * 2 + 0;</span>
 <span class="fc" id="L93">			int v2 = v * 2 + 1;</span>
 <span class="fc" id="L94">			int e = b.addEdge(v1, v2);</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">			assert e &gt;= dummyEdgesThreshold;</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">			assert e &gt;= dummyEdgesThreshold;</span>
 		}
 
 		/* Compute a perfect matching in the new graph */
@@ -112,7 +112,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L113">			int vDup = v * 2 + 0;</span>
 <span class="fc" id="L114">			int eDup = matchDup.getMatchedEdge(vDup);</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			assert eDup &gt;= 0 : &quot;vertex &quot; + vDup + &quot; is not matched&quot;;</span>
+<span class="pc bnc" id="L115" title="All 2 branches missed.">			assert eDup &gt;= 0 : &quot;vertex &quot; + vDup + &quot; is not matched&quot;;</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			int e = eDup &lt; dummyEdgesThreshold ? eDup / 2 : -1;</span>
 <span class="fc" id="L117">			matched[v] = e;</span>
 		}
@@ -228,8 +228,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			for (;;) {
 <span class="fc" id="L229">				final int iterationTreeNum = treeNum;</span>
 <span class="fc bfc" id="L230" title="All 2 branches covered.">				treesLoop: for (Blossom root : rootsDuringAugmentation()) {</span>
-<span class="pc bpc" id="L231" title="1 of 2 branches missed.">					assert root.isTreeRoot();</span>
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">					assert root == root.tree.root;</span>
+<span class="pc bnc" id="L231" title="All 2 branches missed.">					assert root.isTreeRoot();</span>
+<span class="pc bnc" id="L232" title="All 2 branches missed.">					assert root == root.tree.root;</span>
 
 <span class="fc" id="L234">					Tree tree = root.tree;</span>
 					/* Check for augmentation, set currentEdge */
@@ -241,7 +241,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L241">							Edge minEdge = e.pqEvenEven.findMin().key();</span>
 <span class="fc bfc" id="L242" title="All 2 branches covered.">							if (minEdge.slack - tree.eps &lt;= t2.eps) {</span>
 <span class="fc" id="L243">								augment(minEdge);</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">								assert e.pqEvenEven.isEmpty() || e.pqEvenEven.findMin()</span>
+<span class="pc bnc" id="L244" title="All 2 branches missed.">								assert e.pqEvenEven.isEmpty() || e.pqEvenEven.findMin()</span>
 <span class="nc bnc" id="L245" title="All 2 branches missed.">										.key() != minEdge : &quot;edge was not removed during augment&quot;;</span>
 								continue treesLoop;
 							}
@@ -256,7 +256,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L256" title="All 2 branches covered.">								&amp;&amp; (minEdge = e.pqEvenEven.findMin().key()).slack - tree.eps &lt;= t2.eps) {</span>
 							/* Augment step */
 <span class="fc" id="L258">							augment(minEdge);</span>
-<span class="pc bpc" id="L259" title="1 of 2 branches missed.">							assert e.pqEvenEven.isEmpty()</span>
+<span class="pc bnc" id="L259" title="All 2 branches missed.">							assert e.pqEvenEven.isEmpty()</span>
 <span class="nc bnc" id="L260" title="All 2 branches missed.">									|| e.pqEvenEven.findMin().key() != minEdge : &quot;edge was not removed during augment&quot;;</span>
 							continue treesLoop;
 						}
@@ -300,15 +300,15 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L300">					Debug.assertConstraints(this);</span>
 
 					/* Clear currentEdge */
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">					assert tree.currentEdge == null;</span>
+<span class="pc bnc" id="L303" title="All 2 branches missed.">					assert tree.currentEdge == null;</span>
 <span class="fc bfc" id="L304" title="All 2 branches covered.">					for (TreesEdge e : tree.outEdges()) {</span>
-<span class="pc bpc" id="L305" title="1 of 2 branches missed.">						assert e.source == tree;</span>
-<span class="pc bpc" id="L306" title="1 of 2 branches missed.">						assert e.target.currentEdge == e;</span>
+<span class="pc bnc" id="L305" title="All 2 branches missed.">						assert e.source == tree;</span>
+<span class="pc bnc" id="L306" title="All 2 branches missed.">						assert e.target.currentEdge == e;</span>
 <span class="fc" id="L307">						e.target.currentEdge = null;</span>
 <span class="fc" id="L308">					}</span>
 <span class="fc bfc" id="L309" title="All 2 branches covered.">					for (TreesEdge e : tree.inEdges()) {</span>
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">						assert e.target == tree;</span>
-<span class="pc bpc" id="L311" title="1 of 2 branches missed.">						assert e.source.currentEdge == e;</span>
+<span class="pc bnc" id="L310" title="All 2 branches missed.">						assert e.target == tree;</span>
+<span class="pc bnc" id="L311" title="All 2 branches missed.">						assert e.source.currentEdge == e;</span>
 <span class="fc" id="L312">						e.source.currentEdge = null;</span>
 <span class="fc" id="L313">					}</span>
 <span class="fc" id="L314">				}</span>
@@ -332,26 +332,26 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 			/* Init each node dual to be minVertexEdgeWeight/2 */
 <span class="fc bfc" id="L334" title="All 2 branches covered.">			for (Blossom node : singletonNodes) {</span>
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">				assert !node.isBlossom();</span>
+<span class="pc bnc" id="L335" title="All 2 branches missed.">				assert !node.isBlossom();</span>
 <span class="fc" id="L336">				double minSlack = Double.POSITIVE_INFINITY;</span>
 <span class="fc bfc" id="L337" title="All 2 branches covered.">				for (Edge e : node.outEdges())</span>
 <span class="fc" id="L338">					minSlack = Math.min(minSlack, e.slack);</span>
 <span class="fc bfc" id="L339" title="All 2 branches covered.">				for (Edge e : node.inEdges())</span>
 <span class="fc" id="L340">					minSlack = Math.min(minSlack, e.slack);</span>
-<span class="pc bpc" id="L341" title="1 of 2 branches missed.">				assert node.isOuter();</span>
+<span class="pc bnc" id="L341" title="All 2 branches missed.">				assert node.isOuter();</span>
 <span class="fc" id="L342">				node.dual = minSlack / 2;</span>
 			}
 			/* Update edges slack to weight-e.source.dual-e.target.dual */
 <span class="fc bfc" id="L345" title="All 2 branches covered.">			for (Blossom node : singletonNodes) {</span>
 <span class="fc bfc" id="L346" title="All 2 branches covered.">				for (Edge e : node.outEdges()) {</span>
-<span class="pc bpc" id="L347" title="1 of 2 branches missed.">					assert node == e.source;</span>
+<span class="pc bnc" id="L347" title="All 2 branches missed.">					assert node == e.source;</span>
 <span class="fc" id="L348">					e.slack -= (node.dual + e.target.dual);</span>
 <span class="fc" id="L349">				}</span>
 			}
 			/* assert all edges have non negative slack */
 <span class="fc bfc" id="L352" title="All 2 branches covered.">			for (Blossom node : singletonNodes)</span>
 <span class="fc bfc" id="L353" title="All 2 branches covered.">				for (Edge e : node.outEdges())</span>
-<span class="pc bpc" id="L354" title="1 of 2 branches missed.">					assert e.slack &gt;= 0;</span>
+<span class="pc bnc" id="L354" title="All 2 branches missed.">					assert e.slack &gt;= 0;</span>
 
 			/* Iterate over the nodes, increase dual and choose matched edge greedily */
 <span class="fc bfc" id="L357" title="All 2 branches covered.">			for (Blossom node : singletonNodes) {</span>
@@ -369,7 +369,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="pc bpc" id="L369" title="1 of 2 branches missed.">				if (node.isEven()) {</span>
 <span class="fc bfc" id="L370" title="All 2 branches covered.">					while (outIter.hasNext()) {</span>
 <span class="fc" id="L371">						Edge e = outIter.next();</span>
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">						assert node == e.source;</span>
+<span class="pc bnc" id="L372" title="All 2 branches missed.">						assert node == e.source;</span>
 <span class="fc bfc" id="L373" title="All 4 branches covered.">						if (e.slack &lt;= slackMin &amp;&amp; e.target.isEven()) {</span>
 <span class="fc" id="L374">							dbgLog.format(&quot;\tmatch %s\n&quot;, e);</span>
 <span class="fc" id="L375">							node.setOut();</span>
@@ -384,14 +384,14 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 				}
 <span class="fc bfc" id="L385" title="All 2 branches covered.">				while (outIter.hasNext()) {</span>
 <span class="fc" id="L386">					Edge e = outIter.next();</span>
-<span class="pc bpc" id="L387" title="1 of 2 branches missed.">					assert node == e.source;</span>
+<span class="pc bnc" id="L387" title="All 2 branches missed.">					assert node == e.source;</span>
 <span class="fc" id="L388">					e.slack -= slackMin;</span>
 <span class="fc" id="L389">				}</span>
 <span class="fc" id="L390">				Iterator&lt;Edge&gt; inIter = node.inEdges().iterator();</span>
 <span class="fc bfc" id="L391" title="All 2 branches covered.">				if (node.isEven()) {</span>
 <span class="fc bfc" id="L392" title="All 2 branches covered.">					while (inIter.hasNext()) {</span>
 <span class="fc" id="L393">						Edge e = inIter.next();</span>
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">						assert node == e.target;</span>
+<span class="pc bnc" id="L394" title="All 2 branches missed.">						assert node == e.target;</span>
 <span class="pc bpc" id="L395" title="1 of 6 branches missed.">						if (e.slack &lt;= slackMin &amp;&amp; node.isEven() &amp;&amp; e.source.isEven()) {</span>
 <span class="fc" id="L396">							dbgLog.format(&quot;\tmatch %s\n&quot;, e);</span>
 <span class="fc" id="L397">							node.setOut();</span>
@@ -406,7 +406,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 				}
 <span class="fc bfc" id="L407" title="All 2 branches covered.">				while (inIter.hasNext()) {</span>
 <span class="fc" id="L408">					Edge e = inIter.next();</span>
-<span class="pc bpc" id="L409" title="1 of 2 branches missed.">					assert node == e.target;</span>
+<span class="pc bnc" id="L409" title="All 2 branches missed.">					assert node == e.target;</span>
 <span class="fc" id="L410">					e.slack -= slackMin;</span>
 <span class="fc" id="L411">				}</span>
 			}
@@ -439,17 +439,17 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L439">				u = growEdge.getSourceOuterBlossom();</span>
 <span class="fc" id="L440">				v = growEdge.target;</span>
 			} else {
-<span class="pc bpc" id="L442" title="1 of 2 branches missed.">				assert growEdge.source.isOut();</span>
+<span class="pc bnc" id="L442" title="All 2 branches missed.">				assert growEdge.source.isOut();</span>
 <span class="fc" id="L443">				u = growEdge.getTargetOuterBlossom();</span>
 <span class="fc" id="L444">				v = growEdge.source;</span>
 			}
-<span class="pc bpc" id="L446" title="2 of 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
-<span class="pc bpc" id="L447" title="2 of 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOut();</span>
+<span class="pc bnc" id="L446" title="All 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
+<span class="pc bnc" id="L447" title="All 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOut();</span>
 
 <span class="fc" id="L449">			addGrowBlossomsToTree(u, v, growEdge);</span>
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">			assert v.isMatched();</span>
+<span class="pc bnc" id="L450" title="All 2 branches missed.">			assert v.isMatched();</span>
 <span class="fc" id="L451">			Blossom w = v.matchedNode();</span>
-<span class="pc bpc" id="L452" title="1 of 2 branches missed.">			assert w.isEven();</span>
+<span class="pc bnc" id="L452" title="All 2 branches missed.">			assert w.isEven();</span>
 
 			/* Grow the new sub tree iteratively, until no more grow step is available */
 <span class="fc" id="L455">			for (Blossom j = w;;) {</span>
@@ -479,7 +479,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L479">				u = growEdge.getSourceOuterBlossom();</span>
 <span class="fc" id="L480">				v = growEdge.target;</span>
 			} else {
-<span class="pc bpc" id="L482" title="1 of 2 branches missed.">				assert growEdge.source.isOut();</span>
+<span class="pc bnc" id="L482" title="All 2 branches missed.">				assert growEdge.source.isOut();</span>
 <span class="fc" id="L483">				u = growEdge.getTargetOuterBlossom();</span>
 <span class="fc" id="L484">				v = growEdge.source;</span>
 			}
@@ -487,8 +487,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L487">		}</span>
 
 		private static void addGrowBlossomsToTree(Blossom u, Blossom v, Edge growEdge) {
-<span class="pc bpc" id="L490" title="2 of 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
-<span class="pc bpc" id="L491" title="2 of 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOut();</span>
+<span class="pc bnc" id="L490" title="All 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
+<span class="pc bnc" id="L491" title="All 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOut();</span>
 <span class="fc" id="L492">			Tree tree = u.tree;</span>
 
 <span class="fc" id="L494">			v.setOdd();</span>
@@ -497,7 +497,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L497">			v.treeParentEdge = growEdge;</span>
 <span class="fc" id="L498">			v.dual += tree.eps;</span>
 
-<span class="pc bpc" id="L500" title="1 of 2 branches missed.">			assert v.isMatched();</span>
+<span class="pc bnc" id="L500" title="All 2 branches missed.">			assert v.isMatched();</span>
 <span class="fc" id="L501">			Blossom w = v.matchedNode();</span>
 <span class="fc" id="L502">			w.setEven();</span>
 <span class="fc" id="L503">			w.tree = tree;</span>
@@ -516,9 +516,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L516">			Blossom v = w.matchedNode();</span>
 <span class="fc" id="L517">			Blossom u = v.getTreeParent();</span>
 <span class="fc" id="L518">			dbgLog.format(&quot;grow(%s, %s, %s)\n&quot;, u, v, v.matchedNode());</span>
-<span class="pc bpc" id="L519" title="2 of 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
-<span class="pc bpc" id="L520" title="2 of 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOdd();</span>
-<span class="pc bpc" id="L521" title="2 of 4 branches missed.">			assert w.isOuter() &amp;&amp; w.isEven();</span>
+<span class="pc bnc" id="L519" title="All 4 branches missed.">			assert u.isOuter() &amp;&amp; u.isEven();</span>
+<span class="pc bnc" id="L520" title="All 4 branches missed.">			assert v.isOuter() &amp;&amp; v.isOdd();</span>
+<span class="pc bnc" id="L521" title="All 4 branches missed.">			assert w.isOuter() &amp;&amp; w.isEven();</span>
 <span class="fc" id="L522">			Tree tree = u.tree;</span>
 
 			/* Add v as an odd (-) node to the tree */
@@ -529,7 +529,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 					// assert e.pqEvenOutRef != null;
 					// if (e.pqEvenOutRef != null)
 <span class="pc bpc" id="L531" title="1 of 4 branches missed.">					if (!OptimizationGrowSubTree || e.pqRef != null) {</span>
-<span class="pc bpc" id="L532" title="1 of 2 branches missed.">						assert e.pqRef != null;</span>
+<span class="pc bnc" id="L532" title="All 2 branches missed.">						assert e.pqRef != null;</span>
 <span class="fc" id="L533">						x.tree.pqRemoveEvenOut(e);</span>
 					}
 <span class="fc" id="L535">					e.slack -= tree.eps;</span>
@@ -548,7 +548,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 					// assert e.pqEvenOutRef != null;
 					// if (e.pqEvenOutRef != null)
 <span class="pc bpc" id="L550" title="1 of 4 branches missed.">					if (!OptimizationGrowSubTree || e.pqRef != null) {</span>
-<span class="pc bpc" id="L551" title="1 of 2 branches missed.">						assert e.pqRef != null;</span>
+<span class="pc bnc" id="L551" title="All 2 branches missed.">						assert e.pqRef != null;</span>
 <span class="fc" id="L552">						x.tree.pqRemoveEvenOut(e);</span>
 					}
 <span class="fc" id="L554">					e.slack -= tree.eps;</span>
@@ -578,7 +578,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L578" title="All 4 branches covered.">				} else if (x.isEven() &amp;&amp; x.isProcessed()) {</span>
 					// if (e.pqEvenOutRef != null)
 <span class="pc bpc" id="L580" title="1 of 4 branches missed.">					if (!OptimizationGrowSubTree || e.pqRef != null) {</span>
-<span class="pc bpc" id="L581" title="1 of 2 branches missed.">						assert e.pqRef != null;</span>
+<span class="pc bnc" id="L581" title="All 2 branches missed.">						assert e.pqRef != null;</span>
 <span class="fc" id="L582">						x.tree.pqRemoveEvenOut(e);</span>
 					}
 <span class="fc bfc" id="L584" title="All 2 branches covered.">					if (tree != x.tree) {</span>
@@ -613,7 +613,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L613" title="All 4 branches covered.">				} else if (x.isEven() &amp;&amp; x.isProcessed()) {</span>
 					// assert e.pqEvenOutRef != null;
 <span class="pc bpc" id="L615" title="1 of 4 branches missed.">					if (!OptimizationGrowSubTree || e.pqRef != null) {</span>
-<span class="pc bpc" id="L616" title="1 of 2 branches missed.">						assert e.pqRef != null;</span>
+<span class="pc bnc" id="L616" title="All 2 branches missed.">						assert e.pqRef != null;</span>
 <span class="fc" id="L617">						x.tree.pqRemoveEvenOut(e);</span>
 					}
 <span class="fc bfc" id="L619" title="All 2 branches covered.">					if (tree != x.tree) {</span>
@@ -633,10 +633,10 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L633">					tree.pqEdgeInsertEvenOdd(x.tree.currentEdge, e);</span>
 				}
 <span class="fc" id="L635">			}</span>
-<span class="pc bpc" id="L636" title="1 of 2 branches missed.">			assert !w.isProcessed();</span>
+<span class="pc bnc" id="L636" title="All 2 branches missed.">			assert !w.isProcessed();</span>
 <span class="fc" id="L637">			w.setProcessed(true);</span>
 
-<span class="pc bpc" id="L639" title="1 of 2 branches missed.">			assert !v.isProcessed();</span>
+<span class="pc bnc" id="L639" title="All 2 branches missed.">			assert !v.isProcessed();</span>
 <span class="fc" id="L640">			v.setProcessed(true);</span>
 <span class="fc bfc" id="L641" title="All 2 branches covered.">			if (v.isBlossom())</span>
 <span class="fc" id="L642">				tree.pqInsertOdd(v);</span>
@@ -646,8 +646,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		}
 
 		private static void addTreeChild(Blossom parent, Blossom child) {
-<span class="pc bpc" id="L649" title="1 of 2 branches missed.">			assert parent.isEven();</span>
-<span class="pc bpc" id="L650" title="1 of 2 branches missed.">			assert child.isEven();</span>
+<span class="pc bnc" id="L649" title="All 2 branches missed.">			assert parent.isEven();</span>
+<span class="pc bnc" id="L650" title="All 2 branches missed.">			assert child.isEven();</span>
 
 			// assert child.firstTreeChild == null;
 			// assert child.treeSiblingNext == null;
@@ -680,7 +680,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L680">				Blossom[] ptr = new Blossom[] { bridge.source, bridge.target };</span>
 <span class="fc" id="L681">				for (int side = 0;; side = 1 - side) {</span>
 <span class="fc" id="L682">					Blossom b = ptr[side];</span>
-<span class="pc bpc" id="L683" title="2 of 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L683" title="All 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
 <span class="fc bfc" id="L684" title="All 2 branches covered.">					if (b.isMarked()) {</span>
 						/* Reached a node we already visited, its the LCA */
 <span class="fc" id="L686">						root = b;</span>
@@ -696,38 +696,38 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L696" title="All 2 branches covered.">						while (!b.isMarked()) {</span>
 <span class="fc" id="L697">							b.setMarked(true);</span>
 <span class="fc" id="L698">							b = b.matchedNode();</span>
-<span class="pc bpc" id="L699" title="2 of 4 branches missed.">							assert b.isOuter() &amp;&amp; b.isOdd();</span>
-<span class="pc bpc" id="L700" title="1 of 2 branches missed.">							assert !b.isMarked();</span>
+<span class="pc bnc" id="L699" title="All 4 branches missed.">							assert b.isOuter() &amp;&amp; b.isOdd();</span>
+<span class="pc bnc" id="L700" title="All 2 branches missed.">							assert !b.isMarked();</span>
 <span class="fc" id="L701">							b.setMarked(true);</span>
 <span class="fc" id="L702">							b = b.getTreeParent();</span>
-<span class="pc bpc" id="L703" title="2 of 4 branches missed.">							assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L703" title="All 4 branches missed.">							assert b.isOuter() &amp;&amp; b.isEven();</span>
 						}
 <span class="fc" id="L705">						root = b;</span>
 <span class="fc" id="L706">						break;</span>
 					}
 					/* Sides didn't merge yet, continue up */
 <span class="fc" id="L709">					b = b.matchedNode();</span>
-<span class="pc bpc" id="L710" title="1 of 2 branches missed.">					assert !b.isMarked();</span>
+<span class="pc bnc" id="L710" title="All 2 branches missed.">					assert !b.isMarked();</span>
 <span class="fc" id="L711">					b.setMarked(true);</span>
-<span class="pc bpc" id="L712" title="2 of 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isOdd();</span>
+<span class="pc bnc" id="L712" title="All 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isOdd();</span>
 <span class="fc" id="L713">					ptr[side] = b = b.getTreeParent();</span>
-<span class="pc bpc" id="L714" title="2 of 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L714" title="All 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
 				}
 				/* Cleanup from the LCA root to rootAncestor, which is the side that went too much up */
 <span class="fc bfc" id="L717" title="All 2 branches covered.">				if (root != rootAncestor) {</span>
 <span class="fc" id="L718">					for (Blossom b = root;;) {</span>
-<span class="pc bpc" id="L719" title="2 of 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L719" title="All 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isEven();</span>
 <span class="fc" id="L720">						b = b.matchedNode();</span>
-<span class="pc bpc" id="L721" title="2 of 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isOdd();</span>
-<span class="pc bpc" id="L722" title="1 of 2 branches missed.">						assert b.isMarked();</span>
+<span class="pc bnc" id="L721" title="All 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isOdd();</span>
+<span class="pc bnc" id="L722" title="All 2 branches missed.">						assert b.isMarked();</span>
 <span class="fc" id="L723">						b.setMarked(false);</span>
 <span class="fc" id="L724">						b = b.getTreeParent();</span>
-<span class="pc bpc" id="L725" title="2 of 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L725" title="All 4 branches missed.">						assert b.isOuter() &amp;&amp; b.isEven();</span>
 <span class="fc bfc" id="L726" title="All 2 branches covered.">						if (b == rootAncestor) {</span>
 <span class="fc" id="L727">							b.setMarked(false);</span>
 <span class="fc" id="L728">							break;</span>
 						}
-<span class="pc bpc" id="L730" title="1 of 2 branches missed.">						assert b.isMarked();</span>
+<span class="pc bnc" id="L730" title="All 2 branches missed.">						assert b.isMarked();</span>
 <span class="fc" id="L731">						b.setMarked(false);</span>
 					}
 				}
@@ -739,7 +739,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L739" title="All 2 branches covered.">			for (Blossom b : new Blossom[] { bridge.source, bridge.target }) {</span>
 <span class="fc bfc" id="L740" title="All 2 branches covered.">				while (b != root) {</span>
 <span class="fc" id="L741">					dbgLog.format(&quot;\t%s\n&quot;, b);</span>
-<span class="pc bpc" id="L742" title="2 of 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
+<span class="pc bnc" id="L742" title="All 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isEven();</span>
 <span class="fc" id="L743">					removeFromTreeChildrenList(b);</span>
 <span class="fc" id="L744">					moveTreeChildren(b, B);</span>
 <span class="fc" id="L745">					b.setOuter(false);</span>
@@ -747,7 +747,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc" id="L748">					b = b.matchedNode();</span>
 <span class="fc" id="L749">					dbgLog.format(&quot;\t%s\n&quot;, b);</span>
-<span class="pc bpc" id="L750" title="2 of 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isOdd();</span>
+<span class="pc bnc" id="L750" title="All 4 branches missed.">					assert b.isOuter() &amp;&amp; b.isOdd();</span>
 <span class="fc" id="L751">					b.setOuter(false);</span>
 					// b.tree = null;
 <span class="fc bfc" id="L753" title="All 2 branches covered.">					if (b.isBlossom())</span>
@@ -757,7 +757,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 				}
 			}
 <span class="fc" id="L759">			dbgLog.format(&quot;\t%s (root)\n&quot;, root);</span>
-<span class="pc bpc" id="L760" title="2 of 4 branches missed.">			assert root.isOuter() &amp;&amp; root.isEven();</span>
+<span class="pc bnc" id="L760" title="All 4 branches missed.">			assert root.isOuter() &amp;&amp; root.isEven();</span>
 <span class="fc" id="L761">			root.setOuter(false);</span>
 <span class="fc" id="L762">			moveTreeChildren(root, B);</span>
 
@@ -792,12 +792,12 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L792">				bParent.firstTreeChild.treeSiblingPrev = B;</span>
 			}
 <span class="fc bfc" id="L794" title="All 2 branches covered.">			if (B.isTreeRoot()) {</span>
-<span class="pc bpc" id="L795" title="1 of 2 branches missed.">				assert tree.root == root;</span>
-<span class="pc bpc" id="L796" title="1 of 2 branches missed.">				assert root.match == null;</span>
+<span class="pc bnc" id="L795" title="All 2 branches missed.">				assert tree.root == root;</span>
+<span class="pc bnc" id="L796" title="All 2 branches missed.">				assert root.match == null;</span>
 <span class="fc" id="L797">				tree.root = B;</span>
 			} else {
-<span class="pc bpc" id="L799" title="1 of 2 branches missed.">				assert tree.root != root;</span>
-<span class="pc bpc" id="L800" title="1 of 2 branches missed.">				assert root.match != null;</span>
+<span class="pc bnc" id="L799" title="All 2 branches missed.">				assert tree.root != root;</span>
+<span class="pc bnc" id="L800" title="All 2 branches missed.">				assert root.match != null;</span>
 <span class="fc" id="L801">				B.match = root.match;</span>
 			}
 
@@ -812,7 +812,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L812" title="All 2 branches covered.">					if (b.isEven()) {</span>
 <span class="fc" id="L813">						b.dual += tree.eps;</span>
 					} else {
-<span class="pc bpc" id="L815" title="1 of 2 branches missed.">						assert b.isOdd();</span>
+<span class="pc bnc" id="L815" title="All 2 branches missed.">						assert b.isOdd();</span>
 <span class="fc" id="L816">						b.dual -= tree.eps;</span>
 					}
 <span class="fc" id="L818">					b.setProcessed(false);</span>
@@ -888,7 +888,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 			/* clear isMarked */
 <span class="fc" id="L890">			for (Blossom p = root.blossomSibling();; p = p.blossomSibling()) {</span>
-<span class="pc bpc" id="L891" title="1 of 2 branches missed.">				assert p.isMarked();</span>
+<span class="pc bnc" id="L891" title="All 2 branches missed.">				assert p.isMarked();</span>
 <span class="fc" id="L892">				p.setMarked(false);</span>
 <span class="fc" id="L893">				p.blossomEps = tree.eps;</span>
 <span class="fc bfc" id="L894" title="All 2 branches covered.">				if (p == root)</span>
@@ -900,7 +900,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L900" title="All 2 branches covered.">				if (B.match.source == root) {</span>
 <span class="fc" id="L901">					B.match.moveEdgeOut(root, B);</span>
 				} else {
-<span class="pc bpc" id="L903" title="1 of 2 branches missed.">					assert B.match.target == root;</span>
+<span class="pc bnc" id="L903" title="All 2 branches missed.">					assert B.match.target == root;</span>
 <span class="fc" id="L904">					B.match.moveEdgeIn(root, B);</span>
 				}
 			}
@@ -911,7 +911,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		}
 
 		private static void removeFromTreeChildrenList(Blossom b) {
-<span class="pc bpc" id="L914" title="1 of 2 branches missed.">			assert b.isEven();</span>
+<span class="pc bnc" id="L914" title="All 2 branches missed.">			assert b.isEven();</span>
 <span class="fc bfc" id="L915" title="All 2 branches covered.">			if (b.treeSiblingNext != null) {</span>
 <span class="fc" id="L916">				b.treeSiblingNext.treeSiblingPrev = b.treeSiblingPrev;</span>
 			} else {
@@ -967,7 +967,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L967">				tree = e.target.tree;</span>
 <span class="fc" id="L968">				other = e.source;</span>
 			}
-<span class="pc bpc" id="L970" title="1 of 2 branches missed.">			assert tree != null;</span>
+<span class="pc bnc" id="L970" title="All 2 branches missed.">			assert tree != null;</span>
 
 			/* If target was even, e was part of pqOddEven - remove it */
 <span class="fc bfc" id="L973" title="All 4 branches covered.">			if (other.isEven() &amp;&amp; tree != other.tree) {</span>
@@ -994,7 +994,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 				}
 <span class="fc bfc" id="L995" title="All 2 branches covered.">			} else if (tree != other.tree) {</span>
 				/* e is an (+,-) edge between trees */
-<span class="pc bpc" id="L997" title="1 of 2 branches missed.">				assert other.isOdd();</span>
+<span class="pc bnc" id="L997" title="All 2 branches missed.">				assert other.isOdd();</span>
 <span class="fc" id="L998">				ensureTreesEdgeExists(tree, other.tree);</span>
 <span class="fc" id="L999">				tree.pqEdgeInsertEvenOdd(other.tree.currentEdge, e);</span>
 			}
@@ -1007,9 +1007,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		 */
 		private boolean expand(Blossom B) {
 <span class="fc" id="L1009">			dbgLog.format(&quot;expand(%s)\n&quot;, B);</span>
-<span class="pc bpc" id="L1010" title="1 of 2 branches missed.">			assert B.isBlossom();</span>
-<span class="pc bpc" id="L1011" title="1 of 2 branches missed.">			assert B.isOuter();</span>
-<span class="pc bpc" id="L1012" title="1 of 2 branches missed.">			assert B.isOdd();</span>
+<span class="pc bnc" id="L1010" title="All 2 branches missed.">			assert B.isBlossom();</span>
+<span class="pc bnc" id="L1011" title="All 2 branches missed.">			assert B.isOuter();</span>
+<span class="pc bnc" id="L1012" title="All 2 branches missed.">			assert B.isOdd();</span>
 
 <span class="fc" id="L1014">			Tree tree = B.tree;</span>
 <span class="fc" id="L1015">			double eps = tree.eps;</span>
@@ -1041,8 +1041,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1041">				b.setOuter(false);</span>
 <span class="fc" id="L1042">			};</span>
 <span class="fc" id="L1043">			for (Blossom b1 = base.blossomSibling();;) {</span>
-<span class="pc bpc" id="L1044" title="1 of 2 branches missed.">				assert B == b1.blossomParent;</span>
-<span class="pc bpc" id="L1045" title="1 of 2 branches missed.">				assert B == b1.blossomGrandparent; // maybe not</span>
+<span class="pc bnc" id="L1044" title="All 2 branches missed.">				assert B == b1.blossomParent;</span>
+<span class="pc bnc" id="L1045" title="All 2 branches missed.">				assert B == b1.blossomGrandparent; // maybe not</span>
 <span class="fc" id="L1046">				expandTemp.add(b1);</span>
 <span class="fc" id="L1047">				b1.setOut();</span>
 <span class="fc" id="L1048">				processSelfLoops.accept(b1);</span>
@@ -1135,7 +1135,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			}
 
 <span class="fc" id="L1137">			for (Blossom b = base;;) {</span>
-<span class="pc bpc" id="L1138" title="1 of 2 branches missed.">				assert b.isOdd();</span>
+<span class="pc bnc" id="L1138" title="All 2 branches missed.">				assert b.isOdd();</span>
 <span class="fc" id="L1139">				dbgLog.format(&quot;\t%s\n&quot;, b);</span>
 <span class="fc bfc" id="L1140" title="All 2 branches covered.">				if (b.isBlossom())</span>
 <span class="fc" id="L1141">					tree.pqInsertOdd(b);</span>
@@ -1151,7 +1151,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1151">					break;</span>
 
 <span class="fc" id="L1153">				b = b.treeParentEdge.getOtherEndpoint(b);</span>
-<span class="pc bpc" id="L1154" title="1 of 2 branches missed.">				assert b.isEven();</span>
+<span class="pc bnc" id="L1154" title="All 2 branches missed.">				assert b.isEven();</span>
 <span class="fc" id="L1155">				dbgLog.format(&quot;\t%s\n&quot;, b);</span>
 
 <span class="fc bfc" id="L1157" title="All 2 branches covered.">				for (Edge e : b.outEdges()) {</span>
@@ -1213,7 +1213,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1213">							bOther.tree.currentEdge.pqInsertEvenEven(e);</span>
 						}
 <span class="fc bfc" id="L1215" title="All 2 branches covered.">					} else if (tree != bOther.tree) {</span>
-<span class="pc bpc" id="L1216" title="1 of 2 branches missed.">						assert bOther.isOdd();</span>
+<span class="pc bnc" id="L1216" title="All 2 branches missed.">						assert bOther.isOdd();</span>
 <span class="fc" id="L1217">						ensureTreesEdgeExists(tree, bOther.tree);</span>
 <span class="fc" id="L1218">						tree.pqEdgeInsertEvenOdd(bOther.tree.currentEdge, e);</span>
 					}
@@ -1251,7 +1251,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1251">							bOther.tree.currentEdge.pqInsertEvenEven(e);</span>
 						}
 <span class="fc bfc" id="L1253" title="All 2 branches covered.">					} else if (tree != bOther.tree) {</span>
-<span class="pc bpc" id="L1254" title="1 of 2 branches missed.">						assert bOther.isOdd();</span>
+<span class="pc bnc" id="L1254" title="All 2 branches missed.">						assert bOther.isOdd();</span>
 <span class="fc" id="L1255">						ensureTreesEdgeExists(tree, bOther.tree);</span>
 <span class="fc" id="L1256">						tree.pqEdgeInsertEvenOdd(bOther.tree.currentEdge, e);</span>
 					}
@@ -1290,7 +1290,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 		private void augmentBranch(Blossom b) {
 <span class="fc" id="L1292">			dbgLog.format(&quot;augmentBranch(%s)\n&quot;, b);</span>
-<span class="pc bpc" id="L1293" title="1 of 2 branches missed.">			assert b.isEven();</span>
+<span class="pc bnc" id="L1293" title="All 2 branches missed.">			assert b.isEven();</span>
 <span class="fc" id="L1294">			Tree tree = b.tree;</span>
 <span class="fc" id="L1295">			double eps = tree.eps;</span>
 
@@ -1308,12 +1308,12 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1308">			}</span>
 
 <span class="fc bfc" id="L1310" title="All 2 branches covered.">			for (Blossom even : tree.evenNodesWithoutRoot()) {</span>
-<span class="pc bpc" id="L1311" title="1 of 2 branches missed.">				assert even.isOuter();</span>
-<span class="pc bpc" id="L1312" title="1 of 2 branches missed.">				assert even.isEven();</span>
+<span class="pc bnc" id="L1311" title="All 2 branches missed.">				assert even.isOuter();</span>
+<span class="pc bnc" id="L1312" title="All 2 branches missed.">				assert even.isEven();</span>
 
 <span class="fc" id="L1314">				Blossom odd = even.matchedNode();</span>
-<span class="pc bpc" id="L1315" title="1 of 2 branches missed.">				assert odd.isOuter();</span>
-<span class="pc bpc" id="L1316" title="1 of 2 branches missed.">				assert odd.isOdd();</span>
+<span class="pc bnc" id="L1315" title="All 2 branches missed.">				assert odd.isOuter();</span>
+<span class="pc bnc" id="L1316" title="All 2 branches missed.">				assert odd.isOdd();</span>
 
 <span class="fc bfc" id="L1318" title="All 2 branches covered.">				if (odd.isProcessed()) {</span>
 					/* Remove blossom expand event from PQ */
@@ -1329,7 +1329,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 								// if (e.pqEvenOutRef == null &amp;&amp; e.pqEvenEvenRef == null &amp;&amp; e.pqEvenOddRef == null)
 								// if (e.pqRef == null)
 								// target.tree.pqInsertEvenOut(e);
-<span class="pc bpc" id="L1332" title="1 of 2 branches missed.">								assert e.pqRef != null;</span>
+<span class="pc bnc" id="L1332" title="All 2 branches missed.">								assert e.pqRef != null;</span>
 							}
 						} else {
 <span class="fc" id="L1335">							e.slack += eps;</span>
@@ -1343,7 +1343,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 								// if (e.pqEvenOutRef == null &amp;&amp; e.pqEvenEvenRef == null &amp;&amp; e.pqEvenOddRef == null)
 								// if (e.pqRef == null)
 								// source.tree.pqInsertEvenOut(e);
-<span class="pc bpc" id="L1346" title="1 of 2 branches missed.">								assert e.pqRef != null;</span>
+<span class="pc bnc" id="L1346" title="All 2 branches missed.">								assert e.pqRef != null;</span>
 							}
 						} else {
 <span class="fc" id="L1349">							e.slack += eps;</span>
@@ -1387,7 +1387,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1387">					Edge ePq = ref.key();</span>
 					// assert ePq.pqEvenOddRef == ref;
 					// ePq.pqEvenOddRef = null;
-<span class="pc bpc" id="L1390" title="1 of 2 branches missed.">					assert ePq.pqRef == ref;</span>
+<span class="pc bnc" id="L1390" title="All 2 branches missed.">					assert ePq.pqRef == ref;</span>
 <span class="fc" id="L1391">					ePq.pqRef = null;</span>
 
 <span class="fc" id="L1393">					handleEvenPqEdge.accept(ePq);</span>
@@ -1424,7 +1424,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1424">					Edge ePq = ref.key();</span>
 					// assert ePq.pqEvenOddRef == ref;
 					// ePq.pqEvenOddRef = null;
-<span class="pc bpc" id="L1427" title="1 of 2 branches missed.">					assert ePq.pqRef == ref;</span>
+<span class="pc bnc" id="L1427" title="All 2 branches missed.">					assert ePq.pqRef == ref;</span>
 <span class="fc" id="L1428">					ePq.pqRef = null;</span>
 
 <span class="fc" id="L1430">					handleEvenPqEdge.accept(ePq);</span>
@@ -1437,7 +1437,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1437">				Edge ePq = ref.key();</span>
 				// assert ePq.pqEvenOutRef == ref;
 				// ePq.pqEvenOutRef = null;
-<span class="pc bpc" id="L1440" title="1 of 2 branches missed.">				assert ePq.pqRef == ref;</span>
+<span class="pc bnc" id="L1440" title="All 2 branches missed.">				assert ePq.pqRef == ref;</span>
 <span class="fc" id="L1441">				ePq.pqRef = null;</span>
 
 <span class="fc" id="L1443">				handleEvenPqEdge.accept(ePq);</span>
@@ -1449,7 +1449,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1449">				Edge ePq = ref.key();</span>
 				// assert ePq.pqEvenEvenRef == ref;
 				// ePq.pqEvenEvenRef = null;
-<span class="pc bpc" id="L1452" title="1 of 2 branches missed.">				assert ePq.pqRef == ref;</span>
+<span class="pc bnc" id="L1452" title="All 2 branches missed.">				assert ePq.pqRef == ref;</span>
 <span class="fc" id="L1453">				ePq.pqRef = null;</span>
 
 <span class="fc" id="L1455">				processEdgeEvenEven(ePq, true);</span>
@@ -1459,8 +1459,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			/* Set all tree nodes to be out */
 <span class="fc bfc" id="L1460" title="All 2 branches covered.">			for (Blossom even : tree.evenNodesWithoutRoot()) {</span>
 <span class="fc" id="L1461">				Blossom odd = even.matchedNode();</span>
-<span class="pc bpc" id="L1462" title="1 of 2 branches missed.">				assert even.isEven();</span>
-<span class="pc bpc" id="L1463" title="1 of 2 branches missed.">				assert odd.isOdd();</span>
+<span class="pc bnc" id="L1462" title="All 2 branches missed.">				assert even.isEven();</span>
+<span class="pc bnc" id="L1463" title="All 2 branches missed.">				assert odd.isOdd();</span>
 <span class="fc" id="L1464">				even.setOut();</span>
 <span class="fc" id="L1465">				odd.setOut();</span>
 <span class="fc" id="L1466">				even.setProcessed(false);</span>
@@ -1508,7 +1508,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1508">					prev = blossom;</span>
 <span class="fc" id="L1509">					blossom = blossom.blossomParent;</span>
 <span class="fc bfc" id="L1510" title="All 2 branches covered.">				} while (!blossom.isOuter());</span>
-<span class="pc bpc" id="L1511" title="1 of 2 branches missed.">				assert blossom.isMatched();</span>
+<span class="pc bnc" id="L1511" title="All 2 branches missed.">				assert blossom.isMatched();</span>
 
 <span class="fc" id="L1513">				Blossom prevPrev = prev.blossomGrandparent;</span>
 				for (;;) {
@@ -1546,10 +1546,10 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1546">					k.match = blossom.match;</span>
 
 <span class="fc bfc" id="L1548" title="All 2 branches covered.">					for (Blossom i = k.blossomSibling(); i != k;) {</span>
-<span class="pc bpc" id="L1549" title="1 of 2 branches missed.">						assert i.blossomParent == k.blossomParent;</span>
+<span class="pc bnc" id="L1549" title="All 2 branches missed.">						assert i.blossomParent == k.blossomParent;</span>
 <span class="fc" id="L1550">						i.match = i.blossomSibling;</span>
 <span class="fc" id="L1551">						Blossom j = i.matchedNode();</span>
-<span class="pc bpc" id="L1552" title="1 of 2 branches missed.">						assert j.blossomParent == k.blossomParent;</span>
+<span class="pc bnc" id="L1552" title="All 2 branches missed.">						assert j.blossomParent == k.blossomParent;</span>
 <span class="fc" id="L1553">						j.match = i.match;</span>
 <span class="fc" id="L1554">						i = j.blossomSibling();</span>
 <span class="fc" id="L1555">					}</span>
@@ -1568,7 +1568,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1568">			final int n = g.vertices().size();</span>
 <span class="fc" id="L1569">			int[] matched = new int[n];</span>
 <span class="fc bfc" id="L1570" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="pc bpc" id="L1571" title="1 of 2 branches missed.">				assert singletonNodes[u].isMatched();</span>
+<span class="pc bnc" id="L1571" title="All 2 branches missed.">				assert singletonNodes[u].isMatched();</span>
 <span class="fc" id="L1572">				matched[u] = singletonNodes[u].match.id;</span>
 			}
 <span class="fc" id="L1574">			return new Matchings.MatchingImpl(g, matched);</span>
@@ -1776,7 +1776,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		}
 
 		private static void ensureTreesEdgeExists(Tree mainTree, Tree otherTree) {
-<span class="pc bpc" id="L1779" title="1 of 2 branches missed.">			assert mainTree != otherTree;</span>
+<span class="pc bnc" id="L1779" title="All 2 branches missed.">			assert mainTree != otherTree;</span>
 <span class="fc bfc" id="L1780" title="All 2 branches covered.">			if (otherTree.currentEdge == null) {</span>
 <span class="fc" id="L1781">				TreesEdge e = new TreesEdge();</span>
 <span class="fc" id="L1782">				e.source = mainTree;</span>
@@ -1815,7 +1815,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1815">				return true;</span>
 			}
 <span class="fc bfc" id="L1817" title="All 2 branches covered.">			if (penultimateSource != penultimateTarget) {</span>
-<span class="pc bpc" id="L1818" title="2 of 4 branches missed.">				assert penultimateSource != null &amp;&amp; penultimateTarget != null;</span>
+<span class="pc bnc" id="L1818" title="All 4 branches missed.">				assert penultimateSource != null &amp;&amp; penultimateTarget != null;</span>
 <span class="fc bfc" id="L1819" title="All 2 branches covered.">				if (e.source != penultimateSource)</span>
 <span class="fc" id="L1820">					e.moveEdgeOut(e.source, penultimateSource);</span>
 <span class="fc bfc" id="L1821" title="All 2 branches covered.">				if (e.target != penultimateTarget)</span>
@@ -1916,7 +1916,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1916">			}</span>
 
 			Field newField(int size) {
-<span class="pc bpc" id="L1919" title="1 of 2 branches missed.">				assert usedBits + size &lt; maxSize;</span>
+<span class="pc bnc" id="L1919" title="All 2 branches missed.">				assert usedBits + size &lt; maxSize;</span>
 <span class="fc" id="L1920">				int shift = usedBits;</span>
 <span class="fc" id="L1921">				int mask = ((1 &lt;&lt; size) - 1) &lt;&lt; shift;</span>
 <span class="fc" id="L1922">				usedBits += size;</span>
@@ -2066,7 +2066,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2066" title="All 2 branches covered.">			if (this == treeParentEdge.source) {</span>
 <span class="fc" id="L2067">				return treeParentEdge.getTargetOuterBlossom();</span>
 			} else {
-<span class="pc bpc" id="L2069" title="1 of 2 branches missed.">				assert this == treeParentEdge.target;</span>
+<span class="pc bnc" id="L2069" title="All 2 branches missed.">				assert this == treeParentEdge.target;</span>
 <span class="fc" id="L2070">				return treeParentEdge.getSourceOuterBlossom();</span>
 			}
 		}
@@ -2111,7 +2111,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		}
 
 		private void addEdgeOut(Edge e) {
-<span class="pc bpc" id="L2114" title="2 of 4 branches missed.">			assert e.nextOutEdge == null &amp;&amp; e.prevOutEdge == null;</span>
+<span class="pc bnc" id="L2114" title="All 4 branches missed.">			assert e.nextOutEdge == null &amp;&amp; e.prevOutEdge == null;</span>
 <span class="fc bfc" id="L2115" title="All 2 branches covered.">			if (outEdges != null) {</span>
 <span class="fc" id="L2116">				e.prevOutEdge = outEdges.prevOutEdge;</span>
 <span class="fc" id="L2117">				e.nextOutEdge = outEdges;</span>
@@ -2124,7 +2124,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2124">		}</span>
 
 		private void addEdgeIn(Edge e) {
-<span class="pc bpc" id="L2127" title="2 of 4 branches missed.">			assert e.nextInEdge == null &amp;&amp; e.prevInEdge == null;</span>
+<span class="pc bnc" id="L2127" title="All 4 branches missed.">			assert e.nextInEdge == null &amp;&amp; e.prevInEdge == null;</span>
 <span class="fc bfc" id="L2128" title="All 2 branches covered.">			if (inEdges != null) {</span>
 <span class="fc" id="L2129">				e.prevInEdge = inEdges.prevInEdge;</span>
 <span class="fc" id="L2130">				e.nextInEdge = inEdges;</span>
@@ -2137,9 +2137,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2137">		}</span>
 
 		private void removeEdgeOut(Edge e) {
-<span class="pc bpc" id="L2140" title="1 of 2 branches missed.">			assert e.source == this;</span>
+<span class="pc bnc" id="L2140" title="All 2 branches missed.">			assert e.source == this;</span>
 <span class="fc bfc" id="L2141" title="All 2 branches covered.">			if (e.prevOutEdge == e) {</span>
-<span class="pc bpc" id="L2142" title="1 of 2 branches missed.">				assert outEdges == e;</span>
+<span class="pc bnc" id="L2142" title="All 2 branches missed.">				assert outEdges == e;</span>
 <span class="fc" id="L2143">				outEdges = null;</span>
 			} else {
 <span class="fc" id="L2145">				e.prevOutEdge.nextOutEdge = e.nextOutEdge;</span>
@@ -2150,9 +2150,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2150">		}</span>
 
 		private void removeEdgeIn(Edge e) {
-<span class="pc bpc" id="L2153" title="1 of 2 branches missed.">			assert e.target == this;</span>
+<span class="pc bnc" id="L2153" title="All 2 branches missed.">			assert e.target == this;</span>
 <span class="fc bfc" id="L2154" title="All 2 branches covered.">			if (e.prevInEdge == e) {</span>
-<span class="pc bpc" id="L2155" title="1 of 2 branches missed.">				assert inEdges == e;</span>
+<span class="pc bnc" id="L2155" title="All 2 branches missed.">				assert inEdges == e;</span>
 <span class="fc" id="L2156">				inEdges = null;</span>
 			} else {
 <span class="fc" id="L2158">				e.prevInEdge.nextInEdge = e.nextInEdge;</span>
@@ -2194,7 +2194,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc bfc" id="L2195" title="All 2 branches covered.">							if (outEdges != current) {</span>
 <span class="fc" id="L2196">								Edge prev = current.prevOutEdge, next = current.nextOutEdge;</span>
-<span class="pc bpc" id="L2197" title="2 of 4 branches missed.">								assert prev != current &amp;&amp; next != current;</span>
+<span class="pc bnc" id="L2197" title="All 4 branches missed.">								assert prev != current &amp;&amp; next != current;</span>
 <span class="fc" id="L2198">								prev.nextOutEdge = next;</span>
 <span class="fc" id="L2199">								next.prevOutEdge = prev;</span>
 <span class="fc" id="L2200">							} else {</span>
@@ -2245,7 +2245,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc bfc" id="L2246" title="All 2 branches covered.">							if (inEdges != current) {</span>
 <span class="fc" id="L2247">								Edge prev = current.prevInEdge, next = current.nextInEdge;</span>
-<span class="pc bpc" id="L2248" title="2 of 4 branches missed.">								assert prev != current &amp;&amp; next != current;</span>
+<span class="pc bnc" id="L2248" title="All 4 branches missed.">								assert prev != current &amp;&amp; next != current;</span>
 <span class="fc" id="L2249">								prev.nextInEdge = next;</span>
 <span class="fc" id="L2250">								next.prevInEdge = prev;</span>
 <span class="fc" id="L2251">							} else {</span>
@@ -2320,8 +2320,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2320">		static final Comparator&lt;Edge&gt; slackComparator = (e1, e2) -&gt; Double.compare(e1.slack, e2.slack);</span>
 
 <span class="fc" id="L2322">		Edge(int id, Blossom source, Blossom target) {</span>
-<span class="pc bpc" id="L2323" title="1 of 2 branches missed.">			assert !source.isBlossom();</span>
-<span class="pc bpc" id="L2324" title="1 of 2 branches missed.">			assert !target.isBlossom();</span>
+<span class="pc bnc" id="L2323" title="All 2 branches missed.">			assert !source.isBlossom();</span>
+<span class="pc bnc" id="L2324" title="All 2 branches missed.">			assert !target.isBlossom();</span>
 <span class="fc" id="L2325">			this.id = id;</span>
 <span class="fc" id="L2326">			this.source = sourceOrig = Objects.requireNonNull(source);</span>
 <span class="fc" id="L2327">			this.target = targetOrig = Objects.requireNonNull(target);</span>
@@ -2331,7 +2331,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2331" title="All 2 branches covered.">			if (b == source) {</span>
 <span class="fc" id="L2332">				return target;</span>
 			} else {
-<span class="pc bpc" id="L2334" title="1 of 2 branches missed.">				assert b == target;</span>
+<span class="pc bnc" id="L2334" title="All 2 branches missed.">				assert b == target;</span>
 <span class="fc" id="L2335">				return source;</span>
 			}
 		}
@@ -2340,7 +2340,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2340" title="All 2 branches covered.">			if (b == source) {</span>
 <span class="fc" id="L2341">				return sourceOrig;</span>
 			} else {
-<span class="pc bpc" id="L2343" title="1 of 2 branches missed.">				assert b == target;</span>
+<span class="pc bnc" id="L2343" title="All 2 branches missed.">				assert b == target;</span>
 <span class="fc" id="L2344">				return targetOrig;</span>
 			}
 		}
@@ -2349,7 +2349,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2349" title="All 2 branches covered.">			if (oldNode == source) {</span>
 <span class="fc" id="L2350">				moveEdgeOut(oldNode, newNode);</span>
 			} else {
-<span class="pc bpc" id="L2352" title="1 of 2 branches missed.">				assert oldNode == target;</span>
+<span class="pc bnc" id="L2352" title="All 2 branches missed.">				assert oldNode == target;</span>
 <span class="fc" id="L2353">				moveEdgeIn(oldNode, newNode);</span>
 			}
 <span class="fc" id="L2355">		}</span>
@@ -2517,8 +2517,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2517">							nextEdge = nextEdge.nextOutEdge;</span>
 <span class="fc" id="L2518">							advance();</span>
 
-<span class="pc bpc" id="L2520" title="1 of 2 branches missed.">							assert prev.source != null;</span>
-<span class="pc bpc" id="L2521" title="1 of 2 branches missed.">							assert prev.target != null;</span>
+<span class="pc bnc" id="L2520" title="All 2 branches missed.">							assert prev.source != null;</span>
+<span class="pc bnc" id="L2521" title="All 2 branches missed.">							assert prev.target != null;</span>
 <span class="fc" id="L2522">							return prev;</span>
 						}
 					};
@@ -2563,8 +2563,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2563">							nextEdge = nextEdge.nextInEdge;</span>
 <span class="fc" id="L2564">							advance();</span>
 
-<span class="pc bpc" id="L2566" title="1 of 2 branches missed.">							assert prev.source != null;</span>
-<span class="pc bpc" id="L2567" title="1 of 2 branches missed.">							assert prev.target != null;</span>
+<span class="pc bnc" id="L2566" title="All 2 branches missed.">							assert prev.source != null;</span>
+<span class="pc bnc" id="L2567" title="All 2 branches missed.">							assert prev.target != null;</span>
 <span class="fc" id="L2568">							return prev;</span>
 						}
 					};
@@ -2599,7 +2599,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 								for (;;) {
 <span class="fc bfc" id="L2600" title="All 2 branches covered.">									if (b.isTreeRoot()) {</span>
 										/* Done */
-<span class="pc bpc" id="L2602" title="1 of 2 branches missed.">										assert b.isEven();</span>
+<span class="pc bnc" id="L2602" title="All 2 branches missed.">										assert b.isEven();</span>
 <span class="fc" id="L2603">										b = null;</span>
 <span class="fc" id="L2604">										break;</span>
 									}
@@ -2617,9 +2617,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 								}
 							}
 
-<span class="pc bpc" id="L2620" title="1 of 2 branches missed.">							assert ret.isEven();</span>
-<span class="pc bpc" id="L2621" title="1 of 2 branches missed.">							assert ret.isOuter();</span>
-<span class="pc bpc" id="L2622" title="1 of 2 branches missed.">							assert ret.tree == Tree.this;</span>
+<span class="pc bnc" id="L2620" title="All 2 branches missed.">							assert ret.isEven();</span>
+<span class="pc bnc" id="L2621" title="All 2 branches missed.">							assert ret.isOuter();</span>
+<span class="pc bnc" id="L2622" title="All 2 branches missed.">							assert ret.tree == Tree.this;</span>
 <span class="fc" id="L2623">							return ret;</span>
 						}
 					};
@@ -2632,7 +2632,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
 			// edge.pqEvenOutRef = pqEvenOut.insert(edge);
-<span class="pc bpc" id="L2635" title="1 of 2 branches missed.">			assert edge.pqRef == null;</span>
+<span class="pc bnc" id="L2635" title="All 2 branches missed.">			assert edge.pqRef == null;</span>
 <span class="fc" id="L2636">			edge.pqRef = pqEvenOut.insert(edge);</span>
 <span class="fc" id="L2637">		}</span>
 
@@ -2643,7 +2643,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenEvenRef == null;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
-<span class="pc bpc" id="L2646" title="1 of 2 branches missed.">			assert edge.pqRef != null;</span>
+<span class="pc bnc" id="L2646" title="All 2 branches missed.">			assert edge.pqRef != null;</span>
 <span class="fc" id="L2647">			pqEvenOut.remove(edge.pqRef);</span>
 <span class="fc" id="L2648">			edge.pqRef = null;</span>
 <span class="fc" id="L2649">		}</span>
@@ -2653,7 +2653,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
 			// edge.pqEvenEvenRef = pqEvenEven.insert(edge);
-<span class="pc bpc" id="L2656" title="1 of 2 branches missed.">			assert edge.pqRef == null;</span>
+<span class="pc bnc" id="L2656" title="All 2 branches missed.">			assert edge.pqRef == null;</span>
 <span class="fc" id="L2657">			edge.pqRef = pqEvenEven.insert(edge);</span>
 <span class="fc" id="L2658">		}</span>
 
@@ -2664,7 +2664,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenEvenRef == null;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
-<span class="pc bpc" id="L2667" title="1 of 2 branches missed.">			assert edge.pqRef != null;</span>
+<span class="pc bnc" id="L2667" title="All 2 branches missed.">			assert edge.pqRef != null;</span>
 <span class="fc" id="L2668">			pqEvenEven.remove(edge.pqRef);</span>
 <span class="fc" id="L2669">			edge.pqRef = null;</span>
 <span class="fc" id="L2670">		}</span>
@@ -2674,7 +2674,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2674" title="All 2 branches covered.">			if (this == treesEdge.source) {</span>
 <span class="fc" id="L2675">				pqEvenOdd = treesEdge.pqEvenOdd;</span>
 			} else {
-<span class="pc bpc" id="L2677" title="1 of 2 branches missed.">				assert this == treesEdge.target;</span>
+<span class="pc bnc" id="L2677" title="All 2 branches missed.">				assert this == treesEdge.target;</span>
 <span class="fc" id="L2678">				pqEvenOdd = treesEdge.pqOddEven;</span>
 			}
 
@@ -2682,7 +2682,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
 			// edge.pqEvenOddRef = pqEvenOdd.insert(edge);
-<span class="pc bpc" id="L2685" title="1 of 2 branches missed.">			assert edge.pqRef == null;</span>
+<span class="pc bnc" id="L2685" title="All 2 branches missed.">			assert edge.pqRef == null;</span>
 <span class="fc" id="L2686">			edge.pqRef = pqEvenOdd.insert(edge);</span>
 <span class="fc" id="L2687">		}</span>
 
@@ -2691,7 +2691,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L2691" title="All 2 branches covered.">			if (this == treesEdge.source) {</span>
 <span class="fc" id="L2692">				pqEvenOdd = treesEdge.pqEvenOdd;</span>
 			} else {
-<span class="pc bpc" id="L2694" title="1 of 2 branches missed.">				assert this == treesEdge.target;</span>
+<span class="pc bnc" id="L2694" title="All 2 branches missed.">				assert this == treesEdge.target;</span>
 <span class="fc" id="L2695">				pqEvenOdd = treesEdge.pqOddEven;</span>
 			}
 			// assert edge.pqEvenOddRef != null;
@@ -2700,18 +2700,18 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			// assert edge.pqEvenEvenRef == null;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
-<span class="pc bpc" id="L2703" title="1 of 2 branches missed.">			assert edge.pqRef != null;</span>
+<span class="pc bnc" id="L2703" title="All 2 branches missed.">			assert edge.pqRef != null;</span>
 <span class="fc" id="L2704">			pqEvenOdd.remove(edge.pqRef);</span>
 <span class="fc" id="L2705">			edge.pqRef = null;</span>
 <span class="fc" id="L2706">		}</span>
 
 		private void pqInsertOdd(Blossom b) {
-<span class="pc bpc" id="L2709" title="1 of 2 branches missed.">			assert b.expandRef == null;</span>
+<span class="pc bnc" id="L2709" title="All 2 branches missed.">			assert b.expandRef == null;</span>
 <span class="fc" id="L2710">			b.expandRef = pqOdd.insert(b);</span>
 <span class="fc" id="L2711">		}</span>
 
 		private void pqRemoveOdd(Blossom b) {
-<span class="pc bpc" id="L2714" title="1 of 2 branches missed.">			assert b.expandRef != null;</span>
+<span class="pc bnc" id="L2714" title="All 2 branches missed.">			assert b.expandRef != null;</span>
 <span class="fc" id="L2715">			pqOdd.remove(b.expandRef);</span>
 <span class="fc" id="L2716">			b.expandRef = null;</span>
 <span class="fc" id="L2717">		}</span>
@@ -2746,12 +2746,12 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L2746">		final HeapReferenceable&lt;Edge, Void&gt; pqOddEven = newHeap(Edge.slackComparator);</span>
 
 		private void pqInsertEvenEven(Edge edge) {
-<span class="pc bpc" id="L2749" title="1 of 2 branches missed.">			assert edge.source != edge.target;</span>
+<span class="pc bnc" id="L2749" title="All 2 branches missed.">			assert edge.source != edge.target;</span>
 			// assert edge.pqEvenEvenRef == null;
 			// assert edge.pqEvenOddRef == null;
 			// assert edge.pqEvenOutRef == null;
 			// edge.pqEvenEvenRef = pqEvenEven.insert(edge);
-<span class="pc bpc" id="L2754" title="1 of 2 branches missed.">			assert edge.pqRef == null;</span>
+<span class="pc bnc" id="L2754" title="All 2 branches missed.">			assert edge.pqRef == null;</span>
 <span class="fc" id="L2755">			edge.pqRef = pqEvenEven.insert(edge);</span>
 <span class="fc" id="L2756">		}</span>
 

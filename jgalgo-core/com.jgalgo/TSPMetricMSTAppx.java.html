@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L69">		g1Builder.expectedEdgesNum(mst.size() + mst.size() * 2);</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L71">			int vBuilder = g1Builder.addVertex();</span>
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			assert v == vBuilder;</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">			assert v == vBuilder;</span>
 		}
 <span class="fc" id="L74">		int[] edgeRef = new int[mst.size() * 2];</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">		for (int e : mst) {</span>
@@ -80,8 +80,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L80">		IndexGraph g1 = g1Builder.build();</span>
 
 <span class="fc" id="L82">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
+<span class="pc bnc" id="L83" title="All 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="pc bnc" id="L84" title="All 2 branches missed.">		assert cycle.isCycle();</span>
 
 		/* Convert cycle of edges to list of vertices */
 <span class="fc" id="L87">		return cycle;</span>

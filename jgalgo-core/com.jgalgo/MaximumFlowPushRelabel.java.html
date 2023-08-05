@@ -244,8 +244,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L245">			BitSet visited = relabelVisited;</span>
 <span class="fc" id="L246">			IntPriorityQueue queue = relabelQueue;</span>
-<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
+<span class="pc bnc" id="L247" title="All 2 branches missed.">			assert visited.isEmpty();</span>
+<span class="pc bnc" id="L248" title="All 2 branches missed.">			assert queue.isEmpty();</span>
 
 <span class="pc bpc" id="L250" title="3 of 4 branches missed.">			if (HeuristicIncrementalRestart &amp;&amp; minTouchedLayer &gt;= 2) {</span>
 <span class="nc bnc" id="L251" title="All 2 branches missed.">				assert minTouchedLayer != n;</span>
@@ -273,10 +273,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="nc" id="L273">				minTouchedLayer = n;</span>
 
 			// label[sink] = 0;
-<span class="pc bpc" id="L276" title="1 of 2 branches missed.">			assert label[sink] == 0;</span>
+<span class="pc bnc" id="L276" title="All 2 branches missed.">			assert label[sink] == 0;</span>
 <span class="fc" id="L277">			visited.set(sink);</span>
 			// label[source] = n;
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">			assert label[source] == n;</span>
+<span class="pc bnc" id="L279" title="All 2 branches missed.">			assert label[source] == n;</span>
 <span class="fc" id="L280">			visited.set(source);</span>
 
 <span class="fc bfc" id="L282" title="All 2 branches covered.">			if (directed) {</span>
@@ -323,7 +323,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L323">								continue;</span>
 <span class="fc" id="L324">							u = g.edgeTarget(e);</span>
 						} else {
-<span class="pc bpc" id="L326" title="1 of 2 branches missed.">							assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L326" title="All 2 branches missed.">							assert v == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L327" title="All 2 branches covered.">							if (!isResidual(e))</span>
 <span class="fc" id="L328">								continue;</span>
 <span class="fc" id="L329">							u = g.edgeSource(e);</span>
@@ -363,7 +363,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L363">		}</span>
 
 		void addToLayerActive(int u, int layer) {
-<span class="pc bpc" id="L366" title="2 of 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
+<span class="pc bnc" id="L366" title="All 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
 <span class="fc bfc" id="L367" title="All 2 branches covered.">			if (layersHeadActive[layer] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L368">				layers.connect(u, layersHeadActive[layer]);</span>
 <span class="fc" id="L369">			layersHeadActive[layer] = u;</span>
@@ -374,7 +374,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L374">		}</span>
 
 		void addToLayerInactive(int u, int layer) {
-<span class="pc bpc" id="L377" title="2 of 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
+<span class="pc bnc" id="L377" title="All 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
 <span class="fc bfc" id="L378" title="All 2 branches covered.">			if (layersHeadInactive[layer] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L379">				layers.connect(u, layersHeadInactive[layer]);</span>
 <span class="fc" id="L380">			layersHeadInactive[layer] = u;</span>
@@ -399,7 +399,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L399">		}</span>
 
 		void activate(int v) {
-<span class="pc bpc" id="L402" title="2 of 4 branches missed.">			assert v != source &amp;&amp; v != sink;</span>
+<span class="pc bnc" id="L402" title="All 4 branches missed.">			assert v != source &amp;&amp; v != sink;</span>
 <span class="fc" id="L403">			int l = label[v];</span>
 <span class="fc" id="L404">			removeFromLayerInactive(v, l);</span>
 <span class="fc" id="L405">			addToLayerActive(v, l);</span>
@@ -407,7 +407,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L407">		}</span>
 
 		void deactivate(int v) {
-<span class="pc bpc" id="L410" title="2 of 4 branches missed.">			assert v != source &amp;&amp; v != sink;</span>
+<span class="pc bnc" id="L410" title="All 4 branches missed.">			assert v != source &amp;&amp; v != sink;</span>
 <span class="fc" id="L411">			int l = label[v];</span>
 <span class="fc" id="L412">			removeFromLayerActive(v, l);</span>
 <span class="fc" id="L413">			addToLayerInactive(v, l);</span>
@@ -418,9 +418,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		// abstract void push(int e, double f);
 
 		void relabel(int u, int newLabel) {
-<span class="pc bpc" id="L421" title="1 of 2 branches missed.">			assert newLabel &lt; n;</span>
+<span class="pc bnc" id="L421" title="All 2 branches missed.">			assert newLabel &lt; n;</span>
 <span class="fc" id="L422">			int oldLabel = label[u];</span>
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">			assert oldLabel &lt; newLabel;</span>
+<span class="pc bnc" id="L423" title="All 2 branches missed.">			assert oldLabel &lt; newLabel;</span>
 <span class="fc" id="L424">			label[u] = newLabel;</span>
 <span class="fc" id="L425">			touchLayer(oldLabel);</span>
 
@@ -472,7 +472,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			abstract void dischargeUndirected(int u);
 
 			static DischargePolicyImpl newInstance(MaximumFlowPushRelabel.Worker worker, DischargePolicy policy) {
-<span class="pc bpc" id="L475" title="1 of 4 branches missed.">				assert worker instanceof MaximumFlowPushRelabel.WorkerInt</span>
+<span class="pc bnc" id="L475" title="All 4 branches missed.">				assert worker instanceof MaximumFlowPushRelabel.WorkerInt</span>
 						|| worker instanceof MaximumFlowPushRelabel.WorkerDouble;
 <span class="fc" id="L477">				boolean isInt = worker instanceof MaximumFlowPushRelabel.WorkerInt;</span>
 <span class="pc bpc" id="L478" title="1 of 3 branches missed.">				switch (policy) {</span>
@@ -529,7 +529,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L531">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L532" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L532" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L533">									return;</span>
 								}
 							}
@@ -549,7 +549,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L551">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L552" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L552" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L553">									return;</span>
 								}
 							}
@@ -582,15 +582,15 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L584">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L585" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L585" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L586">									return;</span>
 								}
 							}
 <span class="fc" id="L589">						} else {</span>
-<span class="pc bpc" id="L590" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L590" title="All 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L591">							int v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L592">							int eAccess = worker().getTwinResidualCapacity(e);</span>
-<span class="pc bpc" id="L593" title="1 of 2 branches missed.">							assert eAccess &gt;= 0;</span>
+<span class="pc bnc" id="L593" title="All 2 branches missed.">							assert eAccess &gt;= 0;</span>
 <span class="fc bfc" id="L594" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
 <span class="fc bfc" id="L595" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
 <span class="fc" id="L596">									worker.activate(v);</span>
@@ -602,7 +602,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L604">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L605" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L605" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L606">									return;</span>
 								}
 							}
@@ -615,7 +615,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L615" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
 <span class="fc" id="L616">								break;</span>
 <span class="fc" id="L617">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L618" title="1 of 2 branches missed.">							assert it.hasNext();</span>
+<span class="pc bnc" id="L618" title="All 2 branches missed.">							assert it.hasNext();</span>
 						}
 <span class="fc" id="L620">					}</span>
 <span class="fc" id="L621">				}</span>
@@ -653,7 +653,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L655">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L656" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L656" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L657">									return;</span>
 								}
 							}
@@ -676,7 +676,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L678">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L679" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L679" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L680">									return;</span>
 								}
 							}
@@ -712,7 +712,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L714">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L715" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L715" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L716">									return;</span>
 								}
 							}
@@ -733,7 +733,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								} else {
 									// non-saturating push
 <span class="fc" id="L735">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L736" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="pc bnc" id="L736" title="All 2 branches missed.">									assert !worker.hasExcess(u);</span>
 <span class="fc" id="L737">									return;</span>
 								}
 							}
@@ -746,7 +746,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L746" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
 <span class="fc" id="L747">								break;</span>
 <span class="fc" id="L748">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L749" title="1 of 2 branches missed.">							assert it.hasNext();</span>
+<span class="pc bnc" id="L749" title="All 2 branches missed.">							assert it.hasNext();</span>
 						}
 <span class="fc" id="L751">					}</span>
 <span class="fc" id="L752">				}</span>
@@ -763,8 +763,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeDirected(int searchSource) {
-<span class="pc bpc" id="L766" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
-<span class="pc bpc" id="L767" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
+<span class="pc bnc" id="L766" title="All 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
+<span class="pc bnc" id="L767" title="All 2 branches missed.">					assert path.isEmpty();</span>
 
 <span class="fc" id="L769">					dfs: for (int u = searchSource;;) {</span>
 <span class="fc" id="L770">						int uLabel = worker.label[u];</span>
@@ -780,7 +780,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L780">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L783" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="pc bnc" id="L783" title="All 2 branches missed.">									assert !path.isEmpty();</span>
 <span class="fc" id="L784">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
@@ -818,7 +818,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L818">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L821" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="pc bnc" id="L821" title="All 2 branches missed.">									assert !path.isEmpty();</span>
 <span class="fc" id="L822">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
@@ -878,10 +878,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L879">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
 <span class="fc" id="L880">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
-<span class="pc bpc" id="L881" title="1 of 2 branches missed.">						assert worker.outEdgeIters[u].hasNext();</span>
-<span class="pc bpc" id="L882" title="1 of 2 branches missed.">						assert worker.inEdgeIters[u].hasNext();</span>
+<span class="pc bnc" id="L881" title="All 2 branches missed.">						assert worker.outEdgeIters[u].hasNext();</span>
+<span class="pc bnc" id="L882" title="All 2 branches missed.">						assert worker.inEdgeIters[u].hasNext();</span>
 <span class="fc bfc" id="L883" title="All 2 branches covered.">						if (!isSearchSource) {</span>
-<span class="pc bpc" id="L884" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="pc bnc" id="L884" title="All 2 branches missed.">							assert !path.isEmpty();</span>
 <span class="fc" id="L885">							int lastEdge = path.popInt();</span>
 <span class="fc" id="L886">							u = worker.g.edgeEndpoint(lastEdge, u);</span>
 						}
@@ -890,8 +890,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeUndirected(int searchSource) {
-<span class="pc bpc" id="L893" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
-<span class="pc bpc" id="L894" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
+<span class="pc bnc" id="L893" title="All 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
+<span class="pc bnc" id="L894" title="All 2 branches missed.">					assert path.isEmpty();</span>
 
 <span class="fc" id="L896">					dfs: for (int u = searchSource;;) {</span>
 <span class="fc" id="L897">						int uLabel = worker.label[u];</span>
@@ -903,7 +903,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L903">								v = worker.g.edgeTarget(e);</span>
 <span class="fc bfc" id="L904" title="All 4 branches covered.">								isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 							} else {
-<span class="pc bpc" id="L906" title="1 of 2 branches missed.">								assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L906" title="All 2 branches missed.">								assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L907">								v = worker.g.edgeSource(e);</span>
 <span class="fc bfc" id="L908" title="All 4 branches covered.">								isAdmissible = worker.isTwinResidualUndirected(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 							}
@@ -914,7 +914,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L914">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L917" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="pc bnc" id="L917" title="All 2 branches missed.">									assert !path.isEmpty();</span>
 <span class="fc" id="L918">									int firstNonResidual = pushOnPathUndirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
@@ -974,9 +974,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								}
 
 <span class="fc" id="L976">								it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L977" title="1 of 2 branches missed.">								assert it.hasNext();</span>
+<span class="pc bnc" id="L977" title="All 2 branches missed.">								assert it.hasNext();</span>
 <span class="fc bfc" id="L978" title="All 2 branches covered.">								if (!isSearchSource) {</span>
-<span class="pc bpc" id="L979" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="pc bnc" id="L979" title="All 2 branches missed.">									assert !path.isEmpty();</span>
 <span class="fc" id="L980">									int lastEdge = path.popInt();</span>
 <span class="fc" id="L981">									u = worker.g.edgeEndpoint(lastEdge, u);</span>
 <span class="fc" id="L982">								}</span>
@@ -1005,7 +1005,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int pushOnPathDirected(int pathSource) {
-<span class="pc bpc" id="L1008" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="pc bnc" id="L1008" title="All 2 branches missed.">					assert !path.isEmpty();</span>
 <span class="fc" id="L1009">					int u, v = pathSource;</span>
 <span class="fc" id="L1010">					final byte Inactive = 0;</span>
 <span class="fc" id="L1011">					final byte Active = 1;</span>
@@ -1021,20 +1021,20 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1021">							v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1022">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1023">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1024" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1024" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1025">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1026" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="pc bnc" id="L1026" title="All 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1028" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isResidual(e))</span>
 <span class="fc" id="L1029">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1031" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1031" title="All 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1032">							v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L1033">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1034">							f = Math.min(worker().excess[u], worker().flow(e));</span>
-<span class="pc bpc" id="L1035" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1035" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1036">							worker().residualCapacity[e] += f;</span>
-<span class="pc bpc" id="L1037" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
+<span class="pc bnc" id="L1037" title="All 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
 
 <span class="fc bfc" id="L1039" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.hasFlow(e))</span>
 <span class="fc" id="L1040">								firstNonResidual = i;</span>
@@ -1042,8 +1042,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L1043">						worker().excess[u] -= f;</span>
 <span class="fc" id="L1044">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1045" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1046" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="pc bnc" id="L1045" title="All 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bnc" id="L1046" title="All 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1048" title="All 2 branches covered.">						if (uMark == Active) {</span>
 <span class="fc bfc" id="L1049" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
@@ -1059,7 +1059,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int pushOnPathUndirected(int pathSource) {
-<span class="pc bpc" id="L1062" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="pc bnc" id="L1062" title="All 2 branches missed.">					assert !path.isEmpty();</span>
 <span class="fc" id="L1063">					int u, v = pathSource;</span>
 <span class="fc" id="L1064">					final byte Inactive = 0;</span>
 <span class="fc" id="L1065">					final byte Active = 1;</span>
@@ -1075,19 +1075,19 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1075">							v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1076">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1077">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1078" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1078" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1079">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1080" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="pc bnc" id="L1080" title="All 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1082" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isResidual(e))</span>
 <span class="fc" id="L1083">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1085" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1085" title="All 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1086">							v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L1087">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1088">							double twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
 <span class="fc" id="L1089">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
-<span class="pc bpc" id="L1090" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1090" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1091">							worker().residualCapacity[e] += f;</span>
 
 <span class="fc bfc" id="L1093" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
@@ -1096,8 +1096,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L1097">						worker().excess[u] -= f;</span>
 <span class="fc" id="L1098">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1099" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1100" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="pc bnc" id="L1099" title="All 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bnc" id="L1100" title="All 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1102" title="All 2 branches covered.">						if (uMark == Active) {</span>
 <span class="fc bfc" id="L1103" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
@@ -1124,7 +1124,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int pushOnPathDirected(int pathSource) {
-<span class="pc bpc" id="L1127" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="pc bnc" id="L1127" title="All 2 branches missed.">					assert !path.isEmpty();</span>
 <span class="fc" id="L1128">					int u, v = pathSource;</span>
 <span class="fc" id="L1129">					final byte Inactive = 0;</span>
 <span class="fc" id="L1130">					final byte Active = 1;</span>
@@ -1140,20 +1140,20 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1140">							v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1141">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1142">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1143" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1143" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1144">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1145" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="pc bnc" id="L1145" title="All 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1147" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isResidual(e))</span>
 <span class="fc" id="L1148">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1150" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1150" title="All 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1151">							v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L1152">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1153">							f = Math.min(worker().excess[u], worker().flow(e));</span>
-<span class="pc bpc" id="L1154" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1154" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1155">							worker().residualCapacity[e] += f;</span>
-<span class="pc bpc" id="L1156" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
+<span class="pc bnc" id="L1156" title="All 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
 
 <span class="fc bfc" id="L1158" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.hasFlow(e))</span>
 <span class="fc" id="L1159">								firstNonResidual = i;</span>
@@ -1161,8 +1161,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L1162">						worker().excess[u] -= f;</span>
 <span class="fc" id="L1163">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1164" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1165" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="pc bnc" id="L1164" title="All 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bnc" id="L1165" title="All 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1167" title="All 2 branches covered.">						if (uMark == Active) {</span>
 <span class="fc bfc" id="L1168" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
@@ -1178,7 +1178,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int pushOnPathUndirected(int pathSource) {
-<span class="pc bpc" id="L1181" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="pc bnc" id="L1181" title="All 2 branches missed.">					assert !path.isEmpty();</span>
 <span class="fc" id="L1182">					int u, v = pathSource;</span>
 <span class="fc" id="L1183">					final byte Inactive = 0;</span>
 <span class="fc" id="L1184">					final byte Active = 1;</span>
@@ -1194,19 +1194,19 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1194">							v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1195">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1196">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1197" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1197" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1198">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1199" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="pc bnc" id="L1199" title="All 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1201" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isResidual(e))</span>
 <span class="fc" id="L1202">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1204" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1204" title="All 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
 <span class="fc" id="L1205">							v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L1206">							vWasActive = worker.hasExcess(v);</span>
 <span class="fc" id="L1207">							int twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
 <span class="fc" id="L1208">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
-<span class="pc bpc" id="L1209" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="pc bnc" id="L1209" title="All 2 branches missed.">							assert f &gt;= 0;</span>
 <span class="fc" id="L1210">							worker().residualCapacity[e] += f;</span>
 
 <span class="fc bfc" id="L1212" title="All 4 branches covered.">							if (firstNonResidual == -1 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
@@ -1215,8 +1215,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L1216">						worker().excess[u] -= f;</span>
 <span class="fc" id="L1217">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1218" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1219" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="pc bnc" id="L1218" title="All 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bnc" id="L1219" title="All 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
 <span class="fc bfc" id="L1221" title="All 2 branches covered.">						if (uMark == Active) {</span>
 <span class="fc bfc" id="L1222" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
@@ -1242,7 +1242,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1242">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
 <span class="fc bfc" id="L1243" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
 <span class="fc" id="L1244">						continue;</span>
-<span class="pc bpc" id="L1245" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
+<span class="pc bnc" id="L1245" title="All 2 branches missed.">					assert hasExcess(u);</span>
 
 <span class="fc" id="L1247">					removeFromLayerActive(u, label[u]);</span>
 <span class="fc" id="L1248">					dischargePolicy.dischargeDirected(u);</span>
@@ -1257,7 +1257,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1257">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
 <span class="fc bfc" id="L1258" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
 <span class="fc" id="L1259">						continue;</span>
-<span class="pc bpc" id="L1260" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
+<span class="pc bnc" id="L1260" title="All 2 branches missed.">					assert hasExcess(u);</span>
 
 <span class="fc" id="L1262">					removeFromLayerActive(u, label[u]);</span>
 <span class="fc" id="L1263">					dischargePolicy.dischargeUndirected(u);</span>
@@ -1515,7 +1515,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1515">							vState[u] = Visited;</span>
 <span class="fc bfc" id="L1516" title="All 2 branches covered.">							if (u != source) {</span>
 <span class="fc bfc" id="L1517" title="All 2 branches covered.">								if (topoBegin == -1) {</span>
-<span class="pc bpc" id="L1518" title="1 of 2 branches missed.">									assert topoEnd == -1;</span>
+<span class="pc bnc" id="L1518" title="All 2 branches missed.">									assert topoEnd == -1;</span>
 <span class="fc" id="L1519">									topoBegin = topoEnd = u;</span>
 								} else {
 <span class="fc" id="L1521">									topoNext[u] = topoBegin;</span>
@@ -1548,7 +1548,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1548">									continue;</span>
 <span class="fc" id="L1549">								v = g.edgeTarget(e);</span>
 							} else {
-<span class="pc bpc" id="L1551" title="1 of 2 branches missed.">								assert u == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1551" title="All 2 branches missed.">								assert u == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L1552" title="All 2 branches covered.">								if (!hasFlow(e))</span>
 <span class="fc" id="L1553">									continue;</span>
 <span class="fc" id="L1554">								v = g.edgeSource(e);</span>
@@ -1573,7 +1573,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L1573" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasNegativeFlow(vw))</span>
 <span class="fc" id="L1574">											continue;</span>
 									} else {
-<span class="pc bpc" id="L1576" title="1 of 2 branches missed.">										assert v == g.edgeTarget(vw);</span>
+<span class="pc bnc" id="L1576" title="All 2 branches missed.">										assert v == g.edgeTarget(vw);</span>
 <span class="fc" id="L1577">										w = g.edgeSource(vw);</span>
 <span class="fc bfc" id="L1578" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
 <span class="fc" id="L1579">											continue;</span>
@@ -1595,7 +1595,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1595">							vState[u] = Visited;</span>
 <span class="fc bfc" id="L1596" title="All 2 branches covered.">							if (u != source) {</span>
 <span class="fc bfc" id="L1597" title="All 2 branches covered.">								if (topoBegin == -1) {</span>
-<span class="pc bpc" id="L1598" title="1 of 2 branches missed.">									assert topoEnd == -1;</span>
+<span class="pc bnc" id="L1598" title="All 2 branches missed.">									assert topoEnd == -1;</span>
 <span class="fc" id="L1599">									topoBegin = topoEnd = u;</span>
 								} else {
 <span class="fc" id="L1601">									topoNext[u] = topoBegin;</span>
@@ -1645,8 +1645,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L1646">			BitSet visited = relabelVisited;</span>
 <span class="fc" id="L1647">			IntPriorityQueue queue = relabelQueue;</span>
-<span class="pc bpc" id="L1648" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
-<span class="pc bpc" id="L1649" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
+<span class="pc bnc" id="L1648" title="All 2 branches missed.">			assert visited.isEmpty();</span>
+<span class="pc bnc" id="L1649" title="All 2 branches missed.">			assert queue.isEmpty();</span>
 
 <span class="fc" id="L1651">			visited.set(sink);</span>
 <span class="fc" id="L1652">			queue.enqueue(sink);</span>
@@ -1684,7 +1684,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1684">								continue;</span>
 <span class="fc" id="L1685">							u = g.edgeTarget(e);</span>
 						} else {
-<span class="pc bpc" id="L1687" title="1 of 2 branches missed.">							assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1687" title="All 2 branches missed.">							assert v == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L1688" title="All 2 branches covered.">							if (!isResidual(e))</span>
 <span class="fc" id="L1689">								continue;</span>
 <span class="fc" id="L1690">							u = g.edgeSource(e);</span>
@@ -1696,7 +1696,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1696">					}</span>
 <span class="fc" id="L1697">				}</span>
 			}
-<span class="pc bpc" id="L1699" title="1 of 2 branches missed.">			assert !visited.get(source);</span>
+<span class="pc bnc" id="L1699" title="All 2 branches missed.">			assert !visited.get(source);</span>
 <span class="fc" id="L1700">			BitSet cut = new BitSet(n);</span>
 <span class="fc bfc" id="L1701" title="All 2 branches covered.">			for (int n = g.vertices().size(), u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L1702" title="All 2 branches covered.">				if (!visited.get(u))</span>
@@ -1761,7 +1761,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1761">							push(e, f);</span>
 						}
 <span class="fc" id="L1763">					} else {</span>
-<span class="pc bpc" id="L1764" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1764" title="All 2 branches missed.">						assert source == g.edgeTarget(e);</span>
 <span class="fc" id="L1765">						double f = getTwinResidualCapacity(e);</span>
 <span class="pc bpc" id="L1766" title="1 of 4 branches missed.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
 <span class="pc bpc" id="L1767" title="1 of 4 branches missed.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
@@ -1775,7 +1775,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		private void push(int e, double f) {
 <span class="fc" id="L1777">			residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1778" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= -EPS;</span>
+<span class="pc bnc" id="L1778" title="All 2 branches missed.">			assert residualCapacity[e] &gt;= -EPS;</span>
 
 <span class="fc" id="L1780">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L1781">			excess[u] -= f;</span>
@@ -1784,20 +1784,20 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		void eliminateCycleDirected(int e) {
-<span class="pc bpc" id="L1787" title="1 of 2 branches missed.">			assert directed;</span>
+<span class="pc bnc" id="L1787" title="All 2 branches missed.">			assert directed;</span>
 <span class="fc" id="L1788">			int u = g.edgeTarget(e);</span>
 <span class="fc" id="L1789">			int v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L1790" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
+<span class="pc bnc" id="L1790" title="All 2 branches missed.">			assert hasFlow(e);</span>
 <span class="fc" id="L1791">			double f = flow(e);</span>
 			for (;;) {
 <span class="fc" id="L1793">				e = inEdgeIters[v].peekNext();</span>
-<span class="pc bpc" id="L1794" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="pc bnc" id="L1794" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L1795">				f = Math.min(f, flow(e));</span>
 <span class="fc bfc" id="L1796" title="All 2 branches covered.">				if (v == u)</span>
 <span class="fc" id="L1797">					break;</span>
 <span class="fc" id="L1798">				v = g.edgeSource(e);</span>
 			}
-<span class="pc bpc" id="L1800" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L1800" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L1803">			for (v = u;;) {</span>
@@ -1816,24 +1816,24 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			double f;
 <span class="fc bfc" id="L1817" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
 <span class="fc" id="L1818">				v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L1819" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
+<span class="pc bnc" id="L1819" title="All 2 branches missed.">				assert hasNegativeFlow(e);</span>
 <span class="fc" id="L1820">				f = -flow(e);</span>
 			} else {
-<span class="pc bpc" id="L1822" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1822" title="All 2 branches missed.">				assert u == g.edgeTarget(e);</span>
 <span class="fc" id="L1823">				v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L1824" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="pc bnc" id="L1824" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L1825">				f = flow(e);</span>
 			}
 			for (int w;;) {
 <span class="fc" id="L1828">				e = outEdgeIters[v].peekNext();</span>
 <span class="fc" id="L1829">				double ef = flow(e);</span>
 <span class="fc bfc" id="L1830" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="pc bpc" id="L1831" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
+<span class="pc bnc" id="L1831" title="All 2 branches missed.">					assert ef &lt; 0;</span>
 <span class="fc" id="L1832">					ef = -ef;</span>
 <span class="fc" id="L1833">					w = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L1835" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="pc bpc" id="L1836" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
+<span class="pc bnc" id="L1835" title="All 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1836" title="All 2 branches missed.">					assert ef &gt; 0;</span>
 <span class="fc" id="L1837">					w = g.edgeSource(e);</span>
 				}
 <span class="fc" id="L1839">				f = Math.min(f, ef);</span>
@@ -1841,7 +1841,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1841">					break;</span>
 <span class="fc" id="L1842">				v = w;</span>
 <span class="fc" id="L1843">			}</span>
-<span class="pc bpc" id="L1844" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L1844" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L1847">			for (v = u;;) {</span>
@@ -1850,7 +1850,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1850">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L1851">					v = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L1853" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1853" title="All 2 branches missed.">					assert v == g.edgeTarget(e);</span>
 <span class="fc" id="L1854">					residualCapacity[e] += f;</span>
 <span class="fc" id="L1855">					v = g.edgeSource(e);</span>
 				}
@@ -1883,7 +1883,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L1883" title="All 2 branches covered.">							if (f &lt; 0)</span>
 <span class="fc" id="L1884">								push(e, Math.min(excess[u], -f));</span>
 						} else {
-<span class="pc bpc" id="L1886" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1886" title="All 2 branches missed.">							assert u == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L1887" title="All 2 branches covered.">							if (f &gt; 0)</span>
 <span class="fc" id="L1888">								push(e, -Math.min(excess[u], f));</span>
 						}
@@ -1923,7 +1923,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 
 		double getTwinResidualCapacity(int e) {
-<span class="pc bpc" id="L1926" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="pc bnc" id="L1926" title="All 2 branches missed.">			assert !directed;</span>
 <span class="fc" id="L1927">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 
@@ -1934,7 +1934,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-<span class="pc bpc" id="L1937" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="pc bnc" id="L1937" title="All 2 branches missed.">			assert !directed;</span>
 <span class="fc bfc" id="L1938" title="All 2 branches covered.">			return flow(e) &lt; -EPS;</span>
 		}
 
@@ -1985,7 +1985,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1985">							push(e, f);</span>
 						}
 <span class="fc" id="L1987">					} else {</span>
-<span class="pc bpc" id="L1988" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L1988" title="All 2 branches missed.">						assert source == g.edgeTarget(e);</span>
 <span class="fc" id="L1989">						int f = getTwinResidualCapacity(e);</span>
 <span class="fc bfc" id="L1990" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
 <span class="fc bfc" id="L1991" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
@@ -1999,7 +1999,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		private void push(int e, int f) {
 <span class="fc" id="L2001">			residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L2002" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= 0;</span>
+<span class="pc bnc" id="L2002" title="All 2 branches missed.">			assert residualCapacity[e] &gt;= 0;</span>
 
 <span class="fc" id="L2004">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L2005">			excess[u] -= f;</span>
@@ -2008,20 +2008,20 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		void eliminateCycleDirected(int e) {
-<span class="pc bpc" id="L2011" title="1 of 2 branches missed.">			assert directed;</span>
+<span class="pc bnc" id="L2011" title="All 2 branches missed.">			assert directed;</span>
 <span class="fc" id="L2012">			int u = g.edgeTarget(e);</span>
 <span class="fc" id="L2013">			int v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L2014" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
+<span class="pc bnc" id="L2014" title="All 2 branches missed.">			assert hasFlow(e);</span>
 <span class="fc" id="L2015">			int f = flow(e);</span>
 			for (;;) {
 <span class="fc" id="L2017">				e = inEdgeIters[v].peekNext();</span>
-<span class="pc bpc" id="L2018" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="pc bnc" id="L2018" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L2019">				f = Math.min(f, flow(e));</span>
 <span class="fc bfc" id="L2020" title="All 2 branches covered.">				if (v == u)</span>
 <span class="fc" id="L2021">					break;</span>
 <span class="fc" id="L2022">				v = g.edgeSource(e);</span>
 			}
-<span class="pc bpc" id="L2024" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L2024" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L2027">			for (v = u;;) {</span>
@@ -2040,24 +2040,24 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			int f;
 <span class="fc bfc" id="L2041" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
 <span class="fc" id="L2042">				v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L2043" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
+<span class="pc bnc" id="L2043" title="All 2 branches missed.">				assert hasNegativeFlow(e);</span>
 <span class="fc" id="L2044">				f = -flow(e);</span>
 			} else {
-<span class="pc bpc" id="L2046" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L2046" title="All 2 branches missed.">				assert u == g.edgeTarget(e);</span>
 <span class="fc" id="L2047">				v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L2048" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="pc bnc" id="L2048" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L2049">				f = flow(e);</span>
 			}
 			for (int w;;) {
 <span class="fc" id="L2052">				e = outEdgeIters[v].peekNext();</span>
 <span class="fc" id="L2053">				int ef = flow(e);</span>
 <span class="fc bfc" id="L2054" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="pc bpc" id="L2055" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
+<span class="pc bnc" id="L2055" title="All 2 branches missed.">					assert ef &lt; 0;</span>
 <span class="fc" id="L2056">					ef = -ef;</span>
 <span class="fc" id="L2057">					w = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L2059" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="pc bpc" id="L2060" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
+<span class="pc bnc" id="L2059" title="All 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L2060" title="All 2 branches missed.">					assert ef &gt; 0;</span>
 <span class="fc" id="L2061">					w = g.edgeSource(e);</span>
 				}
 <span class="fc" id="L2063">				f = Math.min(f, ef);</span>
@@ -2065,7 +2065,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L2065">					break;</span>
 <span class="fc" id="L2066">				v = w;</span>
 <span class="fc" id="L2067">			}</span>
-<span class="pc bpc" id="L2068" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L2068" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L2071">			for (v = u;;) {</span>
@@ -2074,7 +2074,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L2074">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L2075">					v = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L2077" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L2077" title="All 2 branches missed.">					assert v == g.edgeTarget(e);</span>
 <span class="fc" id="L2078">					residualCapacity[e] += f;</span>
 <span class="fc" id="L2079">					v = g.edgeSource(e);</span>
 				}
@@ -2107,7 +2107,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L2107" title="All 2 branches covered.">							if (f &lt; 0)</span>
 <span class="fc" id="L2108">								push(e, Math.min(excess[u], -f));</span>
 						} else {
-<span class="pc bpc" id="L2110" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L2110" title="All 2 branches missed.">							assert u == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L2111" title="All 2 branches covered.">							if (f &gt; 0)</span>
 <span class="fc" id="L2112">								push(e, -Math.min(excess[u], f));</span>
 						}
@@ -2147,7 +2147,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 
 		int getTwinResidualCapacity(int e) {
-<span class="pc bpc" id="L2150" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="pc bnc" id="L2150" title="All 2 branches missed.">			assert !directed;</span>
 <span class="fc" id="L2151">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 
@@ -2158,7 +2158,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-<span class="pc bpc" id="L2161" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="pc bnc" id="L2161" title="All 2 branches missed.">			assert !directed;</span>
 <span class="fc bfc" id="L2162" title="All 2 branches covered.">			return flow(e) &lt; 0;</span>
 		}
 

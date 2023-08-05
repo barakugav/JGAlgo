@@ -62,14 +62,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L62">			cut.set(0);</span>
 
 			/* Insert all (super) vertices to the heap */
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			assert heap.isEmpty();</span>
+<span class="pc bnc" id="L65" title="All 2 branches missed.">			assert heap.isEmpty();</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">			for (int U = 0; U &lt; cg.numberOfSuperVertices(); U++)</span>
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">				assert vRefs[U] == null;</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">				assert vRefs[U] == null;</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
 <span class="fc" id="L69">				double weightsSum = 0;</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L71">					int e = eit.nextInt();</span>
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">					assert eit.source() == U;</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">					assert eit.source() == U;</span>
 <span class="fc" id="L73">					int V = eit.target();</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">					if (cut.get(V))</span>
 <span class="fc" id="L75">						weightsSum += w.weight(e);</span>
@@ -95,7 +95,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 <span class="fc bfc" id="L96" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L97">						int e = eit.nextInt();</span>
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
+<span class="pc bnc" id="L98" title="All 2 branches missed.">						assert eit.source() == U;</span>
 <span class="fc" id="L99">						int V = eit.target();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">						if (!cut.get(V)) {</span>
 <span class="fc" id="L101">							HeapReference&lt;Double, Integer&gt; vRef = vRefs[V];</span>
@@ -109,14 +109,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Find the cut-of-the-phase and its weight */
 <span class="fc bfc" id="L110" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L111">						int e = eit.nextInt();</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">						assert eit.source() == U;</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">						assert cut.get(eit.target());</span>
+<span class="pc bnc" id="L112" title="All 2 branches missed.">						assert eit.source() == U;</span>
+<span class="pc bnc" id="L113" title="All 2 branches missed.">						assert cut.get(eit.target());</span>
 <span class="fc" id="L114">						cutOfThePhaseWeight += w.weight(e);</span>
 <span class="fc" id="L115">					}</span>
 <span class="fc" id="L116">					break minimumCutPhase;</span>
 				}
 <span class="fc" id="L118">			}</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			assert T != -1;</span>
+<span class="pc bnc" id="L119" title="All 2 branches missed.">			assert T != -1;</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">			if (S == -1)</span>
 <span class="fc" id="L121">				S = 0;</span>
 

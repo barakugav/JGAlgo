@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L44">		}</span>
 
 <span class="fc" id="L46">		MatchingImpl(IndexGraph g, int[] matched) {</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			assert matched.length == g.vertices().size();</span>
+<span class="pc bnc" id="L47" title="All 2 branches missed.">			assert matched.length == g.vertices().size();</span>
 <span class="fc" id="L48">			this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L49">			this.matched = Objects.requireNonNull(matched);</span>
 <span class="fc" id="L50">		}</span>
@@ -143,11 +143,11 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 		@Override
 		public boolean isPerfect() {
-<span class="fc" id="L146">			computeMatchedArray();</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (int e : matched)</span>
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">				if (e == -1)</span>
+<span class="nc" id="L146">			computeMatchedArray();</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">			for (int e : matched)</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">				if (e == -1)</span>
 <span class="nc" id="L149">					return false;</span>
-<span class="fc" id="L150">			return true;</span>
+<span class="nc" id="L150">			return true;</span>
 		}
 
 	}
@@ -287,7 +287,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 			@Override
 			public boolean isPerfect() {
-<span class="fc" id="L290">				return match.isPerfect();</span>
+<span class="nc" id="L290">				return match.isPerfect();</span>
 			}
 
 		}

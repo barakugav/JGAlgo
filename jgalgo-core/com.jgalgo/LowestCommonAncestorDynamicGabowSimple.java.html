@@ -92,7 +92,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 		/* actual recompress */
 <span class="fc" id="L94">		buildCompressedTree(subtreeRoot);</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		assert subtreeRoot.isApex;</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert subtreeRoot.isApex;</span>
 
 		/* recompute ancestor tables */
 <span class="fc" id="L98">		computeAncestorTables(subtreeRoot);</span>
@@ -119,7 +119,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 <span class="fc" id="L119">		node.idxUpperFat = node.idxLowerFat + c * v;</span>
 <span class="fc" id="L120">		node.idxLower = node.idxLowerFat + v;</span>
 <span class="fc" id="L121">		node.idxUpper = node.idxUpperFat - v;</span>
-<span class="pc bpc" id="L122" title="1 of 4 branches missed.">		assert node.isRoot() || node.idxUpperFat &lt;= node.cParent.idxUpperFat;</span>
+<span class="pc bnc" id="L122" title="All 4 branches missed.">		assert node.isRoot() || node.idxUpperFat &lt;= node.cParent.idxUpperFat;</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">		if (!node.isRoot())</span>
 <span class="fc" id="L124">			node.cParent.idxUpperFatMaxChild = node.idxUpperFat;</span>
 
@@ -163,12 +163,12 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	}
 
 	private static double assertOverflowDouble(double x) {
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		assert Double.isFinite(x);</span>
+<span class="pc bnc" id="L166" title="All 2 branches missed.">		assert Double.isFinite(x);</span>
 <span class="fc" id="L167">		return x;</span>
 	}
 
 	private static int assertOverflowInt(double x) {
-<span class="pc bpc" id="L171" title="2 of 4 branches missed.">		assert Integer.MIN_VALUE &lt;= x &amp;&amp; x &lt;= Integer.MAX_VALUE;</span>
+<span class="pc bnc" id="L171" title="All 4 branches missed.">		assert Integer.MIN_VALUE &lt;= x &amp;&amp; x &lt;= Integer.MAX_VALUE;</span>
 <span class="fc" id="L172">		return (int) x;</span>
 	}
 
@@ -205,9 +205,9 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		}
 
 <span class="fc" id="L207">		NodeImpl ax = az[0], ay = az[1];</span>
-<span class="pc bpc" id="L208" title="1 of 2 branches missed.">		assert a[0] == a[1];</span>
-<span class="pc bpc" id="L209" title="1 of 4 branches missed.">		assert ax == a[0] || ax.cParent == a[0];</span>
-<span class="pc bpc" id="L210" title="1 of 4 branches missed.">		assert ay == a[0] || ay.cParent == a[0];</span>
+<span class="pc bnc" id="L208" title="All 2 branches missed.">		assert a[0] == a[1];</span>
+<span class="pc bnc" id="L209" title="All 4 branches missed.">		assert ax == a[0] || ax.cParent == a[0];</span>
+<span class="pc bnc" id="L210" title="All 4 branches missed.">		assert ay == a[0] || ay.cParent == a[0];</span>
 <span class="fc" id="L211">		return new CharacteristicAncestors(a[0], ax, ay);</span>
 	}
 
@@ -219,13 +219,13 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 		/* c is an apex of path P */
 <span class="fc" id="L221">		NodeImpl c = (NodeImpl) cac.a, cx = (NodeImpl) cac.ax, cy = (NodeImpl) cac.ay;</span>
-<span class="pc bpc" id="L222" title="1 of 2 branches missed.">		assert c == c.getPathApex();</span>
+<span class="pc bnc" id="L222" title="All 2 branches missed.">		assert c == c.getPathApex();</span>
 
 		/* bz is the first ancestor of cz on P */
 <span class="fc bfc" id="L225" title="All 4 branches covered.">		NodeImpl bx = cx != c &amp;&amp; cx.isApex ? cx.parent : cx;</span>
 <span class="fc bfc" id="L226" title="All 4 branches covered.">		NodeImpl by = cy != c &amp;&amp; cy.isApex ? cy.parent : cy;</span>
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">		assert c == bx.getPathApex();</span>
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">		assert c == by.getPathApex();</span>
+<span class="pc bnc" id="L227" title="All 2 branches missed.">		assert c == bx.getPathApex();</span>
+<span class="pc bnc" id="L228" title="All 2 branches missed.">		assert c == by.getPathApex();</span>
 
 		/* a is the shallower vertex of bx and by */
 <span class="fc bfc" id="L231" title="All 2 branches covered.">		NodeImpl a = bx.pathIdx &lt; by.pathIdx ? bx : by;</span>
@@ -233,8 +233,8 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 <span class="fc bfc" id="L233" title="All 2 branches covered.">		NodeImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;</span>
 <span class="fc bfc" id="L234" title="All 2 branches covered.">		NodeImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;</span>
 
-<span class="pc bpc" id="L236" title="1 of 4 branches missed.">		assert ax == a || ax.parent == a;</span>
-<span class="pc bpc" id="L237" title="1 of 4 branches missed.">		assert ay == a || ay.parent == a;</span>
+<span class="pc bnc" id="L236" title="All 4 branches missed.">		assert ax == a || ax.parent == a;</span>
+<span class="pc bnc" id="L237" title="All 4 branches missed.">		assert ay == a || ay.parent == a;</span>
 <span class="fc" id="L238">		return new CharacteristicAncestors(a, ax, ay);</span>
 	}
 
@@ -311,7 +311,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		}
 
 		boolean isRoot() {
-<span class="pc bpc" id="L314" title="1 of 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
+<span class="pc bnc" id="L314" title="All 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
 <span class="fc bfc" id="L315" title="All 2 branches covered.">			return parent == null;</span>
 		}
 

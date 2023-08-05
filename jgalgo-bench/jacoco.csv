@@ -13,14 +13,14 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MaximumWeightedBipartit
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RMQStaticBench.PreProcess,0,116,0,2,0,22,0,8,0,7
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.RecursiveMatrix,0,165,0,2,0,35,0,13,0,12
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPNegativeWeightsBench,0,43,0,0,0,8,0,3,0,3
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.RecursiveMatrix,0,92,0,4,0,21,0,7,0,5
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.RecursiveMatrix,0,87,0,2,0,19,0,6,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.BarabasiAlbert,0,158,0,2,0,34,0,13,0,12
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.BarabasiAlbert,0,96,0,2,0,18,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.Gnp,0,80,0,2,0,18,0,6,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RMQStaticBench.Query.LookupTable,0,85,0,0,0,16,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench,8,254,3,19,3,52,3,20,0,12
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RMQStaticBench.Query.PlusMinusOne,0,118,0,4,0,21,0,7,0,5
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfectBipartite,35,193,5,5,3,38,6,9,2,8
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfectBipartite,45,183,7,3,3,38,6,9,2,8
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,LCADynamicBench,12,294,3,14,3,63,3,13,0,7
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.Task,0,54,0,0,0,15,0,2,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapReferenceableBench.GraphArgs,0,12,0,0,0,5,0,1,0,1
@@ -40,7 +40,7 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinimumMeanCycleBench,0,133,0,2,0,25,
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench,0,43,0,0,0,8,0,3,0,3
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.BarabasiAlbert,0,80,0,2,0,18,0,6,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPNegativeWeightsBench.BarabasiAlbert,0,99,0,2,0,19,0,5,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfect,36,165,4,6,4,34,4,9,0,8
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfect,46,155,6,4,4,34,4,9,0,8
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximalCliquesBench.BarabasiAlbert,0,61,0,2,0,13,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,TreePathMaximaBench,0,167,0,6,0,32,0,10,0,7
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.new HeapReferenceable.Builder() {...},6,18,0,0,3,4,3,4,3,4
@@ -48,7 +48,7 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.new Heap.Builder() {...},4,
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,LCADynamicBench.OpAddLeaf,0,6,0,0,0,3,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench,15,244,5,19,3,43,5,14,0,7
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.BarabasiAlbert,0,80,0,2,0,18,0,6,0,5
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench,32,712,8,60,0,141,8,32,0,6
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench,71,673,16,52,0,141,8,32,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximalCliquesBench,110,43,14,2,22,8,8,4,1,3
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.Gnp,0,140,0,2,0,30,0,11,0,10
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RMQStaticBench.PreProcessPlusMinusOne,0,114,0,6,0,18,0,7,0,4
@@ -63,15 +63,6 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.GraphArgs,0,
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.Task,0,83,0,2,0,18,0,3,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.Gnp,0,96,0,2,0,18,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.RecursiveMatrix,0,103,0,2,0,19,0,5,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Base.JGAlgoCSRArgs,6,56,1,1,0,14,1,2,0,2
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Base.JGraphTArgs,0,22,0,0,0,6,0,2,0,2
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Base.JGAlgoArgs,0,12,0,0,0,5,0,1,0,1
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Base.JGraphTSparseArgs,0,39,0,0,0,10,0,2,0,2
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.RecursiveMatrix,0,33,0,0,0,8,0,3,0,3
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench,3,101,0,4,1,13,1,6,1,4
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.BarabasiAlbert,0,27,0,0,0,7,0,3,0,3
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Gnp,0,27,0,0,0,7,0,3,0,3
-JGAlgo - Benchmarks,com.jgalgo.bench.libs,DijkstraBench.Base,0,208,0,2,0,40,0,9,0,8
 JGAlgo - Benchmarks,com.jgalgo.bench.util,GraphsTestUtils,122,735,24,90,20,126,25,50,3,15
 JGAlgo - Benchmarks,com.jgalgo.bench.util,TestUtils.new Iterable() {...},9,0,0,0,2,0,2,0,2,0
 JGAlgo - Benchmarks,com.jgalgo.bench.util,TestUtils.SeedGenerator,0,17,0,0,0,4,0,2,0,2

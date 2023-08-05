@@ -281,14 +281,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L281">				MatchingAlgorithm cardinalityAlgo = MatchingAlgorithm.newBuilder().setCardinality(true).build();</span>
 <span class="fc" id="L282">				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
 <span class="fc" id="L283">				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
-<span class="pc bpc" id="L284" title="1 of 2 branches missed.">				assert unmatchedVertices.size() % 2 == 0;</span>
+<span class="pc bnc" id="L284" title="All 2 branches missed.">				assert unmatchedVertices.size() % 2 == 0;</span>
 <span class="fc" id="L285">				IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));</span>
 <span class="pc bpc" id="L286" title="1 of 2 branches missed.">				for (int i = 0; i &lt; unmatchedVertices.size() / 2; i++) {</span>
 <span class="nc" id="L287">					int u = unmatchedVertices.getInt(i * 2 + 0);</span>
 <span class="nc" id="L288">					int v = unmatchedVertices.getInt(i * 2 + 1);</span>
 <span class="nc" id="L289">					g.addEdge(u, v);</span>
 				}
-<span class="pc bpc" id="L291" title="1 of 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
+<span class="pc bnc" id="L291" title="All 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
 
 <span class="fc" id="L293">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
 <span class="fc" id="L294">				graphs.add(Pair.of(g, w));</span>
@@ -354,7 +354,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L354">				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
 <span class="pc" id="L355">				unmatchedVerticesS.removeIf(v -&gt; partition.getBool(v));</span>
 <span class="pc bnc" id="L356" title="All 2 branches missed.">				unmatchedVerticesT.removeIf(v -&gt; !partition.getBool(v));</span>
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();</span>
+<span class="pc bnc" id="L357" title="All 2 branches missed.">				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();</span>
 <span class="fc" id="L358">				IntLists.shuffle(unmatchedVerticesS, new Random(seedGen.nextSeed()));</span>
 <span class="fc" id="L359">				IntLists.shuffle(unmatchedVerticesT, new Random(seedGen.nextSeed()));</span>
 <span class="pc bpc" id="L360" title="1 of 2 branches missed.">				for (int i = 0; i &lt; unmatchedVerticesS.size(); i++) {</span>
@@ -362,7 +362,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="nc" id="L362">					int v = unmatchedVerticesT.getInt(i);</span>
 <span class="nc" id="L363">					g.addEdge(u, v);</span>
 				}
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
+<span class="pc bnc" id="L365" title="All 2 branches missed.">				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();</span>
 
 <span class="fc" id="L367">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());</span>
 <span class="fc" id="L368">				graphs.add(Pair.of(g, w));</span>

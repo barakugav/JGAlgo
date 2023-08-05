@@ -40,12 +40,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L40">		final int n = verticesNum(graphOrBuilder);</span>
 <span class="fc" id="L41">		final int m = edgesNum(graphOrBuilder);</span>
 
-<span class="fc" id="L43">		verticesIdStrat = new IdStrategy.FixedSize(n);</span>
-<span class="fc" id="L44">		edgesIdStrat = new IdStrategy.FixedSize(m);</span>
+<span class="fc" id="L43">		verticesIdStrat = new IdStrategy.FixedSize(n, false);</span>
+<span class="fc" id="L44">		edgesIdStrat = new IdStrategy.FixedSize(m, true);</span>
 
 <span class="fc" id="L46">		edgesOutBegin = processEdges.edgesOutBegin;</span>
 <span class="fc" id="L47">		endpoints = new long[m];</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		assert edgesOutBegin.length == n + 1;</span>
+<span class="pc bnc" id="L48" title="All 2 branches missed.">		assert edgesOutBegin.length == n + 1;</span>
 
 <span class="fc" id="L50">		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =</span>
 				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
@@ -86,8 +86,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L86">		final int n = g.vertices().size();</span>
 <span class="fc" id="L87">		final int m = g.edges().size();</span>
 
-<span class="fc" id="L89">		verticesIdStrat = new IdStrategy.FixedSize(n);</span>
-<span class="fc" id="L90">		edgesIdStrat = new IdStrategy.FixedSize(m);</span>
+<span class="fc" id="L89">		verticesIdStrat = new IdStrategy.FixedSize(n, false);</span>
+<span class="fc" id="L90">		edgesIdStrat = new IdStrategy.FixedSize(m, true);</span>
 
 <span class="fc" id="L92">		edgesOutBegin = new int[n + 1];</span>
 <span class="fc" id="L93">		endpoints = new long[m];</span>
@@ -329,7 +329,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 					}
 				}
 			}
-<span class="pc bpc" id="L332" title="1 of 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
+<span class="pc bnc" id="L332" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
 <span class="fc bfc" id="L333" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--)</span>
 <span class="fc" id="L334">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
 <span class="fc" id="L335">			edgesOutBegin[0] = 0;</span>
@@ -410,8 +410,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L410">					edgesIn[vInIdx] = e;</span>
 				}
 			}
-<span class="pc bpc" id="L413" title="1 of 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
-<span class="pc bpc" id="L414" title="1 of 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
+<span class="pc bnc" id="L413" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
+<span class="pc bnc" id="L414" title="All 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
 <span class="fc bfc" id="L415" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--) {</span>
 <span class="fc" id="L416">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
 <span class="fc" id="L417">				edgesInBegin[v] = edgesInBegin[v - 1];</span>

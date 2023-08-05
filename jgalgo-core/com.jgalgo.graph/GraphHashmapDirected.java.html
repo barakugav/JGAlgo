@@ -106,7 +106,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		assert v1 != v2;</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">		assert v1 != v2;</span>
 
 		/* we handle self edges of v1,v2 and edges between v1 and v2 separately */
 <span class="fc" id="L112">		int v1v1 = edgesOut[v1].remove(v1);</span>
@@ -127,7 +127,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 <span class="fc bfc" id="L128" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
 <span class="fc" id="L129">			int oldVal = edgesIn[v2].remove(v2);</span>
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			assert oldVal == v2v2;</span>
+<span class="pc bnc" id="L130" title="All 2 branches missed.">			assert oldVal == v2v2;</span>
 		}
 
 <span class="pc bpc" id="L133" title="1 of 2 branches missed.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesOut[v1]); eit.hasNext();) {</span>
@@ -160,8 +160,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L160">			replaceEdgeSource(e, v1);</span>
 <span class="fc" id="L161">			int oldVal1 = edgesIn[target].remove(v2);</span>
 <span class="fc" id="L162">			int oldVal2 = edgesIn[target].put(v1, e);</span>
-<span class="pc bpc" id="L163" title="1 of 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L163" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="pc bnc" id="L164" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 <span class="fc" id="L165">		}</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesIn[v2]); eit.hasNext();) {</span>
 <span class="fc" id="L167">			Int2IntMap.Entry entry = eit.next();</span>
@@ -171,8 +171,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L171">			replaceEdgeTarget(e, v1);</span>
 <span class="fc" id="L172">			int oldVal1 = edgesOut[source].remove(v2);</span>
 <span class="fc" id="L173">			int oldVal2 = edgesOut[source].put(v1, e);</span>
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L174" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="pc bnc" id="L175" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 <span class="fc" id="L176">		}</span>
 
 <span class="pc bpc" id="L178" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
@@ -200,8 +200,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L200">			setEndpoints(v2v2, v1, v1);</span>
 <span class="fc" id="L201">			int oldVal1 = edgesOut[v2].put(v1, v2v2);</span>
 <span class="fc" id="L202">			int oldVal2 = edgesIn[v2].put(v1, v2v2);</span>
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L203" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
+<span class="pc bnc" id="L204" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 		}
 
 <span class="fc" id="L207">		edgesOutContainer.swap(edgesOut, v1, v2);</span>
@@ -247,28 +247,28 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L247">		int source = edgeSource(edge), target = edgeTarget(edge);</span>
 <span class="fc" id="L248">		int oldVal1 = edgesOut[source].remove(target);</span>
 <span class="fc" id="L249">		int oldVal2 = edgesIn[target].remove(source);</span>
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">		assert edge == oldVal1;</span>
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">		assert edge == oldVal2;</span>
+<span class="pc bnc" id="L250" title="All 2 branches missed.">		assert edge == oldVal1;</span>
+<span class="pc bnc" id="L251" title="All 2 branches missed.">		assert edge == oldVal2;</span>
 <span class="fc" id="L252">		super.removeEdgeImpl(edge);</span>
 <span class="fc" id="L253">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">		assert e1 != e2;</span>
+<span class="pc bnc" id="L257" title="All 2 branches missed.">		assert e1 != e2;</span>
 <span class="fc" id="L258">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
 <span class="fc" id="L259">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bpc" id="L263" title="1 of 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L260" title="All 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L261" title="All 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L262" title="All 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L263" title="All 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
 <span class="fc" id="L264">		int oldVal1 = edgesOut[u1].put(v1, e2);</span>
 <span class="fc" id="L265">		int oldVal2 = edgesIn[v1].put(u1, e2);</span>
 <span class="fc" id="L266">		int oldVal3 = edgesOut[u2].put(v2, e1);</span>
 <span class="fc" id="L267">		int oldVal4 = edgesIn[v2].put(u2, e1);</span>
-<span class="pc bpc" id="L268" title="1 of 2 branches missed.">		assert oldVal1 == e1;</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">		assert oldVal2 == e1;</span>
-<span class="pc bpc" id="L270" title="1 of 2 branches missed.">		assert oldVal3 == e2;</span>
-<span class="pc bpc" id="L271" title="1 of 2 branches missed.">		assert oldVal4 == e2;</span>
+<span class="pc bnc" id="L268" title="All 2 branches missed.">		assert oldVal1 == e1;</span>
+<span class="pc bnc" id="L269" title="All 2 branches missed.">		assert oldVal2 == e1;</span>
+<span class="pc bnc" id="L270" title="All 2 branches missed.">		assert oldVal3 == e2;</span>
+<span class="pc bnc" id="L271" title="All 2 branches missed.">		assert oldVal4 == e2;</span>
 <span class="fc" id="L272">		super.edgeSwap(e1, e2);</span>
 <span class="fc" id="L273">	}</span>
 
@@ -299,13 +299,13 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 <span class="fc" id="L300">		int oldVal1 = edgesOut[source].remove(target);</span>
 <span class="fc" id="L301">		int oldVal2 = edgesIn[target].remove(source);</span>
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">		assert edge == oldVal1;</span>
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">		assert edge == oldVal2;</span>
+<span class="pc bnc" id="L302" title="All 2 branches missed.">		assert edge == oldVal1;</span>
+<span class="pc bnc" id="L303" title="All 2 branches missed.">		assert edge == oldVal2;</span>
 
 <span class="fc" id="L305">		int oldVal4 = ensureEdgesMapMutable(edgesOut, target).put(source, edge);</span>
 <span class="fc" id="L306">		int oldVal3 = ensureEdgesMapMutable(edgesIn, source).put(target, edge);</span>
-<span class="pc bpc" id="L307" title="1 of 2 branches missed.">		assert -1 == oldVal3;</span>
-<span class="pc bpc" id="L308" title="1 of 2 branches missed.">		assert -1 == oldVal4;</span>
+<span class="pc bnc" id="L307" title="All 2 branches missed.">		assert -1 == oldVal3;</span>
+<span class="pc bnc" id="L308" title="All 2 branches missed.">		assert -1 == oldVal4;</span>
 
 <span class="fc" id="L310">		super.reverseEdge0(edge);</span>
 <span class="fc" id="L311">	}</span>

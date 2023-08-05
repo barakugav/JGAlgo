@@ -172,23 +172,23 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 <span class="fc bfc" id="L172" title="All 2 branches covered.">					if (this instanceof EdgeIterOut) {</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">						if (edgeSource(lastEdge) == vertex) {</span>
 <span class="fc" id="L174">							int oldVal = clonedMap.replace(edgeTarget(lastEdge), prevEdge);</span>
-<span class="pc bpc" id="L175" title="1 of 4 branches missed.">							assert oldVal == -1 || oldVal == lastEdge;</span>
+<span class="pc bnc" id="L175" title="All 4 branches missed.">							assert oldVal == -1 || oldVal == lastEdge;</span>
 <span class="fc" id="L176">						}</span>
 					} else {
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">						assert this instanceof EdgeIterIn;</span>
+<span class="pc bnc" id="L178" title="All 2 branches missed.">						assert this instanceof EdgeIterIn;</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">						if (edgeTarget(lastEdge) == vertex) {</span>
 <span class="fc" id="L180">							int oldVal = clonedMap.replace(edgeSource(lastEdge), prevEdge);</span>
-<span class="pc bpc" id="L181" title="1 of 4 branches missed.">							assert oldVal == -1 || oldVal == lastEdge;</span>
+<span class="pc bnc" id="L181" title="All 4 branches missed.">							assert oldVal == -1 || oldVal == lastEdge;</span>
 <span class="fc" id="L182">						}</span>
 					}
 				} else {
 <span class="fc" id="L185">					int lastSource = edgeSource(lastEdge), lastTarget = edgeTarget(lastEdge);</span>
 <span class="fc bfc" id="L186" title="All 2 branches covered.">					if (lastSource == vertex) {</span>
 <span class="fc" id="L187">						int oldVal = clonedMap.replace(lastTarget, prevEdge);</span>
-<span class="pc bpc" id="L188" title="1 of 4 branches missed.">						assert oldVal == -1 || oldVal == lastEdge;</span>
+<span class="pc bnc" id="L188" title="All 4 branches missed.">						assert oldVal == -1 || oldVal == lastEdge;</span>
 <span class="fc bfc" id="L189" title="All 2 branches covered.">					} else if (lastTarget == vertex) {</span>
 <span class="fc" id="L190">						int oldVal = clonedMap.replace(lastSource, prevEdge);</span>
-<span class="pc bpc" id="L191" title="1 of 4 branches missed.">						assert oldVal == -1 || oldVal == lastEdge;</span>
+<span class="pc bnc" id="L191" title="All 4 branches missed.">						assert oldVal == -1 || oldVal == lastEdge;</span>
 					}
 				}
 <span class="fc bfc" id="L194" title="All 2 branches covered.">				if (nextEdge == lastEdge)</span>

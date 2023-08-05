@@ -92,7 +92,7 @@ class PathImpl extends AbstractIntList implements Path {
 		@Override
 		public int nextInt() {
 <span class="fc" id="L94">			e = it.nextInt();</span>
-<span class="pc bpc" id="L95" title="1 of 4 branches missed.">			assert v == g.edgeSource(e) || v == g.edgeTarget(e);</span>
+<span class="pc bnc" id="L95" title="All 4 branches missed.">			assert v == g.edgeSource(e) || v == g.edgeTarget(e);</span>
 <span class="fc" id="L96">			v = g.edgeEndpoint(e, v);</span>
 <span class="fc" id="L97">			return e;</span>
 		}
@@ -137,7 +137,7 @@ class PathImpl extends AbstractIntList implements Path {
 		public int nextInt() {
 <span class="fc" id="L138">			int eNext = it.nextInt();</span>
 <span class="fc bfc" id="L139" title="All 2 branches covered.">			if (e != -1)</span>
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">				assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
+<span class="pc bnc" id="L140" title="All 2 branches missed.">				assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
 <span class="fc" id="L141">			return e = eNext;</span>
 		}
 

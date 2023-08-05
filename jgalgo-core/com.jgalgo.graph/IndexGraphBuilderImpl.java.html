@@ -40,8 +40,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
 <span class="fc" id="L42">	private IndexGraphBuilderImpl() {</span>
-<span class="fc" id="L43">		verticesIdStrat = new IdStrategy.Default(0);</span>
-<span class="fc" id="L44">		edgesIdStrat = new IdStrategy.Default(0);</span>
+<span class="fc" id="L43">		verticesIdStrat = new IdStrategy.Default(0, false);</span>
+<span class="fc" id="L44">		edgesIdStrat = new IdStrategy.Default(0, true);</span>
 <span class="fc" id="L45">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);</span>
 <span class="fc" id="L46">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);</span>
 <span class="fc" id="L47">	}</span>
@@ -50,8 +50,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="fc" id="L50">		final int n = g.vertices().size();</span>
 <span class="fc" id="L51">		m = g.edges().size();</span>
 
-<span class="fc" id="L53">		verticesIdStrat = new IdStrategy.Default(n);</span>
-<span class="fc" id="L54">		edgesIdStrat = new IdStrategy.Default(m);</span>
+<span class="fc" id="L53">		verticesIdStrat = new IdStrategy.Default(n, false);</span>
+<span class="fc" id="L54">		edgesIdStrat = new IdStrategy.Default(m, true);</span>
 
 <span class="fc" id="L56">		endpoints = new int[m * 2];</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
@@ -116,7 +116,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 					&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
 <span class="fc" id="L117">		int e = m++;</span>
 <span class="fc" id="L118">		int eFromIdStrat = edgesIdStrat.newIdx();</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		assert e == eFromIdStrat;</span>
+<span class="pc bnc" id="L119" title="All 2 branches missed.">		assert e == eFromIdStrat;</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">		if (e * 2 == endpoints.length)</span>
 <span class="fc" id="L121">			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));</span>
 <span class="fc" id="L122">		setEdgeSource(e, source);</span>
@@ -244,7 +244,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="fc" id="L244">			}</span>
 		}
 <span class="fc bfc" id="L246" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			assert e == edgesUserIds[e];</span>
+<span class="pc bnc" id="L247" title="All 2 branches missed.">			assert e == edgesUserIds[e];</span>
 <span class="fc" id="L248">	}</span>
 
 	@Override

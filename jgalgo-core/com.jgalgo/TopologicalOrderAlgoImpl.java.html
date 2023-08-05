@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L41">			inDegree[v] = g.inEdges(v).size();</span>
 
 		// Find vertices with zero in degree and insert them to the queue
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		assert queue.isEmpty();</span>
+<span class="pc bnc" id="L44" title="All 2 branches missed.">		assert queue.isEmpty();</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
 <span class="fc" id="L47">				queue.enqueue(v);</span>

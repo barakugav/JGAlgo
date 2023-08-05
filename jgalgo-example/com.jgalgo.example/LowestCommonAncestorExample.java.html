@@ -44,11 +44,11 @@ import com.jgalgo.graph.GraphFactory;
 <span class="fc" id="L44">		LowestCommonAncestorStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);</span>
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v2) == rt;</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v3) == v1;</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v4) == v1;</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v5, v6) == v2;</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v6) == rt;</span>
+<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v2) == rt;</span>
+<span class="pc bnc" id="L48" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v3) == v1;</span>
+<span class="pc bnc" id="L49" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v4) == v1;</span>
+<span class="pc bnc" id="L50" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v5, v6) == v2;</span>
+<span class="pc bnc" id="L51" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v6) == rt;</span>
 <span class="fc" id="L52">	}</span>
 
 	public static void dynamicLCAExample() {
@@ -58,18 +58,18 @@ import com.jgalgo.graph.GraphFactory;
 
 <span class="fc" id="L59">		LowestCommonAncestorDynamic.Node v1 = lcaAlgo.addLeaf(rt);</span>
 <span class="fc" id="L60">		LowestCommonAncestorDynamic.Node v2 = lcaAlgo.addLeaf(rt);</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
+<span class="pc bnc" id="L61" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
 
 <span class="fc" id="L63">		LowestCommonAncestorDynamic.Node v3 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
+<span class="pc bnc" id="L64" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
 
 <span class="fc" id="L66">		LowestCommonAncestorDynamic.Node v4 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
 
 <span class="fc" id="L69">		LowestCommonAncestorDynamic.Node v5 = lcaAlgo.addLeaf(v2);</span>
 <span class="fc" id="L70">		LowestCommonAncestorDynamic.Node v6 = lcaAlgo.addLeaf(v2);</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
+<span class="pc bnc" id="L71" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
 <span class="fc" id="L73">	}</span>
 
 	public static void main(String[] args) {

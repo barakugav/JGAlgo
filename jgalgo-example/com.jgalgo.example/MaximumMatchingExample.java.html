@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L40" title="All 2 branches covered.">			uEdges.removeIf(e -&gt; !matching.containsEdge(e));</span>
 
 			/* No vertex is allowed to have more than one matched edge */
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">			assert uEdges.size() &lt;= 1;</span>
+<span class="pc bnc" id="L43" title="All 2 branches missed.">			assert uEdges.size() &lt;= 1;</span>
 <span class="fc" id="L44">		}</span>
 
 <span class="fc" id="L46">		System.out.println(&quot;The maximum matching in the graph has a size of &quot; + matching.edges().size());</span>

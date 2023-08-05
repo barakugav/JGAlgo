@@ -700,10 +700,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc bfc" id="L700" title="All 2 branches covered.">			if (integerFlow) {</span>
 <span class="fc" id="L701">				FlowNetwork.Int netInt = (FlowNetwork.Int) net;</span>
 <span class="fc bfc" id="L702" title="All 2 branches covered.">				for (int m = g.edges().size(), e = sourcesSinksThreshold; e &lt; m; e++)</span>
-<span class="pc bpc" id="L703" title="1 of 2 branches missed.">					assert netInt.getFlowInt(e) == netInt.getCapacityInt(e);</span>
+<span class="pc bnc" id="L703" title="All 2 branches missed.">					assert netInt.getFlowInt(e) == netInt.getCapacityInt(e);</span>
 <span class="fc" id="L704">			} else {</span>
 <span class="fc bfc" id="L705" title="All 2 branches covered.">				for (int m = g.edges().size(), e = sourcesSinksThreshold; e &lt; m; e++)</span>
-<span class="pc bpc" id="L706" title="1 of 2 branches missed.">					assert Math.abs(net.getFlow(e) - net.getCapacity(e)) &lt; 1e-9;</span>
+<span class="pc bnc" id="L706" title="All 2 branches missed.">					assert Math.abs(net.getFlow(e) - net.getCapacity(e)) &lt; 1e-9;</span>
 			}
 <span class="fc" id="L708">		}</span>
 

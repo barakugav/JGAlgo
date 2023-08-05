@@ -122,8 +122,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 <span class="fc" id="L123">			BitSet visited = new BitSet(n);</span>
 <span class="fc" id="L124">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
+<span class="pc bnc" id="L125" title="All 2 branches missed.">			assert visited.isEmpty();</span>
+<span class="pc bnc" id="L126" title="All 2 branches missed.">			assert queue.isEmpty();</span>
 
 <span class="fc" id="L128">			int n = g.vertices().size();</span>
 <span class="fc bfc" id="L129" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
@@ -162,8 +162,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 <span class="fc bfc" id="L163" title="All 2 branches covered.">			while (!active.isEmpty()) {</span>
 <span class="fc" id="L164">				Vertex U = active.pop();</span>
-<span class="pc bpc" id="L165" title="2 of 4 branches missed.">				assert U.v != source &amp;&amp; U.v != sink;</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">				assert U.dtNode.getParent() == null;</span>
+<span class="pc bnc" id="L165" title="All 4 branches missed.">				assert U.v != source &amp;&amp; U.v != sink;</span>
+<span class="pc bnc" id="L166" title="All 2 branches missed.">				assert U.dtNode.getParent() == null;</span>
 <span class="fc" id="L167">				EdgeIter it = U.edgeIter;</span>
 <span class="fc" id="L168">				int uSize = dtTreeSize.getTreeSize(U.dtNode);</span>
 
@@ -183,7 +183,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 						/* Link u to a node with admissible edge and start pushing */
 <span class="fc" id="L184">						dt.link(U.dtNode, V.dtNode, getResidualCapacity(e));</span>
 <span class="fc" id="L185">						U.linkedEdge = e;</span>
-<span class="pc bpc" id="L186" title="2 of 4 branches missed.">						assert !children.hasNext(U.v) &amp;&amp; !children.hasPrev(U.v);</span>
+<span class="pc bnc" id="L186" title="All 4 branches missed.">						assert !children.hasNext(U.v) &amp;&amp; !children.hasPrev(U.v);</span>
 <span class="fc bfc" id="L187" title="All 2 branches covered.">						if (V.firstDtChild != -1)</span>
 <span class="fc" id="L188">							children.connect(U.v, V.firstDtChild);</span>
 <span class="fc" id="L189">						V.firstDtChild = U.v;</span>
@@ -193,7 +193,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L193">						pushAlongEdge(e);</span>
 <span class="fc bfc" id="L194" title="All 4 branches covered.">						if (V.v == source || V.v == sink)</span>
 <span class="fc" id="L195">							continue;</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">						assert V.hasExcess();</span>
+<span class="pc bnc" id="L196" title="All 2 branches missed.">						assert V.hasExcess();</span>
 <span class="fc" id="L197">						W = V;</span>
 					}
 
@@ -246,12 +246,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		void cutAllChildren(Vertex U) {
 			/* cut all vertices pointing into u */
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">			assert U.dtNode.getParent() == null;</span>
+<span class="pc bnc" id="L249" title="All 2 branches missed.">			assert U.dtNode.getParent() == null;</span>
 <span class="fc bfc" id="L250" title="All 2 branches covered.">			if (U.firstDtChild != -1) {</span>
 <span class="fc bfc" id="L251" title="All 2 branches covered.">				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {</span>
 <span class="fc" id="L252">					int child = childIt.nextInt();</span>
 <span class="fc" id="L253">					Vertex childData = vertexData(child);</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">					assert childData.dtNode.getParent() == U.dtNode;</span>
+<span class="pc bnc" id="L254" title="All 2 branches missed.">					assert childData.dtNode.getParent() == U.dtNode;</span>
 
 					/* update flow */
 <span class="fc" id="L257">					MinEdge m = dt.findMinEdge(childData.dtNode);</span>
@@ -275,7 +275,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L275">					cleanupStack.push(uDt);</span>
 <span class="fc bfc" id="L276" title="All 2 branches covered.">				while (!cleanupStack.isEmpty()) {</span>
 <span class="fc" id="L277">					DynamicTree.Node uDt = cleanupStack.pop();</span>
-<span class="pc bpc" id="L278" title="1 of 2 branches missed.">					assert uDt.getParent() == dt.findRoot(uDt);</span>
+<span class="pc bnc" id="L278" title="All 2 branches missed.">					assert uDt.getParent() == dt.findRoot(uDt);</span>
 <span class="fc" id="L279">					MinEdge m = dt.findMinEdge(uDt);</span>
 <span class="fc" id="L280">					int e = m.source().&lt;Vertex&gt;getNodeData().linkedEdge;</span>
 <span class="fc" id="L281">					updateFlow(e, m.weight());</span>
@@ -349,8 +349,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L349">			int t = twin[e];</span>
 <span class="fc" id="L350">			flow[e] += f;</span>
 <span class="fc" id="L351">			flow[t] -= f;</span>
-<span class="pc bpc" id="L352" title="1 of 2 branches missed.">			assert flow[e] &lt;= capacity[e] + EPS;</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">			assert flow[t] &lt;= capacity[t] + EPS;</span>
+<span class="pc bnc" id="L352" title="All 2 branches missed.">			assert flow[e] &lt;= capacity[e] + EPS;</span>
+<span class="pc bnc" id="L353" title="All 2 branches missed.">			assert flow[t] &lt;= capacity[t] + EPS;</span>
 <span class="fc" id="L354">		}</span>
 
 		@Override
@@ -478,8 +478,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L478">			int t = twin[e];</span>
 <span class="fc" id="L479">			flow[e] += f;</span>
 <span class="fc" id="L480">			flow[t] -= f;</span>
-<span class="pc bpc" id="L481" title="1 of 2 branches missed.">			assert flow[e] &lt;= capacity[e];</span>
-<span class="pc bpc" id="L482" title="1 of 2 branches missed.">			assert flow[t] &lt;= capacity[t];</span>
+<span class="pc bnc" id="L481" title="All 2 branches missed.">			assert flow[e] &lt;= capacity[e];</span>
+<span class="pc bnc" id="L482" title="All 2 branches missed.">			assert flow[t] &lt;= capacity[t];</span>
 <span class="fc" id="L483">		}</span>
 
 		@Override

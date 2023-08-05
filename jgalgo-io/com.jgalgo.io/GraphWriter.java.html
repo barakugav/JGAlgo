@@ -44,7 +44,7 @@ public interface GraphWriter {
 	 * @param file  a file descriptor to which the graph will be written to
 	 */
 	default void writeGraph(Graph graph, File file) {
-<span class="nc" id="L47">		try (Writer writer = new FileWriter(file)) {</span>
+<span class="nc" id="L47">		try (Writer writer = new FileWriter(file, GraphIO.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L48">			writeGraph(graph, writer);</span>
 <span class="nc" id="L49">		} catch (IOException e) {</span>
 <span class="nc" id="L50">			throw new RuntimeException(e);</span>
@@ -58,7 +58,7 @@ public interface GraphWriter {
 	 * @param path  a path to a file to which the graph will be written to
 	 */
 	default void writeGraph(Graph graph, String path) {
-<span class="nc" id="L61">		try (Writer writer = new FileWriter(path)) {</span>
+<span class="nc" id="L61">		try (Writer writer = new FileWriter(path, GraphIO.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L62">			writeGraph(graph, writer);</span>
 <span class="nc" id="L63">		} catch (IOException e) {</span>
 <span class="nc" id="L64">			throw new RuntimeException(e);</span>

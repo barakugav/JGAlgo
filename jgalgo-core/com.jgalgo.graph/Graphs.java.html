@@ -33,8 +33,8 @@ public class Graphs {
 
 <span class="fc" id="L34">	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {</span>
 
-<span class="fc" id="L36">		private final IdStrategy verticesIdStrat = IdStrategy.Empty;</span>
-<span class="fc" id="L37">		private final IdStrategy edgesIdStrat = IdStrategy.Empty;</span>
+<span class="fc" id="L36">		private final IdStrategy verticesIdStrat = IdStrategy.EmptyVertices;</span>
+<span class="fc" id="L37">		private final IdStrategy edgesIdStrat = IdStrategy.EmptyEdges;</span>
 
 		@Override
 		public IntSet vertices() {
@@ -203,7 +203,7 @@ public class Graphs {
 <span class="fc" id="L203">				source = target;</span>
 <span class="fc" id="L204">				target = temp;</span>
 			}
-<span class="pc bpc" id="L206" title="1 of 2 branches missed.">			assert source &lt; target;</span>
+<span class="pc bnc" id="L206" title="All 2 branches missed.">			assert source &lt; target;</span>
 
 <span class="fc bfc" id="L208" title="All 2 branches covered.">			if (n % 2 == 0) {</span>
 <span class="fc" id="L209">				final int edgesPerSource1 = n / 2;</span>
@@ -223,12 +223,12 @@ public class Graphs {
 <span class="fc" id="L223">					return base + offset;</span>
 
 				} else {
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">					assert !edgeIsSourcedAtSource;</span>
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">					assert target + edgesPerSource2 &gt;= n;</span>
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">					assert target + edgesPerSource2 - n &gt;= source;</span>
+<span class="pc bnc" id="L226" title="All 2 branches missed.">					assert !edgeIsSourcedAtSource;</span>
+<span class="pc bnc" id="L227" title="All 2 branches missed.">					assert target + edgesPerSource2 &gt;= n;</span>
+<span class="pc bnc" id="L228" title="All 2 branches missed.">					assert target + edgesPerSource2 - n &gt;= source;</span>
 <span class="fc" id="L229">					int base = sourcesNum1 * edgesPerSource1 + (target - sourcesNum1) * edgesPerSource2;</span>
 <span class="fc" id="L230">					int offset = source - target - 1 + n;</span>
-<span class="pc bpc" id="L231" title="2 of 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource2;</span>
+<span class="pc bnc" id="L231" title="All 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource2;</span>
 <span class="fc" id="L232">					return base + offset;</span>
 				}
 			} else {
@@ -236,14 +236,14 @@ public class Graphs {
 <span class="fc bfc" id="L236" title="All 2 branches covered.">				if (source + edgesPerSource &gt;= target) {</span>
 <span class="fc" id="L237">					int base = edgesPerSource * source;</span>
 <span class="fc" id="L238">					int offset = target - source - 1;</span>
-<span class="pc bpc" id="L239" title="2 of 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource;</span>
+<span class="pc bnc" id="L239" title="All 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource;</span>
 <span class="fc" id="L240">					return base + offset;</span>
 				} else {
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">					assert target + edgesPerSource &gt;= n;</span>
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">					assert target + edgesPerSource - n &gt;= source;</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">					assert target + edgesPerSource &gt;= n;</span>
+<span class="pc bnc" id="L243" title="All 2 branches missed.">					assert target + edgesPerSource - n &gt;= source;</span>
 <span class="fc" id="L244">					int base = edgesPerSource * target;</span>
 <span class="fc" id="L245">					int offset = source - target - 1 + n;</span>
-<span class="pc bpc" id="L246" title="2 of 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource;</span>
+<span class="pc bnc" id="L246" title="All 4 branches missed.">					assert 0 &lt;= offset &amp;&amp; offset &lt; edgesPerSource;</span>
 <span class="fc" id="L247">					return base + offset;</span>
 				}
 			}
@@ -457,8 +457,8 @@ public class Graphs {
 		private final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 <span class="fc" id="L459">		CompleteGraph(int n, int m) {</span>
-<span class="fc" id="L460">			verticesIdStrat = new IdStrategy.Default(n);</span>
-<span class="fc" id="L461">			edgesIdStrat = new IdStrategy.Default(m);</span>
+<span class="fc" id="L460">			verticesIdStrat = new IdStrategy.Default(n, false);</span>
+<span class="fc" id="L461">			edgesIdStrat = new IdStrategy.Default(m, true);</span>
 <span class="pc bpc" id="L462" title="2 of 4 branches missed.">			if (n &lt; 0 || m &lt; 0)</span>
 <span class="nc" id="L463">				throw new IllegalArgumentException();</span>
 <span class="fc" id="L464">			this.n = n;</span>
@@ -468,8 +468,8 @@ public class Graphs {
 <span class="fc" id="L468">		}</span>
 
 <span class="nc" id="L470">		CompleteGraph(CompleteGraph g) {</span>
-<span class="nc" id="L471">			verticesIdStrat = new IdStrategy.Default(g.n);</span>
-<span class="nc" id="L472">			edgesIdStrat = new IdStrategy.Default(g.m);</span>
+<span class="nc" id="L471">			verticesIdStrat = new IdStrategy.Default(g.n, false);</span>
+<span class="nc" id="L472">			edgesIdStrat = new IdStrategy.Default(g.m, true);</span>
 <span class="nc" id="L473">			this.n = g.n;</span>
 <span class="nc" id="L474">			this.m = g.m;</span>
 <span class="nc" id="L475">			verticesWeights = new WeightsImpl.IndexMutable.Manager(g.verticesWeights, verticesIdStrat);</span>

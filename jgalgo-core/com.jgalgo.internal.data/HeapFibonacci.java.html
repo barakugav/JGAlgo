@@ -149,13 +149,13 @@ class HeapFibonacci&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 	}
 
 	private void cut(Node&lt;K, V&gt; p) {
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		assert p.parent != null;</span>
+<span class="pc bnc" id="L152" title="All 2 branches missed.">		assert p.parent != null;</span>
 <span class="fc" id="L153">		Node&lt;K, V&gt; prev = p.prev;</span>
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		if (prev != null) {</span>
 <span class="fc" id="L155">			prev.next = p.next;</span>
 <span class="fc" id="L156">			p.prev = null;</span>
 		} else {
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">			assert p.parent.child == p;</span>
+<span class="pc bnc" id="L158" title="All 2 branches missed.">			assert p.parent.child == p;</span>
 <span class="fc" id="L159">			p.parent.child = p.next;</span>
 		}
 <span class="fc" id="L161">		p.parent.degree--;</span>
@@ -175,7 +175,7 @@ class HeapFibonacci&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 <span class="fc" id="L175">	}</span>
 
 	private void compareToMinRoot(Node&lt;K, V&gt; p) {
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		assert p.parent == null;</span>
+<span class="pc bnc" id="L178" title="All 2 branches missed.">		assert p.parent == null;</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">		if (compare(minRoot.key, p.key) &gt; 0)</span>
 <span class="fc" id="L180">			minRoot = p;</span>
 <span class="fc" id="L181">	}</span>
@@ -331,7 +331,7 @@ class HeapFibonacci&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 <span class="fc" id="L331">			u = v;</span>
 <span class="fc" id="L332">			v = temp;</span>
 		}
-<span class="pc bpc" id="L334" title="1 of 2 branches missed.">		assert JGAlgoUtils.cmpDefault(u.key, v.key) &lt;= 0;</span>
+<span class="pc bnc" id="L334" title="All 2 branches missed.">		assert JGAlgoUtils.cmpDefault(u.key, v.key) &lt;= 0;</span>
 
 <span class="fc" id="L336">		v.parent = u;</span>
 <span class="fc" id="L337">		v.prev = null;</span>
@@ -350,7 +350,7 @@ class HeapFibonacci&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 <span class="fc" id="L350">			u = v;</span>
 <span class="fc" id="L351">			v = temp;</span>
 		}
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
+<span class="pc bnc" id="L353" title="All 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
 
 <span class="fc" id="L355">		v.parent = u;</span>
 <span class="fc" id="L356">		v.prev = null;</span>

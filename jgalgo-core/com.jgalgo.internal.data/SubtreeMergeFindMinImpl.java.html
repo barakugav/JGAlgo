@@ -181,7 +181,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L181">						eU = eV;</span>
 <span class="fc" id="L182">						eV = temp;</span>
 					}
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">					assert eU == U;</span>
+<span class="pc bnc" id="L184" title="All 2 branches missed.">					assert eU == U;</span>
 
 <span class="fc bfc" id="L186" title="All 4 branches covered.">					if (eV.inEdgeTimestamp == t &amp;&amp; weightCmp.compare(eV.inEdge.data.data, edge.data.data) &lt;= 0) {</span>
 						/* edge is redundant */
@@ -246,7 +246,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 	private void addEdgeNode(EdgeNode&lt;E&gt; edge) {
 		/* assume u is deeper */
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">		assert edge.u.depth &gt; edge.v.depth;</span>
+<span class="pc bnc" id="L249" title="All 2 branches missed.">		assert edge.u.depth &gt; edge.v.depth;</span>
 
 <span class="fc" id="L251">		SubTree&lt;E&gt; u = subTree(edge.u), v = subTree(edge.v);</span>
 <span class="fc bfc" id="L252" title="All 2 branches covered.">		if (u == v)</span>

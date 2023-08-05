@@ -126,7 +126,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L126" title="All 2 branches covered.">					if (parent.right == node) {</span>
 <span class="fc" id="L127">						parent.right = null;</span>
 					} else {
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">						assert parent.left == node;</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">						assert parent.left == node;</span>
 <span class="fc" id="L130">						parent.left = null;</span>
 					}
 <span class="fc" id="L132">					node.parent = null;</span>
@@ -210,9 +210,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L210">	}</span>
 
 	private Node&lt;K, V&gt; insertNode(Node&lt;K, V&gt; n) {
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">		assert n.parent == null;</span>
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">		assert n.left == null;</span>
-<span class="pc bpc" id="L215" title="1 of 2 branches missed.">		assert n.right == null;</span>
+<span class="pc bnc" id="L213" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L214" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L215" title="All 2 branches missed.">		assert n.right == null;</span>
 <span class="fc bfc" id="L216" title="All 2 branches covered.">		if (root == null) {</span>
 <span class="fc" id="L217">			n.color = Black;</span>
 <span class="fc" id="L218">			root = n;</span>
@@ -264,7 +264,7 @@ import com.jgalgo.internal.util.Assertions;
 					}
 				}
 
-<span class="pc bpc" id="L267" title="3 of 8 branches missed.">				assert (n == parent.left &amp;&amp; parent == grandparent.left)</span>
+<span class="pc bnc" id="L267" title="All 8 branches missed.">				assert (n == parent.left &amp;&amp; parent == grandparent.left)</span>
 						|| (n == parent.right &amp;&amp; parent == grandparent.right);
 				/* Case 6: n is an outer grandchild of grandparent */
 <span class="fc bfc" id="L270" title="All 2 branches covered.">				if (parent == grandparent.left)</span>
@@ -277,7 +277,7 @@ import com.jgalgo.internal.util.Assertions;
 			}
 
 			/* Case 2: parent is Red, uncle is Red */
-<span class="pc bpc" id="L280" title="1 of 2 branches missed.">			assert grandparent.color == Black;</span>
+<span class="pc bnc" id="L280" title="All 2 branches missed.">			assert grandparent.color == Black;</span>
 <span class="fc" id="L281">			parent.color = uncle.color = Black;</span>
 <span class="fc" id="L282">			grandparent.color = Red;</span>
 
@@ -294,7 +294,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L294" title="All 2 branches covered.">			if (n == parent.left) {</span>
 <span class="fc" id="L295">				parent.left = replace;</span>
 			} else {
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">				assert n == parent.right;</span>
+<span class="pc bnc" id="L297" title="All 2 branches missed.">				assert n == parent.right;</span>
 <span class="fc" id="L298">				parent.right = replace;</span>
 			}
 		} else {
@@ -316,22 +316,22 @@ import com.jgalgo.internal.util.Assertions;
 		/* 2 children, switch place with a single child node */
 <span class="fc bfc" id="L317" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
 <span class="fc" id="L318">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
-<span class="pc bpc" id="L319" title="1 of 4 branches missed.">		assert n.left == null || n.right == null;</span>
+<span class="pc bnc" id="L319" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
 <span class="fc" id="L320">		Node&lt;K, V&gt; parent = n.parent;</span>
 
 		/* Red node, just remove */
 <span class="fc bfc" id="L323" title="All 2 branches covered.">		if (n.color == Red) {</span>
-<span class="pc bpc" id="L324" title="2 of 4 branches missed.">			assert n.left == null &amp;&amp; n.right == null;</span>
+<span class="pc bnc" id="L324" title="All 4 branches missed.">			assert n.left == null &amp;&amp; n.right == null;</span>
 <span class="fc" id="L325">			removeNode(n, null);</span>
 <span class="fc" id="L326">			return;</span>
 		}
 
 		/* Black node, single red child. Remove and make child black */
 <span class="fc bfc" id="L330" title="All 4 branches covered.">		if (n.left != null || n.right != null) {</span>
-<span class="pc bpc" id="L331" title="1 of 6 branches missed.">			assert n.left != null ^ n.right != null;</span>
+<span class="pc bnc" id="L331" title="All 6 branches missed.">			assert n.left != null ^ n.right != null;</span>
 <span class="fc bfc" id="L332" title="All 2 branches covered.">			Node&lt;K, V&gt; child = n.left != null ? n.left : n.right;</span>
-<span class="pc bpc" id="L333" title="1 of 2 branches missed.">			assert child.color = Red;</span>
-<span class="pc bpc" id="L334" title="2 of 4 branches missed.">			assert child.left == null &amp;&amp; child.right == null;</span>
+<span class="pc bnc" id="L333" title="All 2 branches missed.">			assert child.color = Red;</span>
+<span class="pc bnc" id="L334" title="All 4 branches missed.">			assert child.left == null &amp;&amp; child.right == null;</span>
 <span class="fc" id="L335">			child.color = Black;</span>
 <span class="fc" id="L336">			removeNode(n, child);</span>
 <span class="fc" id="L337">			return;</span>
@@ -366,7 +366,7 @@ import com.jgalgo.internal.util.Assertions;
 			/* Case 3: sibling is Red */
 <span class="fc bfc" id="L367" title="All 2 branches covered.">			if (sibling.color == Red) {</span>
 <span class="fc" id="L368">				rotate(parent, leftIsShortSide);</span>
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">				assert parent.color == Black;</span>
+<span class="pc bnc" id="L369" title="All 2 branches missed.">				assert parent.color == Black;</span>
 <span class="fc" id="L370">				parent.color = Red;</span>
 <span class="fc" id="L371">				sibling.color = Black;</span>
 
@@ -444,7 +444,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L444" title="All 2 branches covered.">			if (n == parent.left) {</span>
 <span class="fc" id="L445">				parent.left = child;</span>
 			} else {
-<span class="pc bpc" id="L447" title="1 of 2 branches missed.">				assert n == parent.right;</span>
+<span class="pc bnc" id="L447" title="All 2 branches missed.">				assert n == parent.right;</span>
 <span class="fc" id="L448">				parent.right = child;</span>
 			}
 		} else {
@@ -468,7 +468,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L468" title="All 2 branches covered.">			if (n == parent.left) {</span>
 <span class="fc" id="L469">				parent.left = child;</span>
 			} else {
-<span class="pc bpc" id="L471" title="1 of 2 branches missed.">				assert n == parent.right;</span>
+<span class="pc bnc" id="L471" title="All 2 branches missed.">				assert n == parent.right;</span>
 <span class="fc" id="L472">				parent.right = child;</span>
 			}
 		} else {

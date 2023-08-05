@@ -132,7 +132,7 @@ abstract class DataContainer&lt;E&gt; {
 		@Override
 		public void expand(int newCapacity) {
 <span class="fc" id="L134">			int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L136">			weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L137">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L138">			onArrayAlloc.accept(weights);</span>
@@ -245,7 +245,7 @@ abstract class DataContainer&lt;E&gt; {
 		@Override
 		public void expand(int newCapacity) {
 <span class="fc" id="L247">			int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L248" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L249">			weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L250">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L251">			onArrayAlloc.accept(weights);</span>
@@ -368,7 +368,7 @@ abstract class DataContainer&lt;E&gt; {
 		@Override
 		void expand(int newCapacity) {
 <span class="fc" id="L370">			int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L371" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L371" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L372">			weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L373">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L374">			onArrayAlloc.accept(weights);</span>

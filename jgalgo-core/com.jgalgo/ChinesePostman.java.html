@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChinesePostman.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">ChinesePostman.java</span></div><h1>ChinesePostman.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
+
+/**
+ * An algorithm for the chinese postman problem.
+ * &lt;p&gt;
+ * The chinese postman problem is to find a closed path that visits all edges in the graph at least once, with minimum
+ * weight sum with respect to a given edge weight function.
+ * &lt;p&gt;
+ * The problem can be solved in polynomial time.
+ *
+ * @author Barak Ugav
+ */
+public interface ChinesePostman {
+
+	/**
+	 * Compute the shortest circuit that visits all edges in the graph at least once.
+	 *
+	 * @param  g a graph
+	 * @param  w an edge weight function
+	 * @return   a closed path that visits all edges in the graph, with minimum weight sum with respect to the given
+	 *           edge weight function
+	 */
+	Path computeShortestEdgeVisitorCircle(Graph g, WeightFunction w);
+
+	/**
+	 * Create a new builder for chinese postman algorithms.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link ChinesePostman} object.
+	 *
+	 * @return a new builder that can build {@link ChinesePostman} objects
+	 */
+	static ChinesePostman.Builder newBuilder() {
+<span class="nc" id="L52">		return ChinesePostmanImpl::new;</span>
+	}
+
+	/**
+	 * A builder for {@link ChinesePostman} objects.
+	 *
+	 * @see    ChinesePostman#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;ChinesePostman.Builder&gt; {
+
+		/**
+		 * Create a new algorithm object for chinese postman problem.
+		 *
+		 * @return a new chinese postman algorithm
+		 */
+		ChinesePostman build();
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

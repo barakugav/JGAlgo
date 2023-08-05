@@ -212,7 +212,7 @@ class HeapBinomial&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 	}
 
 	private Node&lt;K, V&gt; mergeTreesDefaultCmp(Node&lt;K, V&gt; r1, Node&lt;K, V&gt; r2) {
-<span class="pc bpc" id="L215" title="1 of 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bnc" id="L215" title="All 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L216" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L217">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L218" title="All 2 branches covered.">		if (JGAlgoUtils.cmpDefault(r1.key, r2.key) &gt; 0) {</span>
@@ -231,7 +231,7 @@ class HeapBinomial&lt;K, V&gt; extends AbstractHeapReferenceable&lt;K, V&gt; {
 	}
 
 	private Node&lt;K, V&gt; mergeTreesCustomCmp(Node&lt;K, V&gt; r1, Node&lt;K, V&gt; r2) {
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bnc" id="L234" title="All 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L235" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L236">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">		if (c.compare(r1.key, r2.key) &gt; 0) {</span>

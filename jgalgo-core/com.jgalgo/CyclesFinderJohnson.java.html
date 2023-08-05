@@ -90,17 +90,17 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 		private void reset() {
 <span class="fc" id="L91">			int n = g.vertices().size();</span>
 <span class="fc" id="L92">			isBlocked.clear();</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">			assert unblockStack.isEmpty();</span>
+<span class="pc bnc" id="L93" title="All 2 branches missed.">			assert unblockStack.isEmpty();</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
 <span class="fc" id="L95">				blockingSet[u].clear();</span>
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
+<span class="pc bnc" id="L96" title="All 2 branches missed.">			assert path.isEmpty();</span>
 <span class="fc" id="L97">		}</span>
 
 		private boolean findAllCycles(int startV, StronglyConnectedComponent scc) {
 <span class="fc" id="L100">			boolean cycleFound = false;</span>
 
 <span class="fc bfc" id="L102" title="All 2 branches covered.">			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">			assert scc.contains(u);</span>
+<span class="pc bnc" id="L103" title="All 2 branches missed.">			assert scc.contains(u);</span>
 <span class="fc" id="L104">			isBlocked.set(u);</span>
 
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 <span class="fc" id="L161">		gSubBuilder.expectedVerticesNum(nSub);</span>
 <span class="fc bfc" id="L162" title="All 2 branches covered.">		for (int uSubIdx = 0; uSubIdx &lt; nSub; uSubIdx++) {</span>
 <span class="fc" id="L163">			int uIdx = gSubBuilder.addVertex();</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">			assert uIdx == uSubIdx;</span>
+<span class="pc bnc" id="L164" title="All 2 branches missed.">			assert uIdx == uSubIdx;</span>
 		}
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
 <span class="fc" id="L167">			int uFull = uSub + subToFull;</span>

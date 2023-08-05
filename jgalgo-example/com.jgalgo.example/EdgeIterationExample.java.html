@@ -44,13 +44,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		/* Query the edges of some vertices */
 		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
 <span class="fc" id="L46">		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert v1Edges.equals(IntSet.of(e1, e3, e5));</span>
+<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(e1, e3, e5));</span>
 
 <span class="fc" id="L49">		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		assert v2Edges.equals(IntSet.of(e1, e2));</span>
+<span class="pc bnc" id="L50" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(e1, e2));</span>
 
 <span class="fc" id="L52">		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		assert v3Edges.equals(IntSet.of(e2, e3, e6));</span>
+<span class="pc bnc" id="L53" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(e2, e3, e6));</span>
 
 		/* Print the out-edges of v5 */
 <span class="fc" id="L56">		System.out.println(&quot;The edges of v5:&quot;);</span>
@@ -62,8 +62,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			assert u == v5;</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			assert IntSet.of(e4, e7).contains(e);</span>
+<span class="pc bnc" id="L65" title="All 2 branches missed.">			assert u == v5;</span>
+<span class="pc bnc" id="L66" title="All 2 branches missed.">			assert IntSet.of(e4, e7).contains(e);</span>
 <span class="fc" id="L67">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
 <span class="fc" id="L68">		}</span>
 <span class="fc" id="L69">	}</span>

@@ -126,7 +126,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			}
 
 			void checkIdx(int idx) {
-<span class="fc" id="L129">				Assertions.Graphs.checkId(idx, idStrat.size());</span>
+<span class="fc" id="L129">				idStrat.checkIdx(idx);</span>
 <span class="fc" id="L130">			}</span>
 		}
 
@@ -1225,7 +1225,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1227">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1228" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1228" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1229">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1230">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1231">			}</span>
@@ -1273,7 +1273,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1275">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1276" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1276" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1277">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1278">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1279">			}</span>
@@ -1321,7 +1321,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1323">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1324" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1324" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1325">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1326">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1327">			}</span>
@@ -1369,7 +1369,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1371">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1372" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1372" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1373">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1374">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1375">			}</span>
@@ -1417,7 +1417,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1419">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1420" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1420" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1421">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1422">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1423">			}</span>
@@ -1465,7 +1465,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1467">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1468" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1468" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1469">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1470">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1471">			}</span>
@@ -1513,7 +1513,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1515">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1516" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1516" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1517">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1518">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1519">			}</span>
@@ -1561,7 +1561,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1563">				int oldCapacity = capacity;</span>
-<span class="pc bpc" id="L1564" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1564" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1565">				capacity = newCapacity;</span>
 <span class="fc bfc" id="L1566" title="All 2 branches covered.">				if (defaultWeight)</span>
 <span class="fc" id="L1567">					weights.set(oldCapacity, newCapacity);</span>
@@ -1612,7 +1612,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 			@Override
 			public void expand(int newCapacity) {
 <span class="fc" id="L1614">				int oldCapacity = weights.length;</span>
-<span class="pc bpc" id="L1615" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bnc" id="L1615" title="All 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L1616">				weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L1617">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L1618">			}</span>

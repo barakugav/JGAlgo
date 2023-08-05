@@ -151,7 +151,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L151">				gBuilder.expectedVerticesNum(gOrig.vertices().size());</span>
 <span class="fc bfc" id="L152" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L153">					int vBuilder = gBuilder.addVertex();</span>
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">					assert u == vBuilder;</span>
+<span class="pc bnc" id="L154" title="All 2 branches missed.">					assert u == vBuilder;</span>
 				}
 
 <span class="fc" id="L157">				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);</span>
@@ -177,13 +177,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 			void addEdge(int u, int v, int e) {
 <span class="fc" id="L178">				int e1Builder = gBuilder.addEdge(u, v);</span>
 <span class="fc" id="L179">				int e2Builder = gBuilder.addEdge(v, u);</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
+<span class="pc bnc" id="L180" title="All 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
 <span class="fc" id="L181">				edgeRef.add(e);</span>
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
+<span class="pc bnc" id="L182" title="All 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
 <span class="fc" id="L183">				edgeRef.add(e);</span>
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">				assert e1Builder == twin.size();</span>
+<span class="pc bnc" id="L184" title="All 2 branches missed.">				assert e1Builder == twin.size();</span>
 <span class="fc" id="L185">				twin.add(e2Builder);</span>
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">				assert e2Builder == twin.size();</span>
+<span class="pc bnc" id="L186" title="All 2 branches missed.">				assert e2Builder == twin.size();</span>
 <span class="fc" id="L187">				twin.add(e1Builder);</span>
 <span class="fc" id="L188">			}</span>
 

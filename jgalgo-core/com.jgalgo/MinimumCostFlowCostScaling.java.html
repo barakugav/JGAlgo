@@ -210,7 +210,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 				}
 
 				/* Find all active nodes */
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">				assert activeQueue.isEmpty();</span>
+<span class="pc bnc" id="L213" title="All 2 branches missed.">				assert activeQueue.isEmpty();</span>
 <span class="fc bfc" id="L214" title="All 2 branches covered.">				for (int n = g.vertices().size(), u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L215" title="All 2 branches covered.">					if (excess[u] &gt; 0)</span>
 <span class="fc" id="L216">						activeQueue.enqueue(u);</span>
@@ -250,18 +250,18 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 			 * (change it potential) and back up the DFS.
 			 */
 
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">			assert onPath.isEmpty();</span>
+<span class="pc bnc" id="L253" title="All 2 branches missed.">			assert path.isEmpty();</span>
+<span class="pc bnc" id="L254" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
 <span class="fc" id="L255">			onPath.set(searchSource);</span>
 <span class="fc" id="L256">			dfs: for (int u = searchSource;;) {</span>
 
 				/* Find an admissible edge from u */
 <span class="fc" id="L259">				long uPotential = potential[u];</span>
 <span class="fc" id="L260">				long minReducedCost = Long.MAX_VALUE;</span>
-<span class="pc bpc" id="L261" title="1 of 2 branches missed.">				assert edgeIter[u].hasNext();</span>
+<span class="pc bnc" id="L261" title="All 2 branches missed.">				assert edgeIter[u].hasNext();</span>
 <span class="fc" id="L262">				final int firstEdge = edgeIter[u].peekNext();</span>
 <span class="fc" id="L263">				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {</span>
-<span class="pc bpc" id="L264" title="1 of 2 branches missed.">					assert eit.hasNext();</span>
+<span class="pc bnc" id="L264" title="All 2 branches missed.">					assert eit.hasNext();</span>
 <span class="fc" id="L265">					int e = eit.peekNext();</span>
 <span class="fc bfc" id="L266" title="All 2 branches covered.">					if (isResidual(e)) {</span>
 <span class="fc" id="L267">						int v = g.edgeTarget(e);</span>
@@ -294,14 +294,14 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 						/* Find the minimum change in the potential required for an admissible edge to appear */
 <span class="fc bfc" id="L296" title="All 2 branches covered.">						if (u != searchSource) {</span>
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="pc bnc" id="L297" title="All 2 branches missed.">							assert !path.isEmpty();</span>
 <span class="fc" id="L298">							int lastEdge = path.getInt(path.size() - 1);</span>
 <span class="fc" id="L299">							int lastTwin = twin[lastEdge];</span>
 <span class="fc" id="L300">							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];</span>
 <span class="fc" id="L301">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
 						}
 <span class="fc" id="L303">						for (EdgeIter eit2 = g.outEdges(u).iterator();;) {</span>
-<span class="pc bpc" id="L304" title="1 of 2 branches missed.">							assert eit2.hasNext();</span>
+<span class="pc bnc" id="L304" title="All 2 branches missed.">							assert eit2.hasNext();</span>
 <span class="fc" id="L305">							int e2 = eit2.nextInt();</span>
 <span class="fc bfc" id="L306" title="All 2 branches covered.">							if (e2 == firstEdge)</span>
 <span class="fc" id="L307">								break;</span>
@@ -311,21 +311,21 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 							}
 
 <span class="fc" id="L313">						}</span>
-<span class="pc bpc" id="L314" title="1 of 2 branches missed.">						assert minReducedCost != Long.MAX_VALUE;</span>
+<span class="pc bnc" id="L314" title="All 2 branches missed.">						assert minReducedCost != Long.MAX_VALUE;</span>
 
 						/* 'relabel', change potential */
 <span class="fc" id="L317">						potential[u] -= minReducedCost + eps;</span>
 <span class="fc" id="L318">						relabelsSinceLastGlobalUpdate++;</span>
 						/* Reset u iterator */
 <span class="fc" id="L320">						edgeIter[u] = g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">						assert edgeIter[u].hasNext();</span>
+<span class="pc bnc" id="L321" title="All 2 branches missed.">						assert edgeIter[u].hasNext();</span>
 
 <span class="fc bfc" id="L323" title="All 2 branches covered.">						if (u != searchSource) {</span>
 							/* step up once in the DFS path */
-<span class="pc bpc" id="L325" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="pc bnc" id="L325" title="All 2 branches missed.">							assert !path.isEmpty();</span>
 <span class="fc" id="L326">							int lastEdge = path.popInt();</span>
-<span class="pc bpc" id="L327" title="1 of 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">							assert onPath.get(u);</span>
+<span class="pc bnc" id="L327" title="All 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
+<span class="pc bnc" id="L328" title="All 2 branches missed.">							assert onPath.get(u);</span>
 <span class="fc" id="L329">							onPath.clear(u);</span>
 <span class="fc" id="L330">							u = g.edgeSource(lastEdge);</span>
 <span class="fc" id="L331">						}</span>
@@ -336,8 +336,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		}
 
 		private void pushOnPath(int searchSource) {
-<span class="pc bpc" id="L339" title="1 of 2 branches missed.">			assert !path.isEmpty();</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			assert searchSource == g.edgeSource(path.getInt(0));</span>
+<span class="pc bnc" id="L339" title="All 2 branches missed.">			assert !path.isEmpty();</span>
+<span class="pc bnc" id="L340" title="All 2 branches missed.">			assert searchSource == g.edgeSource(path.getInt(0));</span>
 <span class="fc" id="L341">			int u, v = searchSource;</span>
 <span class="fc bfc" id="L342" title="All 2 branches covered.">			for (int e : path) {</span>
 <span class="fc" id="L343">				u = v;</span>
@@ -354,7 +354,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L354">					activeQueue.enqueue(v);</span>
 <span class="fc" id="L355">			}</span>
 <span class="fc" id="L356">			onPath.clear(searchSource);</span>
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">			assert onPath.isEmpty();</span>
+<span class="pc bnc" id="L357" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
 <span class="fc" id="L358">			path.clear();</span>
 			// TODO optimization, backup dfs until all edges in path are admissible
 <span class="fc" id="L360">		}</span>
@@ -548,7 +548,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L548" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L549">				edgeIter[v] = g.outEdges(v).iterator();</span>
 
-<span class="pc bpc" id="L551" title="1 of 2 branches missed.">			assert topologicalOrder.isEmpty();</span>
+<span class="pc bnc" id="L551" title="All 2 branches missed.">			assert topologicalOrder.isEmpty();</span>
 <span class="fc bfc" id="L552" title="All 2 branches covered.">			for (int root = 0; root &lt; n; ++root) {</span>
 <span class="fc bfc" id="L553" title="All 2 branches covered.">				if (visited.get(root))</span>
 <span class="fc" id="L554">					continue;</span>
@@ -561,7 +561,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L561">					for (EdgeIter it = edgeIter[u];; it.nextInt()) {</span>
 <span class="fc bfc" id="L562" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 							/* No admissible edge from u, go up once in the DFS path */
-<span class="pc bpc" id="L564" title="1 of 2 branches missed.">							assert !processed.get(u);</span>
+<span class="pc bnc" id="L564" title="All 2 branches missed.">							assert !processed.get(u);</span>
 <span class="fc" id="L565">							processed.set(u);</span>
 <span class="fc" id="L566">							topologicalOrder.push(u);</span>
 <span class="fc" id="L567">							u = backtrack[u];</span>
@@ -570,7 +570,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L570">								break dfs;</span>
 
 							/* advance edge iterator to next child */
-<span class="pc bpc" id="L573" title="1 of 2 branches missed.">							assert edgeIter[u].hasNext();</span>
+<span class="pc bnc" id="L573" title="All 2 branches missed.">							assert edgeIter[u].hasNext();</span>
 <span class="fc" id="L574">							edgeIter[u].nextInt();</span>
 <span class="fc" id="L575">							continue dfs;</span>
 						}

@@ -274,7 +274,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L274">			parents.ensureCapacity(parents.size() + n);</span>
 <span class="fc bfc" id="L275" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L276">				int vBuilder = vTv[v] = treeBuilder.addVertex();</span>
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">				assert v == vBuilder;</span>
+<span class="pc bnc" id="L277" title="All 2 branches missed.">				assert v == vBuilder;</span>
 <span class="fc" id="L278">				depths.add(0);</span>
 <span class="fc" id="L279">				parents.add(-1);</span>
 			}
@@ -286,7 +286,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			 * super vertices in the current iteration. Note that tOrig.edgeSource(e) will not return u or v (only in
 			 * the first iteration).
 			 */
-<span class="pc bpc" id="L289" title="1 of 2 branches missed.">			assert tOrig.edges().size() == n - 1;</span>
+<span class="pc bnc" id="L289" title="All 2 branches missed.">			assert tOrig.edges().size() == n - 1;</span>
 <span class="fc" id="L290">			int[] edges = new int[(n - 1) * 3];</span>
 <span class="fc" id="L291">			int[] edgesNext = new int[(n / 2 * 1) * 3];</span>
 <span class="fc" id="L292">			int edgesNum = 0;</span>
@@ -360,7 +360,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					 * know our current depth. After the whole tree will be built, we will update the depths of the
 					 * vertices by depth=(treeHeight-height-1).
 					 */
-<span class="pc bpc" id="L363" title="1 of 2 branches missed.">					assert depths.size() == nextV;</span>
+<span class="pc bnc" id="L363" title="All 2 branches missed.">					assert depths.size() == nextV;</span>
 <span class="fc" id="L364">					depths.add(height);</span>
 
 					/* Will be set in the next iteration (or not, for root) */

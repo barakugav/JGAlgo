@@ -71,7 +71,7 @@ class DynamicTreeSplayExtended extends DynamicTreeSplay {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">			for (DynamicTreeSplayExtension extension : extensions)</span>
 <span class="fc" id="L72">				extension.data.expand(newLen);</span>
 		}
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert nodes[idx] == null;</span>
 <span class="fc" id="L75">		Node n = nodes[idx] = new Node(idx);</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">		for (DynamicTreeSplayExtension extension : extensions)</span>
 <span class="fc" id="L77">			extension.initNode(n);</span>

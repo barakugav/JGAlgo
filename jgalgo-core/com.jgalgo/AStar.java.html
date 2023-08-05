@@ -105,7 +105,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 <span class="fc" id="L106">		for (int u = source;;) {</span>
 <span class="fc" id="L107">			final double uDistance = distances.get(u);</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			assert uDistance != Double.POSITIVE_INFINITY;</span>
+<span class="pc bnc" id="L108" title="All 2 branches missed.">			assert uDistance != Double.POSITIVE_INFINITY;</span>
 
 <span class="fc bfc" id="L110" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L111">				int e = eit.nextInt();</span>
@@ -147,7 +147,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L147">			for (int v = target;;) {</span>
 <span class="fc" id="L148">				int e = backtrack.get(v);</span>
 <span class="fc bfc" id="L149" title="All 2 branches covered.">				if (e == -1) {</span>
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">					assert v == source;</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}
 <span class="fc" id="L153">				path.add(e);</span>
@@ -157,7 +157,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L157">			for (int v = target;;) {</span>
 <span class="fc" id="L158">				int e = backtrack.get(v);</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">				if (e == -1) {</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">					assert v == source;</span>
+<span class="pc bnc" id="L160" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}
 <span class="fc" id="L163">				path.add(e);</span>

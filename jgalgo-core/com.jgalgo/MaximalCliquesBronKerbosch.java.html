@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L87">				IntList excluded = excludedStack.top();</span>
 
 				recursionLoop: for (;;) {
-<span class="pc bpc" id="L90" title="1 of 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
+<span class="pc bnc" id="L90" title="All 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
 
 <span class="fc bfc" id="L92" title="All 2 branches covered.">					while (!potential.isEmpty()) {</span>
 <span class="fc" id="L93">						int v = potential.getInt(potential.size() - 1);</span>
@@ -137,7 +137,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 			private void removeLastInsertedVertex(IntList potential, IntList excluded) {
 <span class="fc" id="L138">				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */</span>
 <span class="fc" id="L139">				int lastPotential = potential.removeInt(potential.size() - 1); /* P.remove(v); */</span>
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">				assert lastPotential == v;</span>
+<span class="pc bnc" id="L140" title="All 2 branches missed.">				assert lastPotential == v;</span>
 <span class="fc" id="L141">				excluded.add(v);</span>
 <span class="fc" id="L142">			}</span>
 

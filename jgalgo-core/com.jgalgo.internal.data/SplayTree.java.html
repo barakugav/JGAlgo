@@ -87,9 +87,9 @@ import com.jgalgo.internal.util.Assertions;
 	}
 
 	private SplayBSTNode&lt;K, V&gt; insertNode(SplayBSTNode&lt;K, V&gt; n) {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		assert n.parent == null;</span>
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		assert n.left == null;</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		assert n.right == null;</span>
+<span class="pc bnc" id="L90" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L92" title="All 2 branches missed.">		assert n.right == null;</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L94">			return root = n;</span>
 
@@ -111,7 +111,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L111" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
 <span class="fc" id="L112">			replace(n, child = n.right);</span>
 		} else {
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">			assert !n.hasRightChild();</span>
+<span class="pc bnc" id="L114" title="All 2 branches missed.">			assert !n.hasRightChild();</span>
 <span class="fc" id="L115">			replace(n, child = n.left);</span>
 		}
 
@@ -130,7 +130,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L130" title="All 2 branches covered.">			if (u.isLeftChild()) {</span>
 <span class="fc" id="L131">				u.parent.left = v;</span>
 			} else {
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">				assert u.isRightChild();</span>
+<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert u.isRightChild();</span>
 <span class="fc" id="L134">				u.parent.right = v;</span>
 			}
 		}
@@ -270,7 +270,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L270" title="All 2 branches covered.">						if (parent.right == node) {</span>
 <span class="fc" id="L271">							parent.right = null;</span>
 						} else {
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">							assert parent.left == node;</span>
+<span class="pc bnc" id="L273" title="All 2 branches missed.">							assert parent.left == node;</span>
 <span class="fc" id="L274">							parent.left = null;</span>
 						}
 <span class="fc" id="L276">						node.parent = null;</span>
@@ -281,11 +281,11 @@ import com.jgalgo.internal.util.Assertions;
 			}
 
 <span class="fc bfc" id="L283" title="All 2 branches covered.">			if (hLow != null) {</span>
-<span class="pc bpc" id="L284" title="1 of 2 branches missed.">				assert compare(hLow.findMax().key(), findMin().key()) &lt; 0;</span>
+<span class="pc bnc" id="L284" title="All 2 branches missed.">				assert compare(hLow.findMax().key(), findMin().key()) &lt; 0;</span>
 <span class="fc" id="L285">				root = meld(hLow, this);</span>
 			}
 <span class="fc bfc" id="L287" title="All 2 branches covered.">			if (hHigh != null) {</span>
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">				assert compare(hHigh.findMin().key(), findMax().key()) &gt; 0;</span>
+<span class="pc bnc" id="L288" title="All 2 branches missed.">				assert compare(hHigh.findMin().key(), findMax().key()) &gt; 0;</span>
 <span class="fc" id="L289">				root = meld(this, hHigh);</span>
 			}
 		}
@@ -297,8 +297,8 @@ import com.jgalgo.internal.util.Assertions;
 
 		/* Splay t1 max and t2 min */
 <span class="fc" id="L299">		SplayBSTNode&lt;K, V&gt; n1 = (SplayBSTNode&lt;K, V&gt;) t1.findMax();</span>
-<span class="pc bpc" id="L300" title="1 of 2 branches missed.">		assert n1.isRoot();</span>
-<span class="pc bpc" id="L301" title="1 of 2 branches missed.">		assert !n1.hasRightChild();</span>
+<span class="pc bnc" id="L300" title="All 2 branches missed.">		assert n1.isRoot();</span>
+<span class="pc bnc" id="L301" title="All 2 branches missed.">		assert !n1.hasRightChild();</span>
 
 <span class="fc" id="L303">		n1.right = t2.root;</span>
 <span class="fc" id="L304">		t2.root.parent = n1;</span>
@@ -312,7 +312,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L312">		SplayBSTNode&lt;K, V&gt; pred = (SplayBSTNode&lt;K, V&gt;) findSmaller(key);</span>
 <span class="pc bpc" id="L313" title="1 of 2 branches missed.">		if (pred == null)</span>
 <span class="nc" id="L314">			return newTree;</span>
-<span class="pc bpc" id="L315" title="1 of 2 branches missed.">		assert pred.isRoot();</span>
+<span class="pc bnc" id="L315" title="All 2 branches missed.">		assert pred.isRoot();</span>
 
 <span class="pc bpc" id="L317" title="1 of 2 branches missed.">		if ((root = pred.right) != null) {</span>
 <span class="fc" id="L318">			pred.size -= pred.right.size;</span>
@@ -337,7 +337,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L337">		SplayTree&lt;K, V&gt; newTree = new SplayTree&lt;&gt;(c);</span>
 
 <span class="fc" id="L339">		SplayBSTNode&lt;K, V&gt; n = impl.splay((SplayBSTNode&lt;K, V&gt;) ref);</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bnc" id="L340" title="All 2 branches missed.">		assert n.isRoot();</span>
 
 <span class="fc bfc" id="L342" title="All 2 branches covered.">		if ((root = n.left) != null) {</span>
 <span class="fc" id="L343">			n.size -= n.left.size;</span>
@@ -413,7 +413,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L413">				n.right = parent;</span>
 
 			} else {
-<span class="pc bpc" id="L416" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bnc" id="L416" title="All 2 branches missed.">				assert n.isRightChild();</span>
 
 <span class="fc" id="L418">				parent.right = n.left;</span>
 <span class="fc bfc" id="L419" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
@@ -481,7 +481,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L481" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
 <span class="fc bfc" id="L482" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
 			} else {
-<span class="pc bpc" id="L484" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bnc" id="L484" title="All 2 branches missed.">				assert n.isRightChild();</span>
 <span class="fc bfc" id="L485" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
 			}
 

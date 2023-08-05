@@ -35,9 +35,9 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 <span class="fc" id="L35">		edgesIn = processEdges.edgesIn;</span>
 <span class="fc" id="L36">		edgesInBegin = processEdges.edgesInBegin;</span>
 <span class="fc" id="L37">		int[] edgesOut = processEdges.edgesOut;</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert edgesOut.length == m;</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		assert edgesIn.length == m;</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		assert edgesInBegin.length == n + 1;</span>
+<span class="pc bnc" id="L38" title="All 2 branches missed.">		assert edgesOut.length == m;</span>
+<span class="pc bnc" id="L39" title="All 2 branches missed.">		assert edgesIn.length == m;</span>
+<span class="pc bnc" id="L40" title="All 2 branches missed.">		assert edgesInBegin.length == n + 1;</span>
 
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
 <span class="fc" id="L43">			int eOrig = edgesIn[eIdx];</span>
