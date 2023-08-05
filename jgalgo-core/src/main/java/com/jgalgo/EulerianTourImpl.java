@@ -18,19 +18,20 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class EulerianTourImpl extends EulerianTourAlgoAbstract {
+class EulerianTourImpl implements EulerianTourAlgo {
 
 	/**
 	 * {@inheritDoc}
 	 * <p>
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
-	@Override
 	Path computeEulerianTour(IndexGraph g) {
 		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
@@ -184,6 +185,19 @@ class EulerianTourImpl extends EulerianTourAlgoAbstract {
 				throw new IllegalArgumentException("Graph is not connected");
 		IntArrays.reverse(tour.elements(), 0, tour.size());
 		return new PathImpl(g, start, end, tour);
+	}
+
+	@Override
+	public Path computeEulerianTour(Graph g) {
+		if (g instanceof IndexGraph)
+			return computeEulerianTour((IndexGraph) g);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
+
+		Path indexPath = computeEulerianTour(iGraph);
+		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 }

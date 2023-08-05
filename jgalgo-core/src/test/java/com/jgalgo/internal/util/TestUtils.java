@@ -75,7 +75,7 @@ public class TestUtils {
 			for (int pIdx = 0; pIdx < phases.size(); pIdx++) {
 				Phase phase = phases.get(pIdx);
 				assertArgsNum(phase, runnableArgs);
-				for (int repeat = phase.repeat; repeat > 0; repeat--) {
+				for (int repeat = 0; repeat < phase.repeat; repeat++) {
 					try {
 						test.accept(phase);
 					} catch (Throwable ex) {
