@@ -51,6 +51,8 @@
 | Bi-Connected components calculation (undirected) | $O(n + m)$ | |
 | Topological sort calculation (DAG) | $O(n + m)$ |
 | Euler Tour calculation | $O(n + m)$ |
+| Cores computation | $O(n + m)$ |
+| Chinese Postman problem | $O(n^3)$ |
 
 
 # Data Structures
