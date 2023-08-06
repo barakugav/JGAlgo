@@ -21,14 +21,27 @@ jobs:
         cache: maven
 
     - name: Generate Javadoc with Maven
-      run: mvn javadoc:aggregate
-      shell: bash
+      run: |
+        mvn javadoc:aggregate
+        mv target/site/apidocs ${{ runner.temp }}/docs-snapshot
 
-    - name: Deploy to GitHub Page 🚀 with Maven
+    - uses: actions/checkout@v3
+      with:
+        ref: docs
+
+    - name: Copy Javadoc to Documentation Branch
+      run: |
+        mkdir -p ${{ runner.temp }}/docs
+        mv index.html ${{ runner.temp }}/docs/
+        mv 0.1.1.2 ${{ runner.temp }}/docs/
+        mv ${{ runner.temp }}/docs-snapshot/index.html ${{ runner.temp }}/docs-snapshot/index-main.html
+        mv ${{ runner.temp }}/docs-snapshot ${{ runner.temp }}/docs/0.1.1.2-snapshot
+
+    - name: Deploy to Documentation Branch
       uses: JamesIves/github-pages-deploy-action@v4.4.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        branch: javadoc
+        branch: docs
         clean: true
-        folder: target/site/apidocs
+        folder: ${{ runner.temp }}/docs
         target-folder: .
