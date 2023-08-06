@@ -5,7 +5,7 @@
   <groupId>com.jgalgo</groupId>
   <artifactId>jgalgo</artifactId>
   <name>JGAlgo - Parent</name>
-  <version>0.1.1.2-SNAPSHOT</version>
+  <version>0.2.0</version>
   <packaging>pom</packaging>
   <url>https://www.jgalgo.com/</url>
   <description>A performant Java library for graph algorithms</description>
@@ -21,7 +21,7 @@
     <url>https://github.com/barakugav/JGAlgo.git</url>
     <connection>scm:git:git@github.com:barakugav/JGAlgo.git</connection>
     <developerConnection>scm:git:git@github.com:barakugav/JGAlgo.git</developerConnection>
-    <tag>jgalgo-0.1.0</tag>
+    <tag>jgalgo-0.2.0</tag>
   </scm>
 
   <developers>
