@@ -1,0 +1,8 @@
+.vscode/
+.settings/
+target/
+__pycache__/
+.classpath
+.project
+dependency-reduced-pom.xml
+
