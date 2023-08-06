@@ -30,7 +30,7 @@ Add the following lines to your `pom.xml`:
 <dependency>
 	<groupId>com.jgalgo</groupId>
 	<artifactId>jgalgo-core</artifactId>
-	<version>0.1.1.2</version>
+	<version>0.2.0</version>
 </dependency>
 ```
 

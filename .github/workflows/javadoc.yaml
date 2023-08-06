@@ -34,8 +34,9 @@ jobs:
         mkdir -p ${{ runner.temp }}/docs
         mv index.html ${{ runner.temp }}/docs/
         mv 0.1.1.2 ${{ runner.temp }}/docs/
+        mv 0.2.0 ${{ runner.temp }}/docs/
         mv ${{ runner.temp }}/docs-snapshot/index.html ${{ runner.temp }}/docs-snapshot/index-main.html
-        mv ${{ runner.temp }}/docs-snapshot ${{ runner.temp }}/docs/0.1.1.2-snapshot
+        mv ${{ runner.temp }}/docs-snapshot ${{ runner.temp }}/docs/0.2.1-snapshot
 
     - name: Deploy to Documentation Branch
       uses: JamesIves/github-pages-deploy-action@v4.4.1
