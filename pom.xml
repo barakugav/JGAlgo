@@ -65,7 +65,6 @@
 
   <modules>
     <module>jgalgo-core</module>
-    <module>jgalgo-io</module>
     <module>jgalgo-bench</module>
     <module>jgalgo-example</module>
   </modules>
@@ -97,6 +96,7 @@
           <serverId>ossrh</serverId>
           <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <tagNameFormat>jgalgo-@{project.version}</tagNameFormat>
         </configuration>
       </plugin>
 
