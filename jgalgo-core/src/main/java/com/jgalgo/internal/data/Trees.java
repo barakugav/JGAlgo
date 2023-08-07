@@ -136,25 +136,29 @@ class Trees {
 			return p != null;
 		}
 
+		boolean advance() {
+			Node next;
+			if ((next = p.child()) != null) {
+				p = next;
+				return true;
+			} else {
+				Node p0 = p;
+				do {
+					if ((next = p0.next()) != null) {
+						p = next;
+						return true;
+					}
+				} while ((p0 = p0.parent()) != null);
+				p = null;
+				return false;
+			}
+		}
+
 		@Override
 		public Node next() {
 			Assertions.Iters.hasNext(this);
-			final Node ret = p;
-
-			Node next;
-			if ((next = ret.child()) != null) {
-				p = next;
-			} else {
-				Node p0 = ret;
-				do {
-					if ((next = p0.next()) != null) {
-						p0 = next;
-						break;
-					}
-				} while ((p0 = p0.parent()) != null);
-				p = p0;
-			}
-
+			Node ret = p;
+			advance();
 			return ret;
 		}
 

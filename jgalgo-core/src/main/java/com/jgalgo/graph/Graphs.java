@@ -510,13 +510,19 @@ public class Graphs {
 			return new EdgeIter() {
 				int nextTarget = 0;
 				int target = -1;
+				{
+					advance();
+				}
+
+				private void advance() {
+					for (; nextTarget < n; nextTarget++)
+						if (nextTarget != source)
+							return;
+				}
 
 				@Override
 				public boolean hasNext() {
-					for (; nextTarget < n; nextTarget++)
-						if (nextTarget != source)
-							return true;
-					return false;
+					return nextTarget < n;
 				}
 
 				@Override
@@ -524,6 +530,7 @@ public class Graphs {
 					Assertions.Iters.hasNext(this);
 					target = nextTarget;
 					nextTarget++;
+					advance();
 					return getEdge(source, target);
 				}
 
@@ -551,12 +558,19 @@ public class Graphs {
 				int nextSource = 0;
 				int source = -1;
 
-				@Override
-				public boolean hasNext() {
+				{
+					advance();
+				}
+
+				private void advance() {
 					for (; nextSource < n; nextSource++)
 						if (nextSource != target)
-							return true;
-					return false;
+							return;
+				}
+
+				@Override
+				public boolean hasNext() {
+					return nextSource < n;
 				}
 
 				@Override
@@ -564,6 +578,7 @@ public class Graphs {
 					Assertions.Iters.hasNext(this);
 					source = nextSource;
 					nextSource++;
+					advance();
 					return getEdge(source, target);
 				}
 

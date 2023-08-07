@@ -293,6 +293,15 @@ class GraphImplTestUtils extends TestUtils {
 						assertEquals(g.edgeTarget(e), eit.target());
 					}
 				}
+
+				/* do not call hasNext() */
+				EdgeIter eit = g.outEdges(u).iterator();
+				for (int s = g.outEdges(u).size(); s-- > 0;) {
+					int e = eit.nextInt();
+					assertEquals(u, eit.source());
+					assertEquals(g.edgeEndpoint(e, u), eit.target());
+				}
+				assert !eit.hasNext();
 			}
 
 			/* inEdges */
@@ -315,6 +324,15 @@ class GraphImplTestUtils extends TestUtils {
 						assertEquals(g.edgeTarget(e), eit.target());
 					}
 				}
+
+				/* do not call hasNext() */
+				EdgeIter eit = g.inEdges(v).iterator();
+				for (int s = g.inEdges(v).size(); s-- > 0;) {
+					int e = eit.nextInt();
+					assertEquals(v, eit.target());
+					assertEquals(g.edgeEndpoint(e, v), eit.source());
+				}
+				assert !eit.hasNext();
 			}
 
 			/* getEdges */

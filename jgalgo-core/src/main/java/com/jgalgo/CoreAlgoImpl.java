@@ -203,23 +203,32 @@ class CoreAlgoImpl implements CoreAlgo {
 
 								int cIdx = c;
 								IntIterator it = vs[cIdx].iterator();
+								{
+									advance();
+								}
 
-								@Override
-								public boolean hasNext() {
+								private void advance() {
 									for (;;) {
 										if (it.hasNext())
-											return true;
+											break;
 										if (cIdx == maxCore)
-											return false;
+											break;
 										cIdx++;
 										it = vs[cIdx].iterator();
 									}
 								}
 
 								@Override
+								public boolean hasNext() {
+									return it.hasNext();
+								}
+
+								@Override
 								public int nextInt() {
 									Assertions.Iters.hasNext(this);
-									return it.nextInt();
+									int ret = it.nextInt();
+									advance();
+									return ret;
 								}
 							};
 						}

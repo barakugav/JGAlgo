@@ -392,23 +392,24 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		Itr() {
 			super(null);
 			nextRootIdx = 0;
+			advanceToNextRoot();
+		}
+
+		private boolean advanceToNextRoot() {
+			for (;; nextRootIdx++) {
+				if (nextRootIdx >= rootsLen)
+					return false;
+				if (roots[nextRootIdx] != null) {
+					reset(roots[nextRootIdx]);
+					nextRootIdx++;
+					return true;
+				}
+			}
 		}
 
 		@Override
-		public boolean hasNext() {
-			while (!super.hasNext()) {
-				if (nextRootIdx >= rootsLen)
-					return false;
-				int i;
-				for (i = nextRootIdx; i < rootsLen; i++) {
-					if (roots[i] != null) {
-						reset(roots[i]);
-						break;
-					}
-				}
-				nextRootIdx = i + 1;
-			}
-			return true;
+		boolean advance() {
+			return super.advance() || advanceToNextRoot();
 		}
 
 	}

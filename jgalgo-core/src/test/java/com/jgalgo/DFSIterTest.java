@@ -57,6 +57,20 @@ public class DFSIterTest extends TestBase {
 
 			for (int v : g.vertices())
 				assertTrue(visited.contains(v));
+
+			/* run DFS again without calling .hasNext() */
+			IntSet visited2 = new IntOpenHashSet();
+			DFSIter it = DFSIter.newInstance(g, source);
+			for (int s = visited.size(); s-- > 0;) {
+				int v = it.nextInt();
+				IntList pathFromSource = it.edgePath();
+				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
+				assertFalse(visited2.contains(v), "already visited vertex " + v);
+				if (v != source)
+					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
+				visited2.add(v);
+			}
+			assert !it.hasNext();
 		});
 	}
 

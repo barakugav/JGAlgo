@@ -79,58 +79,83 @@ class ContractableGraph {
 		return new ContractableGraph.EdgeIter() {
 
 			final IntIterator vit = superVertexVertices(U);
-			com.jgalgo.graph.EdgeIter eit = com.jgalgo.graph.EdgeIter.emptyIterator();
-			int source = -1, target = -1;
+			com.jgalgo.graph.EdgeIter eit;
+			int nextEdge = -1;
+			int nextSourceOrig = -1, nextTargetOrig = -1;
+			int sourceOrig = -1, targetOrig = -1;
+			int nextTarget = -1;
+			int target = -1;
 
-			boolean eitAdvance() {
-				for (; eit.hasNext(); eit.nextInt()) {
-					int e = eit.peekNext();
-					if (uf.find(g.edgeSource(e)) != uf.find(g.edgeTarget(e)))
-						return true;
+			{
+				if (vit.hasNext()) {
+					eit = g.outEdges(vit.nextInt()).iterator();
+					eitAdvance();
 				}
-				return false;
+			}
+
+			void eitAdvance() {
+				for (;;) {
+					while (eit.hasNext()) {
+						int e = eit.nextInt();
+						int s = g.edgeSource(e), t = g.edgeTarget(e);
+						int S = findToSuperV[uf.find(s)], T = findToSuperV[uf.find(t)];
+						if (S != T) {
+							nextEdge = e;
+							if (U == S) {
+								nextSourceOrig = s;
+								nextTargetOrig = t;
+								nextTarget = T;
+							} else {
+								assert U == T;
+								nextSourceOrig = t;
+								nextTargetOrig = s;
+								nextTarget = S;
+							}
+							return;
+						}
+					}
+					if (!vit.hasNext()) {
+						nextEdge = -1;
+						return;
+					}
+					eit = g.outEdges(vit.nextInt()).iterator();
+				}
 			}
 
 			@Override
 			public boolean hasNext() {
-				if (eit.hasNext())
-					return true;
-				for (; vit.hasNext();) {
-					eit = g.outEdges(vit.nextInt()).iterator();
-					if (eitAdvance())
-						return true;
-				}
-				return false;
+				return nextEdge != -1;
 			}
 
 			@Override
 			public int nextInt() {
 				Assertions.Iters.hasNext(this);
-				int e = eit.nextInt();
-				source = eit.source();
-				target = eit.target();
+				int e = nextEdge;
+				sourceOrig = nextSourceOrig;
+				targetOrig = nextTargetOrig;
+				target = nextTarget;
 				eitAdvance();
 				return e;
 			}
 
 			@Override
 			public int source() {
-				return findToSuperV[uf.find(source)];
+				return U;
 			}
 
 			@Override
 			public int target() {
-				return findToSuperV[uf.find(target)];
+				return target;
 			}
 
 			@Override
 			public int sourceOriginal() {
-				return source;
+				return sourceOrig;
 			}
 
 			@Override
 			public int targetOriginal() {
-				return target;
+				return targetOrig;
 			}
 		};
 	}

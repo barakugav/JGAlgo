@@ -30,7 +30,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * adjacent (connected by an edge). A maximal clique is a clique that cannot be extended by including one more adjacent
  * vertex.
  * <p>
- *
  * <pre> {@code
  * Graph g = ...;
  * MaximalCliques maxCliquesAlgo = MaximalCliques.newBuilder().build();

@@ -297,40 +297,43 @@ abstract class GraphBase implements Graph {
 
 		private final int source, target;
 		private final EdgeIter it;
-		private int e = -1;
+		private int nextEdge = -1;
 
 		EdgeIterSourceTarget(int source, int target) {
 			this.source = source;
 			this.target = target;
 			it = outEdges(source).iterator();
+			advance();
+		}
+
+		private void advance() {
+			while (it.hasNext()) {
+				int e = it.nextInt();
+				if (it.target() == target) {
+					nextEdge = e;
+					return;
+				}
+			}
+			nextEdge = -1;
 		}
 
 		@Override
 		public boolean hasNext() {
-			if (e != -1)
-				return true;
-			while (it.hasNext()) {
-				int eNext = it.nextInt();
-				if (it.target() == target) {
-					e = eNext;
-					return true;
-				}
-			}
-			return false;
+			return nextEdge != -1;
 		}
 
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			int ret = e;
-			e = -1;
+			int ret = nextEdge;
+			advance();
 			return ret;
 		}
 
 		@Override
 		public int peekNext() {
 			Assertions.Iters.hasNext(this);
-			return e;
+			return nextEdge;
 		}
 
 		@Override

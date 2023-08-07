@@ -178,73 +178,76 @@ public class JGAlgoUtils {
 	static class IterPeekableImpl<E> implements IterPeekable<E> {
 
 		private final Iterator<? super E> it;
-		private Object peek;
-		private static final Object PeekNone = JGAlgoUtils.labeledObj("None");
+		private Object nextElm;
+		private static final Object nextNone = JGAlgoUtils.labeledObj("None");
 
 		IterPeekableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
-			peek = PeekNone;
+			advance();
+		}
+
+		private void advance() {
+			if (it.hasNext()) {
+				nextElm = it.next();
+			} else {
+				nextElm = nextNone;
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			if (peek != PeekNone)
-				return true;
-			if (!it.hasNext())
-				return false;
-			peek = it.next();
-			return true;
+			return nextElm != null;
 		}
 
 		@Override
 		public E next() {
 			Assertions.Iters.hasNext(this);
 			@SuppressWarnings("unchecked")
-			E n = (E) peek;
-			peek = PeekNone;
-			return n;
+			E ret = (E) nextElm;
+			advance();
+			return ret;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public E peekNext() {
 			Assertions.Iters.hasNext(this);
-			return (E) peek;
+			return (E) nextElm;
 		}
 
 		static class Int implements IterPeekable.Int {
 
 			private final IntIterator it;
-			private int peek;
-			private boolean isPeekValid;
+			private int next;
+			private boolean isNextValid;
 
 			Int(IntIterator it) {
 				this.it = Objects.requireNonNull(it);
-				isPeekValid = false;
+				advance();
+			}
+
+			private void advance() {
+				if (isNextValid = it.hasNext())
+					next = it.nextInt();
 			}
 
 			@Override
 			public boolean hasNext() {
-				if (isPeekValid)
-					return true;
-				if (!it.hasNext())
-					return false;
-				peek = it.nextInt();
-				isPeekValid = true;
-				return true;
+				return isNextValid;
 			}
 
 			@Override
 			public int nextInt() {
 				Assertions.Iters.hasNext(this);
-				isPeekValid = false;
-				return peek;
+				int ret = next;
+				advance();
+				return ret;
 			}
 
 			@Override
 			public int peekNext() {
 				Assertions.Iters.hasNext(this);
-				return peek;
+				return next;
 			}
 
 		}
