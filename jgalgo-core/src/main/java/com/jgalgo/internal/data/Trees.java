@@ -160,43 +160,43 @@ class Trees {
 
 	}
 
-	static class PostOrderIter<N extends TreeNode<N>> implements Iterator<N> {
+	// static class PostOrderIter<N extends TreeNode<N>> implements Iterator<N> {
 
-		private N p;
+	// private N p;
 
-		PostOrderIter(N p) {
-			reset(p);
-		}
+	// PostOrderIter(N p) {
+	// reset(p);
+	// }
 
-		void reset(N p) {
-			for (N next; (next = p.child()) != null;)
-				p = next;
-			this.p = p;
-		}
+	// void reset(N p) {
+	// for (N next; (next = p.child()) != null;)
+	// p = next;
+	// this.p = p;
+	// }
 
-		@Override
-		public boolean hasNext() {
-			return p != null;
-		}
+	// @Override
+	// public boolean hasNext() {
+	// return p != null;
+	// }
 
-		@Override
-		public N next() {
-			Assertions.Iters.hasNext(this);
-			final N ret = p;
+	// @Override
+	// public N next() {
+	// Assertions.Iters.hasNext(this);
+	// final N ret = p;
 
-			N next;
-			if ((next = ret.next()) != null) {
-				/* lower child */
-				for (N child; (child = next.child()) != null;)
-					next = child;
-				p = next;
-			} else {
-				p = ret.parent();
-			}
+	// N next;
+	// if ((next = ret.next()) != null) {
+	// /* lower child */
+	// for (N child; (child = next.child()) != null;)
+	// next = child;
+	// p = next;
+	// } else {
+	// p = ret.parent();
+	// }
 
-			return ret;
-		}
+	// return ret;
+	// }
 
-	}
+	// }
 
 }
