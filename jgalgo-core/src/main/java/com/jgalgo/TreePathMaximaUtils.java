@@ -166,11 +166,11 @@ class TreePathMaximaUtils {
 			int vBuilder = mstBuilder.addVertex();
 			assert v == vBuilder;
 		}
-		int[] edgeRef = new int[mstEdges.size()];
+		double[] mstWeights = new double[mstEdges.size()];
 		for (int e : mstEdges) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ne = mstBuilder.addEdge(u, v);
-			edgeRef[ne] = e;
+			mstWeights[ne] = w.weight(e);
 		}
 		IndexGraph mst = mstBuilder.build();
 		if (!Trees.isTree(mst))
@@ -183,15 +183,14 @@ class TreePathMaximaUtils {
 			if (u != v)
 				queries.addQuery(u, v);
 		}
-		WeightFunction w0 = e -> w.weight(edgeRef[e]);
-		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
+		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, e -> mstWeights[e], queries);
 
 		int i = 0;
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			if (g.edgeSource(e) == g.edgeTarget(e))
 				continue;
 			int mstEdge = tpmResults.getHeaviestEdge(i++);
-			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
+			if (mstEdge == -1 || w.weight(e) < mstWeights[mstEdge])
 				return false;
 		}
 		return true;
