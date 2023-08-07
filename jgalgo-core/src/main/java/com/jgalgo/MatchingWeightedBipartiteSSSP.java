@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
@@ -44,7 +43,6 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();
 	private ShortestPathSingleSource ssspNegative =
 			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
-	private static final Object EdgeRefWeightKey = JGAlgoUtils.labeledObj("refToOrig");
 	private static final Object EdgeWeightKey = JGAlgoUtils.labeledObj("weight");
 
 	/**
@@ -100,27 +98,37 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
-		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
+		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2)
+				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
 		for (int v = 0; v < n; v++)
 			g.addVertex();
-		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		final int s = g.addVertex(), t = g.addVertex();
 		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);
 
-		for (int u = 0; u < n; u++) {
-			if (!partition.getBool(u))
-				continue;
-			for (EdgeIter eit = gOrig.outEdges(u).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				double weight = wOrig.weight(e);
-				if (weight < 0)
-					continue; // no reason to match negative edges
-				int e0 = g.addEdge(u, eit.target());
-				edgeRef.set(e0, e);
-				w.set(e0, weight);
+		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+			if (!partition.getBool(u)) {
+				assert partition.getBool(v);
+				int temp = u;
+				u = v;
+				v = temp;
+			}
+			assert partition.getBool(u);
+			assert !partition.getBool(v);
+
+			double weight = wOrig.weight(e);
+			if (weight >= 0) {
+				int e0 = g.addEdge(u, v);
+				assert e0 == e;
+				w.set(e, weight);
+			} else {
+				/* no reason to match negative edges. we can ignore this edge */
+				/* to match the original graph edges ids, we add a dummy edge */
+				int e0 = g.addEdge(t, t);
+				assert e0 == e;
+				w.set(e, 0);
 			}
 		}
-
-		final int s = g.addVertex(), t = g.addVertex();
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
@@ -169,8 +177,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 				// Reverse newly matched edge
 				g.reverseEdge(matchedEdge);
-				int eOrig = edgeRef.getInt(matchedEdge);
-				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = eOrig;
+				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;
 				w.set(matchedEdge, -w.weight(matchedEdge));
 
 				int unmatchedEdge = it.nextInt();
