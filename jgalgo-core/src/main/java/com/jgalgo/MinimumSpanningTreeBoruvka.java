@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
@@ -110,6 +109,12 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		double[] minEdgesWeights = new double[n];
 		int[] path = new int[n];
 
+		final int m = g.edges().size();
+		int[] edges = new int[m];
+		for (int e = 0; e < m; e++)
+			edges[e] = e;
+		int edgesNum = m;
+
 		int treeNum = n;
 		IntCollection mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
@@ -117,37 +122,33 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 			/* find minimum edge going out of each tree */
 			Arrays.fill(minEdges, 0, treeNum, -1);
 			Arrays.fill(minEdgesWeights, 0, treeNum, Double.MAX_VALUE);
-			for (int u = 0; u < n; u++) {
-				int tree = vTree[u];
-
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					if (tree == vTree[v])
-						continue;
-
-					double eWeight = w.weight(e);
-					if (eWeight < minEdgesWeights[tree]) {
-						minEdges[tree] = e;
-						minEdgesWeights[tree] = eWeight;
-					}
+			int edgesNumNew = 0;
+			for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+				int e = edges[eIdx];
+				int u = vTree[g.edgeSource(e)];
+				int v = vTree[g.edgeTarget(e)];
+				if (u == v)
+					continue;
+				edges[edgesNumNew++] = e;
+				double eWeight = w.weight(e);
+				if (eWeight < minEdgesWeights[u]) {
+					minEdges[u] = e;
+					minEdgesWeights[u] = eWeight;
+				}
+				if (eWeight < minEdgesWeights[v]) {
+					minEdges[v] = e;
+					minEdgesWeights[v] = eWeight;
 				}
 			}
+			edgesNum = edgesNumNew;
 
 			/* add min edges to MST */
 			for (int tree = 0; tree < treeNum; tree++) {
 				int e = minEdges[tree];
 				if (e == -1)
 					continue;
-				int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];
-				if (tree == vt) {
-					int temp = ut;
-					ut = vt;
-					vt = temp;
-				} else {
-					assert tree == ut;
-				}
-				if (ut < vt || minEdges[vt] != e)
+				int ut = vTree[g.edgeSource(e)];
+				if (tree == ut || minEdges[ut] != e)
 					mst.add(e);
 			}
 
@@ -162,6 +163,9 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 			int treeNumNext = 0;
 
 			for (int t = 0; t < treeNum; t++) {
+				if (vTreeNext[t] != UNVISITED)
+					continue;
+
 				/* find all reachable trees from t */
 				int pathLength = 0;
 				int deepestTree;
