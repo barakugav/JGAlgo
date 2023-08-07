@@ -23,8 +23,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class GraphCSRBase extends GraphBase
-		implements IndexGraphImpl, GraphWithEdgeEndpointsContainer, ImmutableGraph {
+abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
 	final IdStrategy.FixedSize verticesIdStrat;
 	final IdStrategy.FixedSize edgesIdStrat;

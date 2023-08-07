@@ -40,7 +40,7 @@ class EdgeEndpointsContainer {
 		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
-	static interface GraphWithEdgeEndpointsContainer extends IndexGraph {
+	static interface GraphWithEdgeEndpointsContainer extends IndexGraphImpl {
 
 		long[] edgeEndpoints();
 
@@ -50,6 +50,7 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
+			getEdgesIdStrategy().checkIdx(edge);
 			long endpoints = edgeEndpoints()[edge];
 			int u = endpoints2Source(endpoints);
 			int v = endpoints2Target(endpoints);
@@ -65,11 +66,13 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeSource(int edge) {
+			getEdgesIdStrategy().checkIdx(edge);
 			return endpoints2Source(edgeEndpoints()[edge]);
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
+			getEdgesIdStrategy().checkIdx(edge);
 			return endpoints2Target(edgeEndpoints()[edge]);
 		}
 
