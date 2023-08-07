@@ -160,44 +160,44 @@ class Trees {
 
 	}
 
-	static class PostOrderIter&lt;N extends TreeNode&lt;N&gt;&gt; implements Iterator&lt;N&gt; {
+	// static class PostOrderIter&lt;N extends TreeNode&lt;N&gt;&gt; implements Iterator&lt;N&gt; {
 
-		private N p;
+	// private N p;
 
-<span class="nc" id="L167">		PostOrderIter(N p) {</span>
-<span class="nc" id="L168">			reset(p);</span>
-<span class="nc" id="L169">		}</span>
+	// PostOrderIter(N p) {
+	// reset(p);
+	// }
 
-		void reset(N p) {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">			for (N next; (next = p.child()) != null;)</span>
-<span class="nc" id="L173">				p = next;</span>
-<span class="nc" id="L174">			this.p = p;</span>
-<span class="nc" id="L175">		}</span>
+	// void reset(N p) {
+	// for (N next; (next = p.child()) != null;)
+	// p = next;
+	// this.p = p;
+	// }
 
-		@Override
-		public boolean hasNext() {
-<span class="nc bnc" id="L179" title="All 2 branches missed.">			return p != null;</span>
-		}
+	// @Override
+	// public boolean hasNext() {
+	// return p != null;
+	// }
 
-		@Override
-		public N next() {
-<span class="nc" id="L184">			Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L185">			final N ret = p;</span>
+	// @Override
+	// public N next() {
+	// Assertions.Iters.hasNext(this);
+	// final N ret = p;
 
-			N next;
-<span class="nc bnc" id="L188" title="All 2 branches missed.">			if ((next = ret.next()) != null) {</span>
-				/* lower child */
-<span class="nc bnc" id="L190" title="All 2 branches missed.">				for (N child; (child = next.child()) != null;)</span>
-<span class="nc" id="L191">					next = child;</span>
-<span class="nc" id="L192">				p = next;</span>
-			} else {
-<span class="nc" id="L194">				p = ret.parent();</span>
-			}
+	// N next;
+	// if ((next = ret.next()) != null) {
+	// /* lower child */
+	// for (N child; (child = next.child()) != null;)
+	// next = child;
+	// p = next;
+	// } else {
+	// p = ret.parent();
+	// }
 
-<span class="nc" id="L197">			return ret;</span>
-		}
+	// return ret;
+	// }
 
-	}
+	// }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
