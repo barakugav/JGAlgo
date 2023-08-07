@@ -18,18 +18,16 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.List;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 /**
  * Johnson's algorithm for finding all cycles in a directed graph.
@@ -54,138 +52,180 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	Iterator<Path> findAllCycles(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
-		int n = g.vertices().size();
-		Worker worker = new Worker(g);
-		for (int startIdx = 0; startIdx < n; startIdx++) {
-			ObjectIntPair<StronglyConnectedComponent> p = chooseSCCInSubGraph(g, startIdx);
-			if (p == null)
-				break;
-			StronglyConnectedComponent scc = p.first();
-			startIdx = p.secondInt();
-			worker.findAllCycles(startIdx, scc);
-			worker.reset();
-		}
-		/* TODO: the intention of returning an iterator is to avoid storing all cycles in memory */
-		return worker.cycles.iterator();
-	}
+		final int n = g.vertices().size();
 
-	private static class Worker {
+		return new Iterator<>() {
 
-		private final IndexGraph g;
-		private final BitSet isBlocked;
-		private final IntSet[] blockingSet;
-		private final IntStack unblockStack = new IntArrayList();
-		private final IntStack path = new IntArrayList();
-		private final List<Path> cycles = new ObjectArrayList<>();
+			int startV;
+			StronglyConnectedComponent scc;
+			final BitSet isBlocked;
+			final IntSet[] blockingSet;
+			final IntStack unblockStack = new IntArrayList();
+			final IntArrayList path = new IntArrayList();
+			final Stack<EdgeIter> edgeIterStack = new ObjectArrayList<>();
+			/**
+			 * In the paper, there is a boolean flag in each recursive call of the backtrack function. The flag is set
+			 * to true if a cycle was found in the current function call or its successors calls. This invariant allow
+			 * us to store a single int to represent all these flags, which is the deepest depth of the recursion in
+			 * which a cycle was found. For any depth smaller than this depth, the flag is also true. When we back up to
+			 * the store depth, we decrease it by one.
+			 */
+			int cycleFoundDepth = -1;
+			Path nextCycle;
 
-		Worker(IndexGraph g) {
-			this.g = g;
-			int n = g.vertices().size();
-			isBlocked = new BitSet(n);
-			blockingSet = new IntSet[n];
-			for (int u = 0; u < n; u++)
-				blockingSet[u] = new IntOpenHashSet();
-		}
+			{
+				isBlocked = new BitSet(n);
+				blockingSet = new IntSet[n];
+				for (int u = 0; u < n; u++)
+					blockingSet[u] = new IntOpenHashSet();
 
-		private void reset() {
-			int n = g.vertices().size();
-			isBlocked.clear();
-			assert unblockStack.isEmpty();
-			for (int u = 0; u < n; u++)
-				blockingSet[u].clear();
-			assert path.isEmpty();
-		}
-
-		private boolean findAllCycles(int startV, StronglyConnectedComponent scc) {
-			boolean cycleFound = false;
-
-			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());
-			assert scc.contains(u);
-			isBlocked.set(u);
-
-			for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int v = it.target();
-				if (!scc.contains(v))
-					continue;
-				if (v == startV) {
-					path.push(e);
-					cycles.add(new PathImpl(g, startV, startV, new IntArrayList((IntList) path)));
-					path.popInt();
-					cycleFound = true;
-				} else if (!isBlocked.get(v)) {
-					path.push(e);
-					if (findAllCycles(startV, scc))
-						cycleFound = true;
-					path.popInt();
-				}
-			}
-			if (cycleFound) {
-				unblock(u);
-			} else {
-				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
-					it.nextInt();
-					int v = it.target();
-					if (!scc.contains(v))
-						continue;
-					blockingSet[v].add(u);
-				}
-			}
-			return cycleFound;
-		}
-
-		private void unblock(int v) {
-			isBlocked.clear(v);
-			for (;;) {
-				for (int u : blockingSet[v]) {
-					if (isBlocked.get(u)) {
-						isBlocked.clear(u);
-						unblockStack.push(u);
+				for (startV = 0; startV < n; startV++) {
+					chooseSCCInSubGraph();
+					if (scc != null) {
+						edgeIterStack.push(g.outEdges(startV).iterator());
+						isBlocked.set(startV);
+						advance();
+						break;
 					}
 				}
-				blockingSet[v].clear();
-
-				if (unblockStack.isEmpty())
-					break;
-				v = unblockStack.popInt();
 			}
-		}
-	}
 
-	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(IndexGraph g, int startIdx) {
-		int nFull = g.vertices().size();
-		int subToFull = startIdx;
-		int nSub = nFull - subToFull;
+			private void advance() {
+				if (startV >= n) {
+					nextCycle = null;
+					return;
+				}
+				for (;;) {
+					currentStartVLoop: while (!edgeIterStack.isEmpty()) {
+						for (EdgeIter it = edgeIterStack.top(); it.hasNext();) {
+							int e = it.nextInt();
+							int v = it.target();
+							if (!scc.contains(v))
+								continue;
+							if (v == startV) {
+								path.push(e);
+								nextCycle = new PathImpl(g, startV, startV, new IntArrayList(path));
+								path.popInt();
+								cycleFoundDepth = path.size();
+								return;
 
-		IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();
-		gSubBuilder.expectedVerticesNum(nSub);
-		for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
-			int uIdx = gSubBuilder.addVertex();
-			assert uIdx == uSubIdx;
-		}
-		for (int uSub = 0; uSub < nSub; uSub++) {
-			int uFull = uSub + subToFull;
-			for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
-				it.nextInt();
-				int vSub = it.target() - subToFull;
-				if (vSub >= 0)
-					gSubBuilder.addEdge(uSub, vSub);
+							} else if (!isBlocked.get(v)) {
+								path.push(e);
+								edgeIterStack.push(g.outEdges(v).iterator());
+								isBlocked.set(v);
+								continue currentStartVLoop;
+							}
+						}
+
+						assert cycleFoundDepth <= path.size();
+						boolean cycleFound = cycleFoundDepth == path.size();
+
+						int u = path.isEmpty() ? startV : g.edgeTarget(path.popInt());
+						if (cycleFound) {
+							unblock(u);
+							cycleFoundDepth--;
+						} else {
+							for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+								it.nextInt();
+								int v = it.target();
+								if (!scc.contains(v))
+									continue;
+								blockingSet[v].add(u);
+							}
+						}
+						edgeIterStack.pop();
+					}
+
+					do {
+						startV++;
+						if (startV >= n) {
+							nextCycle = null;
+							return;
+						}
+						chooseSCCInSubGraph();
+					} while (scc == null);
+					reset();
+					edgeIterStack.push(g.outEdges(startV).iterator());
+					isBlocked.set(startV);
+				}
 			}
-		}
-		IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
+			private void reset() {
+				isBlocked.clear();
+				assert unblockStack.isEmpty();
+				for (int u = 0; u < n; u++)
+					blockingSet[u].clear();
+				assert path.isEmpty();
+			}
 
-		for (; startIdx < nFull; startIdx++) {
-			int uSub = startIdx - subToFull;
-			int ccIdx = connectivityResult.getVertexCc(uSub);
-			if (connectivityResult.getCcVertices(ccIdx).size() > 1 || hasSelfEdge(gSub, uSub))
-				break;
-		}
-		if (startIdx >= nFull)
-			return null;
-		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);
-		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);
+			private void unblock(int v) {
+				isBlocked.clear(v);
+				for (;;) {
+					for (int u : blockingSet[v]) {
+						if (isBlocked.get(u)) {
+							isBlocked.clear(u);
+							unblockStack.push(u);
+						}
+					}
+					blockingSet[v].clear();
+
+					if (unblockStack.isEmpty())
+						break;
+					v = unblockStack.popInt();
+				}
+			}
+
+			private void chooseSCCInSubGraph() {
+				int nFull = g.vertices().size();
+				int subToFull = startV;
+				int nSub = nFull - subToFull;
+
+				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();
+				gSubBuilder.expectedVerticesNum(nSub);
+				for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
+					int uIdx = gSubBuilder.addVertex();
+					assert uIdx == uSubIdx;
+				}
+				for (int uSub = 0; uSub < nSub; uSub++) {
+					int uFull = uSub + subToFull;
+					for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
+						it.nextInt();
+						int vSub = it.target() - subToFull;
+						if (vSub >= 0)
+							gSubBuilder.addEdge(uSub, vSub);
+					}
+				}
+				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
+
+				ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
+
+				for (;; startV++) {
+					if (startV >= nFull) {
+						scc = null;
+						return;
+					}
+					int uSub = startV - subToFull;
+					int ccIdx = connectivityResult.getVertexCc(uSub);
+					if (connectivityResult.getCcVertices(ccIdx).size() > 1 || hasSelfEdge(gSub, uSub)) {
+						scc = new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx);
+						return;
+					}
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return nextCycle != null;
+			}
+
+			@Override
+			public Path next() {
+				Assertions.Iters.hasNext(this);
+				Path ret = nextCycle;
+				advance();
+				return ret;
+			}
+		};
 	}
 
 	private static boolean hasSelfEdge(IndexGraph g, int u) {

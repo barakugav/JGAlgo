@@ -74,7 +74,7 @@ class CyclesFinderTestUtils extends TestUtils {
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
 		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
 		Iterator<Path> expected = validationAlgo.findAllCycles(g);
-		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual), g.toString());
+		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
 	}
 
 	private static Set<IntList> transformCyclesToCanonical(Iterator<Path> cycles) {
