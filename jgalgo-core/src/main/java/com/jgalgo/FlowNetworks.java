@@ -155,18 +155,10 @@ class FlowNetworks {
 				}
 
 				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);
-				if (gOrig.getCapabilities().directed()) {
-					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
-						int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-						if (u != v)
-							addEdge(u, v, e);
-					}
-				} else {
-					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
-						int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-						if (u != v)
-							addEdge(u, v, e);
-					}
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+					if (u != v)
+						addEdge(u, v, e);
 				}
 			}
 
