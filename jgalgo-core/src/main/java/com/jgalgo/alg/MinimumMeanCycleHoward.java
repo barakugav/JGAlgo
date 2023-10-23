@@ -65,7 +65,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
-		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
+		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);
 		final int ccNum = cc.getNumberOfCcs();
 
 		/* init distances and policy */

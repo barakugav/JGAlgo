@@ -21,7 +21,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
- * Connectivity components algorithm.
+ * Connected components algorithm.
  *
  * @author Barak Ugav
  */
@@ -36,7 +36,7 @@ public interface ConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into (strongly) connected components
 	 */
-	ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g);
+	ConnectedComponentsAlgo.Result findConnectedComponents(Graph g);
 
 	/**
 	 * Compute all weakly connected components in a directed graph.
@@ -47,13 +47,13 @@ public interface ConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into weakly connected components
 	 */
-	ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(Graph g);
+	ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(Graph g);
 
 	/**
-	 * Result object for connectivity components calculation.
+	 * Result object for connected components calculation.
 	 * <p>
-	 * The result object contains the partition of the vertices into the connectivity components (strongly for directed
-	 * graph). Each connectivity component (CC) is assigned a unique integer number in range [0, ccNum), and each vertex
+	 * The result object contains the partition of the vertices into the connected components (strongly for directed
+	 * graph). Each connected component (CC) is assigned a unique integer number in range [0, ccNum), and each vertex
 	 * can be queried for its CC using {@link #getVertexCc(int)}.
 	 *
 	 * @author Barak Ugav
@@ -61,39 +61,39 @@ public interface ConnectedComponentsAlgo {
 	static interface Result {
 
 		/**
-		 * Get the connectivity component containing a vertex.
+		 * Get the connected component containing a vertex.
 		 *
 		 * @param  vertex a vertex in the graph
-		 * @return        index of the connectivity component containing the vertex, in range [0, ccNum)
+		 * @return        index of the connected component containing the vertex, in range [0, ccNum)
 		 */
 		int getVertexCc(int vertex);
 
 		/**
-		 * Get the number of connectivity components in the graph.
+		 * Get the number of connected components in the graph.
 		 *
-		 * @return the number of connectivity components in the graph, non negative number
+		 * @return the number of connected components in the graph, non negative number
 		 */
 		int getNumberOfCcs();
 
 		/**
-		 * Get all the vertices that are part of a connectivity component.
+		 * Get all the vertices that are part of a connected component.
 		 *
-		 * @param  ccIdx                     index of a connectivity component
-		 * @return                           the vertices that are part of the connectivity components
-		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connectivity
+		 * @param  ccIdx                     index of a connected component
+		 * @return                           the vertices that are part of the connected components
+		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connected
 		 *                                       components
 		 */
 		IntCollection getCcVertices(int ccIdx);
 
 		/**
-		 * Get all the edges that are part of a connectivity component.
+		 * Get all the edges that are part of a connected component.
 		 * <p>
-		 * An edge \((u,v)\) is part of a connectivity component if both \(u\) and \(v\) are part of the connectivity
+		 * An edge \((u,v)\) is part of a connected component if both \(u\) and \(v\) are part of the connected
 		 * component.
 		 *
-		 * @param  ccIdx                     index of a connectivity component
-		 * @return                           the edges that are part of the connectivity components
-		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connectivity
+		 * @param  ccIdx                     index of a connected component
+		 * @return                           the edges that are part of the connected components
+		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connected
 		 *                                       components
 		 */
 		IntCollection getCcEdges(int ccIdx);
@@ -101,7 +101,7 @@ public interface ConnectedComponentsAlgo {
 	}
 
 	/**
-	 * Create a new connectivity algorithm builder.
+	 * Create a new connected algorithm builder.
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ConnectedComponentsAlgo} object.
 	 *
@@ -120,9 +120,9 @@ public interface ConnectedComponentsAlgo {
 	static interface Builder extends BuilderAbstract<ConnectedComponentsAlgo.Builder> {
 
 		/**
-		 * Create a new algorithm object for connectivity components computation.
+		 * Create a new algorithm object for connected components computation.
 		 *
-		 * @return a new connectivity components algorithm
+		 * @return a new connected components algorithm
 		 */
 		ConnectedComponentsAlgo build();
 	}

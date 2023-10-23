@@ -154,7 +154,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 
 			/*
 			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a graph where each vertex has
-			 * one out edge at most, and we want to find all the connectivity components between the trees and label the
+			 * one out edge at most, and we want to find all the connected components between the trees and label the
 			 * vertices of G with new trees indices
 			 */
 			final int UNVISITED = -1;

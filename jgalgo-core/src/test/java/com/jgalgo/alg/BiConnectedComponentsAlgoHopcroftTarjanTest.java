@@ -49,7 +49,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 	}
 
 	private static void testUGraph(BiConnectedComponentsAlgo algo, Graph g) {
-		BiConnectedComponentsAlgo.Result res = algo.computeBiConnectivityComponents(g);
+		BiConnectedComponentsAlgo.Result res = algo.findBiConnectedComponents(g);
 
 		/* Check that each vertex is contained in some BiCc */
 		for (int v : g.vertices()) {
@@ -84,7 +84,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		final ConnectedComponentsAlgo ccAlgo = ConnectedComponentsAlgo.newBuilder().build();
-		final ConnectedComponentsAlgo.Result gCcs = ccAlgo.computeConnectivityComponents(g);
+		final ConnectedComponentsAlgo.Result gCcs = ccAlgo.findConnectedComponents(g);
 
 		/* Check that each bicc is actually a BiConnected component */
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
@@ -104,7 +104,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 				Graph gWithoutV = g.copy();
 				gWithoutV.removeEdgesOf(vToRemove);
 
-				ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.computeConnectivityComponents(gWithoutV);
+				ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
 				ccIdxs.clear();
 				for (int u : vertices)
 					if (u != vToRemove)
@@ -129,7 +129,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 					Graph gWithoutV = g.copy();
 					gWithoutV.removeEdgesOf(vToRemove);
 
-					ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.computeConnectivityComponents(gWithoutV);
+					ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
 					IntSet ccIdxs = new IntOpenHashSet();
 					for (IntIterator uit = IntIterators.concat(vs1.iterator(), vs2.iterator()); uit.hasNext();) {
 						int u = uit.nextInt();

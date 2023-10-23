@@ -25,34 +25,34 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlgo {
 
 	@Override
-	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
+	public ConnectedComponentsAlgo.Result findConnectedComponents(Graph g) {
 		if (g instanceof IndexGraph)
-			return computeConnectivityComponents((IndexGraph) g);
+			return findConnectedComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		ConnectedComponentsAlgo.Result indexResult = computeConnectivityComponents(iGraph);
+		ConnectedComponentsAlgo.Result indexResult = findConnectedComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
 	@Override
-	public ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(Graph g) {
+	public ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(Graph g) {
 		if (g instanceof IndexGraph)
-			return computeWeaklyConnectivityComponents((IndexGraph) g);
+			return findWeaklyConnectedComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		ConnectedComponentsAlgo.Result indexResult = computeWeaklyConnectivityComponents(iGraph);
+		ConnectedComponentsAlgo.Result indexResult = findWeaklyConnectedComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
-	abstract ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g);
+	abstract ConnectedComponentsAlgo.Result findConnectedComponents(IndexGraph g);
 
-	abstract ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(IndexGraph g);
+	abstract ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(IndexGraph g);
 
 	private static class ResultFromIndexResult implements ConnectedComponentsAlgo.Result {
 

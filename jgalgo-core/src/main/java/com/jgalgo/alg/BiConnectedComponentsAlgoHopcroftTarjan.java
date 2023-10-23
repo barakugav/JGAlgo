@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {
 
 	@Override
-	BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g) {
+	BiConnectedComponentsAlgo.Result findBiConnectedComponents(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 
 		final int n = g.vertices().size();

@@ -229,7 +229,7 @@ public class RandomGraphBuilder {
 					continue;
 			}
 
-			// keep track of number of connectivity components
+			// keep track of number of connected components
 			if (!cycles || connected) {
 				if (!directed) {
 					int uComp = uf.find(vertexToUf.getInt(u));

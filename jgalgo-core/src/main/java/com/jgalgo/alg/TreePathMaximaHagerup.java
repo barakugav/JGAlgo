@@ -324,7 +324,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					}
 				}
 
-				/* find connectivity components, and label each vertex with new super vertex */
+				/* find connected components, and label each vertex with new super vertex */
 				final int UNVISITED = -1;
 				final int IN_PATH = -2;
 				Arrays.fill(vNext, 0, n, UNVISITED);

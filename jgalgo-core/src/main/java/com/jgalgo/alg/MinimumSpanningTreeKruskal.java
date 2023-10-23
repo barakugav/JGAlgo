@@ -29,8 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Kruskal's minimum spanning tree algorithm.
  * <p>
  * The algorithm first sort all the edges of the graph by their weight, and then examine them in increasing weight
- * order. For each examined edge, if it connects two connectivity components that were not connected beforehand, the
- * edge is added to the forest. The algorithm terminate after all edges were examined.
+ * order. For each examined edge, if it connects two connected components that were not connected beforehand, the edge
+ * is added to the forest. The algorithm terminate after all edges were examined.
  * <p>
  * The running time of the algorithm is \(O(m \log n)\) and it uses linear time. This algorithm perform good in practice
  * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time

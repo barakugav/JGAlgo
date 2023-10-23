@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-				ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
+				ConnectedComponentsAlgo.Result connectivityResult = ccAlg.findConnectedComponents(gSub);
 
 				for (;; startV++) {
 					if (startV >= nFull) {

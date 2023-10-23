@@ -229,7 +229,7 @@ public class EulerianTourTest extends TestBase {
 				break;
 			}
 		}
-		assert ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g).getNumberOfCcs() == 1;
+		assert ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g).getNumberOfCcs() == 1;
 		return g;
 	}
 
@@ -250,7 +250,7 @@ public class EulerianTourTest extends TestBase {
 
 	private static void addEdgesUntilStronglyConnected(Graph g) {
 		ConnectedComponentsAlgo.Result connectivityRes =
-				ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g);
+				ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
 		int N = connectivityRes.getNumberOfCcs();
 		if (N <= 1)
 			return;

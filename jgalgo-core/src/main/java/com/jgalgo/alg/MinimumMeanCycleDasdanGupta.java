@@ -90,7 +90,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int n = g.vertices().size();
 
 		/* find all SCC */
-		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
+		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);
 		final int ccNum = cc.getNumberOfCcs();
 		SourceChooser sourceChooser = new SourceChooser(g, cc);
 

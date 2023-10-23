@@ -41,7 +41,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the bi-connected components of the graph
 	 */
-	BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(Graph g);
+	BiConnectedComponentsAlgo.Result findBiConnectedComponents(Graph g);
 
 	/**
 	 * A result object of a {@link BiConnectedComponentsAlgo} computation.

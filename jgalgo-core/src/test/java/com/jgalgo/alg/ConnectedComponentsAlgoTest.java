@@ -47,7 +47,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g);
+					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -84,7 +84,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g);
+					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -131,7 +131,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().computeWeaklyConnectivityComponents(g);
+					ConnectedComponentsAlgo.newBuilder().build().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
 			GraphBuilder gb = GraphBuilder.newUndirected();
@@ -140,7 +140,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			for (int e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 			ConnectedComponentsAlgo.Result expected =
-					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(gb.build());
+					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(gb.build());
 			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
 			for (int v : g.vertices())
 				expectedMap.put(v, expected.getVertexCc(v));

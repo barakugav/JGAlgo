@@ -133,7 +133,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			gNeg.addVertex();
 		int[] gNegEdgeRefs = new int[m];
 
-		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
+		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
 		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
@@ -171,12 +171,12 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					}
 				}
 
-				/* Find all strong connectivity components in the graph */
-				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
+				/* Find all strong connected components in the graph */
+				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.findConnectedComponents(gNeg);
 				final int N = connectivityRes.getNumberOfCcs();
 
 				/*
-				 * Contract each strong connectivity component and search for a negative edge within it, if found -
+				 * Contract each strong connected component and search for a negative edge within it, if found -
 				 * negative cycle found
 				 */
 				G.clear();

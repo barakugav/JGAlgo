@@ -25,19 +25,19 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {
 
 	@Override
-	public BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(Graph g) {
+	public BiConnectedComponentsAlgo.Result findBiConnectedComponents(Graph g) {
 		if (g instanceof IndexGraph)
-			return computeBiConnectivityComponents((IndexGraph) g);
+			return findBiConnectedComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		BiConnectedComponentsAlgo.Result indexResult = computeBiConnectivityComponents(iGraph);
+		BiConnectedComponentsAlgo.Result indexResult = findBiConnectedComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
-	abstract BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g);
+	abstract BiConnectedComponentsAlgo.Result findBiConnectedComponents(IndexGraph g);
 
 	private static class ResultFromIndexResult implements BiConnectedComponentsAlgo.Result {
 

@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
 
 	@Override
-	ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g) {
+	ConnectedComponentsAlgo.Result findConnectedComponents(IndexGraph g) {
 		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
 	}
 
@@ -130,7 +130,7 @@ class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
 	}
 
 	@Override
-	ConnectedComponentsAlgo.Result computeWeaklyConnectivityComponents(IndexGraph g) {
+	ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 
 		final int n = g.vertices().size();

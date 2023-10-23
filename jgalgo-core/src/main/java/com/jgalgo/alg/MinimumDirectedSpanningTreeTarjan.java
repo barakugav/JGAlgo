@@ -129,7 +129,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	private void addEdgesUntilStronglyConnected(IndexGraph g, int artificialEdgesThreshold) {
-		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
+		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.findConnectedComponents(g);
 		int N = connectivityRes.getNumberOfCcs();
 		if (N <= 1)
 			return;
