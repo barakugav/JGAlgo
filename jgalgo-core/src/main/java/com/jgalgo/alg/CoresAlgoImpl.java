@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Linear core computing algorithm.
+ * Linear cores computing algorithm.
  * <p>
  * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core ect. It does so
  * by removing all vertices with degree less than the current core number.
@@ -41,9 +41,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class CoreAlgoImpl implements CoreAlgo {
+class CoresAlgoImpl implements CoresAlgo {
 
-	CoreAlgo.Result computeCores(IndexGraph g, DegreeType degreeType) {
+	CoresAlgo.Result computeCores(IndexGraph g, DegreeType degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
@@ -150,7 +150,7 @@ class CoreAlgoImpl implements CoreAlgo {
 		return new ResultImpl(core);
 	}
 
-	private static class ResultImpl implements CoreAlgo.Result {
+	private static class ResultImpl implements CoresAlgo.Result {
 
 		private final int[] core;
 		private final int maxCore;
@@ -247,22 +247,22 @@ class CoreAlgoImpl implements CoreAlgo {
 	}
 
 	@Override
-	public CoreAlgo.Result computeCores(Graph g, DegreeType degreeType) {
+	public CoresAlgo.Result computeCores(Graph g, DegreeType degreeType) {
 		if (g instanceof IndexGraph)
 			return computeCores((IndexGraph) g, degreeType);
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
-		CoreAlgo.Result iResult = computeCores(iGraph, degreeType);
+		CoresAlgo.Result iResult = computeCores(iGraph, degreeType);
 		return new ResultFromIndexResult(iResult, viMap);
 	}
 
-	private static class ResultFromIndexResult implements CoreAlgo.Result {
+	private static class ResultFromIndexResult implements CoresAlgo.Result {
 
-		private final CoreAlgo.Result iResult;
+		private final CoresAlgo.Result iResult;
 		private final IndexIdMap viMap;
 
-		public ResultFromIndexResult(CoreAlgo.Result iResult, IndexIdMap viMap) {
+		public ResultFromIndexResult(CoresAlgo.Result iResult, IndexIdMap viMap) {
 			this.iResult = Objects.requireNonNull(iResult);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

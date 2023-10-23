@@ -25,45 +25,45 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class CoreAlgoTest extends TestBase {
+public class CoresAlgoTest extends TestBase {
 
 	@Test
 	public void testRandDiGraphOutDegree() {
 		final long seed = 0x9580a32b3a337964L;
-		testCoreAlgo(CoreAlgo.DegreeType.OutDegree, true, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.OutDegree, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphOutDegree() {
 		final long seed = 0xbbc94ada47517633L;
-		testCoreAlgo(CoreAlgo.DegreeType.OutDegree, false, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.OutDegree, false, seed);
 	}
 
 	@Test
 	public void testRandDiGraphInDegree() {
 		final long seed = 0xfc360f8910a1daf5L;
-		testCoreAlgo(CoreAlgo.DegreeType.InDegree, true, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.InDegree, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphInDegree() {
 		final long seed = 0x45fdea8a6c65ad42L;
-		testCoreAlgo(CoreAlgo.DegreeType.InDegree, false, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.InDegree, false, seed);
 	}
 
 	@Test
 	public void testRandDiGraphOutAndInDegree() {
 		final long seed = 0x934896c8f5134dceL;
-		testCoreAlgo(CoreAlgo.DegreeType.OutAndInDegree, true, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.OutAndInDegree, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphOutAndInDegree() {
 		final long seed = 0xc17b43624b506d6bL;
-		testCoreAlgo(CoreAlgo.DegreeType.OutAndInDegree, false, seed);
+		testCoresAlgo(CoresAlgo.DegreeType.OutAndInDegree, false, seed);
 	}
 
-	private static void testCoreAlgo(CoreAlgo.DegreeType degreeType, boolean directed, long seed) {
+	private static void testCoresAlgo(CoresAlgo.DegreeType degreeType, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -74,14 +74,14 @@ public class CoreAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			CoreAlgo algo = new CoreAlgoImpl();
-			testCoreAlgo(g, algo, degreeType);
+			CoresAlgo algo = new CoresAlgoImpl();
+			testCoresAlgo(g, algo, degreeType);
 		});
 	}
 
-	private static void testCoreAlgo(Graph g, CoreAlgo algo, CoreAlgo.DegreeType degreeType) {
-		CoreAlgo.Result res;
-		if (degreeType == CoreAlgo.DegreeType.OutAndInDegree) {
+	private static void testCoresAlgo(Graph g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
+		CoresAlgo.Result res;
+		if (degreeType == CoresAlgo.DegreeType.OutAndInDegree) {
 			res = algo.computeCores(g);
 		} else {
 			res = algo.computeCores(g, degreeType);
@@ -99,20 +99,20 @@ public class CoreAlgoTest extends TestBase {
 				for (IntIterator it = vs.iterator(); it.hasNext();) {
 					int u = it.nextInt();
 					int degree = 0;
-					if (!directed || degreeType == CoreAlgo.DegreeType.OutDegree) {
+					if (!directed || degreeType == CoresAlgo.DegreeType.OutDegree) {
 						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
 							if (vs.contains(eit.target()))
 								degree++;
 						}
-					} else if (degreeType == CoreAlgo.DegreeType.InDegree) {
+					} else if (degreeType == CoresAlgo.DegreeType.InDegree) {
 						for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
 							if (vs.contains(eit.source()))
 								degree++;
 						}
 					} else {
-						assert degreeType == CoreAlgo.DegreeType.OutAndInDegree;
+						assert degreeType == CoresAlgo.DegreeType.OutAndInDegree;
 						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
 							if (vs.contains(eit.target()))

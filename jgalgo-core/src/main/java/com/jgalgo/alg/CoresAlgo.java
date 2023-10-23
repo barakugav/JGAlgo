@@ -26,20 +26,20 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
  * in-degree + out-degree, determining different types of cores.
  *
- * @see    CoreAlgo.DegreeType
+ * @see    CoresAlgo.DegreeType
  * @author Barak Ugav
  */
-public interface CoreAlgo {
+public interface CoresAlgo {
 
 	/**
 	 * Compute the cores of the graph with respect to both in and out degree of the vertices.
 	 * <p>
-	 * For a detail description of the cores definition, see the interface documentation {@link CoreAlgo}.
+	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
 	 * @param  g a graph
 	 * @return   the cores of the graph
 	 */
-	default CoreAlgo.Result computeCores(Graph g) {
+	default CoresAlgo.Result computeCores(Graph g) {
 		return computeCores(g, DegreeType.OutAndInDegree);
 	}
 
@@ -49,13 +49,13 @@ public interface CoreAlgo {
 	 * Cores are defined with respect to either the out edges, in edges, or both. For undirected graphs the degree type
 	 * is ignored.
 	 * <p>
-	 * For a detail description of the cores definition, see the interface documentation {@link CoreAlgo}.
+	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
 	 * @param  g          a graph
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	CoreAlgo.Result computeCores(Graph g, DegreeType degreeType);
+	CoresAlgo.Result computeCores(Graph g, DegreeType degreeType);
 
 	/**
 	 * The degree type the cores are defined with respect to.
@@ -64,8 +64,8 @@ public interface CoreAlgo {
 	 * Different types of degrees can be considered, yielding different types of cores. For undirected graphs the degree
 	 * type has no effect.
 	 *
-	 * @see    CoreAlgo
-	 * @see    CoreAlgo#computeCores(Graph, DegreeType)
+	 * @see    CoresAlgo
+	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
 	 * @author Barak Ugav
 	 */
 	static enum DegreeType {
@@ -124,24 +124,24 @@ public interface CoreAlgo {
 	 *
 	 * @return a new builder for core algorithms
 	 */
-	static CoreAlgo.Builder newBuilder() {
-		return CoreAlgoImpl::new;
+	static CoresAlgo.Builder newBuilder() {
+		return CoresAlgoImpl::new;
 	}
 
 	/**
-	 * A builder for {@link CoreAlgo} objects.
+	 * A builder for {@link CoresAlgo} objects.
 	 *
-	 * @see    CoreAlgo#newBuilder()
+	 * @see    CoresAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
 
 		/**
-		 * Build a new {@link CoreAlgo} object.
+		 * Build a new {@link CoresAlgo} object.
 		 *
-		 * @return a new {@link CoreAlgo} object
+		 * @return a new {@link CoresAlgo} object
 		 */
-		CoreAlgo build();
+		CoresAlgo build();
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -156,7 +156,7 @@ public interface CoreAlgo {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default CoreAlgo.Builder setOption(String key, Object value) {
+		default CoresAlgo.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}
