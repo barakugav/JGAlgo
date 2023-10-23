@@ -100,17 +100,15 @@ class UnionFindArray implements UnionFind {
 		if (a == b)
 			return a;
 
-		int aRank = -parent[a];
-		int bRank = -parent[b];
-		assert aRank > 0;
-		assert bRank > 0;
+		int aRank = getRank(a);
+		int bRank = getRank(b);
 		if (aRank < bRank) {
 			int temp = a;
 			a = b;
 			b = temp;
 		} else if (aRank == bRank) {
 			aRank++;
-			parent[a] = -aRank;
+			setRank(a, aRank);
 		}
 
 		unionSetParent(b, a);
@@ -130,6 +128,17 @@ class UnionFindArray implements UnionFind {
 	public void clear() {
 		Arrays.fill(parent, 0, size, -1);
 		size = 0;
+	}
+
+	int getRank(int idx) {
+		int rank = parent[idx];
+		assert rank < 0;
+		return -rank;
+	}
+
+	void setRank(int idx, int rank) {
+		assert rank > 0;
+		parent[idx] = -rank;
 	}
 
 }
