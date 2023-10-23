@@ -40,7 +40,7 @@ The most basic object in the library is a [Graph](https://barakugav.github.io/JG
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
-Graph g = GraphFactory.newDirected().newGraph();
+Graph g = Graph.newDirected();
 int v1 = g.addVertex();
 int v2 = g.addVertex();
 int v3 = g.addVertex();
@@ -55,7 +55,7 @@ w.set(e2, 3.1);
 w.set(e3, 15.1);
 
 /* Calculate the shortest paths from v1 to all other vertices */
-ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
 ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
 assert ssspRes.distance(v3) == 4.3;

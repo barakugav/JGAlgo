@@ -25,6 +25,9 @@ import com.jgalgo.graph.WeightFunction;
  * weight sum with respect to a given edge weight function.
  * <p>
  * The problem can be solved in polynomial time.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -41,9 +44,21 @@ public interface ChinesePostman {
 	Path computeShortestEdgeVisitorCircle(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new algorithm object for chinese postman problem.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ChinesePostman} object. The
+	 * {@link ChinesePostman.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ChinesePostman}
+	 */
+	static ChinesePostman newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new builder for chinese postman algorithms.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ChinesePostman} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ChinesePostman} objects
 	 */

@@ -21,6 +21,9 @@ import com.jgalgo.graph.Graph;
 
 /**
  * An algorithm that finds all cycles in a graph.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -35,9 +38,21 @@ public interface CyclesFinder {
 	public Iterator<Path> findAllCycles(Graph g);
 
 	/**
+	 * Create a new algorithm for cycles finding.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link CyclesFinder} object. The {@link CyclesFinder.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link CyclesFinder}
+	 */
+	static CyclesFinder newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new cycles finder algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link CyclesFinder} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link CyclesFinder} objects
 	 */

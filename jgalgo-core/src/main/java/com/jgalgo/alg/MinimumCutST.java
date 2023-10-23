@@ -33,6 +33,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * <p>
  * Algorithms implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
  * {@code sink (T)}.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @author Barak Ugav
@@ -72,9 +75,21 @@ public interface MinimumCutST {
 	Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
 
 	/**
+	 * Create a new minimum S-T cut algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumCutST} object. The {@link MinimumCutST.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCutST}
+	 */
+	static MinimumCutST newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new minimum cut algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumCutST} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */

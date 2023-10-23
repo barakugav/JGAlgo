@@ -35,8 +35,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 
-	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
-	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().build();
+	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
+	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	/**
 	 * Create a new TSP \(3/2\)-approximation algorithm.

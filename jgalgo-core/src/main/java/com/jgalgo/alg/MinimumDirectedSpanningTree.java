@@ -24,6 +24,9 @@ import com.jgalgo.graph.WeightFunction;
  * <p>
  * A spanning tree in directed graph is defined similarly to a spanning tree in undirected graph, but the 'spanning
  * tree' does not yield a strongly connected graph, but a weakly connected tree rooted at some vertex.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -41,9 +44,21 @@ public interface MinimumDirectedSpanningTree {
 	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root);
 
 	/**
+	 * Create a new directed-MST algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumDirectedSpanningTree} object. The
+	 * {@link MinimumDirectedSpanningTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumDirectedSpanningTree}
+	 */
+	static MinimumDirectedSpanningTree newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new minimum directed spanning tree algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumDirectedSpanningTree} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
 	 */

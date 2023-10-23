@@ -26,6 +26,9 @@ import com.jgalgo.graph.WeightFunction;
  * last edge target. Given an edge weight function, we can define for each such cycle its mean weight, by summing its
  * edges weights and dividing by its length (the number of edges in the cycle). Algorithms implementing this interface
  * find the cycle with the minimum mean weight among all the cycles in the given graph.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -41,9 +44,21 @@ public interface MinimumMeanCycle {
 	Path computeMinimumMeanCycle(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new min mean cycle algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object. The
+	 * {@link MinimumMeanCycle.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumMeanCycle}
+	 */
+	static MinimumMeanCycle newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new minimum mean cycle algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */

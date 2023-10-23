@@ -30,6 +30,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Note that finding the actual minimum vertex cover is an NP-hard problem, even for a weight function that assign \(1\)
  * to each vertex. Therefore, algorithms implementing this interface provide an approximation for the actual optimal
  * solution.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Vertex_cover">Wikipedia</a>
  * @author Barak Ugav
@@ -83,9 +86,21 @@ public interface VertexCover {
 	}
 
 	/**
+	 * Create a new vertex cover algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link VertexCover} object. The {@link VertexCover.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link VertexCover}
+	 */
+	static VertexCover newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new vertex cover algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link VertexCover} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */

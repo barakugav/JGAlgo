@@ -26,9 +26,12 @@ import java.util.Comparator;
  * constant time.
  * <p>
  * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Heap<Integer> h = Heap.newBuilder().build();
+ * Heap<Integer> h = Heap.newInstance();
  * h.insert(5);
  * h.insert(10);
  * h.insert(1);
@@ -115,9 +118,33 @@ public interface Heap<E> extends Collection<E> {
 	Comparator<? super E> comparator();
 
 	/**
+	 * Create a new heap.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
+	 * different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link Heap}
+	 */
+	static <E> Heap<E> newInstance() {
+		return newBuilder().<E>elementsTypeObj().build();
+	}
+
+	/**
+	 * Create a new heap with custom comparator.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
+	 * different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link Heap}
+	 */
+	static <E> Heap<E> newInstance(Comparator<? super E> cmp) {
+		return newBuilder().<E>elementsTypeObj().build(cmp);
+	}
+
+	/**
 	 * Create a new heaps builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link Heap} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */

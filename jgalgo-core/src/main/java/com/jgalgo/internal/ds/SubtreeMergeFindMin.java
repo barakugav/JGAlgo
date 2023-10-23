@@ -28,6 +28,9 @@ import java.util.NoSuchElementException;
  * only the subtrees groups in it. The last two supported operations are addNonTreeEdge(u,v,weight) and
  * findMinNonTreeEdge(), which add a edge with some weight without affecting the tree structure, and the findMin
  * operation query for the non tree edge with minimum weight that connects two different subtrees.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @param  <E> the edges element type
  * @author     Barak Ugav
@@ -171,9 +174,33 @@ public interface SubtreeMergeFindMin<E> {
 	}
 
 	/**
+	 * Create a new SMF algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
+	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 */
+	static <E> SubtreeMergeFindMin<E> newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
+	 * Create a new SMF algorithm object with custom comparator.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
+	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 */
+	static <E> SubtreeMergeFindMin<E> newInstance(Comparator<? super E> cmp) {
+		return newBuilder().build(cmp);
+	}
+
+	/**
 	 * Create a new subtree-merge-findMin algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SubtreeMergeFindMin} objects
 	 */

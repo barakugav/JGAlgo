@@ -50,10 +50,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.AbstractImpl
 		implements AlgorithmWithDiagnostics {
 
-	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newBuilder().build();
+	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
 	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.newBuilder().setDag(true).build();
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
 
 	private final Diagnostics diagnostics = new Diagnostics();
 

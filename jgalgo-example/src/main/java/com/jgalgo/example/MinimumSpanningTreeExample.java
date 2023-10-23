@@ -17,7 +17,6 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -26,7 +25,7 @@ public class MinimumSpanningTreeExample {
 
 	public static void MSTExample() {
 		/* Create a graph with 7 vertices */
-		Graph g = GraphFactory.newUndirected().newGraph();
+		Graph g = Graph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -66,7 +65,7 @@ public class MinimumSpanningTreeExample {
 
 		/* Compute the minimum spanning tree of the graph */
 		WeightFunction w = weights;
-		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
+		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);
 
 		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -46,7 +45,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testWithSelfLoops(ColoringAlgo algo) {
-		Graph g = GraphFactory.newUndirected().newGraph();
+		Graph g = Graph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -58,7 +57,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testDirectedGraph(ColoringAlgo algo) {
-		Graph g = GraphFactory.newDirected().newGraph();
+		Graph g = Graph.newDirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

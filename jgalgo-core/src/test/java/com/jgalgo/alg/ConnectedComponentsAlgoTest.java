@@ -46,7 +46,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newInstance().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -82,7 +82,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newInstance().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -128,7 +128,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findWeaklyConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
 			GraphBuilder gb = GraphBuilder.newUndirected();
@@ -136,7 +136,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 				gb.addVertex(u);
 			for (int e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
-			VertexPartition expected = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(gb.build());
+			VertexPartition expected = ConnectedComponentsAlgo.newInstance().findConnectedComponents(gb.build());
 			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
 			for (int v : g.vertices())
 				expectedMap.put(v, expected.vertexBlock(v));

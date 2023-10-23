@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -156,7 +155,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
-			Graph mst = GraphFactory.newUndirected().newGraph();
+			Graph mst = Graph.newUndirected();
 			for (int v : g.vertices())
 				mst.addVertex(v);
 			for (int e : mstEdges)

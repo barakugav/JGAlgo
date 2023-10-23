@@ -41,6 +41,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * back to the regular graph IDs. The mapping from a regular graph IDs to indices and vice versa is exposed using
  * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
  * {@link Graph#indexGraphEdgesMap()}.
+ * <p>
+ * To create a new empty index graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will
+ * use the default implementation. For more control over the graph details, see {@link IndexGraphFactory}. To construct
+ * an immutable index graph, use {@link IndexGraphBuilder}.
  *
  * @see    IndexIdMap
  * @author Barak Ugav
@@ -248,6 +252,30 @@ public interface IndexGraph extends Graph {
 	@Override
 	default IndexGraph reverseView() {
 		return Graphs.reverseView(this);
+	}
+
+	/**
+	 * Create a new undirected empty index graph.
+	 * <p>
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link IndexGraphFactory}.
+	 *
+	 * @return a new undirected empty index graph
+	 */
+	static IndexGraph newUndirected() {
+		return IndexGraphFactory.newUndirected().newGraph();
+	}
+
+	/**
+	 * Create a new directed empty index graph.
+	 * <p>
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link IndexGraphFactory}.
+	 *
+	 * @return a new directed empty index graph
+	 */
+	static IndexGraph newDirected() {
+		return IndexGraphFactory.newDirected().newGraph();
 	}
 
 }

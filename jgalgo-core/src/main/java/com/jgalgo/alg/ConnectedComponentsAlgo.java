@@ -20,6 +20,9 @@ import com.jgalgo.graph.Graph;
 
 /**
  * Connected components algorithm.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -48,9 +51,21 @@ public interface ConnectedComponentsAlgo {
 	VertexPartition findWeaklyConnectedComponents(Graph g);
 
 	/**
+	 * Create a new connected components algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ConnectedComponentsAlgo} object. The
+	 * {@link ConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ConnectedComponentsAlgo}
+	 */
+	static ConnectedComponentsAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new connected algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ConnectedComponentsAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ConnectedComponentsAlgo} objects
 	 */

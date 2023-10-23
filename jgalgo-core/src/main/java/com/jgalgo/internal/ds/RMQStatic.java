@@ -26,6 +26,9 @@ package com.jgalgo.internal.ds;
  * <p>
  * The sequence itself is never passed to the algorithm, rather a {@link RMQStaticComparator} which support comparing
  * two elements given their <i>indices</i> only.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -61,9 +64,21 @@ public interface RMQStatic {
 	}
 
 	/**
+	 * Create a new RMQ algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link RMQStatic} object. The {@link RMQStatic.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link RMQStatic}
+	 */
+	static RMQStatic newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new static range minimum queries algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link RMQStatic} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link RMQStatic} objects
 	 */

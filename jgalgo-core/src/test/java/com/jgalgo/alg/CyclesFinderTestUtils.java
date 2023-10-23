@@ -24,7 +24,6 @@ import java.util.TreeSet;
 import java.util.function.IntSupplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
@@ -35,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class CyclesFinderTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesFinder cyclesFinder) {
-		IndexGraph g = IndexGraphFactory.newDirected().newGraph();
+		IndexGraph g = IndexGraph.newDirected();
 		int v0 = g.addVertex();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();

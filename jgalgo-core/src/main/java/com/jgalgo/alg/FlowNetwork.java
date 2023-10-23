@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaximumFlow maxFlowAlg = MaximumFlow.newBuilder().build();
+ * MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);

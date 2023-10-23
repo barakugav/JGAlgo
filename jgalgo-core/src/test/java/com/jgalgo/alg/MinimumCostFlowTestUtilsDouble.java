@@ -173,7 +173,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 
 			/* build a 'random' lower bound by solving min-cost flow with a different cost function and use the flows */
 			WeightFunction cost1 = randCost(g, rand);
-			MinimumCostFlow.newBuilder().build().computeMinCostFlow(g, net, cost1, supply);
+			MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
 			Weights.Double lowerBound = Weights.createExternalEdgesWeights(g, double.class);
 			for (int e : g.edges()) {
 				lowerBound.set(e, (int) (net.getFlow(e) * 0.4 * rand.nextDouble()));
@@ -613,7 +613,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		residualWeights = residualGraph.getEdgesWeights("cost");
 
 		/* the circulation is optimal if no circle with negative mean cost exists */
-		Path cycle = MinimumMeanCycle.newBuilder().build().computeMinimumMeanCycle(residualGraph, residualWeights);
+		Path cycle = MinimumMeanCycle.newInstance().computeMinimumMeanCycle(residualGraph, residualWeights);
 		assertTrue(cycle == null || cycle.weight(residualWeights) >= 0,
 				"Negative cycle found in residual graph, the circulation is not optimal");
 	}

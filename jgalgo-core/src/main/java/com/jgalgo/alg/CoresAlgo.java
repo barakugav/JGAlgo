@@ -25,6 +25,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * \(k\) if \(\forall v \in W : deg_H(v) \geq k\) and \(H\) is a maximum subgraph with this property. The core number of
  * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
  * in-degree + out-degree, determining different types of cores.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    CoresAlgo.DegreeType
  * @author Barak Ugav
@@ -120,7 +123,21 @@ public interface CoresAlgo {
 	}
 
 	/**
+	 * Create a new cores algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link CoresAlgo} object. The {@link CoresAlgo.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link CoresAlgo}
+	 */
+	static CoresAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new builder for core algorithms.
+	 * <p>
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder for core algorithms
 	 */

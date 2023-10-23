@@ -30,6 +30,9 @@ import com.jgalgo.graph.WeightFunction;
  * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
  * <p>
  * Algorithms implementing this interface compute the global minimum cut without terminal vertices.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @author Barak Ugav
@@ -50,9 +53,21 @@ public interface MinimumCutGlobal {
 	Cut computeMinimumCut(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new minimum global cut algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object. The
+	 * {@link MinimumCutGlobal.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCutGlobal}
+	 */
+	static MinimumCutGlobal newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new global minimum cut algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCutGlobal} objects
 	 */

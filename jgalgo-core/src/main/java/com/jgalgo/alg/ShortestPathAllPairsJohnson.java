@@ -114,7 +114,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
-			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().build();
+			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();
 			for (int source : verticesSubset)
 				ssspResults[vToResIdx[source]] = sssp.computeShortestPaths(g, w, source);
 
@@ -122,7 +122,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			/* parallel */
 			List<RecursiveAction> tasks = new ObjectArrayList<>(verticesSubsetSize);
 			ThreadLocal<ShortestPathSingleSource> sssp =
-					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().build());
+					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newInstance());
 			for (int source : verticesSubset) {
 				final int source0 = source;
 				tasks.add(JGAlgoUtils.recursiveAction(

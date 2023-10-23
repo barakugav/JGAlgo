@@ -65,8 +65,8 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
 		nodes = new NodeImpl[2];
 
-		uf = UnionFind.newBuilder().build();
-		lca = LowestCommonAncestorDynamic.newBuilder().build();
+		uf = UnionFind.newInstance();
+		lca = LowestCommonAncestorDynamic.newInstance();
 
 		this.weightCmp = weightCmp != null ? weightCmp : JGAlgoUtils.getDefaultComparator();
 		timestamp = 0;

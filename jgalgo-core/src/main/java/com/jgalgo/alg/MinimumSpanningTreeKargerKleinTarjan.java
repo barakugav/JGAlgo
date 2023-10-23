@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Random;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
@@ -47,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private final Random rand;
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
 	private final MinimumSpanningTreeBoruvka boruvka = new MinimumSpanningTreeBoruvka();
 	private final TreePathMaxima tpm = new TreePathMaximaHagerup();
 
@@ -239,8 +238,8 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
-				IndexGraph tree = trees[tIdx] =
-						MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraphFactory.newUndirected().newGraph());
+				IndexGraph tree =
+						trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 				tpmQueries[tIdx] =

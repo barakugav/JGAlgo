@@ -94,7 +94,7 @@ public class ChinesePostmanTest extends TestBase {
 			if (eulerianGraph.vertices().intStream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
 				continue;
 
-			Path eulerianTour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(eulerianGraph);
+			Path eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
 			double eulerianTourWeight = eulerianTour.weight(bWeights);
 			if (bestWeight > eulerianTourWeight)
 				bestWeight = eulerianTourWeight;

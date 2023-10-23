@@ -22,9 +22,12 @@ package com.jgalgo.alg;
  * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
  * (common ancestor), and its farthest from the root (lowest). Algorithm implementing this interface support modifying
  * the tree by adding leafs as children to existing parents vertices, while supporting LCA queries.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newBuilder().build();
+ * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newInstance();
  * LowestCommonAncestorDynamic.Vertex rt = lca.initTree();
  * LowestCommonAncestorDynamic.Vertex n1 = lca.addLeaf(rt);
  * LowestCommonAncestorDynamic.Vertex n2 = lca.addLeaf(rt);
@@ -37,6 +40,7 @@ package com.jgalgo.alg;
  * assert lca.findLowestCommonAncestor(n1, n4) == n1;
  * }</pre>
  *
+ * @see    LowestCommonAncestorStatic
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorDynamic {
@@ -112,9 +116,21 @@ public interface LowestCommonAncestorDynamic {
 	}
 
 	/**
+	 * Create a new algorithm for dynamic LCA queries.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object. The
+	 * {@link LowestCommonAncestorDynamic.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link LowestCommonAncestorDynamic}
+	 */
+	static LowestCommonAncestorDynamic newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new dynamic LCA algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link LowestCommonAncestorDynamic} objects
 	 */

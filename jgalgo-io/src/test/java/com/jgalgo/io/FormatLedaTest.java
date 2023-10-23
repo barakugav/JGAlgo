@@ -23,7 +23,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Weights;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
@@ -115,7 +114,7 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				Graph g = directed ? GraphFactory.newDirected().newGraph() : GraphFactory.newUndirected().newGraph();
+				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -150,7 +149,7 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				Graph g = directed ? GraphFactory.newDirected().newGraph() : GraphFactory.newUndirected().newGraph();
+				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)

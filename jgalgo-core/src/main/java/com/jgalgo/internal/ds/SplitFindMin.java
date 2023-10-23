@@ -27,6 +27,9 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * support {@link #find(int)} and {@link #split(int)} operations. In addition, each element have a key, which is
  * comparable to any other key by a provided comparator, and the minimum key in each set can be queried using
  * {@link #findMin(int)}.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @param  <K> the keys type
  * @author     Barak Ugav
@@ -74,9 +77,21 @@ public interface SplitFindMin<K> extends SplitFind {
 	boolean decreaseKey(int x, K newKey);
 
 	/**
+	 * Create a new split-find-min object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SplitFindMin} object. The {@link SplitFindMin.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SplitFindMin}
+	 */
+	static <K> SplitFindMin<K> newInstance() {
+		return newBuilder().buildWithFindMin();
+	}
+
+	/**
 	 * Create a new split-find-min data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SplitFindMin} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SplitFindMin} objects
 	 */

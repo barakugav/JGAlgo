@@ -46,7 +46,7 @@ public class UnionFindValueArrayTest extends TestBase {
 	private static void randOps(int n, int m, long seed) {
 		Random rand = new Random(seed);
 
-		UnionFindValue uf = UnionFindValue.newBuilder().build();
+		UnionFindValue uf = UnionFindValue.newInstance();
 		int[] set = new int[n];
 		double[] deltas = new double[n];
 

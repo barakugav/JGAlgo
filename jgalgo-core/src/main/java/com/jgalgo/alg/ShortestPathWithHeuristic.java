@@ -31,6 +31,9 @@ import com.jgalgo.graph.WeightFunction;
  * the shortest path between a single source and a single target, rather than a single source and all other vertices as
  * targets. Therefore, the algorithm can terminate after performing and using less than linear (in the graph size)
  * operations and space.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
  * @author Barak Ugav
@@ -51,9 +54,21 @@ public interface ShortestPathWithHeuristic {
 	Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
 
 	/**
+	 * Create a new shortest path algorithm with heuristic.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ShortestPathWithHeuristic} object. The
+	 * {@link ShortestPathWithHeuristic.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ShortestPathWithHeuristic}
+	 */
+	static ShortestPathWithHeuristic newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new heuristic shortest path algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathWithHeuristic} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ShortestPathWithHeuristic} objects
 	 */

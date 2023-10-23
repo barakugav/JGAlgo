@@ -29,6 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * some weight function. A perfect maximum/minimum weighted matching is a matching with the maximum/minimum edges weight
  * sum out of all the matchings in which each vertex has an adjacent matched edge. Note that the weight of a perfect
  * maximum matching is smaller or equal to the weight of a maximum weight matching.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
@@ -91,9 +94,21 @@ public interface MatchingAlgo {
 	Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new matching algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MatchingAlgo} object. The {@link MatchingAlgo.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MatchingAlgo}
+	 */
+	static MatchingAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new matching algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MatchingAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MatchingAlgo} objects
 	 */

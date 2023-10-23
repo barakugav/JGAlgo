@@ -29,6 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * <p>
  * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
  * be viewed as upper bounds.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    MaximumFlow
  * @see    FlowNetwork
@@ -119,9 +122,21 @@ public interface MinimumCostFlow {
 			WeightFunction supply);
 
 	/**
+	 * Create a new min-cost-flow algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object. The
+	 * {@link MinimumCostFlow.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCostFlow}
+	 */
+	static MinimumCostFlow newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new minimum cost flow algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCostFlow} objects
 	 */

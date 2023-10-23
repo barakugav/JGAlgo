@@ -783,16 +783,15 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newBuilder().build(), graphImpl, seed);
+		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newInstance(), graphImpl, seed);
 	}
 
 	static void testDirectedMDST(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newBuilder().build(), graphImpl,
-				seed);
+		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newInstance(), graphImpl, seed);
 	}
 
 	static void testDirectedMaxFlow(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MaximumFlowTestUtils.testRandGraphs(MaximumFlow.newBuilder().build(), graphImpl, seed, /* directed= */ true);
+		MaximumFlowTestUtils.testRandGraphs(MaximumFlow.newInstance(), graphImpl, seed, /* directed= */ true);
 	}
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph> graphImpl, long seed) {

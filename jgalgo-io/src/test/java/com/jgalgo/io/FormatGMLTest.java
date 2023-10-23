@@ -24,7 +24,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Weights;
 
 public class FormatGMLTest {
@@ -72,7 +71,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = GraphFactory.newUndirected().newGraph();
+			Graph g = Graph.newUndirected();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -107,7 +106,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = GraphFactory.newUndirected().newGraph();
+			Graph g = Graph.newUndirected();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -155,7 +154,7 @@ public class FormatGMLTest {
 
 	@Test
 	public void writeDirectedGraphUnsupported() {
-		Graph g = GraphFactory.newDirected().newGraph();
+		Graph g = Graph.newDirected();
 		g.addVertex(1);
 		g.addVertex(6);
 		g.addVertex(78);

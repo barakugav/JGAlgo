@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
 	private static final double EPS = 0.00001;
 
 	/* Although the paper suggest a value of 10, this seems only to slow us down */

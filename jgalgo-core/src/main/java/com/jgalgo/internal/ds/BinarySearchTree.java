@@ -25,6 +25,9 @@ import java.util.Comparator;
  * an element, not just {@link Heap#findMin()}. Every element could be found in \(O(\log n)\) time, notably
  * {@link #findMax()} in addition to {@link Heap#findMin()}. Also, given an element, the nearest (smaller or larger)
  * element in the tree can be found efficiently.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @param  <K> the keys type
  * @param  <V> the values type
@@ -155,6 +158,30 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 *             key exists) than the given key
 	 */
 	BinarySearchTree<K, V> split(HeapReference<K, V> ref);
+
+	/**
+	 * Create a new BST.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
+	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BinarySearchTree}
+	 */
+	static <K, V> BinarySearchTree<K, V> newInstance() {
+		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build();
+	}
+
+	/**
+	 * Create a new BST with custom comparator.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
+	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BinarySearchTree}
+	 */
+	static <K, V> BinarySearchTree<K, V> newInstance(Comparator<? super K> cmp) {
+		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build(cmp);
+	}
 
 	/**
 	 * Create a new binary search tree algorithm builder.

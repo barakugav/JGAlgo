@@ -29,9 +29,12 @@ import com.jgalgo.graph.Graph;
  * optimal results for special cases.
  * <p>
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph g = GraphFactory.newUndirected().newGraph();
+ * Graph g = Graph.newUndirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -41,7 +44,7 @@ import com.jgalgo.graph.Graph;
  * g.addEdge(v3, v1);
  * g.addEdge(v3, v4);
  *
- * Coloring coloringAlg = Coloring.newBuilder().build();
+ * Coloring coloringAlg = Coloring.newInstance();
  * VertexPartition colors = coloringAlg.computeColoring(g);
  * System.out.println("A valid coloring with " + colors.numberOfBlocks() + " colors was found");
  * for (int u : g.vertices()) {
@@ -69,9 +72,21 @@ public interface ColoringAlgo {
 	VertexPartition computeColoring(Graph g);
 
 	/**
+	 * Create a new coloring algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object. The {@link ColoringAlgo.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ColoringAlgo}
+	 */
+	static ColoringAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new coloring algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ColoringAlgo} objects
 	 */

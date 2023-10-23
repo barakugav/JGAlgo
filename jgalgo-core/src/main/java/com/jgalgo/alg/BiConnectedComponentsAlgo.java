@@ -27,6 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * all the maximal bi-connected components of the graph. Note that the bi-connected components are not disjoint, namely
  * a single vertex can be included in multiple bi-connected components, differing from the regular connected components
  * of a graph.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Biconnected_component">Wikipedia</a>
  * @see    ConnectedComponentsAlgo
@@ -96,9 +99,21 @@ public interface BiConnectedComponentsAlgo {
 	}
 
 	/**
+	 * Create a new bi-connected components algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object. The
+	 * {@link BiConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
+	 */
+	static BiConnectedComponentsAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new bi-connected components algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
 	 */

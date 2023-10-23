@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
 
-	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newBuilder().build();
+	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newInstance();
 
 	/**
 	 * Construct a new SSSP algorithm.

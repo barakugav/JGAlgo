@@ -29,10 +29,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * adjacent (connected by an edge). A maximal clique is a clique that cannot be extended by including one more adjacent
  * vertex.
  * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * Graph g = ...;
- * MaximalCliques maxCliquesAlgo = MaximalCliques.newBuilder().build();
+ * MaximalCliques maxCliquesAlgo = MaximalCliques.newInstance();
  *
  * for (IntCollection clique : maxCliquesAlgo.findAllMaximalCliques(g)) {
  * 	System.out.println("Clique in the graph:");
@@ -74,7 +76,21 @@ public interface MaximalCliques {
 	Iterator<IntCollection> iterateMaximalCliques(Graph g);
 
 	/**
+	 * Create a new maximal cliques algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MaximalCliques} object. The
+	 * {@link MaximalCliques.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MaximalCliques}
+	 */
+	static MaximalCliques newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new builder for maximal cliques algorithms.
+	 * <p>
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder for maximal cliques algorithms
 	 */

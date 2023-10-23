@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * EdgeWeightFunc weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -94,7 +94,7 @@ public interface WeightFunction extends IntComparator {
 	 *
 	 * <pre> {@code
 	 * // Create a directed graph with three vertices and edges between them
-	 * Graph g = GraphFactory.newDirected().newGraph();
+	 * Graph g = Graph.newDirected();
 	 * int v1 = g.addVertex();
 	 * int v2 = g.addVertex();
 	 * int v3 = g.addVertex();

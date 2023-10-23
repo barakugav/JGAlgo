@@ -78,10 +78,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
+ * <p>
+ * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
+ * default implementation. For more control over the graph details, see {@link GraphFactory}. To construct an immutable
+ * graph, use {@link GraphBuilder}.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -96,7 +100,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -764,6 +768,30 @@ public interface Graph {
 	 */
 	default Graph reverseView() {
 		return Graphs.reverseView(this);
+	}
+
+	/**
+	 * Create a new undirected empty graph.
+	 * <p>
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link GraphFactory}.
+	 *
+	 * @return a new undirected empty graph
+	 */
+	static Graph newUndirected() {
+		return GraphFactory.newUndirected().newGraph();
+	}
+
+	/**
+	 * Create a new directed empty graph.
+	 * <p>
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link GraphFactory}.
+	 *
+	 * @return a new directed empty graph
+	 */
+	static Graph newDirected() {
+		return GraphFactory.newDirected().newGraph();
 	}
 
 }

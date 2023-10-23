@@ -28,9 +28,12 @@ package com.jgalgo.internal.ds;
  * <li>{@link #split(int)} - split a set into two, to a set with elements smaller than the given element and a set with
  * elements greater or equals the given element.</li>
  * </ul>
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * SplitFind sf = SplitFind.newBuilder().build();
+ * SplitFind sf = SplitFind.newInstance();
  * sf.init(5);
  * assert sf.find(1) == sf.find(2);
  * assert sf.find(1) == sf.find(3);
@@ -75,9 +78,21 @@ interface SplitFind {
 	void split(int x);
 
 	/**
+	 * Create a new split-find object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SplitFind} object. The {@link SplitFind.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SplitFind}
+	 */
+	static SplitFind newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new split-find data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SplitFind} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SplitFind} objects
 	 */

@@ -29,10 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class ChinesePostmanImpl implements ChinesePostman {
 
-	private final ConnectedComponentsAlgo connectedComponentsAlgo = ConnectedComponentsAlgo.newBuilder().build();
-	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newBuilder().build();
-	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newBuilder().build();
-	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().build();
+	private final ConnectedComponentsAlgo connectedComponentsAlgo = ConnectedComponentsAlgo.newInstance();
+	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();
+	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();
+	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
 		int nonSelfEdgesCount = 0;

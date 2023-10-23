@@ -27,6 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * addition, a maximum flow maximize the number of flow units originated at the source and reaching the sink, which is
  * equivalent to the sum of flows going out(in) of the source(sink) subtracted by the sum of flows going in(out) to the
  * source(sink).
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * Graph g = ...;
@@ -36,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaxFlow maxFlowAlg = MaximumFlow.newBuilder().build();
+ * MaxFlow maxFlowAlg = MaximumFlow.newInstance();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
@@ -83,9 +86,21 @@ public interface MaximumFlow {
 	double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MaximumFlow} object. The {@link MaximumFlow.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MaximumFlow}
+	 */
+	static MaximumFlow newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new maximum flow algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */

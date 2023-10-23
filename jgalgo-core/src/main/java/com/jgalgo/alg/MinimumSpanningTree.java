@@ -26,6 +26,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * <p>
  * A spanning tree is an edge sub set of the graph edges which form a tree and connect (span) all the vertices of the
  * graph. A minimum spanning tree (MST) is a spanning tree with the minimum edge weights sum over all spanning trees.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Minimum_spanning_tree">Wikipedia</a>
  * @see    MinimumDirectedSpanningTree
@@ -67,9 +70,21 @@ public interface MinimumSpanningTree {
 	}
 
 	/**
+	 * Create a new MST algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
+	 * {@link MinimumSpanningTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumSpanningTree}
+	 */
+	static MinimumSpanningTree newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new minimum spanning tree algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */

@@ -25,6 +25,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * <p>
  * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more
  * efficient to use a APSP algorithm in the first place.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -134,9 +137,21 @@ public interface ShortestPathAllPairs {
 	}
 
 	/**
+	 * Create a new all-pairs-shortest-paths algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ShortestPathAllPairs} object. The
+	 * {@link ShortestPathAllPairs.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ShortestPathAllPairs}
+	 */
+	static ShortestPathAllPairs newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new all pairs shortest paths algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathAllPairs} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */

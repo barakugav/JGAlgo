@@ -35,6 +35,9 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
  * \((u,v)\) that is not in the tree that it is heavier than the heaviest edge in the path from \(u\) to \(v\) in the
  * tree. If a TPM on \(n\) vertices and \(m\) queries can be answer in \(O(n + m)\) time than an MST can be validated in
  * linear time.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -138,9 +141,21 @@ public interface TreePathMaxima {
 	}
 
 	/**
+	 * Create a new tree path maxima algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object. The
+	 * {@link TreePathMaxima.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link TreePathMaxima}
+	 */
+	static TreePathMaxima newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new tree path maxima algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */

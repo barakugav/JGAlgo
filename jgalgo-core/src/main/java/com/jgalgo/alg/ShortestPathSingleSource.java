@@ -37,10 +37,13 @@ import com.jgalgo.graph.WeightFunction;
  * {@link ShortestPathSingleSource.Builder#setDag(boolean)}). Another special case arise when the weight function assign
  * \(1\) to any edges, and the shortest paths could be computed again in linear time using a BFS (see
  * {@link ShortestPathSingleSource.Builder#setCardinality(boolean)}).
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -55,7 +58,7 @@ import com.jgalgo.graph.WeightFunction;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -154,9 +157,21 @@ public interface ShortestPathSingleSource {
 	}
 
 	/**
+	 * Create a new shortest path algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link ShortestPathSingleSource} object. The
+	 * {@link ShortestPathSingleSource.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ShortestPathSingleSource}
+	 */
+	static ShortestPathSingleSource newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new single source shortest path algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathSingleSource} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */

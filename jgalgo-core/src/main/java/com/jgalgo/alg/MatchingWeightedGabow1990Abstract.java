@@ -307,7 +307,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		final Blossom[] findToBlossom;
 
 		Odds(int n) {
-			sf = SplitFindMin.newBuilder().buildWithFindMin();
+			sf = SplitFindMin.newInstance();
 			vToSf = new int[n];
 			findToBlossom = new Blossom[n];
 		}

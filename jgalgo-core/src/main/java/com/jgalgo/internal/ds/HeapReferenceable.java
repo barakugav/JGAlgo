@@ -33,9 +33,12 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * Another difference from the regular {@link Heap}, is the existent of both keys and values, rather than just
  * 'elements'. A key may be changed using {@link #decreaseKey} while the <b>value</b> is the same. This matches the
  * common use case of these heaps.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * HeapReferenceable<Integer, String> heap = HeapReferenceable.newBuilder().build();
+ * HeapReferenceable<Integer, String> heap = HeapReferenceable.newInstance();
  * HeapReference<Integer, String> r1 = heap.insert(5, "Alice");
  * HeapReference<Integer, String> r2 = heap.insert(10, "Bob");
  * HeapReference<Integer, String> r3 = heap.insert(3, "Charlie");
@@ -185,6 +188,30 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 	 */
 	default Heap<K> asHeap() {
 		return HeapAbstract.fromHeapReferenceable(this);
+	}
+
+	/**
+	 * Create a new referenceable heap.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link HeapReferenceable} object. The
+	 * {@link HeapReferenceable.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link HeapReferenceable}
+	 */
+	static <K, V> HeapReferenceable<K, V> newInstance() {
+		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build();
+	}
+
+	/**
+	 * Create a new referenceable heap with custom comparator.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link HeapReferenceable} object. The
+	 * {@link HeapReferenceable.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link HeapReferenceable}
+	 */
+	static <K, V> HeapReferenceable<K, V> newInstance(Comparator<? super K> cmp) {
+		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build(cmp);
 	}
 
 	/**

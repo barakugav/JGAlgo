@@ -37,7 +37,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -52,7 +52,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3

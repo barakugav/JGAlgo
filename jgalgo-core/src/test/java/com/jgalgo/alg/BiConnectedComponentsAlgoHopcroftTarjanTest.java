@@ -44,7 +44,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			testUGraph(BiConnectedComponentsAlgo.newBuilder().build(), g);
+			testUGraph(BiConnectedComponentsAlgo.newInstance(), g);
 		});
 	}
 
@@ -83,7 +83,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 			}
 		}
 
-		final ConnectedComponentsAlgo ccAlgo = ConnectedComponentsAlgo.newBuilder().build();
+		final ConnectedComponentsAlgo ccAlgo = ConnectedComponentsAlgo.newInstance();
 		final VertexPartition gCcs = ccAlgo.findConnectedComponents(g);
 
 		/* Check that each bicc is actually a BiConnected component */

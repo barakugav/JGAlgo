@@ -64,7 +64,7 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			Graph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
-			Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g);
+			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
@@ -77,7 +77,7 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			Graph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
-			Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g);
+			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
@@ -229,7 +229,7 @@ public class EulerianTourTest extends TestBase {
 				break;
 			}
 		}
-		assert ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g).numberOfBlocks() == 1;
+		assert ConnectedComponentsAlgo.newInstance().findConnectedComponents(g).numberOfBlocks() == 1;
 		return g;
 	}
 
@@ -249,7 +249,7 @@ public class EulerianTourTest extends TestBase {
 	}
 
 	private static void addEdgesUntilStronglyConnected(Graph g) {
-		VertexPartition connectivityRes = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
+		VertexPartition connectivityRes = ConnectedComponentsAlgo.newInstance().findConnectedComponents(g);
 		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)
 			return;

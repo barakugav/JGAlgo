@@ -27,9 +27,12 @@ package com.jgalgo.internal.ds;
  * element in the set).</li>
  * <li>{@link #union(int, int)} - union the sets of two elements.</li>
  * </ul>
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * UnionFind uf = UnionFind.newBuilder().build();
+ * UnionFind uf = UnionFind.newInstance();
  * int x1 = uf.make();
  * int x2 = uf.make();
  * int x3 = uf.make();
@@ -89,9 +92,21 @@ public interface UnionFind {
 	void clear();
 
 	/**
+	 * Create a new union find algorithm object.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link UnionFind} object. The {@link UnionFind.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link UnionFind}
+	 */
+	static UnionFind newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new union-find data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFind} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */

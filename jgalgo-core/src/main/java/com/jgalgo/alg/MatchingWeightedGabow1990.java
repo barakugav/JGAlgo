@@ -72,7 +72,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 			int n = gOrig.vertices().size();
 			vToSMFId = new SubtreeMergeFindMin.Node[n];
 			oddBlossomPath = new int[n];
-			smf = SubtreeMergeFindMin.newBuilder().build((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			smf = SubtreeMergeFindMin.newInstance((e1, e2) -> Double.compare(e1.slack, e2.slack));
 		}
 
 		@Override

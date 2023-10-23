@@ -28,10 +28,11 @@ import com.jgalgo.graph.Graph;
  * each vertex must be equal for an Eulerian cycle to exists. If exactly one vertex \(s\) has one more out-edge than
  * in-edges, and one vertex \(t\) has one more in-edge than out-edges, an Eulerian tour that start at \(s\) and ends at
  * \(t\) exists.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Eulerian_path">Wikipedia</a>
- * @see    TSPMetricMSTAppx
- * @see    TSPMetricMatchingAppx
  * @author Barak Ugav
  */
 public interface EulerianTourAlgo {
@@ -49,9 +50,21 @@ public interface EulerianTourAlgo {
 	public Path computeEulerianTour(Graph g);
 
 	/**
+	 * Create a new Eulerian tour computation algorithm.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object. The
+	 * {@link EulerianTourAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link EulerianTourAlgo}
+	 */
+	static EulerianTourAlgo newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new Eulerian tour algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link EulerianTourAlgo} objects
 	 */

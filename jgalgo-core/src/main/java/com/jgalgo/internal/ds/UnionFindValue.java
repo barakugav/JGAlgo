@@ -21,9 +21,12 @@ package com.jgalgo.internal.ds;
  * <p>
  * This interface is an extension to the {@link UnionFind} interface that support, along with regular operation, value
  * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * UnionFindValue uf = UnionFindValue.newBuilder().build();
+ * UnionFindValue uf = UnionFindValue.newInstance();
  * int x1 = uf.make(4);
  * int x2 = uf.make(11);
  * int x3 = uf.make(6);
@@ -83,9 +86,21 @@ public interface UnionFindValue extends UnionFind {
 	void addValue(int x, double value);
 
 	/**
+	 * Create a new union find algorithm with values.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object. The
+	 * {@link UnionFindValue.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link UnionFindValue}
+	 */
+	static UnionFindValue newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new union-find with values data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link UnionFindValue} objects
 	 */

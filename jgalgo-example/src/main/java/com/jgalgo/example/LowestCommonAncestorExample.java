@@ -18,13 +18,12 @@ package com.jgalgo.example;
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 
 public class LowestCommonAncestorExample {
 
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-		Graph tree = GraphFactory.newUndirected().newGraph();
+		Graph tree = Graph.newUndirected();
 		int rt = tree.addVertex();
 		int v1 = tree.addVertex();
 		int v2 = tree.addVertex();
@@ -40,7 +39,7 @@ public class LowestCommonAncestorExample {
 		tree.addEdge(v2, v6);
 
 		/* Pre process the tree for LCA queries */
-		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newBuilder().build();
+		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();
 		LowestCommonAncestorStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
@@ -53,7 +52,7 @@ public class LowestCommonAncestorExample {
 
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
-		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newBuilder().build();
+		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();
 		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();
 
 		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);

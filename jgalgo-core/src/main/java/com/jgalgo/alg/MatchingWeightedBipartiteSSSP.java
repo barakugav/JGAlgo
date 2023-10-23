@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newBuilder().build();
+	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();
 	private ShortestPathSingleSource ssspNegative =
 			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
 	private static final Object EdgeWeightKey = JGAlgoUtils.labeledObj("weight");

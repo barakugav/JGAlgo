@@ -38,8 +38,8 @@ import com.jgalgo.internal.util.Assertions;
  */
 class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSourceSink {
 
-	private final MaximumFlow maxFlowAlg = MaximumFlow.newBuilder().build();
-	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newBuilder().build();
+	private final MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
+	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();
 	private static final double EPS = 0.0001;
 
 	@Override

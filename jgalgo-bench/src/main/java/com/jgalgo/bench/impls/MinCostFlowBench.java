@@ -81,7 +81,7 @@ public class MinCostFlowBench {
 				 * flows
 				 */
 				WeightFunction.Int cost1 = randCost(g, rand);
-				MinimumCostFlow.newBuilder().build().computeMinCostFlow(g, net, cost1, supply);
+				MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
 				Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);
 				for (int e : g.edges()) {
 					lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));

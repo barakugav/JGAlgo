@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.TestBase;
@@ -26,7 +25,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 
 	@Test
 	public void testSimpleNoBlossomsUnweighted() {
-		IndexGraph g = IndexGraphFactory.newUndirected().newGraph();
+		IndexGraph g = IndexGraph.newUndirected();
 		int v0 = g.addVertex();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
@@ -44,7 +43,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 
 	@Test
 	public void testSimpleNoBlossomsWeighted() {
-		IndexGraph g = IndexGraphFactory.newUndirected().newGraph();
+		IndexGraph g = IndexGraph.newUndirected();
 		int v0 = g.addVertex();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
@@ -67,7 +66,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 
 	@Test
 	public void testSimpleWithBlossomsUnweighted() {
-		IndexGraph g = IndexGraphFactory.newUndirected().newGraph();
+		IndexGraph g = IndexGraph.newUndirected();
 		int v00 = g.addVertex();
 		int v01 = g.addVertex();
 		int v02 = g.addVertex();
@@ -100,7 +99,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 
 	@Test
 	public void testSimpleWithBlossomsWeighted() {
-		IndexGraph g = IndexGraphFactory.newUndirected().newGraph();
+		IndexGraph g = IndexGraph.newUndirected();
 		int v00 = g.addVertex();
 		int v01 = g.addVertex();
 		int v02 = g.addVertex();

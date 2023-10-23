@@ -27,9 +27,12 @@ import com.jgalgo.graph.Graph;
  * <p>
  * Most implementation of this interface achieve linear or near linear preprocessing time and constant or logarithmic
  * query time.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph tree = GraphFactory.newUndirected().newGraph();
+ * Graph tree = Graph.newUndirected();
  * int rt = tree.addVertex();
  * int v1 = tree.addVertex();
  * int v2 = tree.addVertex();
@@ -43,7 +46,7 @@ import com.jgalgo.graph.Graph;
  * tree.addEdge(rt, v4);
  * tree.addEdge(v4, v5);
  *
- * LowestCommonAncestorStatic lca = LowestCommonAncestorStatic.newBuilder().build();
+ * LowestCommonAncestorStatic lca = LowestCommonAncestorStatic.newInstance();
  * LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(tree, rt);
  * assert lcaDS.findLowestCommonAncestor(v1, v4) == rt;
  * assert lcaDS.findLowestCommonAncestor(v2, v3) == v1;
@@ -51,6 +54,7 @@ import com.jgalgo.graph.Graph;
  * assert lcaDS.findLowestCommonAncestor(v2, v5) == rt;
  * }</pre>
  *
+ * @see    LowestCommonAncestorDynamic
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorStatic {
@@ -82,9 +86,21 @@ public interface LowestCommonAncestorStatic {
 	}
 
 	/**
+	 * Create a new algorithm for static LCA queries.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object. The
+	 * {@link LowestCommonAncestorStatic.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link LowestCommonAncestorStatic}
+	 */
+	static LowestCommonAncestorStatic newInstance() {
+		return newBuilder().build();
+	}
+
+	/**
 	 * Create a new static LCA algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link LowestCommonAncestorStatic} objects
 	 */

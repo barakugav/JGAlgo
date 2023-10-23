@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class CyclesFinderJohnson extends CyclesFinderAbstract {
 
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
 
 	/**
 	 * Create a new cycles finder algorithm object.

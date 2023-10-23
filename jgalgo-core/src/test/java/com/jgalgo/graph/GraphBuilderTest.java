@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.TestBase;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -38,8 +38,7 @@ public class GraphBuilderTest extends TestBase {
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
 				IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
-				IndexGraph g = directed ? IndexGraphFactory.newDirected().newGraph()
-						: IndexGraphFactory.newUndirected().newGraph();
+				IndexGraph g = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
 
 				/* Add vertices and edges */
 				final int n = 12 + rand.nextInt(12);
@@ -118,7 +117,7 @@ public class GraphBuilderTest extends TestBase {
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
 				GraphBuilder b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
-				Graph g = directed ? GraphFactory.newDirected().newGraph() : GraphFactory.newUndirected().newGraph();
+				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
 
 				/* Add vertices and edges */
 				final int n = 12 + rand.nextInt(12);

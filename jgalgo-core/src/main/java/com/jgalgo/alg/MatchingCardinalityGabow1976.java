@@ -69,7 +69,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 		int blossomBaseSearchNotesIndex = 0;
 		int[] blossomVertices = new int[n];
 
-		UnionFind uf = UnionFind.newBuilder().build();
+		UnionFind uf = UnionFind.newInstance();
 		int[] bases = new int[n];
 
 		for (;;) {
