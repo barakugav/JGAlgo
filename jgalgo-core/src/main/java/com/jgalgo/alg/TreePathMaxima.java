@@ -159,10 +159,12 @@ public interface TreePathMaxima {
 
 			@Override
 			public TreePathMaxima.Builder setOption(String key, Object value) {
-				if ("bits-lookup-tables-enable".equals(key)) {
-					bitsLookupTablesEnable = ((Boolean) value).booleanValue();
-				} else {
-					throw new IllegalArgumentException("unknown option key: " + key);
+				switch (key) {
+					case "bits-lookup-tables-enable":
+						bitsLookupTablesEnable = ((Boolean) value).booleanValue();
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
 				}
 				return this;
 			}
