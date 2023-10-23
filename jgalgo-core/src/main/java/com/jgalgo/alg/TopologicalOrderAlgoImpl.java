@@ -21,7 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
@@ -60,7 +60,33 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		if (topolSortSize != n)
 			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
 
-		return () -> IntIterators.wrap(topolSort);
+		return new Res(topolSort);
+	}
+
+	private static class Res implements TopologicalOrderAlgo.Result {
+
+		private final IntList orderedVertices;
+		private int[] vertexOrderIndex;
+
+		Res(int[] topolSort) {
+			orderedVertices = IntList.of(topolSort);
+		}
+
+		@Override
+		public IntList orderedVertices() {
+			return orderedVertices;
+		}
+
+		@Override
+		public int vertexOrderIndex(int vertex) {
+			if (vertexOrderIndex == null) {
+				vertexOrderIndex = new int[orderedVertices.size()];
+				for (int i = 0; i < orderedVertices.size(); i++)
+					vertexOrderIndex[orderedVertices.getInt(i)] = i;
+			}
+			return vertexOrderIndex[vertex];
+		}
+
 	}
 
 }

@@ -16,7 +16,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Algorithm that calculate a topological order of graph vertices.
@@ -50,13 +51,31 @@ public interface TopologicalOrderAlgo {
 	 * @author Barak Ugav
 	 */
 	static interface Result {
+
 		/**
-		 * Get an iterator that iterate over the vertices of the graph in the order computed by the
-		 * {@link TopologicalOrderAlgo}.
+		 * Get all the vertices ordered in the list by the topological order.
 		 *
-		 * @return an iterator that iterate over the vertices of the graph in the order computed
+		 * @return all the vertices ordered in the list by the topological order
 		 */
-		IntIterator verticesIterator();
+		IntList orderedVertices();
+
+		/**
+		 * Get the index of a vertex in the topological order.
+		 *
+		 * @param  vertex the vertex
+		 * @return        the index of the vertex in the topological order, in range \([0, n)\)
+		 */
+		int vertexOrderIndex(int vertex);
+
+		/**
+		 * Get a comparator that compare vertices by their order in the topological order.
+		 *
+		 * @return a comparator that compare vertices by their order in the topological order
+		 */
+		default IntComparator orderComparator() {
+			return (v1, v2) -> Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));
+		}
+
 	}
 
 	/**

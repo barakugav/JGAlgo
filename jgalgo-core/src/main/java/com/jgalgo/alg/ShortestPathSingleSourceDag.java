@@ -58,14 +58,10 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
-		boolean sourceSeen = false;
-		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {
+		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);
+		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
+				.hasNext();) {
 			int u = uit.nextInt();
-			if (!sourceSeen) {
-				if (u != source)
-					continue;
-				sourceSeen = true;
-			}
 			double uDistance = res.distances[u];
 			if (uDistance == Double.POSITIVE_INFINITY)
 				continue;
@@ -86,14 +82,10 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
-		boolean sourceSeen = false;
-		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {
+		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);
+		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
+				.hasNext();) {
 			int u = uit.nextInt();
-			if (!sourceSeen) {
-				if (u != source)
-					continue;
-				sourceSeen = true;
-			}
 			int uDistance = res.distances[u];
 			if (uDistance == Integer.MAX_VALUE)
 				continue;

@@ -20,7 +20,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 
@@ -49,8 +49,13 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 		}
 
 		@Override
-		public IntIterator verticesIterator() {
-			return IndexIdMaps.indexToIdIterator(res.verticesIterator(), viMap);
+		public IntList orderedVertices() {
+			return IndexIdMaps.indexToIdList(res.orderedVertices(), viMap);
+		}
+
+		@Override
+		public int vertexOrderIndex(int vertex) {
+			return res.vertexOrderIndex(viMap.idToIndex(vertex));
 		}
 
 	}
