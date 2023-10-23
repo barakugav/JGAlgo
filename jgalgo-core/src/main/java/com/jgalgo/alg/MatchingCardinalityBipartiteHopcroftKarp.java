@@ -22,11 +22,9 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -42,7 +40,6 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private static final Object EdgeRefWeightKey = JGAlgoUtils.labeledObj("refToOrig");
 
 	/**
 	 * Create a new maximum matching object.
@@ -87,16 +84,14 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 
 		/* DFS */
 		BitSet visited = new BitSet(n);
-		EdgeIter[] edges = new EdgeIter[n];
-		int[] dfsPath = new int[n];
+		EdgeIter[] edges = new EdgeIter[n / 2 + 1];
+		int[] dfsPath = new int[(n - 1) / 2 + 1];
 
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		IndexGraph f = IndexGraphFactory.newUndirected().expectedVerticesNum(n).newGraph();
-		for (int v = 0; v < n; v++)
-			f.addVertex();
-		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+
+		BitSet es = new BitSet(g.edges().size());
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */
@@ -120,15 +115,15 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 					int v = eit.target();
 					if (depths[v] < depth)
 						continue;
-					edgeRef.set(f.addEdge(u, v), e);
+					es.set(e);
 					if (depths[v] != Integer.MAX_VALUE)
 						continue;
 					depths[v] = depth + 1;
 
 					int matchedEdge = matched[v];
 					if (matchedEdge != MatchedNone) {
+						es.set(matchedEdge);
 						int w = g.edgeEndpoint(matchedEdge, v);
-						edgeRef.set(f.addEdge(v, w), matchedEdge);
 						v = w;
 						depths[v] = depth + 2;
 						bfsQueue.enqueue(v);
@@ -147,42 +142,40 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 
-				edges[0] = f.outEdges(u).iterator();
+				edges[0] = g.outEdges(u).iterator();
 				visited.set(u);
 
 				for (int depth = 0; depth >= 0;) {
 					EdgeIter eit = edges[depth];
 					if (eit.hasNext()) {
 						int e = eit.nextInt();
+						if (!es.get(e))
+							continue;
 						int v = eit.target();
 						if (visited.get(v) || depth >= depths[v])
 							continue;
 						visited.set(v);
-						dfsPath[depth++] = edgeRef.getInt(e);
+						dfsPath[depth++] = e;
 
 						int matchedEdge = matched[v];
 						if (matchedEdge == MatchedNone) {
-							// Augmenting path found
-							for (int i = 0; i < depth; i += 2) {
+							/* Augmenting path found */
+							for (int i = 0; i < depth; i++) {
 								int e1 = dfsPath[i];
 								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;
 							}
 							break;
 						}
-						dfsPath[depth] = matchedEdge;
 						v = g.edgeEndpoint(matchedEdge, v);
-
-						edges[++depth] = f.outEdges(v).iterator();
+						edges[depth] = g.outEdges(v).iterator();
 					} else {
-						/*
-						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path
-						 */
-						depth -= 2;
+						/* go back up in the DFS */
+						depth--;
 					}
 				}
 			}
 			visited.clear();
-			f.clearEdges();
+			es.clear();
 		}
 		Arrays.fill(edges, null);
 		return new Matchings.MatchingImpl(g, matched);
