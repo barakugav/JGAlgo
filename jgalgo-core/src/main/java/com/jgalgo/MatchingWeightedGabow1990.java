@@ -19,8 +19,8 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.data.HeapReferenceable;
-import com.jgalgo.internal.data.SubtreeMergeFindMin;
+import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.SubtreeMergeFindMin;
 import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 

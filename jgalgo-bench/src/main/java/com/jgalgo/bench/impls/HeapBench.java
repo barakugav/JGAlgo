@@ -37,9 +37,9 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.internal.data.BinarySearchTree;
-import com.jgalgo.internal.data.Heap;
-import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.ds.BinarySearchTree;
+import com.jgalgo.internal.ds.Heap;
+import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)

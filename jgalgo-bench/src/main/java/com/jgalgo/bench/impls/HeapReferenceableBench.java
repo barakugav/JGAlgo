@@ -43,8 +43,8 @@ import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.data.BinarySearchTree;
-import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.ds.BinarySearchTree;
+import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)

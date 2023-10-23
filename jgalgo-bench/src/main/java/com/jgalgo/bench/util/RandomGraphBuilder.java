@@ -21,7 +21,7 @@ import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
-import com.jgalgo.internal.data.UnionFind;
+import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;

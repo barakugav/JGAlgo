@@ -37,8 +37,8 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.internal.data.RMQStatic;
-import com.jgalgo.internal.data.RMQStaticComparator;
+import com.jgalgo.internal.ds.RMQStatic;
+import com.jgalgo.internal.ds.RMQStaticComparator;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 

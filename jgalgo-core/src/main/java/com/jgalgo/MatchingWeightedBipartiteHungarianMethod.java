@@ -24,8 +24,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
-import com.jgalgo.internal.data.HeapReference;
-import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.ds.HeapReference;
+import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 

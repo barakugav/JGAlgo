@@ -22,7 +22,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.data.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

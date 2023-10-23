@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.Weights;
-import com.jgalgo.internal.data.HeapReference;
+import com.jgalgo.internal.ds.HeapReference;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;

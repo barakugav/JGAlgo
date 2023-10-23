@@ -19,8 +19,8 @@ package com.jgalgo;
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.data.RMQStatic;
-import com.jgalgo.internal.data.RMQStaticComparator;
+import com.jgalgo.internal.ds.RMQStatic;
+import com.jgalgo.internal.ds.RMQStaticComparator;
 import com.jgalgo.internal.util.Assertions;
 
 /**
