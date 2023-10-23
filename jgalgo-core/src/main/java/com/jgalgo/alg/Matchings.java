@@ -152,7 +152,7 @@ class Matchings {
 
 	}
 
-	static abstract class AbstractMatchingImpl implements MatchingAlgorithm {
+	static abstract class AbstractMatchingImpl implements MatchingAlgo {
 
 		@Override
 		public Matching computeMaximumCardinalityMatching(Graph g) {

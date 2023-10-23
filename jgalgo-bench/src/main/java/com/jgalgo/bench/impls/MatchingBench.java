@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.Matching;
-import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -79,7 +79,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Matching matching = algo.computeMaximumCardinalityMatching(g);
 			blackhole.consume(matching);
@@ -121,7 +121,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Matching matching = algo.computeMaximumCardinalityMatching(g);
 			blackhole.consume(matching);
@@ -169,7 +169,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Graph g = gw.first();
 			WeightFunction w = gw.second();
@@ -224,7 +224,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Graph g = gw.first();
 			WeightFunction w = gw.second();
@@ -278,7 +278,7 @@ public class MatchingBench {
 				if (g.vertices().size() % 2 != 0)
 					throw new IllegalArgumentException("there is no perfect matching");
 
-				MatchingAlgorithm cardinalityAlgo = MatchingAlgorithm.newBuilder().setCardinality(true).build();
+				MatchingAlgo cardinalityAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
 				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
 				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				assert unmatchedVertices.size() % 2 == 0;
@@ -295,7 +295,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Graph g = gw.first();
 			WeightFunction w = gw.second();
@@ -347,8 +347,8 @@ public class MatchingBench {
 				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
 				Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 
-				MatchingAlgorithm cardinalityAlgo =
-						MatchingAlgorithm.newBuilder().setCardinality(true).setBipartite(true).build();
+				MatchingAlgo cardinalityAlgo =
+						MatchingAlgo.newBuilder().setCardinality(true).setBipartite(true).build();
 				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
 				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
@@ -369,7 +369,7 @@ public class MatchingBench {
 			}
 		}
 
-		private void benchAlgo(MatchingAlgorithm algo, Blackhole blackhole) {
+		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Graph g = gw.first();
 			WeightFunction w = gw.second();
@@ -394,8 +394,8 @@ public class MatchingBench {
 
 	}
 
-	private static MatchingAlgorithm getAlgo(String name) {
-		return MatchingAlgorithm.newBuilder().setOption("impl", name).build();
+	private static MatchingAlgo getAlgo(String name) {
+		return MatchingAlgo.newBuilder().setOption("impl", name).build();
 	}
 
 }

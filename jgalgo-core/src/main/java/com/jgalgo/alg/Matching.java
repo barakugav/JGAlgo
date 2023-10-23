@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * the greatest number of edges. Another variant is to compute the maximum weighted matching with respect to some weight
  * function.
  *
- * @see    MatchingAlgorithm
+ * @see    MatchingAlgo
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
  */

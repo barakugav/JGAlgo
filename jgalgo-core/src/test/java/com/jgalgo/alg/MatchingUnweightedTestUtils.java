@@ -33,7 +33,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 
 	private MatchingUnweightedTestUtils() {}
 
-	static void randGraphs(MatchingAlgorithm algo, long seed) {
+	static void randGraphs(MatchingAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 8).repeat(128);
@@ -52,7 +52,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testAlgo(MatchingAlgorithm algo, Graph g, int expectedMatchSize) {
+	private static void testAlgo(MatchingAlgo algo, Graph g, int expectedMatchSize) {
 		Matching match = algo.computeMaximumCardinalityMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");

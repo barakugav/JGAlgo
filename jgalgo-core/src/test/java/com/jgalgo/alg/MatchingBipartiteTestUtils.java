@@ -37,11 +37,11 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	static void randBipartiteGraphs(MatchingAlgorithm algo, long seed) {
+	static void randBipartiteGraphs(MatchingAlgo algo, long seed) {
 		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void randBipartiteGraphs(MatchingAlgorithm algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 4, 4).repeat(128);
@@ -57,7 +57,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testBipartiteAlgo(MatchingAlgorithm algo, Graph g, int expectedMatchSize) {
+	private static void testBipartiteAlgo(MatchingAlgo algo, Graph g, int expectedMatchSize) {
 		Matching match = algo.computeMaximumCardinalityMatching(g);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);

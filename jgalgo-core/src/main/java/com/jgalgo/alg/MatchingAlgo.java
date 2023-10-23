@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface MatchingAlgorithm {
+public interface MatchingAlgo {
 
 	/**
 	 * Compute the maximum matching of unweighted undirected graph.
@@ -94,19 +94,19 @@ public interface MatchingAlgorithm {
 	/**
 	 * Create a new matching algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MatchingAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link MatchingAlgo} object.
 	 *
-	 * @return a new builder that can build {@link MatchingAlgorithm} objects
+	 * @return a new builder that can build {@link MatchingAlgo} objects
 	 */
-	static MatchingAlgorithm.Builder newBuilder() {
-		return new MatchingAlgorithm.Builder() {
+	static MatchingAlgo.Builder newBuilder() {
+		return new MatchingAlgo.Builder() {
 
 			boolean cardinality = false;
 			boolean isBipartite = false;
 			String impl;
 
 			@Override
-			public MatchingAlgorithm build() {
+			public MatchingAlgo build() {
 				if (impl != null) {
 					switch (impl) {
 						case "CardinalityBipartiteHopcroftKarp":
@@ -127,13 +127,13 @@ public interface MatchingAlgorithm {
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				final MatchingAlgorithm cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()
+				final MatchingAlgo cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()
 						: new MatchingCardinalityGabow1976();
 				if (cardinality) {
 					return cardinalityAlgo;
 				} else {
-					final MatchingAlgorithm weightedAlgo = new MatchingWeightedBlossomV();
-					return new MatchingAlgorithm() {
+					final MatchingAlgo weightedAlgo = new MatchingWeightedBlossomV();
+					return new MatchingAlgo() {
 
 						@Override
 						public Matching computeMaximumCardinalityMatching(Graph g) {
@@ -173,19 +173,19 @@ public interface MatchingAlgorithm {
 			}
 
 			@Override
-			public MatchingAlgorithm.Builder setBipartite(boolean bipartite) {
+			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
 				isBipartite = bipartite;
 				return this;
 			}
 
 			@Override
-			public MatchingAlgorithm.Builder setCardinality(boolean cardinality) {
+			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
 				this.cardinality = cardinality;
 				return this;
 			}
 
 			@Override
-			public MatchingAlgorithm.Builder setOption(String key, Object value) {
+			public MatchingAlgo.Builder setOption(String key, Object value) {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
@@ -199,19 +199,19 @@ public interface MatchingAlgorithm {
 	}
 
 	/**
-	 * A builder for {@link MatchingAlgorithm} objects.
+	 * A builder for {@link MatchingAlgo} objects.
 	 *
-	 * @see    MatchingAlgorithm#newBuilder()
+	 * @see    MatchingAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<MatchingAlgorithm.Builder> {
+	static interface Builder extends BuilderAbstract<MatchingAlgo.Builder> {
 
 		/**
 		 * Create a new matching algorithm object.
 		 *
 		 * @return a new matching algorithm
 		 */
-		MatchingAlgorithm build();
+		MatchingAlgo build();
 
 		/**
 		 * Set whether the matching algorithms built by this builder should only support bipartite graphs.
@@ -221,7 +221,7 @@ public interface MatchingAlgorithm {
 		 * @param  bipartite if {@code true}, the created matching algorithms will support bipartite graphs only
 		 * @return           this builder
 		 */
-		MatchingAlgorithm.Builder setBipartite(boolean bipartite);
+		MatchingAlgo.Builder setBipartite(boolean bipartite);
 
 		/**
 		 * Set whether the matching algorithms built by this builder should support only maximum cardinality matching.
@@ -232,7 +232,7 @@ public interface MatchingAlgorithm {
 		 *                         matching only
 		 * @return             this builder
 		 */
-		MatchingAlgorithm.Builder setCardinality(boolean cardinality);
+		MatchingAlgo.Builder setCardinality(boolean cardinality);
 	}
 
 }

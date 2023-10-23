@@ -32,11 +32,11 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {}
 
-	static void randGraphsBipartiteWeighted(MatchingAlgorithm algo, long seed) {
+	static void randGraphsBipartiteWeighted(MatchingAlgo algo, long seed) {
 		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void randGraphsBipartiteWeighted(MatchingAlgorithm algo, Boolean2ObjectFunction<Graph> graphImpl,
+	public static void randGraphsBipartiteWeighted(MatchingAlgo algo, Boolean2ObjectFunction<Graph> graphImpl,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -48,14 +48,14 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
-			MatchingAlgorithm validationAlgo =
+			MatchingAlgo validationAlgo =
 					algo instanceof MatchingWeightedBipartiteSSSP ? new MatchingWeightedBipartiteHungarianMethod()
 							: new MatchingWeightedBipartiteSSSP();
 			testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}
 
-	static void randBipartiteGraphsWeightedPerfect(MatchingAlgorithm algo, long seed) {
+	static void randBipartiteGraphsWeightedPerfect(MatchingAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 8, 8).repeat(64);
@@ -68,7 +68,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 					seedGen.nextSeed());
 			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 
-			MatchingAlgorithm cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
+			MatchingAlgo cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
 			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
 			IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
@@ -87,15 +87,15 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunction.Int w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
-			MatchingAlgorithm validationUnweightedAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
-			MatchingAlgorithm validationWeightedAlgo =
+			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
+			MatchingAlgo validationWeightedAlgo =
 					algo instanceof MatchingWeightedBipartiteHungarianMethod ? new MatchingWeightedGabow1990()
 							: new MatchingWeightedBipartiteHungarianMethod();
 			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
 
-	static void randGraphsWeighted(MatchingAlgorithm algo, long seed) {
+	static void randGraphsWeighted(MatchingAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 8).repeat(256);
@@ -107,16 +107,15 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
-			MatchingAlgorithm validationAlgo =
-					algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
-							: new MatchingWeightedGabow1990();
+			MatchingAlgo validationAlgo = algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
+					: new MatchingWeightedGabow1990();
 
 			testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}
 
-	private static void testGraphWeighted(MatchingAlgorithm algo, Graph g, WeightFunction.Int w,
-			MatchingAlgorithm validationAlgo) {
+	private static void testGraphWeighted(MatchingAlgo algo, Graph g, WeightFunction.Int w,
+			MatchingAlgo validationAlgo) {
 		Matching actual = algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		double actualWeight = actual.weight(w);
@@ -132,7 +131,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
-	static void randGraphsWeightedPerfect(MatchingAlgorithm algo, long seed) {
+	static void randGraphsWeightedPerfect(MatchingAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 8).repeat(256);
@@ -145,7 +144,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			if (g.vertices().size() % 2 != 0)
 				throw new IllegalArgumentException("there is no perfect matching");
 
-			MatchingAlgorithm cardinalityAlgo = new MatchingCardinalityGabow1976();
+			MatchingAlgo cardinalityAlgo = new MatchingCardinalityGabow1976();
 			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
 			IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			assert unmatchedVertices.size() % 2 == 0;
@@ -161,16 +160,16 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunction.Int w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
-			MatchingAlgorithm validationUnweightedAlgo = new MatchingCardinalityGabow1976();
-			MatchingAlgorithm validationWeightedAlgo =
+			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityGabow1976();
+			MatchingAlgo validationWeightedAlgo =
 					algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
 							: new MatchingWeightedGabow1990();
 			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
 
-	static void testGraphWeightedPerfect(MatchingAlgorithm algo, Graph g, WeightFunction.Int w,
-			MatchingAlgorithm validationUnweightedAlgo, MatchingAlgorithm validationWeightedAlgo) {
+	static void testGraphWeightedPerfect(MatchingAlgo algo, Graph g, WeightFunction.Int w,
+			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
 		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		int actualSize = actual.edges().size();

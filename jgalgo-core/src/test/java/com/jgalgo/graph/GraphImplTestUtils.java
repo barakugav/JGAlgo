@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.ToIntFunction;
-import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MatchingBipartiteTestUtils;
 import com.jgalgo.alg.MatchingWeightedTestUtils;
 import com.jgalgo.alg.MaximumFlow;
@@ -797,11 +797,11 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(
-				MatchingAlgorithm.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
+				MatchingAlgo.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph> graphImpl, long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgorithm.newBuilder().setBipartite(true).build(),
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgo.newBuilder().setBipartite(true).build(),
 				graphImpl, seed);
 	}
 

@@ -16,7 +16,7 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.Matching;
-import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -29,7 +29,7 @@ public class MaximumMatchingExample {
 		Graph g = createGraph();
 
 		/* Compute a maximum (cardinality) matching */
-		MatchingAlgorithm matchingAlgo = MatchingAlgorithm.newBuilder().build();
+		MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().build();
 		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);
 
 		/* Validate the matching is valid */
