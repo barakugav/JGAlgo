@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Gabow implementation for dynamic LCA data structure with \(O(\log^2 n)\) amortized time for {@code addLeaf()}
@@ -58,13 +59,13 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	@Override
 	public Vertex initTree() {
 		if (size() != 0)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Tree already initialized");
 		return newVertex(null);
 	}
 
 	@Override
 	public Vertex addLeaf(Vertex parent) {
-		return newVertex((VertexImpl) parent);
+		return newVertex((VertexImpl) Objects.requireNonNull(parent));
 	}
 
 	private Vertex newVertex(VertexImpl parent) {

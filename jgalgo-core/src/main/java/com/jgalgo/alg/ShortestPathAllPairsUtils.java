@@ -165,7 +165,7 @@ class ShortestPathAllPairsUtils {
 			@Override
 			public Path getNegativeCycle() {
 				if (!foundNegativeCycle())
-					throw new IllegalStateException();
+					throw new IllegalStateException("no negative cycle found");
 				return negCycle;
 			}
 
@@ -202,14 +202,14 @@ class ShortestPathAllPairsUtils {
 			@Override
 			public double distance(int source, int target) {
 				if (foundNegativeCycle())
-					throw new IllegalStateException();
+					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				return source != target ? distances[index(source, target)] : 0;
 			}
 
 			@Override
 			public Path getPath(int source, int target) {
 				if (foundNegativeCycle())
-					throw new IllegalStateException();
+					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				if (distance(source, target) == Double.POSITIVE_INFINITY)
 					return null;
 				IntList path = new IntArrayList();
@@ -244,14 +244,14 @@ class ShortestPathAllPairsUtils {
 			@Override
 			public double distance(int source, int target) {
 				if (foundNegativeCycle())
-					throw new IllegalStateException();
+					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				return distances[source][target];
 			}
 
 			@Override
 			public Path getPath(int source, int target) {
 				if (foundNegativeCycle())
-					throw new IllegalStateException();
+					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				if (distance(source, target) == Double.POSITIVE_INFINITY)
 					return null;
 				IntList path = new IntArrayList();
@@ -283,7 +283,7 @@ class ShortestPathAllPairsUtils {
 
 		@Override
 		public Path getNegativeCycle() {
-			throw new IllegalStateException();
+			throw new IllegalStateException("no negative cycle found");
 		}
 
 		static class AllVertices extends ResFromSSSP {

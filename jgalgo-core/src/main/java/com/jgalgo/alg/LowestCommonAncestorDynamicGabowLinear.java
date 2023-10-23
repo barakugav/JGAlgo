@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.Objects;
 import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors;
 
 /**
@@ -59,13 +60,13 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 	@Override
 	public Vertex initTree() {
 		if (size() != 0)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Tree already initialized");
 		return newVertex2(null);
 	}
 
 	@Override
 	public Vertex addLeaf(Vertex parent) {
-		return newVertex2((Vertex2) parent);
+		return newVertex2((Vertex2) Objects.requireNonNull(parent));
 	}
 
 	private Vertex2 newVertex2(Vertex2 parent) {

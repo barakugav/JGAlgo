@@ -104,7 +104,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			for (int v = 0; v < n; v++)
 				excessSum += excess[v] = supply.weight(v);
 			if (Math.abs(excessSum) > eps)
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("sum of supply is not zero");
 
 			/* init greedily */
 			for (int e = 0; e < m; e++) {
@@ -242,7 +242,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			for (int v = 0; v < n; v++)
 				excessSum += excess[v] = supply.weightInt(v);
 			if (excessSum != 0)
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("sum of supply is not zero");
 
 			/* init greedily */
 			for (int e = 0; e < m; e++) {

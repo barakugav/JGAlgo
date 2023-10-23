@@ -194,7 +194,7 @@ class MinimumCutSTUtils {
 
 			@Override
 			public void setCapacity(int edge, double cap) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("capacities are immutable");
 			}
 
 			@Override

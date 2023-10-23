@@ -633,8 +633,9 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 						}
 					} else if (deltaNext == delta4) {
 						expandStep();
-					} else
+					} else {
 						throw new IllegalStateException();
+					}
 				}
 
 				// Update dual values

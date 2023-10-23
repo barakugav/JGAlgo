@@ -167,7 +167,7 @@ public class AStarTest extends TestBase {
 
 					@Override
 					public Path getNegativeCycle() {
-						throw new IllegalStateException();
+						throw new IllegalStateException("no negative cycle found");
 					}
 				};
 			}

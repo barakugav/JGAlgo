@@ -144,7 +144,7 @@ class BitsLookupTable {
 			if (!(0 < wordsize && wordsize < Integer.SIZE - 1))
 				throw new IllegalArgumentException("unsupported word size: " + wordsize);
 			if (count.wordsize < wordsize)
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("bitCount table can't handle the requested word size");
 			this.count = count;
 			this.wordsize = wordsize;
 			int halfwordsize = ((wordsize - 1) / 2 + 1);

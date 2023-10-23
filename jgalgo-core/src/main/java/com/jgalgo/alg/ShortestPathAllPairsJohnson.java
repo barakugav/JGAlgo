@@ -201,12 +201,12 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		@Override
 		public double distance(int source, int target) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("negative cycle found, no shortest path exists");
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("negative cycle found, no shortest path exists");
 		}
 
 		@Override
@@ -237,7 +237,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		@Override
 		public Path getNegativeCycle() {
-			throw new IllegalStateException();
+			throw new IllegalStateException("no negative cycle found");
 		}
 
 		private static class AllVertices extends SuccessRes {

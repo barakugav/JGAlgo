@@ -328,14 +328,14 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		@Override
 		public double distance(int target) {
 			if (foundNegativeCycle())
-				throw new IllegalStateException();
+				throw new IllegalStateException("negative cycle found, no shortest path exists");
 			return dijkstraRes.distance(target) - sourcePotential + potential[target];
 		}
 
 		@Override
 		public Path getPath(int target) {
 			if (foundNegativeCycle())
-				throw new IllegalStateException();
+				throw new IllegalStateException("negative cycle found, no shortest path exists");
 			return dijkstraRes.getPath(target);
 		}
 
@@ -347,7 +347,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		@Override
 		public Path getNegativeCycle() {
 			if (!foundNegativeCycle())
-				throw new IllegalStateException();
+				throw new IllegalStateException("no negative cycle found");
 			return cycle;
 		}
 

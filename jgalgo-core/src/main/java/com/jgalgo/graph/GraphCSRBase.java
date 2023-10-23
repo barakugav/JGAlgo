@@ -117,17 +117,17 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	public int addVertex() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't add vertex");
 	}
 
 	@Override
 	public void removeVertex(int vertex) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't remove vertex");
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't add edge");
 	}
 
 	@Override
@@ -137,22 +137,22 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	public void removeEdge(int edge) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't remove edge");
 	}
 
 	@Override
 	public void reverseEdge(int edge) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't reverse edge");
 	}
 
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't clear");
 	}
 
 	@Override
 	public void clearEdges() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't clear edges");
 	}
 
 	@Override
@@ -168,7 +168,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't remove vertices weights");
 	}
 
 	@Override
@@ -184,17 +184,17 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't remove edges weights");
 	}
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't add vertices weights");
 	}
 
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("graph is immutable, can't add edges weights");
 	}
 
 	@Override

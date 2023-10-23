@@ -208,7 +208,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -230,7 +230,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -410,7 +410,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -440,7 +440,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -607,7 +607,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -639,7 +639,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -794,7 +794,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -824,7 +824,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -935,7 +935,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override
@@ -964,7 +964,7 @@ class MinimumCostFlows {
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException();
+						throw new UnsupportedOperationException("capacities are immutable");
 					}
 
 					@Override

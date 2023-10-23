@@ -353,13 +353,13 @@ public class Graphs {
 
 		@Override
 		public int addVertex() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot add vertices");
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
 			checkVertex(vertex);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove vertices");
 		}
 
 		EdgeIter outEdgesIter(int source) {
@@ -527,41 +527,41 @@ public class Graphs {
 		public int addEdge(int source, int target) {
 			checkVertex(source);
 			checkVertex(target);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot add edges");
 		}
 
 		@Override
 		public void removeEdge(int edge) {
 			checkEdge(edge);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
 		public void removeEdgesOf(int vertex) {
 			checkVertex(vertex);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
 		public void removeOutEdgesOf(int vertex) {
 			checkVertex(vertex);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
 		public void removeInEdgesOf(int vertex) {
 			checkVertex(vertex);
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
 		public void clear() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
 		public void clearEdges() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is complete, cannot remove edges");
 		}
 
 		@Override
@@ -679,17 +679,17 @@ public class Graphs {
 
 		@Override
 		public int addVertex() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
 		}
 
 		@Override
 		public void addVertex(int vertex) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
 		}
 
 		@Override
@@ -709,22 +709,22 @@ public class Graphs {
 
 		@Override
 		public int addEdge(int source, int target) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
 		@Override
@@ -739,12 +739,12 @@ public class Graphs {
 
 		@Override
 		public void clear() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices and edges");
 		}
 
 		@Override
 		public void clearEdges() {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
 		@SuppressWarnings("unchecked")
@@ -756,12 +756,12 @@ public class Graphs {
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices weights");
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices weights");
 		}
 
 		@Override
@@ -777,12 +777,12 @@ public class Graphs {
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges weights");
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges weights");
 		}
 
 		@Override

@@ -952,7 +952,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, E weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -969,7 +969,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, byte weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -986,7 +986,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, short weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1003,7 +1003,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, int weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1020,7 +1020,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, long weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1037,7 +1037,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, float weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1054,7 +1054,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, double weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1071,7 +1071,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, boolean weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -1088,7 +1088,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int idx, char weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 		}
 
@@ -2464,7 +2464,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, E weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2490,7 +2490,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, byte weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2516,7 +2516,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, short weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2542,7 +2542,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, int weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2568,7 +2568,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, long weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2594,7 +2594,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, float weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2620,7 +2620,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, double weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2646,7 +2646,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, boolean weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override
@@ -2672,7 +2672,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			@Override
 			public void set(int id, char weight) {
-				throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException("immutable weights");
 			}
 
 			@Override

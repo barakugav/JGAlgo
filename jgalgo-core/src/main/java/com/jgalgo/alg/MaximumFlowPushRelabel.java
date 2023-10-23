@@ -143,7 +143,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				public void setCapacity(int edge, int capacity) {
-					throw new UnsupportedOperationException();
+					throw new UnsupportedOperationException("capacities are immutable");
 				}
 
 				@Override
@@ -168,7 +168,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				public void setCapacity(int edge, double capacity) {
-					throw new UnsupportedOperationException();
+					throw new UnsupportedOperationException("capacities are immutable");
 				}
 
 				@Override
@@ -1350,7 +1350,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					for (; worker.maxLayerActive > 0; worker.maxLayerActive--)
 						if (worker.layersHeadActive[worker.maxLayerActive] != LinkedListFixedSize.None)
 							return worker.layersHeadActive[worker.maxLayerActive];
-					throw new IllegalStateException();
+					throw new IllegalStateException("no active vertex to discharge");
 				}
 			}
 
@@ -1386,7 +1386,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					for (; minLayerActive < worker.n; minLayerActive++)
 						if (worker.layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 							return worker.layersHeadActive[minLayerActive];
-					throw new IllegalStateException();
+					throw new IllegalStateException("no active vertex to discharge");
 				}
 			}
 
@@ -1447,7 +1447,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					while (listIter.hasNext())
 						if (worker.hasExcess(v = listIter.nextInt()))
 							return v;
-					throw new IllegalStateException();
+					throw new IllegalStateException("no active vertex to discharge");
 				}
 			}
 		}
