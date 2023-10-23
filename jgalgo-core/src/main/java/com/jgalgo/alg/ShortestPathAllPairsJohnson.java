@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -47,7 +48,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private ShortestPathSingleSource negativeSssp =
 			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
-	private boolean parallel = JGAlgoConfig.parallelByDefault;
+	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**

@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import java.util.Objects;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -45,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
-	private boolean parallelEnable = JGAlgoConfig.parallelByDefault;
+	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.

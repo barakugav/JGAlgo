@@ -20,6 +20,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -39,7 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
 
-	private boolean parallel = JGAlgoConfig.parallelByDefault;
+	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**

@@ -21,9 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Supplier;
-import com.jgalgo.alg.JGAlgoConfig;
 import com.jgalgo.graph.IdStrategy.IdAddRemoveListener;
+import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -467,20 +466,13 @@ abstract class GraphImpl extends GraphBase {
 			initListeners(idStrat);
 		}
 
-		private static Supplier<Boolean> IsGraphIdRandom =
-				Objects.requireNonNull(JGAlgoConfig.getOption("GraphIdRandom"));
-
-		private static boolean isGraphIdRandom() {
-			return IsGraphIdRandom.get().booleanValue();
-		}
-
 		static IdIdxMapImpl newInstance(IdStrategy idStrat, int expectedSize, boolean isEdges) {
-			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize, isEdges)
+			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize, isEdges)
 					: new GraphImpl.IdIdxMapCounter(idStrat, expectedSize, isEdges);
 		}
 
 		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
-			return isGraphIdRandom() ? new GraphImpl.IdIdxMapRand(orig, idStrat, isEdges)
+			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(orig, idStrat, isEdges)
 					: new GraphImpl.IdIdxMapCounter(orig, idStrat, isEdges);
 		}
 
