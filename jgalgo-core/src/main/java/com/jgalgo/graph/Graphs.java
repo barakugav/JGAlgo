@@ -15,7 +15,6 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
@@ -30,146 +29,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class Graphs {
 	private Graphs() {}
 
-	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {
-
-		private final GraphElementSet vertices = GraphElementSet.EmptyVertices;
-		private final GraphElementSet edges = GraphElementSet.EmptyEdges;
-
-		@Override
-		public GraphElementSet vertices() {
-			return vertices;
-		}
-
-		@Override
-		public GraphElementSet edges() {
-			return edges;
-		}
-
-		@Override
-		public int addVertex() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void removeVertex(int vertex) {
-			throw new IndexOutOfBoundsException(vertex);
-		}
-
-		@Override
-		public EdgeSet outEdges(int source) {
-			throw new IndexOutOfBoundsException(source);
-		}
-
-		@Override
-		public EdgeSet inEdges(int target) {
-			throw new IndexOutOfBoundsException(target);
-		}
-
-		@Override
-		public EdgeSet getEdges(int source, int target) {
-			throw new IndexOutOfBoundsException(source);
-		}
-
-		@Override
-		public int addEdge(int source, int target) {
-			throw new IndexOutOfBoundsException(source);
-		}
-
-		@Override
-		public void removeEdge(int edge) {
-			throw new IndexOutOfBoundsException(edge);
-		}
-
-		@Override
-		public void reverseEdge(int edge) {
-			throw new IndexOutOfBoundsException(edge);
-		}
-
-		@Override
-		public int edgeSource(int edge) {
-			throw new IndexOutOfBoundsException(edge);
-		}
-
-		@Override
-		public int edgeTarget(int edge) {
-			throw new IndexOutOfBoundsException(edge);
-		}
-
-		@Override
-		public void clear() {}
-
-		@Override
-		public void clearEdges() {}
-
-		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return null;
-		}
-
-		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
-				V defVal) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void removeVerticesWeights(Object key) {}
-
-		@Override
-		public Set<Object> getVerticesWeightsKeys() {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return null;
-		}
-
-		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void removeEdgesWeights(Object key) {}
-
-		@Override
-		public Set<Object> getEdgesWeightsKeys() {
-			return Collections.emptySet();
-		}
-	}
-
-	private static class EmptyGraphUndirected extends EmptyGraph {
-
-		private static final GraphCapabilities Capabilities =
-				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
-
-		@Override
-		public GraphCapabilities getCapabilities() {
-			return Capabilities;
-		}
-	}
-
-	private static class EmptyGraphDirected extends EmptyGraph {
-
-		private static final GraphCapabilities Capabilities =
-				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
-
-		@Override
-		public GraphCapabilities getCapabilities() {
-			return Capabilities;
-		}
-	}
-
 	/**
 	 * An undirected graphs with no vertices and no edges
 	 */
-	public static final IndexGraph EmptyGraphUndirected = new EmptyGraphUndirected();
+	public static final IndexGraph EmptyGraphUndirected = IndexGraphBuilder.newUndirected().build();
 
 	/**
 	 * A directed graphs with no vertices and no edges
 	 */
-	public static final IndexGraph EmptyGraphDirected = new EmptyGraphDirected();
+	public static final IndexGraph EmptyGraphDirected = IndexGraphBuilder.newDirected().build();
 
 	private static class CompleteGraphUndirected extends CompleteGraph {
 

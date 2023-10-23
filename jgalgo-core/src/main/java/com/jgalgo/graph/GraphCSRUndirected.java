@@ -49,13 +49,17 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 
+		final int begin, end;
+
 		EdgeSetOut(int source) {
 			super(source);
+			begin = edgesOutBegin[source];
+			end = edgesOutBegin[source + 1];
 		}
 
 		@Override
 		public int size() {
-			return edgesOutBegin[source + 1] - edgesOutBegin[source];
+			return end - begin;
 		}
 
 		@Override
@@ -65,19 +69,23 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);
+			return new EdgeIterOut(source, edgesOut, begin, end);
 		}
 	}
 
 	class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
 
+		final int begin, end;
+
 		EdgeSetIn(int target) {
 			super(target);
+			begin = edgesOutBegin[target];
+			end = edgesOutBegin[target + 1];
 		}
 
 		@Override
 		public int size() {
-			return edgesOutBegin[target + 1] - edgesOutBegin[target];
+			return end - begin;
 		}
 
 		@Override
@@ -87,7 +95,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 		@Override
 		public EdgeIter iterator() {
-			return new EdgeIterIn(target, edgesOut, edgesOutBegin[target], edgesOutBegin[target + 1]);
+			return new EdgeIterIn(target, edgesOut, begin, end);
 		}
 	}
 

@@ -19,18 +19,11 @@ package com.jgalgo.graph;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
-import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class GraphBase implements Graph {
-
-	@Override
-	public EdgeSet getEdges(int source, int target) {
-		return getCapabilities().directed() ? new EdgeSetSourceTargetDirected(source, target)
-				: new EdgeSetSourceTargetUndirected(source, target);
-	}
 
 	@Override
 	public boolean equals(Object other) {
@@ -149,7 +142,7 @@ abstract class GraphBase implements Graph {
 		return s.toString();
 	}
 
-	private abstract class EdgeSetAbstract extends AbstractIntSet implements EdgeSet {
+	abstract class EdgeSetAbstract extends AbstractIntSet implements EdgeSet {
 
 		@Override
 		public boolean remove(int edge) {
@@ -244,106 +237,6 @@ abstract class GraphBase implements Graph {
 		@Override
 		public void clear() {
 			removeInEdgesOf(target);
-		}
-	}
-
-	private abstract class EdgeSetSourceTarget extends EdgeSetAbstract {
-
-		final int source, target;
-
-		EdgeSetSourceTarget(int source, int target) {
-			this.source = source;
-			this.target = target;
-		}
-
-		@Override
-		public void clear() {
-			for (EdgeIter it = iterator(); it.hasNext();) {
-				it.nextInt();
-				it.remove();
-			}
-		}
-
-		@Override
-		public EdgeIter iterator() {
-			return new EdgeIterSourceTarget(source, target);
-		}
-	}
-
-	private class EdgeSetSourceTargetUndirected extends EdgeSetSourceTarget {
-		EdgeSetSourceTargetUndirected(int source, int target) {
-			super(source, target);
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			int s = edgeSource(edge), t = edgeTarget(edge);
-			return (source == s && target == t) || (source == t && target == s);
-		}
-	}
-
-	private class EdgeSetSourceTargetDirected extends EdgeSetSourceTarget {
-		EdgeSetSourceTargetDirected(int source, int target) {
-			super(source, target);
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			return source == edgeSource(edge) && target == edgeTarget(edge);
-		}
-	}
-
-	private class EdgeIterSourceTarget implements EdgeIter {
-
-		private final int source, target;
-		private final EdgeIter it;
-		private int nextEdge = -1;
-
-		EdgeIterSourceTarget(int source, int target) {
-			this.source = source;
-			this.target = target;
-			it = outEdges(source).iterator();
-			advance();
-		}
-
-		private void advance() {
-			while (it.hasNext()) {
-				int e = it.nextInt();
-				if (it.target() == target) {
-					nextEdge = e;
-					return;
-				}
-			}
-			nextEdge = -1;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return nextEdge != -1;
-		}
-
-		@Override
-		public int nextInt() {
-			Assertions.Iters.hasNext(this);
-			int ret = nextEdge;
-			advance();
-			return ret;
-		}
-
-		@Override
-		public int peekNext() {
-			Assertions.Iters.hasNext(this);
-			return nextEdge;
-		}
-
-		@Override
-		public int source() {
-			return source;
-		}
-
-		@Override
-		public int target() {
-			return target;
 		}
 	}
 

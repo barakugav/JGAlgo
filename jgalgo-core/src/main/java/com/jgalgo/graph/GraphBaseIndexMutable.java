@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphBaseIndexMutable extends GraphBase implements IndexGraphImpl {
+abstract class GraphBaseIndexMutable extends IndexGraphBase {
 
 	final GraphElementSet.Default vertices;
 	final GraphElementSet.Default edges;

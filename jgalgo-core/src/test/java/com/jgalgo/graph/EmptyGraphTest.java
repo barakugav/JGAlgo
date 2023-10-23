@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -48,8 +47,8 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testRemoveVertex() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.removeVertex(0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.removeVertex(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphUndirected.removeVertex(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphDirected.removeVertex(0));
 	}
 
 	@Test
@@ -78,20 +77,20 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testAddEdge() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.addEdge(0, 0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.addEdge(0, 0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphUndirected.addEdge(0, 0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphDirected.addEdge(0, 0));
 	}
 
 	@Test
 	public void testRemoveEdge() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.removeEdge(0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.removeEdge(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphUndirected.removeEdge(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphDirected.removeEdge(0));
 	}
 
 	@Test
 	public void testReverseEdge() {
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.reverseEdge(0));
-		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.reverseEdge(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphUndirected.reverseEdge(0));
+		assertThrows(UnsupportedOperationException.class, () -> Graphs.EmptyGraphDirected.reverseEdge(0));
 	}
 
 	@Test
@@ -104,18 +103,6 @@ public class EmptyGraphTest extends TestBase {
 	public void testEdgeTarget() {
 		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphUndirected.edgeTarget(0));
 		assertThrows(IndexOutOfBoundsException.class, () -> Graphs.EmptyGraphDirected.edgeTarget(0));
-	}
-
-	@Test
-	public void testClear() {
-		Graphs.EmptyGraphUndirected.clear();
-		Graphs.EmptyGraphDirected.clear();
-	}
-
-	@Test
-	public void testClearEdges() {
-		Graphs.EmptyGraphUndirected.clearEdges();
-		Graphs.EmptyGraphDirected.clearEdges();
 	}
 
 	@Test
@@ -154,11 +141,6 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testCapabilities() {
-		for (Graph g : List.of(Graphs.EmptyGraphUndirected, Graphs.EmptyGraphDirected)) {
-			GraphCapabilities capabilities = g.getCapabilities();
-			assertFalse(capabilities.selfEdges());
-			assertFalse(capabilities.parallelEdges());
-		}
 		assertFalse(Graphs.EmptyGraphUndirected.getCapabilities().directed());
 		assertTrue(Graphs.EmptyGraphDirected.getCapabilities().directed());
 	}

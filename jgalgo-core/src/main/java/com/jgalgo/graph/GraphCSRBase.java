@@ -22,7 +22,7 @@ import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
+abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
 	final GraphElementSet.FixedSize vertices;
 	final GraphElementSet.FixedSize edges;
