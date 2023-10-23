@@ -109,19 +109,19 @@ public interface MatchingAlgo {
 			public MatchingAlgo build() {
 				if (impl != null) {
 					switch (impl) {
-						case "CardinalityBipartiteHopcroftKarp":
+						case "cardinality-bipartite-hopcroft-karp":
 							return new MatchingCardinalityBipartiteHopcroftKarp();
-						case "CardinalityGabow1976":
+						case "cardinality-gabow-1976":
 							return new MatchingCardinalityGabow1976();
-						case "BipartiteHungarianMethod":
+						case "bipartite-hungarian-method":
 							return new MatchingWeightedBipartiteHungarianMethod();
-						case "BipartiteSSSP":
+						case "bipartite-sssp":
 							return new MatchingWeightedBipartiteSSSP();
-						case "Gabow1990":
+						case "gabow-1990":
 							return new MatchingWeightedGabow1990();
-						case "Gabow1990Simpler":
+						case "gabow-1990-simpler":
 							return new MatchingWeightedGabow1990Simpler();
-						case "BlossomV":
+						case "blossom-v":
 							return new MatchingWeightedBlossomV();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);

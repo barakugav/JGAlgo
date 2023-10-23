@@ -87,7 +87,7 @@ public class MatchingBench {
 
 		@Benchmark
 		public void CardinalityGabow1976(Blackhole blackhole) {
-			benchAlgo(getAlgo("CardinalityGabow1976"), blackhole);
+			benchAlgo(getAlgo("cardinality-gabow-1976"), blackhole);
 		}
 
 	}
@@ -129,12 +129,12 @@ public class MatchingBench {
 
 		@Benchmark
 		public void CardinalityBipartiteHopcroftKarp(Blackhole blackhole) {
-			benchAlgo(getAlgo("CardinalityBipartiteHopcroftKarp"), blackhole);
+			benchAlgo(getAlgo("cardinality-bipartite-hopcroft-karp"), blackhole);
 		}
 
 		@Benchmark
 		public void CardinalityGabow1976(Blackhole blackhole) {
-			benchAlgo(getAlgo("CardinalityGabow1976"), blackhole);
+			benchAlgo(getAlgo("cardinality-gabow-1976"), blackhole);
 		}
 
 	}
@@ -179,17 +179,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void Gabow1990Simpler(Blackhole blackhole) {
-			benchAlgo(getAlgo("Gabow1990Simpler"), blackhole);
+			benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
 		}
 
 		@Benchmark
 		public void Gabow1990(Blackhole blackhole) {
-			benchAlgo(getAlgo("Gabow1990"), blackhole);
+			benchAlgo(getAlgo("gabow-1990"), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("BlossomV"), blackhole);
+			benchAlgo(getAlgo("blossom-v"), blackhole);
 		}
 
 	}
@@ -234,17 +234,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void BipartiteHungarianMethod(Blackhole blackhole) {
-			benchAlgo(getAlgo("BipartiteHungarianMethod"), blackhole);
+			benchAlgo(getAlgo("bipartite-hungarian-method"), blackhole);
 		}
 
 		@Benchmark
 		public void BipartiteSSSP(Blackhole blackhole) {
-			benchAlgo(getAlgo("BipartiteSSSP"), blackhole);
+			benchAlgo(getAlgo("bipartite-sssp"), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("BlossomV"), blackhole);
+			benchAlgo(getAlgo("blossom-v"), blackhole);
 		}
 
 	}
@@ -305,17 +305,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void Gabow1990Simpler(Blackhole blackhole) {
-			benchAlgo(getAlgo("Gabow1990Simpler"), blackhole);
+			benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
 		}
 
 		@Benchmark
 		public void Gabow1990(Blackhole blackhole) {
-			benchAlgo(getAlgo("Gabow1990"), blackhole);
+			benchAlgo(getAlgo("gabow-1990"), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("BlossomV"), blackhole);
+			benchAlgo(getAlgo("blossom-v"), blackhole);
 		}
 
 	}
@@ -379,17 +379,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void BipartiteHungarianMethod(Blackhole blackhole) {
-			benchAlgo(getAlgo("BipartiteHungarianMethod"), blackhole);
+			benchAlgo(getAlgo("bipartite-hungarian-method"), blackhole);
 		}
 
 		@Benchmark
 		public void Gabow1990Simpler(Blackhole blackhole) {
-			benchAlgo(getAlgo("Gabow1990Simpler"), blackhole);
+			benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("BlossomV"), blackhole);
+			benchAlgo(getAlgo("blossom-v"), blackhole);
 		}
 
 	}
