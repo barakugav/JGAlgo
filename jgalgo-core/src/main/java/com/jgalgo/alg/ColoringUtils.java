@@ -15,73 +15,28 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Arrays;
-import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 
 class ColoringUtils {
 
-	static class ResultImpl implements ColoringAlgo.Result {
-
-		int colorsNum;
-		final int[] colors;
-
-		ResultImpl(IndexGraph g) {
-			colors = new int[g.vertices().size()];
-			Arrays.fill(colors, -1);
-		}
-
-		@Override
-		public int colorsNum() {
-			return colorsNum;
-		}
-
-		@Override
-		public int colorOf(int vertex) {
-			return colors[vertex];
-		}
-
-	}
-
 	static abstract class AbstractImpl implements ColoringAlgo {
 
 		@Override
-		public ColoringAlgo.Result computeColoring(Graph g) {
+		public VertexPartition computeColoring(Graph g) {
 			if (g instanceof IndexGraph)
 				return computeColoring((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-			ColoringAlgo.Result indexResult = computeColoring(iGraph);
-			return new ResultFromIndexResult(indexResult, viMap);
+			VertexPartition indexResult = computeColoring(iGraph);
+			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
-		abstract ColoringAlgo.Result computeColoring(IndexGraph g);
-
-	}
-
-	static class ResultFromIndexResult implements ColoringAlgo.Result {
-
-		private final ColoringAlgo.Result res;
-		private final IndexIdMap viMap;
-
-		ResultFromIndexResult(ColoringAlgo.Result res, IndexIdMap viMap) {
-			this.res = Objects.requireNonNull(res);
-			this.viMap = Objects.requireNonNull(viMap);
-		}
-
-		@Override
-		public int colorsNum() {
-			return res.colorsNum();
-		}
-
-		@Override
-		public int colorOf(int vertex) {
-			return res.colorOf(viMap.idToIndex(vertex));
-		}
+		abstract VertexPartition computeColoring(IndexGraph g);
 
 	}
 

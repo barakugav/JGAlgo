@@ -40,7 +40,7 @@ class ColoringTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
-			ColoringAlgo.Result coloring = algo.computeColoring(g);
+			VertexPartition coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}
@@ -68,14 +68,14 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void validateColoring(Graph g, ColoringAlgo.Result coloring) {
+	static void validateColoring(Graph g, VertexPartition coloring) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return;
 
 		IntSet seenColors = new IntOpenHashSet();
 		for (int v : g.vertices())
-			seenColors.add(coloring.colorOf(v));
+			seenColors.add(coloring.vertexBlock(v));
 		int[] seenColorsArr = seenColors.toIntArray();
 		IntArrays.parallelQuickSort(seenColorsArr);
 		int[] seenColorsArrExpected = new int[seenColorsArr.length];
@@ -83,13 +83,13 @@ class ColoringTestUtils extends TestUtils {
 			seenColorsArrExpected[i] = i;
 		assertArrayEquals(seenColorsArrExpected, seenColorsArr, "colors are expected to be 0,1,2,3,...");
 
-		assertEquals(seenColorsArr.length, coloring.colorsNum(), "wrong colors num");
+		assertEquals(seenColorsArr.length, coloring.numberOfBlocks(), "wrong colors num");
 
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
-			int c1 = coloring.colorOf(u);
-			int c2 = coloring.colorOf(v);
+			int c1 = coloring.vertexBlock(u);
+			int c2 = coloring.vertexBlock(v);
 			assertNotEquals(c1, c2, "neighbor vertices " + u + "," + v + " have the same color: " + c1);
 		}
 	}

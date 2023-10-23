@@ -84,7 +84,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		final ConnectedComponentsAlgo ccAlgo = ConnectedComponentsAlgo.newBuilder().build();
-		final ConnectedComponentsAlgo.Result gCcs = ccAlgo.findConnectedComponents(g);
+		final VertexPartition gCcs = ccAlgo.findConnectedComponents(g);
 
 		/* Check that each bicc is actually a BiConnected component */
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
@@ -97,18 +97,18 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 
 			IntSet ccIdxs = new IntOpenHashSet();
 			for (int v : vertices)
-				ccIdxs.add(gCcs.getVertexCc(v));
+				ccIdxs.add(gCcs.vertexBlock(v));
 			assertTrue(ccIdxs.size() == 1, "BiConnected component vertices are not in a the connected component");
 
 			for (final int vToRemove : vertices) {
 				Graph gWithoutV = g.copy();
 				gWithoutV.removeEdgesOf(vToRemove);
 
-				ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
+				VertexPartition ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
 				ccIdxs.clear();
 				for (int u : vertices)
 					if (u != vToRemove)
-						ccIdxs.add(ccsWithoutV.getVertexCc(u));
+						ccIdxs.add(ccsWithoutV.vertexBlock(u));
 				assertEquals(1, ccIdxs.size(),
 						"BiConnected component vertices are not in a the connected component after remove a single vertex: "
 								+ vToRemove);
@@ -120,7 +120,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 			for (int j = i + 1; j < res.getNumberOfBiCcs(); j++) {
 				IntCollection vs1 = res.getBiCcVertices(i);
 				IntCollection vs2 = res.getBiCcVertices(j);
-				if (gCcs.getVertexCc(vs1.iterator().nextInt()) != gCcs.getVertexCc(vs2.iterator().nextInt()))
+				if (gCcs.vertexBlock(vs1.iterator().nextInt()) != gCcs.vertexBlock(vs2.iterator().nextInt()))
 					continue; /* not connected at all */
 
 				boolean sameCcForAllV = true;
@@ -129,12 +129,12 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 					Graph gWithoutV = g.copy();
 					gWithoutV.removeEdgesOf(vToRemove);
 
-					ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
+					VertexPartition ccsWithoutV = ccAlgo.findConnectedComponents(gWithoutV);
 					IntSet ccIdxs = new IntOpenHashSet();
 					for (IntIterator uit = IntIterators.concat(vs1.iterator(), vs2.iterator()); uit.hasNext();) {
 						int u = uit.nextInt();
 						if (u != vToRemove)
-							ccIdxs.add(ccsWithoutV.getVertexCc(u));
+							ccIdxs.add(ccsWithoutV.vertexBlock(u));
 					}
 					if (ccIdxs.size() > 1)
 						sameCcForAllV = false;

@@ -15,17 +15,14 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlgo {
 
 	@Override
-	public ConnectedComponentsAlgo.Result findConnectedComponents(Graph g) {
+	public VertexPartition findConnectedComponents(Graph g) {
 		if (g instanceof IndexGraph)
 			return findConnectedComponents((IndexGraph) g);
 
@@ -33,12 +30,12 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		ConnectedComponentsAlgo.Result indexResult = findConnectedComponents(iGraph);
-		return new ResultFromIndexResult(indexResult, viMap, eiMap);
+		VertexPartition indexResult = findConnectedComponents(iGraph);
+		return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
 	@Override
-	public ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(Graph g) {
+	public VertexPartition findWeaklyConnectedComponents(Graph g) {
 		if (g instanceof IndexGraph)
 			return findWeaklyConnectedComponents((IndexGraph) g);
 
@@ -46,46 +43,12 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
-		ConnectedComponentsAlgo.Result indexResult = findWeaklyConnectedComponents(iGraph);
-		return new ResultFromIndexResult(indexResult, viMap, eiMap);
+		VertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
+		return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
 	}
 
-	abstract ConnectedComponentsAlgo.Result findConnectedComponents(IndexGraph g);
+	abstract VertexPartition findConnectedComponents(IndexGraph g);
 
-	abstract ConnectedComponentsAlgo.Result findWeaklyConnectedComponents(IndexGraph g);
-
-	private static class ResultFromIndexResult implements ConnectedComponentsAlgo.Result {
-
-		private final ConnectedComponentsAlgo.Result res;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
-
-		ResultFromIndexResult(ConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
-			this.res = Objects.requireNonNull(res);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
-		}
-
-		@Override
-		public int getVertexCc(int vertex) {
-			return res.getVertexCc(viMap.idToIndex(vertex));
-		}
-
-		@Override
-		public int getNumberOfCcs() {
-			return res.getNumberOfCcs();
-		}
-
-		@Override
-		public IntCollection getCcVertices(int ccIdx) {
-			return IndexIdMaps.indexToIdCollection(res.getCcVertices(ccIdx), viMap);
-		}
-
-		@Override
-		public IntCollection getCcEdges(int ccIdx) {
-			return IndexIdMaps.indexToIdCollection(res.getCcEdges(ccIdx), eiMap);
-		}
-
-	}
+	abstract VertexPartition findWeaklyConnectedComponents(IndexGraph g);
 
 }

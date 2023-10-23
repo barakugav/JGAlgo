@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -61,13 +62,15 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 	}
 
 	@Override
-	ColoringAlgo.Result computeColoring(IndexGraph g) {
+	VertexPartition computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
-		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		int[] colors = new int[n];
+		int colorsNum = 0;
 		BitSet[] neighborColors = new BitSet[n];
+		Arrays.fill(colors, -1);
 
 		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
 		int maxDegree = 0;
@@ -95,13 +98,13 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 			int color = 0;
 			while (neighborColors[u].get(color))
 				color++;
-			res.colors[u] = color;
-			res.colorsNum = Math.max(res.colorsNum, color + 1);
+			colors[u] = color;
+			colorsNum = Math.max(colorsNum, color + 1);
 
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
-				if (res.colorOf(v) == -1) { /* v is uncolored */
+				if (colors[v] == -1) { /* v is uncolored */
 					HeapReference<Integer, Integer> ref = refs[v];
 					int key = ref.key().intValue();
 					int saturationDegree = keyToSaturationDegree.applyAsInt(key);
@@ -132,7 +135,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 				}
 			}
 		}
-		return res;
+		return new VertexPartitions.ImplIndex(g, colorsNum, colors);
 	}
 
 }

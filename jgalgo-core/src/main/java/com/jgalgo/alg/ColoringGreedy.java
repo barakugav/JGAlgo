@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
 import com.jgalgo.graph.EdgeIter;
@@ -58,12 +59,14 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 	}
 
 	@Override
-	ColoringAlgo.Result computeColoring(IndexGraph g) {
+	VertexPartition computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
-		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		int[] colors = new int[n];
+		int colorsNum = 0;
+		Arrays.fill(colors, -1);
 		int[] order = new int[n];
 		for (int u = 0; u < n; u++)
 			order[u] = u;
@@ -75,15 +78,15 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
-				int c = res.colorOf(v);
+				int c = colors[v];
 				if (c != -1)
 					usedColors.set(c);
 			}
 			int color = usedColors.nextClearBit(0);
-			res.colors[u] = color;
-			res.colorsNum = Math.max(res.colorsNum, color + 1);
+			colors[u] = color;
+			colorsNum = Math.max(colorsNum, color + 1);
 		}
-		return res;
+		return new VertexPartitions.ImplIndex(g, colorsNum, colors);
 	}
 
 }

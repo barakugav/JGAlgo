@@ -42,14 +42,14 @@ import com.jgalgo.graph.Graph;
  * g.addEdge(v3, v4);
  *
  * Coloring coloringAlg = Coloring.newBuilder().build();
- * Coloring.Result colors = coloringAlg.computeColoring(g);
- * System.out.println("A valid coloring with " + colors.colorsNum() + " colors was found");
+ * VertexPartition colors = coloringAlg.computeColoring(g);
+ * System.out.println("A valid coloring with " + colors.numberOfBlocks() + " colors was found");
  * for (int u : g.vertices()) {
- * 	System.out.println("The color of vertex " + u + " is " + colors.colorOf(u));
+ * 	System.out.println("The color of vertex " + u + " is " + colors.vertexBlock(u));
  * 	for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
  * 		eit.nextInt();
  * 		int v = eit.target();
- * 		assert colors.colorOf(u) != colors.colorOf(v);
+ * 		assert colors.vertexBlock(u) != colors.vertexBlock(v);
  * 	}
  * }
  * }</pre>
@@ -66,31 +66,7 @@ public interface ColoringAlgo {
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	ColoringAlgo.Result computeColoring(Graph g);
-
-	/**
-	 * A coloring result containing a color for each vertex.
-	 *
-	 * @author Barak Ugav
-	 */
-	interface Result {
-
-		/**
-		 * The total number of different colors used in the coloring.
-		 *
-		 * @return number of different colors
-		 */
-		int colorsNum();
-
-		/**
-		 * Get the color assigned to a vertex.
-		 *
-		 * @param  vertex a vertex identifier in the graph
-		 * @return        a color of the vertex, represented as integer
-		 */
-		int colorOf(int vertex);
-
-	}
+	VertexPartition computeColoring(Graph g);
 
 	/**
 	 * Create a new coloring algorithm builder.

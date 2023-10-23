@@ -46,7 +46,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 	Path computeShortestEdgeVisitorCircle(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		if (connectedComponentsAlgo.findConnectedComponents(g).getNumberOfCcs() != 1)
+		if (connectedComponentsAlgo.findConnectedComponents(g).numberOfBlocks() != 1)
 			throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
 
 		/* Find all vertices with odd degree */

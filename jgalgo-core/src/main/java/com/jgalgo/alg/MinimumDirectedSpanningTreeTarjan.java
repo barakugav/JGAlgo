@@ -129,8 +129,8 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	private void addEdgesUntilStronglyConnected(IndexGraph g, int artificialEdgesThreshold) {
-		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.findConnectedComponents(g);
-		int N = connectivityRes.getNumberOfCcs();
+		VertexPartition connectivityRes = ccAlg.findConnectedComponents(g);
+		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)
 			return;
 
@@ -138,7 +138,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		Arrays.fill(V2v, -1);
 		int n = g.vertices().size();
 		for (int v = 0; v < n; v++) {
-			int V = connectivityRes.getVertexCc(v);
+			int V = connectivityRes.vertexBlock(v);
 			if (V2v[V] == -1)
 				V2v[V] = v;
 		}
@@ -147,7 +147,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			int vNext = V < N - 1 ? V + 1 : 0;
 			for (EdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				if (connectivityRes.getVertexCc(eit.target()) == vNext)
+				if (connectivityRes.vertexBlock(eit.target()) == vNext)
 					continue ccLoop; /* V already connected to vNext */
 			}
 			int e = g.addEdge(V2v[V], V2v[vNext]);

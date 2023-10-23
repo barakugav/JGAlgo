@@ -34,6 +34,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.ColoringAlgo;
+import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -72,7 +73,7 @@ public class ColoringBench {
 	private void benchColoring(ColoringAlgo.Builder builder, Blackhole blackhole) {
 		Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ColoringAlgo algo = builder.build();
-		ColoringAlgo.Result res = algo.computeColoring(g);
+		VertexPartition res = algo.computeColoring(g);
 		blackhole.consume(res);
 	}
 

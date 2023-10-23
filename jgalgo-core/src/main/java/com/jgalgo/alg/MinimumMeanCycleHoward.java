@@ -65,8 +65,8 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
-		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);
-		final int ccNum = cc.getNumberOfCcs();
+		VertexPartition cc = ccAlg.findConnectedComponents(g);
+		final int ccNum = cc.numberOfBlocks();
 
 		/* init distances and policy */
 		double[] d = new double[n];
@@ -74,7 +74,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		int[] policy = new int[n];
 		Arrays.fill(policy, 0, n, -1);
 		for (int c = 0; c < ccNum; c++) {
-			for (int e : cc.getCcEdges(c)) {
+			for (int e : cc.blockEdges(c)) {
 				double ew = w.weight(e);
 				int u = g.edgeSource(e);
 				if (ew < d[u]) {
@@ -93,7 +93,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		Arrays.fill(visitIdx, 0, n, 0);
 		/* operate on each SCC separately */
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
-			if (cc.getCcVertices(ccIdx).size() < 2)
+			if (cc.blockVertices(ccIdx).size() < 2)
 				continue;
 			/* run in iteration as long as we find improvements */
 			sccLoop: for (;;) {
@@ -103,7 +103,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 				final int iterationFirstSearchIdx = nextSearchIdx;
 				IntPredicate visited = v -> visitIdx[v] >= iterationFirstSearchIdx;
 				/* DFS root loop */
-				for (final int root : cc.getCcVertices(ccIdx)) {
+				for (final int root : cc.blockVertices(ccIdx)) {
 					if (visited.test(root))
 						continue;
 					final int searchIdx = nextSearchIdx++;
@@ -172,7 +172,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 
 				/* check for improvements */
 				boolean improved = false;
-				for (int e : cc.getCcEdges(ccIdx)) {
+				for (int e : cc.blockEdges(ccIdx)) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;

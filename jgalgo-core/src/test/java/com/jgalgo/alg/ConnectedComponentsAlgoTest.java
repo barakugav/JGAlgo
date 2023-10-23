@@ -46,8 +46,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -83,8 +82,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -130,8 +128,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			ConnectedComponentsAlgo.Result actual =
-					ConnectedComponentsAlgo.newBuilder().build().findWeaklyConnectedComponents(g);
+			VertexPartition actual = ConnectedComponentsAlgo.newBuilder().build().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
 			GraphBuilder gb = GraphBuilder.newUndirected();
@@ -139,23 +136,21 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 				gb.addVertex(u);
 			for (int e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
-			ConnectedComponentsAlgo.Result expected =
-					ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(gb.build());
+			VertexPartition expected = ConnectedComponentsAlgo.newBuilder().build().findConnectedComponents(gb.build());
 			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
 			for (int v : g.vertices())
-				expectedMap.put(v, expected.getVertexCc(v));
-			Pair<Integer, Int2IntMap> expectedPair = IntObjectPair.of(expected.getNumberOfCcs(), expectedMap);
+				expectedMap.put(v, expected.vertexBlock(v));
+			Pair<Integer, Int2IntMap> expectedPair = IntObjectPair.of(expected.numberOfBlocks(), expectedMap);
 			assertConnectivityResultsEqual(g, expectedPair, actual);
 		});
 	}
 
-	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, Int2IntMap> r1,
-			ConnectedComponentsAlgo.Result r2) {
-		assertEquals(r1.first(), r2.getNumberOfCcs());
-		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.getNumberOfCcs());
+	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, Int2IntMap> r1, VertexPartition r2) {
+		assertEquals(r1.first(), r2.numberOfBlocks());
+		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.numberOfBlocks());
 		for (int u : g.vertices()) {
 			int cc1 = r1.second().get(u);
-			int cc2 = r2.getVertexCc(u);
+			int cc2 = r2.vertexBlock(u);
 			if (cc1To2Map.containsKey(cc1)) {
 				int cc1Mapped = cc1To2Map.get(cc1);
 				assertEquals(cc1Mapped, cc2);
@@ -165,12 +160,12 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		}
 	}
 
-	private static void validateConnectivityResult(Graph g, ConnectedComponentsAlgo.Result res) {
+	private static void validateConnectivityResult(Graph g, VertexPartition res) {
 		BitSet ccs = new BitSet();
 		for (int v : g.vertices())
-			ccs.set(res.getVertexCc(v));
-		assertEquals(ccs.cardinality(), res.getNumberOfCcs());
-		for (int cc = 0; cc < res.getNumberOfCcs(); cc++)
+			ccs.set(res.vertexBlock(v));
+		assertEquals(ccs.cardinality(), res.numberOfBlocks());
+		for (int cc = 0; cc < res.numberOfBlocks(); cc++)
 			assertTrue(ccs.get(cc));
 	}
 

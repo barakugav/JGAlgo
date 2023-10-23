@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-				ConnectedComponentsAlgo.Result connectivityResult = ccAlg.findConnectedComponents(gSub);
+				VertexPartition connectivityResult = ccAlg.findConnectedComponents(gSub);
 
 				for (;; startV++) {
 					if (startV >= nFull) {
@@ -205,8 +205,8 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 						return;
 					}
 					int uSub = startV - subToFull;
-					int ccIdx = connectivityResult.getVertexCc(uSub);
-					if (connectivityResult.getCcVertices(ccIdx).size() > 1 || hasSelfEdge(gSub, uSub)) {
+					int ccIdx = connectivityResult.vertexBlock(uSub);
+					if (connectivityResult.blockVertices(ccIdx).size() > 1 || hasSelfEdge(gSub, uSub)) {
 						scc = new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx);
 						return;
 					}
@@ -235,10 +235,10 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final ConnectedComponentsAlgo.Result connectivityResult;
+		private final VertexPartition connectivityResult;
 		private final int ccIdx;
 
-		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {
+		StronglyConnectedComponent(int subToFull, VertexPartition connectivityResult, int ccIdx) {
 			this.subToFull = subToFull;
 			this.connectivityResult = connectivityResult;
 			this.ccIdx = ccIdx;
@@ -248,7 +248,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			int vSub = v - subToFull;
 			if (vSub < 0)
 				return false;
-			return ccIdx == connectivityResult.getVertexCc(vSub);
+			return ccIdx == connectivityResult.vertexBlock(vSub);
 		}
 
 	}

@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -48,12 +49,14 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 	ColoringRecursiveLargestFirst() {}
 
 	@Override
-	ColoringAlgo.Result computeColoring(IndexGraph g) {
+	VertexPartition computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
-		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		int[] colors = new int[n];
+		int colorsNum = 0;
+		Arrays.fill(colors, -1);
 		int[] degree = new int[n];
 		for (int u = 0; u < n; u++)
 			degree[u] = g.outEdges(u).size();
@@ -67,7 +70,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 
 			int bestDegree = -1, firstU = -1;
 			for (int u = 0; u < n; u++) {
-				if (res.colorOf(u) != -1)
+				if (colors[u] != -1)
 					continue;
 				int d = degree[u];
 				if (bestDegree < d) {
@@ -76,7 +79,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				}
 			}
 			if (firstU == -1) {
-				res.colorsNum = color;
+				colorsNum = color;
 				break;
 			}
 
@@ -88,7 +91,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.target();
-					if (res.colorOf(v) != -1)
+					if (colors[v] != -1)
 						continue;
 					isAdjacentToS.set(v);
 				}
@@ -96,7 +99,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				int nextU = -1, bestNumOfNeighborsAdjacentToS = -1;
 				bestDegree = -1;
 				for (int v = 0; v < n; v++) {
-					if (res.colorOf(v) != -1 || S.get(v) || isAdjacentToS.get(v))
+					if (colors[v] != -1 || S.get(v) || isAdjacentToS.get(v))
 						continue;
 					int numOfNeighborsAdjacentToS = 0;
 					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
@@ -116,7 +119,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 			}
 
 			for (int u : JGAlgoUtils.iterable(S)) {
-				res.colors[u] = color;
+				colors[u] = color;
 
 				// update degree to include only vertices without color
 				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -126,7 +129,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 			}
 		}
 
-		return res;
+		return new VertexPartitions.ImplIndex(g, colorsNum, colors);
 	}
 
 }

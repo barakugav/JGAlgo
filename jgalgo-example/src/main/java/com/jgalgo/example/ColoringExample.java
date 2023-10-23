@@ -16,6 +16,7 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.ColoringAlgo;
+import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
@@ -28,17 +29,17 @@ public class ColoringExample {
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
 		ColoringAlgo coloringAlgo = ColoringAlgo.newBuilder().build();
-		ColoringAlgo.Result colors = coloringAlgo.computeColoring(g);
+		VertexPartition colors = coloringAlgo.computeColoring(g);
 
 		for (int u : g.vertices()) {
-			int uColor = colors.colorOf(u);
+			int uColor = colors.vertexBlock(u);
 			System.out.println("The color of " + u + " is " + uColor);
 
 			/* For each edge (u,v), the endpoints u and v have different colors */
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
-				int vColor = colors.colorOf(v);
+				int vColor = colors.vertexBlock(v);
 				assert uColor != vColor;
 			}
 		}

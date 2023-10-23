@@ -172,8 +172,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				}
 
 				/* Find all strong connected components in the graph */
-				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.findConnectedComponents(gNeg);
-				final int N = connectivityRes.getNumberOfCcs();
+				VertexPartition connectivityRes = ccAlg.findConnectedComponents(gNeg);
+				final int N = connectivityRes.numberOfBlocks();
 
 				/*
 				 * Contract each strong connected component and search for a negative edge within it, if found -
@@ -183,11 +183,11 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				for (int U = 0; U < N; U++)
 					G.addVertex();
 				for (int u = 0; u < n; u++) {
-					int U = connectivityRes.getVertexCc(u);
+					int U = connectivityRes.vertexBlock(u);
 					for (EdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
-						int V = connectivityRes.getVertexCc(v);
+						int V = connectivityRes.vertexBlock(v);
 						int weight = w[gNegEdgeRefs[e]];
 						if (U != V) {
 							GWeights.set(G.addEdge(U, V), weight);
@@ -234,7 +234,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					diagnostics.bigLayer();
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
 					for (int v = 0; v < n; v++) {
-						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);
+						int V = connectivityRes.vertexBlock(v), l = -(int) ssspRes.distance(V);
 						if (l >= biggestLayer)
 							potential[v]--;
 					}
@@ -265,8 +265,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					for (int e = 0; e < m; e++) {
 						int weight = w[e];
 						if (weight > 0) {
-							int U = connectivityRes.getVertexCc(g.edgeSource(e));
-							int V = connectivityRes.getVertexCc(g.edgeTarget(e));
+							int U = connectivityRes.vertexBlock(g.edgeSource(e));
+							int V = connectivityRes.vertexBlock(g.edgeTarget(e));
 							if (U != V)
 								GWeights.set(G.addEdge(U, V), weight);
 						}
@@ -278,7 +278,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 							GWeights.set(e, -weight);
 					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
-						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));
+						potential[v] += ssspRes.distance(connectivityRes.vertexBlock(v));
 				}
 			}
 		}
