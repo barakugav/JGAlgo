@@ -190,6 +190,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 			} else {
 				throw new IllegalStateException();
 			}
+			assertEquals(vertices.size(), lca.size());
 		}
 	}
 

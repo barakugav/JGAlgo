@@ -91,6 +91,7 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 			addFullVertex1(vertex.subTree, tparent);
 		}
 
+		vertices2Num++;
 		return vertex;
 	}
 
@@ -200,6 +201,7 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 	@Override
 	public void clear() {
 		lca0.clear();
+		vertices2Num = 0;
 	}
 
 	private static class Vertex2 implements LowestCommonAncestorDynamic.Vertex {
