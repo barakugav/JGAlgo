@@ -102,8 +102,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		Collection<E> values();
 
-		Class<E> getTypeClass();
-
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
 
 			final GraphElementSet elements;
@@ -137,16 +135,14 @@ interface WeightsImpl<E> extends Weights<E> {
 			Object[] weights;
 			final E defaultWeight;
 			private final ObjectCollection<E> values;
-			private final Class<E> type;
 
-			Obj(GraphElementSet elements, E defVal, Class<E> type) {
+			Obj(GraphElementSet elements, E defVal) {
 				super(elements);
 
 				defaultWeight = defVal;
 				weights = ObjectArrays.EMPTY_ARRAY;
 				Arrays.fill(weights, defaultWeight);
 
-				this.type = Objects.requireNonNull(type);
 				values = new AbstractObjectList<>() {
 					@Override
 					public int size() {
@@ -169,13 +165,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			Obj(WeightsImpl.Index.Obj<E> orig, GraphElementSet elements) {
-				this(elements, orig.defaultWeight, orig.type);
+				this(elements, orig.defaultWeight);
 				checkSameSize(elements, orig.elements);
 				weights = Arrays.copyOf(orig.weights, elements.size());
 			}
 
 			Obj(WeightsImpl.Index.Obj<E> orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				this(elements, orig.defaultWeight, orig.type);
+				this(elements, orig.defaultWeight);
 				checkSameSize(elements, orig.elements);
 				weights = Arrays.copyOf(weights, elements.size());
 				final int s = elements.size();
@@ -198,11 +194,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public Collection<E> values() {
 				return values;
-			}
-
-			@Override
-			public Class<E> getTypeClass() {
-				return type;
 			}
 
 			@Override
@@ -279,11 +270,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public Class<java.lang.Byte> getTypeClass() {
-				return byte.class;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -354,11 +340,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public ShortCollection values() {
 				return values;
-			}
-
-			@Override
-			public Class<java.lang.Short> getTypeClass() {
-				return short.class;
 			}
 
 			@Override
@@ -435,11 +416,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public Class<Integer> getTypeClass() {
-				return int.class;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -509,11 +485,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public LongCollection values() {
 				return values;
-			}
-
-			@Override
-			public Class<java.lang.Long> getTypeClass() {
-				return long.class;
 			}
 
 			@Override
@@ -590,11 +561,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public Class<java.lang.Float> getTypeClass() {
-				return float.class;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -666,11 +632,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public DoubleCollection values() {
 				return values;
-			}
-
-			@Override
-			public Class<java.lang.Double> getTypeClass() {
-				return double.class;
 			}
 
 			@Override
@@ -785,11 +746,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public Class<Boolean> getTypeClass() {
-				return boolean.class;
-			}
-
-			@Override
 			public boolean equals(Object other) {
 				if (this == other)
 					return true;
@@ -866,11 +822,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public CharCollection values() {
 				return values;
-			}
-
-			@Override
-			public Class<Character> getTypeClass() {
-				return char.class;
 			}
 
 			@Override
@@ -1172,7 +1123,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				container = new WeightsImpl.IndexMutable.Char(elements, defVal0);
 
 			} else {
-				container = new WeightsImpl.IndexMutable.Obj<>(elements, defVal, type);
+				container = new WeightsImpl.IndexMutable.Obj<>(elements, defVal);
 			}
 			@SuppressWarnings("unchecked")
 			WeightsImpl.IndexMutable<D> container0 = (WeightsImpl.IndexMutable<D>) container;
@@ -1207,8 +1158,8 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Obj<E> extends WeightsImpl.Index.Obj<E> implements WeightsImpl.IndexMutable<E> {
 
-			Obj(GraphElementSet elements, E defVal, Class<E> type) {
-				super(elements, defVal, type);
+			Obj(GraphElementSet elements, E defVal) {
+				super(elements, defVal);
 			}
 
 			Obj(WeightsImpl.Index.Obj<E> orig, GraphElementSet elements) {
