@@ -42,7 +42,7 @@ class DynamicTreeSplayExtended extends DynamicTreeSplay {
 	 *
 	 * @param  weightLimit              a limit on the weights of the edges. The limit is an upper bound on the sum of
 	 *                                      each edge weight and the weights modification that are performed using
-	 *                                      {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
+	 *                                      {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
 	 * @param  extensions               a collection of extensions the data structure will use. Each extension must not
 	 *                                      be used in any other tree than this one.
 	 * @throws IllegalArgumentException if the extensions collection is empty. In such a case, the regular

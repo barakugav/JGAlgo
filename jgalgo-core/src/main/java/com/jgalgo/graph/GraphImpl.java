@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
-import com.jgalgo.JGAlgoConfig;
+import com.jgalgo.alg.JGAlgoConfig;
 import com.jgalgo.graph.IdStrategy.IdAddRemoveListener;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;

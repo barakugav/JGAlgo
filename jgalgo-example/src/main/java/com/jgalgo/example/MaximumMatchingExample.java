@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.Matching;
-import com.jgalgo.MatchingAlgorithm;
+import com.jgalgo.alg.Matching;
+import com.jgalgo.alg.MatchingAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;

@@ -18,7 +18,7 @@ package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import com.jgalgo.LowestCommonAncestorDynamic;
+import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**

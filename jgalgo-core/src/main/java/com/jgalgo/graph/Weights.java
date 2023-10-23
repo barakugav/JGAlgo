@@ -16,8 +16,8 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.MatchingAlgorithm;
-import com.jgalgo.ShortestPathSingleSource;
+import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**

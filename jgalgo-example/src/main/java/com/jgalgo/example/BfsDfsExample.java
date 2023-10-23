@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.BFSIter;
-import com.jgalgo.DFSIter;
+import com.jgalgo.alg.BFSIter;
+import com.jgalgo.alg.DFSIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import it.unimi.dsi.fastutil.ints.IntList;

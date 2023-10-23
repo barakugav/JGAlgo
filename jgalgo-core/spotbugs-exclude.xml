@@ -7,20 +7,20 @@
   <Match>
     <!-- Heap element in DSatur coloring implementation is only used in a heap, in which the
     compareTo() method is used and the equals() is not -->
-    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Class name="com.jgalgo.alg.ColoringDSaturHeap$HeapElm" />
     <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
   </Match>
   <Match>
     <!-- DSatur coloring heap SHOULD negate the comparison result, as we want vertices with GREATER
     degree to be extracted first from the heap -->
-    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Class name="com.jgalgo.alg.ColoringDSaturHeap$HeapElm" />
     <Method name="compareTo" />
     <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
   </Match>
   <Match>
     <!-- BFS iterator indeed store a mutable reference to the graph and the user should not modify
     the graph while the BFS iterator is in use -->
-    <Class name="com.jgalgo.BFSIter" />
+    <Class name="com.jgalgo.alg.BFSIter" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -28,7 +28,7 @@
   <Match>
     <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
     the graph while the DFS iterator is in use -->
-    <Class name="com.jgalgo.DFSIter" />
+    <Class name="com.jgalgo.alg.DFSIter" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -42,73 +42,73 @@
   <Match>
     <!-- The Path object indeed store a mutable reference to the graph and the user should not
     modify the graph while the Path object is in use -->
-    <Class name="com.jgalgo.Path" />
+    <Class name="com.jgalgo.alg.Path" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- The retuned list is an unmodifiable view of the real list -->
-    <Class name="com.jgalgo.DFSIter" />
+    <Class name="com.jgalgo.alg.DFSIter" />
     <Method name="edgePath" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.HeapBinomial" />
+    <Class name="com.jgalgo.alg.HeapBinomial" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.HeapFibonacci" />
+    <Class name="com.jgalgo.alg.HeapFibonacci" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.HeapPairing" />
+    <Class name="com.jgalgo.alg.HeapPairing" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="com.jgalgo.RedBlackTree" />
+    <Class name="com.jgalgo.alg.RedBlackTree" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="com.jgalgo.SplayTree" />
+    <Class name="com.jgalgo.alg.SplayTree" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is reference to the minimum root node, and its desire to expose it -->
-    <Class name="com.jgalgo.HeapFibonacci" />
+    <Class name="com.jgalgo.alg.HeapFibonacci" />
     <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is reference to the root node, and its desire to expose it -->
-    <Class name="com.jgalgo.HeapPairing" />
+    <Class name="com.jgalgo.alg.HeapPairing" />
     <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- the provided reference is already internal object -->
-    <Class name="com.jgalgo.HeapPairing" />
+    <Class name="com.jgalgo.alg.HeapPairing" />
     <Method name="remove" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- should be fine -->
-    <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker" />
+    <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker" />
     <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
   </Match>
   <Match>
     <!-- intentional -->
-    <Class name="com.jgalgo.SSSPDial$DialHeap" />
+    <Class name="com.jgalgo.alg.SSSPDial$DialHeap" />
     <Method name="extractMin" />
     <Field name="scanIdx" />
     <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
@@ -162,11 +162,11 @@
   <Match>
     <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
     <Or>
-      <Class name="com.jgalgo.AStar" />
-      <Class name="com.jgalgo.ColoringDSaturHeap" />
-      <Class name="com.jgalgo.MSTFredmanTarjan" />
-      <Class name="com.jgalgo.MSTPrim" />
-      <Class name="com.jgalgo.MatchingWeightedBipartiteHungarianMethod" />
+      <Class name="com.jgalgo.alg.AStar" />
+      <Class name="com.jgalgo.alg.ColoringDSaturHeap" />
+      <Class name="com.jgalgo.alg.MSTFredmanTarjan" />
+      <Class name="com.jgalgo.alg.MSTPrim" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBipartiteHungarianMethod" />
     </Or>
     <Method name="setHeapBuilder" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -176,15 +176,15 @@
     <Or>
       <Class name="com.jgalgo.internal.ds.BinarySearchTrees$BSTIterator" />
       <Class name="com.jgalgo.internal.ds.HeapBinary$It" />
-      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
-      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$1" />
-      <Class name="com.jgalgo.MatchingWeightedGabow1990Abstract$Worker$2" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$1$1" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Blossom$2$1" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$1$1" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Tree$2$1" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$2$1" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Worker$3$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker$2" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Blossom$1$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Blossom$2$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Tree$1$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Tree$2$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$2$1" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$3$1" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$IterPeekableImpl" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
@@ -195,8 +195,8 @@
   <Match>
     <!-- used when Debug=trues -->
     <Or>
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug" />
-      <Class name="com.jgalgo.MatchingWeightedBlossomV$Debug$Impl" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Debug" />
+      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Debug$Impl" />
     </Or>
     <Or>
       <Bug pattern="UC_USELESS_VOID_METHOD" />
