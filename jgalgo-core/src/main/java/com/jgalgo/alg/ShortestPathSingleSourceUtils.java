@@ -302,6 +302,13 @@ class ShortestPathSingleSourceUtils {
 				Arrays.fill(backtrack, -1);
 			}
 
+			Int(IndexGraph g, int source, int[] distances, int[] backtrack) {
+				this.g = g;
+				this.source = source;
+				this.distances = distances;
+				this.backtrack = backtrack;
+			}
+
 			@Override
 			public double distance(int target) {
 				int d = distances[target];

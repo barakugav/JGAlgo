@@ -24,7 +24,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
  * Dial's algorithm for Single Source Shortest Path for positive integer weights.
@@ -80,18 +79,16 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 */
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source,
 			int maxDistance) {
-		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
-		res.distances[source] = 0;
-
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
+		heap.distances[source] = 0;
+		int[] backtrack = new int[g.vertices().size()];
+		Arrays.fill(backtrack, -1);
 
 		for (int u = source;;) {
-			final int uDistance = res.distances[u];
+			final int uDistance = heap.distances[u];
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				if (res.distances[v] != Integer.MAX_VALUE)
-					continue;
 
 				int ew = w.weightInt(e);
 				Assertions.Graphs.onlyPositiveWeight(ew);
@@ -99,31 +96,27 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 
 				if (!heap.containsVertex(v)) {
 					heap.insert(v, distance);
-					res.backtrack[v] = e;
+					backtrack[v] = e;
 				} else {
 					if (distance < heap.getCurrentDistance(v)) {
-						res.backtrack[v] = e;
+						backtrack[v] = e;
 						heap.decreaseKey(v, distance);
 					}
 				}
 			}
 
-			IntIntPair next = heap.extractMin();
-			if (next == null)
+			u = heap.extractMin();
+			if (u == -1)
 				break;
-			u = next.firstInt();
-			assert res.distances[u] == Integer.MAX_VALUE;
-			res.distances[u] = next.secondInt();
 		}
-
-		return res;
+		return new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source, heap.distances, backtrack);
 	}
 
 	private static class DialHeap {
 
 		private final LinkedListFixedSize.Doubly heapBucketsNodes;
 		private int[] heapBucketsHead;
-		private final int[] heapDistances;
+		final int[] distances;
 		private int heapScanIdx;
 		private int maxDistance;
 
@@ -131,15 +124,15 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 			heapBucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
 			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);
 			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
-			heapDistances = new int[n];
-			Arrays.fill(heapDistances, 0, n, -1);
+			distances = new int[n];
+			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
 
 			maxDistance = -1;
 			heapScanIdx = 0;
 		}
 
 		void insert(int v, int distance) {
-			heapDistances[v] = distance;
+			distances[v] = distance;
 			if (distance >= heapBucketsHead.length) {
 				int oldLength = heapBucketsHead.length;
 				int newLength = Math.max(distance + 1, oldLength * 2);
@@ -157,7 +150,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 		}
 
 		void decreaseKey(int v, int distance) {
-			int oldDistance = heapDistances[v];
+			int oldDistance = distances[v];
 			assert distance < oldDistance;
 			if (v == heapBucketsHead[oldDistance])
 				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
@@ -166,26 +159,26 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 			insert(v, distance);
 		}
 
-		IntIntPair extractMin() {
+		int extractMin() {
 			for (int distance = heapScanIdx; distance <= maxDistance; distance++) {
 				int v = heapBucketsHead[distance];
 				if (v != LinkedListFixedSize.None) {
 					heapBucketsHead[distance] = heapBucketsNodes.next(v);
 					heapBucketsNodes.disconnect(v);
 					heapScanIdx = distance;
-					return IntIntPair.of(v, distance);
+					return v;
 				}
 			}
 			heapScanIdx = maxDistance;
-			return null;
+			return -1;
 		}
 
 		boolean containsVertex(int v) {
-			return heapDistances[v] != -1;
+			return distances[v] != Integer.MAX_VALUE;
 		}
 
 		int getCurrentDistance(int v) {
-			return heapDistances[v];
+			return distances[v];
 		}
 
 	}
