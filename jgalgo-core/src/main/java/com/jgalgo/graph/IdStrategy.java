@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -78,7 +78,7 @@ abstract class IdStrategy {
 
 		@Override
 		public IntIterator iterator() {
-			return JGAlgoUtils.rangeIter(size);
+			return Range.of(size).iterator();
 		}
 
 		@Override

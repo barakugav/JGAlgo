@@ -214,8 +214,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				}
 			}
 
-			for (int v = 0; v < n; v++)
-				assert Math.abs(excess[v]) < eps;
+			assert g.vertices().intStream().allMatch(v -> excess[v] < eps);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				net.setFlow(e, Math.max(0, Math.min(flow[e], net.getCapacity(e))));
 		}
@@ -354,8 +353,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			}
 
 			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-			for (int v = 0; v < n; v++)
-				assert excess[v] == 0;
+			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				netInt.setFlow(e, flow[e]);
 		}

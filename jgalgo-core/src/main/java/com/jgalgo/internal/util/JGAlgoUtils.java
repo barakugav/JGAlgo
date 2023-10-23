@@ -120,31 +120,6 @@ public class JGAlgoUtils {
 		};
 	}
 
-	private static class RangeIter implements IntIterator {
-
-		private int idx;
-		private final int size;
-
-		RangeIter(int size) {
-			this.size = size;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return idx < size;
-		}
-
-		@Override
-		public int nextInt() {
-			Assertions.Iters.hasNext(this);
-			return idx++;
-		}
-	}
-
-	public static IntIterator rangeIter(int size) {
-		return new RangeIter(size);
-	}
-
 	public static interface IterPeekable<E> extends Iterator<E> {
 
 		E peekNext();
