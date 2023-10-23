@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class CyclesFinderJohnson extends CyclesFinderAbstract {
 
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-				VertexPartition connectivityResult = ccAlg.findConnectedComponents(gSub);
+				VertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);
 
 				for (;; startV++) {
 					if (startV >= nFull) {

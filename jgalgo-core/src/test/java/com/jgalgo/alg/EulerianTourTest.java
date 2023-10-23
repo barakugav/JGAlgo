@@ -229,7 +229,7 @@ public class EulerianTourTest extends TestBase {
 				break;
 			}
 		}
-		assert ConnectedComponentsAlgo.newInstance().findConnectedComponents(g).numberOfBlocks() == 1;
+		assert StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(g);
 		return g;
 	}
 
@@ -249,7 +249,8 @@ public class EulerianTourTest extends TestBase {
 	}
 
 	private static void addEdgesUntilStronglyConnected(Graph g) {
-		VertexPartition connectivityRes = ConnectedComponentsAlgo.newInstance().findConnectedComponents(g);
+		VertexPartition connectivityRes =
+				StronglyConnectedComponentsAlgo.newInstance().findStronglyConnectedComponents(g);
 		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)
 			return;

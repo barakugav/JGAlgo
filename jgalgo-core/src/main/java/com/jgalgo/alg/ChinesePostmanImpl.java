@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class ChinesePostmanImpl implements ChinesePostman {
 
-	private final ConnectedComponentsAlgo connectedComponentsAlgo = ConnectedComponentsAlgo.newInstance();
+	private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo = WeaklyConnectedComponentsAlgo.newInstance();
 	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();
 	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
@@ -46,7 +46,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 	Path computeShortestEdgeVisitorCircle(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		if (connectedComponentsAlgo.findConnectedComponents(g).numberOfBlocks() != 1)
+		if (!connectedComponentsAlgo.isWeaklyConnected(g))
 			throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
 
 		/* Find all vertices with odd degree */

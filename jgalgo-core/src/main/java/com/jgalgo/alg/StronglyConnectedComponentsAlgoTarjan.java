@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
+class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
 
 	@Override
-	VertexPartition findConnectedComponents(IndexGraph g) {
-		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
-	}
-
-	private static VertexPartition computeSCCDirected(IndexGraph g) {
+	VertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		IntStack s = new IntArrayList();
 		IntStack p = new IntArrayList();
@@ -93,82 +87,9 @@ class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
 		return new VertexPartitions.ImplIndex(g, compNum, comp);
 	}
 
-	private static VertexPartition computeSCCUndirected(IndexGraph g) {
-		final int n = g.vertices().size();
-		int[] comp = new int[n];
-		Arrays.fill(comp, -1);
-		int compNum = 0;
-
-		IntStack stack = new IntArrayList();
-		for (int root = 0; root < n; root++) {
-			if (comp[root] != -1)
-				continue;
-			final int compIdx = compNum++;
-			stack.push(root);
-			comp[root] = compIdx;
-
-			while (!stack.isEmpty()) {
-				int u = stack.popInt();
-
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.target();
-					if (comp[v] != -1) {
-						assert comp[v] == compIdx;
-						continue;
-					}
-					comp[v] = compIdx;
-					stack.push(v);
-				}
-			}
-		}
-		return new VertexPartitions.ImplIndex(g, compNum, comp);
-	}
-
 	@Override
-	VertexPartition findWeaklyConnectedComponents(IndexGraph g) {
-		Assertions.Graphs.onlyDirected(g);
-
-		final int n = g.vertices().size();
-		int[] comp = new int[n];
-		Arrays.fill(comp, -1);
-		int compNum = 0;
-
-		IntStack stack = new IntArrayList();
-		for (int root = 0; root < n; root++) {
-			if (comp[root] != -1)
-				continue;
-			final int compIdx = compNum++;
-			stack.push(root);
-			comp[root] = compIdx;
-
-			while (!stack.isEmpty()) {
-				int u = stack.popInt();
-
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.target();
-					if (comp[v] != -1) {
-						assert comp[v] == compIdx;
-						continue;
-					}
-					comp[v] = compIdx;
-					stack.push(v);
-				}
-
-				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.source();
-					if (comp[v] != -1) {
-						assert comp[v] == compIdx;
-						continue;
-					}
-					comp[v] = compIdx;
-					stack.push(v);
-				}
-			}
-		}
-		return new VertexPartitions.ImplIndex(g, compNum, comp);
+	boolean isStronglyConnected(IndexGraph g) {
+		return findStronglyConnectedComponentsDirected(g).numberOfBlocks() <= 1;
 	}
 
 }

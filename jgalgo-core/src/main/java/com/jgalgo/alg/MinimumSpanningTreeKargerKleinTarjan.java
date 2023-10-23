@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private final Random rand;
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final WeaklyConnectedComponentsAlgo ccAlg = WeaklyConnectedComponentsAlgo.newInstance();
 	private final MinimumSpanningTreeBoruvka boruvka = new MinimumSpanningTreeBoruvka();
 	private final TreePathMaxima tpm = new TreePathMaximaHagerup();
 
@@ -154,7 +154,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	private IntCollection lightEdges(IndexGraph g, Int2DoubleFunction gw, IndexGraph f, Int2DoubleFunction fw) {
 		final int n = f.vertices().size();
 		/* find connected components in the forest, each one of them is a tree */
-		VertexPartition connectivityRes = ccAlg.findConnectedComponents(f);
+		VertexPartition connectivityRes = ccAlg.findWeaklyConnectedComponents(f);
 		final int treeCount = connectivityRes.numberOfBlocks();
 		Int2IntFunction vToTree = connectivityRes::vertexBlock;
 

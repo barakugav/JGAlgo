@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	private static final double EPS = 0.0001;
 
@@ -65,7 +65,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
-		VertexPartition cc = ccAlg.findConnectedComponents(g);
+		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 
 		/* init distances and policy */

@@ -32,7 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Biconnected_component">Wikipedia</a>
- * @see    ConnectedComponentsAlgo
+ * @see    StronglyConnectedComponentsAlgo
+ * @see    WeaklyConnectedComponentsAlgo
  * @author Barak Ugav
  */
 public interface BiConnectedComponentsAlgo {

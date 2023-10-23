@@ -53,7 +53,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
 	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.newBuilder().setDag(true).build();
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	private final Diagnostics diagnostics = new Diagnostics();
 
@@ -172,7 +172,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				}
 
 				/* Find all strong connected components in the graph */
-				VertexPartition connectivityRes = ccAlg.findConnectedComponents(gNeg);
+				VertexPartition connectivityRes = ccAlg.findStronglyConnectedComponents(gNeg);
 				final int N = connectivityRes.numberOfBlocks();
 
 				/*

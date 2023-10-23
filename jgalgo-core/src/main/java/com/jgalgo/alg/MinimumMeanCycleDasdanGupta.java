@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 	private static final double EPS = 0.00001;
 
 	/* Although the paper suggest a value of 10, this seems only to slow us down */
@@ -90,7 +90,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int n = g.vertices().size();
 
 		/* find all SCC */
-		VertexPartition cc = ccAlg.findConnectedComponents(g);
+		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 		SourceChooser sourceChooser = new SourceChooser(g, cc);
 

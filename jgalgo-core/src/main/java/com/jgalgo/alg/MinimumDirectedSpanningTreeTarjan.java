@@ -41,7 +41,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
-	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newInstance();
+	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
 
 	/**
@@ -129,7 +129,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	private void addEdgesUntilStronglyConnected(IndexGraph g, int artificialEdgesThreshold) {
-		VertexPartition connectivityRes = ccAlg.findConnectedComponents(g);
+		VertexPartition connectivityRes = ccAlg.findStronglyConnectedComponents(g);
 		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)
 			return;
