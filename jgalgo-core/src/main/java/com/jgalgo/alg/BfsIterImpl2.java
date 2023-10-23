@@ -26,9 +26,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class BFSIterImpl {
+class BfsIterImpl {
 
-	private static abstract class Abstract implements BFSIter {
+	private static abstract class Abstract implements BfsIter {
 
 		final IndexGraph g;
 		final BitSet visited;
@@ -72,7 +72,7 @@ class BFSIterImpl {
 		}
 	}
 
-	static class Forward extends BFSIterImpl.Abstract {
+	static class Forward extends BfsIterImpl.Abstract {
 
 		/**
 		 * Create a BFS iterator rooted at a single source vertex.
@@ -121,7 +121,7 @@ class BFSIterImpl {
 		}
 	}
 
-	static class Backward extends BFSIterImpl.Abstract {
+	static class Backward extends BfsIterImpl.Abstract {
 
 		Backward(IndexGraph g, int source) {
 			this(g, IntIterators.singleton(source));
@@ -157,13 +157,13 @@ class BFSIterImpl {
 		}
 	}
 
-	static class BFSFromIndexBFS implements BFSIter {
+	static class BFSFromIndexBFS implements BfsIter {
 
-		private final BFSIter it;
+		private final BfsIter it;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-		BFSFromIndexBFS(BFSIter it, IndexIdMap viMap, IndexIdMap eiMap) {
+		BFSFromIndexBFS(BfsIter it, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

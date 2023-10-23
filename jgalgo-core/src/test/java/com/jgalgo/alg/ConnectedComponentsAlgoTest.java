@@ -64,7 +64,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			if (vertexToCC.get(start) != -1)
 				continue;
 			int ccIdx = ccNum++;
-			for (BFSIter it = BFSIter.newInstance(g, start); it.hasNext();)
+			for (BfsIter it = BfsIter.newInstance(g, start); it.hasNext();)
 				vertexToCC.put(it.nextInt(), ccIdx);
 		}
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
@@ -96,7 +96,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		Int2ObjectMap<IntSet> reach = new Int2ObjectOpenHashMap<>();
 		for (int start : g.vertices()) {
 			IntSet vReach = new IntOpenHashSet();
-			for (BFSIter it = BFSIter.newInstance(g, start); it.hasNext();)
+			for (BfsIter it = BfsIter.newInstance(g, start); it.hasNext();)
 				vReach.add(it.nextInt());
 			reach.put(start, vReach);
 		}

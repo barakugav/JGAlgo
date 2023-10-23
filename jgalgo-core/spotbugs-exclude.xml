@@ -20,7 +20,7 @@
   <Match>
     <!-- BFS iterator indeed store a mutable reference to the graph and the user should not modify
     the graph while the BFS iterator is in use -->
-    <Class name="com.jgalgo.alg.BFSIter" />
+    <Class name="com.jgalgo.alg.BfsIter" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -28,7 +28,7 @@
   <Match>
     <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
     the graph while the DFS iterator is in use -->
-    <Class name="com.jgalgo.alg.DFSIter" />
+    <Class name="com.jgalgo.alg.DfsIter" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -49,7 +49,7 @@
   </Match>
   <Match>
     <!-- The retuned list is an unmodifiable view of the real list -->
-    <Class name="com.jgalgo.alg.DFSIter" />
+    <Class name="com.jgalgo.alg.DfsIter" />
     <Method name="edgePath" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>

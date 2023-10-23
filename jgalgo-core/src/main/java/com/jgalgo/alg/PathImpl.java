@@ -192,7 +192,7 @@ class PathImpl extends AbstractIntList implements Path {
 		Arrays.fill(backtrack, -1);
 
 		IntArrayList path = new IntArrayList();
-		for (BFSIter it = BFSIter.newInstanceBackward(g, target); it.hasNext();) {
+		for (BfsIter it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {
 			int p = it.nextInt();
 			backtrack[p] = it.lastEdge();
 			if (p == source)

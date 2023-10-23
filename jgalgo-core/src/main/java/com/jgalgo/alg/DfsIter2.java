@@ -34,18 +34,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * <pre> {@code
  * Graph g = ...;
  * int sourceVertex = ...;
- * for (DFSIter iter = DFSIter.newInstance(g, sourceVertex); iter.hasNext();) {
+ * for (DfsIter iter = DfsIter.newInstance(g, sourceVertex); iter.hasNext();) {
  *     int v = iter.nextInt();
  *     IntList edgePath = iter.edgePath();
  *     System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
  * }
  * }</pre>
  *
- * @see    BFSIter
+ * @see    BfsIter
  * @see    <a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface DFSIter extends IntIterator {
+public interface DfsIter extends IntIterator {
 
 	/**
 	 * Create a DFS iterator rooted at some source vertex.
@@ -54,17 +54,17 @@ public interface DFSIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
-	static DFSIter newInstance(Graph g, int source) {
+	static DfsIter newInstance(Graph g, int source) {
 		if (g instanceof IndexGraph)
-			return new DFSIterImpl((IndexGraph) g, source);
+			return new DfsIterImpl((IndexGraph) g, source);
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		int iSource = viMap.idToIndex(source);
-		DFSIter indexIter = new DFSIterImpl(iGraph, iSource);
-		return new DFSIterImpl.DFSFromIndexDFS(indexIter, viMap, eiMap);
+		DfsIter indexIter = new DfsIterImpl(iGraph, iSource);
+		return new DfsIterImpl.DFSFromIndexDFS(indexIter, viMap, eiMap);
 	}
 
 	/**

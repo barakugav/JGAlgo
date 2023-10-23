@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class BFSIterTest extends TestBase {
+public class DfsIterTest extends TestBase {
 
 	@Test
-	public void testBfsConnected() {
-		final long seed = 0xa782852da2497b7fL;
+	public void testDfsConnected() {
+		final long seed = 0x77678e2ce068199cL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 8).repeat(256);
 		tester.addPhase().withArgs(32, 64).repeat(128);
@@ -41,14 +41,14 @@ public class BFSIterTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
 
-			IntSet visited = new IntOpenHashSet(n);
-			for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
+			IntSet visited = new IntOpenHashSet();
+			for (DfsIter it = DfsIter.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
-				int e = it.lastEdge();
+				IntList pathFromSource = it.edgePath();
+				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
 				assertFalse(visited.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
@@ -58,12 +58,13 @@ public class BFSIterTest extends TestBase {
 			for (int v : g.vertices())
 				assertTrue(visited.contains(v));
 
-			/* run BFS again without calling .hasNext() */
+			/* run DFS again without calling .hasNext() */
 			IntSet visited2 = new IntOpenHashSet();
-			BFSIter it = BFSIter.newInstance(g, source);
+			DfsIter it = DfsIter.newInstance(g, source);
 			for (int s = visited.size(); s-- > 0;) {
 				int v = it.nextInt();
-				int e = it.lastEdge();
+				IntList pathFromSource = it.edgePath();
+				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
 				assertFalse(visited2.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");

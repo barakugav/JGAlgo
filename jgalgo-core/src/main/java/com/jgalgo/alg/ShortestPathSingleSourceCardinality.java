@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
  * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex
  * until all vertices that can be reached are reached. The algorithm runs in linear time.
  *
- * @see    BFSIter
+ * @see    BfsIter
  * @author Barak Ugav
  */
 class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
@@ -39,7 +39,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	@Override
 	ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
-		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
+		for (BfsIter it = BfsIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();
 			res.backtrack[v] = it.lastEdge();

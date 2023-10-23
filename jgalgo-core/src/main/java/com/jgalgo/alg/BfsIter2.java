@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * <pre> {@code
  * Graph g = ...;
  * int sourceVertex = ...;
- * for (BFSIter iter = BFSIter.newInstance(g, sourceVertex); iter.hasNext();) {
+ * for (BfsIter iter = BfsIter.newInstance(g, sourceVertex); iter.hasNext();) {
  *     int v = iter.nextInt();
  *     int e = iter.inEdge();
  *     int layer = iter.layer();
@@ -41,11 +41,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see    DFSIter
+ * @see    DfsIter
  * @see    <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface BFSIter extends IntIterator {
+public interface BfsIter extends IntIterator {
 
 	/**
 	 * Create a BFS iterator rooted at a single source vertex.
@@ -54,12 +54,12 @@ public interface BFSIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a BFS iterator that iterate over the vertices of the graph
 	 */
-	public static BFSIter newInstance(Graph g, int source) {
+	public static BfsIter newInstance(Graph g, int source) {
 		if (g instanceof IndexGraph)
-			return new BFSIterImpl.Forward((IndexGraph) g, source);
+			return new BfsIterImpl.Forward((IndexGraph) g, source);
 		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
-		BFSIter indexBFS = new BFSIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
+		BfsIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}
 
 	/**
@@ -72,12 +72,12 @@ public interface BFSIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
 	 */
-	public static BFSIter newInstanceBackward(Graph g, int source) {
+	public static BfsIter newInstanceBackward(Graph g, int source) {
 		if (g instanceof IndexGraph)
-			return new BFSIterImpl.Backward((IndexGraph) g, source);
+			return new BfsIterImpl.Backward((IndexGraph) g, source);
 		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
-		BFSIter indexBFS = new BFSIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
+		BfsIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}
 
 	/**

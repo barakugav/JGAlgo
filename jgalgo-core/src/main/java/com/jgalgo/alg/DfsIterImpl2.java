@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class DFSIterImpl implements DFSIter {
+class DfsIterImpl implements DfsIter {
 
 	private final IndexGraph g;
 	private final BitSet visited;
@@ -45,7 +45,7 @@ class DFSIterImpl implements DFSIter {
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from
 	 */
-	public DFSIterImpl(IndexGraph g, int source) {
+	public DfsIterImpl(IndexGraph g, int source) {
 		int n = g.vertices().size();
 		this.g = g;
 		visited = new BitSet(n);
@@ -111,13 +111,13 @@ class DFSIterImpl implements DFSIter {
 		return edgePathView;
 	}
 
-	static class DFSFromIndexDFS implements DFSIter {
+	static class DFSFromIndexDFS implements DfsIter {
 
-		private final DFSIter it;
+		private final DfsIter it;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-		DFSFromIndexDFS(DFSIter it, IndexIdMap viMap, IndexIdMap eiMap) {
+		DFSFromIndexDFS(DfsIter it, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
