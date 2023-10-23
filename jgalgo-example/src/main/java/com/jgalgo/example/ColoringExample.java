@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Coloring;
+import com.jgalgo.alg.ColoringAlgo;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
@@ -27,8 +27,8 @@ public class ColoringExample {
 		Graph g = createGraph();
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
-		Coloring coloringAlgo = Coloring.newBuilder().build();
-		Coloring.Result colors = coloringAlgo.computeColoring(g);
+		ColoringAlgo coloringAlgo = ColoringAlgo.newBuilder().build();
+		ColoringAlgo.Result colors = coloringAlgo.computeColoring(g);
 
 		for (int u : g.vertices()) {
 			int uColor = colors.colorOf(u);

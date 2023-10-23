@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class ColoringTestUtils extends TestUtils {
 
-	static void testRandGraphs(Coloring algo, long seed) {
+	static void testRandGraphs(ColoringAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 8).repeat(256);
@@ -40,12 +40,12 @@ class ColoringTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
-			Coloring.Result coloring = algo.computeColoring(g);
+			ColoringAlgo.Result coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}
 
-	static void testWithSelfLoops(Coloring algo) {
+	static void testWithSelfLoops(ColoringAlgo algo) {
 		Graph g = GraphFactory.newUndirected().newGraph();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
@@ -57,7 +57,7 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void testDirectedGraph(Coloring algo) {
+	static void testDirectedGraph(ColoringAlgo algo) {
 		Graph g = GraphFactory.newDirected().newGraph();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
@@ -68,7 +68,7 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void validateColoring(Graph g, Coloring.Result coloring) {
+	static void validateColoring(Graph g, ColoringAlgo.Result coloring) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return;

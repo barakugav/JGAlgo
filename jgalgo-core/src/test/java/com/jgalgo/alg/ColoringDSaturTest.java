@@ -37,7 +37,7 @@ public class ColoringDSaturTest extends TestBase {
 		ColoringTestUtils.testDirectedGraph(algo());
 	}
 
-	private static Coloring algo() {
+	private static ColoringAlgo algo() {
 		return new ColoringDSatur();
 	}
 

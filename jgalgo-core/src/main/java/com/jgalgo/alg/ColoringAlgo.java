@@ -57,7 +57,7 @@ import com.jgalgo.graph.Graph;
  * @see    <a href="https://en.wikipedia.org/wiki/Graph_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface Coloring {
+public interface ColoringAlgo {
 
 	/**
 	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
@@ -66,7 +66,7 @@ public interface Coloring {
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	Coloring.Result computeColoring(Graph g);
+	ColoringAlgo.Result computeColoring(Graph g);
 
 	/**
 	 * A coloring result containing a color for each vertex.
@@ -95,17 +95,17 @@ public interface Coloring {
 	/**
 	 * Create a new coloring algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link Coloring} object.
+	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object.
 	 *
-	 * @return a new builder that can build {@link Coloring} objects
+	 * @return a new builder that can build {@link ColoringAlgo} objects
 	 */
-	static Coloring.Builder newBuilder() {
-		return new Coloring.Builder() {
+	static ColoringAlgo.Builder newBuilder() {
+		return new ColoringAlgo.Builder() {
 			String impl;
 			Random rand;
 
 			@Override
-			public Coloring build() {
+			public ColoringAlgo build() {
 				if (impl != null) {
 					switch (impl) {
 						case "greedy":
@@ -122,7 +122,7 @@ public interface Coloring {
 			}
 
 			@Override
-			public Coloring.Builder setOption(String key, Object value) {
+			public ColoringAlgo.Builder setOption(String key, Object value) {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
@@ -139,9 +139,9 @@ public interface Coloring {
 	}
 
 	/**
-	 * A builder for {@link Coloring} objects.
+	 * A builder for {@link ColoringAlgo} objects.
 	 *
-	 * @see    Coloring#newBuilder()
+	 * @see    ColoringAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -151,7 +151,7 @@ public interface Coloring {
 		 *
 		 * @return a new coloring algorithm
 		 */
-		Coloring build();
+		ColoringAlgo build();
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -166,7 +166,7 @@ public interface Coloring {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default Coloring.Builder setOption(String key, Object value) {
+		default ColoringAlgo.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}

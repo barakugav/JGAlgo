@@ -48,7 +48,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 	ColoringRecursiveLargestFirst() {}
 
 	@Override
-	Coloring.Result computeColoring(IndexGraph g) {
+	ColoringAlgo.Result computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

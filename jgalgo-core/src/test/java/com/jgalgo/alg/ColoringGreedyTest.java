@@ -37,7 +37,7 @@ public class ColoringGreedyTest extends TestBase {
 		ColoringTestUtils.testDirectedGraph(algo());
 	}
 
-	private static Coloring algo() {
+	private static ColoringAlgo algo() {
 		final long seed = 0x1e86629cfff1ccacL;
 		return new ColoringGreedy(seed);
 	}

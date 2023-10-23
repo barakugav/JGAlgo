@@ -37,7 +37,7 @@ public class ColoringRecursiveLargestFirstTest extends TestBase {
 		ColoringTestUtils.testDirectedGraph(algo());
 	}
 
-	private static Coloring algo() {
+	private static ColoringAlgo algo() {
 		return new ColoringRecursiveLargestFirst();
 	}
 

@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexIdMap;
 
 class ColoringUtils {
 
-	static class ResultImpl implements Coloring.Result {
+	static class ResultImpl implements ColoringAlgo.Result {
 
 		int colorsNum;
 		final int[] colors;
@@ -45,30 +45,30 @@ class ColoringUtils {
 
 	}
 
-	static abstract class AbstractImpl implements Coloring {
+	static abstract class AbstractImpl implements ColoringAlgo {
 
 		@Override
-		public Coloring.Result computeColoring(Graph g) {
+		public ColoringAlgo.Result computeColoring(Graph g) {
 			if (g instanceof IndexGraph)
 				return computeColoring((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap viMap = g.indexGraphVerticesMap();
 
-			Coloring.Result indexResult = computeColoring(iGraph);
+			ColoringAlgo.Result indexResult = computeColoring(iGraph);
 			return new ResultFromIndexResult(indexResult, viMap);
 		}
 
-		abstract Coloring.Result computeColoring(IndexGraph g);
+		abstract ColoringAlgo.Result computeColoring(IndexGraph g);
 
 	}
 
-	static class ResultFromIndexResult implements Coloring.Result {
+	static class ResultFromIndexResult implements ColoringAlgo.Result {
 
-		private final Coloring.Result res;
+		private final ColoringAlgo.Result res;
 		private final IndexIdMap viMap;
 
-		ResultFromIndexResult(Coloring.Result res, IndexIdMap viMap) {
+		ResultFromIndexResult(ColoringAlgo.Result res, IndexIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
