@@ -93,7 +93,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 		/* Add to LCA data structure */
 		node.lcaNode = parent == null ? lca.initTree() : lca.addLeaf(parent.lcaNode);
-		node.lcaNode.setNodeData(node);
+		node.lcaNode.setData(node);
 
 		/* Add to UF data structure */
 		node.ufIdx = uf.make();
@@ -235,10 +235,10 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		Edge<E> edge = new Edge<>(u, v, edgedata);
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-		LowestCommonAncestorDynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);
+		LowestCommonAncestorDynamic.Vertex l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);
 		if (u.lcaNode != l) {
-			addEdgeNode(new EdgeNode<>(u, l.getNodeData(), edge));
-			addEdgeNode(new EdgeNode<>(v, l.getNodeData(), edge));
+			addEdgeNode(new EdgeNode<>(u, l.getData(), edge));
+			addEdgeNode(new EdgeNode<>(v, l.getData(), edge));
 		} else {
 			addEdgeNode(new EdgeNode<>(v, u, edge));
 		}
@@ -340,7 +340,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		private final NodeImpl<E> parent;
 		private final int depth;
 		private int ufIdx;
-		private LowestCommonAncestorDynamic.Node lcaNode;
+		private LowestCommonAncestorDynamic.Vertex lcaNode;
 		private SubTree<E> subtree;
 
 		NodeImpl(NodeImpl<E> parent) {

@@ -23,14 +23,14 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
  * Gabow linear dynamic LCA data structure.
  * <p>
  * The algorithm use {@link LowestCommonAncestorDynamicGabowSimple} as a base, but uses two layers of bit tricks to
- * remove the \(O(\log^2 n)\) factor of the simpler data structure. Each layer have less nodes than the previous one by
- * a factor of \(O(\log n)\), until the simpler data structure is used on \(O(n / \log^2 n)\) nodes. This implementation
- * is much faster in practice and always should be used over the simpler one.
+ * remove the \(O(\log^2 n)\) factor of the simpler data structure. Each layer have less vertices than the previous one
+ * by a factor of \(O(\log n)\), until the simpler data structure is used on \(O(n / \log^2 n)\) vertices. This
+ * implementation is much faster in practice and always should be used over the simpler one.
  * <p>
  * The running time of this algorithm for \(m\) operations is \(O(n + m)\) and it uses linear space. More specifically,
- * the {@link #addLeaf(LowestCommonAncestorDynamic.Node)} operation is perform in \(O(1)\) amortized time and
- * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Node, LowestCommonAncestorDynamic.Node)} is perform in
- * constant time.
+ * the {@link #addLeaf(LowestCommonAncestorDynamic.Vertex)} operation is perform in \(O(1)\) amortized time and
+ * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
+ * in constant time.
  * <p>
  * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by Harold N. Gabow (1990).
  *
@@ -44,85 +44,85 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 	 * in constant time (less than 10 operations).
 	 */
 
-	private int nodes2Num;
+	private int vertices2Num;
 	private final LowestCommonAncestorDynamicGabowSimple lca0;
 
 	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
 
 	/**
-	 * Create a new dynamic LCA data structure that contains zero nodes.
+	 * Create a new dynamic LCA data structure that contains zero vertices.
 	 */
 	LowestCommonAncestorDynamicGabowLinear() {
 		lca0 = new LowestCommonAncestorDynamicGabowSimple();
 	}
 
 	@Override
-	public Node initTree() {
+	public Vertex initTree() {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode2(null);
+		return newVertex2(null);
 	}
 
 	@Override
-	public Node addLeaf(Node parent) {
-		return newNode2((Node2) parent);
+	public Vertex addLeaf(Vertex parent) {
+		return newVertex2((Vertex2) parent);
 	}
 
-	private Node2 newNode2(Node2 parent) {
-		Node2 node = new Node2(parent);
+	private Vertex2 newVertex2(Vertex2 parent) {
+		Vertex2 vertex = new Vertex2(parent);
 
 		if (parent == null || parent.subTree.isFull()) {
-			/* make the new node a root of a new sub tree */
-			node.subTree = new Node1(node);
+			/* make the new vertex a root of a new sub tree */
+			vertex.subTree = new Vertex1(vertex);
 		} else {
-			/* add new node to the parent sub tree */
-			node.subTree = parent.subTree;
-			node.ancestorsBitmap = parent.ancestorsBitmap;
+			/* add new vertex to the parent sub tree */
+			vertex.subTree = parent.subTree;
+			vertex.ancestorsBitmap = parent.ancestorsBitmap;
 		}
 
-		node.subTree.addNode(node);
-		node.ancestorsBitmap |= ithBit(node.idWithinSubTree);
+		vertex.subTree.addVertex(vertex);
+		vertex.ancestorsBitmap |= ithBit(vertex.idWithinSubTree);
 
-		if (node.subTree.isFull()) {
+		if (vertex.subTree.isFull()) {
 			/* new full sub tree, add to next level tree */
-			Node2 topParent = node.subTree.top.parent;
-			Node1 tparent = topParent != null ? topParent.subTree : null;
-			addFullNode1(node.subTree, tparent);
+			Vertex2 topParent = vertex.subTree.top.parent;
+			Vertex1 tparent = topParent != null ? topParent.subTree : null;
+			addFullVertex1(vertex.subTree, tparent);
 		}
 
-		return node;
+		return vertex;
 	}
 
-	private void addFullNode1(Node1 node, Node1 parent) {
+	private void addFullVertex1(Vertex1 vertex, Vertex1 parent) {
 		if (parent == null || parent.subTree.isFull()) {
-			/* make the new node a root of a new sub tree */
-			node.subTree = new Node0(node);
+			/* make the new vertex a root of a new sub tree */
+			vertex.subTree = new Vertex0(vertex);
 		} else {
-			/* add new node to the parent sub tree */
-			node.subTree = parent.subTree;
-			node.ancestorsBitmap = parent.ancestorsBitmap;
+			/* add new vertex to the parent sub tree */
+			vertex.subTree = parent.subTree;
+			vertex.ancestorsBitmap = parent.ancestorsBitmap;
 		}
 
-		node.subTree.addNode(node);
-		node.ancestorsBitmap |= ithBit(node.idWithinSubTree);
+		vertex.subTree.addVertex(vertex);
+		vertex.ancestorsBitmap |= ithBit(vertex.idWithinSubTree);
 
-		if (node.subTree.isFull()) {
+		if (vertex.subTree.isFull()) {
 			/* new full sub tree, add to next level tree */
-			Node1 topParent = node.subTree.top.getParent();
-			Node0 tparent = topParent != null ? topParent.subTree : null;
-			addFullNode0(node.subTree, tparent);
+			Vertex1 topParent = vertex.subTree.top.getParent();
+			Vertex0 tparent = topParent != null ? topParent.subTree : null;
+			addFullVertex0(vertex.subTree, tparent);
 		}
 	}
 
-	private void addFullNode0(Node0 node, Node0 parent) {
+	private void addFullVertex0(Vertex0 vertex, Vertex0 parent) {
 		if (parent == null) {
-			(node.lcaId = lca0.initTree()).setNodeData(node);
+			(vertex.lcaId = lca0.initTree()).setData(vertex);
 		} else {
-			(node.lcaId = lca0.addLeaf(parent.lcaId)).setNodeData(node);
+			(vertex.lcaId = lca0.addLeaf(parent.lcaId)).setData(vertex);
 		}
 	}
 
-	private Node2 calcLCA(Node2 x2, Node2 y2) {
+	private Vertex2 calcLCA(Vertex2 x2, Vertex2 y2) {
 		if (x2.subTree != y2.subTree) {
 			if (!x2.subTree.isFull())
 				x2 = x2.subTree.top.parent;
@@ -130,8 +130,8 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 				y2 = y2.subTree.top.parent;
 
 			/* Calculate CAs in the next level tree */
-			Node1 x1 = x2.subTree, y1 = y2.subTree;
-			Node1 ax1 = null, ay1 = null;
+			Vertex1 x1 = x2.subTree, y1 = y2.subTree;
+			Vertex1 ax1 = null, ay1 = null;
 			if (x1.subTree != y1.subTree) {
 				if (!x1.subTree.isFull()) {
 					ax1 = x1.subTree.top;
@@ -143,9 +143,9 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 				}
 
 				/* Calculate CAs in the next level tree */
-				Node0 x0 = x1.subTree, y0 = y1.subTree;
+				Vertex0 x0 = x1.subTree, y0 = y1.subTree;
 				CharacteristicAncestors ca0 = lca0.calcCA(x0.lcaId, y0.lcaId);
-				Node0 a0 = ca0.a.getNodeData(), ax0 = ca0.ax.getNodeData(), ay0 = ca0.ay.getNodeData();
+				Vertex0 a0 = ca0.a.getData(), ax0 = ca0.ax.getData(), ay0 = ca0.ay.getData();
 
 				if (a0 != ax0) {
 					ax1 = ax0.top;
@@ -160,16 +160,16 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 			assert x1.subTree == y1.subTree;
 			/* calculate LCA within sub tree */
 			int commonAncestors1 = x1.ancestorsBitmap & y1.ancestorsBitmap;
-			Node1 a1 = x1.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors1)];
+			Vertex1 a1 = x1.subTree.vertices[31 - Integer.numberOfLeadingZeros(commonAncestors1)];
 			if (a1 != x1) {
 				int x1UncommonAncestors = x1.ancestorsBitmap & ~y1.ancestorsBitmap;
-				ax1 = x1.subTree.nodes[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
+				ax1 = x1.subTree.vertices[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
 			} else if (ax1 == null) {
 				ax1 = x1;
 			}
 			if (a1 != y1) {
 				int x1UncommonAncestors = ~x1.ancestorsBitmap & y1.ancestorsBitmap;
-				ay1 = x1.subTree.nodes[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
+				ay1 = x1.subTree.vertices[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
 			} else if (ay1 == null) {
 				ay1 = y1;
 			}
@@ -183,17 +183,17 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		assert x2.subTree == y2.subTree;
 		/* calculate LCA within sub tree */
 		int commonAncestors = x2.ancestorsBitmap & y2.ancestorsBitmap;
-		return x2.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors)];
+		return x2.subTree.vertices[31 - Integer.numberOfLeadingZeros(commonAncestors)];
 	}
 
 	@Override
-	public Node findLowestCommonAncestor(Node x, Node y) {
-		return calcLCA((Node2) x, (Node2) y);
+	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
+		return calcLCA((Vertex2) x, (Vertex2) y);
 	}
 
 	@Override
 	public int size() {
-		return nodes2Num;
+		return vertices2Num;
 	}
 
 	@Override
@@ -201,32 +201,32 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		lca0.clear();
 	}
 
-	private static class Node2 implements LowestCommonAncestorDynamic.Node {
-		Object nodeData;
+	private static class Vertex2 implements LowestCommonAncestorDynamic.Vertex {
+		Object vertexData;
 
 		/* level 2 info */
-		final Node2 parent;
-		Node1 subTree;
+		final Vertex2 parent;
+		Vertex1 subTree;
 		int idWithinSubTree;
 		int ancestorsBitmap;
 
-		Node2(Node2 parent) {
+		Vertex2(Vertex2 parent) {
 			this.parent = parent;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <D> D getNodeData() {
-			return (D) nodeData;
+		public <D> D getData() {
+			return (D) vertexData;
 		}
 
 		@Override
-		public void setNodeData(Object data) {
-			nodeData = data;
+		public void setData(Object data) {
+			vertexData = data;
 		}
 
 		@Override
-		public Node getParent() {
+		public Vertex getParent() {
 			return parent;
 		}
 
@@ -235,32 +235,32 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		// }
 	}
 
-	private static class Node1 {
+	private static class Vertex1 {
 		/* level 2 info */
-		final Node2 top;
-		Node2[] nodes;
+		final Vertex2 top;
+		Vertex2[] vertices;
 		int size;
 
 		/* level 1 info */
-		Node0 subTree;
+		Vertex0 subTree;
 		int idWithinSubTree;
 		int ancestorsBitmap;
 
-		Node1(Node2 top) {
+		Vertex1(Vertex2 top) {
 			this.top = top;
-			nodes = new Node2[4];
+			vertices = new Vertex2[4];
 		}
 
-		Node1 getParent() {
+		Vertex1 getParent() {
 			return top.parent != null ? top.parent.subTree : null;
 		}
 
-		void addNode(Node2 node) {
+		void addVertex(Vertex2 vertex) {
 			assert size < SUB_TREE_MAX_SIZE;
-			node.idWithinSubTree = size++;
-			if (node.idWithinSubTree >= nodes.length)
-				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));
-			nodes[node.idWithinSubTree] = node;
+			vertex.idWithinSubTree = size++;
+			if (vertex.idWithinSubTree >= vertices.length)
+				vertices = Arrays.copyOf(vertices, Math.max(vertices.length * 2, 2));
+			vertices[vertex.idWithinSubTree] = vertex;
 		}
 
 		boolean isFull() {
@@ -268,31 +268,31 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		}
 
 		// void clear() {
-		// nodes = null;
+		// vertices = null;
 		// subTree = null;
 		// }
 	}
 
-	private static class Node0 {
+	private static class Vertex0 {
 		/* level 1 info */
-		final Node1 top;
-		Node1[] nodes;
+		final Vertex1 top;
+		Vertex1[] vertices;
 		int size;
 
 		/* level 0 info */
-		LowestCommonAncestorDynamic.Node lcaId;
+		LowestCommonAncestorDynamic.Vertex lcaId;
 
-		Node0(Node1 top) {
+		Vertex0(Vertex1 top) {
 			this.top = top;
-			nodes = new Node1[4];
+			vertices = new Vertex1[4];
 		}
 
-		void addNode(Node1 node) {
+		void addVertex(Vertex1 vertex) {
 			assert size < SUB_TREE_MAX_SIZE;
-			node.idWithinSubTree = size++;
-			if (node.idWithinSubTree >= nodes.length)
-				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));
-			nodes[node.idWithinSubTree] = node;
+			vertex.idWithinSubTree = size++;
+			if (vertex.idWithinSubTree >= vertices.length)
+				vertices = Arrays.copyOf(vertices, Math.max(vertices.length * 2, 2));
+			vertices[vertex.idWithinSubTree] = vertex;
 		}
 
 		boolean isFull() {
@@ -300,7 +300,7 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		}
 
 		// void clear() {
-		// nodes = null;
+		// vertices = null;
 		// }
 	}
 

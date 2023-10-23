@@ -19,14 +19,14 @@ package com.jgalgo.internal.ds;
 /**
  * Dynamic tree data structure that support {@code link} and {@code cut} operations.
  * <p>
- * The dynamic tree data structure is a set of nodes forming a forest and support the following operations:
+ * The dynamic tree data structure is a set of vertices forming a forest and support the following operations:
  * <ul>
- * <li>{@link #makeTree()} - create a new node which will form a tree of size one.</li>
- * <li>{@link #findRoot(Node)} - find the root node of a given node.</li>
- * <li>{@link #link(Node, Node, double)} - link a node (root) to a parent with weighted edge.</li>
- * <li>{@link #cut(Node)} - remove the edge from a node to its parent.</li>
- * <li>{@link #addWeight(Node, double)} - add a weight to all edges on the path from a node to its tree root.</li>
- * <li>{@link #findMinEdge(Node)} - find the edge with minimum weight from on the path from a node to its tree
+ * <li>{@link #makeTree()} - create a new vertex which will form a tree of size one.</li>
+ * <li>{@link #findRoot(Vertex)} - find the root vertex of a given vertex.</li>
+ * <li>{@link #link(Vertex, Vertex, double)} - link a vertex (root) to a parent with weighted edge.</li>
+ * <li>{@link #cut(Vertex)} - remove the edge from a vertex to its parent.</li>
+ * <li>{@link #addWeight(Vertex, double)} - add a weight to all edges on the path from a vertex to its tree root.</li>
+ * <li>{@link #findMinEdge(Vertex)} - find the edge with minimum weight from on the path from a vertex to its tree
  * root.</li>
  * </ul>
  * <p>
@@ -38,53 +38,53 @@ package com.jgalgo.internal.ds;
 public interface DynamicTree {
 
 	/**
-	 * Create a new tree in the forest with a single node.
+	 * Create a new tree in the forest with a single vertex.
 	 *
-	 * @return the new node
+	 * @return the new vertex
 	 */
-	Node makeTree();
+	Vertex makeTree();
 
 	/**
 	 * Find the root of the tree containing \(v\).
 	 *
-	 * @param  v a node
+	 * @param  v a vertex
 	 * @return   the root of the tree containing \(v\)
 	 */
-	Node findRoot(Node v);
+	Vertex findRoot(Vertex v);
 
 	/**
-	 * Find the minimum edge on the path from a node to it's tree root.
+	 * Find the minimum edge on the path from a vertex to it's tree root.
 	 *
-	 * @param  v a node
+	 * @param  v a vertex
 	 * @return   the minimum edge from \(v\) to it's tree root, or {@code null} if no such edge exists
 	 */
-	MinEdge findMinEdge(Node v);
+	MinEdge findMinEdge(Vertex v);
 
 	/**
 	 * Add a weight to all of the edges from \(v\) to it's tree root.
 	 *
-	 * @param v a node
+	 * @param v a vertex
 	 * @param w a weight to add
 	 */
-	void addWeight(Node v, double w);
+	void addWeight(Vertex v, double w);
 
 	/**
-	 * Link a root to be a child of some other node of another tree.
+	 * Link a root to be a child of some other vertex of another tree.
 	 *
 	 * @param  child                    a root of some tree
-	 * @param  parent                   a node in another tree
+	 * @param  parent                   a vertex in another tree
 	 * @param  w                        the new edge weight
 	 * @throws IllegalArgumentException if {@code child} is not a root or if {@code child} and {@code root} are in the
 	 *                                      same tree.
 	 */
-	void link(Node child, Node parent, double w);
+	void link(Vertex child, Vertex parent, double w);
 
 	/**
-	 * Remove the edge from a node to it's parent.
+	 * Remove the edge from a vertex to it's parent.
 	 *
-	 * @param v a node
+	 * @param v a vertex
 	 */
-	void cut(Node v);
+	void cut(Vertex v);
 
 	/**
 	 * Clear the whole data structure
@@ -92,39 +92,39 @@ public interface DynamicTree {
 	void clear();
 
 	/**
-	 * A node in the forest of {@link DynamicTree} data structure.
+	 * A vertex in the forest of {@link DynamicTree} data structure.
 	 *
 	 * @author Barak Ugav
 	 */
-	static interface Node {
+	static interface Vertex {
 
 		/**
-		 * Get the user data of this node.
+		 * Get the user data of this vertex.
 		 *
 		 * @param  <V> the data type
 		 * @return     the user data or {@code null} if it was not set
 		 */
-		<V> V getNodeData();
+		<V> V getData();
 
 		/**
-		 * Set the user data of this node.
+		 * Set the user data of this vertex.
 		 *
-		 * @param data new data for the node
+		 * @param data new data for the vertex
 		 */
-		void setNodeData(Object data);
+		void setData(Object data);
 
 		/**
-		 * Get the parent node of this node.
+		 * Get the parent vertex of this vertex.
 		 *
-		 * @return the parent node of this node
+		 * @return the parent vertex of this vertex
 		 */
-		Node getParent();
+		Vertex getParent();
 
 	};
 
 	/**
-	 * A return type for {@link DynamicTree#findMinEdge(Node)} method representing the minimum edge from a node to its
-	 * tree root.
+	 * A return type for {@link DynamicTree#findMinEdge(Vertex)} method representing the minimum edge from a vertex to
+	 * its tree root.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -133,19 +133,19 @@ public interface DynamicTree {
 		/**
 		 * Get the source of this edge.
 		 * <p>
-		 * The source was determined as the child node during the creation of the node via
-		 * {@link DynamicTree#link(Node, Node, double)} operation.
+		 * The source was determined as the child vertex during the creation of the vertex via
+		 * {@link DynamicTree#link(Vertex, Vertex, double)} operation.
 		 *
 		 * @return the edge source.
 		 */
-		Node source();
+		Vertex source();
 
 		/**
 		 * Get the weight of the edge.
 		 * <p>
 		 * The weight of the edge is a sum over the initial weight assigned during the
-		 * {@link DynamicTree#link(Node, Node, double)} operation and all {@link DynamicTree#addWeight(Node, double)}
-		 * operations that affected this edge.
+		 * {@link DynamicTree#link(Vertex, Vertex, double)} operation and all
+		 * {@link DynamicTree#addWeight(Vertex, double)} operations that affected this edge.
 		 *
 		 * @return the weight of the edge.
 		 */
@@ -167,10 +167,10 @@ public interface DynamicTree {
 	 * DynamicTree dt = builder.build();
 	 * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
 	 * ...
-	 * DynamicTree.Node n1 = dt.makeTree();
-	 * DynamicTree.Node n2 = dt.makeTree();
+	 * DynamicTree.Vertex n1 = dt.makeTree();
+	 * DynamicTree.Vertex n2 = dt.makeTree();
 	 *
-	 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+	 * System.out.println("The number of vertices in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
 	 * }</pre>
 	 *
 	 * @param  <Ext>         the extension type
@@ -214,7 +214,7 @@ public interface DynamicTree {
 		 *
 		 * @param  maxWeight a limit on the weights of the edges. The limit is an upper bound on the sum of each edge
 		 *                       weight and the weights modification that are performed using
-		 *                       {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
+		 *                       {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 		 * @return           this builder
 		 */
 		DynamicTree.Builder setMaxWeight(double maxWeight);
@@ -241,10 +241,10 @@ public interface DynamicTree {
 		 * DynamicTree dt = builder.build();
 		 * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
 		 * ...
-		 * DynamicTree.Node n1 = dt.makeTree();
-		 * DynamicTree.Node n2 = dt.makeTree();
+		 * DynamicTree.Vertex n1 = dt.makeTree();
+		 * DynamicTree.Vertex n2 = dt.makeTree();
 		 *
-		 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+		 * System.out.println("The number of vertices in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
 		 * }</pre>
 		 *
 		 * @param  extensionType the extension type

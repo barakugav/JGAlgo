@@ -20,10 +20,10 @@ import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
+import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.ds.QueueFixSize;
-import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * The push relabel algorithm for maximum flow using dynamic trees.
  * <p>
  * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
- * between neighboring nodes using <i>push</i> operations under the guidance of an admissible network maintained by
+ * between neighboring vertexs using <i>push</i> operations under the guidance of an admissible network maintained by
  * <i>relabel</i> operations.
  * <p>
  * Conceptually, the dynamic trees are used to push flow along multiple edges simultaneously. The current flow of each
@@ -81,7 +81,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final QueueFixSize<Vertex> active;
 		final Vertex[] vertexData;
 
-		/* Data structure maintaining the children of each node in the DT */
+		/* Data structure maintaining the children of each vertex in the DT */
 		final LinkedListFixedSize.Doubly children;
 		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();
 
@@ -111,7 +111,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 				vertexData(u).edgeIter = g.outEdges(u).iterator();
 		}
 
-		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
+		abstract Vertex newVertex(int v, DynamicTree.Vertex dtVertex);
 
 		abstract double getMaxCapacity();
 
@@ -163,9 +163,9 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			while (!active.isEmpty()) {
 				Vertex U = active.pop();
 				assert U.v != source && U.v != sink;
-				assert U.dtNode.getParent() == null;
+				assert U.dtVertex.getParent() == null;
 				EdgeIter it = U.edgeIter;
-				int uSize = dtTreeSize.getTreeSize(U.dtNode);
+				int uSize = dtTreeSize.getTreeSize(U.dtVertex);
 
 				while (U.hasExcess() && it.hasNext()) {
 					int e = it.peekNext();
@@ -178,10 +178,10 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 					}
 
 					Vertex W;
-					int vSize = dtTreeSize.getTreeSize(V.dtNode);
+					int vSize = dtTreeSize.getTreeSize(V.dtVertex);
 					if (uSize + vSize <= maxTreeSize) {
-						/* Link u to a node with admissible edge and start pushing */
-						dt.link(U.dtNode, V.dtNode, getResidualCapacity(e));
+						/* Link u to a vertex with admissible edge and start pushing */
+						dt.link(U.dtVertex, V.dtVertex, getResidualCapacity(e));
 						U.linkedEdge = e;
 						assert !children.hasNext(U.v) && !children.hasPrev(U.v);
 						if (V.firstDtChild != -1)
@@ -198,7 +198,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 					}
 
 					/* Continue as long as w has excess and it is not the root */
-					while (W.hasExcess() && W.dtNode.getParent() != null)
+					while (W.hasExcess() && W.dtVertex.getParent() != null)
 						pushAlongPath(W);
 
 					if (W.hasExcess() && !W.isActive) {
@@ -235,27 +235,27 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		void cut(Vertex U) {
 			/* Remove vertex from parent children list */
-			Vertex parent = U.dtNode.getParent().getNodeData();
+			Vertex parent = U.dtVertex.getParent().getData();
 			if (U.v == parent.firstDtChild)
 				parent.firstDtChild = children.next(U.v);
 			children.disconnect(U.v);
 
 			/* Remove link from DT */
-			dt.cut(U.dtNode);
+			dt.cut(U.dtVertex);
 		}
 
 		void cutAllChildren(Vertex U) {
 			/* cut all vertices pointing into u */
-			assert U.dtNode.getParent() == null;
+			assert U.dtVertex.getParent() == null;
 			if (U.firstDtChild != -1) {
 				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
 					int child = childIt.nextInt();
 					Vertex childData = vertexData(child);
-					assert childData.dtNode.getParent() == U.dtNode;
+					assert childData.dtVertex.getParent() == U.dtVertex;
 
 					/* update flow */
-					MinEdge m = dt.findMinEdge(childData.dtNode);
-					int e = m.source().<Vertex>getNodeData().linkedEdge;
+					MinEdge m = dt.findMinEdge(childData.dtVertex);
+					int e = m.source().<Vertex>getData().linkedEdge;
 					updateFlow(e, m.weight());
 
 					/* cut child */
@@ -269,15 +269,15 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		void cleanAllDTEdges() {
 			/* Cleanup all the edges that stayed in the DT */
 			int n = g.vertices().size();
-			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
+			Stack<DynamicTree.Vertex> cleanupStack = new ObjectArrayList<>();
 			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node uDt = vertexData(u).dtNode, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
+				for (DynamicTree.Vertex uDt = vertexData(u).dtVertex, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {
-					DynamicTree.Node uDt = cleanupStack.pop();
+					DynamicTree.Vertex uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge m = dt.findMinEdge(uDt);
-					int e = m.source().<Vertex>getNodeData().linkedEdge;
+					int e = m.source().<Vertex>getData().linkedEdge;
 					updateFlow(e, m.weight());
 					dt.cut(m.source());
 				}
@@ -301,15 +301,15 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			int label;
 			EdgeIter edgeIter;
 
-			final DynamicTree.Node dtNode;
+			final DynamicTree.Vertex dtVertex;
 			int firstDtChild;
 			int linkedEdge = -1;
 
-			Vertex(int v, DynamicTree.Node dtNode) {
+			Vertex(int v, DynamicTree.Vertex dtVertex) {
 				this.v = v;
-				this.dtNode = dtNode;
+				this.dtVertex = dtVertex;
 				firstDtChild = -1;
-				dtNode.setNodeData(this);
+				dtVertex.setData(this);
 			}
 
 			abstract boolean hasExcess();
@@ -333,8 +333,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		}
 
 		@Override
-		Vertex newVertex(int v, DynamicTree.Node dtNode) {
-			return new Vertex(v, dtNode);
+		Vertex newVertex(int v, DynamicTree.Vertex dtVertex) {
+			return new Vertex(v, dtVertex);
 		}
 
 		@Override
@@ -391,14 +391,14 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		void pushAlongPath(AbstractWorker.Vertex W0) {
 			Vertex W = (Vertex) W0;
 			/* Find the maximum flow that can be pushed */
-			MinEdge minEdge = dt.findMinEdge(W.dtNode);
+			MinEdge minEdge = dt.findMinEdge(W.dtVertex);
 			double f = Math.min(W.excess, minEdge.weight());
 
 			/* Push from u up to u's tree root */
-			dt.addWeight(W.dtNode, -f);
+			dt.addWeight(W.dtVertex, -f);
 
 			/* Update u's excess and u's tree root excess */
-			Vertex wRoot = dt.findRoot(W.dtNode).getNodeData();
+			Vertex wRoot = dt.findRoot(W.dtVertex).getData();
 			W.excess -= f;
 			wRoot.excess += f;
 			if (!wRoot.isActive) {
@@ -407,13 +407,13 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
-			for (; W.dtNode.getParent() != null;) {
-				minEdge = dt.findMinEdge(W.dtNode);
+			for (; W.dtVertex.getParent() != null;) {
+				minEdge = dt.findMinEdge(W.dtVertex);
 				if (minEdge.weight() > EPS)
 					break;
-				int minEdgeId = minEdge.source().<Vertex>getNodeData().linkedEdge;
+				int minEdgeId = minEdge.source().<Vertex>getData().linkedEdge;
 				updateFlow(minEdgeId, minEdge.weight());
-				cut(minEdge.source().getNodeData());
+				cut(minEdge.source().getData());
 			}
 		}
 
@@ -435,8 +435,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		private static class Vertex extends AbstractWorker.Vertex {
 			double excess = 0;
 
-			Vertex(int v, DynamicTree.Node dtNode) {
-				super(v, dtNode);
+			Vertex(int v, DynamicTree.Vertex dtVertex) {
+				super(v, dtVertex);
 			}
 
 			@Override
@@ -461,8 +461,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		}
 
 		@Override
-		Vertex newVertex(int v, DynamicTree.Node dtNode) {
-			return new Vertex(v, dtNode);
+		Vertex newVertex(int v, DynamicTree.Vertex dtVertex) {
+			return new Vertex(v, dtVertex);
 		}
 
 		@Override
@@ -520,14 +520,14 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		void pushAlongPath(AbstractWorker.Vertex W0) {
 			Vertex W = (Vertex) W0;
 			/* Find the maximum flow that can be pushed */
-			MinEdge minEdge = dt.findMinEdge(W.dtNode);
+			MinEdge minEdge = dt.findMinEdge(W.dtVertex);
 			int f = Math.min(W.excess, (int) minEdge.weight());
 
 			/* Push from u up to u's tree root */
-			dt.addWeight(W.dtNode, -f);
+			dt.addWeight(W.dtVertex, -f);
 
 			/* Update u's excess and u's tree root excess */
-			Vertex wRoot = dt.findRoot(W.dtNode).getNodeData();
+			Vertex wRoot = dt.findRoot(W.dtVertex).getData();
 			W.excess -= f;
 			wRoot.excess += f;
 			if (!wRoot.isActive) {
@@ -536,13 +536,13 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
-			for (; W.dtNode.getParent() != null;) {
-				minEdge = dt.findMinEdge(W.dtNode);
+			for (; W.dtVertex.getParent() != null;) {
+				minEdge = dt.findMinEdge(W.dtVertex);
 				if (minEdge.weight() > 0)
 					break;
-				int minEdgeId = minEdge.source().<Vertex>getNodeData().linkedEdge;
+				int minEdgeId = minEdge.source().<Vertex>getData().linkedEdge;
 				updateFlow(minEdgeId, minEdge.weight());
-				cut(minEdge.source().getNodeData());
+				cut(minEdge.source().getData());
 			}
 		}
 
@@ -564,8 +564,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		private static class Vertex extends AbstractWorker.Vertex {
 			int excess = 0;
 
-			Vertex(int v, DynamicTree.Node dtNode) {
-				super(v, dtNode);
+			Vertex(int v, DynamicTree.Vertex dtVertex) {
+				super(v, dtVertex);
 			}
 
 			@Override

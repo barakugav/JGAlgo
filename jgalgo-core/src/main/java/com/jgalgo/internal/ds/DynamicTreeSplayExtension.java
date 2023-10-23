@@ -62,7 +62,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		TreeSize() {}
 
 		@Override
-		public int getTreeSize(DynamicTree.Node node) {
+		public int getTreeSize(DynamicTree.Vertex node) {
 			SplayTree.BaseNode<?, ?> n = (SplayTree.BaseNode<?, ?>) node;
 			splay(n);
 			return getNodeData(n);
@@ -80,7 +80,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 		@Override
 		void afterLink(SplayTree.BaseNode<?, ?> n) {
-			SplayTree.BaseNode<?, ?> parent = (SplayTree.BaseNode<?, ?>) ((DynamicTree.Node) n).getParent();
+			SplayTree.BaseNode<?, ?> parent = (SplayTree.BaseNode<?, ?>) ((DynamicTree.Vertex) n).getParent();
 			setNodeData(parent, getNodeData(parent) + getNodeData(n));
 		}
 

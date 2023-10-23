@@ -52,7 +52,7 @@ public class DynamicTreeSplayTest extends TestBase {
 	}
 
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops,
-			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
+			ToIntFunction<DynamicTree.Vertex> sizeFunc, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16).repeat(256);
@@ -74,7 +74,7 @@ public class DynamicTreeSplayTest extends TestBase {
 
 	static class TrackerNode {
 		final int id;
-		DynamicTree.Node dtNode;
+		DynamicTree.Vertex dtNode;
 		TrackerNode parent;
 		final List<TrackerNode> children = new ObjectArrayList<>();
 		int edgeWeight;
@@ -91,7 +91,7 @@ public class DynamicTreeSplayTest extends TestBase {
 
 	@SuppressWarnings("boxing")
 	private static void testRandOps(DoubleFunction<? extends DynamicTree> builder, final int m, List<Op> ops,
-			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
+			ToIntFunction<DynamicTree.Vertex> sizeFunc, long seed) {
 		DebugPrinter debug = new DebugPrinter(false);
 		debug.println("\tnew iteration");
 		Random rand = new Random(seed);
@@ -115,7 +115,7 @@ public class DynamicTreeSplayTest extends TestBase {
 			switch (op) {
 				case MakeTree: {
 					TrackerNode node = new TrackerNode(nodes.size());
-					DynamicTree.Node dtNode = tree.makeTree();
+					DynamicTree.Vertex dtNode = tree.makeTree();
 					node.dtNode = dtNode;
 					debug.println(op, "() -> ", dtNode);
 					nodes.add(node);
@@ -129,8 +129,8 @@ public class DynamicTreeSplayTest extends TestBase {
 					debug.println(op, "(", node, ")");
 
 					TrackerNode root = findRoot.apply(node);
-					DynamicTree.Node expected = root.dtNode;
-					DynamicTree.Node actual = tree.findRoot(node.dtNode);
+					DynamicTree.Vertex expected = root.dtNode;
+					DynamicTree.Vertex actual = tree.findRoot(node.dtNode);
 					assertEquals(expected, actual, "FindRoot failure");
 					break;
 				}

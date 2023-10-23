@@ -22,10 +22,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Compute the minimum-cost (max) flow in a flow network.
  * <p>
- * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal nodes, and the
- * objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply, and
- * the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow units
- * going out of the vertex minus the sum of flow units going into it is equal to its supply.
+ * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal vertices, and
+ * the objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply,
+ * and the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow
+ * units going out of the vertex minus the sum of flow units going into it is equal to its supply.
  * <p>
  * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
  * be viewed as upper bounds.

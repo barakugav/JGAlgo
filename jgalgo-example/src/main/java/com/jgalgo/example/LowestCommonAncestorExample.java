@@ -54,20 +54,20 @@ public class LowestCommonAncestorExample {
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
 		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newBuilder().build();
-		LowestCommonAncestorDynamic.Node rt = lcaAlgo.initTree();
+		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();
 
-		LowestCommonAncestorDynamic.Node v1 = lcaAlgo.addLeaf(rt);
-		LowestCommonAncestorDynamic.Node v2 = lcaAlgo.addLeaf(rt);
+		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);
+		LowestCommonAncestorDynamic.Vertex v2 = lcaAlgo.addLeaf(rt);
 		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;
 
-		LowestCommonAncestorDynamic.Node v3 = lcaAlgo.addLeaf(v1);
+		LowestCommonAncestorDynamic.Vertex v3 = lcaAlgo.addLeaf(v1);
 		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;
 
-		LowestCommonAncestorDynamic.Node v4 = lcaAlgo.addLeaf(v1);
+		LowestCommonAncestorDynamic.Vertex v4 = lcaAlgo.addLeaf(v1);
 		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;
 
-		LowestCommonAncestorDynamic.Node v5 = lcaAlgo.addLeaf(v2);
-		LowestCommonAncestorDynamic.Node v6 = lcaAlgo.addLeaf(v2);
+		LowestCommonAncestorDynamic.Vertex v5 = lcaAlgo.addLeaf(v2);
+		LowestCommonAncestorDynamic.Vertex v6 = lcaAlgo.addLeaf(v2);
 		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;
 		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;
 	}

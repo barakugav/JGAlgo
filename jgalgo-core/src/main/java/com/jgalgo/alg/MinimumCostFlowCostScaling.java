@@ -209,7 +209,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 					}
 				}
 
-				/* Find all active nodes */
+				/* Find all active vertices */
 				assert activeQueue.isEmpty();
 				for (int n = g.vertices().size(), u = 0; u < n; u++) {
 					if (excess[u] > 0)
@@ -218,7 +218,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 				}
 
 				activeVerticesLoop: for (;;) {
-					/* Find next active node in FIFO queue */
+					/* Find next active vertex in FIFO queue */
 					final int searchSource;
 					for (;;) {
 						if (activeQueue.isEmpty())
@@ -244,8 +244,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private void dischargePartialAugment(int searchSource) {
 
 			/*
-			 * We perform a DFS from the 'searchSource' node, using only admissible edges. If we manage to reach path of
-			 * length MAX_AUGMENT_PATH_LENGTH, or we reached a vertex with negative excess, or we closed a cycle, we
+			 * We perform a DFS from the 'searchSource' vertex, using only admissible edges. If we manage to reach path
+			 * of length MAX_AUGMENT_PATH_LENGTH, or we reached a vertex with negative excess, or we closed a cycle, we
 			 * push flow on the DFS path. If we were not able to advance the search from some vertex, we 'relabel' it
 			 * (change it potential) and back up the DFS.
 			 */
@@ -429,7 +429,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 					if (excess[u] > 0) {
 						excessSum -= excess[u];
 						if (excessSum <= 0)
-							/* no active nodes, we are done */
+							/* no active vertices, we are done */
 							break;
 					}
 				}

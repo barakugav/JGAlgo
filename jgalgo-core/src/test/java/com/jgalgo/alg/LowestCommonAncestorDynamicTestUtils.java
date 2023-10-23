@@ -76,25 +76,25 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		IntArrays.shuffle(opsOrder, rand);
 
 		List<Op> ops = new ObjectArrayList<>();
-		int nodesCount = 0;
+		int verticesCount = 0;
 
 		/* insert first two elements */
 		ops.add(new OpInitTree());
-		int root = nodesCount++;
+		int root = verticesCount++;
 		ops.add(new OpAddLeaf(root));
-		nodesCount++;
+		verticesCount++;
 
 		for (int op : opsOrder) {
 			switch (op) {
 				case addLeafOp: {
-					int p = (nodesCount - 1) / 2;
+					int p = (verticesCount - 1) / 2;
 					ops.add(new OpAddLeaf(p));
-					nodesCount++;
+					verticesCount++;
 					break;
 				}
 				case lcaOp: {
-					int x = rand.nextInt(nodesCount);
-					int y = rand.nextInt(nodesCount);
+					int x = rand.nextInt(verticesCount);
+					int y = rand.nextInt(verticesCount);
 					ops.add(new OpLCAQuery(x, y));
 					break;
 				}
@@ -119,25 +119,25 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		IntArrays.shuffle(opsOrder, rand);
 
 		List<Op> ops = new ObjectArrayList<>();
-		int nodesCount = 0;
+		int verticesCount = 0;
 
 		/* insert first two elements */
 		ops.add(new OpInitTree());
-		int root = nodesCount++;
+		int root = verticesCount++;
 		ops.add(new OpAddLeaf(root));
-		nodesCount++;
+		verticesCount++;
 
 		for (int op : opsOrder) {
 			switch (op) {
 				case addLeafOp: {
-					int p = rand.nextInt(nodesCount);
+					int p = rand.nextInt(verticesCount);
 					ops.add(new OpAddLeaf(p));
-					nodesCount++;
+					verticesCount++;
 					break;
 				}
 				case lcaOp: {
-					int x = rand.nextInt(nodesCount);
-					int y = rand.nextInt(nodesCount);
+					int x = rand.nextInt(verticesCount);
+					int y = rand.nextInt(verticesCount);
 					ops.add(new OpLCAQuery(x, y));
 					break;
 				}
@@ -150,41 +150,41 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	static void testLCA(LowestCommonAncestorDynamic.Builder builder, int n, Collection<Op> ops) {
-		List<LowestCommonAncestorDynamic.Node> nodes = new ObjectArrayList<>();
+		List<LowestCommonAncestorDynamic.Vertex> vertices = new ObjectArrayList<>();
 		LowestCommonAncestorDynamic lca = builder.build();
 
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {
-				LowestCommonAncestorDynamic.Node root = lca.initTree();
-				root.setNodeData(0);
-				nodes.add(root);
+				LowestCommonAncestorDynamic.Vertex root = lca.initTree();
+				root.setData(0);
+				vertices.add(root);
 
 			} else if (op0 instanceof OpAddLeaf) {
 				OpAddLeaf op = (OpAddLeaf) op0;
-				LowestCommonAncestorDynamic.Node parent = nodes.get(op.parent);
-				LowestCommonAncestorDynamic.Node leaf = lca.addLeaf(parent);
-				leaf.setNodeData(parent.<Integer>getNodeData() + 1);
-				nodes.add(leaf);
+				LowestCommonAncestorDynamic.Vertex parent = vertices.get(op.parent);
+				LowestCommonAncestorDynamic.Vertex leaf = lca.addLeaf(parent);
+				leaf.setData(parent.<Integer>getData() + 1);
+				vertices.add(leaf);
 
 			} else if (op0 instanceof OpLCAQuery) {
 				OpLCAQuery op = (OpLCAQuery) op0;
 
-				LowestCommonAncestorDynamic.Node x = nodes.get(op.x), y = nodes.get(op.y);
-				if (x.<Integer>getNodeData() > y.<Integer>getNodeData()) {
-					LowestCommonAncestorDynamic.Node temp = x;
+				LowestCommonAncestorDynamic.Vertex x = vertices.get(op.x), y = vertices.get(op.y);
+				if (x.<Integer>getData() > y.<Integer>getData()) {
+					LowestCommonAncestorDynamic.Vertex temp = x;
 					x = y;
 					y = temp;
 				}
-				while (x.<Integer>getNodeData() < y.<Integer>getNodeData())
+				while (x.<Integer>getData() < y.<Integer>getData())
 					y = y.getParent();
 				while (x != y) {
 					x = x.getParent();
 					y = y.getParent();
 				}
 
-				LowestCommonAncestorDynamic.Node lcaExpected = x;
-				LowestCommonAncestorDynamic.Node lcaActual =
-						lca.findLowestCommonAncestor(nodes.get(op.x), nodes.get(op.y));
+				LowestCommonAncestorDynamic.Vertex lcaExpected = x;
+				LowestCommonAncestorDynamic.Vertex lcaActual =
+						lca.findLowestCommonAncestor(vertices.get(op.x), vertices.get(op.y));
 				assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else {

@@ -29,10 +29,10 @@ package com.jgalgo.internal.ds;
  * DynamicTree dt = builder.build();
  * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
  * ...
- * DynamicTree.Node n1 = dt.makeTree();
- * DynamicTree.Node n2 = dt.makeTree();
+ * DynamicTree.Vertex n1 = dt.makeTree();
+ * DynamicTree.Vertex n2 = dt.makeTree();
  *
- * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+ * System.out.println("The number of vertices in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
  * }</pre>
  *
  * @see    DynamicTreeSplayExtended
@@ -42,12 +42,12 @@ package com.jgalgo.internal.ds;
 public interface DynamicTreeExtension {
 
 	/**
-	 * An extension to {@link DynamicTree} that keep track on the number of nodes in each tree.
+	 * An extension to {@link DynamicTree} that keep track on the number of vertices in each tree.
 	 * <p>
-	 * The extension add some fields to each node, and maintain them during operation on the forest. The asymptotical
-	 * running time of all the operations does not increase, and an addition operation that query the number of nodes in
-	 * the current tree of any given node is added via the {@link #getTreeSize(com.jgalgo.internal.ds.DynamicTree.Node)}
-	 * method.
+	 * The extension add some fields to each vertex, and maintain them during operation on the forest. The asymptotical
+	 * running time of all the operations does not increase, and an addition operation that query the number of vertices
+	 * in the current tree of any given vertex is added via the
+	 * {@link #getTreeSize(com.jgalgo.internal.ds.DynamicTree.Vertex)} method.
 	 *
 	 * <pre> {@code
 	 * DynamicTree.Builder builder = DynamicTree.newBuilder();
@@ -56,10 +56,10 @@ public interface DynamicTreeExtension {
 	 * DynamicTree dt = builder.build();
 	 * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
 	 * ...
-	 * DynamicTree.Node n1 = dt.makeTree();
-	 * DynamicTree.Node n2 = dt.makeTree();
+	 * DynamicTree.Vertex n1 = dt.makeTree();
+	 * DynamicTree.Vertex n2 = dt.makeTree();
 	 *
-	 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+	 * System.out.println("The number of vertices in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
 	 * }</pre>
 	 *
 	 * @author Barak Ugav
@@ -67,12 +67,12 @@ public interface DynamicTreeExtension {
 	static interface TreeSize extends DynamicTreeExtension {
 
 		/**
-		 * Get the number of nodes in the current tree of a given node.
+		 * Get the number of vertices in the current tree of a given vertex.
 		 *
-		 * @param  node a node in the dynamic tree data structure
-		 * @return      the number nodes in the tree of the node
+		 * @param  vertex a vertex in the dynamic tree data structure
+		 * @return        the number vertices in the tree of the vertex
 		 */
-		int getTreeSize(DynamicTree.Node node);
+		int getTreeSize(DynamicTree.Vertex vertex);
 	}
 
 }

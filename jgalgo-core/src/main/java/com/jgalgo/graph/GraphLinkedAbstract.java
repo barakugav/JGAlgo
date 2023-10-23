@@ -21,28 +21,28 @@ import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
-	private Node[] edges;
-	private final DataContainer.Obj<Node> edgesContainer;
-	private static final Node[] EmptyNodeArr = new Node[0];
+	private Edge[] edges;
+	private final DataContainer.Obj<Edge> edgesContainer;
+	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 	}
 
 	GraphLinkedAbstract(IndexGraph g, boolean copyWeights) {
 		super(g, copyWeights);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			edges[e] = allocNode(e, g.edgeSource(e), g.edgeTarget(e));
+			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-		Node n = getNode(edge);
+		Edge n = getEdge(edge);
 		if (endpoint == n.source) {
 			return n.target;
 		} else if (endpoint == n.target) {
@@ -53,8 +53,8 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		}
 	}
 
-	Node getNode(int edge) {
-		Node n = edges[edge];
+	Edge getEdge(int edge) {
+		Edge n = edges[edge];
 		assert n.id == edge;
 		return n;
 	}
@@ -65,18 +65,18 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		super.removeEdgeImpl(edge);
 	}
 
-	Node addEdgeNode(int source, int target) {
+	Edge addEdgeObj(int source, int target) {
 		int e = super.addEdge(source, target);
-		Node n = allocNode(e, source, target);
+		Edge n = allocEdge(e, source, target);
 		edges[e] = n;
 		return n;
 	}
 
-	abstract Node allocNode(int id, int source, int target);
+	abstract Edge allocEdge(int id, int source, int target);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		Node n1 = getNode(e1), n2 = getNode(e2);
+		Edge n1 = getEdge(e1), n2 = getEdge(e2);
 		n1.id = e2;
 		n2.id = e1;
 		edgesContainer.swap(edges, e1, e2);
@@ -86,16 +86,16 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 	@Override
 	public int edgeSource(int edge) {
 		checkEdge(edge);
-		return getNode(edge).source;
+		return getEdge(edge).source;
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
 		checkEdge(edge);
-		return getNode(edge).target;
+		return getEdge(edge).target;
 	}
 
-	Collection<Node> nodes() {
+	Collection<Edge> edgeObjs() {
 		return edgesContainer.values();
 	}
 
@@ -107,14 +107,14 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
 	abstract class EdgeItr implements EdgeIter {
 
-		private Node next;
-		Node last;
+		private Edge next;
+		Edge last;
 
-		EdgeItr(Node p) {
+		EdgeItr(Edge p) {
 			this.next = p;
 		}
 
-		abstract Node nextNode(Node n);
+		abstract Edge nextEdge(Edge n);
 
 		@Override
 		public boolean hasNext() {
@@ -124,7 +124,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			next = nextNode(last = next);
+			next = nextEdge(last = next);
 			return last.id;
 		}
 
@@ -143,12 +143,12 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		}
 	}
 
-	abstract static class Node {
+	abstract static class Edge {
 
 		int id;
 		int source, target;
 
-		Node(int id, int source, int target) {
+		Edge(int id, int source, int target) {
 			this.id = id;
 			this.source = source;
 			this.target = target;

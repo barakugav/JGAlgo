@@ -39,7 +39,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 	 *
 	 * @param weightLimit a limit on the weights of the edges. The limit is an upper bound on the sum of each edge
 	 *                        weight and the weights modification that are performed using
-	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
+	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 	 */
 	DynamicTreeSplayInt(int weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
@@ -58,7 +58,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 	}
 
 	@Override
-	public Node findRoot(Node v) {
+	public DynamicTree.Vertex findRoot(DynamicTree.Vertex v) {
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return n;
@@ -67,7 +67,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 	}
 
 	@Override
-	public MinEdge findMinEdge(Node v) {
+	public MinEdge findMinEdge(DynamicTree.Vertex v) {
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return null;
@@ -95,7 +95,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 	}
 
 	@Override
-	public void addWeight(Node v, double w) {
+	public void addWeight(DynamicTree.Vertex v, double w) {
 		int wInt = (int) w;
 		if (w != wInt)
 			throw new IllegalArgumentException("weight is not an integer");
@@ -121,14 +121,14 @@ class DynamicTreeSplayInt implements DynamicTree {
 	}
 
 	@Override
-	public void link(Node child, Node parent, double w) {
+	public void link(DynamicTree.Vertex child, DynamicTree.Vertex parent, double w) {
 		int wInt = (int) w;
 		if (w != wInt)
 			throw new IllegalArgumentException("weight is not an integer");
 		if (child != findRoot(child))
-			throw new IllegalArgumentException("child node must be a root");
+			throw new IllegalArgumentException("child vertex must be a root");
 		if (child == findRoot(parent))
-			throw new IllegalArgumentException("Both nodes are in the same tree");
+			throw new IllegalArgumentException("Both vertices are in the same tree");
 		if (wInt >= rootWeight / 2)
 			throw new IllegalArgumentException("Weight is over the limit");
 		SplayNode t1 = splay((SplayNode) child);
@@ -150,7 +150,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 	}
 
 	@Override
-	public void cut(Node v) {
+	public void cut(DynamicTree.Vertex v) {
 		SplayNode n = splay((SplayNode) v);
 		if (!n.hasRightChild())
 			return;
@@ -269,7 +269,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 	}
 
-	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements Node {
+	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements DynamicTree.Vertex {
 
 		SplayNode userParent;
 
@@ -287,17 +287,17 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V> V getNodeData() {
+		public <V> V getData() {
 			return (V) key;
 		}
 
 		@Override
-		public void setNodeData(Object data) {
+		public void setData(Object data) {
 			this.key = data;
 		}
 
 		@Override
-		public Node getParent() {
+		public DynamicTree.Vertex getParent() {
 			return userParent;
 		}
 

@@ -99,8 +99,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];
 			DynamicTree dt = DynamicTree.newBuilder().setMaxWeight(capacitySum > 0 ? capacitySum : 1e100).build();
-			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
-			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
+			DynamicTree.Vertex[] vToDt = new DynamicTree.Vertex[n];
+			Stack<DynamicTree.Vertex> cleanupStack = new ObjectArrayList<>();
 
 			int[] edgeToParent = new int[n];
 			Arrays.fill(edgeToParent, -1);
@@ -138,7 +138,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 				dt.clear();
 				for (int u = 0; u < n; u++)
-					(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));
+					(vToDt[u] = dt.makeTree()).setData(Integer.valueOf(u));
 
 				IntDoubleConsumer updateFlow = (e, weight) -> {
 					double currentFlow = flow[e];
@@ -149,7 +149,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 				};
 
 				calcBlockFlow: for (;;) {
-					int v = dt.findRoot(vToDt[source]).<Integer>getNodeData().intValue();
+					int v = dt.findRoot(vToDt[source]).<Integer>getData().intValue();
 					if (v == sink) {
 
 						/* Augment */
@@ -160,7 +160,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 						/* Delete all saturated edges */
 						debug.println("Delete");
 						do {
-							int e = edgeToParent[min.source().<Integer>getNodeData().intValue()];
+							int e = edgeToParent[min.source().<Integer>getData().intValue()];
 							assert vToDt[L.edgeSource(e)] == min.source();
 							L.removeEdge(e);
 
@@ -184,7 +184,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 							assert vToDt[u].getParent() == vToDt[v];
 
 							MinEdge m = dt.findMinEdge(vToDt[u]);
-							assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
+							assert e == edgeToParent[m.source().<Integer>getData().intValue()];
 							edgeToParent[u] = -1;
 							updateFlow.accept(e, m.weight());
 
@@ -206,13 +206,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 				/* Cleanup all the edges that stayed in the DT */
 				for (int u = 0; u < n; u++) {
-					for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
+					for (DynamicTree.Vertex uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 						cleanupStack.push(uDt);
 					while (!cleanupStack.isEmpty()) {
-						DynamicTree.Node uDt = cleanupStack.pop();
+						DynamicTree.Vertex uDt = cleanupStack.pop();
 						assert uDt.getParent() == dt.findRoot(uDt);
 						MinEdge m = dt.findMinEdge(uDt);
-						int eSource = m.source().<Integer>getNodeData().intValue();
+						int eSource = m.source().<Integer>getData().intValue();
 						int e = edgeToParent[eSource];
 						edgeToParent[eSource] = -1;
 						updateFlow.accept(e, m.weight());

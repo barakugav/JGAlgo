@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * The push-relabel maximum flow algorithm with FIFO ordering.
  * <p>
  * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
- * between neighboring nodes using <i>push</i> operations under the guidance of an admissible network maintained by
+ * between neighboring vertices using <i>push</i> operations under the guidance of an admissible network maintained by
  * <i>relabel</i> operations.
  * <p>
  * Different variants of the push relabel algorithm exists, mostly differing in the order the vertices with excess (more

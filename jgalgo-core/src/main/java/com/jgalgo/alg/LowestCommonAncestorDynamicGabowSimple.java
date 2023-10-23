@@ -22,11 +22,11 @@ import java.util.Arrays;
  * Gabow implementation for dynamic LCA data structure with \(O(\log^2 n)\) amortized time for {@code addLeaf()}
  * operation.
  * <p>
- * The running time of this algorithm for \(m\) operations over \(n\) nodes is \(O(m + n \log^2 n)\) and it uses linear
- * space. More specifically, the {@link #addLeaf(LowestCommonAncestorDynamic.Node)} operation is perform in \(O(\log^2
- * n)\) amortized time and
- * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Node, LowestCommonAncestorDynamic.Node)} is perform in
- * constant time.
+ * The running time of this algorithm for \(m\) operations over \(n\) vertices is \(O(m + n \log^2 n)\) and it uses
+ * linear space. More specifically, the {@link #addLeaf(LowestCommonAncestorDynamic.Vertex)} operation is perform in
+ * \(O(\log^2 n)\) amortized time and
+ * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
+ * in constant time.
  * <p>
  * This implementation is used by the better linear LCA algorithm {@link LowestCommonAncestorDynamicGabowLinear} and
  * rarely should be used directly.
@@ -38,7 +38,7 @@ import java.util.Arrays;
  */
 class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDynamic {
 
-	private int nodesNum;
+	private int verticesNum;
 
 	/* Hyper parameters */
 	private static final double alpha = 6.0 / 5.0;
@@ -46,50 +46,50 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	private static final int e = 4;
 	private static final int c = 5;
 
-	private static final NodeImpl[] EMPTY_NODE_ARR = new NodeImpl[0];
+	private static final VertexImpl[] EMPTY_VERTICES_ARR = new VertexImpl[0];
 
 	/**
-	 * Create a new dynamic LCA data structure that contains zero nodes.
+	 * Create a new dynamic LCA data structure that contains zero vertices.
 	 */
 	LowestCommonAncestorDynamicGabowSimple() {
-		nodesNum = 0;
+		verticesNum = 0;
 	}
 
 	@Override
-	public Node initTree() {
+	public Vertex initTree() {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode(null);
+		return newVertex(null);
 	}
 
 	@Override
-	public Node addLeaf(Node parent) {
-		return newNode((NodeImpl) parent);
+	public Vertex addLeaf(Vertex parent) {
+		return newVertex((VertexImpl) parent);
 	}
 
-	private Node newNode(NodeImpl parent) {
-		nodesNum++;
-		NodeImpl node = new NodeImpl(parent);
+	private Vertex newVertex(VertexImpl parent) {
+		verticesNum++;
+		VertexImpl vertex = new VertexImpl(parent);
 
-		node.isApex = true;
+		vertex.isApex = true;
 		if (parent != null) {
-			parent.addChild(node);
-			node.cParent = parent.getPathApex();
+			parent.addChild(vertex);
+			vertex.cParent = parent.getPathApex();
 		}
 
-		NodeImpl lastAncestorRequireCompress = null;
-		for (NodeImpl a = node; a != null; a = a.cParent) {
+		VertexImpl lastAncestorRequireCompress = null;
+		for (VertexImpl a = vertex; a != null; a = a.cParent) {
 			a.size++;
 			if (a.isRequireRecompress())
 				lastAncestorRequireCompress = a;
 		}
 		recompress(lastAncestorRequireCompress);
 
-		return node;
+		return vertex;
 	}
 
-	private void recompress(NodeImpl subtreeRoot) {
-		/* first, compute the size of each node subtree */
+	private void recompress(VertexImpl subtreeRoot) {
+		/* first, compute the size of each vertex subtree */
 		computeSize(subtreeRoot);
 
 		/* actual recompress */
@@ -100,60 +100,60 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		computeAncestorTables(subtreeRoot);
 	}
 
-	private int computeSize(NodeImpl node) {
+	private int computeSize(VertexImpl vertex) {
 		int size = 1;
-		for (int i = 0; i < node.childrenNum; i++)
-			size += computeSize(node.children[i]);
-		return node.size = size;
+		for (int i = 0; i < vertex.childrenNum; i++)
+			size += computeSize(vertex.children[i]);
+		return vertex.size = size;
 	}
 
-	private void buildCompressedTree(NodeImpl node) {
-		node.cParent = node.isRoot() ? null : node.parent.getPathApex();
+	private void buildCompressedTree(VertexImpl vertex) {
+		vertex.cParent = vertex.isRoot() ? null : vertex.parent.getPathApex();
 
-		node.path = node.isApex ? EMPTY_NODE_ARR : null;
-		node.pathSize = 0;
-		node.pathIdx = node.getPathApex().pathSize;
-		node.getPathApex().addToPath(node);
+		vertex.path = vertex.isApex ? EMPTY_VERTICES_ARR : null;
+		vertex.pathSize = 0;
+		vertex.pathIdx = vertex.getPathApex().pathSize;
+		vertex.getPathApex().addToPath(vertex);
 
-		node.sigma = node.isApex ? node.size : 1;
-		double /* integer */ v = pow(node.sigma, e);
-		node.idxLowerFat = node.isRoot() ? 0 : node.cParent.idxUpperFatMaxChild;
-		node.idxUpperFat = node.idxLowerFat + c * v;
-		node.idxLower = node.idxLowerFat + v;
-		node.idxUpper = node.idxUpperFat - v;
-		assert node.isRoot() || node.idxUpperFat <= node.cParent.idxUpperFat;
-		if (!node.isRoot())
-			node.cParent.idxUpperFatMaxChild = node.idxUpperFat;
+		vertex.sigma = vertex.isApex ? vertex.size : 1;
+		double /* integer */ v = pow(vertex.sigma, e);
+		vertex.idxLowerFat = vertex.isRoot() ? 0 : vertex.cParent.idxUpperFatMaxChild;
+		vertex.idxUpperFat = vertex.idxLowerFat + c * v;
+		vertex.idxLower = vertex.idxLowerFat + v;
+		vertex.idxUpper = vertex.idxUpperFat - v;
+		assert vertex.isRoot() || vertex.idxUpperFat <= vertex.cParent.idxUpperFat;
+		if (!vertex.isRoot())
+			vertex.cParent.idxUpperFatMaxChild = vertex.idxUpperFat;
 
-		node.idxUpperFatMaxChild = node.idxLower + 1;
+		vertex.idxUpperFatMaxChild = vertex.idxLower + 1;
 
-		for (int i = 0; i < node.childrenNum; i++) {
-			NodeImpl child = node.children[i];
-			child.isApex = child.size <= node.size / 2;
+		for (int i = 0; i < vertex.childrenNum; i++) {
+			VertexImpl child = vertex.children[i];
+			child.isApex = child.size <= vertex.size / 2;
 			buildCompressedTree(child);
 		}
 	}
 
-	private void computeAncestorTables(NodeImpl node) {
-		int ancestorTableSize = logBetaFloor(c * pow(nodesNum, e));
-		node.ancestorTableInit(ancestorTableSize);
+	private void computeAncestorTables(VertexImpl vertex) {
+		int ancestorTableSize = logBetaFloor(c * pow(verticesNum, e));
+		vertex.ancestorTableInit(ancestorTableSize);
 
 		int tableIdx = 0;
-		for (NodeImpl a = node, last = null;; a = a.cParent) {
+		for (VertexImpl a = vertex, last = null;; a = a.cParent) {
 			for (; (c - 2) * pow(a.sigma, e) >= pow(beta, tableIdx); tableIdx++)
 				if (last != null)
-					node.ancestorTable[tableIdx] = last;
+					vertex.ancestorTable[tableIdx] = last;
 			if (a.isRoot()) {
 				for (; tableIdx < ancestorTableSize; tableIdx++)
 					if ((c - 2) * pow(a.sigma, e) < pow(beta, tableIdx))
-						node.ancestorTable[tableIdx] = a;
+						vertex.ancestorTable[tableIdx] = a;
 				break;
 			}
 			last = a;
 		}
 
-		for (int i = 0; i < node.childrenNum; i++)
-			computeAncestorTables(node.children[i]);
+		for (int i = 0; i < vertex.childrenNum; i++)
+			computeAncestorTables(vertex.children[i]);
 	}
 
 	private static double /* integer */ pow(double /* integer */ a, double /* integer */ b) {
@@ -174,21 +174,21 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		return (int) x;
 	}
 
-	private static CharacteristicAncestors calcCACompressed(NodeImpl x, NodeImpl y) {
+	private static CharacteristicAncestors calcCACompressed(VertexImpl x, VertexImpl y) {
 		if (x == y)
 			return new CharacteristicAncestors(x, x, x);
 		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));
 
-		NodeImpl[] a = new NodeImpl[2];
-		NodeImpl[] az = new NodeImpl[2];
+		VertexImpl[] a = new VertexImpl[2];
+		VertexImpl[] az = new VertexImpl[2];
 		for (int zIdx = 0; zIdx < 2; zIdx++) {
-			NodeImpl z = zIdx == 0 ? x : y;
-			NodeImpl z0 = zIdx == 0 ? y : x;
+			VertexImpl z = zIdx == 0 ? x : y;
+			VertexImpl z0 = zIdx == 0 ? y : x;
 
-			NodeImpl v = z.ancestorTable[i];
-			NodeImpl w = v != null ? v.cParent : z;
+			VertexImpl v = z.ancestorTable[i];
+			VertexImpl w = v != null ? v.cParent : z;
 
-			NodeImpl b, bz;
+			VertexImpl b, bz;
 			if ((c - 2) * pow(w.sigma, e) > Math.abs(x.idxLower - y.idxLower)) {
 				b = w;
 				bz = v != null ? v : z;
@@ -206,34 +206,34 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 			}
 		}
 
-		NodeImpl ax = az[0], ay = az[1];
+		VertexImpl ax = az[0], ay = az[1];
 		assert a[0] == a[1];
 		assert ax == a[0] || ax.cParent == a[0];
 		assert ay == a[0] || ay.cParent == a[0];
 		return new CharacteristicAncestors(a[0], ax, ay);
 	}
 
-	CharacteristicAncestors calcCA(Node x0, Node y0) {
-		NodeImpl x = (NodeImpl) x0, y = (NodeImpl) y0;
+	CharacteristicAncestors calcCA(Vertex x0, Vertex y0) {
+		VertexImpl x = (VertexImpl) x0, y = (VertexImpl) y0;
 		if (x == y)
 			return new CharacteristicAncestors(x, x, x);
 		CharacteristicAncestors cac = calcCACompressed(x, y);
 
 		/* c is an apex of path P */
-		NodeImpl c = (NodeImpl) cac.a, cx = (NodeImpl) cac.ax, cy = (NodeImpl) cac.ay;
+		VertexImpl c = (VertexImpl) cac.a, cx = (VertexImpl) cac.ax, cy = (VertexImpl) cac.ay;
 		assert c == c.getPathApex();
 
 		/* bz is the first ancestor of cz on P */
-		NodeImpl bx = cx != c && cx.isApex ? cx.parent : cx;
-		NodeImpl by = cy != c && cy.isApex ? cy.parent : cy;
+		VertexImpl bx = cx != c && cx.isApex ? cx.parent : cx;
+		VertexImpl by = cy != c && cy.isApex ? cy.parent : cy;
 		assert c == bx.getPathApex();
 		assert c == by.getPathApex();
 
 		/* a is the shallower vertex of bx and by */
-		NodeImpl a = bx.pathIdx < by.pathIdx ? bx : by;
+		VertexImpl a = bx.pathIdx < by.pathIdx ? bx : by;
 
-		NodeImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;
-		NodeImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;
+		VertexImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;
+		VertexImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;
 
 		assert ax == a || ax.parent == a;
 		assert ay == a || ay.parent == a;
@@ -241,38 +241,38 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	}
 
 	@Override
-	public Node findLowestCommonAncestor(Node x, Node y) {
+	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
 		return calcCA(x, y).a;
 	}
 
 	@Override
 	public int size() {
-		return nodesNum;
+		return verticesNum;
 	}
 
 	@Override
 	public void clear() {
-		nodesNum = 0;
+		verticesNum = 0;
 	}
 
-	private static class NodeImpl implements Node {
+	private static class VertexImpl implements Vertex {
 		/* --- user tree data --- */
-		Object nodeData;
+		Object vertexData;
 		/* tree parent */
-		final NodeImpl parent;
-		/* children nodes of this node */
-		NodeImpl[] children;
+		final VertexImpl parent;
+		/* children vertices of this vertex */
+		VertexImpl[] children;
 		int childrenNum;
-		/* number of nodes in subtree */
+		/* number of vertices in subtree */
 		int size;
 
 		/* --- compressed tree data --- */
 		/* parent in the compressed tree */
-		NodeImpl cParent;
-		/* If the node is apex, contains all the nodes in it's path, else null */
-		NodeImpl[] path;
+		VertexImpl cParent;
+		/* If the vertex is apex, contains all the vertices in it's path, else null */
+		VertexImpl[] path;
 		int pathSize;
-		/* Index of the node within it's path */
+		/* Index of the vertex within it's path */
 		int pathIdx;
 		/* p */
 		double /* integer */ idxLower;
@@ -286,29 +286,29 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		double /* integer */ idxUpperFatMaxChild;
 		/* sigma */
 		int sigma;
-		/* flag for head (shallower) of path node */
+		/* flag for head (shallower) of path vertex */
 		boolean isApex;
 		/* ancestor table */
-		NodeImpl[] ancestorTable;
+		VertexImpl[] ancestorTable;
 
-		NodeImpl(NodeImpl parent) {
+		VertexImpl(VertexImpl parent) {
 			this.parent = parent;
-			children = EMPTY_NODE_ARR;
+			children = EMPTY_VERTICES_ARR;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <D> D getNodeData() {
-			return (D) nodeData;
+		public <D> D getData() {
+			return (D) vertexData;
 		}
 
 		@Override
-		public void setNodeData(Object data) {
-			nodeData = data;
+		public void setData(Object data) {
+			vertexData = data;
 		}
 
 		@Override
-		public Node getParent() {
+		public Vertex getParent() {
 			return parent;
 		}
 
@@ -317,17 +317,17 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 			return parent == null;
 		}
 
-		void addChild(NodeImpl c) {
+		void addChild(VertexImpl c) {
 			if (childrenNum >= children.length)
 				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));
 			children[childrenNum++] = c;
 		}
 
-		NodeImpl getPathApex() {
+		VertexImpl getPathApex() {
 			return isApex ? this : cParent;
 		}
 
-		void addToPath(NodeImpl c) {
+		void addToPath(VertexImpl c) {
 			if (pathSize >= path.length)
 				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));
 			path[pathSize++] = c;
@@ -341,12 +341,12 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 			if (ancestorTable != null && ancestorTable.length >= size)
 				Arrays.fill(ancestorTable, null);
 			else
-				ancestorTable = new NodeImpl[size];
+				ancestorTable = new VertexImpl[size];
 		}
 
 		@Override
 		public String toString() {
-			return "V" + (isApex ? "*" : "") + "<" + getNodeData() + ">";
+			return "V" + (isApex ? "*" : "") + "<" + getData() + ">";
 		}
 
 		// void clear() {
@@ -360,9 +360,9 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	}
 
 	static class CharacteristicAncestors {
-		final Node a, ax, ay;
+		final Vertex a, ax, ay;
 
-		CharacteristicAncestors(Node a, Node ax, Node ay) {
+		CharacteristicAncestors(Vertex a, Vertex ax, Vertex ay) {
 			this.a = a;
 			this.ax = ax;
 			this.ay = ay;

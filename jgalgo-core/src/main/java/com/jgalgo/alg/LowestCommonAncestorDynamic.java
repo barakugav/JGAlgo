@@ -21,19 +21,19 @@ package com.jgalgo.alg;
  * <p>
  * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
  * (common ancestor), and its farthest from the root (lowest). Algorithm implementing this interface support modifying
- * the tree by adding leafs as children to existing parents nodes, while supporting LCA queries.
+ * the tree by adding leafs as children to existing parents vertices, while supporting LCA queries.
  *
  * <pre> {@code
  * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newBuilder().build();
- * Node rt = lca.initTree();
- * Node n1 = lca.addLeaf(rt);
- * Node n2 = lca.addLeaf(rt);
- * Node n3 = lca.addLeaf(n1);
+ * LowestCommonAncestorDynamic.Vertex rt = lca.initTree();
+ * LowestCommonAncestorDynamic.Vertex n1 = lca.addLeaf(rt);
+ * LowestCommonAncestorDynamic.Vertex n2 = lca.addLeaf(rt);
+ * LowestCommonAncestorDynamic.Vertex n3 = lca.addLeaf(n1);
  *
  * assert lca.findLowestCommonAncestor(n1, n2) == rt;
  * assert lca.findLowestCommonAncestor(n1, n3) == n1;
  *
- * Node n4 = lca.addLeaf(n1);
+ * LowestCommonAncestorDynamic.Vertex n4 = lca.addLeaf(n1);
  * assert lca.findLowestCommonAncestor(n1, n4) == n1;
  * }</pre>
  *
@@ -42,72 +42,72 @@ package com.jgalgo.alg;
 public interface LowestCommonAncestorDynamic {
 
 	/**
-	 * Initialize the tree the LCA will operate on and create a root node.
+	 * Initialize the tree the LCA will operate on and create a root vertex.
 	 *
-	 * @return                       the new root node
+	 * @return                       the new root vertex
 	 * @throws IllegalStateException if the tree is not empty
 	 */
-	public Node initTree();
+	public Vertex initTree();
 
 	/**
-	 * Add a new leaf node to the tree.
+	 * Add a new leaf vertex to the tree.
 	 *
-	 * @param  parent parent of the new node
-	 * @return        the new node
+	 * @param  parent parent of the new vertex
+	 * @return        the new vertex
 	 */
-	public Node addLeaf(Node parent);
+	public Vertex addLeaf(Vertex parent);
 
 	/**
-	 * Find the lowest common ancestor of two nodes in the tree.
+	 * Find the lowest common ancestor of two vertices in the tree.
 	 *
-	 * @param  u the first node
-	 * @param  v the second node
-	 * @return   the lowest common ancestor of the two nodes
+	 * @param  u the first vertex
+	 * @param  v the second vertex
+	 * @return   the lowest common ancestor of the two vertices
 	 */
-	public Node findLowestCommonAncestor(Node u, Node v);
+	public Vertex findLowestCommonAncestor(Vertex u, Vertex v);
 
 	/**
-	 * Get the number of nodes in the tree.
+	 * Get the number of vertices in the tree.
 	 *
-	 * @return number of nodes in the tree
+	 * @return number of vertices in the tree
 	 */
 	public int size();
 
 	/**
-	 * Clear the data structure by removing all nodes in the tree.
+	 * Clear the data structure by removing all vertices in the tree.
 	 */
 	public void clear();
 
 	/**
-	 * A tree node in an {@link LowestCommonAncestorDynamic} data structure.
+	 * A tree vertex in an {@link LowestCommonAncestorDynamic} data structure.
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Node {
+	public static interface Vertex {
 
 		/**
-		 * Get the parent node of this node.
+		 * Get the parent vertex of this vertex.
 		 *
-		 * @return the parent of this node or {@code null} if this node is the root of the tree.
+		 * @return the parent of this vertex or {@code null} if this vertex is the root of the tree.
 		 */
-		public Node getParent();
+		public Vertex getParent();
 
 		/**
-		 * Get the user data of this node.
+		 * Get the user data of this vertex.
 		 * <p>
 		 * Note that the conversion of the data stored in the implementation to the user type is unsafe.
 		 *
 		 * @param  <D> the data type
-		 * @return     the user data of this node
+		 * @return     the user data of this vertex
 		 */
-		public <D> D getNodeData();
+		public <D> D getData();
 
 		/**
-		 * Set the user data of this node.
+		 * Set the user data of this vertex.
 		 *
-		 * @param data new value for this node
+		 * @param data new value for this vertex
 		 */
-		public void setNodeData(Object data);
+		public void setData(Object data);
 
 	}
 

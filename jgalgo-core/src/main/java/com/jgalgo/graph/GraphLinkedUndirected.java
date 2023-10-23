@@ -30,10 +30,10 @@ import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
  */
 class GraphLinkedUndirected extends GraphLinkedAbstract {
 
-	private Node[] edges;
-	private final DataContainer.Obj<Node> edgesContainer;
+	private Edge[] edges;
+	private final DataContainer.Obj<Edge> edgesContainer;
 
-	private static final Node[] EmptyNodeArr = new Node[0];
+	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
@@ -43,19 +43,19 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyWeights) {
 		super(g, copyWeights);
 
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			addEdgeToLists(getNode(e));
+			addEdgeToLists(getEdge(e));
 	}
 
 	@Override
@@ -69,21 +69,21 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		assert v1 != v2;
 
 		final int tempV = -2;
-		for (Node p = edges[v1], next; p != null; p = next) {
+		for (Edge p = edges[v1], next; p != null; p = next) {
 			next = p.next(v1);
 			if (p.source == v1)
 				p.source = tempV;
 			if (p.target == v1)
 				p.target = tempV;
 		}
-		for (Node p = edges[v2], next; p != null; p = next) {
+		for (Edge p = edges[v2], next; p != null; p = next) {
 			next = p.next(v2);
 			if (p.source == v2)
 				p.source = v1;
 			if (p.target == v2)
 				p.target = v1;
 		}
-		for (Node p = edges[v1], next; p != null; p = next) {
+		for (Edge p = edges[v1], next; p != null; p = next) {
 			next = p.next(tempV);
 			if (p.source == tempV)
 				p.source = v2;
@@ -110,14 +110,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public int addEdge(int source, int target) {
-		Node e = (Node) addEdgeNode(source, target);
+		Edge e = (Edge) addEdgeObj(source, target);
 		addEdgeToLists(e);
 		return e.id;
 	}
 
-	private void addEdgeToLists(Node e) {
+	private void addEdgeToLists(Edge e) {
 		int source = e.source, target = e.target;
-		Node next;
+		Edge next;
 		if ((next = edges[source]) != null) {
 			e.nextSet(source, next);
 			next.prevSet(source, e);
@@ -133,26 +133,26 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	Node allocNode(int id, int source, int target) {
-		return new Node(id, source, target);
+	Edge allocEdge(int id, int source, int target) {
+		return new Edge(id, source, target);
 	}
 
 	@Override
-	Node getNode(int edge) {
-		return (Node) super.getNode(edge);
+	Edge getEdge(int edge) {
+		return (Edge) super.getEdge(edge);
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-		Node node = getNode(edge);
-		removeEdgeNodePointers(node, node.source);
-		if (node.source != node.target)
-			removeEdgeNodePointers(node, node.target);
+		Edge e = getEdge(edge);
+		removeEdgePointers(e, e.source);
+		if (e.source != e.target)
+			removeEdgePointers(e, e.target);
 		super.removeEdgeImpl(edge);
 	}
 
-	private void removeEdgeNodePointers(Node e, int w) {
-		Node next = e.next(w), prev = e.prev(w);
+	private void removeEdgePointers(Edge e, int w) {
+		Edge next = e.next(w), prev = e.prev(w);
 		if (prev == null) {
 			edges[w] = next;
 		} else {
@@ -168,7 +168,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 		checkVertex(source);
-		for (Node p = edges[source], next; p != null; p = next) {
+		for (Edge p = edges[source], next; p != null; p = next) {
 			// update u list
 			next = p.next(source);
 			p.nextSet(source, null);
@@ -177,7 +177,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			// update v list
 			if (p.source != p.target) {
 				int target = p.getEndpoint(source);
-				removeEdgeNodePointers(p, target);
+				removeEdgePointers(p, target);
 			}
 
 			edgeSwapBeforeRemove(p.id);
@@ -203,8 +203,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public void clearEdges() {
-		for (GraphLinkedAbstract.Node p0 : nodes()) {
-			Node p = (Node) p0;
+		for (GraphLinkedAbstract.Edge p0 : edgeObjs()) {
+			Edge p = (Edge) p0;
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
 		edgesContainer.clear(edges);
@@ -219,21 +219,21 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private static final GraphCapabilities Capabilities =
 			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();
 
-	private static class Node extends GraphLinkedAbstract.Node {
+	private static class Edge extends GraphLinkedAbstract.Edge {
 
-		private Node nextu, nextv;
-		private Node prevu, prevv;
+		private Edge nextu, nextv;
+		private Edge prevu, prevv;
 
-		Node(int id, int source, int target) {
+		Edge(int id, int source, int target) {
 			super(id, source, target);
 		}
 
-		Node next(int w) {
+		Edge next(int w) {
 			assert w == source || w == target;
 			return w == source ? nextu : nextv;
 		}
 
-		void nextSet(int w, Node n) {
+		void nextSet(int w, Edge n) {
 			if (w == source) {
 				nextu = n;
 			} else {
@@ -242,7 +242,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			}
 		}
 
-		Node prev(int w) {
+		Edge prev(int w) {
 			if (w == source) {
 				return prevu;
 			} else {
@@ -251,7 +251,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			}
 		}
 
-		void prevSet(int w, Node n) {
+		void prevSet(int w, Edge n) {
 			if (w == source) {
 				prevu = n;
 			} else {
@@ -296,14 +296,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		private final int source;
 
-		EdgeIterOut(int source, Node p) {
+		EdgeIterOut(int source, Edge p) {
 			super(p);
 			this.source = source;
 		}
 
 		@Override
-		Node nextNode(GraphLinkedAbstract.Node n) {
-			return ((Node) n).next(source);
+		Edge nextEdge(GraphLinkedAbstract.Edge n) {
+			return ((Edge) n).next(source);
 		}
 
 		@Override
@@ -322,14 +322,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		private final int target;
 
-		EdgeIterIn(int target, Node p) {
+		EdgeIterIn(int target, Edge p) {
 			super(p);
 			this.target = target;
 		}
 
 		@Override
-		Node nextNode(GraphLinkedAbstract.Node n) {
-			return ((Node) n).next(target);
+		Edge nextEdge(GraphLinkedAbstract.Edge n) {
+			return ((Edge) n).next(target);
 		}
 
 		@Override

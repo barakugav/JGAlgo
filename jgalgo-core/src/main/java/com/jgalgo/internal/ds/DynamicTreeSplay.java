@@ -40,7 +40,7 @@ class DynamicTreeSplay implements DynamicTree {
 	 *
 	 * @param weightLimit a limit on the weights of the edges. The limit is an upper bound on the sum of each edge
 	 *                        weight and the weights modification that are performed using
-	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
+	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 	 */
 	DynamicTreeSplay(double weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
@@ -59,7 +59,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public Node findRoot(Node v) {
+	public DynamicTree.Vertex findRoot(DynamicTree.Vertex v) {
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return n;
@@ -68,7 +68,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public MinEdge findMinEdge(Node v) {
+	public MinEdge findMinEdge(DynamicTree.Vertex v) {
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return null;
@@ -96,7 +96,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void addWeight(Node v, double w) {
+	public void addWeight(DynamicTree.Vertex v, double w) {
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return;
@@ -118,7 +118,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void link(Node child, Node parent, double w) {
+	public void link(DynamicTree.Vertex child, DynamicTree.Vertex parent, double w) {
 		if (child != findRoot(child))
 			throw new IllegalArgumentException("child node must be a root");
 		if (child == findRoot(parent))
@@ -144,7 +144,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void cut(Node v) {
+	public void cut(DynamicTree.Vertex v) {
 		SplayNode n = splay((SplayNode) v);
 		if (!n.hasRightChild())
 			return;
@@ -263,7 +263,7 @@ class DynamicTreeSplay implements DynamicTree {
 
 	}
 
-	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements Node {
+	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements DynamicTree.Vertex {
 
 		SplayNode userParent;
 
@@ -281,17 +281,17 @@ class DynamicTreeSplay implements DynamicTree {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V> V getNodeData() {
+		public <V> V getData() {
 			return (V) key;
 		}
 
 		@Override
-		public void setNodeData(Object data) {
+		public void setData(Object data) {
 			this.key = data;
 		}
 
 		@Override
-		public Node getParent() {
+		public Vertex getParent() {
 			return userParent;
 		}
 

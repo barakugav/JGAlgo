@@ -75,21 +75,21 @@ public class LCADynamicBench {
 	private void benchLCA(LowestCommonAncestorDynamic.Builder builder, Blackhole blackhole) {
 		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		LowestCommonAncestorDynamic lca = builder.build();
-		LowestCommonAncestorDynamic.Node[] nodes = new LowestCommonAncestorDynamic.Node[n];
-		int nodesNum = 0;
+		LowestCommonAncestorDynamic.Vertex[] vertices = new LowestCommonAncestorDynamic.Vertex[n];
+		int verticesNum = 0;
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {
-				nodes[nodesNum++] = lca.initTree();
+				vertices[verticesNum++] = lca.initTree();
 
 			} else if (op0 instanceof OpAddLeaf) {
 				OpAddLeaf op = (OpAddLeaf) op0;
-				LowestCommonAncestorDynamic.Node parent = nodes[op.parent];
-				nodes[nodesNum++] = lca.addLeaf(parent);
+				LowestCommonAncestorDynamic.Vertex parent = vertices[op.parent];
+				vertices[verticesNum++] = lca.addLeaf(parent);
 
 			} else if (op0 instanceof OpLCAQuery) {
 				OpLCAQuery op = (OpLCAQuery) op0;
-				LowestCommonAncestorDynamic.Node x = nodes[op.x], y = nodes[op.y];
-				LowestCommonAncestorDynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
+				LowestCommonAncestorDynamic.Vertex x = vertices[op.x], y = vertices[op.y];
+				LowestCommonAncestorDynamic.Vertex lcaRes = lca.findLowestCommonAncestor(x, y);
 				blackhole.consume(lcaRes);
 
 			} else {
@@ -97,7 +97,7 @@ public class LCADynamicBench {
 			}
 		}
 		blackhole.consume(lca);
-		blackhole.consume(nodes);
+		blackhole.consume(vertices);
 	}
 
 	@Benchmark
@@ -124,25 +124,25 @@ public class LCADynamicBench {
 		IntArrays.shuffle(opsOrder, rand);
 
 		List<Op> ops = new ObjectArrayList<>();
-		int nodesCount = 0;
+		int verticesNum = 0;
 
 		/* insert first two elements */
 		ops.add(new OpInitTree());
-		int root = nodesCount++;
+		int root = verticesNum++;
 		ops.add(new OpAddLeaf(root));
-		nodesCount++;
+		verticesNum++;
 
 		for (int op : opsOrder) {
 			switch (op) {
 				case addLeafOp: {
-					int p = rand.nextInt(nodesCount);
+					int p = rand.nextInt(verticesNum);
 					ops.add(new OpAddLeaf(p));
-					nodesCount++;
+					verticesNum++;
 					break;
 				}
 				case lcaOp: {
-					int x = rand.nextInt(nodesCount);
-					int y = rand.nextInt(nodesCount);
+					int x = rand.nextInt(verticesNum);
+					int y = rand.nextInt(verticesNum);
 					ops.add(new OpLCAQuery(x, y));
 					break;
 				}
