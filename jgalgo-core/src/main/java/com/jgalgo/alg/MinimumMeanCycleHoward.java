@@ -136,7 +136,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 						}
 
 						/* compare to best */
-						cycleWeight = cycleWeight / cycleLength;
+						cycleWeight /= cycleLength;
 						if (bestCycleMeanWeight > cycleWeight) {
 							bestCycleMeanWeight = cycleWeight;
 							bestCycleVertex = cycleVertex;
