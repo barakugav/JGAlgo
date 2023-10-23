@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Trees.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">Trees.java</span></div><h1>Trees.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import java.util.Arrays;
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
+/**
+ * Static methods class for tree graphs.
+ *
+ * @author Barak Ugav
+ */
+public class Trees {
+
+	private Trees() {}
+
+	/**
+	 * Check if an undirected graph is a tree.
+	 * &lt;p&gt;
+	 * An undirected graph is a tree if its connected and contains no cycle, therefore \(n-1\) edges.
+	 * &lt;p&gt;
+	 * This method runs in linear time.
+	 *
+	 * @param  g                        a graph
+	 * @return                          {@code true} if the graph is a tree, else {@code false}
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	public static boolean isTree(Graph g) {
+<span class="fc" id="L53">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());</span>
+	}
+
+	/**
+	 * Check if a graph is a tree rooted as some vertex.
+	 * &lt;p&gt;
+	 * For undirected graphs, a graph which is a tree rooted at some vertex can be rooted at any other vertex and will
+	 * always be a tree. For directed graphs however this is not true. A directed graph might be a tree rooted at some
+	 * vertex, but will no be connected if we root it at another vertex.
+	 * &lt;p&gt;
+	 * This method runs in linear time.
+	 *
+	 * @param  g    a graph
+	 * @param  root a root vertex
+	 * @return      {@code true} if the graph is a tree rooted at {@code root}, else {@code false}.
+	 */
+	public static boolean isTree(Graph g, int root) {
+<span class="fc" id="L71">		return isForest(g, IntIterators.singleton(root));</span>
+	}
+
+	/**
+	 * Check if a graph is a forest.
+	 * &lt;p&gt;
+	 * A forest is a graph which can be divided into trees, which is equivalent to saying a graph with no cycles.
+	 * &lt;p&gt;
+	 * This method runs in linear time.
+	 *
+	 * @param  g a graph
+	 * @return   {@code true} if the graph is a forest, else {@code false}
+	 */
+	public static boolean isForest(Graph g) {
+<span class="fc" id="L85">		return isForest(g, g.vertices().iterator(), true);</span>
+	}
+
+	/**
+	 * Check if a graph is a forest rooted at the given roots.
+	 * &lt;p&gt;
+	 * A forest is a graph which can be divided into trees, which is equivalent to saying a graph with no cycles. For a
+	 * graph to be a forest rooted at some given roots, all vertices must be reachable from the roots, and the roots can
+	 * not be reached from another root.
+	 * &lt;p&gt;
+	 * This method runs in linear time.
+	 *
+	 * @param  g     a graph
+	 * @param  roots a set of roots
+	 * @return       true if the graph is a forest rooted at the given roots.
+	 */
+	private static boolean isForest(Graph g, IntIterator roots) {
+<span class="fc" id="L102">		return isForest(g, roots, false);</span>
+	}
+
+	private static boolean isForest(Graph g, IntIterator roots, boolean allowVisitedRoot) {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L107">			return isForest((IndexGraph) g, roots, allowVisitedRoot);</span>
+<span class="fc" id="L108">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L109">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L110">		roots = IndexIdMaps.idToIndexIterator(roots, viMap);</span>
+<span class="fc" id="L111">		return isForest(iGraph, roots, allowVisitedRoot);</span>
+	}
+
+	private static boolean isForest(IndexGraph g, IntIterator roots, boolean allowVisitedRoot) {
+<span class="fc" id="L115">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L117">			return true;</span>
+<span class="fc" id="L118">		boolean directed = g.getCapabilities().directed();</span>
+
+<span class="fc" id="L120">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L121">		int[] parent = new int[n];</span>
+<span class="fc" id="L122">		Arrays.fill(parent, -1);</span>
+
+<span class="fc" id="L124">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L125">		int visitedCount = 0;</span>
+
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		while (roots.hasNext()) {</span>
+<span class="fc" id="L128">			int root = roots.nextInt();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			if (visited.get(root)) {</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
+<span class="fc" id="L131">					continue;</span>
+<span class="nc" id="L132">				return false;</span>
+			}
+
+<span class="fc" id="L135">			stack.push(root);</span>
+<span class="fc" id="L136">			visited.set(root);</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L139">				int u = stack.popInt();</span>
+<span class="fc" id="L140">				visitedCount++;</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L143">					eit.nextInt();</span>
+<span class="fc" id="L144">					int v = eit.target();</span>
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
+<span class="fc" id="L146">						continue;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L148">						return false;</span>
+<span class="fc" id="L149">					visited.set(v);</span>
+<span class="fc" id="L150">					stack.push(v);</span>
+<span class="fc" id="L151">					parent[v] = u;</span>
+<span class="fc" id="L152">				}</span>
+<span class="fc" id="L153">			}</span>
+<span class="fc" id="L154">		}</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		return visitedCount == n;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

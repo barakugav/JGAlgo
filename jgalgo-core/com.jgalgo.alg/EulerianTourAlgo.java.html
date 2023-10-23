@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EulerianTourAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">EulerianTourAlgo.java</span></div><h1>EulerianTourAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
+
+/**
+ * Eulerian tour calculation algorithm.
+ * &lt;p&gt;
+ * An Eulerian tour is a tour that visits every edge exactly once (allowing for revisiting vertices). For a connected
+ * undirected graph, if all vertices have an even degree, an Eulerian cycle will be found. If exactly two vertices have
+ * an odd degree, called \(s,t\), an Eulerian tour that start at \(s\) and ends at \(t\) exists. For any other vertices
+ * degrees an Eulerian tour does not exists. For a strongly connected directed graph, the in-degree and out-degree of
+ * each vertex must be equal for an Eulerian cycle to exists. If exactly one vertex \(s\) has one more out-edge than
+ * in-edges, and one vertex \(t\) has one more in-edge than out-edges, an Eulerian tour that start at \(s\) and ends at
+ * \(t\) exists.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Eulerian_path&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    TSPMetricMSTAppx
+ * @see    TSPMetricMatchingAppx
+ * @author Barak Ugav
+ */
+public interface EulerianTourAlgo {
+
+	/**
+	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
+	 * &lt;p&gt;
+	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will be found, depending on the vertices
+	 * degrees.
+	 *
+	 * @param  g                        a graph
+	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
+	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
+	 */
+	public Path computeEulerianTour(Graph g);
+
+	/**
+	 * Create a new Eulerian tour algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
+	 *
+	 * @return a new builder that can build {@link EulerianTourAlgo} objects
+	 */
+	static EulerianTourAlgo.Builder newBuilder() {
+<span class="fc" id="L60">		return EulerianTourImpl::new;</span>
+	}
+
+	/**
+	 * A builder for {@link EulerianTourAlgo} objects.
+	 *
+	 * @see    EulerianTourAlgo#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;EulerianTourAlgo.Builder&gt; {
+
+		/**
+		 * Create a new algorithm object for Eulerian tours computation.
+		 *
+		 * @return a new Eulerian tour algorithm
+		 */
+		EulerianTourAlgo build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

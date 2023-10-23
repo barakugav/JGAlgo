@@ -35,16 +35,16 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.MinimumSpanningTree;
-import com.jgalgo.ShortestPathSingleSource;
+import com.jgalgo.alg.MinimumSpanningTree;
+import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.data.BinarySearchTree;
-import com.jgalgo.internal.data.HeapReferenceable;
+import com.jgalgo.internal.ds.BinarySearchTree;
+import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)

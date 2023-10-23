@@ -16,9 +16,9 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.MatchingAlgorithm;
-import com.jgalgo.MinimumSpanningTree;
-import com.jgalgo.ShortestPathSingleSource;
+import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MinimumSpanningTree;
+import com.jgalgo.alg.ShortestPathSingleSource;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**

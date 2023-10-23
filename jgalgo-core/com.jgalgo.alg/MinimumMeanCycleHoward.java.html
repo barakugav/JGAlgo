@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumMeanCycleHoward.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumMeanCycleHoward.java</span></div><h1>MinimumMeanCycleHoward.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import java.util.Arrays;
+import java.util.function.IntPredicate;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * Howard's algorithm for minimum mean cycle detection.
+ * &lt;p&gt;
+ * The algorithm runs in \(O(m N)\) and uses linear space, where \(N\) is product of the out-degrees of all the vertices
+ * in the graph. Although this bound is not polynomial, this algorithm perform well in practice. There are other bounds
+ * on the time such as \(O(n m \alpha)\) where \(\alpha\) is the number of simple cycles in the graph, or \(O(n^2 m
+ * (MaxW-MinW)/\epsilon)\) where \(MaxW,MinW\) are the maximum and minimum edge weight in the graph, and \(\epsilon\) is
+ * the precision of the algorithm.
+ * &lt;p&gt;
+ * Based on 'Efficient Algorithms for Optimal Cycle Mean and Optimum Cost to Time Ratio Problems' by Ali Dasdan, Sandy
+ * S. Irani, Rajesh K. Gupta (1999).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L45">class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {</span>
+
+<span class="fc" id="L47">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
+
+	private static final double EPS = 0.0001;
+
+	/**
+	 * Create a new minimum mean cycle algorithm.
+	 */
+<span class="fc" id="L54">	MinimumMeanCycleHoward() {}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
+<span class="fc" id="L63">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L64">		final int n = g.vertices().size();</span>
+<span class="fc" id="L65">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+
+		/* find all SCC */
+<span class="fc" id="L68">		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);</span>
+<span class="fc" id="L69">		final int ccNum = cc.getNumberOfCcs();</span>
+
+		/* init distances and policy */
+<span class="fc" id="L72">		double[] d = new double[n];</span>
+<span class="fc" id="L73">		Arrays.fill(d, 0, n, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L74">		int[] policy = new int[n];</span>
+<span class="fc" id="L75">		Arrays.fill(policy, 0, n, -1);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int c = 0; c &lt; ccNum; c++) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int e : cc.getCcEdges(c)) {</span>
+<span class="fc" id="L78">				double ew = w.weight(e);</span>
+<span class="fc" id="L79">				int u = g.edgeSource(e);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (ew &lt; d[u]) {</span>
+<span class="fc" id="L81">					d[u] = ew;</span>
+<span class="fc" id="L82">					policy[u] = e;</span>
+				}
+<span class="fc" id="L84">			}</span>
+		}
+
+<span class="fc" id="L87">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+
+<span class="fc" id="L89">		double overallBestCycleMeanWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L90">		int overallBestCycleVertex = -1;</span>
+<span class="fc" id="L91">		int nextSearchIdx = 1;</span>
+<span class="fc" id="L92">		int[] visitIdx = new int[n];</span>
+<span class="fc" id="L93">		Arrays.fill(visitIdx, 0, n, 0);</span>
+		/* operate on each SCC separately */
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (cc.getCcVertices(ccIdx).size() &lt; 2)</span>
+<span class="fc" id="L97">				continue;</span>
+			/* run in iteration as long as we find improvements */
+			sccLoop: for (;;) {
+<span class="fc" id="L100">				double bestCycleMeanWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L101">				int bestCycleVertex = -1;</span>
+
+<span class="fc" id="L103">				final int iterationFirstSearchIdx = nextSearchIdx;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				IntPredicate visited = v -&gt; visitIdx[v] &gt;= iterationFirstSearchIdx;</span>
+				/* DFS root loop */
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (final int root : cc.getCcVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">					if (visited.test(root))</span>
+<span class="fc" id="L108">						continue;</span>
+<span class="fc" id="L109">					final int searchIdx = nextSearchIdx++;</span>
+
+					/* Run DFS from root */
+					int cycleVertex;
+<span class="fc" id="L113">					for (int v = root;;) {</span>
+<span class="fc" id="L114">						visitIdx[v] = searchIdx;</span>
+<span class="fc" id="L115">						v = g.edgeTarget(policy[v]);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">						if (visited.test(v)) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">							cycleVertex = visitIdx[v] == searchIdx ? v : -1;</span>
+<span class="fc" id="L118">							break;</span>
+						}
+					}
+
+					/* cycle found */
+<span class="fc bfc" id="L123" title="All 2 branches covered.">					if (cycleVertex != -1) {</span>
+
+						/* find cycle mean weight */
+<span class="fc" id="L126">						double cycleWeight = 0;</span>
+<span class="fc" id="L127">						int cycleLength = 0;</span>
+<span class="fc" id="L128">						for (int v = cycleVertex;;) {</span>
+<span class="fc" id="L129">							int e = policy[v];</span>
+<span class="fc" id="L130">							cycleWeight += w.weight(e);</span>
+<span class="fc" id="L131">							cycleLength++;</span>
+
+<span class="fc" id="L133">							v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">							if (v == cycleVertex)</span>
+<span class="fc" id="L135">								break;</span>
+<span class="fc" id="L136">						}</span>
+
+						/* compare to best */
+<span class="fc" id="L139">						cycleWeight = cycleWeight / cycleLength;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">						if (bestCycleMeanWeight &gt; cycleWeight) {</span>
+<span class="fc" id="L141">							bestCycleMeanWeight = cycleWeight;</span>
+<span class="fc" id="L142">							bestCycleVertex = cycleVertex;</span>
+						}
+					}
+<span class="fc" id="L145">				}</span>
+<span class="pc bnc" id="L146" title="All 2 branches missed.">				assert bestCycleVertex != -1;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				if (overallBestCycleMeanWeight &gt; bestCycleMeanWeight) {</span>
+<span class="fc" id="L148">					overallBestCycleMeanWeight = bestCycleMeanWeight;</span>
+<span class="fc" id="L149">					overallBestCycleVertex = bestCycleVertex;</span>
+				}
+
+				/* run a reversed BFS from a vertex in the best cycle */
+<span class="fc" id="L153">				final int searchIdx = nextSearchIdx++;</span>
+<span class="fc" id="L154">				visitIdx[bestCycleVertex] = searchIdx;</span>
+<span class="pc bnc" id="L155" title="All 2 branches missed.">				assert queue.isEmpty();</span>
+<span class="fc" id="L156">				queue.enqueue(bestCycleVertex);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
+<span class="fc" id="L158">					int v = queue.dequeueInt();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L160">						int e = eit.nextInt();</span>
+<span class="fc" id="L161">						int u = g.edgeSource(e);</span>
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">						if (policy[u] != e || visited.test(u))</span>
+<span class="fc" id="L163">							continue;</span>
+						/* update distance */
+<span class="nc" id="L165">						d[u] += w.weight(e) - bestCycleMeanWeight;</span>
+
+						/* enqueue in BFS */
+<span class="nc" id="L168">						visitIdx[u] = searchIdx;</span>
+<span class="nc" id="L169">						queue.enqueue(u);</span>
+<span class="nc" id="L170">					}</span>
+<span class="fc" id="L171">				}</span>
+
+				/* check for improvements */
+<span class="fc" id="L174">				boolean improved = false;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (int e : cc.getCcEdges(ccIdx)) {</span>
+<span class="fc" id="L176">					int u = g.edgeSource(e);</span>
+<span class="fc" id="L177">					int v = g.edgeTarget(e);</span>
+<span class="fc" id="L178">					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;</span>
+<span class="fc" id="L179">					double delta = d[u] - newDistance;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">					if (delta &gt; 0) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">						if (delta &gt; EPS)</span>
+<span class="fc" id="L182">							improved = true;</span>
+<span class="fc" id="L183">						d[u] = newDistance;</span>
+<span class="fc" id="L184">						policy[u] = e;</span>
+					}
+<span class="fc" id="L186">				}</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				if (!improved)</span>
+<span class="fc" id="L188">					break sccLoop;</span>
+<span class="fc" id="L189">			}</span>
+		}
+
+		/* handle self edges separately, as the algorithm skip SCC of size one */
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (g.getCapabilities().selfEdges()) {</span>
+<span class="fc" id="L194">			int bestSelfEdge = 1;</span>
+<span class="fc" id="L195">			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L197" title="All 4 branches covered.">				if (g.edgeSource(e) == g.edgeTarget(e) &amp;&amp; w.weight(e) &lt; bestSelfEdgeWeight) {</span>
+<span class="fc" id="L198">					bestSelfEdge = e;</span>
+<span class="fc" id="L199">					bestSelfEdgeWeight = w.weight(e);</span>
+				}
+			}
+<span class="pc bpc" id="L202" title="1 of 4 branches missed.">			if (bestSelfEdge != -1 &amp;&amp; bestSelfEdgeWeight &lt; overallBestCycleMeanWeight) {</span>
+<span class="fc" id="L203">				int cycleVertex = g.edgeSource(bestSelfEdge);</span>
+<span class="fc" id="L204">				return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));</span>
+			}
+		}
+
+<span class="fc bfc" id="L208" title="All 2 branches covered.">		if (overallBestCycleVertex == -1)</span>
+<span class="fc" id="L209">			return null;</span>
+
+<span class="fc" id="L211">		IntList cycle = new IntArrayList();</span>
+<span class="fc" id="L212">		for (int cycleVertex = overallBestCycleVertex, v = cycleVertex;;) {</span>
+<span class="fc" id="L213">			int e = policy[v];</span>
+<span class="fc" id="L214">			cycle.add(e);</span>
+<span class="fc" id="L215">			v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (v == cycleVertex)</span>
+<span class="fc" id="L217">				return new PathImpl(g, cycleVertex, cycleVertex, cycle);</span>
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			if (cycle.size() &gt; n) {</span>
+				/**
+				 * In case we have multiple cycles with the same minimum mean weight, the original
+				 * overallBestCycleVertex might point to tail that leads to minimum mean cycle. For example:
+				 * v1-&gt;v2,v2-&gt;v3,v3-&gt;v2, if start at v1 and search for a cycle ending at v1 we will never find it. If
+				 * the cycle length is greater than n, we will not reach our original cycle.
+				 */
+<span class="fc" id="L226">				cycle.clear();</span>
+<span class="fc" id="L227">				cycleVertex = v;</span>
+			}
+<span class="fc" id="L229">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchingCardinalityBipartiteHopcroftKarp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MatchingCardinalityBipartiteHopcroftKarp.java</span></div><h1>MatchingCardinalityBipartiteHopcroftKarp.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * Hopcroft–Karp maximum unweighted matching algorithm for undirected bipartite graphs.
+ * &lt;p&gt;
+ * The algorithm runs in \(O(m \sqrt{n})\) and it uses linear space.
+ * &lt;p&gt;
+ * Based on &quot;A n^5/2 Algorithm for Maximum Matchings in Bipartite Graphs&quot; by J. Hopcroft and R. Karp (1973).
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
+
+<span class="fc" id="L44">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
+<span class="fc" id="L45">	private static final Object EdgeRefWeightKey = JGAlgoUtils.labeledObj(&quot;refToOrig&quot;);</span>
+
+	/**
+	 * Create a new maximum matching object.
+	 */
+<span class="fc" id="L50">	MatchingCardinalityBipartiteHopcroftKarp() {}</span>
+
+	/**
+	 * Set the key used to get the bipartiteness property of vertices.
+	 * &lt;p&gt;
+	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
+	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
+	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
+	 * different key.
+	 *
+	 * @param key an object key that will be used to get the bipartite vertices partition by
+	 *                {@code g.verticesWeight(key)}.
+	 */
+	public void setBipartiteVerticesWeightKey(Object key) {
+<span class="nc" id="L64">		bipartiteVerticesWeightKey = key;</span>
+<span class="nc" id="L65">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
+	 */
+	@Override
+	Matching computeMaximumCardinalityMatching(IndexGraph g) {
+<span class="fc" id="L76">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L77">		int n = g.vertices().size();</span>
+
+<span class="fc" id="L79">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
+<span class="fc" id="L80">		Objects.requireNonNull(partition,</span>
+				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
+<span class="fc" id="L82">		Assertions.Graphs.onlyBipartite(g, partition);</span>
+
+		/* BFS */
+<span class="fc" id="L85">		int[] depths = new int[n];</span>
+<span class="fc" id="L86">		IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();</span>
+
+		/* DFS */
+<span class="fc" id="L89">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L90">		EdgeIter[] edges = new EdgeIter[n];</span>
+<span class="fc" id="L91">		int[] dfsPath = new int[n];</span>
+
+<span class="fc" id="L93">		int[] matched = new int[n];</span>
+<span class="fc" id="L94">		final int MatchedNone = -1;</span>
+<span class="fc" id="L95">		Arrays.fill(matched, MatchedNone);</span>
+<span class="fc" id="L96">		IndexGraph f = IndexGraphFactory.newUndirected().expectedVerticesNum(n).newGraph();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L98">			f.addVertex();</span>
+<span class="fc" id="L99">		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+
+		for (;;) {
+			/* Perform BFS to build the alternating forest */
+<span class="fc" id="L103">			bfsQueue.clear();</span>
+<span class="fc" id="L104">			Arrays.fill(depths, Integer.MAX_VALUE);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L106" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
+<span class="fc" id="L107">					continue;</span>
+<span class="fc" id="L108">				depths[u] = 0;</span>
+<span class="fc" id="L109">				bfsQueue.enqueue(u);</span>
+			}
+<span class="fc" id="L111">			int unmatchedTDepth = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			while (!bfsQueue.isEmpty()) {</span>
+<span class="fc" id="L113">				int u = bfsQueue.dequeueInt();</span>
+<span class="fc" id="L114">				int depth = depths[u];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
+<span class="fc" id="L116">					continue;</span>
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L119">					int e = eit.nextInt();</span>
+<span class="fc" id="L120">					int v = eit.target();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
+<span class="fc" id="L122">						continue;</span>
+<span class="fc" id="L123">					edgeRef.set(f.addEdge(u, v), e);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (depths[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L125">						continue;</span>
+<span class="fc" id="L126">					depths[v] = depth + 1;</span>
+
+<span class="fc" id="L128">					int matchedEdge = matched[v];</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">					if (matchedEdge != MatchedNone) {</span>
+<span class="fc" id="L130">						int w = g.edgeEndpoint(matchedEdge, v);</span>
+<span class="fc" id="L131">						edgeRef.set(f.addEdge(v, w), matchedEdge);</span>
+<span class="fc" id="L132">						v = w;</span>
+<span class="fc" id="L133">						depths[v] = depth + 2;</span>
+<span class="fc" id="L134">						bfsQueue.enqueue(v);</span>
+<span class="fc" id="L135">					} else {</span>
+<span class="fc" id="L136">						unmatchedTDepth = depth + 1;</span>
+					}
+<span class="fc" id="L138">				}</span>
+<span class="fc" id="L139">			}</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (unmatchedTDepth == Integer.MAX_VALUE)</span>
+<span class="fc" id="L141">				break;</span>
+
+			/*
+			 * Run DFS to find the maximal number of paths from unmatched S vertices to unmatched T vertices
+			 */
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
+<span class="fc" id="L148">					continue;</span>
+
+<span class="fc" id="L150">				edges[0] = f.outEdges(u).iterator();</span>
+<span class="fc" id="L151">				visited.set(u);</span>
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
+<span class="fc" id="L154">					EdgeIter eit = edges[depth];</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					if (eit.hasNext()) {</span>
+<span class="fc" id="L156">						int e = eit.nextInt();</span>
+<span class="fc" id="L157">						int v = eit.target();</span>
+<span class="pc bpc" id="L158" title="1 of 4 branches missed.">						if (visited.get(v) || depth &gt;= depths[v])</span>
+<span class="nc" id="L159">							continue;</span>
+<span class="fc" id="L160">						visited.set(v);</span>
+<span class="fc" id="L161">						dfsPath[depth++] = edgeRef.getInt(e);</span>
+
+<span class="fc" id="L163">						int matchedEdge = matched[v];</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">						if (matchedEdge == MatchedNone) {</span>
+							// Augmenting path found
+<span class="fc bfc" id="L166" title="All 2 branches covered.">							for (int i = 0; i &lt; depth; i += 2) {</span>
+<span class="fc" id="L167">								int e1 = dfsPath[i];</span>
+<span class="fc" id="L168">								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;</span>
+							}
+<span class="fc" id="L170">							break;</span>
+						}
+<span class="fc" id="L172">						dfsPath[depth] = matchedEdge;</span>
+<span class="fc" id="L173">						v = g.edgeEndpoint(matchedEdge, v);</span>
+
+<span class="fc" id="L175">						edges[++depth] = f.outEdges(v).iterator();</span>
+<span class="fc" id="L176">					} else {</span>
+						/*
+						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path
+						 */
+<span class="fc" id="L180">						depth -= 2;</span>
+					}
+<span class="fc" id="L182">				}</span>
+			}
+<span class="fc" id="L184">			visited.clear();</span>
+<span class="fc" id="L185">			f.clearEdges();</span>
+<span class="fc" id="L186">		}</span>
+<span class="fc" id="L187">		Arrays.fill(edges, null);</span>
+<span class="fc" id="L188">		return new Matchings.MatchingImpl(g, matched);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Trees.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">Trees.java</span></div><h1>Trees.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.ds;
+
+import java.util.Iterator;
+import java.util.function.Consumer;
+import com.jgalgo.internal.util.Assertions;
+
+class Trees {
+
+	private Trees() {}
+
+	interface TreeNode&lt;Node extends TreeNode&lt;Node&gt;&gt; {
+
+		Node parent();
+
+		Node next();
+
+		Node prev();
+
+		Node child();
+
+		void setParent(Node x);
+
+		void setNext(Node x);
+
+		void setPrev(Node x);
+
+		void setChild(Node x);
+
+	}
+
+<span class="fc" id="L46">	static class TreeNodeImpl&lt;Node extends TreeNodeImpl&lt;Node&gt;&gt; implements TreeNode&lt;Node&gt; {</span>
+
+		Node parent;
+		Node next;
+		Node prev;
+		Node child;
+
+		@Override
+		public Node parent() {
+<span class="fc" id="L55">			return parent;</span>
+		}
+
+		@Override
+		public Node next() {
+<span class="fc" id="L60">			return next;</span>
+		}
+
+		@Override
+		public Node prev() {
+<span class="fc" id="L65">			return prev;</span>
+		}
+
+		@Override
+		public Node child() {
+<span class="fc" id="L70">			return child;</span>
+		}
+
+		@Override
+		public void setParent(Node x) {
+<span class="fc" id="L75">			parent = x;</span>
+<span class="fc" id="L76">		}</span>
+
+		@Override
+		public void setNext(Node x) {
+<span class="fc" id="L80">			next = x;</span>
+<span class="fc" id="L81">		}</span>
+
+		@Override
+		public void setPrev(Node x) {
+<span class="fc" id="L85">			prev = x;</span>
+<span class="fc" id="L86">		}</span>
+
+		@Override
+		public void setChild(Node x) {
+<span class="fc" id="L90">			child = x;</span>
+<span class="fc" id="L91">		}</span>
+	}
+
+	static &lt;Node extends TreeNode&lt;Node&gt;&gt; void clear(Node root, Consumer&lt;? super Node&gt; finalizer) {
+<span class="fc" id="L95">		for (Node p = root;;) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			while (p.child() != null) {</span>
+<span class="fc" id="L97">				p = p.child();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				while (p.next() != null)</span>
+<span class="fc" id="L99">					p = p.next();</span>
+			}
+
+			Node prev;
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (p.prev() != null) {</span>
+<span class="fc" id="L104">				prev = p.prev();</span>
+<span class="fc" id="L105">				prev.setNext(null);</span>
+<span class="fc" id="L106">				p.setPrev(null);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			} else if (p.parent() != null) {</span>
+<span class="fc" id="L108">				prev = p.parent();</span>
+<span class="fc" id="L109">				prev.setChild(null);</span>
+<span class="fc" id="L110">				p.setParent(null);</span>
+			} else {
+<span class="fc" id="L112">				prev = null;</span>
+			}
+
+<span class="fc" id="L115">			finalizer.accept(p);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (prev == null)</span>
+<span class="fc" id="L117">				break;</span>
+<span class="fc" id="L118">			p = prev;</span>
+<span class="fc" id="L119">		}</span>
+<span class="fc" id="L120">	}</span>
+
+	static class PreOrderIter&lt;Node extends TreeNode&lt;Node&gt;&gt; implements Iterator&lt;Node&gt; {
+
+		private Node p;
+
+<span class="fc" id="L126">		PreOrderIter(Node p) {</span>
+<span class="fc" id="L127">			reset(p);</span>
+<span class="fc" id="L128">		}</span>
+
+		void reset(Node p) {
+<span class="fc" id="L131">			this.p = p;</span>
+<span class="fc" id="L132">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			return p != null;</span>
+		}
+
+		boolean advance() {
+			Node next;
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if ((next = p.child()) != null) {</span>
+<span class="fc" id="L142">				p = next;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">				return p != null;</span>
+			} else {
+<span class="fc" id="L145">				Node p0 = p;</span>
+				do {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">					if ((next = p0.next()) != null) {</span>
+<span class="fc" id="L148">						p = next;</span>
+<span class="fc" id="L149">						return true;</span>
+					}
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				} while ((p0 = p0.parent()) != null);</span>
+<span class="fc" id="L152">				p = null;</span>
+<span class="fc" id="L153">				return false;</span>
+			}
+		}
+
+		@Override
+		public Node next() {
+<span class="fc" id="L159">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L160">			Node ret = p;</span>
+<span class="fc" id="L161">			advance();</span>
+<span class="fc" id="L162">			return ret;</span>
+		}
+
+	}
+
+	// static class PostOrderIter&lt;N extends TreeNode&lt;N&gt;&gt; implements Iterator&lt;N&gt; {
+
+	// private N p;
+
+	// PostOrderIter(N p) {
+	// reset(p);
+	// }
+
+	// void reset(N p) {
+	// for (N next; (next = p.child()) != null;)
+	// p = next;
+	// this.p = p;
+	// }
+
+	// @Override
+	// public boolean hasNext() {
+	// return p != null;
+	// }
+
+	// @Override
+	// public N next() {
+	// Assertions.Iters.hasNext(this);
+	// final N ret = p;
+
+	// N next;
+	// if ((next = ret.next()) != null) {
+	// /* lower child */
+	// for (N child; (child = next.child()) != null;)
+	// next = child;
+	// p = next;
+	// } else {
+	// p = ret.parent();
+	// }
+
+	// return ret;
+	// }
+
+	// }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

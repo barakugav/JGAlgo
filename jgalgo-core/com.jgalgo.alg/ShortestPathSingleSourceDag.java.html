@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathSingleSourceDag.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">ShortestPathSingleSourceDag.java</span></div><h1>ShortestPathSingleSourceDag.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+/**
+ * Linear Single Source Shortest Path (SSSP) algorithm for directed acyclic graphs (DAG).
+ * &lt;p&gt;
+ * The algorithm first compute a topological sorting of the vertices in linear time, and then traverse the vertices in
+ * that order and determine the distance for each one of them.
+ *
+ * @see    TopologicalOrderAlgo
+ * @author Barak Ugav
+ */
+class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
+
+<span class="fc" id="L36">	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newBuilder().build();</span>
+
+	/**
+	 * Construct a new SSSP algorithm.
+	 */
+<span class="fc" id="L41">	ShortestPathSingleSourceDag() {}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if graph is not directed or contains cycles
+	 */
+	@Override
+	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+<span class="fc" id="L50">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L52">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		return w instanceof WeightFunction.Int ? computeSsspInt(g, (WeightFunction.Int) w, source)</span>
+<span class="nc" id="L54">				: computeSsspDouble(g, w, source);</span>
+	}
+
+	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, WeightFunction w, int source) {
+<span class="nc" id="L58">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="nc" id="L59">		res.distances[source] = 0;</span>
+
+<span class="nc" id="L61">		boolean sourceSeen = false;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {</span>
+<span class="nc" id="L63">			int u = uit.nextInt();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">			if (!sourceSeen) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">				if (u != source)</span>
+<span class="nc" id="L66">					continue;</span>
+<span class="nc" id="L67">				sourceSeen = true;</span>
+			}
+<span class="nc" id="L69">			double uDistance = res.distances[u];</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
+<span class="nc" id="L71">				continue;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L73">				int e = eit.nextInt();</span>
+<span class="nc" id="L74">				int v = eit.target();</span>
+<span class="nc" id="L75">				double d = uDistance + w.weight(e);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">				if (d &lt; res.distances[v]) {</span>
+<span class="nc" id="L77">					res.distances[v] = d;</span>
+<span class="nc" id="L78">					res.backtrack[v] = e;</span>
+				}
+<span class="nc" id="L80">			}</span>
+<span class="nc" id="L81">		}</span>
+<span class="nc" id="L82">		return res;</span>
+	}
+
+	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunction.Int w, int source) {
+<span class="fc" id="L86">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
+<span class="fc" id="L87">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L89">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {</span>
+<span class="fc" id="L91">			int u = uit.nextInt();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L94">					continue;</span>
+<span class="fc" id="L95">				sourceSeen = true;</span>
+			}
+<span class="fc" id="L97">			int uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (uDistance == Integer.MAX_VALUE)</span>
+<span class="fc" id="L99">				continue;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L101">				int e = eit.nextInt();</span>
+<span class="fc" id="L102">				int v = eit.target();</span>
+<span class="fc" id="L103">				int d = uDistance + w.weightInt(e);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L105">					res.distances[v] = d;</span>
+<span class="fc" id="L106">					res.backtrack[v] = e;</span>
+				}
+<span class="fc" id="L108">			}</span>
+<span class="fc" id="L109">		}</span>
+<span class="fc" id="L110">		return res;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

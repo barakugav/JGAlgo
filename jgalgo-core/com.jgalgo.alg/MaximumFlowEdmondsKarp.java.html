@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumFlowEdmondsKarp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MaximumFlowEdmondsKarp.java</span></div><h1>MaximumFlowEdmondsKarp.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * The Edmonds-Karp algorithm for maximum flow.
+ * &lt;p&gt;
+ * The most known implementation that solve the maximum flow problem. It does so by finding augmenting paths from the
+ * source to the sink in the residual network, and saturating at least one edge in each path. This is a specification
+ * Ford–Fulkerson method, which chooses the shortest augmenting path in each iteration. It runs in \(O(m^2 n)\) time and
+ * linear space.
+ * &lt;p&gt;
+ * Based on the paper 'Theoretical improvements in algorithmic efficiency for network flow problems' by Jack Edmonds and
+ * Richard M Karp.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
+
+	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+<span class="fc" id="L45">	MaximumFlowEdmondsKarp() {}</span>
+
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
+<span class="fc" id="L50">			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
+		} else {
+<span class="fc" id="L52">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
+		}
+	}
+
+	@Override
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
+<span class="fc" id="L59">			return new WorkerInt(g, (FlowNetwork.Int) net, sources, sinks).computeMaxFlow();</span>
+		} else {
+<span class="fc" id="L61">			return new WorkerDouble(g, net, sources, sinks).computeMaxFlow();</span>
+		}
+	}
+
+	private abstract class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
+
+<span class="fc" id="L67">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L68">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L69">		}</span>
+
+<span class="fc" id="L71">		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
+<span class="fc" id="L72">			super(gOrig, net, sources, sinks);</span>
+<span class="fc" id="L73">		}</span>
+
+		void computeMaxFlow0() {
+<span class="fc" id="L76">			final int n = g.vertices().size();</span>
+<span class="fc" id="L77">			int[] backtrack = new int[n];</span>
+<span class="fc" id="L78">			BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L79">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+
+			// perform BFS and find a path of non saturated edges from source to sink
+<span class="fc" id="L82">			queue.enqueue(source);</span>
+<span class="fc" id="L83">			visited.set(source);</span>
+			bfs: for (;;) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (queue.isEmpty())</span>
+<span class="fc" id="L86">					return; /* no path to sink, we are done */</span>
+<span class="fc" id="L87">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L89">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					if (isSaturated(e))</span>
+<span class="fc" id="L91">						continue;</span>
+<span class="fc" id="L92">					int v = eit.target();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L94">						continue;</span>
+<span class="fc" id="L95">					backtrack[v] = e;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">					if (v == sink) {</span>
+						/* found an augmenting path, push flow on it */
+<span class="fc" id="L98">						pushAlongPath(backtrack);</span>
+
+						/* reset BFS */
+<span class="fc" id="L101">						queue.clear();</span>
+<span class="fc" id="L102">						visited.clear();</span>
+<span class="fc" id="L103">						visited.set(source);</span>
+<span class="fc" id="L104">						queue.enqueue(source);</span>
+<span class="fc" id="L105">						continue bfs;</span>
+					}
+<span class="fc" id="L107">					visited.set(v);</span>
+<span class="fc" id="L108">					queue.enqueue(v);</span>
+<span class="fc" id="L109">				}</span>
+<span class="fc" id="L110">			}</span>
+		}
+
+		abstract void pushAlongPath(int[] backtrack);
+
+		abstract boolean isSaturated(int e);
+
+	}
+
+	private class WorkerDouble extends Worker {
+
+		final double[] flow;
+		final double[] capacity;
+
+		private static final double EPS = 0.0001;
+
+<span class="fc" id="L126">		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L127">			super(gOrig, net, source, sink);</span>
+
+<span class="fc" id="L129">			flow = new double[g.edges().size()];</span>
+<span class="fc" id="L130">			capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L131">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L132">		}</span>
+
+<span class="fc" id="L134">		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
+<span class="fc" id="L135">			super(gOrig, net, sources, sinks);</span>
+
+<span class="fc" id="L137">			flow = new double[g.edges().size()];</span>
+<span class="fc" id="L138">			capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L139">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L140">		}</span>
+
+		double computeMaxFlow() {
+<span class="fc" id="L143">			computeMaxFlow0();</span>
+<span class="fc" id="L144">			return constructResult(flow);</span>
+		}
+
+		@Override
+		void pushAlongPath(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+<span class="fc" id="L150">			double f = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L152">				int e = backtrack[p];</span>
+<span class="fc" id="L153">				f = Math.min(f, getResidualCapacity(e));</span>
+<span class="fc" id="L154">				p = g.edgeSource(e);</span>
+<span class="fc" id="L155">			}</span>
+
+			// update flow of all edges on path
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L159">				int e = backtrack[p], t = twin[e];</span>
+<span class="fc" id="L160">				flow[e] += f;</span>
+<span class="fc" id="L161">				flow[t] -= f;</span>
+<span class="fc" id="L162">				p = g.edgeSource(e);</span>
+<span class="fc" id="L163">			}</span>
+<span class="fc" id="L164">		}</span>
+
+		double getResidualCapacity(int e) {
+<span class="fc" id="L167">			return capacity[e] - flow[e];</span>
+		}
+
+		@Override
+		boolean isSaturated(int e) {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			return getResidualCapacity(e) &lt;= EPS;</span>
+		}
+	}
+
+	private class WorkerInt extends Worker {
+
+		final int[] flow;
+		final int[] capacity;
+
+<span class="fc" id="L181">		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {</span>
+<span class="fc" id="L182">			super(gOrig, net, source, sink);</span>
+
+<span class="fc" id="L184">			flow = new int[g.edges().size()];</span>
+<span class="fc" id="L185">			capacity = new int[g.edges().size()];</span>
+<span class="fc" id="L186">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L187">		}</span>
+
+<span class="fc" id="L189">		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {</span>
+<span class="fc" id="L190">			super(gOrig, net, sources, sinks);</span>
+
+<span class="fc" id="L192">			flow = new int[g.edges().size()];</span>
+<span class="fc" id="L193">			capacity = new int[g.edges().size()];</span>
+<span class="fc" id="L194">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L195">		}</span>
+
+		int computeMaxFlow() {
+<span class="fc" id="L198">			computeMaxFlow0();</span>
+<span class="fc" id="L199">			return constructResult(flow);</span>
+		}
+
+		@Override
+		void pushAlongPath(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+<span class="fc" id="L205">			int f = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L207">				int e = backtrack[p];</span>
+<span class="fc" id="L208">				f = Math.min(f, getResidualCapacity(e));</span>
+<span class="fc" id="L209">				p = g.edgeSource(e);</span>
+<span class="fc" id="L210">			}</span>
+
+			// update flow of all edges on path
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L214">				int e = backtrack[p], t = twin[e];</span>
+<span class="fc" id="L215">				flow[e] += f;</span>
+<span class="fc" id="L216">				flow[t] -= f;</span>
+<span class="fc" id="L217">				p = g.edgeSource(e);</span>
+<span class="fc" id="L218">			}</span>
+<span class="fc" id="L219">		}</span>
+
+		int getResidualCapacity(int e) {
+<span class="fc" id="L222">			return capacity[e] - flow[e];</span>
+		}
+
+		@Override
+		boolean isSaturated(int e) {
+<span class="fc bfc" id="L227" title="All 2 branches covered.">			return getResidualCapacity(e) &lt;= 0;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

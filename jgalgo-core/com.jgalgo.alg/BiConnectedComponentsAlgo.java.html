@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BiConnectedComponentsAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">BiConnectedComponentsAlgo.java</span></div><h1>BiConnectedComponentsAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * An algorithm that compute the bi-connected components of a graph.
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\) a bi-connected component \(B \subseteq V\) is a maximal set of connected vertices that
+ * remain connected even after removing any single vertex of \(B\). In particular, an isolated vertex is considered a
+ * bi-connected component, along with an isolated pair of vertices connected by a single edge. This algorithm compute
+ * all the maximal bi-connected components of the graph. Note that the bi-connected components are not disjoint, namely
+ * a single vertex can be included in multiple bi-connected components, differing from the regular connected components
+ * of a graph.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Biconnected_component&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    ConnectedComponentsAlgo
+ * @author Barak Ugav
+ */
+public interface BiConnectedComponentsAlgo {
+
+	/**
+	 * Compute all maximal bi-connected components of a graph.
+	 *
+	 * @param  g a graph
+	 * @return   a result object containing the bi-connected components of the graph
+	 */
+	BiConnectedComponentsAlgo.Result findBiConnectedComponents(Graph g);
+
+	/**
+	 * A result object of a {@link BiConnectedComponentsAlgo} computation.
+	 * &lt;p&gt;
+	 * Each bi-connected components is labeled by an integer in range {@code [0, getNumberOfBiCcs())}.
+	 * &lt;p&gt;
+	 * Note that the bi-connected components are not disjoint, namely a single vertex can be included in multiple
+	 * bi-connected components, differing from the regular connected components of a graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * Get the bi-connected components a vertex is contained in.
+		 *
+		 * @param  vertex                    a vertex in the graph
+		 * @return                           the labels of the bi-connected components containing the vertex
+		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 */
+		IntCollection getVertexBiCcs(int vertex);
+
+		/**
+		 * Get the number of bi-connected components computed in the graph.
+		 * &lt;p&gt;
+		 * Each bi-connected component is labeled by an integer in range {@code [0, getNumberOfBiCcs())}.
+		 *
+		 * @return the number of bi-connected components
+		 */
+		int getNumberOfBiCcs();
+
+		/**
+		 * Get the vertices contained in a single bi-connected component.
+		 *
+		 * @param  biccIdx                   an index of a bi-connected component
+		 * @return                           all the vertices that are contained in the bi-connected component
+		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
+		 */
+		IntCollection getBiCcVertices(int biccIdx);
+
+		/**
+		 * Get the edges contained in a single bi-connected component.
+		 * &lt;p&gt;
+		 * An edge \((u,v)\) is said to bi contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
+		 * \(B\).
+		 *
+		 * @param  biccIdx                   an index of a bi-connected component
+		 * @return                           all the edges that are contained in the bi-connected component
+		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
+		 */
+		IntCollection getBiCcEdges(int biccIdx);
+
+	}
+
+	/**
+	 * Create a new bi-connected components algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object.
+	 *
+	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
+	 */
+	static BiConnectedComponentsAlgo.Builder newBuilder() {
+<span class="fc" id="L107">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
+	}
+
+	/**
+	 * A builder for {@link BiConnectedComponentsAlgo} objects.
+	 *
+	 * @see    BiConnectedComponentsAlgo#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;BiConnectedComponentsAlgo.Builder&gt; {
+
+		/**
+		 * Create a new algorithm object for bi-connected components computation.
+		 *
+		 * @return a new bi-connected components algorithm
+		 */
+		BiConnectedComponentsAlgo build();
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.MinimumSpanningTree;
+import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.WeightFunction;

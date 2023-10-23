@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SplitFindMin.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">SplitFindMin.java</span></div><h1>SplitFindMin.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Collection;
+import java.util.Comparator;
+import com.jgalgo.internal.util.JGAlgoUtils;
+
+/**
+ * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
+ * &lt;p&gt;
+ * As the {@link SplitFind}, a data structure implementing this interface maintain a collection disjoint sets and
+ * support {@link #find(int)} and {@link #split(int)} operations. In addition, each element have a key, which is
+ * comparable to any other key by a provided comparator, and the minimum key in each set can be queried using
+ * {@link #findMin(int)}.
+ *
+ * @param  &lt;K&gt; the keys type
+ * @author     Barak Ugav
+ */
+public interface SplitFindMin&lt;K&gt; extends SplitFind {
+
+	/**
+	 * Init the data structure with a sequence {@code [0, keys.size())} with the given keys.
+	 *
+	 * @param keys       collection of keys. The size of the collection determine the number of elements in the data
+	 *                       structure
+	 * @param comparator a comparator to compare the keys of the elements, if {@code null} the default comparator will
+	 *                       be used (Comparable interface)
+	 */
+	void init(Collection&lt;K&gt; keys, Comparator&lt;? super K&gt; comparator);
+
+	@Override
+	default void init(int size) {
+<span class="fc" id="L48">		init(JGAlgoUtils.nullList(size), (k1, k2) -&gt; 0);</span>
+<span class="fc" id="L49">	}</span>
+
+	/**
+	 * Get the key associated with an element.
+	 *
+	 * @param  x an element in the data structure
+	 * @return   the key associated with the element
+	 */
+	K getKey(int x);
+
+	/**
+	 * Find the element with the minimum key in the sequence of {@code x}
+	 *
+	 * @param  x an element in the data structure
+	 * @return   the element with the minimum key in the sequence of {@code x}
+	 */
+	int findMin(int x);
+
+	/**
+	 * Decrease the key of an element.
+	 *
+	 * @param  x      an element in the data structure
+	 * @param  newKey new key for the element
+	 * @return        {@code true} if the decreased key is the minimum key in the element's sequence
+	 */
+	boolean decreaseKey(int x, K newKey);
+
+	/**
+	 * Create a new split-find-min data structure builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link SplitFindMin} object.
+	 *
+	 * @return a new builder that can build {@link SplitFindMin} objects
+	 */
+	static SplitFindMin.Builder newBuilder() {
+<span class="fc" id="L84">		return SplitFindMinArray::new;</span>
+	}
+
+	/**
+	 * A builder for {@link SplitFindMin} objects.
+	 *
+	 * @see    SplitFindMin#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends SplitFind.Builder {
+
+		/**
+		 * Create a new split-find-min data structure
+		 *
+		 * @return     a new split-find-min data structure
+		 * @param  &lt;K&gt; the keys type
+		 */
+		&lt;K&gt; SplitFindMin&lt;K&gt; buildWithFindMin();
+
+		@SuppressWarnings(&quot;rawtypes&quot;)
+		@Override
+		default SplitFindMin build() {
+<span class="nc" id="L106">			return buildWithFindMin();</span>
+		}
+
+		@Override
+		default SplitFindMin.Builder setOption(String key, Object value) {
+<span class="nc" id="L111">			SplitFind.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L112">			return this;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

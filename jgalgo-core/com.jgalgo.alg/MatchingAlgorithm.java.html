@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchingAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MatchingAlgorithm.java</span></div><h1>MatchingAlgorithm.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.BuilderAbstract;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+/**
+ * Maximum/minimum matching algorithm.
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
+ * adjacent edge in \(M\). A maximum cardinality matching is a matching with the maximum &lt;b&gt;number&lt;/b&gt; of edges in
+ * \(M\). A maximum/minimum weighted matching is a matching with the maximum/minimum edges weight sum with respect to
+ * some weight function. A perfect maximum/minimum weighted matching is a matching with the maximum/minimum edges weight
+ * sum out of all the matchings in which each vertex has an adjacent matched edge. Note that the weight of a perfect
+ * maximum matching is smaller or equal to the weight of a maximum weight matching.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Matching_(graph_theory)&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface MatchingAlgorithm {
+
+	/**
+	 * Compute the maximum matching of unweighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumCardinalityMatching(Graph g);
+
+	/**
+	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumWeightedMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the minimum weighted matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMinimumWeightedMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the maximum perfect matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
+	 * if no such matching exist the behavior is undefined.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed perfect matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the minimum perfect matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
+	 * if no such matching exist the behavior is undefined.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed perfect matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Create a new matching algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MatchingAlgorithm} object.
+	 *
+	 * @return a new builder that can build {@link MatchingAlgorithm} objects
+	 */
+	static MatchingAlgorithm.Builder newBuilder() {
+<span class="fc" id="L102">		return new MatchingAlgorithm.Builder() {</span>
+
+<span class="fc" id="L104">			boolean cardinality = false;</span>
+<span class="fc" id="L105">			boolean isBipartite = false;</span>
+			String impl;
+
+			@Override
+			public MatchingAlgorithm build() {
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L111" title="All 8 branches missed.">					switch (impl) {</span>
+						case &quot;CardinalityBipartiteHopcroftKarp&quot;:
+<span class="nc" id="L113">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
+						case &quot;CardinalityGabow1976&quot;:
+<span class="nc" id="L115">							return new MatchingCardinalityGabow1976();</span>
+						case &quot;BipartiteHungarianMethod&quot;:
+<span class="nc" id="L117">							return new MatchingWeightedBipartiteHungarianMethod();</span>
+						case &quot;BipartiteSSSP&quot;:
+<span class="nc" id="L119">							return new MatchingWeightedBipartiteSSSP();</span>
+						case &quot;Gabow1990&quot;:
+<span class="nc" id="L121">							return new MatchingWeightedGabow1990();</span>
+						case &quot;Gabow1990Simpler&quot;:
+<span class="nc" id="L123">							return new MatchingWeightedGabow1990Simpler();</span>
+						case &quot;BlossomV&quot;:
+<span class="nc" id="L125">							return new MatchingWeightedBlossomV();</span>
+						default:
+<span class="nc" id="L127">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc bfc" id="L130" title="All 2 branches covered.">				final MatchingAlgorithm cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()</span>
+<span class="fc" id="L131">						: new MatchingCardinalityGabow1976();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				if (cardinality) {</span>
+<span class="fc" id="L133">					return cardinalityAlgo;</span>
+				} else {
+<span class="fc" id="L135">					final MatchingAlgorithm weightedAlgo = new MatchingWeightedBlossomV();</span>
+<span class="fc" id="L136">					return new MatchingAlgorithm() {</span>
+
+						@Override
+						public Matching computeMaximumCardinalityMatching(Graph g) {
+<span class="nc" id="L140">							return cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
+						}
+
+						@Override
+						public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+<span class="pc bpc" id="L145" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L147">									: weightedAlgo.computeMaximumWeightedMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L152" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">							return isCardinality ? new Matchings.MatchingImpl(g.indexGraph(), IntLists.emptyList())</span>
+<span class="nc" id="L154">									: weightedAlgo.computeMinimumWeightedMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L159" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="nc" id="L161">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="pc bpc" id="L166" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L168">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
+						}
+
+					};
+				}
+			}
+
+			@Override
+			public MatchingAlgorithm.Builder setBipartite(boolean bipartite) {
+<span class="fc" id="L177">				isBipartite = bipartite;</span>
+<span class="fc" id="L178">				return this;</span>
+			}
+
+			@Override
+			public MatchingAlgorithm.Builder setCardinality(boolean cardinality) {
+<span class="fc" id="L183">				this.cardinality = cardinality;</span>
+<span class="fc" id="L184">				return this;</span>
+			}
+
+			@Override
+			public MatchingAlgorithm.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L189" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L191">						impl = (String) value;</span>
+<span class="nc" id="L192">						break;</span>
+					default:
+<span class="nc" id="L194">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L196">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MatchingAlgorithm} objects.
+	 *
+	 * @see    MatchingAlgorithm#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;MatchingAlgorithm.Builder&gt; {
+
+		/**
+		 * Create a new matching algorithm object.
+		 *
+		 * @return a new matching algorithm
+		 */
+		MatchingAlgorithm build();
+
+		/**
+		 * Set whether the matching algorithms built by this builder should only support bipartite graphs.
+		 * &lt;p&gt;
+		 * If the input graphs are known to be bipartite, simpler or more efficient algorithm may exists.
+		 *
+		 * @param  bipartite if {@code true}, the created matching algorithms will support bipartite graphs only
+		 * @return           this builder
+		 */
+		MatchingAlgorithm.Builder setBipartite(boolean bipartite);
+
+		/**
+		 * Set whether the matching algorithms built by this builder should support only maximum cardinality matching.
+		 * &lt;p&gt;
+		 * For cardinality weights, simpler or more efficient algorithm may exists.
+		 *
+		 * @param  cardinality if {@code true}, the created matching algorithms will support maximum cardinality
+		 *                         matching only
+		 * @return             this builder
+		 */
+		MatchingAlgorithm.Builder setCardinality(boolean cardinality);
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

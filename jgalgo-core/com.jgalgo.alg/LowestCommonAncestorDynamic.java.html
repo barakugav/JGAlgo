@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LowestCommonAncestorDynamic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">LowestCommonAncestorDynamic.java</span></div><h1>LowestCommonAncestorDynamic.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import com.jgalgo.internal.util.BuilderAbstract;
+
+/**
+ * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
+ * &lt;p&gt;
+ * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
+ * (common ancestor), and its farthest from the root (lowest). Algorithm implementing this interface support modifying
+ * the tree by adding leafs as children to existing parents nodes, while supporting LCA queries.
+ *
+ * &lt;pre&gt; {@code
+ * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newBuilder().build();
+ * Node rt = lca.initTree();
+ * Node n1 = lca.addLeaf(rt);
+ * Node n2 = lca.addLeaf(rt);
+ * Node n3 = lca.addLeaf(n1);
+ *
+ * assert lca.findLowestCommonAncestor(n1, n2) == rt;
+ * assert lca.findLowestCommonAncestor(n1, n3) == n1;
+ *
+ * Node n4 = lca.addLeaf(n1);
+ * assert lca.findLowestCommonAncestor(n1, n4) == n1;
+ * }&lt;/pre&gt;
+ *
+ * @author Barak Ugav
+ */
+public interface LowestCommonAncestorDynamic {
+
+	/**
+	 * Initialize the tree the LCA will operate on and create a root node.
+	 *
+	 * @return                       the new root node
+	 * @throws IllegalStateException if the tree is not empty
+	 */
+	public Node initTree();
+
+	/**
+	 * Add a new leaf node to the tree.
+	 *
+	 * @param  parent parent of the new node
+	 * @return        the new node
+	 */
+	public Node addLeaf(Node parent);
+
+	/**
+	 * Find the lowest common ancestor of two nodes in the tree.
+	 *
+	 * @param  u the first node
+	 * @param  v the second node
+	 * @return   the lowest common ancestor of the two nodes
+	 */
+	public Node findLowestCommonAncestor(Node u, Node v);
+
+	/**
+	 * Get the number of nodes in the tree.
+	 *
+	 * @return number of nodes in the tree
+	 */
+	public int size();
+
+	/**
+	 * Clear the data structure by removing all nodes in the tree.
+	 */
+	public void clear();
+
+	/**
+	 * A tree node in an {@link LowestCommonAncestorDynamic} data structure.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Node {
+
+		/**
+		 * Get the parent node of this node.
+		 *
+		 * @return the parent of this node or {@code null} if this node is the root of the tree.
+		 */
+		public Node getParent();
+
+		/**
+		 * Get the user data of this node.
+		 * &lt;p&gt;
+		 * Note that the conversion of the data stored in the implementation to the user type is unsafe.
+		 *
+		 * @param  &lt;D&gt; the data type
+		 * @return     the user data of this node
+		 */
+		public &lt;D&gt; D getNodeData();
+
+		/**
+		 * Set the user data of this node.
+		 *
+		 * @param data new value for this node
+		 */
+		public void setNodeData(Object data);
+
+	}
+
+	/**
+	 * Create a new dynamic LCA algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object.
+	 *
+	 * @return a new builder that can build {@link LowestCommonAncestorDynamic} objects
+	 */
+	static LowestCommonAncestorDynamic.Builder newBuilder() {
+<span class="fc" id="L124">		return new LowestCommonAncestorDynamic.Builder() {</span>
+			String impl;
+
+			@Override
+			public LowestCommonAncestorDynamic build() {
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L130" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;gabow-simple&quot;:
+<span class="nc" id="L132">							return new LowestCommonAncestorDynamicGabowSimple();</span>
+						case &quot;gabow-linear&quot;:
+<span class="nc" id="L134">							return new LowestCommonAncestorDynamicGabowLinear();</span>
+						default:
+<span class="nc" id="L136">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc" id="L139">				return new LowestCommonAncestorDynamicGabowLinear();</span>
+			}
+
+			@Override
+			public LowestCommonAncestorDynamic.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L146">						impl = (String) value;</span>
+<span class="nc" id="L147">						break;</span>
+					default:
+<span class="nc" id="L149">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L151">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link LowestCommonAncestorDynamic} objects.
+	 *
+	 * @see    LowestCommonAncestorDynamic#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;LowestCommonAncestorDynamic.Builder&gt; {
+
+		/**
+		 * Create a new dynamic LCA algorithm.
+		 *
+		 * @return a new dynamic LCA algorithm
+		 */
+		LowestCommonAncestorDynamic build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

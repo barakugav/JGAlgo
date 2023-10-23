@@ -178,73 +178,76 @@ public class JGAlgoUtils {
 	static class IterPeekableImpl&lt;E&gt; implements IterPeekable&lt;E&gt; {
 
 		private final Iterator&lt;? super E&gt; it;
-		private Object peek;
-<span class="fc" id="L182">		private static final Object PeekNone = JGAlgoUtils.labeledObj(&quot;None&quot;);</span>
+		private Object nextElm;
+<span class="fc" id="L182">		private static final Object nextNone = JGAlgoUtils.labeledObj(&quot;None&quot;);</span>
 
 <span class="nc" id="L184">		IterPeekableImpl(Iterator&lt;? super E&gt; it) {</span>
 <span class="nc" id="L185">			this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L186">			peek = PeekNone;</span>
+<span class="nc" id="L186">			advance();</span>
 <span class="nc" id="L187">		}</span>
+
+		private void advance() {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">			if (it.hasNext()) {</span>
+<span class="nc" id="L191">				nextElm = it.next();</span>
+			} else {
+<span class="nc" id="L193">				nextElm = nextNone;</span>
+			}
+<span class="nc" id="L195">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L191" title="All 2 branches missed.">			if (peek != PeekNone)</span>
-<span class="nc" id="L192">				return true;</span>
-<span class="nc bnc" id="L193" title="All 2 branches missed.">			if (!it.hasNext())</span>
-<span class="nc" id="L194">				return false;</span>
-<span class="nc" id="L195">			peek = it.next();</span>
-<span class="nc" id="L196">			return true;</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">			return nextElm != null;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc" id="L201">			Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L204">			Assertions.Iters.hasNext(this);</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L203">			E n = (E) peek;</span>
-<span class="nc" id="L204">			peek = PeekNone;</span>
-<span class="nc" id="L205">			return n;</span>
+<span class="nc" id="L206">			E ret = (E) nextElm;</span>
+<span class="nc" id="L207">			advance();</span>
+<span class="nc" id="L208">			return ret;</span>
 		}
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public E peekNext() {
-<span class="nc" id="L211">			Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L212">			return (E) peek;</span>
+<span class="nc" id="L214">			Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L215">			return (E) nextElm;</span>
 		}
 
 		static class Int implements IterPeekable.Int {
 
 			private final IntIterator it;
-			private int peek;
-			private boolean isPeekValid;
+			private int next;
+			private boolean isNextValid;
 
-<span class="nc" id="L221">			Int(IntIterator it) {</span>
-<span class="nc" id="L222">				this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L223">				isPeekValid = false;</span>
-<span class="nc" id="L224">			}</span>
+<span class="nc" id="L224">			Int(IntIterator it) {</span>
+<span class="nc" id="L225">				this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L226">				advance();</span>
+<span class="nc" id="L227">			}</span>
+
+			private void advance() {
+<span class="nc bnc" id="L230" title="All 2 branches missed.">				if (isNextValid = it.hasNext())</span>
+<span class="nc" id="L231">					next = it.nextInt();</span>
+<span class="nc" id="L232">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="nc bnc" id="L228" title="All 2 branches missed.">				if (isPeekValid)</span>
-<span class="nc" id="L229">					return true;</span>
-<span class="nc bnc" id="L230" title="All 2 branches missed.">				if (!it.hasNext())</span>
-<span class="nc" id="L231">					return false;</span>
-<span class="nc" id="L232">				peek = it.nextInt();</span>
-<span class="nc" id="L233">				isPeekValid = true;</span>
-<span class="nc" id="L234">				return true;</span>
+<span class="nc" id="L236">				return isNextValid;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="nc" id="L239">				Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L240">				isPeekValid = false;</span>
-<span class="nc" id="L241">				return peek;</span>
+<span class="nc" id="L241">				Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L242">				int ret = next;</span>
+<span class="nc" id="L243">				advance();</span>
+<span class="nc" id="L244">				return ret;</span>
 			}
 
 			@Override
 			public int peekNext() {
-<span class="nc" id="L246">				Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L247">				return peek;</span>
+<span class="nc" id="L249">				Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L250">				return next;</span>
 			}
 
 		}
@@ -255,47 +258,47 @@ public class JGAlgoUtils {
 		private final Iterator&lt;A&gt; it;
 		private final Function&lt;A, B&gt; map;
 
-<span class="fc" id="L258">		IterMap(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {</span>
-<span class="fc" id="L259">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L260">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L261">		}</span>
+<span class="fc" id="L261">		IterMap(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {</span>
+<span class="fc" id="L262">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L263">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L264">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L265">			return it.hasNext();</span>
+<span class="fc" id="L268">			return it.hasNext();</span>
 		}
 
 		@Override
 		public B next() {
-<span class="fc" id="L270">			return map.apply(it.next());</span>
+<span class="fc" id="L273">			return map.apply(it.next());</span>
 		}
 
 	}
 
 	public static &lt;A, B&gt; Iterator&lt;B&gt; iterMap(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {
-<span class="fc" id="L276">		return new IterMap&lt;&gt;(it, map);</span>
+<span class="fc" id="L279">		return new IterMap&lt;&gt;(it, map);</span>
 	}
 
 	static class NullIterator&lt;E&gt; implements Iterator&lt;E&gt; {
 
 		private int size;
 
-<span class="fc" id="L283">		NullIterator(int size) {</span>
-<span class="pc bpc" id="L284" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L285">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L286">			this.size = size;</span>
-<span class="fc" id="L287">		}</span>
+<span class="fc" id="L286">		NullIterator(int size) {</span>
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L288">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L289">			this.size = size;</span>
+<span class="fc" id="L290">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L291" title="All 2 branches covered.">			return size &gt; 0;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">			return size &gt; 0;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="fc" id="L296">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L297">			size--;</span>
-<span class="fc" id="L298">			return null;</span>
+<span class="fc" id="L299">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L300">			size--;</span>
+<span class="fc" id="L301">			return null;</span>
 		}
 
 	}
@@ -306,211 +309,211 @@ public class JGAlgoUtils {
 		private int idx;
 
 		NullListIterator(int size) {
-<span class="nc" id="L309">			this(size, 0);</span>
-<span class="nc" id="L310">		}</span>
+<span class="nc" id="L312">			this(size, 0);</span>
+<span class="nc" id="L313">		}</span>
 
-<span class="nc" id="L312">		NullListIterator(int size, int idx) {</span>
-<span class="nc bnc" id="L313" title="All 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L314">				throw new IllegalArgumentException();</span>
-<span class="nc bnc" id="L315" title="All 4 branches missed.">			if (idx &lt; 0 || idx &gt; size)</span>
-<span class="nc" id="L316">				throw new IllegalArgumentException();</span>
-<span class="nc" id="L317">			this.size = size;</span>
-<span class="nc" id="L318">			this.idx = idx;</span>
-<span class="nc" id="L319">		}</span>
+<span class="nc" id="L315">		NullListIterator(int size, int idx) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L317">				throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L318" title="All 4 branches missed.">			if (idx &lt; 0 || idx &gt; size)</span>
+<span class="nc" id="L319">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L320">			this.size = size;</span>
+<span class="nc" id="L321">			this.idx = idx;</span>
+<span class="nc" id="L322">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L323" title="All 2 branches missed.">			return idx &lt; size;</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">			return idx &lt; size;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc" id="L328">			Assertions.Iters.hasNext(this);</span>
-<span class="nc" id="L329">			idx++;</span>
-<span class="nc" id="L330">			return null;</span>
+<span class="nc" id="L331">			Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L332">			idx++;</span>
+<span class="nc" id="L333">			return null;</span>
 		}
 
 		@Override
 		public boolean hasPrevious() {
-<span class="nc bnc" id="L335" title="All 2 branches missed.">			return idx &gt; 0;</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">			return idx &gt; 0;</span>
 		}
 
 		@Override
 		public E previous() {
-<span class="nc" id="L340">			Assertions.Iters.hasPrevious(this);</span>
-<span class="nc" id="L341">			idx--;</span>
-<span class="nc" id="L342">			return null;</span>
+<span class="nc" id="L343">			Assertions.Iters.hasPrevious(this);</span>
+<span class="nc" id="L344">			idx--;</span>
+<span class="nc" id="L345">			return null;</span>
 		}
 
 		@Override
 		public int nextIndex() {
-<span class="nc" id="L347">			return idx;</span>
+<span class="nc" id="L350">			return idx;</span>
 		}
 
 		@Override
 		public int previousIndex() {
-<span class="nc" id="L352">			return idx - 1;</span>
+<span class="nc" id="L355">			return idx - 1;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="nc" id="L357">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L360">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void set(E e) {
-<span class="nc" id="L362">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L365">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void add(E e) {
-<span class="nc" id="L367">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L370">			throw new UnsupportedOperationException();</span>
 		}
 
 	}
 
 	public static &lt;E&gt; List&lt;E&gt; nullList(int size) {
-<span class="fc" id="L373">		return new NullList&lt;&gt;(size);</span>
+<span class="fc" id="L376">		return new NullList&lt;&gt;(size);</span>
 	}
 
 	private static class NullList&lt;E&gt; extends AbstractList&lt;E&gt; {
 
 		private final int size;
 
-<span class="fc" id="L380">		NullList(int size) {</span>
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L382">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L383">			this.size = size;</span>
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L383">		NullList(int size) {</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L385">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L386">			this.size = size;</span>
+<span class="fc" id="L387">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L388">			return size;</span>
+<span class="fc" id="L391">			return size;</span>
 		}
 
 		@Override
 		public boolean contains(Object o) {
-<span class="nc bnc" id="L393" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0;</span>
+<span class="nc bnc" id="L396" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0;</span>
 		}
 
 		@Override
 		public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L398">			return new NullIterator&lt;&gt;(size);</span>
+<span class="fc" id="L401">			return new NullIterator&lt;&gt;(size);</span>
 		}
 
 		@Override
 		public boolean add(E e) {
-<span class="nc" id="L403">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L406">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean remove(Object o) {
-<span class="nc" id="L408">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L411">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean addAll(Collection&lt;? extends E&gt; c) {
-<span class="nc" id="L413">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L416">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean addAll(int index, Collection&lt;? extends E&gt; c) {
-<span class="nc" id="L418">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L421">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L423">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L426">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean retainAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L428">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L431">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L433">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L436">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public E get(int index) {
-<span class="nc bnc" id="L438" title="All 4 branches missed.">			if (index &lt; 0 || index &gt;= size)</span>
-<span class="nc" id="L439">				throw new IndexOutOfBoundsException();</span>
-<span class="nc" id="L440">			return null;</span>
+<span class="nc bnc" id="L441" title="All 4 branches missed.">			if (index &lt; 0 || index &gt;= size)</span>
+<span class="nc" id="L442">				throw new IndexOutOfBoundsException();</span>
+<span class="nc" id="L443">			return null;</span>
 		}
 
 		@Override
 		public E set(int index, E element) {
-<span class="nc" id="L445">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L448">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void add(int index, E element) {
-<span class="nc" id="L450">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L453">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public E remove(int index) {
-<span class="nc" id="L455">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L458">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public int indexOf(Object o) {
-<span class="nc bnc" id="L460" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? 0 : -1;</span>
+<span class="nc bnc" id="L463" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? 0 : -1;</span>
 		}
 
 		@Override
 		public int lastIndexOf(Object o) {
-<span class="nc bnc" id="L465" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? size - 1 : -1;</span>
+<span class="nc bnc" id="L468" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? size - 1 : -1;</span>
 		}
 
 		@Override
 		public ListIterator&lt;E&gt; listIterator() {
-<span class="nc" id="L470">			return new NullListIterator&lt;&gt;(size);</span>
+<span class="nc" id="L473">			return new NullListIterator&lt;&gt;(size);</span>
 		}
 
 		@Override
 		public ListIterator&lt;E&gt; listIterator(int index) {
-<span class="nc" id="L475">			return new NullListIterator&lt;&gt;(size, index);</span>
+<span class="nc" id="L478">			return new NullListIterator&lt;&gt;(size, index);</span>
 		}
 
 		@Override
 		public List&lt;E&gt; subList(int fromIndex, int toIndex) {
-<span class="nc bnc" id="L480" title="All 6 branches missed.">			if (fromIndex &lt; 0 || fromIndex &gt;= toIndex || toIndex &gt; size)</span>
-<span class="nc" id="L481">				throw new IllegalArgumentException();</span>
-<span class="nc bnc" id="L482" title="All 4 branches missed.">			if (fromIndex == 0 &amp;&amp; toIndex == size)</span>
-<span class="nc" id="L483">				return this;</span>
-<span class="nc" id="L484">			return new NullList&lt;&gt;(toIndex - fromIndex);</span>
+<span class="nc bnc" id="L483" title="All 6 branches missed.">			if (fromIndex &lt; 0 || fromIndex &gt;= toIndex || toIndex &gt; size)</span>
+<span class="nc" id="L484">				throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L485" title="All 4 branches missed.">			if (fromIndex == 0 &amp;&amp; toIndex == size)</span>
+<span class="nc" id="L486">				return this;</span>
+<span class="nc" id="L487">			return new NullList&lt;&gt;(toIndex - fromIndex);</span>
 		}
 
 	}
 
 	public static IntIterator bitSetIterator(BitSet bitSet) {
-<span class="fc" id="L490">		return new IntIterator() {</span>
+<span class="fc" id="L493">		return new IntIterator() {</span>
 
-<span class="fc" id="L492">			int bit = bitSet.nextSetBit(0);</span>
+<span class="fc" id="L495">			int bit = bitSet.nextSetBit(0);</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L496" title="All 2 branches covered.">				return bit != -1;</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">				return bit != -1;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L501">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L502">				int ret = bit;</span>
-<span class="fc" id="L503">				bit = bitSet.nextSetBit(bit + 1);</span>
-<span class="fc" id="L504">				return ret;</span>
+<span class="fc" id="L504">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L505">				int ret = bit;</span>
+<span class="fc" id="L506">				bit = bitSet.nextSetBit(bit + 1);</span>
+<span class="fc" id="L507">				return ret;</span>
 			}
 		};
 	}
 
 	public static IntIterable iterable(BitSet bitSet) {
-<span class="fc" id="L510">		return new IntIterable() {</span>
+<span class="fc" id="L513">		return new IntIterable() {</span>
 			@Override
 			public IntIterator iterator() {
-<span class="fc" id="L513">				return bitSetIterator(bitSet);</span>
+<span class="fc" id="L516">				return bitSetIterator(bitSet);</span>
 			}
 		};
 	}
@@ -526,38 +529,38 @@ public class JGAlgoUtils {
 	}
 
 	public static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
-<span class="pc bpc" id="L529" title="1 of 2 branches missed.">		if (parallel) {</span>
-<span class="fc" id="L530">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
+<span class="pc bpc" id="L532" title="1 of 2 branches missed.">		if (parallel) {</span>
+<span class="fc" id="L533">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
 		} else {
-<span class="nc" id="L532">			IntArrays.quickSort(arr, from, to, cmp);</span>
+<span class="nc" id="L535">			IntArrays.quickSort(arr, from, to, cmp);</span>
 		}
-<span class="fc" id="L534">	}</span>
+<span class="fc" id="L537">	}</span>
 
 	public static ForkJoinPool getPool() {
-<span class="fc" id="L537">		ForkJoinPool current = ForkJoinTask.getPool();</span>
-<span class="pc bpc" id="L538" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
+<span class="fc" id="L540">		ForkJoinPool current = ForkJoinTask.getPool();</span>
+<span class="pc bpc" id="L541" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
 	}
 
 	public static &lt;Exec extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(Exec exec) {
-<span class="nc" id="L542">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="nc" id="L545">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	public static &lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(Exec exec) {
-<span class="nc" id="L546">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
+<span class="nc" id="L549">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
 	}
 
 	private static class RecursiveActionFromRunnable&lt;Exec extends Runnable &amp; Serializable&gt; extends RecursiveAction {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L553">		RecursiveActionFromRunnable(Exec exec) {</span>
-<span class="nc" id="L554">			this.exec = exec;</span>
-<span class="nc" id="L555">		}</span>
+<span class="nc" id="L556">		RecursiveActionFromRunnable(Exec exec) {</span>
+<span class="nc" id="L557">			this.exec = exec;</span>
+<span class="nc" id="L558">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="nc" id="L559">			exec.run();</span>
-<span class="nc" id="L560">		}</span>
+<span class="nc" id="L562">			exec.run();</span>
+<span class="nc" id="L563">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;
@@ -565,48 +568,48 @@ public class JGAlgoUtils {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L568">		RecursiveTaskFromSupplier(Exec exec) {</span>
-<span class="nc" id="L569">			this.exec = exec;</span>
-<span class="nc" id="L570">		}</span>
+<span class="nc" id="L571">		RecursiveTaskFromSupplier(Exec exec) {</span>
+<span class="nc" id="L572">			this.exec = exec;</span>
+<span class="nc" id="L573">		}</span>
 
 		@Override
 		protected V compute() {
-<span class="nc" id="L574">			return exec.get();</span>
+<span class="nc" id="L577">			return exec.get();</span>
 		}
 	}
 
 	private static class LabeledObj {
 		private final String s;
 
-<span class="fc" id="L581">		LabeledObj(String label) {</span>
-<span class="fc" id="L582">			this.s = Objects.requireNonNull(label);</span>
-<span class="fc" id="L583">		}</span>
+<span class="fc" id="L584">		LabeledObj(String label) {</span>
+<span class="fc" id="L585">			this.s = Objects.requireNonNull(label);</span>
+<span class="fc" id="L586">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L587">			return s;</span>
+<span class="fc" id="L590">			return s;</span>
 		}
 	}
 
 	public static Object labeledObj(String label) {
-<span class="fc" id="L592">		return new LabeledObj(label);</span>
+<span class="fc" id="L595">		return new LabeledObj(label);</span>
 	}
 
 	public static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
-<span class="fc" id="L596">		return e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L599">		return e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	public static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
-<span class="fc" id="L600">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L603">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L604">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
-<span class="fc" id="L605">	};</span>
+<span class="fc" id="L607">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
+<span class="fc" id="L608">	};</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T&gt; Consumer&lt;T&gt; consumerNoOp() {
-<span class="fc" id="L609">		return ConsumerNoOp;</span>
+<span class="fc" id="L612">		return ConsumerNoOp;</span>
 	}
 
 	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
@@ -615,149 +618,149 @@ public class JGAlgoUtils {
 
 		private final int defVal;
 
-<span class="fc" id="L618">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
-<span class="fc" id="L619">			this.defVal = defVal;</span>
-<span class="fc" id="L620">		}</span>
+<span class="fc" id="L621">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
+<span class="fc" id="L622">			this.defVal = defVal;</span>
+<span class="fc" id="L623">		}</span>
 
 		@Override
 		public int get(int key) {
-<span class="fc" id="L624">			return defVal;</span>
+<span class="fc" id="L627">			return defVal;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L629">			return true;</span>
+<span class="fc" id="L632">			return true;</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L634">			return 0;</span>
+<span class="fc" id="L637">			return 0;</span>
 		}
 
 		@Override
-<span class="fc" id="L638">		public void clear() {}</span>
+<span class="fc" id="L641">		public void clear() {}</span>
 
 		@Override
 		public void defaultReturnValue(int rv) {
-<span class="nc" id="L642">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L645">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public int defaultReturnValue() {
-<span class="nc" id="L647">			return defVal;</span>
+<span class="nc" id="L650">			return defVal;</span>
 		}
 
 		@Override
 		public int remove(int key) {
-<span class="fc" id="L652">			return defVal;</span>
+<span class="fc" id="L655">			return defVal;</span>
 		}
 
 		@Override
 		public ObjectSet&lt;Int2IntMap.Entry&gt; int2IntEntrySet() {
-<span class="fc" id="L657">			return ObjectSets.emptySet();</span>
+<span class="fc" id="L660">			return ObjectSets.emptySet();</span>
 		}
 
 		@Override
 		public IntSet keySet() {
-<span class="nc" id="L662">			return IntSets.emptySet();</span>
+<span class="nc" id="L665">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public IntCollection values() {
-<span class="fc" id="L667">			return IntSets.emptySet();</span>
+<span class="fc" id="L670">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public boolean containsKey(int key) {
-<span class="nc" id="L672">			return false;</span>
+<span class="nc" id="L675">			return false;</span>
 		}
 
 		@Override
 		public boolean containsValue(int value) {
-<span class="nc" id="L677">			return false;</span>
+<span class="nc" id="L680">			return false;</span>
 		}
 	}
 
-<span class="fc" id="L681">	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);</span>
+<span class="fc" id="L684">	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);</span>
 
 	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
-<span class="fc bfc" id="L684" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
-<span class="fc" id="L685">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L686">			int mid = from + half;</span>
-<span class="fc bfc" id="L687" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
-<span class="fc" id="L688">				from = mid + 1;</span>
-<span class="fc" id="L689">				len = len - half - 1;</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L688">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L689">			int mid = from + half;</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
+<span class="fc" id="L691">				from = mid + 1;</span>
+<span class="fc" id="L692">				len = len - half - 1;</span>
 			} else {
-<span class="fc" id="L691">				len = half;</span>
+<span class="fc" id="L694">				len = half;</span>
 			}
-<span class="fc" id="L693">		}</span>
-<span class="fc" id="L694">		return from;</span>
+<span class="fc" id="L696">		}</span>
+<span class="fc" id="L697">		return from;</span>
 	}
 
 	private static int upperBound(int to, int from, int key, IntUnaryOperator idx2key) {
-<span class="fc bfc" id="L698" title="All 2 branches covered.">		for (int len = from - to; len &gt; 0;) {</span>
-<span class="fc" id="L699">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L700">			int mid = to + half;</span>
-<span class="fc bfc" id="L701" title="All 2 branches covered.">			if (key &lt; idx2key.applyAsInt(mid)) {</span>
-<span class="fc" id="L702">				len = half;</span>
+<span class="fc bfc" id="L701" title="All 2 branches covered.">		for (int len = from - to; len &gt; 0;) {</span>
+<span class="fc" id="L702">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L703">			int mid = to + half;</span>
+<span class="fc bfc" id="L704" title="All 2 branches covered.">			if (key &lt; idx2key.applyAsInt(mid)) {</span>
+<span class="fc" id="L705">				len = half;</span>
 			} else {
-<span class="fc" id="L704">				to = mid + 1;</span>
-<span class="fc" id="L705">				len = len - half - 1;</span>
+<span class="fc" id="L707">				to = mid + 1;</span>
+<span class="fc" id="L708">				len = len - half - 1;</span>
 			}
-<span class="fc" id="L707">		}</span>
-<span class="fc" id="L708">		return to;</span>
+<span class="fc" id="L710">		}</span>
+<span class="fc" id="L711">		return to;</span>
 	}
 
 	public static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
-<span class="pc bpc" id="L712" title="1 of 2 branches missed.">		for (int len = to - from; len &gt; 0;) {</span>
-<span class="fc" id="L713">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L714">			int mid = from + half;</span>
-<span class="fc" id="L715">			int midKey = idx2key.applyAsInt(mid);</span>
-<span class="fc bfc" id="L716" title="All 2 branches covered.">			if (midKey &lt; key) {</span>
-<span class="fc" id="L717">				from = mid + 1;</span>
-<span class="fc" id="L718">				len = len - half - 1;</span>
-<span class="fc bfc" id="L719" title="All 2 branches covered.">			} else if (key &lt; midKey) {</span>
-<span class="fc" id="L720">				len = half;</span>
+<span class="pc bpc" id="L715" title="1 of 2 branches missed.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L716">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L717">			int mid = from + half;</span>
+<span class="fc" id="L718">			int midKey = idx2key.applyAsInt(mid);</span>
+<span class="fc bfc" id="L719" title="All 2 branches covered.">			if (midKey &lt; key) {</span>
+<span class="fc" id="L720">				from = mid + 1;</span>
+<span class="fc" id="L721">				len = len - half - 1;</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">			} else if (key &lt; midKey) {</span>
+<span class="fc" id="L723">				len = half;</span>
 			} else {
-<span class="fc" id="L722">				int left = lowerBound(from, mid, key, idx2key);</span>
-<span class="fc" id="L723">				from += len;</span>
-<span class="fc" id="L724">				int right = upperBound(++mid, from, key, idx2key);</span>
-<span class="fc" id="L725">				return IntIntPair.of(left, right);</span>
+<span class="fc" id="L725">				int left = lowerBound(from, mid, key, idx2key);</span>
+<span class="fc" id="L726">				from += len;</span>
+<span class="fc" id="L727">				int right = upperBound(++mid, from, key, idx2key);</span>
+<span class="fc" id="L728">				return IntIntPair.of(left, right);</span>
 			}
-<span class="fc" id="L727">		}</span>
-<span class="nc" id="L728">		return null;</span>
+<span class="fc" id="L730">		}</span>
+<span class="nc" id="L731">		return null;</span>
 	}
 
 	public static class Variant {
 
 		final Object val;
 
-<span class="fc" id="L735">		private Variant(Object val) {</span>
-<span class="fc" id="L736">			this.val = Objects.requireNonNull(val);</span>
-<span class="fc" id="L737">		}</span>
+<span class="fc" id="L738">		private Variant(Object val) {</span>
+<span class="fc" id="L739">			this.val = Objects.requireNonNull(val);</span>
+<span class="fc" id="L740">		}</span>
 
 		public boolean contains(Class&lt;?&gt; type) {
-<span class="fc" id="L740">			return type.isInstance(val);</span>
+<span class="fc" id="L743">			return type.isInstance(val);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;E&gt; Optional&lt;E&gt; get(Class&lt;E&gt; type) {
-<span class="pc bpc" id="L745" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
+<span class="pc bpc" id="L748" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
 		}
 
 		@SuppressWarnings(&quot;unused&quot;)
 		public static class Of2&lt;A, B&gt; extends Variant {
 
 			private Of2(Object val) {
-<span class="fc" id="L752">				super(val);</span>
-<span class="fc" id="L753">			}</span>
+<span class="fc" id="L755">				super(val);</span>
+<span class="fc" id="L756">			}</span>
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withA(A val) {
-<span class="fc" id="L756">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L759">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withB(B val) {
-<span class="fc" id="L760">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L763">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 		}

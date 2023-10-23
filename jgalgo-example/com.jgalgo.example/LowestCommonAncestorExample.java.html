@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.LowestCommonAncestorDynamic;
-import com.jgalgo.LowestCommonAncestorStatic;
+import com.jgalgo.alg.LowestCommonAncestorDynamic;
+import com.jgalgo.alg.LowestCommonAncestorStatic;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 

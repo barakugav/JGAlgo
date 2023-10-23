@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.Coloring;
+import com.jgalgo.alg.Coloring;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;

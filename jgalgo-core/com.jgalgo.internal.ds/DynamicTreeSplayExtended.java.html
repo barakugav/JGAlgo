@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTreeSplayExtended.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">DynamicTreeSplayExtended.java</span></div><h1>DynamicTreeSplayExtended.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import com.jgalgo.internal.ds.DynamicTreeSplayExtension.SplayNodeExtended;
+
+/**
+ * Dynamic trees implementation using splay trees that support various extensions.
+ * &lt;p&gt;
+ * Some extensions such as {@link DynamicTreeSplayExtension.TreeSize} can be added to the tree without increasing the
+ * asymptotical running time of any operation.
+ *
+ * @see    DynamicTreeSplayExtension
+ * @author Barak Ugav
+ */
+class DynamicTreeSplayExtended extends DynamicTreeSplay {
+
+	private Node[] nodes;
+	private int nodesCount;
+<span class="fc" id="L37">	private static final Node[] EmptyNodes = new Node[0];</span>
+	private final DynamicTreeSplayExtension[] extensions;
+
+	/**
+	 * Create a new empty dynamic tree data structure with extensions.
+	 *
+	 * @param  weightLimit              a limit on the weights of the edges. The limit is an upper bound on the sum of
+	 *                                      each edge weight and the weights modification that are performed using
+	 *                                      {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
+	 * @param  extensions               a collection of extensions the data structure will use. Each extension must not
+	 *                                      be used in any other tree than this one.
+	 * @throws IllegalArgumentException if the extensions collection is empty. In such a case, the regular
+	 *                                      {@link DynamicTreeSplay} should be used
+	 */
+	DynamicTreeSplayExtended(double weightLimit, Collection&lt;? extends DynamicTreeSplayExtension&gt; extensions) {
+<span class="fc" id="L52">		this(weightLimit, extensions.toArray(len -&gt; new DynamicTreeSplayExtension[len]));</span>
+<span class="fc" id="L53">	}</span>
+
+	private DynamicTreeSplayExtended(double weightLimit, DynamicTreeSplayExtension[] extensions) {
+<span class="fc" id="L56">		super(new SplayImplWithExtensions(extensions), weightLimit);</span>
+<span class="fc" id="L57">		nodes = EmptyNodes;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (extensions.length == 0)</span>
+<span class="nc" id="L59">			throw new IllegalArgumentException(&quot;No extensions provided. Use the regular Red Black tree.&quot;);</span>
+<span class="fc" id="L60">		this.extensions = extensions;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L62">			extension.setDynamicTreeAlgo(this);</span>
+<span class="fc" id="L63">	}</span>
+
+	@Override
+	Node newNode() {
+<span class="fc" id="L67">		int idx = nodesCount++;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
+<span class="fc" id="L69">			int newLen = Math.max(2, nodes.length * 2);</span>
+<span class="fc" id="L70">			nodes = Arrays.copyOf(nodes, newLen);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L72">				extension.data.expand(newLen);</span>
+		}
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="fc" id="L75">		Node n = nodes[idx] = new Node(idx);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L77">			extension.initNode(n);</span>
+<span class="fc" id="L78">		return n;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="nc" id="L83">		Arrays.fill(nodes, 0, nodesCount, null);</span>
+<span class="nc" id="L84">		nodesCount = 0;</span>
+<span class="nc" id="L85">		super.clear();</span>
+<span class="nc" id="L86">	}</span>
+
+	@Override
+	void beforeCut(SplayNode n) {
+<span class="fc" id="L90">		super.beforeCut(n);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L92">			extension.beforeCut(n);</span>
+<span class="fc" id="L93">	}</span>
+
+	@Override
+	void afterLink(SplayNode n) {
+<span class="fc" id="L97">		super.afterLink(n);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L99">			extension.afterLink(n);</span>
+<span class="fc" id="L100">	}</span>
+
+	private static class Node extends DynamicTreeSplay.SplayNode implements SplayNodeExtended {
+		int idx;
+
+<span class="fc" id="L105">		Node(int idx) {</span>
+<span class="fc" id="L106">			this.idx = idx;</span>
+<span class="fc" id="L107">		}</span>
+
+		@Override
+		public int idx() {
+<span class="fc" id="L111">			return idx;</span>
+		}
+	}
+
+	static class SplayImplWithExtensions extends DynamicTreeSplay.SplayImplWithRelativeWeights {
+
+		private final DynamicTreeSplayExtension[] extensions;
+
+<span class="fc" id="L119">		SplayImplWithExtensions(DynamicTreeSplayExtension[] extensions) {</span>
+<span class="fc" id="L120">			this.extensions = Objects.requireNonNull(extensions);</span>
+<span class="fc" id="L121">		}</span>
+
+		@Override
+		void beforeRotate(SplayNode n) {
+<span class="fc" id="L125">			super.beforeRotate(n);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (DynamicTreeSplayExtension extension : extensions)</span>
+<span class="fc" id="L127">				extension.beforeRotate(n);</span>
+<span class="fc" id="L128">		}</span>
+
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType) {
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		for (DynamicTreeSplayExtension ext : extensions)</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">			if (extensionType.isAssignableFrom(ext.getClass()))</span>
+<span class="fc" id="L137">				return (Ext) ext;</span>
+<span class="nc" id="L138">		return null;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -38,7 +38,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.data.UnionFind;
+import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

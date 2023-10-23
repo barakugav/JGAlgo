@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColoringDSatur.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">ColoringDSatur.java</span></div><h1>ColoringDSatur.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.ds.HeapReference;
+import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+
+/**
+ * The DSatur coloring algorithm.
+ * &lt;p&gt;
+ * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
+ * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
+ * greedy coloring algorithms by the order of the vertices: the next vertex to be colored is the vertex with the highest
+ * number of colors in its neighborhood (called saturation degree).
+ * &lt;p&gt;
+ * The algorithm runs in \(O(m \log n)\) time assuming the number of colors is constant.
+ * &lt;p&gt;
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/DSatur&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+class ColoringDSatur extends ColoringUtils.AbstractImpl {
+
+<span class="fc" id="L46">	private HeapReferenceable.Builder&lt;Integer, Integer&gt; heapBuilder =</span>
+<span class="fc" id="L47">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);</span>
+
+	/**
+	 * Create a new coloring algorithm object.
+	 */
+<span class="fc" id="L52">	ColoringDSatur() {}</span>
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+<span class="nc" id="L60">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class);</span>
+<span class="nc" id="L61">	}</span>
+
+	@Override
+	Coloring.Result computeColoring(IndexGraph g) {
+<span class="fc" id="L65">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L66">		Assertions.Graphs.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+
+<span class="fc" id="L68">		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);</span>
+<span class="fc" id="L69">		int n = g.vertices().size();</span>
+<span class="fc" id="L70">		BitSet[] neighborColors = new BitSet[n];</span>
+
+		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
+<span class="fc" id="L73">		int maxDegree = 0;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L75">			maxDegree = Math.max(maxDegree, g.outEdges(u).size());</span>
+<span class="fc" id="L76">		final int maxDegreeFactor = maxDegree + 1;</span>
+		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
+<span class="fc" id="L78">		BiInt2IntFunction createKey =</span>
+<span class="fc" id="L79">				(saturationDegree, uncoloredDegree) -&gt; -(saturationDegree * maxDegreeFactor + uncoloredDegree);</span>
+<span class="fc" id="L80">		Int2IntFunction keyToSaturationDegree = key -&gt; (-key) / maxDegreeFactor;</span>
+<span class="fc" id="L81">		Int2IntFunction keyToUncoloredDegree = key -&gt; (-key) % maxDegreeFactor;</span>
+
+<span class="fc" id="L83">		HeapReferenceable&lt;Integer, Integer&gt; heap = heapBuilder.build();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L85">		HeapReference&lt;Integer, Integer&gt;[] refs = new HeapReference[n];</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L87">			int key = createKey.apply(/* saturationDegree= */0, g.outEdges(u).size());</span>
+<span class="fc" id="L88">			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));</span>
+<span class="fc" id="L89">			neighborColors[u] = new BitSet();</span>
+		}
+
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc" id="L93">			int u = heap.extractMin().value().intValue();</span>
+
+<span class="fc" id="L95">			int color = 0;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			while (neighborColors[u].get(color))</span>
+<span class="fc" id="L97">				color++;</span>
+<span class="fc" id="L98">			res.colors[u] = color;</span>
+<span class="fc" id="L99">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L102">				eit.nextInt();</span>
+<span class="fc" id="L103">				int v = eit.target();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
+<span class="fc" id="L105">					HeapReference&lt;Integer, Integer&gt; ref = refs[v];</span>
+<span class="fc" id="L106">					int key = ref.key().intValue();</span>
+<span class="fc" id="L107">					int saturationDegree = keyToSaturationDegree.applyAsInt(key);</span>
+<span class="fc" id="L108">					int uncoloredDegree = keyToUncoloredDegree.applyAsInt(key);</span>
+
+					/* we colored u, v has one less uncolored neighbor */
+<span class="fc" id="L111">					uncoloredDegree--;</span>
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">					if (!neighborColors[v].get(color)) {</span>
+						/* v has one more unique color in its neighborhood */
+<span class="fc" id="L115">						neighborColors[v].set(color);</span>
+<span class="fc" id="L116">						saturationDegree++;</span>
+
+<span class="fc" id="L118">						key = createKey.apply(saturationDegree, uncoloredDegree);</span>
+<span class="fc" id="L119">						heap.decreaseKey(ref, Integer.valueOf(key));</span>
+					} else {
+
+<span class="fc" id="L122">						key = createKey.apply(saturationDegree, uncoloredDegree);</span>
+						/*
+						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
+						 * 'increaseKey' with respect to the heap ordering. Remove and insert a new element to the heap,
+						 * and pay \(O(\log n)\) instead of \(O(1)\)
+						 */
+<span class="fc" id="L128">						heap.remove(ref);</span>
+<span class="fc" id="L129">						refs[v] = heap.insert(Integer.valueOf(key), ref.value());</span>
+					}
+
+				}
+<span class="fc" id="L133">			}</span>
+<span class="fc" id="L134">		}</span>
+<span class="fc" id="L135">		return res;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
