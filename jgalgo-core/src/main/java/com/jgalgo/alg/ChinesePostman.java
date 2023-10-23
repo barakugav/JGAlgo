@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm for the chinese postman problem.
@@ -58,7 +57,7 @@ public interface ChinesePostman {
 	 * @see    ChinesePostman#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<ChinesePostman.Builder> {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for chinese postman problem.
@@ -66,6 +65,23 @@ public interface ChinesePostman {
 		 * @return a new chinese postman algorithm
 		 */
 		ChinesePostman build();
+
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default ChinesePostman.Builder setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 
 	}
 

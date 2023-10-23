@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import java.util.Random;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -145,7 +144,7 @@ public interface Coloring {
 	 * @see    Coloring#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<Coloring.Builder> {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for coloring computation.
@@ -153,6 +152,23 @@ public interface Coloring {
 		 * @return a new coloring algorithm
 		 */
 		Coloring build();
+
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default Coloring.Builder setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 	}
 
 }

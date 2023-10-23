@@ -21,7 +21,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
@@ -178,7 +177,7 @@ public interface TreePathMaxima {
 	 * @see    TreePathMaxima#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<TreePathMaxima.Builder> {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for tree path maxima computation.
@@ -186,6 +185,23 @@ public interface TreePathMaxima {
 		 * @return a new tree path maxima algorithm
 		 */
 		TreePathMaxima build();
+
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default TreePathMaxima.Builder setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 	}
 
 	/**

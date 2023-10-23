@@ -18,7 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.BuilderAbstract;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
@@ -276,7 +275,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 	 * @see        HeapReferenceable#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	static interface Builder<K, V> extends BuilderAbstract<HeapReferenceable.Builder<K, V>> {
+	static interface Builder<K, V> {
 
 		/**
 		 * Build a new heap with the given comparator.
@@ -347,6 +346,22 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 		 */
 		HeapReferenceable.Builder<K, Void> valuesTypeVoid();
 
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default HeapReferenceable.Builder<K, V> setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 	}
 
 }

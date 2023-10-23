@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -100,7 +99,7 @@ public interface VertexCover {
 	 * @see    VertexCover#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<VertexCover.Builder> {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum vertex cover computation.
@@ -109,6 +108,22 @@ public interface VertexCover {
 		 */
 		VertexCover build();
 
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default VertexCover.Builder setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 	}
 
 }

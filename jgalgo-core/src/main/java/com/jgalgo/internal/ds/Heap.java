@@ -18,7 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value.
@@ -160,7 +159,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @see        Heap#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	static interface Builder<E> extends BuilderAbstract<Heap.Builder<E>> {
+	static interface Builder<E> {
 		/**
 		 * Build a new heap with the given comparator.
 		 * <p>
@@ -202,6 +201,23 @@ public interface Heap<E> extends Collection<E> {
 		 *                                      {@code int.class, double.class} ect.
 		 */
 		<Elements> Heap.Builder<Elements> elementsTypePrimitive(Class<? extends Elements> primitiveType);
+
+		/**
+		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 * <p>
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * <p>
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default Heap.Builder<E> setOption(String key, Object value) {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
 	}
 
 }
