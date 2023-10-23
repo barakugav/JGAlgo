@@ -79,9 +79,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 				if (c != -1)
 					usedColors.set(c);
 			}
-			int color = 0;
-			while (usedColors.get(color))
-				color++;
+			int color = usedColors.nextClearBit(0);
 			res.colors[u] = color;
 			res.colorsNum = Math.max(res.colorsNum, color + 1);
 		}
