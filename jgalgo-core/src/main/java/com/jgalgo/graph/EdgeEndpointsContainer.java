@@ -50,7 +50,7 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
-			getEdgesIdStrategy().checkIdx(edge);
+			edges().checkIdx(edge);
 			long endpoints = edgeEndpoints()[edge];
 			int u = endpoints2Source(endpoints);
 			int v = endpoints2Target(endpoints);
@@ -66,13 +66,13 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeSource(int edge) {
-			getEdgesIdStrategy().checkIdx(edge);
+			edges().checkIdx(edge);
 			return endpoints2Source(edgeEndpoints()[edge]);
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
-			getEdgesIdStrategy().checkIdx(edge);
+			edges().checkIdx(edge);
 			return endpoints2Target(edgeEndpoints()[edge]);
 		}
 

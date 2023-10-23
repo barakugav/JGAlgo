@@ -46,8 +46,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesOut = newArr);
+		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edgesOut = newArr);
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesInContainer);
 	}
@@ -55,8 +55,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(IndexGraph g, boolean copyWeights) {
 		super(g, copyWeights);
 
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesIn = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edgesOut = newArr);
+		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edgesOut = newArr);
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesInContainer);
 

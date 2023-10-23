@@ -28,7 +28,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 		edgeEndpointsContainer =
-				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
@@ -36,13 +36,13 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		super(g, copyWeights);
 		if (g instanceof GraphArrayAbstract) {
 			GraphArrayAbstract g0 = (GraphArrayAbstract) g;
-			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
+			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 		} else {
 
-			final int m = edgesIdStrat.size();
-			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
-					newArr -> edgeEndpoints = newArr);
+			final int m = edges.size();
+			edgeEndpointsContainer =
+					new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
@@ -51,9 +51,9 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 
 	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
 		super(builder);
-		final int m = edgesIdStrat.size();
+		final int m = edges.size();
 		edgeEndpointsContainer =
-				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 
 		for (int e = 0; e < m; e++)

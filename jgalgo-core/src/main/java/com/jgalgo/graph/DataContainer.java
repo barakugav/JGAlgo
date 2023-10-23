@@ -40,14 +40,14 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
 abstract class DataContainer<E> {
 
-	final IdStrategy idStrat;
+	final GraphElementSet elements;
 
-	DataContainer(IdStrategy idStrat) {
-		this.idStrat = Objects.requireNonNull(idStrat);
+	DataContainer(GraphElementSet elements) {
+		this.elements = Objects.requireNonNull(elements);
 	}
 
 	int size() {
-		return idStrat.size();
+		return elements.size();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ abstract class DataContainer<E> {
 	}
 
 	void checkIdx(int idx) {
-		if (!(0 <= idx && idx < idStrat.size()))
+		if (!elements.contains(idx))
 			throw new IndexOutOfBoundsException(idx);
 	}
 
@@ -71,8 +71,8 @@ abstract class DataContainer<E> {
 
 	private static abstract class Abstract<E> extends DataContainer<E> {
 
-		Abstract(IdStrategy idStrat) {
-			super(idStrat);
+		Abstract(GraphElementSet elements) {
+			super(elements);
 		}
 
 		abstract int capacity();
@@ -86,8 +86,8 @@ abstract class DataContainer<E> {
 		private final ObjectCollection<E> values;
 		private final Consumer<E[]> onArrayAlloc;
 
-		Obj(IdStrategy idStrat, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
-			super(idStrat);
+		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+			super(elements);
 
 			defaultWeight = defVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
@@ -169,11 +169,11 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		public DataContainer.Obj<E> copy(IdStrategy idStrat, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
-			if (idStrat.size() != this.idStrat.size())
+		public DataContainer.Obj<E> copy(GraphElementSet elements, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
-			DataContainer.Obj<E> copy = new DataContainer.Obj<>(idStrat, defaultWeight, emptyArr, onArrayAlloc);
-			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			DataContainer.Obj<E> copy = new DataContainer.Obj<>(elements, defaultWeight, emptyArr, onArrayAlloc);
+			copy.weights = Arrays.copyOf(weights, elements.size());
 			onArrayAlloc.accept(copy.weights);
 			return copy;
 		}
@@ -196,8 +196,8 @@ abstract class DataContainer<E> {
 		private final IntCollection values;
 		private final Consumer<int[]> onArrayAlloc;
 
-		Int(IdStrategy idStrat, int defVal, Consumer<int[]> onArrayAlloc) {
-			super(idStrat);
+		Int(GraphElementSet elements, int defVal, Consumer<int[]> onArrayAlloc) {
+			super(elements);
 
 			weights = IntArrays.EMPTY_ARRAY;
 			defaultWeight = defVal;
@@ -282,11 +282,11 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		DataContainer.Int copy(IdStrategy idStrat, Consumer<int[]> onArrayAlloc) {
-			if (idStrat.size() != this.idStrat.size())
+		DataContainer.Int copy(GraphElementSet elements, Consumer<int[]> onArrayAlloc) {
+			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
-			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultWeight, onArrayAlloc);
-			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			DataContainer.Int copy = new DataContainer.Int(elements, defaultWeight, onArrayAlloc);
+			copy.weights = Arrays.copyOf(weights, elements.size());
 			onArrayAlloc.accept(copy.weights);
 			return copy;
 		}
@@ -326,8 +326,8 @@ abstract class DataContainer<E> {
 		};
 		private final Consumer<long[]> onArrayAlloc;
 
-		Long(IdStrategy idStrat, long defVal, Consumer<long[]> onArrayAlloc) {
-			super(idStrat);
+		Long(GraphElementSet elements, long defVal, Consumer<long[]> onArrayAlloc) {
+			super(elements);
 
 			weights = LongArrays.EMPTY_ARRAY;
 			defaultWeight = defVal;
@@ -335,12 +335,12 @@ abstract class DataContainer<E> {
 			onArrayAlloc.accept(weights);
 		}
 
-		Long(DataContainer.Long orig, IdStrategy idStrat, Consumer<long[]> onArrayAlloc) {
-			super(idStrat);
-			if (idStrat.size() != this.idStrat.size())
+		Long(DataContainer.Long orig, GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
+			super(elements);
+			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
 
-			weights = Arrays.copyOf(orig.weights, idStrat.size());
+			weights = Arrays.copyOf(orig.weights, elements.size());
 			defaultWeight = orig.defaultWeight;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
 			onArrayAlloc.accept(weights);
@@ -407,8 +407,8 @@ abstract class DataContainer<E> {
 			return values;
 		}
 
-		DataContainer.Long copy(IdStrategy idStrat, Consumer<long[]> onArrayAlloc) {
-			return new DataContainer.Long(this, idStrat, onArrayAlloc);
+		DataContainer.Long copy(GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
+			return new DataContainer.Long(this, elements, onArrayAlloc);
 		}
 
 		@Override

@@ -21,7 +21,6 @@ import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 
 /**
  * Static methods class for graphs.
@@ -33,17 +32,17 @@ public class Graphs {
 
 	private abstract static class EmptyGraph extends GraphBase implements IndexGraphImpl {
 
-		private final IdStrategy verticesIdStrat = IdStrategy.EmptyVertices;
-		private final IdStrategy edgesIdStrat = IdStrategy.EmptyEdges;
+		private final GraphElementSet vertices = GraphElementSet.EmptyVertices;
+		private final GraphElementSet edges = GraphElementSet.EmptyEdges;
 
 		@Override
-		public IntSet vertices() {
-			return IntSets.emptySet();
+		public GraphElementSet vertices() {
+			return vertices;
 		}
 
 		@Override
-		public IntSet edges() {
-			return IntSets.emptySet();
+		public GraphElementSet edges() {
+			return edges;
 		}
 
 		@Override
@@ -137,16 +136,6 @@ public class Graphs {
 		@Override
 		public Set<Object> getEdgesWeightsKeys() {
 			return Collections.emptySet();
-		}
-
-		@Override
-		public IdStrategy getVerticesIdStrategy() {
-			return verticesIdStrat;
-		}
-
-		@Override
-		public IdStrategy getEdgesIdStrategy() {
-			return edgesIdStrat;
 		}
 	}
 
@@ -451,14 +440,14 @@ public class Graphs {
 	private static abstract class CompleteGraph extends GraphBase implements IndexGraphImpl {
 
 		final int n, m;
-		private final IdStrategy verticesIdStrat;
-		private final IdStrategy edgesIdStrat;
+		private final GraphElementSet vertices;
+		private final GraphElementSet edges;
 		private final WeightsImpl.IndexMutable.Manager verticesWeights;
 		private final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIdStrat = new IdStrategy.Default(n, false);
-			edgesIdStrat = new IdStrategy.Default(m, true);
+			vertices = new GraphElementSet.Default(n, false);
+			edges = new GraphElementSet.Default(m, true);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -468,22 +457,22 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIdStrat = new IdStrategy.Default(g.n, false);
-			edgesIdStrat = new IdStrategy.Default(g.m, true);
+			vertices = new GraphElementSet.Default(g.n, false);
+			edges = new GraphElementSet.Default(g.m, true);
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = new WeightsImpl.IndexMutable.Manager(g.verticesWeights, verticesIdStrat);
-			edgesWeights = new WeightsImpl.IndexMutable.Manager(g.edgesWeights, edgesIdStrat);
+			verticesWeights = new WeightsImpl.IndexMutable.Manager(g.verticesWeights, vertices);
+			edgesWeights = new WeightsImpl.IndexMutable.Manager(g.edgesWeights, edges);
 		}
 
 		@Override
-		public IntSet vertices() {
-			return verticesIdStrat.indices();
+		public GraphElementSet vertices() {
+			return vertices;
 		}
 
 		@Override
-		public IntSet edges() {
-			return edgesIdStrat.indices();
+		public GraphElementSet edges() {
+			return edges;
 		}
 
 		void checkVertex(int vertex) {
@@ -730,7 +719,7 @@ public class Graphs {
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(verticesIdStrat, type, defVal);
+			WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 			verticesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -739,7 +728,7 @@ public class Graphs {
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edgesIdStrat, type, defVal);
+			WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -754,16 +743,6 @@ public class Graphs {
 		@Override
 		public void removeEdgesWeights(Object key) {
 			edgesWeights.removeWeights(key);
-		}
-
-		@Override
-		public IdStrategy getVerticesIdStrategy() {
-			return verticesIdStrat;
-		}
-
-		@Override
-		public IdStrategy getEdgesIdStrategy() {
-			return edgesIdStrat;
 		}
 	}
 
@@ -992,13 +971,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IdStrategy getVerticesIdStrategy() {
-			return graph().getVerticesIdStrategy();
+		public GraphElementSet vertices() {
+			return graph().vertices();
 		}
 
 		@Override
-		public IdStrategy getEdgesIdStrategy() {
-			return graph().getEdgesIdStrategy();
+		public GraphElementSet edges() {
+			return graph().edges();
 		}
 
 		@Override
@@ -1255,13 +1234,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IdStrategy getVerticesIdStrategy() {
-			return graph().getVerticesIdStrategy();
+		public GraphElementSet vertices() {
+			return graph().vertices();
 		}
 
 		@Override
-		public IdStrategy getEdgesIdStrategy() {
-			return graph().getEdgesIdStrategy();
+		public GraphElementSet edges() {
+			return graph().edges();
 		}
 
 		@Override

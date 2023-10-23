@@ -17,28 +17,30 @@ package com.jgalgo.graph;
 
 interface IndexGraphImpl extends IndexGraph {
 
-	IdStrategy getVerticesIdStrategy();
+	@Override
+	GraphElementSet vertices();
 
-	IdStrategy getEdgesIdStrategy();
+	@Override
+	GraphElementSet edges();
 
 	@Override
 	default void addVertexSwapListener(IndexSwapListener listener) {
-		getVerticesIdStrategy().addIdSwapListener(listener);
+		vertices().addIdSwapListener(listener);
 	}
 
 	@Override
 	default void removeVertexSwapListener(IndexSwapListener listener) {
-		getVerticesIdStrategy().removeIdSwapListener(listener);
+		vertices().removeIdSwapListener(listener);
 	}
 
 	@Override
 	default void addEdgeSwapListener(IndexSwapListener listener) {
-		getEdgesIdStrategy().addIdSwapListener(listener);
+		edges().addIdSwapListener(listener);
 	}
 
 	@Override
 	default void removeEdgeSwapListener(IndexSwapListener listener) {
-		getEdgesIdStrategy().removeIdSwapListener(listener);
+		edges().removeIdSwapListener(listener);
 	}
 
 }

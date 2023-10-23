@@ -23,28 +23,47 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class IdStrategy {
+abstract class GraphElementSet extends AbstractIntSet {
 
 	int size;
-	private final IntSet indices;
 	final boolean isEdges;
 
-	IdStrategy(int initSize, boolean isEdges) {
+	GraphElementSet(int initSize, boolean isEdges) {
 		if (initSize < 0)
 			throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 		size = initSize;
-		indices = new IndicesSet();
 		this.isEdges = isEdges;
 	}
 
-	int size() {
+	@Override
+	public int size() {
 		return size;
 	}
 
-	IntSet indices() {
-		return indices;
+	@Override
+	public boolean contains(int key) {
+		return key >= 0 && key < size;
+	}
+
+	@Override
+	public IntIterator iterator() {
+		return Range.of(size).iterator();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (!(other instanceof GraphElementSet))
+			return super.equals(other);
+		GraphElementSet o = (GraphElementSet) other;
+		return size == o.size();
+	}
+
+	@Override
+	public int hashCode() {
+		return size * (size + 1) / 2;
 	}
 
 	void checkIdx(int idx) {
@@ -59,45 +78,7 @@ abstract class IdStrategy {
 
 	abstract void removeIdAddRemoveListener(IdAddRemoveListener listener);
 
-	@Override
-	public String toString() {
-		return indices().toString();
-	}
-
-	private class IndicesSet extends AbstractIntSet {
-
-		@Override
-		public int size() {
-			return size;
-		}
-
-		@Override
-		public boolean contains(int key) {
-			return key >= 0 && key < size;
-		}
-
-		@Override
-		public IntIterator iterator() {
-			return Range.of(size).iterator();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof IndicesSet))
-				return super.equals(other);
-			IndicesSet o = (IndicesSet) other;
-			return size == o.size();
-		}
-
-		@Override
-		public int hashCode() {
-			return size * (size + 1) / 2;
-		}
-	}
-
-	static class FixedSize extends IdStrategy {
+	static class FixedSize extends GraphElementSet {
 
 		FixedSize(int initSize, boolean isEdges) {
 			super(initSize, isEdges);
@@ -120,7 +101,7 @@ abstract class IdStrategy {
 		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}
 	}
 
-	static class Default extends IdStrategy.FixedSize {
+	static class Default extends GraphElementSet.FixedSize {
 
 		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
 		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
@@ -142,7 +123,8 @@ abstract class IdStrategy {
 			size--;
 		}
 
-		void clear() {
+		@Override
+		public void clear() {
 			notifyIdsClear();
 			size = 0;
 		}
@@ -158,8 +140,8 @@ abstract class IdStrategy {
 			notifyIDSwap(idx1, idx2);
 		}
 
-		IdStrategy.Default copy() {
-			return new IdStrategy.Default(size, isEdges);
+		GraphElementSet.Default copy() {
+			return new GraphElementSet.Default(size, isEdges);
 		}
 
 		void notifyIDSwap(int id1, int id2) {
@@ -203,8 +185,8 @@ abstract class IdStrategy {
 		}
 	}
 
-	static final IdStrategy EmptyVertices = new IdStrategy.FixedSize(0, false);
-	static final IdStrategy EmptyEdges = new IdStrategy.FixedSize(0, true);
+	static final GraphElementSet EmptyVertices = new GraphElementSet.FixedSize(0, false);
+	static final GraphElementSet EmptyEdges = new GraphElementSet.FixedSize(0, true);
 
 	/**
 	 * A listener that will be notified each time a strategy add or remove an id.

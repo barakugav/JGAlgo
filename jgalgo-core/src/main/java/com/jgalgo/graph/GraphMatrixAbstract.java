@@ -33,11 +33,11 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	GraphMatrixAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
+		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 		addInternalVerticesContainer(edges);
 
 		edgeEndpointsContainer =
-				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+				new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
@@ -47,22 +47,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		if (g instanceof GraphMatrixAbstract) {
 			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
-			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
+			edges = g0.edges.copy(vertices, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
 			for (int v = 0; v < n; v++) {
-				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, JGAlgoUtils.consumerNoOp());
+				DataContainer.Int vEdges = edges.get(v).copy(vertices, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
 				edges.set(v, vEdges);
 			}
 
-			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -> edgeEndpoints = newArr);
+			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(super.edges, newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 		} else {
 
-			edges = new DataContainer.Obj<>(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
+			edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
 			for (int v = 0; v < n; v++) {
-				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());
+				DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
 				edges.set(v, vEdges);
 
@@ -72,8 +72,8 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 				}
 			}
 
-			final int m = edgesIdStrat.size();
-			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,
+			final int m = edges.size();
+			edgeEndpointsContainer = new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal,
 					newArr -> edgeEndpoints = newArr);
 			addInternalEdgesContainer(edgeEndpointsContainer);
 			for (int e = 0; e < m; e++)
@@ -86,7 +86,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		int v = super.addVertex();
 		DataContainer.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());
+			vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(vEdges);
 			edges.set(v, vEdges);
 		}

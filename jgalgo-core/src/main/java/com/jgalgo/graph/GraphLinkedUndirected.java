@@ -43,14 +43,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyWeights) {
 		super(g, copyWeights);
 
-		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, null, EmptyNodeArr, newArr -> edges = newArr);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyNodeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 
 		final int m = g.edges().size();

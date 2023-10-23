@@ -51,12 +51,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
-				IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
-		edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesOutNum = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+		edgesOutContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+				newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edgesIn = newArr);
-		edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesInNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesOutNumContainer);
@@ -71,12 +71,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		if (g instanceof GraphArrayDirected) {
 			GraphArrayDirected g0 = (GraphArrayDirected) g;
 
-			edgesOutContainer = g0.edgesOutContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY,
-					newArr -> edgesOut = newArr);
-			edgesOutNumContainer = g0.edgesOutNumContainer.copy(verticesIdStrat, newArr -> edgesOutNum = newArr);
+			edgesOutContainer =
+					g0.edgesOutContainer.copy(vertices, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
+			edgesOutNumContainer = g0.edgesOutNumContainer.copy(vertices, newArr -> edgesOutNum = newArr);
 			edgesInContainer =
-					g0.edgesInContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
-			edgesInNumContainer = g0.edgesInNumContainer.copy(verticesIdStrat, newArr -> edgesInNum = newArr);
+					g0.edgesInContainer.copy(vertices, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
+			edgesInNumContainer = g0.edgesInNumContainer.copy(vertices, newArr -> edgesInNum = newArr);
 
 			addInternalVerticesContainer(edgesOutContainer);
 			addInternalVerticesContainer(edgesOutNumContainer);
@@ -88,12 +88,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 				edgesIn[v] = Arrays.copyOf(edgesIn[v], edgesInNum[v]);
 			}
 		} else {
-			edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
-					IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
-			edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesOutNum = newArr);
-			edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
-					IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
-			edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesInNum = newArr);
+			edgesOutContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+					newArr -> edgesOut = newArr);
+			edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+			edgesInContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+					newArr -> edgesIn = newArr);
+			edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 
 			addInternalVerticesContainer(edgesOutContainer);
 			addInternalVerticesContainer(edgesOutNumContainer);
@@ -123,12 +123,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	GraphArrayDirected(IndexGraphBuilderImpl.Directed builder) {
 		super(builder);
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY,
-				IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
-		edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesOutNum = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+		edgesOutContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
+				newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edgesIn = newArr);
-		edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -> edgesInNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesOutNumContainer);

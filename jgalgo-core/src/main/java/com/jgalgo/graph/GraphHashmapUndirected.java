@@ -37,7 +37,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	 */
 	GraphHashmapUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+		edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 		addInternalVerticesContainer(edgesContainer);
@@ -49,14 +49,14 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 		if (g instanceof GraphHashmapUndirected) {
 			GraphHashmapUndirected g0 = (GraphHashmapUndirected) g;
-			edgesContainer = g0.edgesContainer.copy(verticesIdStrat, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
+			edgesContainer = g0.edgesContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 			addInternalVerticesContainer(edgesContainer);
 
 			for (int v = 0; v < n; v++)
 				if (!edges[v].isEmpty())
 					edges[v] = new Int2IntOpenHashMap(edges[v]);
 		} else {
-			edgesContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+			edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 			addInternalVerticesContainer(edgesContainer);

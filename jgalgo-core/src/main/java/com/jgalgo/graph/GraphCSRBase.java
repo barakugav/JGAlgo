@@ -21,12 +21,11 @@ import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
-	final IdStrategy.FixedSize verticesIdStrat;
-	final IdStrategy.FixedSize edgesIdStrat;
+	final GraphElementSet.FixedSize vertices;
+	final GraphElementSet.FixedSize edges;
 
 	final int[] edgesOutBegin;
 	private final long[] endpoints;
@@ -39,17 +38,16 @@ abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsC
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
-		verticesIdStrat = new IdStrategy.FixedSize(n, false);
-		edgesIdStrat = new IdStrategy.FixedSize(m, true);
+		vertices = new GraphElementSet.FixedSize(n, false);
+		edges = new GraphElementSet.FixedSize(m, true);
 
 		edgesOutBegin = processEdges.edgesOutBegin;
 		endpoints = new long[m];
 		assert edgesOutBegin.length == n + 1;
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
-		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
+				new WeightsImpl.IndexImmutable.Builder(vertices);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder = new WeightsImpl.IndexImmutable.Builder(edges);
 		if (copyWeights) {
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
@@ -85,8 +83,8 @@ abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsC
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
-		verticesIdStrat = new IdStrategy.FixedSize(n, false);
-		edgesIdStrat = new IdStrategy.FixedSize(m, true);
+		vertices = new GraphElementSet.FixedSize(n, false);
+		edges = new GraphElementSet.FixedSize(m, true);
 
 		edgesOutBegin = new int[n + 1];
 		endpoints = new long[m];
@@ -95,9 +93,8 @@ abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsC
 			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(verticesIdStrat);
-		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(edgesIdStrat);
+				new WeightsImpl.IndexImmutable.Builder(vertices);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder = new WeightsImpl.IndexImmutable.Builder(edges);
 		if (copyWeights) {
 			for (Object key : g.getVerticesWeightsKeys())
 				verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesWeights(key));
@@ -109,13 +106,13 @@ abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsC
 	}
 
 	@Override
-	public IntSet vertices() {
-		return verticesIdStrat.indices();
+	public GraphElementSet vertices() {
+		return vertices;
 	}
 
 	@Override
-	public IntSet edges() {
-		return edgesIdStrat.indices();
+	public GraphElementSet edges() {
+		return edges;
 	}
 
 	@Override
@@ -198,16 +195,6 @@ abstract class GraphCSRBase extends GraphBase implements GraphWithEdgeEndpointsC
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public IdStrategy getVerticesIdStrategy() {
-		return verticesIdStrat;
-	}
-
-	@Override
-	public IdStrategy getEdgesIdStrategy() {
-		return edgesIdStrat;
 	}
 
 	@Override

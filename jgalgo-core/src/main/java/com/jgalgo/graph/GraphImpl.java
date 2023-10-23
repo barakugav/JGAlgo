@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import com.jgalgo.graph.IdStrategy.IdAddRemoveListener;
+import com.jgalgo.graph.GraphElementSet.IdAddRemoveListener;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -43,14 +43,14 @@ abstract class GraphImpl extends GraphBase {
 		assert g.edges().isEmpty();
 
 		indexGraph = (IndexGraphImpl) g;
-		viMap = IdIdxMapImpl.newInstance(indexGraph.getVerticesIdStrategy(), expectedVerticesNum, false);
-		eiMap = IdIdxMapImpl.newInstance(indexGraph.getEdgesIdStrategy(), expectedEdgesNum, true);
+		viMap = IdIdxMapImpl.newInstance(indexGraph.vertices(), expectedVerticesNum, false);
+		eiMap = IdIdxMapImpl.newInstance(indexGraph.edges(), expectedEdgesNum, true);
 	}
 
 	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
 		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.getVerticesIdStrategy(), false);
-		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.getEdgesIdStrategy(), true);
+		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.vertices(), false);
+		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.edges(), true);
 	}
 
 	/* copy constructor */
@@ -426,28 +426,28 @@ abstract class GraphImpl extends GraphBase {
 		private int userChosenId = -1;
 		private final boolean isEdges;
 
-		IdIdxMapImpl(IdStrategy idStrat, int expectedSize, boolean isEdges) {
+		IdIdxMapImpl(GraphElementSet elements, int expectedSize, boolean isEdges) {
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
+			indexToId = new WeightsImpl.IndexMutable.Int(elements, -1);
 			this.isEdges = isEdges;
-			initListeners(idStrat);
+			initListeners(elements);
 		}
 
-		IdIdxMapImpl(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
+		IdIdxMapImpl(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
 			if (orig instanceof IdIdxMapImpl) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImpl.IndexMutable.Int(orig0.indexToId, idStrat);
+				indexToId = new WeightsImpl.IndexMutable.Int(orig0.indexToId, elements);
 			} else {
-				idToIndex = new Int2IntOpenHashMap(idStrat.size());
+				idToIndex = new Int2IntOpenHashMap(elements.size());
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImpl.IndexMutable.Int(idStrat, -1);
-				if (idStrat.size() > 0) {
-					((WeightsImpl.IndexMutable.Int) indexToId).expand(idStrat.size());
-					for (int idx : idStrat.indices()) {
+				indexToId = new WeightsImpl.IndexMutable.Int(elements, -1);
+				if (elements.size() > 0) {
+					((WeightsImpl.IndexMutable.Int) indexToId).expand(elements.size());
+					for (int idx : elements) {
 						int id = orig.indexToId(idx);
 						if (indexToId.getInt(idx) != -1)
 							throw new IllegalArgumentException("duplicate index: " + idx);
@@ -463,21 +463,21 @@ abstract class GraphImpl extends GraphBase {
 			}
 			this.isEdges = isEdges;
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			initListeners(idStrat);
+			initListeners(elements);
 		}
 
-		static IdIdxMapImpl newInstance(IdStrategy idStrat, int expectedSize, boolean isEdges) {
-			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(idStrat, expectedSize, isEdges)
-					: new GraphImpl.IdIdxMapCounter(idStrat, expectedSize, isEdges);
+		static IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
+			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(elements, expectedSize, isEdges)
+					: new GraphImpl.IdIdxMapCounter(elements, expectedSize, isEdges);
 		}
 
-		static IdIdxMapImpl copyOf(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
-			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(orig, idStrat, isEdges)
-					: new GraphImpl.IdIdxMapCounter(orig, idStrat, isEdges);
+		static IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(orig, elements, isEdges)
+					: new GraphImpl.IdIdxMapCounter(orig, elements, isEdges);
 		}
 
-		private void initListeners(IdStrategy idStrat) {
-			idStrat.addIdSwapListener((idx1, idx2) -> {
+		private void initListeners(GraphElementSet elements) {
+			elements.addIdSwapListener((idx1, idx2) -> {
 				int id1 = indexToId.getInt(idx1);
 				int id2 = indexToId.getInt(idx2);
 				indexToId.set(idx1, id2);
@@ -487,7 +487,7 @@ abstract class GraphImpl extends GraphBase {
 				assert idx1 == oldIdx1;
 				assert idx2 == oldIdx2;
 			});
-			idStrat.addIdAddRemoveListener(new IdAddRemoveListener() {
+			elements.addIdAddRemoveListener(new IdAddRemoveListener() {
 
 				WeightsImpl.IndexMutable.Int indexToId() {
 					return (WeightsImpl.IndexMutable.Int) indexToId;
@@ -549,14 +549,14 @@ abstract class GraphImpl extends GraphBase {
 
 		private int counter;
 
-		IdIdxMapCounter(IdStrategy idStrat, int expectedSize, boolean isEdges) {
-			super(idStrat, expectedSize, isEdges);
+		IdIdxMapCounter(GraphElementSet elements, int expectedSize, boolean isEdges) {
+			super(elements, expectedSize, isEdges);
 			// We prefer non zero IDs because fastutil handle zero (null) keys separately
 			counter = 1;
 		}
 
-		IdIdxMapCounter(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
-			super(orig, idStrat, isEdges);
+		IdIdxMapCounter(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+			super(orig, elements, isEdges);
 			if (orig instanceof IdIdxMapCounter) {
 				counter = ((IdIdxMapCounter) orig).counter;
 			} else {
@@ -578,12 +578,12 @@ abstract class GraphImpl extends GraphBase {
 
 		private final Random rand = new Random();
 
-		IdIdxMapRand(IdStrategy idStrat, int expectedSize, boolean isEdges) {
-			super(idStrat, expectedSize, isEdges);
+		IdIdxMapRand(GraphElementSet elements, int expectedSize, boolean isEdges) {
+			super(elements, expectedSize, isEdges);
 		}
 
-		IdIdxMapRand(IndexIdMap orig, IdStrategy idStrat, boolean isEdges) {
-			super(orig, idStrat, isEdges);
+		IdIdxMapRand(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+			super(orig, elements, isEdges);
 		}
 
 		@Override

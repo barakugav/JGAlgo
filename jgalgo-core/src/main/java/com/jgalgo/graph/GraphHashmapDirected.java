@@ -33,9 +33,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+		edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-		edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+		edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 		addInternalVerticesContainer(edgesOutContainer);
@@ -49,9 +49,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		if (g instanceof GraphHashmapDirected) {
 			GraphHashmapDirected g0 = (GraphHashmapDirected) g;
 
-			edgesOutContainer =
-					g0.edgesOutContainer.copy(verticesIdStrat, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-			edgesInContainer = g0.edgesInContainer.copy(verticesIdStrat, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
+			edgesOutContainer = g0.edgesOutContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+			edgesInContainer = g0.edgesInContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			addInternalVerticesContainer(edgesOutContainer);
 			addInternalVerticesContainer(edgesInContainer);
@@ -67,9 +66,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				}
 			}
 		} else {
-			edgesOutContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+			edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-			edgesInContainer = new DataContainer.Obj<>(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+			edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			addInternalVerticesContainer(edgesOutContainer);

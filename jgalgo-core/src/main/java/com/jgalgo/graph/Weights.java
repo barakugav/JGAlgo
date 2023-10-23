@@ -615,10 +615,10 @@ public interface Weights<W> {
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
-		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getVerticesIdStrategy();
-		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);
-		if (idStrat.size() > 0)
-			weights.expand(idStrat.size());
+		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();
+		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
+		if (vertices.size() > 0)
+			weights.expand(vertices.size());
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {
@@ -658,10 +658,10 @@ public interface Weights<W> {
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
-		IdStrategy idStrat = ((IndexGraphImpl) g.indexGraph()).getEdgesIdStrategy();
-		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(idStrat, type, defVal);
-		if (idStrat.size() > 0)
-			weights.expand(idStrat.size());
+		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();
+		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
+		if (edges.size() > 0)
+			weights.expand(edges.size());
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {
