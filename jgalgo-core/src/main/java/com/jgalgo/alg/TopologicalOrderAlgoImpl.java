@@ -36,15 +36,13 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		int topolSortSize = 0;
 
 		// calc in degree of all vertices
-		Arrays.fill(inDegree, 0, n, 0);
-		for (int v = 0; v < n; v++)
-			inDegree[v] = g.inEdges(v).size();
-
 		// Find vertices with zero in degree and insert them to the queue
-		assert queue.isEmpty();
-		for (int v = 0; v < n; v++)
+		Arrays.fill(inDegree, 0);
+		for (int v = 0; v < n; v++) {
+			inDegree[v] = g.inEdges(v).size();
 			if (inDegree[v] == 0)
 				queue.enqueue(v);
+		}
 
 		// Poll vertices from the queue and "remove" each one from the tree and add new
 		// zero in degree vertices to the queue
