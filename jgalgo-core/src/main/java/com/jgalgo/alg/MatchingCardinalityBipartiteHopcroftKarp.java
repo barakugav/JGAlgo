@@ -98,7 +98,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
-				if (!partition.getBool(u) || matched[u] != MatchedNone)
+				if (!partition.get(u) || matched[u] != MatchedNone)
 					continue;
 				depths[u] = 0;
 				bfsQueue.enqueue(u);
@@ -139,7 +139,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 			 * Run DFS to find the maximal number of paths from unmatched S vertices to unmatched T vertices
 			 */
 			for (int u = 0; u < n; u++) {
-				if (!partition.getBool(u) || matched[u] != MatchedNone)
+				if (!partition.get(u) || matched[u] != MatchedNone)
 					continue;
 
 				edges[0] = g.outEdges(u).iterator();

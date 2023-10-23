@@ -41,7 +41,7 @@ class FlowNetworks {
 
 		@Override
 		public double getCapacity(int edge) {
-			return capacities.getDouble(edge);
+			return capacities.get(edge);
 		}
 
 		@Override
@@ -53,7 +53,7 @@ class FlowNetworks {
 
 		@Override
 		public double getFlow(int edge) {
-			return flows.getDouble(edge);
+			return flows.get(edge);
 		}
 
 		@Override
@@ -90,7 +90,7 @@ class FlowNetworks {
 
 		@Override
 		public int getCapacityInt(int edge) {
-			return capacities.getInt(edge);
+			return capacities.get(edge);
 		}
 
 		@Override
@@ -102,7 +102,7 @@ class FlowNetworks {
 
 		@Override
 		public int getFlowInt(int edge) {
-			return flows.getInt(edge);
+			return flows.get(edge);
 		}
 
 		@Override

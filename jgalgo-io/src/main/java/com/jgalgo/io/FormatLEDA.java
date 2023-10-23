@@ -383,7 +383,7 @@ class FormatLEDA implements GraphFormat {
 								break;
 							case "string":
 							default:
-								((Weights<String>) w_info_type_for_vertices).set(id, label);
+								((Weights.Obj<String>) w_info_type_for_vertices).set(id, label);
 								break;
 						}
 
@@ -483,7 +483,7 @@ class FormatLEDA implements GraphFormat {
 							break;
 						case "string":
 						default:
-							((Weights<String>) w_info_type_for_edges).set(id, label);
+							((Weights.Obj<String>) w_info_type_for_edges).set(id, label);
 							break;
 					}
 

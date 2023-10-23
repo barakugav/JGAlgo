@@ -53,7 +53,7 @@ public class Assertions {
 			if (!JGAlgoConfigImpl.AssertionsGraphsBipartitePartition)
 				return;
 			for (int m = g.edges().size(), e = 0; e < m; e++)
-				if (partition.getBool(g.edgeSource(e)) == partition.getBool(g.edgeTarget(e)))
+				if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))
 					throw new IllegalArgumentException("the graph is not bipartite");
 		}
 

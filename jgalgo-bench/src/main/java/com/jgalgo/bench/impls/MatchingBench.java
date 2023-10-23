@@ -352,8 +352,8 @@ public class MatchingBench {
 				Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
 				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
-				unmatchedVerticesS.removeIf(v -> partition.getBool(v));
-				unmatchedVerticesT.removeIf(v -> !partition.getBool(v));
+				unmatchedVerticesS.removeIf(v -> partition.get(v));
+				unmatchedVerticesT.removeIf(v -> !partition.get(v));
 				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();
 				IntLists.shuffle(unmatchedVerticesS, new Random(seedGen.nextSeed()));
 				IntLists.shuffle(unmatchedVerticesT, new Random(seedGen.nextSeed()));

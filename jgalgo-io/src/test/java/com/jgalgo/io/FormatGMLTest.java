@@ -124,7 +124,7 @@ public class FormatGMLTest {
 
 			Weights.Int wv1 = g.addVerticesWeights("v1", int.class);
 			Weights.Double wv2 = g.addVerticesWeights("v2", double.class);
-			Weights<String> wv3 = g.addVerticesWeights("v3", String.class);
+			Weights.Obj<String> wv3 = g.addVerticesWeights("v3", String.class);
 			for (int v : g.vertices()) {
 				wv1.set(v, n + rand.nextInt(n * 3));
 				wv2.set(v, n + rand.nextDouble());
@@ -133,7 +133,7 @@ public class FormatGMLTest {
 
 			Weights.Int we1 = g.addEdgesWeights("e1", int.class);
 			Weights.Double we2 = g.addEdgesWeights("e2", double.class);
-			Weights<String> we3 = g.addEdgesWeights("e3", String.class);
+			Weights.Obj<String> we3 = g.addEdgesWeights("e3", String.class);
 			for (int e : g.edges()) {
 				we1.set(e, n + rand.nextInt(m * 3));
 				we2.set(e, n + rand.nextDouble());

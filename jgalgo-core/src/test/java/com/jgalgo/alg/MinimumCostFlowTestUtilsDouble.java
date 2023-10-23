@@ -287,7 +287,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		}
 
 		for (int e : g.edges())
-			lowerBound.set(e, Math.min(lowerBound.getDouble(e), net.getCapacity(e)));
+			lowerBound.set(e, Math.min(lowerBound.get(e), net.getCapacity(e)));
 		return lowerBound;
 	}
 

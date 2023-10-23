@@ -449,7 +449,7 @@ abstract class GraphImpl extends GraphBase {
 					((WeightsImpl.IndexMutable.Int) indexToId).expand(elements.size());
 					for (int idx : elements) {
 						int id = orig.indexToId(idx);
-						if (indexToId.getInt(idx) != -1)
+						if (indexToId.get(idx) != -1)
 							throw new IllegalArgumentException("duplicate index: " + idx);
 						if (id < 0)
 							throw new IllegalArgumentException("negative id: " + id);
@@ -478,8 +478,8 @@ abstract class GraphImpl extends GraphBase {
 
 		private void initListeners(GraphElementSet elements) {
 			elements.addIdSwapListener((idx1, idx2) -> {
-				int id1 = indexToId.getInt(idx1);
-				int id2 = indexToId.getInt(idx2);
+				int id1 = indexToId.get(idx1);
+				int id2 = indexToId.get(idx2);
 				indexToId.set(idx1, id2);
 				indexToId.set(idx2, id1);
 				int oldIdx1 = idToIndex.put(id1, idx2);
@@ -495,7 +495,7 @@ abstract class GraphImpl extends GraphBase {
 
 				@Override
 				public void idRemove(int idx) {
-					final int id = indexToId.getInt(idx);
+					final int id = indexToId.get(idx);
 					indexToId().clear(idx);
 					idToIndex.remove(id);
 				}
@@ -528,7 +528,7 @@ abstract class GraphImpl extends GraphBase {
 
 		@Override
 		public int indexToId(int index) {
-			return indexToId.getInt(index);
+			return indexToId.get(index);
 		}
 
 		@Override

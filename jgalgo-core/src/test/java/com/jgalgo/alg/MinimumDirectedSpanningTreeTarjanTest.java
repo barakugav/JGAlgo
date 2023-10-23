@@ -66,10 +66,10 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			}
 			int root = dg.vertices().iterator().nextInt();
 			MinimumSpanningTree.Result mst0 =
-					algo.computeMinimumDirectedSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)), root);
+					algo.computeMinimumDirectedSpanningTree(dg, e -> w.weight(edgeRef.get(e)), root);
 			IntCollection mst = new IntArrayList(mst0.edges().size());
 			for (int e : mst0.edges())
-				mst.add(edgeRef.getInt(e));
+				mst.add(edgeRef.get(e));
 			return new MinimumSpanningTreeUtils.ResultImpl(mst);
 		}
 	}

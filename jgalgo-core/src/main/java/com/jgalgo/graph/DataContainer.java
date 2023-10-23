@@ -223,7 +223,7 @@ abstract class DataContainer<E> {
 			};
 		}
 
-		public int getInt(int idx) {
+		public int get(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
@@ -233,7 +233,7 @@ abstract class DataContainer<E> {
 			weights[idx] = weight;
 		}
 
-		public int defaultWeightInt() {
+		public int defaultWeight() {
 			return defaultWeight;
 		}
 
@@ -346,7 +346,7 @@ abstract class DataContainer<E> {
 			onArrayAlloc.accept(weights);
 		}
 
-		long getLong(int idx) {
+		long get(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
@@ -356,7 +356,7 @@ abstract class DataContainer<E> {
 			weights[idx] = weight;
 		}
 
-		long defaultWeightLong() {
+		long defaultWeight() {
 			return defaultWeight;
 		}
 

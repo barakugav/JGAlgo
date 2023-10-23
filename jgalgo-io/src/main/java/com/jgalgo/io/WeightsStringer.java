@@ -37,53 +37,57 @@ interface WeightsStringer {
 
 		if (weights instanceof Weights.Byte) {
 			Weights.Byte ws = (Weights.Byte) weights;
-			return elm -> String.valueOf(ws.getByte(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Short) {
 			Weights.Short ws = (Weights.Short) weights;
-			return elm -> String.valueOf(ws.getShort(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Int) {
 			Weights.Int ws = (Weights.Int) weights;
-			return elm -> String.valueOf(ws.getInt(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Long) {
 			Weights.Long ws = (Weights.Long) weights;
-			return elm -> String.valueOf(ws.getLong(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Float) {
 			Weights.Float ws = (Weights.Float) weights;
-			return elm -> String.valueOf(ws.getFloat(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Double) {
 			Weights.Double ws = (Weights.Double) weights;
-			return elm -> String.valueOf(ws.getDouble(elm));
+			return elm -> String.valueOf(ws.get(elm));
 
 		} else if (weights instanceof Weights.Bool) {
 			Weights.Bool ws = (Weights.Bool) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
-				return elm -> pre + String.valueOf(ws.getBool(elm)) + post;
+				return elm -> pre + String.valueOf(ws.get(elm)) + post;
 			} else {
-				return elm -> String.valueOf(ws.getBool(elm));
+				return elm -> String.valueOf(ws.get(elm));
 			}
 
 		} else if (weights instanceof Weights.Char) {
 			Weights.Char ws = (Weights.Char) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
-				return elm -> pre + String.valueOf(ws.getChar(elm)) + post;
+				return elm -> pre + String.valueOf(ws.get(elm)) + post;
 			} else {
-				return elm -> String.valueOf(ws.getChar(elm));
+				return elm -> String.valueOf(ws.get(elm));
+			}
+
+		} else if (weights instanceof Weights.Obj) {
+			Weights.Obj<?> ws = (Weights.Obj<?>) weights;
+			if (nonNumberEnclosing) {
+				String pre = nonNumberPrefix, post = nonNumberSuffix;
+				return elm -> pre + String.valueOf(ws.get(elm)) + post;
+			} else {
+				return elm -> String.valueOf(ws.get(elm));
 			}
 
 		} else {
-			if (nonNumberEnclosing) {
-				String pre = nonNumberPrefix, post = nonNumberSuffix;
-				return elm -> pre + String.valueOf(weights.get(elm)) + post;
-			} else {
-				return elm -> String.valueOf(weights.get(elm));
-			}
+			throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
 		}
 	}
 

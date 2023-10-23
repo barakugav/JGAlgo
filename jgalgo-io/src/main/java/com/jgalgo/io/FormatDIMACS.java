@@ -81,7 +81,7 @@ class FormatDIMACS implements GraphFormat {
 							.append(Integer.toString(graph.edgeTarget(e)));
 					/* e {source} {target} {weight} */
 					if (hasWeights)
-						writer.append(' ').append(Integer.toString(w.getInt(e)));
+						writer.append(' ').append(Integer.toString(w.get(e)));
 					writer.append(System.lineSeparator());
 				}
 			} catch (IOException e) {

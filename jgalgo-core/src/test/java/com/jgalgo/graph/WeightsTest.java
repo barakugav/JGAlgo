@@ -193,7 +193,7 @@ public class WeightsTest extends TestBase {
 
 			Object wKey = "edgeWeight";
 			Weights<E> weights = edgeWeightsAdder.apply(g, wKey);
-			assertEquals(defaultWeight, weights.defaultWeight());
+			assertEquals(defaultWeight, weights.defaultWeightAsObj());
 
 			int[] edges = g.edges().toIntArray();
 			int edgesLen = edges.length;
@@ -221,12 +221,12 @@ public class WeightsTest extends TestBase {
 
 					// assigned to it a new value
 					E val = weightFactory.get();
-					weights.set(e, val);
+					weights.setAsObj(e, val);
 					assignedEdges.put(e, val);
 
 				} else {
 					int e = edges[rand.nextInt(edgesLen)];
-					E actual = weights.get(e);
+					E actual = weights.getAsObj(e);
 					E expected = assignedEdges.get(e);
 					assertEquals(expected, actual);
 				}
@@ -237,19 +237,19 @@ public class WeightsTest extends TestBase {
 				nonExistingEdge0 = rand.nextInt();
 			} while (g.edges().contains(nonExistingEdge0));
 			final int nonExistingEdge = nonExistingEdge0;
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.get(-1));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.get(nonExistingEdge));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.set(-1, weightFactory.get()));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.set(nonExistingEdge, weightFactory.get()));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(-1));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(nonExistingEdge));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(-1, weightFactory.get()));
+			assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
 
 			Weights<E> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
 			for (int e : g.edges())
-				assertEquals(weights.get(e), weightsImmutable.get(e));
-			assertEquals(weights.defaultWeight(), weightsImmutable.defaultWeight());
+				assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
+			assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());
 			assertThrows(UnsupportedOperationException.class, () -> {
 				IntIterator eit = g.edges().iterator();
 				int e1 = eit.nextInt(), e2 = eit.nextInt();
-				weightsImmutable.set(e1, weightsImmutable.get(e2));
+				weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
 			});
 
 			assertEquals(weights, weights);

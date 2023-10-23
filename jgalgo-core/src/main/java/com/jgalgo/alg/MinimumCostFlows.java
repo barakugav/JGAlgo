@@ -300,8 +300,8 @@ class MinimumCostFlows {
 						continue;
 					net.setFlow(e, l);
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					supply2.set(u, supply2.getDouble(u) - l);
-					supply2.set(v, supply2.getDouble(v) + l);
+					supply2.set(u, supply2.get(u) - l);
+					supply2.set(v, supply2.get(v) + l);
 				}
 			}
 			return supply2;
@@ -321,8 +321,8 @@ class MinimumCostFlows {
 						continue;
 					net.setFlow(e, l);
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					supply2.set(u, supply2.getInt(u) - l);
-					supply2.set(v, supply2.getInt(v) + l);
+					supply2.set(u, supply2.get(u) - l);
+					supply2.set(v, supply2.get(v) + l);
 				}
 			}
 			return supply2;

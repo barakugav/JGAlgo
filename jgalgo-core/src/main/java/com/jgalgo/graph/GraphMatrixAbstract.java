@@ -117,12 +117,12 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 	@Override
 	public int getEdge(int source, int target) {
-		return edges.get(source).getInt(target);
+		return edges.get(source).get(target);
 	}
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
-		int edge = edges.get(source).getInt(target);
+		int edge = edges.get(source).get(target);
 		if (edge == EdgeNone) {
 			return Edges.EmptyEdgeSet;
 		} else {
@@ -132,7 +132,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (edges.get(source).getInt(target) != EdgeNone)
+		if (edges.get(source).get(target) != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(source, target);
 		setEndpoints(e, source, target);
@@ -200,7 +200,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			int e = sourceEdges.getInt(lastTarget = target);
+			int e = sourceEdges.get(lastTarget = target);
 			advanceUntilNext(target + 1);
 			return e;
 		}
@@ -208,13 +208,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 			Assertions.Iters.hasNext(this);
-			return sourceEdges.getInt(target);
+			return sourceEdges.get(target);
 		}
 
 		void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (sourceEdges.getInt(next) != EdgeNone) {
+				if (sourceEdges.get(next) != EdgeNone) {
 					target = next;
 					return;
 				}
@@ -234,7 +234,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-			removeEdge(sourceEdges.getInt(target()));
+			removeEdge(sourceEdges.get(target()));
 		}
 	}
 
@@ -261,7 +261,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			int e = targetEdges.getInt(lastSource = source);
+			int e = targetEdges.get(lastSource = source);
 			advanceUntilNext(source + 1);
 			return e;
 		}
@@ -269,13 +269,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 			Assertions.Iters.hasNext(this);
-			return targetEdges.getInt(source);
+			return targetEdges.get(source);
 		}
 
 		private void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (targetEdges.getInt(next) != EdgeNone) {
+				if (targetEdges.get(next) != EdgeNone) {
 					source = next;
 					return;
 				}
@@ -295,7 +295,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-			removeEdge(targetEdges.getInt(source()));
+			removeEdge(targetEdges.get(source()));
 		}
 	}
 
@@ -320,7 +320,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			int e = edges.get(lastSource = source).getInt(target);
+			int e = edges.get(lastSource = source).get(target);
 			advanceUntilNext(source + 1);
 			return e;
 		}
@@ -328,13 +328,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 			Assertions.Iters.hasNext(this);
-			return edges.get(source).getInt(target);
+			return edges.get(source).get(target);
 		}
 
 		private void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (edges.get(next).getInt(target) != EdgeNone) {
+				if (edges.get(next).get(target) != EdgeNone) {
 					source = next;
 					return;
 				}
@@ -354,7 +354,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-			removeEdge(edges.get(source()).getInt(target()));
+			removeEdge(edges.get(source()).get(target()));
 		}
 	}
 

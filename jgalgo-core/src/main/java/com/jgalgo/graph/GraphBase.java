@@ -104,7 +104,7 @@ abstract class GraphBase implements Graph {
 				} else {
 					s.append(", ");
 				}
-				s.append(weight.get(key));
+				s.append(weight.getAsObj(key));
 			}
 			s.append(']');
 		};

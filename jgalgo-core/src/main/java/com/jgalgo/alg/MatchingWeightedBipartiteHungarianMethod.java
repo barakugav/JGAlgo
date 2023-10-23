@@ -155,7 +155,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 				maxWeight = Math.max(maxWeight, w.weight(e));
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
-				if (partition.getBool(u))
+				if (partition.get(u))
 					dualValBase[u] = delta1Threshold;
 
 			mainLoop: for (;;) {
@@ -163,7 +163,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 
 				// Start growing tree from all unmatched vertices in S
 				for (int u = 0; u < n; u++) {
-					if (!partition.getBool(u) || matched[u] != EdgeNone)
+					if (!partition.get(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
 					for (int e : g.outEdges(u))
@@ -250,7 +250,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		}
 
 		private double dualVal(int v) {
-			return inTree.get(v) ? dualVal0[v] + (partition.getBool(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
+			return inTree.get(v) ? dualVal0[v] + (partition.get(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
 		}
 
 		private double edgeSlack(int e) {
@@ -258,7 +258,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		}
 
 		private void vertexAddedToTree(int v) {
-			dualVal0[v] = dualValBase[v] + (partition.getBool(v) ? deltaTotal : -deltaTotal);
+			dualVal0[v] = dualValBase[v] + (partition.get(v) ? deltaTotal : -deltaTotal);
 			inTree.set(v);
 		}
 

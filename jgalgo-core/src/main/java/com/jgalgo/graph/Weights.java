@@ -24,10 +24,10 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * Weights of graph vertices or edges.
  * <p>
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
- * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
- * algorithms such as {@link ShortestPathSingleSource} or {@link MatchingAlgo} to assigned the <i>cost</i> of edges.
- * Another example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
- * algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
+ * edge (vertex). Such weights are useful for various algorithms such as {@link ShortestPathSingleSource} or
+ * {@link MatchingAlgo} to assigned the <i>cost</i> of edges. Another example is boolean weights used to represent the
+ * partition of vertices in bipartite graphs, which is used by algorithms such as Hopcroft-Karp algorithm for
+ * cardinality maximum matching in bipartite graphs.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
@@ -67,9 +67,8 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * }</pre>
  *
  * <p>
- * A default weight can be provided in the time of the weights container. The default weight will be returned from the
- * {@link #get(int)} method for every edge (vertex) that was not explicitly set another value using
- * {@link #set(int, Object)}.
+ * A default weight can be provided in the time of the weights container. The default weight will be returned for every
+ * edge (vertex) that was not explicitly set another value.
  * <p>
  * If the weights container is associated with the edges of an index graph, and the graph implementation chooses to
  * perform some swaps and renames to the edges, the weights container will update automatically (see
@@ -86,7 +85,7 @@ public interface Weights<W> {
 	 * @param  id an id of edge/vertex
 	 * @return    the weight associated with the given id
 	 */
-	public W get(int id);
+	public W getAsObj(int id);
 
 	/**
 	 * Set the weight associated with the given id.
@@ -94,7 +93,7 @@ public interface Weights<W> {
 	 * @param id     an id of edge/vertex
 	 * @param weight new weight that will be associated with the given id
 	 */
-	public void set(int id, W weight);
+	public void setAsObj(int id, W weight);
 
 	/**
 	 * Get the default weight of this weights container.
@@ -104,7 +103,59 @@ public interface Weights<W> {
 	 *
 	 * @return the default weight of this weights container.
 	 */
-	public W defaultWeight();
+	public W defaultWeightAsObj();
+
+	/**
+	 * Specific weights of objects.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Obj<W> extends Weights<W> {
+
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
+		 */
+		public W get(int id);
+
+		@Deprecated
+		@Override
+		default W getAsObj(int id) {
+			return get(id);
+		}
+
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, W weight);
+
+		@Deprecated
+		@Override
+		default void setAsObj(int id, W weight) {
+			set(id, weight);
+		}
+
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, Object)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public W defaultWeight();
+
+		@Deprecated
+		@Override
+		default W defaultWeightAsObj() {
+			return defaultWeight();
+		}
+	}
 
 	/**
 	 * Specific weights of primitive type {@code byte}.
@@ -119,12 +170,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public byte getByte(int id);
+		public byte get(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Byte get(int id) {
-			return java.lang.Byte.valueOf(getByte(id));
+		default java.lang.Byte getAsObj(int id) {
+			return java.lang.Byte.valueOf(get(id));
 		}
 
 		/**
@@ -137,7 +188,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, java.lang.Byte weight) {
+		default void setAsObj(int id, java.lang.Byte weight) {
 			set(id, weight.byteValue());
 		}
 
@@ -149,12 +200,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public byte defaultWeightByte();
+		public byte defaultWeight();
 
 		@Deprecated
 		@Override
-		default java.lang.Byte defaultWeight() {
-			return java.lang.Byte.valueOf(defaultWeightByte());
+		default java.lang.Byte defaultWeightAsObj() {
+			return java.lang.Byte.valueOf(defaultWeight());
 		}
 
 		/**
@@ -164,7 +215,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default int weightInt(int id) {
-			return getByte(id);
+			return get(id);
 		}
 	}
 
@@ -181,12 +232,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public short getShort(int id);
+		public short get(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Short get(int id) {
-			return java.lang.Short.valueOf(getShort(id));
+		default java.lang.Short getAsObj(int id) {
+			return java.lang.Short.valueOf(get(id));
 		}
 
 		/**
@@ -199,7 +250,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, java.lang.Short weight) {
+		default void setAsObj(int id, java.lang.Short weight) {
 			set(id, weight.shortValue());
 		}
 
@@ -211,12 +262,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public short defaultWeightShort();
+		public short defaultWeight();
 
 		@Deprecated
 		@Override
-		default java.lang.Short defaultWeight() {
-			return java.lang.Short.valueOf(defaultWeightShort());
+		default java.lang.Short defaultWeightAsObj() {
+			return java.lang.Short.valueOf(defaultWeight());
 		}
 
 		/**
@@ -226,7 +277,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default int weightInt(int id) {
-			return getShort(id);
+			return get(id);
 		}
 	}
 
@@ -243,12 +294,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public int getInt(int id);
+		public int get(int id);
 
 		@Deprecated
 		@Override
-		default Integer get(int id) {
-			return Integer.valueOf(getInt(id));
+		default Integer getAsObj(int id) {
+			return Integer.valueOf(get(id));
 		}
 
 		/**
@@ -261,7 +312,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, Integer weight) {
+		default void setAsObj(int id, Integer weight) {
 			set(id, weight.intValue());
 		}
 
@@ -273,12 +324,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public int defaultWeightInt();
+		public int defaultWeight();
 
 		@Deprecated
 		@Override
-		default Integer defaultWeight() {
-			return Integer.valueOf(defaultWeightInt());
+		default Integer defaultWeightAsObj() {
+			return Integer.valueOf(defaultWeight());
 		}
 
 		/**
@@ -288,7 +339,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default int weightInt(int id) {
-			return getInt(id);
+			return get(id);
 		}
 	}
 
@@ -305,12 +356,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public long getLong(int id);
+		public long get(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Long get(int id) {
-			return java.lang.Long.valueOf(getLong(id));
+		default java.lang.Long getAsObj(int id) {
+			return java.lang.Long.valueOf(get(id));
 		}
 
 		/**
@@ -323,7 +374,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, java.lang.Long weight) {
+		default void setAsObj(int id, java.lang.Long weight) {
 			set(id, weight.longValue());
 		}
 
@@ -335,12 +386,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public long defaultWeightLong();
+		public long defaultWeight();
 
 		@Deprecated
 		@Override
-		default java.lang.Long defaultWeight() {
-			return java.lang.Long.valueOf(defaultWeightLong());
+		default java.lang.Long defaultWeightAsObj() {
+			return java.lang.Long.valueOf(defaultWeight());
 		}
 
 		/**
@@ -350,7 +401,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default double weight(int id) {
-			return getLong(id);
+			return get(id);
 		}
 	}
 
@@ -367,12 +418,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public float getFloat(int id);
+		public float get(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Float get(int id) {
-			return java.lang.Float.valueOf(getFloat(id));
+		default java.lang.Float getAsObj(int id) {
+			return java.lang.Float.valueOf(get(id));
 		}
 
 		/**
@@ -385,7 +436,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, java.lang.Float weight) {
+		default void setAsObj(int id, java.lang.Float weight) {
 			set(id, weight.floatValue());
 		}
 
@@ -397,12 +448,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public float defaultWeightFloat();
+		public float defaultWeight();
 
 		@Deprecated
 		@Override
-		default java.lang.Float defaultWeight() {
-			return java.lang.Float.valueOf(defaultWeightFloat());
+		default java.lang.Float defaultWeightAsObj() {
+			return java.lang.Float.valueOf(defaultWeight());
 		}
 
 		/**
@@ -412,7 +463,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default double weight(int id) {
-			return getFloat(id);
+			return get(id);
 		}
 	}
 
@@ -429,12 +480,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public double getDouble(int id);
+		public double get(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Double get(int id) {
-			return java.lang.Double.valueOf(getDouble(id));
+		default java.lang.Double getAsObj(int id) {
+			return java.lang.Double.valueOf(get(id));
 		}
 
 		/**
@@ -447,7 +498,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, java.lang.Double weight) {
+		default void setAsObj(int id, java.lang.Double weight) {
 			set(id, weight.doubleValue());
 		}
 
@@ -459,12 +510,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public double defaultWeightDouble();
+		public double defaultWeight();
 
 		@Deprecated
 		@Override
-		default java.lang.Double defaultWeight() {
-			return java.lang.Double.valueOf(defaultWeightDouble());
+		default java.lang.Double defaultWeightAsObj() {
+			return java.lang.Double.valueOf(defaultWeight());
 		}
 
 		/**
@@ -474,7 +525,7 @@ public interface Weights<W> {
 		 */
 		@Override
 		default double weight(int id) {
-			return getDouble(id);
+			return get(id);
 		}
 	}
 
@@ -491,12 +542,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public boolean getBool(int id);
+		public boolean get(int id);
 
 		@Deprecated
 		@Override
-		default Boolean get(int id) {
-			return Boolean.valueOf(getBool(id));
+		default Boolean getAsObj(int id) {
+			return Boolean.valueOf(get(id));
 		}
 
 		/**
@@ -509,7 +560,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, Boolean weight) {
+		default void setAsObj(int id, Boolean weight) {
 			set(id, weight.booleanValue());
 		}
 
@@ -521,12 +572,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public boolean defaultWeightBool();
+		public boolean defaultWeight();
 
 		@Deprecated
 		@Override
-		default Boolean defaultWeight() {
-			return Boolean.valueOf(defaultWeightBool());
+		default Boolean defaultWeightAsObj() {
+			return Boolean.valueOf(defaultWeight());
 		}
 	}
 
@@ -543,12 +594,12 @@ public interface Weights<W> {
 		 * @param  id an id of edge/vertex.
 		 * @return    the weight associated with the given id.
 		 */
-		public char getChar(int id);
+		public char get(int id);
 
 		@Deprecated
 		@Override
-		default Character get(int id) {
-			return Character.valueOf(getChar(id));
+		default Character getAsObj(int id) {
+			return Character.valueOf(get(id));
 		}
 
 		/**
@@ -561,7 +612,7 @@ public interface Weights<W> {
 
 		@Deprecated
 		@Override
-		default void set(int id, Character weight) {
+		default void setAsObj(int id, Character weight) {
 			set(id, weight.charValue());
 		}
 
@@ -573,12 +624,12 @@ public interface Weights<W> {
 		 *
 		 * @return the default weight of this weights container.
 		 */
-		public char defaultWeightChar();
+		public char defaultWeight();
 
 		@Deprecated
 		@Override
-		default Character defaultWeight() {
-			return Character.valueOf(defaultWeightChar());
+		default Character defaultWeightAsObj() {
+			return Character.valueOf(defaultWeight());
 		}
 	}
 

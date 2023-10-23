@@ -274,7 +274,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 					// Calc distance with abs weight function to update potential function
 					for (int weight, mG = G.edges().size(), e = 0; e < mG; e++)
-						if ((weight = GWeights.getInt(e)) < 0)
+						if ((weight = GWeights.get(e)) < 0)
 							GWeights.set(e, -weight);
 					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
 					for (int v = 0; v < n; v++)

@@ -107,14 +107,14 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-			if (!partition.getBool(u)) {
-				assert partition.getBool(v);
+			if (!partition.get(u)) {
+				assert partition.get(v);
 				int temp = u;
 				u = v;
 				v = temp;
 			}
-			assert partition.getBool(u);
-			assert !partition.getBool(v);
+			assert partition.get(u);
+			assert !partition.get(v);
 
 			double weight = wOrig.weight(e);
 			if (weight >= 0) {
@@ -145,7 +145,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 			w.set(e, -w.weight(e));
 		// Connected unmatched vertices to fake vertices s,t
 		for (int u = 0; u < n; u++) {
-			if (partition.getBool(u)) {
+			if (partition.get(u)) {
 				w.set(g.addEdge(s, u), 0);
 			} else {
 				w.set(g.addEdge(u, t), 0);

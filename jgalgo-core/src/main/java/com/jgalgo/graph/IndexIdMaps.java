@@ -347,11 +347,11 @@ public class IndexIdMaps {
 			return map.idToIndex(id);
 		}
 
-		static class Obj<W> extends IdToIndexWeights<W> {
+		static class Obj<W> extends IdToIndexWeights<W> implements Weights.Obj<W> {
 
-			private final Weights<W> weights;
+			private final Weights.Obj<W> weights;
 
-			Obj(Weights<W> weights, IndexIdMap map) {
+			Obj(Weights.Obj<W> weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -382,8 +382,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public byte getByte(int id) {
-				return weights.getByte(index(id));
+			public byte get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -392,8 +392,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public byte defaultWeightByte() {
-				return weights.defaultWeightByte();
+			public byte defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -407,8 +407,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public short getShort(int id) {
-				return weights.getShort(index(id));
+			public short get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -417,8 +417,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public short defaultWeightShort() {
-				return weights.defaultWeightShort();
+			public short defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -432,8 +432,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public int getInt(int id) {
-				return weights.getInt(index(id));
+			public int get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -442,8 +442,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public int defaultWeightInt() {
-				return weights.defaultWeightInt();
+			public int defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -457,8 +457,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public long getLong(int id) {
-				return weights.getLong(index(id));
+			public long get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -467,8 +467,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public long defaultWeightLong() {
-				return weights.defaultWeightLong();
+			public long defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -482,8 +482,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public float getFloat(int id) {
-				return weights.getFloat(index(id));
+			public float get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -492,8 +492,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public float defaultWeightFloat() {
-				return weights.defaultWeightFloat();
+			public float defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -507,8 +507,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public double getDouble(int id) {
-				return weights.getDouble(index(id));
+			public double get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -517,8 +517,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public double defaultWeightDouble() {
-				return weights.defaultWeightDouble();
+			public double defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -532,8 +532,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public boolean getBool(int id) {
-				return weights.getBool(index(id));
+			public boolean get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -542,8 +542,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public boolean defaultWeightBool() {
-				return weights.defaultWeightBool();
+			public boolean defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
@@ -557,8 +557,8 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public char getChar(int id) {
-				return weights.getChar(index(id));
+			public char get(int id) {
+				return weights.get(index(id));
 			}
 
 			@Override
@@ -567,14 +567,15 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public char defaultWeightChar() {
-				return weights.defaultWeightChar();
+			public char defaultWeight() {
+				return weights.defaultWeight();
 			}
 		}
 
 	}
 
-	private static <V, WeightsT extends WeightsImpl<V>> WeightsT idToIndexWeights0(Weights<?> weights, IndexIdMap map) {
+	private static <V, WeightsT extends WeightsImpl<V>> WeightsT idToIndexWeights0(WeightsImpl<?> weights,
+			IndexIdMap map) {
 		WeightsUnwrapper unwrapper = new WeightsUnwrapper();
 		WeightsImpl<?> weights0 = unwrapper.unwrap((WeightsImpl<?>) weights);
 
@@ -599,7 +600,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static <W> Weights<W> idToIndexWeights(Weights<W> weights, IndexIdMap map) {
+	public static <W> Weights.Obj<W> idToIndexWeights(Weights.Obj<W> weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */

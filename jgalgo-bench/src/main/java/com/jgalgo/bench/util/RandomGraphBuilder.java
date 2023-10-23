@@ -210,7 +210,7 @@ public class RandomGraphBuilder {
 				do {
 					u = vertices.getInt(rand.nextInt(n));
 					v = vertices.getInt(rand.nextInt(n));
-				} while (partition.getBool(u) == partition.getBool(v));
+				} while (partition.get(u) == partition.get(v));
 			}
 
 			// avoid self edges
@@ -232,8 +232,8 @@ public class RandomGraphBuilder {
 			// keep track of number of connectivity components
 			if (!cycles || connected) {
 				if (!directed) {
-					int uComp = uf.find(vertexToUf.getInt(u));
-					int vComp = uf.find(vertexToUf.getInt(v));
+					int uComp = uf.find(vertexToUf.get(u));
+					int vComp = uf.find(vertexToUf.get(v));
 
 					// avoid cycles
 					if (!cycles && uComp == vComp)
@@ -243,7 +243,7 @@ public class RandomGraphBuilder {
 						componentsNum--;
 					uf.union(uComp, vComp);
 				} else if (connected) {
-					if (reachableFromRoot.getBool(u) && !reachableFromRoot.getBool(v)) {
+					if (reachableFromRoot.get(u) && !reachableFromRoot.get(v)) {
 						reachableFromRoot.set(v, true);
 						reachableFromRootCount++;
 
@@ -254,7 +254,7 @@ public class RandomGraphBuilder {
 							for (EdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {
 								eit.nextInt();
 								int pv = eit.target();
-								if (reachableFromRoot.getBool(pv))
+								if (reachableFromRoot.get(pv))
 									continue;
 								reachableFromRoot.set(pv, true);
 								reachableFromRootCount++;

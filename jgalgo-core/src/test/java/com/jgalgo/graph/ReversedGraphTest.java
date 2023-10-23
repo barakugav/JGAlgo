@@ -420,8 +420,8 @@ public class ReversedGraphTest extends TestBase {
 					Weights.Int wRev = gRev.getVerticesWeights(key);
 
 					for (int v : gRev.vertices())
-						assertEquals(wOrig.getInt(v), wRev.getInt(v));
-					assertEquals(wOrig.defaultWeightInt(), wRev.defaultWeightInt());
+						assertEquals(wOrig.get(v), wRev.get(v));
+					assertEquals(wOrig.defaultWeight(), wRev.defaultWeight());
 				}
 
 				gRev.removeVerticesWeights(key1);
@@ -457,8 +457,8 @@ public class ReversedGraphTest extends TestBase {
 					Weights.Int wRev = gRev.getEdgesWeights(key);
 
 					for (int e : gRev.edges())
-						assertEquals(wOrig.getInt(e), wRev.getInt(e));
-					assertEquals(wOrig.defaultWeightInt(), wRev.defaultWeightInt());
+						assertEquals(wOrig.get(e), wRev.get(e));
+					assertEquals(wOrig.defaultWeight(), wRev.defaultWeight());
 				}
 
 				gRev.removeEdgesWeights(key1);

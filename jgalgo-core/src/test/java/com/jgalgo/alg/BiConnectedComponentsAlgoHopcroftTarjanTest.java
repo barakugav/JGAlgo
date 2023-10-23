@@ -60,7 +60,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		/* Check that each edge is contained in exactly one BiCc (unless its a self loop) */
-		Weights<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
+		Weights.Obj<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
 			IntCollection biccEdges = res.getBiCcEdges(bccIdx);
 			for (int e : biccEdges) {

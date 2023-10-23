@@ -230,12 +230,12 @@ class FormatGML implements GraphFormat {
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					Weights<String> w = b.addVerticesWeights(key, String.class);
+					Weights.Obj<String> w = b.addVerticesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					Weights<Object> w = b.addVerticesWeights(key, Object.class);
+					Weights.Obj<Object> w = b.addVerticesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}
@@ -254,12 +254,12 @@ class FormatGML implements GraphFormat {
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					Weights<String> w = b.addEdgesWeights(key, String.class);
+					Weights.Obj<String> w = b.addEdgesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					Weights<Object> w = b.addEdgesWeights(key, Object.class);
+					Weights.Obj<Object> w = b.addEdgesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}

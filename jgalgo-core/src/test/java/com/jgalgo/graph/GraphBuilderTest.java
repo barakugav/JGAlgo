@@ -81,8 +81,8 @@ public class GraphBuilderTest extends TestBase {
 							}
 							for (int elm : elements) {
 								Object w = valSupplier.get();
-								wG.set(elm, w);
-								wB.set(elm, w);
+								wG.setAsObj(elm, w);
+								wB.setAsObj(elm, w);
 							}
 						}
 					}
@@ -101,10 +101,11 @@ public class GraphBuilderTest extends TestBase {
 				assertEquals(g, gActual);
 
 				for (Object key : g.getVerticesWeightsKeys())
-					assertEquals(g.getVerticesWeights(key).defaultWeight(),
-							gActual.getVerticesWeights(key).defaultWeight());
+					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
+							gActual.getVerticesWeights(key).defaultWeightAsObj());
 				for (Object key : g.getEdgesWeightsKeys())
-					assertEquals(g.getEdgesWeights(key).defaultWeight(), gActual.getEdgesWeights(key).defaultWeight());
+					assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
+							gActual.getEdgesWeights(key).defaultWeightAsObj());
 			}
 		}
 	}
@@ -159,8 +160,8 @@ public class GraphBuilderTest extends TestBase {
 							}
 							for (int elm : elements) {
 								Object w = valSupplier.get();
-								wG.set(elm, w);
-								wB.set(elm, w);
+								wG.setAsObj(elm, w);
+								wB.setAsObj(elm, w);
 							}
 						}
 					}
@@ -179,10 +180,11 @@ public class GraphBuilderTest extends TestBase {
 				assertEquals(g, gActual);
 
 				for (Object key : g.getVerticesWeightsKeys())
-					assertEquals(g.getVerticesWeights(key).defaultWeight(),
-							gActual.getVerticesWeights(key).defaultWeight());
+					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
+							gActual.getVerticesWeights(key).defaultWeightAsObj());
 				for (Object key : g.getEdgesWeightsKeys())
-					assertEquals(g.getEdgesWeights(key).defaultWeight(), gActual.getEdgesWeights(key).defaultWeight());
+					assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
+							gActual.getEdgesWeights(key).defaultWeightAsObj());
 
 				if (!buildMut) {
 					int[] vs = gActual.vertices().toIntArray();
@@ -191,15 +193,15 @@ public class GraphBuilderTest extends TestBase {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getVerticesWeights(key);
 						int v = vs[rand.nextInt(vs.length)];
-						Object data = w.get(vs[rand.nextInt(vs.length)]);
-						assertThrows(UnsupportedOperationException.class, () -> w.set(v, data));
+						Object data = w.getAsObj(vs[rand.nextInt(vs.length)]);
+						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(v, data));
 					}
 					for (Object key : gActual.getEdgesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getEdgesWeights(key);
 						int e = es[rand.nextInt(es.length)];
-						Object data = w.get(es[rand.nextInt(es.length)]);
-						assertThrows(UnsupportedOperationException.class, () -> w.set(e, data));
+						Object data = w.getAsObj(es[rand.nextInt(es.length)]);
+						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(e, data));
 					}
 				}
 			}

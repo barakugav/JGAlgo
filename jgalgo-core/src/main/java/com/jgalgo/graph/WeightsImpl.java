@@ -93,7 +93,9 @@ interface WeightsImpl<E> extends Weights<E> {
 			return (WeightsImpl<E>) new ImmutableView.Bool((Weights.Bool) weights);
 		if (weights instanceof Weights.Char)
 			return (WeightsImpl<E>) new ImmutableView.Char((Weights.Char) weights);
-		return new ImmutableView.Obj<>(weights);
+		if (weights instanceof Weights.Obj)
+			return new ImmutableView.Obj<>((Weights.Obj<E>) weights);
+		throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
 	}
 
 	static interface Index<E> extends WeightsImpl<E> {
@@ -130,7 +132,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static abstract class Obj<E> extends WeightsImpl.Index.Abstract<E> {
+		static abstract class Obj<E> extends WeightsImpl.Index.Abstract<E> implements Weights.Obj<E> {
 
 			Object[] weights;
 			final E defaultWeight;
@@ -261,13 +263,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public byte getByte(int idx) {
+			public byte get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public byte defaultWeightByte() {
+			public byte defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -339,13 +341,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public short getShort(int idx) {
+			public short get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public short defaultWeightShort() {
+			public short defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -417,13 +419,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public int getInt(int idx) {
+			public int get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public int defaultWeightInt() {
+			public int defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -494,13 +496,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public long getLong(int idx) {
+			public long get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public long defaultWeightLong() {
+			public long defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -572,13 +574,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public float getFloat(int idx) {
+			public float get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public float defaultWeightFloat() {
+			public float defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -651,13 +653,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public double getDouble(int idx) {
+			public double get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public double defaultWeightDouble() {
+			public double defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -767,13 +769,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public boolean getBool(int idx) {
+			public boolean get(int idx) {
 				checkIdx(idx);
 				return weights.get(idx);
 			}
 
 			@Override
-			public boolean defaultWeightBool() {
+			public boolean defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -851,13 +853,13 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public char getChar(int idx) {
+			public char get(int idx) {
 				checkIdx(idx);
 				return weights[idx];
 			}
 
 			@Override
-			public char defaultWeightChar() {
+			public char defaultWeight() {
 				return defaultWeight;
 			}
 
@@ -1741,7 +1743,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static class Obj<E> extends Mapped<E> {
+		static class Obj<E> extends Mapped<E> implements Weights.Obj<E> {
 			Obj(WeightsImpl.Index<E> weights, IndexIdMap indexMap) {
 				super(weights, indexMap);
 			}
@@ -1770,9 +1772,9 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean equals(Object other) {
 				if (other == this)
 					return true;
-				if (!(other instanceof WeightsImpl))
+				if (!(other instanceof WeightsImpl.Obj))
 					return false;
-				WeightsImpl<?> o = (WeightsImpl<?>) other;
+				WeightsImpl.Obj<?> o = (WeightsImpl.Obj<?>) other;
 
 				WeightsImpl.Index.Obj<E> w = weights();
 				int size = w.size();
@@ -1828,8 +1830,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public byte getByte(int id) {
-				return weights().getByte(indexMap.idToIndex(id));
+			public byte get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -1838,8 +1840,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public byte defaultWeightByte() {
-				return weights().defaultWeightByte();
+			public byte defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -1856,7 +1858,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getByte(idx) != o.getByte(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -1871,7 +1873,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += w.getByte(idx);
+					h += w.get(idx);
 				return h;
 			}
 
@@ -1884,7 +1886,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getByte(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -1904,8 +1906,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public short getShort(int id) {
-				return weights().getShort(indexMap.idToIndex(id));
+			public short get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -1914,8 +1916,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public short defaultWeightShort() {
-				return weights().defaultWeightShort();
+			public short defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -1932,7 +1934,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getShort(idx) != o.getShort(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -1947,7 +1949,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += w.getShort(idx);
+					h += w.get(idx);
 				return h;
 			}
 
@@ -1960,7 +1962,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getShort(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -1980,8 +1982,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public int getInt(int id) {
-				return weights().getInt(indexMap.idToIndex(id));
+			public int get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -1990,8 +1992,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public int defaultWeightInt() {
-				return weights().defaultWeightInt();
+			public int defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2008,7 +2010,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getInt(idx) != o.getInt(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2023,7 +2025,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += w.getInt(idx);
+					h += w.get(idx);
 				return h;
 			}
 
@@ -2036,7 +2038,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getInt(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2056,8 +2058,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public long getLong(int id) {
-				return weights().getLong(indexMap.idToIndex(id));
+			public long get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -2066,8 +2068,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public long defaultWeightLong() {
-				return weights().defaultWeightLong();
+			public long defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2084,7 +2086,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getLong(idx) != o.getLong(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2099,7 +2101,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += java.lang.Long.hashCode(w.getLong(idx));
+					h += java.lang.Long.hashCode(w.get(idx));
 				return h;
 			}
 
@@ -2112,7 +2114,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getLong(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2132,8 +2134,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public float getFloat(int id) {
-				return weights().getFloat(indexMap.idToIndex(id));
+			public float get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -2142,8 +2144,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public float defaultWeightFloat() {
-				return weights().defaultWeightFloat();
+			public float defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2160,7 +2162,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getFloat(idx) != o.getFloat(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2175,7 +2177,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += java.lang.Float.hashCode(w.getFloat(idx));
+					h += java.lang.Float.hashCode(w.get(idx));
 				return h;
 			}
 
@@ -2188,7 +2190,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getFloat(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2208,8 +2210,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public double getDouble(int id) {
-				return weights().getDouble(indexMap.idToIndex(id));
+			public double get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -2218,8 +2220,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public double defaultWeightDouble() {
-				return weights().defaultWeightDouble();
+			public double defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2236,7 +2238,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getDouble(idx) != o.getDouble(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2251,7 +2253,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += java.lang.Double.hashCode(w.getDouble(idx));
+					h += java.lang.Double.hashCode(w.get(idx));
 				return h;
 			}
 
@@ -2264,7 +2266,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getDouble(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2284,8 +2286,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public boolean getBool(int id) {
-				return weights().getBool(indexMap.idToIndex(id));
+			public boolean get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -2294,8 +2296,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public boolean defaultWeightBool() {
-				return weights().defaultWeightBool();
+			public boolean defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2312,7 +2314,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getBool(idx) != o.getBool(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2327,7 +2329,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += Boolean.hashCode(w.getBool(idx));
+					h += Boolean.hashCode(w.get(idx));
 				return h;
 			}
 
@@ -2340,7 +2342,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getBool(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2360,8 +2362,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public char getChar(int id) {
-				return weights().getChar(indexMap.idToIndex(id));
+			public char get(int id) {
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
@@ -2370,8 +2372,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public char defaultWeightChar() {
-				return weights().defaultWeightChar();
+			public char defaultWeight() {
+				return weights().defaultWeight();
 			}
 
 			@Override
@@ -2388,7 +2390,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					return false;
 				try {
 					for (int idx = 0; idx < size; idx++)
-						if (w.getChar(idx) != o.getChar(indexMap.indexToId(idx)))
+						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
 							return false;
 				} catch (IndexOutOfBoundsException e) {
 					return false;
@@ -2403,7 +2405,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				int size = w.size();
 				for (int idx = 0; idx < size; idx++)
 					/* we must use addition, order shouldn't matter */
-					h += w.getChar(idx);
+					h += w.get(idx);
 				return h;
 			}
 
@@ -2416,7 +2418,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				StringBuilder s = new StringBuilder().append('[');
 				for (int idx = 0;; idx++) {
 					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.getChar(idx));
+					s.append(id).append('=').append(w.get(idx));
 					if (idx == size - 1)
 						break;
 					s.append(", ");
@@ -2451,10 +2453,15 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights.size();
 		}
 
-		static class Obj<E> extends ImmutableView<E> {
+		static class Obj<E> extends ImmutableView<E> implements Weights.Obj<E> {
 
-			Obj(Weights<E> w) {
+			Obj(Weights.Obj<E> w) {
 				super(w);
+			}
+
+			@Override
+			Weights.Obj<E> weights() {
+				return (Weights.Obj<E>) super.weights();
 			}
 
 			@Override
@@ -2484,8 +2491,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public byte getByte(int id) {
-				return weights().getByte(id);
+			public byte get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2494,8 +2501,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public byte defaultWeightByte() {
-				return weights().defaultWeightByte();
+			public byte defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2510,8 +2517,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public short getShort(int id) {
-				return weights().getShort(id);
+			public short get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2520,8 +2527,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public short defaultWeightShort() {
-				return weights().defaultWeightShort();
+			public short defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2536,8 +2543,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public int getInt(int id) {
-				return weights().getInt(id);
+			public int get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2546,8 +2553,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public int defaultWeightInt() {
-				return weights().defaultWeightInt();
+			public int defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2562,8 +2569,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public long getLong(int id) {
-				return weights().getLong(id);
+			public long get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2572,8 +2579,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public long defaultWeightLong() {
-				return weights().defaultWeightLong();
+			public long defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2588,8 +2595,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public float getFloat(int id) {
-				return weights().getFloat(id);
+			public float get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2598,8 +2605,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public float defaultWeightFloat() {
-				return weights().defaultWeightFloat();
+			public float defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2614,8 +2621,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public double getDouble(int id) {
-				return weights().getDouble(id);
+			public double get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2624,8 +2631,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public double defaultWeightDouble() {
-				return weights().defaultWeightDouble();
+			public double defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2640,8 +2647,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public boolean getBool(int id) {
-				return weights().getBool(id);
+			public boolean get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2650,8 +2657,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public boolean defaultWeightBool() {
-				return weights().defaultWeightBool();
+			public boolean defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 
@@ -2666,8 +2673,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public char getChar(int id) {
-				return weights().getChar(id);
+			public char get(int id) {
+				return weights().get(id);
 			}
 
 			@Override
@@ -2676,8 +2683,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public char defaultWeightChar() {
-				return weights().defaultWeightChar();
+			public char defaultWeight() {
+				return weights().defaultWeight();
 			}
 		}
 	}

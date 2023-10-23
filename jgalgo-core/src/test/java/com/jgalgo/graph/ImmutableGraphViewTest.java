@@ -324,8 +324,8 @@ public class ImmutableGraphViewTest extends TestBase {
 				Weights.Int wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
 
 				for (int v : gImmutable.vertices())
-					assertEquals(wOrig.getInt(v), wImmutable.getInt(v));
-				assertEquals(wOrig.defaultWeightInt(), wImmutable.defaultWeightInt());
+					assertEquals(wOrig.get(v), wImmutable.get(v));
+				assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
 
 				int vertex = gImmutable.vertices().iterator().nextInt();
 				assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(vertex, 42));
@@ -351,8 +351,8 @@ public class ImmutableGraphViewTest extends TestBase {
 				Weights.Int wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
 
 				for (int e : gImmutable.edges())
-					assertEquals(wOrig.getInt(e), wImmutable.getInt(e));
-				assertEquals(wOrig.defaultWeightInt(), wImmutable.defaultWeightInt());
+					assertEquals(wOrig.get(e), wImmutable.get(e));
+				assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
 
 				int edge = gImmutable.edges().iterator().nextInt();
 				assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(edge, 42));

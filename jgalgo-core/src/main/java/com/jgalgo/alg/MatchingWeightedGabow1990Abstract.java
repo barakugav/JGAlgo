@@ -379,7 +379,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		/* the graph */
 		final IndexGraph g;
 
-		final Weights<EdgeVal> edgeVal;
+		final Weights.Obj<EdgeVal> edgeVal;
 
 		/* the weight function */
 		final WeightFunction w;
