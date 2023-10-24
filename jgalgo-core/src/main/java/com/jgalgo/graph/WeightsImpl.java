@@ -18,60 +18,22 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
-import it.unimi.dsi.fastutil.booleans.BooleanCollection;
-import it.unimi.dsi.fastutil.booleans.BooleanListIterator;
-import it.unimi.dsi.fastutil.bytes.AbstractByteList;
 import it.unimi.dsi.fastutil.bytes.ByteArrays;
-import it.unimi.dsi.fastutil.bytes.ByteCollection;
-import it.unimi.dsi.fastutil.bytes.ByteIterators;
-import it.unimi.dsi.fastutil.bytes.ByteListIterator;
-import it.unimi.dsi.fastutil.chars.AbstractCharList;
 import it.unimi.dsi.fastutil.chars.CharArrays;
-import it.unimi.dsi.fastutil.chars.CharCollection;
-import it.unimi.dsi.fastutil.chars.CharIterators;
-import it.unimi.dsi.fastutil.chars.CharListIterator;
-import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.doubles.DoubleCollection;
-import it.unimi.dsi.fastutil.doubles.DoubleIterators;
-import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
-import it.unimi.dsi.fastutil.floats.AbstractFloatList;
 import it.unimi.dsi.fastutil.floats.FloatArrays;
-import it.unimi.dsi.fastutil.floats.FloatCollection;
-import it.unimi.dsi.fastutil.floats.FloatIterators;
-import it.unimi.dsi.fastutil.floats.FloatListIterator;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.longs.AbstractLongList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongArrays;
-import it.unimi.dsi.fastutil.longs.LongCollection;
-import it.unimi.dsi.fastutil.longs.LongIterators;
-import it.unimi.dsi.fastutil.longs.LongListIterator;
-import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import it.unimi.dsi.fastutil.objects.ObjectCollection;
-import it.unimi.dsi.fastutil.objects.ObjectIterators;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-import it.unimi.dsi.fastutil.shorts.AbstractShortList;
 import it.unimi.dsi.fastutil.shorts.ShortArrays;
-import it.unimi.dsi.fastutil.shorts.ShortCollection;
-import it.unimi.dsi.fastutil.shorts.ShortIterators;
-import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 
 interface WeightsImpl<E> extends Weights<E> {
-
-	int size();
 
 	@SuppressWarnings("unchecked")
 	static <E> Weights<E> immutableView(Weights<E> weights) {
@@ -100,8 +62,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	static interface Index<E> extends WeightsImpl<E> {
 
-		Collection<E> values();
-
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
 
 			final GraphElementSet elements;
@@ -110,19 +70,8 @@ interface WeightsImpl<E> extends Weights<E> {
 				this.elements = Objects.requireNonNull(elements);
 			}
 
-			@Override
 			public int size() {
 				return elements.size();
-			}
-
-			@Override
-			public int hashCode() {
-				return values().hashCode();
-			}
-
-			@Override
-			public String toString() {
-				return values().toString();
 			}
 
 			void checkIdx(int idx) {
@@ -134,34 +83,11 @@ interface WeightsImpl<E> extends Weights<E> {
 
 			Object[] weights;
 			final E defaultWeight;
-			private final ObjectCollection<E> values;
 
 			Obj(GraphElementSet elements, E defVal) {
 				super(elements);
-
 				defaultWeight = defVal;
 				weights = ObjectArrays.EMPTY_ARRAY;
-				Arrays.fill(weights, defaultWeight);
-
-				values = new AbstractObjectList<>() {
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Obj.super.size();
-					}
-
-					@SuppressWarnings({ "unchecked", "rawtypes" })
-					@Override
-					public ObjectListIterator<E> iterator() {
-						return (ObjectListIterator) ObjectIterators.wrap(weights, 0, size());
-					}
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public E get(int index) {
-						checkIdx(index);
-						return (E) weights[index];
-					}
-				};
 			}
 
 			Obj(WeightsImpl.Index.Obj<E> orig, GraphElementSet elements) {
@@ -190,52 +116,17 @@ interface WeightsImpl<E> extends Weights<E> {
 			public E defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public Collection<E> values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Obj<?>))
-					return false;
-				WeightsImpl.Index.Obj<?> o = (WeightsImpl.Index.Obj<?>) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Byte extends WeightsImpl.Index.Abstract<java.lang.Byte> implements Weights.Byte {
 
 			byte[] weights;
 			final byte defaultWeight;
-			private final ByteCollection values;
 
 			Byte(GraphElementSet elements, byte defVal) {
 				super(elements);
-
 				weights = ByteArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractByteList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Byte.super.size();
-					}
-
-					@Override
-					public ByteListIterator iterator() {
-						return ByteIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public byte getByte(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Byte(WeightsImpl.Index.Byte orig, GraphElementSet elements) {
@@ -263,52 +154,17 @@ interface WeightsImpl<E> extends Weights<E> {
 			public byte defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public ByteCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Byte))
-					return false;
-				WeightsImpl.Index.Byte o = (WeightsImpl.Index.Byte) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Short extends WeightsImpl.Index.Abstract<java.lang.Short> implements Weights.Short {
 
 			short[] weights;
 			final short defaultWeight;
-			private final ShortCollection values;
 
 			Short(GraphElementSet elements, short defVal) {
 				super(elements);
-
 				weights = ShortArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractShortList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Short.super.size();
-					}
-
-					@Override
-					public ShortListIterator iterator() {
-						return ShortIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public short getShort(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Short(WeightsImpl.Index.Short orig, GraphElementSet elements) {
@@ -336,52 +192,17 @@ interface WeightsImpl<E> extends Weights<E> {
 			public short defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public ShortCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Short))
-					return false;
-				WeightsImpl.Index.Short o = (WeightsImpl.Index.Short) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Int extends WeightsImpl.Index.Abstract<Integer> implements Weights.Int {
 
 			int[] weights;
 			final int defaultWeight;
-			private final IntCollection values;
 
 			Int(GraphElementSet elements, int defVal) {
 				super(elements);
-
 				weights = IntArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractIntList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Int.super.size();
-					}
-
-					@Override
-					public IntListIterator iterator() {
-						return IntIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public int getInt(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Int(WeightsImpl.Index.Int orig, GraphElementSet elements) {
@@ -409,49 +230,15 @@ interface WeightsImpl<E> extends Weights<E> {
 			public int defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public IntCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Int))
-					return false;
-				WeightsImpl.Index.Int o = (WeightsImpl.Index.Int) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Long extends WeightsImpl.Index.Abstract<java.lang.Long> implements Weights.Long {
 
 			long[] weights;
 			final long defaultWeight;
-			private final LongCollection values = new AbstractLongList() {
-
-				@Override
-				public int size() {
-					return WeightsImpl.Index.Long.super.size();
-				}
-
-				@Override
-				public LongListIterator iterator() {
-					return LongIterators.wrap(weights, 0, size());
-				}
-
-				@Override
-				public long getLong(int index) {
-					checkIdx(index);
-					return weights[index];
-				}
-			};
 
 			Long(GraphElementSet elements, long defVal) {
 				super(elements);
-
 				weights = LongArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
 			}
@@ -481,52 +268,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			public long defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public LongCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Long))
-					return false;
-				WeightsImpl.Index.Long o = (WeightsImpl.Index.Long) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Float extends WeightsImpl.Index.Abstract<java.lang.Float> implements Weights.Float {
 
 			float[] weights;
 			final float defaultWeight;
-			private final FloatCollection values;
 
 			Float(GraphElementSet elements, float defVal) {
 				super(elements);
 
 				weights = FloatArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractFloatList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Float.super.size();
-					}
-
-					@Override
-					public FloatListIterator iterator() {
-						return FloatIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public float getFloat(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Float(WeightsImpl.Index.Float orig, GraphElementSet elements) {
@@ -554,52 +307,18 @@ interface WeightsImpl<E> extends Weights<E> {
 			public float defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public FloatCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Float))
-					return false;
-				WeightsImpl.Index.Float o = (WeightsImpl.Index.Float) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Double extends WeightsImpl.Index.Abstract<java.lang.Double> implements Weights.Double {
 
 			double[] weights;
 			final double defaultWeight;
-			private final DoubleCollection values;
 
 			Double(GraphElementSet elements, double defVal) {
 				super(elements);
 
 				weights = DoubleArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractDoubleList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Double.super.size();
-					}
-
-					@Override
-					public DoubleListIterator iterator() {
-						return DoubleIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public double getDouble(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Double(WeightsImpl.Index.Double orig, GraphElementSet elements) {
@@ -628,21 +347,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public double defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public DoubleCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Double))
-					return false;
-				WeightsImpl.Index.Double o = (WeightsImpl.Index.Double) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-			}
 		}
 
 		static abstract class Bool extends WeightsImpl.Index.Abstract<Boolean> implements Weights.Bool {
@@ -650,62 +354,9 @@ interface WeightsImpl<E> extends Weights<E> {
 			final BitSet weights;
 			int capacity;
 			final boolean defaultWeight;
-			private final BooleanCollection values = new AbstractBooleanList() {
-
-				@Override
-				public int size() {
-					return WeightsImpl.Index.Bool.super.size();
-				}
-
-				@Override
-				public BooleanListIterator iterator() {
-					return new BooleanListIterator() {
-						int idx = 0;
-
-						@Override
-						public boolean hasNext() {
-							return idx < size();
-						}
-
-						@Override
-						public boolean nextBoolean() {
-							Assertions.Iters.hasNext(this);
-							return weights.get(idx++);
-						}
-
-						@Override
-						public boolean previousBoolean() {
-							Assertions.Iters.hasPrevious(this);
-							return weights.get(--idx);
-						}
-
-						@Override
-						public boolean hasPrevious() {
-							return idx > 0;
-						}
-
-						@Override
-						public int nextIndex() {
-							return idx;
-						}
-
-						@Override
-						public int previousIndex() {
-							return idx - 1;
-						}
-					};
-				}
-
-				@Override
-				public boolean getBoolean(int index) {
-					checkIdx(index);
-					return weights.get(index);
-				}
-			};
 
 			Bool(GraphElementSet elements, boolean defVal) {
 				super(elements);
-
 				defaultWeight = defVal;
 				weights = new BitSet();
 			}
@@ -739,58 +390,17 @@ interface WeightsImpl<E> extends Weights<E> {
 			public boolean defaultWeight() {
 				return defaultWeight;
 			}
-
-			@Override
-			public BooleanCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Bool))
-					return false;
-				WeightsImpl.Index.Bool o = (WeightsImpl.Index.Bool) other;
-				final int s = size();
-				if (s != o.size())
-					return false;
-				for (int i = 0; i < s; i++)
-					if (weights.get(i) != o.weights.get(i))
-						return false;
-				return true;
-			}
 		}
 
 		static abstract class Char extends WeightsImpl.Index.Abstract<Character> implements Weights.Char {
 
 			char[] weights;
 			final char defaultWeight;
-			private final CharCollection values;
 
 			Char(GraphElementSet elements, char defVal) {
 				super(elements);
-
 				weights = CharArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
-				values = new AbstractCharList() {
-
-					@Override
-					public int size() {
-						return WeightsImpl.Index.Char.super.size();
-					}
-
-					@Override
-					public CharListIterator iterator() {
-						return CharIterators.wrap(weights, 0, size());
-					}
-
-					@Override
-					public char getChar(int index) {
-						checkIdx(index);
-						return weights[index];
-					}
-				};
 			}
 
 			Char(WeightsImpl.Index.Char orig, GraphElementSet elements) {
@@ -817,21 +427,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public char defaultWeight() {
 				return defaultWeight;
-			}
-
-			@Override
-			public CharCollection values() {
-				return values;
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (this == other)
-					return true;
-				if (!(other instanceof WeightsImpl.Index.Char))
-					return false;
-				WeightsImpl.Index.Char o = (WeightsImpl.Index.Char) other;
-				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
 			}
 		}
 
@@ -1667,11 +1262,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights;
 		}
 
-		@Override
-		public int size() {
-			return weights.size();
-		}
-
 		static WeightsImpl.Mapped<?> newInstance(WeightsImpl.Index<?> weights, IndexIdMap indexMap) {
 			if (weights instanceof WeightsImpl.Index.Byte) {
 				return new WeightsImpl.Mapped.Byte((WeightsImpl.Index.Byte) weights, indexMap);
@@ -1718,56 +1308,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public E defaultWeight() {
 				return weights().defaultWeight();
 			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl.Obj))
-					return false;
-				WeightsImpl.Obj<?> o = (WeightsImpl.Obj<?>) other;
-
-				WeightsImpl.Index.Obj<E> w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (!Objects.equals(w.get(idx), o.get(indexMap.indexToId(idx))))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Obj<E> w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += Objects.hashCode(w.get(idx));
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Obj<E> w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
-			}
 		}
 
 		static class Byte extends Mapped<java.lang.Byte> implements Weights.Byte {
@@ -1793,56 +1333,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public byte defaultWeight() {
 				return weights().defaultWeight();
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Byte))
-					return false;
-				Weights.Byte o = (Weights.Byte) other;
-
-				WeightsImpl.Index.Byte w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Byte w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += w.get(idx);
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Byte w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
 			}
 		}
 
@@ -1870,56 +1360,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public short defaultWeight() {
 				return weights().defaultWeight();
 			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Short))
-					return false;
-				Weights.Short o = (Weights.Short) other;
-
-				WeightsImpl.Index.Short w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Short w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += w.get(idx);
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Short w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
-			}
 		}
 
 		static class Int extends Mapped<Integer> implements Weights.Int {
@@ -1945,56 +1385,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public int defaultWeight() {
 				return weights().defaultWeight();
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Int))
-					return false;
-				Weights.Int o = (Weights.Int) other;
-
-				WeightsImpl.Index.Int w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Int w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += w.get(idx);
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Int w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
 			}
 		}
 
@@ -2022,56 +1412,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public long defaultWeight() {
 				return weights().defaultWeight();
 			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Long))
-					return false;
-				Weights.Long o = (Weights.Long) other;
-
-				WeightsImpl.Index.Long w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Long w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += java.lang.Long.hashCode(w.get(idx));
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Long w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
-			}
 		}
 
 		static class Float extends Mapped<java.lang.Float> implements Weights.Float {
@@ -2097,56 +1437,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public float defaultWeight() {
 				return weights().defaultWeight();
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Float))
-					return false;
-				Weights.Float o = (Weights.Float) other;
-
-				WeightsImpl.Index.Float w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Float w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += java.lang.Float.hashCode(w.get(idx));
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Float w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
 			}
 		}
 
@@ -2174,56 +1464,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public double defaultWeight() {
 				return weights().defaultWeight();
 			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Double))
-					return false;
-				Weights.Double o = (Weights.Double) other;
-
-				WeightsImpl.Index.Double w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Double w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += java.lang.Double.hashCode(w.get(idx));
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Double w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
-			}
 		}
 
 		static class Bool extends Mapped<Boolean> implements Weights.Bool {
@@ -2249,56 +1489,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			@Override
 			public boolean defaultWeight() {
 				return weights().defaultWeight();
-			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Bool))
-					return false;
-				Weights.Bool o = (Weights.Bool) other;
-
-				WeightsImpl.Index.Bool w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Bool w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += Boolean.hashCode(w.get(idx));
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Bool w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
 			}
 		}
 
@@ -2326,56 +1516,6 @@ interface WeightsImpl<E> extends Weights<E> {
 			public char defaultWeight() {
 				return weights().defaultWeight();
 			}
-
-			@Override
-			public boolean equals(Object other) {
-				if (other == this)
-					return true;
-				if (!(other instanceof WeightsImpl && other instanceof Weights.Char))
-					return false;
-				Weights.Char o = (Weights.Char) other;
-
-				WeightsImpl.Index.Char w = weights();
-				int size = w.size();
-				if (size != ((WeightsImpl<?>) other).size())
-					return false;
-				try {
-					for (int idx = 0; idx < size; idx++)
-						if (w.get(idx) != o.get(indexMap.indexToId(idx)))
-							return false;
-				} catch (IndexOutOfBoundsException e) {
-					return false;
-				}
-				return true;
-			}
-
-			@Override
-			public int hashCode() {
-				int h = 0;
-				WeightsImpl.Index.Char w = weights();
-				int size = w.size();
-				for (int idx = 0; idx < size; idx++)
-					/* we must use addition, order shouldn't matter */
-					h += w.get(idx);
-				return h;
-			}
-
-			@Override
-			public String toString() {
-				WeightsImpl.Index.Char w = weights();
-				int size = w.size();
-				if (size == 0)
-					return "[]";
-				StringBuilder s = new StringBuilder().append('[');
-				for (int idx = 0;; idx++) {
-					int id = indexMap.indexToId(idx);
-					s.append(id).append('=').append(w.get(idx));
-					if (idx == size - 1)
-						break;
-					s.append(", ");
-				}
-				return s.append(']').toString();
-			}
 		}
 	}
 
@@ -2397,11 +1537,6 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		Weights<E> weights() {
 			return weights;
-		}
-
-		@Override
-		public int size() {
-			return weights.size();
 		}
 
 		static class Obj<E> extends ImmutableView<E> implements Weights.Obj<E> {
@@ -2643,6 +1778,98 @@ interface WeightsImpl<E> extends Weights<E> {
 	private static void checkSameSize(GraphElementSet i1, GraphElementSet i2) {
 		if (i1.size() != i2.size())
 			throw new IllegalArgumentException("Elements sets size mismatch: " + i1.size() + " != " + i2.size());
+	}
+
+	static boolean isEqual(IntSet elementsSet, Weights<?> w1, Weights<?> w2) {
+		if (w1 == w2)
+			return true;
+		if (w1 instanceof Weights.Obj<?> && w2 instanceof Weights.Obj<?>) {
+			for (int elm : elementsSet)
+				if (!Objects.equals(((Weights.Obj<?>) w1).get(elm), ((Weights.Obj<?>) w2).get(elm)))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Byte && w2 instanceof Weights.Byte) {
+			for (int elm : elementsSet)
+				if (((Weights.Byte) w1).get(elm) != ((Weights.Byte) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Short && w2 instanceof Weights.Short) {
+			for (int elm : elementsSet)
+				if (((Weights.Short) w1).get(elm) != ((Weights.Short) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Int && w2 instanceof Weights.Int) {
+			for (int elm : elementsSet)
+				if (((Weights.Int) w1).get(elm) != ((Weights.Int) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Long && w2 instanceof Weights.Long) {
+			for (int elm : elementsSet)
+				if (((Weights.Long) w1).get(elm) != ((Weights.Long) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Float && w2 instanceof Weights.Float) {
+			for (int elm : elementsSet)
+				if (((Weights.Float) w1).get(elm) != ((Weights.Float) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Double && w2 instanceof Weights.Double) {
+			for (int elm : elementsSet)
+				if (((Weights.Double) w1).get(elm) != ((Weights.Double) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Bool && w2 instanceof Weights.Bool) {
+			for (int elm : elementsSet)
+				if (((Weights.Bool) w1).get(elm) != ((Weights.Bool) w2).get(elm))
+					return false;
+			return true;
+		} else if (w1 instanceof Weights.Char && w2 instanceof Weights.Char) {
+			for (int elm : elementsSet)
+				if (((Weights.Char) w1).get(elm) != ((Weights.Char) w2).get(elm))
+					return false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	static int hashCode(IntSet elementsSet, Weights<?> w) {
+		int h = 0;
+		if (w instanceof Weights.Obj<?>) {
+			for (int elm : elementsSet)
+				h += Objects.hashCode(((Weights.Obj<?>) w).get(elm));
+		} else if (w instanceof Weights.Byte) {
+			for (int elm : elementsSet)
+				h += ((Weights.Byte) w).get(elm);
+		} else if (w instanceof Weights.Short) {
+			for (int elm : elementsSet)
+				h += ((Weights.Short) w).get(elm);
+		} else if (w instanceof Weights.Int) {
+			for (int elm : elementsSet)
+				h += ((Weights.Int) w).get(elm);
+		} else if (w instanceof Weights.Long) {
+			for (int elm : elementsSet) {
+				long x = ((Weights.Long) w).get(elm);
+				h += (int) (x ^ (x >>> 32));
+			}
+		} else if (w instanceof Weights.Float) {
+			for (int elm : elementsSet)
+				h += java.lang.Float.floatToRawIntBits(((Weights.Float) w).get(elm));
+		} else if (w instanceof Weights.Double) {
+			for (int elm : elementsSet) {
+				long x = java.lang.Double.doubleToRawLongBits(((Weights.Double) w).get(elm));
+				h += (int) (x ^ (x >>> 32));
+			}
+		} else if (w instanceof Weights.Bool) {
+			for (int elm : elementsSet)
+				h += ((Weights.Bool) w).get(elm) ? 1231 : 1237;
+		} else if (w instanceof Weights.Char) {
+			for (int elm : elementsSet)
+				h += ((Weights.Char) w).get(elm);
+		} else {
+			throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
+		}
+		return h;
 	}
 
 }

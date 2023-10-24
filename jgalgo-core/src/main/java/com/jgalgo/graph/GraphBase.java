@@ -54,14 +54,18 @@ abstract class GraphBase implements Graph {
 
 		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))
 			return false;
-		for (Object key : getVerticesWeightsKeys())
-			if (!getVerticesWeights(key).equals(o.getVerticesWeights(key)))
+		for (Object key : getVerticesWeightsKeys()) {
+			Weights<?> w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);
+			if (!WeightsImpl.isEqual(vertices(), w1, w2))
 				return false;
+		}
 		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))
 			return false;
-		for (Object key : getEdgesWeightsKeys())
-			if (!getEdgesWeights(key).equals(o.getEdgesWeights(key)))
+		for (Object key : getEdgesWeightsKeys()) {
+			Weights<?> w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);
+			if (!WeightsImpl.isEqual(edges(), w1, w2))
 				return false;
+		}
 
 		return true;
 	}
@@ -74,9 +78,9 @@ abstract class GraphBase implements Graph {
 		for (int e : edges())
 			h += edgeSource(e) + edgeTarget(e);
 		for (Object key : getVerticesWeightsKeys())
-			h += getVerticesWeights(key).hashCode();
+			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));
 		for (Object key : getEdgesWeightsKeys())
-			h += getEdgesWeights(key).hashCode();
+			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));
 		return h;
 	}
 

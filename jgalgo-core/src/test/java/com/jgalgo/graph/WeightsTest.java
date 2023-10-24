@@ -17,8 +17,8 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -252,11 +252,9 @@ public class WeightsTest extends TestBase {
 				weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
 			});
 
-			assertEquals(weights, weights);
-			assertEquals(weights, weightsImmutable);
-			assertEquals(weightsImmutable, weightsImmutable);
-			assertNotEquals(weights, Integer.valueOf(5));
-			assertNotEquals(weightsImmutable, Integer.valueOf(-95));
+			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weights));
+			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weightsImmutable));
+			assertTrue(WeightsImpl.isEqual(g.edges(), weightsImmutable, weightsImmutable));
 		}
 	}
 
