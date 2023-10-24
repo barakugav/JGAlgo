@@ -343,8 +343,8 @@ public class IndexIdMaps {
 			this.map = Objects.requireNonNull(map);
 		}
 
-		int index(int id) {
-			return map.idToIndex(id);
+		int id(int index) {
+			return map.indexToId(index);
 		}
 
 		static class Obj<W> extends IdToIndexWeights<W> implements WeightsObj<W> {
@@ -357,13 +357,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public W get(int id) {
-				return weights.get(index(id));
+			public W get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, W weight) {
-				weights.set(index(id), weight);
+			public void set(int index, W weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -382,13 +382,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public byte get(int id) {
-				return weights.get(index(id));
+			public byte get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, byte weight) {
-				weights.set(index(id), weight);
+			public void set(int index, byte weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -407,13 +407,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public short get(int id) {
-				return weights.get(index(id));
+			public short get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, short weight) {
-				weights.set(index(id), weight);
+			public void set(int index, short weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -432,13 +432,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public int get(int id) {
-				return weights.get(index(id));
+			public int get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, int weight) {
-				weights.set(index(id), weight);
+			public void set(int index, int weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -457,13 +457,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public long get(int id) {
-				return weights.get(index(id));
+			public long get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, long weight) {
-				weights.set(index(id), weight);
+			public void set(int index, long weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -482,13 +482,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public float get(int id) {
-				return weights.get(index(id));
+			public float get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, float weight) {
-				weights.set(index(id), weight);
+			public void set(int index, float weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -507,13 +507,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public double get(int id) {
-				return weights.get(index(id));
+			public double get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, double weight) {
-				weights.set(index(id), weight);
+			public void set(int index, double weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -532,13 +532,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public boolean get(int id) {
-				return weights.get(index(id));
+			public boolean get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, boolean weight) {
-				weights.set(index(id), weight);
+			public void set(int index, boolean weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
@@ -557,13 +557,13 @@ public class IndexIdMaps {
 			}
 
 			@Override
-			public char get(int id) {
-				return weights.get(index(id));
+			public char get(int index) {
+				return weights.get(id(index));
 			}
 
 			@Override
-			public void set(int id, char weight) {
-				weights.set(index(id), weight);
+			public void set(int index, char weight) {
+				weights.set(id(index), weight);
 			}
 
 			@Override
