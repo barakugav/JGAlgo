@@ -43,14 +43,14 @@ public class ImmutableGraphViewTest extends TestBase {
 		Graph g = GraphFactory.newUndirected().setDirected(directed).newGraph();
 
 		IntList vertices = new IntArrayList(n);
-		Weights.Int vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
+		WeightsInt vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int i = 0; i < n; i++) {
 			int v = g.addVertex();
 			vertices.add(v);
 			vWeights.set(v, rand.nextInt(10000));
 		}
 
-		Weights.Int eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
+		WeightsInt eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
 		for (int i = 0; i < m; i++) {
 			int u = vertices.getInt(rand.nextInt(vertices.size()));
 			int v = vertices.getInt(rand.nextInt(vertices.size()));
@@ -320,8 +320,8 @@ public class ImmutableGraphViewTest extends TestBase {
 				Graph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
 				assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
-				Weights.Int wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
-				Weights.Int wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
+				WeightsInt wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
+				WeightsInt wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
 
 				for (int v : gImmutable.vertices())
 					assertEquals(wOrig.get(v), wImmutable.get(v));
@@ -347,8 +347,8 @@ public class ImmutableGraphViewTest extends TestBase {
 				Graph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
 				assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
-				Weights.Int wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
-				Weights.Int wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
+				WeightsInt wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
+				WeightsInt wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
 
 				for (int e : gImmutable.edges())
 					assertEquals(wOrig.get(e), wImmutable.get(e));

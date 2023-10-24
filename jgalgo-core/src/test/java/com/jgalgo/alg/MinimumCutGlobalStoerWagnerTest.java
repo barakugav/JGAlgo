@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -53,7 +53,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Int w = g.addEdgesWeights("weight", int.class);
+			WeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 

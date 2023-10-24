@@ -24,6 +24,8 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
@@ -288,7 +290,7 @@ class MinimumCostFlows {
 				return computeSupply(g, (FlowNetwork.Int) net, (WeightFunction.Int) lowerBound,
 						(WeightFunction.Int) supply);
 
-			Weights.Double supply2 = Weights.createExternalVerticesWeights(g, double.class);
+			WeightsDouble supply2 = Weights.createExternalVerticesWeights(g, double.class);
 			if (supply != null) {
 				for (int n = g.vertices().size(), v = 0; v < n; v++)
 					supply2.set(v, supply.weight(v));
@@ -309,7 +311,7 @@ class MinimumCostFlows {
 
 		static WeightFunction.Int computeSupply(IndexGraph g, FlowNetwork.Int net, WeightFunction.Int lowerBound,
 				WeightFunction.Int supply) {
-			Weights.Int supply2 = Weights.createExternalVerticesWeights(g, int.class);
+			WeightsInt supply2 = Weights.createExternalVerticesWeights(g, int.class);
 			if (supply != null) {
 				for (int n = g.vertices().size(), v = 0; v < n; v++)
 					supply2.set(v, supply.weightInt(v));

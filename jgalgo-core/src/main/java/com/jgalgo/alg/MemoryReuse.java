@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.ds.HeapReference;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -91,7 +91,7 @@ class MemoryReuse {
 	static final EdgeIter[] EmptyEdgeIterArr = new EdgeIter[0];
 	static final IntList[] EmptyIntListArr = new IntList[0];
 	static final IndexGraph[] EmptyGraphArr = new IndexGraph[0];
-	static final Weights.Double[] EmptyWeightsDoubleArr = new Weights.Double[0];
+	static final WeightsDouble[] EmptyWeightsDoubleArr = new WeightsDouble[0];
 	@SuppressWarnings("rawtypes")
 	static final HeapReference[] EmptyHeapReferenceArr = new HeapReference[0];
 	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];

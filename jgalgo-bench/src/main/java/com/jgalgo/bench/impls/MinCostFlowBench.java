@@ -41,6 +41,7 @@ import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -82,7 +83,7 @@ public class MinCostFlowBench {
 				 */
 				WeightFunction.Int cost1 = randCost(g, rand);
 				MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
-				Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);
+				WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);
 				for (int e : g.edges()) {
 					lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));
 					net.setFlow(e, 0);
@@ -439,8 +440,8 @@ public class MinCostFlowBench {
 	}
 
 	private static FlowNetwork.Int randNetwork(Graph g, Random rand) {
-		Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);
-		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
 		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextInt(1024));
@@ -448,7 +449,7 @@ public class MinCostFlowBench {
 	}
 
 	private static WeightFunction.Int randCost(Graph g, Random rand) {
-		Weights.Int cost = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt cost = Weights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
 			cost.set(e, rand.nextInt(2424) - 600);
 		return cost;
@@ -465,7 +466,7 @@ public class MinCostFlowBench {
 		IntSet sinksSet = new IntOpenHashSet(sinks);
 		IntList sourcesList = new IntArrayList(sources);
 
-		Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 
@@ -578,7 +579,7 @@ public class MinCostFlowBench {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		Weights.Int supply = Weights.createExternalVerticesWeights(g, int.class);
+		WeightsInt supply = Weights.createExternalVerticesWeights(g, int.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {

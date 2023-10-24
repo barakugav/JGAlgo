@@ -23,7 +23,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class FormatLedaTest {
@@ -163,7 +163,7 @@ public class FormatLedaTest {
 					g.addEdge(source, target, e);
 				}
 
-				Weights.Int we1 = g.addEdgesWeights("weightsKey", int.class);
+				WeightsInt we1 = g.addEdgesWeights("weightsKey", int.class);
 				for (int e : g.edges())
 					we1.set(e, n + rand.nextInt(m * 3));
 

@@ -19,6 +19,7 @@ import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -116,7 +117,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* cost(e) for original edges */
 		/* -cost(e) for backward (twin) original edges */
 		/* saturatedCost for 'removed' (saturated) edges */
-		Weights.Double cost0 = Weights.createExternalEdgesWeights(g, double.class);
+		WeightsDouble cost0 = Weights.createExternalEdgesWeights(g, double.class);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			boolean isSaturated = capacity[e] - flow[e] < EPS;
 			if (isSaturated) {

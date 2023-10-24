@@ -26,7 +26,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -78,7 +78,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Double w = g.addEdgesWeights("weights", double.class);
+			WeightsDouble w = g.addEdgesWeights("weights", double.class);
 			for (int e : new IntArrayList(g.edges())) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double ew = rand.nextInt(1024) - 256;

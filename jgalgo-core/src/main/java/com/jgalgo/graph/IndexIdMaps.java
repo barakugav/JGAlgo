@@ -347,11 +347,11 @@ public class IndexIdMaps {
 			return map.idToIndex(id);
 		}
 
-		static class Obj<W> extends IdToIndexWeights<W> implements Weights.Obj<W> {
+		static class Obj<W> extends IdToIndexWeights<W> implements WeightsObj<W> {
 
-			private final Weights.Obj<W> weights;
+			private final WeightsObj<W> weights;
 
-			Obj(Weights.Obj<W> weights, IndexIdMap map) {
+			Obj(WeightsObj<W> weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -372,11 +372,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Byte extends IdToIndexWeights<java.lang.Byte> implements Weights.Byte {
+		static class Byte extends IdToIndexWeights<java.lang.Byte> implements WeightsByte {
 
-			private final Weights.Byte weights;
+			private final WeightsByte weights;
 
-			Byte(Weights.Byte weights, IndexIdMap map) {
+			Byte(WeightsByte weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -397,11 +397,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Short extends IdToIndexWeights<java.lang.Short> implements Weights.Short {
+		static class Short extends IdToIndexWeights<java.lang.Short> implements WeightsShort {
 
-			private final Weights.Short weights;
+			private final WeightsShort weights;
 
-			Short(Weights.Short weights, IndexIdMap map) {
+			Short(WeightsShort weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -422,11 +422,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Int extends IdToIndexWeights<Integer> implements Weights.Int {
+		static class Int extends IdToIndexWeights<Integer> implements WeightsInt {
 
-			private final Weights.Int weights;
+			private final WeightsInt weights;
 
-			Int(Weights.Int weights, IndexIdMap map) {
+			Int(WeightsInt weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -447,11 +447,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Long extends IdToIndexWeights<java.lang.Long> implements Weights.Long {
+		static class Long extends IdToIndexWeights<java.lang.Long> implements WeightsLong {
 
-			private final Weights.Long weights;
+			private final WeightsLong weights;
 
-			Long(Weights.Long weights, IndexIdMap map) {
+			Long(WeightsLong weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -472,11 +472,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Float extends IdToIndexWeights<java.lang.Float> implements Weights.Float {
+		static class Float extends IdToIndexWeights<java.lang.Float> implements WeightsFloat {
 
-			private final Weights.Float weights;
+			private final WeightsFloat weights;
 
-			Float(Weights.Float weights, IndexIdMap map) {
+			Float(WeightsFloat weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -497,11 +497,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Double extends IdToIndexWeights<java.lang.Double> implements Weights.Double {
+		static class Double extends IdToIndexWeights<java.lang.Double> implements WeightsDouble {
 
-			private final Weights.Double weights;
+			private final WeightsDouble weights;
 
-			Double(Weights.Double weights, IndexIdMap map) {
+			Double(WeightsDouble weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -522,11 +522,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Bool extends IdToIndexWeights<Boolean> implements Weights.Bool {
+		static class Bool extends IdToIndexWeights<Boolean> implements WeightsBool {
 
-			private final Weights.Bool weights;
+			private final WeightsBool weights;
 
-			Bool(Weights.Bool weights, IndexIdMap map) {
+			Bool(WeightsBool weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -547,11 +547,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Char extends IdToIndexWeights<Character> implements Weights.Char {
+		static class Char extends IdToIndexWeights<Character> implements WeightsChar {
 
-			private final Weights.Char weights;
+			private final WeightsChar weights;
 
-			Char(Weights.Char weights, IndexIdMap map) {
+			Char(WeightsChar weights, IndexIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -574,16 +574,15 @@ public class IndexIdMaps {
 
 	}
 
-	private static <V, WeightsT extends WeightsImpl<V>> WeightsT idToIndexWeights0(WeightsImpl<?> weights,
-			IndexIdMap map) {
+	private static <V, WeightsT extends Weights<V>> WeightsT idToIndexWeights0(WeightsImpl<?> weights, IndexIdMap map) {
 		WeightsUnwrapper unwrapper = new WeightsUnwrapper();
-		WeightsImpl<?> weights0 = unwrapper.unwrap((WeightsImpl<?>) weights);
+		Weights<?> weights0 = unwrapper.unwrap(weights);
 
 		if (!(weights0 instanceof WeightsImpl.Mapped<?>))
 			throw new IllegalArgumentException("weights of index graph used with non index graph");
 		if (map != ((WeightsImpl.Mapped<?>) weights0).indexMap)
 			throw new IllegalArgumentException("wrong index-id map is used with weights container");
-		WeightsImpl.Index.Abstract<?> weights00 = ((WeightsImpl.Mapped<?>) weights0).weights;
+		WeightsImpl.IndexAbstract<?> weights00 = ((WeightsImpl.Mapped<?>) weights0).weights;
 
 		return unwrapper.rewrap(weights00);
 	}
@@ -600,7 +599,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static <W> Weights.Obj<W> idToIndexWeights(Weights.Obj<W> weights, IndexIdMap map) {
+	public static <W> WeightsObj<W> idToIndexWeights(WeightsObj<W> weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -623,7 +622,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Byte idToIndexWeights(Weights.Byte weights, IndexIdMap map) {
+	public static WeightsByte idToIndexWeights(WeightsByte weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -646,7 +645,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Short idToIndexWeights(Weights.Short weights, IndexIdMap map) {
+	public static WeightsShort idToIndexWeights(WeightsShort weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -669,7 +668,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Int idToIndexWeights(Weights.Int weights, IndexIdMap map) {
+	public static WeightsInt idToIndexWeights(WeightsInt weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -692,7 +691,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Long idToIndexWeights(Weights.Long weights, IndexIdMap map) {
+	public static WeightsLong idToIndexWeights(WeightsLong weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -715,7 +714,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Float idToIndexWeights(Weights.Float weights, IndexIdMap map) {
+	public static WeightsFloat idToIndexWeights(WeightsFloat weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -738,7 +737,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Double idToIndexWeights(Weights.Double weights, IndexIdMap map) {
+	public static WeightsDouble idToIndexWeights(WeightsDouble weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -761,7 +760,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Bool indexWeightsFromWeights(Weights.Bool weights, IndexIdMap map) {
+	public static WeightsBool indexWeightsFromWeights(WeightsBool weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -784,7 +783,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static Weights.Char idToIndexWeights(Weights.Char weights, IndexIdMap map) {
+	public static WeightsChar idToIndexWeights(WeightsChar weights, IndexIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -850,8 +849,8 @@ public class IndexIdMaps {
 		private boolean immutableView;
 
 		@SuppressWarnings("unchecked")
-		<V, WeightsT extends WeightsImpl<V>> WeightsT unwrap(WeightsImpl<?> weights) {
-			WeightsImpl<?> weights0 = weights;
+		<V, WeightsT extends Weights<V>> WeightsT unwrap(WeightsImpl<?> weights) {
+			Weights<?> weights0 = weights;
 			immutableView = weights0 instanceof WeightsImpl.ImmutableView<?>;
 			if (immutableView)
 				weights0 = ((WeightsImpl.ImmutableView<?>) weights0).weights;
@@ -859,9 +858,9 @@ public class IndexIdMaps {
 		}
 
 		@SuppressWarnings("unchecked")
-		<V, WeightsT extends WeightsImpl<V>> WeightsT rewrap(WeightsImpl<?> weights) {
+		<V, WeightsT extends Weights<V>> WeightsT rewrap(Weights<?> weights) {
 			if (immutableView)
-				weights = (WeightsImpl<?>) WeightsImpl.immutableView(weights);
+				weights = WeightsImpl.ImmutableView.newInstance(weights);
 			return (WeightsT) weights;
 		}
 

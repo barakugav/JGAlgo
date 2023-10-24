@@ -27,6 +27,9 @@ import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsObj;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
@@ -220,22 +223,22 @@ class FormatGML implements GraphFormat {
 				String key = entry.getKey();
 				Class<?> weightType = chooseWeightType(entry.getValue());
 				if (weightType == int.class) {
-					Weights.Int w = b.addVerticesWeights(key, int.class);
+					WeightsInt w = b.addVerticesWeights(key, int.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
 
 				} else if (weightType == double.class) {
-					Weights.Double w = b.addVerticesWeights(key, double.class);
+					WeightsDouble w = b.addVerticesWeights(key, double.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					Weights.Obj<String> w = b.addVerticesWeights(key, String.class);
+					WeightsObj<String> w = b.addVerticesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					Weights.Obj<Object> w = b.addVerticesWeights(key, Object.class);
+					WeightsObj<Object> w = b.addVerticesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}
@@ -244,22 +247,22 @@ class FormatGML implements GraphFormat {
 				String key = entry.getKey();
 				Class<?> weightType = chooseWeightType(entry.getValue());
 				if (weightType == int.class) {
-					Weights.Int w = b.addEdgesWeights(key, int.class);
+					WeightsInt w = b.addEdgesWeights(key, int.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
 
 				} else if (weightType == double.class) {
-					Weights.Double w = b.addEdgesWeights(key, double.class);
+					WeightsDouble w = b.addEdgesWeights(key, double.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					Weights.Obj<String> w = b.addEdgesWeights(key, String.class);
+					WeightsObj<String> w = b.addEdgesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					Weights.Obj<Object> w = b.addEdgesWeights(key, Object.class);
+					WeightsObj<Object> w = b.addEdgesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}

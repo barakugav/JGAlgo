@@ -18,7 +18,7 @@ package com.jgalgo.example;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class MinimumSpanningTreeExample {
@@ -49,7 +49,7 @@ public class MinimumSpanningTreeExample {
 		int e12 = g.addEdge(v3, v6);
 
 		/* Assign a weight to each edge */
-		Weights.Double weights = g.addEdgesWeights("weightsKey", double.class);
+		WeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
 		weights.set(e1, 4.6);
 		weights.set(e2, 5.2);
 		weights.set(e3, 6.1);

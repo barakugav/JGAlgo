@@ -20,6 +20,8 @@ import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
@@ -139,7 +141,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		Weights.Int supply = Weights.createExternalVerticesWeights(g, int.class);
+		WeightsInt supply = Weights.createExternalVerticesWeights(g, int.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {
@@ -237,7 +239,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		Weights.Double supply = Weights.createExternalVerticesWeights(g, double.class);
+		WeightsDouble supply = Weights.createExternalVerticesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {

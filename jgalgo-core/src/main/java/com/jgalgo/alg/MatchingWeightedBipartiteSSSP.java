@@ -23,6 +23,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -87,7 +89,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		Assertions.Graphs.onlyBipartite(g, partition);
@@ -96,14 +98,14 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		return new Matchings.MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, Weights.Bool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, WeightsBool partition) {
 		final int n = gOrig.vertices().size();
 		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2)
 				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
 		for (int v = 0; v < n; v++)
 			g.addVertex();
 		final int s = g.addVertex(), t = g.addVertex();
-		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);
+		WeightsDouble w = g.addEdgesWeights(EdgeWeightKey, double.class);
 
 		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);

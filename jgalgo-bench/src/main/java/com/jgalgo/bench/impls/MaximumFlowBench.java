@@ -42,6 +42,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
@@ -326,8 +327,8 @@ public class MaximumFlowBench {
 
 	private static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
-		Weights.Int capacities = Weights.createExternalEdgesWeights(g, int.class);
-		Weights.Int flows = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
 		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
 			net.setCapacity(e, 5000 + rand.nextInt(16384));

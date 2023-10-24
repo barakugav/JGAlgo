@@ -24,7 +24,9 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsObj;
 
 public class FormatGMLTest {
 
@@ -122,18 +124,18 @@ public class FormatGMLTest {
 					g.addEdge(source, target, e);
 			}
 
-			Weights.Int wv1 = g.addVerticesWeights("v1", int.class);
-			Weights.Double wv2 = g.addVerticesWeights("v2", double.class);
-			Weights.Obj<String> wv3 = g.addVerticesWeights("v3", String.class);
+			WeightsInt wv1 = g.addVerticesWeights("v1", int.class);
+			WeightsDouble wv2 = g.addVerticesWeights("v2", double.class);
+			WeightsObj<String> wv3 = g.addVerticesWeights("v3", String.class);
 			for (int v : g.vertices()) {
 				wv1.set(v, n + rand.nextInt(n * 3));
 				wv2.set(v, n + rand.nextDouble());
 				wv3.set(v, Character.toString('a' + rand.nextInt('z' - 'a' + 1)));
 			}
 
-			Weights.Int we1 = g.addEdgesWeights("e1", int.class);
-			Weights.Double we2 = g.addEdgesWeights("e2", double.class);
-			Weights.Obj<String> we3 = g.addEdgesWeights("e3", String.class);
+			WeightsInt we1 = g.addEdgesWeights("e1", int.class);
+			WeightsDouble we2 = g.addEdgesWeights("e2", double.class);
+			WeightsObj<String> we3 = g.addEdgesWeights("e3", String.class);
 			for (int e : g.edges()) {
 				we1.set(e, n + rand.nextInt(m * 3));
 				we2.set(e, n + rand.nextDouble());

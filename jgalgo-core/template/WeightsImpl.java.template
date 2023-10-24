@@ -1,0 +1,180 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Arrays;
+import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
+
+class WEIGHTS_IMPL {
+
+	static abstract class IndexImpl KEY_GENERIC extends WeightsImpl.IndexAbstract<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
+
+		PRIMITIVE_TYPE_REAL[] weights;
+		final PRIMITIVE_TYPE defaultWeight;
+
+		IndexImpl(GraphElementSet elements, PRIMITIVE_TYPE defVal) {
+			super(elements);
+
+			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
+			defaultWeight = defVal;
+		}
+
+		IndexImpl(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements) {
+			this(elements, orig.defaultWeight);
+			WeightsImpl.checkSameSize(elements, orig.elements);
+			weights = Arrays.copyOf(orig.weights, elements.size());
+		}
+
+		IndexImpl(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			this(elements, orig.defaultWeight);
+			WeightsImpl.checkSameSize(elements, orig.elements);
+			weights = Arrays.copyOf(weights, elements.size());
+			final int s = elements.size();
+			for (int i = 0; i < s; i++)
+				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+		}
+
+		SUPPRESS_WARNINGS_UNCHECKED
+		@Override
+		public PRIMITIVE_TYPE get(int idx) {
+			checkIdx(idx);
+			return CAST_TO_GENERIC weights[idx];
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return defaultWeight;
+		}
+	}
+
+	static class IndexImmutable KEY_GENERIC extends WEIGHTS_IMPL.IndexImpl KEY_GENERIC implements WeightsImpl.IndexImmutable<KEY_GENERIC_CLASS> {
+
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet.FixedSize elements) {
+			super(orig, elements);
+		}
+
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet.FixedSize elements,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			super(orig, elements, reIndexMap);
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			throw new UnsupportedOperationException("immutable weights");
+		}
+	}
+
+	static class IndexMutable KEY_GENERIC extends WEIGHTS_IMPL.IndexImpl KEY_GENERIC implements WeightsImpl.IndexMutable<KEY_GENERIC_CLASS> {
+
+		IndexMutable(GraphElementSet elements, PRIMITIVE_TYPE defVal) {
+			super(elements, defVal);
+		}
+
+		IndexMutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements) {
+			super(orig, elements);
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
+		}
+
+		@Override
+		public int capacity() {
+			return weights.length;
+		}
+
+		@Override
+		public void expand(int newCapacity) {
+			int oldCapacity = weights.length;
+			assert oldCapacity < newCapacity;
+			weights = Arrays.copyOf(weights, newCapacity);
+			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+		}
+
+		@Override
+		public void swap(int idx1, int idx2) {
+			checkIdx(idx1);
+			checkIdx(idx2);
+			FASTUTIL_TYPEArrays.swap(weights, idx1, idx2);
+		}
+
+		@Override
+		public void clear(int idx) {
+			weights[idx] = defaultWeight;
+		}
+
+		@Override
+		public void clear() {
+			Arrays.fill(weights, 0, size(), defaultWeight);
+		}
+	}
+
+	static class Mapped KEY_GENERIC extends WeightsImpl.Mapped<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
+		Mapped(WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights, IndexIdMap indexMap) {
+			super(weights, indexMap);
+		}
+
+		@Override
+		public WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights() {
+			return (WEIGHTS_IMPL.IndexImpl KEY_GENERIC) super.weights();
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int id) {
+			return weights().get(indexMap.idToIndex(id));
+		}
+
+		@Override
+		public void set(int id, PRIMITIVE_TYPE weight) {
+			weights().set(indexMap.idToIndex(id), weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return weights().defaultWeight();
+		}
+	}
+
+	static class ImmutableView KEY_GENERIC extends WeightsImpl.ImmutableView<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
+		ImmutableView(WEIGHTS KEY_GENERIC w) {
+			super(w);
+		}
+
+		@Override
+		WEIGHTS KEY_GENERIC weights() {
+			return (WEIGHTS KEY_GENERIC) super.weights();
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int id) {
+			return weights().get(id);
+		}
+
+		@Override
+		public void set(int id, PRIMITIVE_TYPE weight) {
+			throw new UnsupportedOperationException("immutable weights");
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return weights().defaultWeight();
+		}
+	}
+
+}

@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -60,7 +61,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		/* Check that each edge is contained in exactly one BiCc (unless its a self loop) */
-		Weights.Obj<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
+		WeightsObj<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
 			IntCollection biccEdges = res.getBiCcEdges(bccIdx);
 			for (int e : biccEdges) {

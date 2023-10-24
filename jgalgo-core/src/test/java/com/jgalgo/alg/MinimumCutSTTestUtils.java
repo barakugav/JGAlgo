@@ -22,7 +22,8 @@ import java.util.Random;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -47,7 +48,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Double w = g.addEdgesWeights("weight", double.class);
+			WeightsDouble w = g.addEdgesWeights("weight", double.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextDouble() * 5642);
 
@@ -68,7 +69,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Int w = g.addEdgesWeights("weight", int.class);
+			WeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 
@@ -99,7 +100,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Double w = g.addEdgesWeights("weight", double.class);
+			WeightsDouble w = g.addEdgesWeights("weight", double.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextDouble() * 5642);
 
@@ -120,7 +121,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			Weights.Int w = g.addEdgesWeights("weight", int.class);
+			WeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 

@@ -25,7 +25,7 @@ import com.jgalgo.alg.GraphsUtils;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -49,7 +49,7 @@ public class Assertions {
 				throw new IllegalArgumentException("only undirected graphs are supported");
 		}
 
-		public static void onlyBipartite(IndexGraph g, Weights.Bool partition) {
+		public static void onlyBipartite(IndexGraph g, WeightsBool partition) {
 			if (!JGAlgoConfigImpl.AssertionsGraphsBipartitePartition)
 				return;
 			for (int m = g.edges().size(), e = 0; e < m; e++)

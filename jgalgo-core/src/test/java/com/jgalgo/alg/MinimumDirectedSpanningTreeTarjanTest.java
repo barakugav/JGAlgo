@@ -22,7 +22,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -55,7 +55,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			for (IntIterator it1 = g.vertices().iterator(), it2 = dg.vertices().iterator(); it1.hasNext();)
 				gToDg.put(it1.nextInt(), it2.nextInt());
 
-			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
+			WeightsInt edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int u : g.vertices()) {
 				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();

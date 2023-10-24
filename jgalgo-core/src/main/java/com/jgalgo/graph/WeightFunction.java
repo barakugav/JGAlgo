@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * Weights.Double weights = g.addEdgesWeights("weightsKey", double.class);
+ * WeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
  * weights.set(e1, 1.2);
  * weights.set(e2, 3.1);
  * weights.set(e3, 15.1);
@@ -103,7 +103,7 @@ public interface WeightFunction extends IntComparator {
 	 * int e3 = g.addEdge(v1, v3);
 	 *
 	 * // Assign some weights to the edges
-	 * Weights.Int weights = g.addEdgesWeights("weightsKey", int.class);
+	 * WeightsInt weights = g.addEdgesWeights("weightsKey", int.class);
 	 * weights.set(e1, 1);
 	 * weights.set(e2, 3);
 	 * weights.set(e3, 15);

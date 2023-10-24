@@ -422,7 +422,7 @@ abstract class GraphImpl extends GraphBase {
 
 		private final Int2IntOpenHashMap idToIndex;
 		private final IntSet idsView; // TODO move to graph abstract implementation
-		private final WeightsImpl.Index.Int indexToId;
+		private final WeightsImplInt.IndexImpl indexToId;
 		private int userChosenId = -1;
 		private final boolean isEdges;
 
@@ -430,7 +430,7 @@ abstract class GraphImpl extends GraphBase {
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			indexToId = new WeightsImpl.IndexMutable.Int(elements, -1);
+			indexToId = new WeightsImplInt.IndexMutable(elements, -1);
 			this.isEdges = isEdges;
 			initListeners(elements);
 		}
@@ -440,13 +440,13 @@ abstract class GraphImpl extends GraphBase {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImpl.IndexMutable.Int(orig0.indexToId, elements);
+				indexToId = new WeightsImplInt.IndexMutable(orig0.indexToId, elements);
 			} else {
 				idToIndex = new Int2IntOpenHashMap(elements.size());
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImpl.IndexMutable.Int(elements, -1);
+				indexToId = new WeightsImplInt.IndexMutable(elements, -1);
 				if (elements.size() > 0) {
-					((WeightsImpl.IndexMutable.Int) indexToId).expand(elements.size());
+					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
 					for (int idx : elements) {
 						int id = orig.indexToId(idx);
 						if (indexToId.get(idx) != -1)
@@ -489,8 +489,8 @@ abstract class GraphImpl extends GraphBase {
 			});
 			elements.addIdAddRemoveListener(new IdAddRemoveListener() {
 
-				WeightsImpl.IndexMutable.Int indexToId() {
-					return (WeightsImpl.IndexMutable.Int) indexToId;
+				WeightsImplInt.IndexMutable indexToId() {
+					return (WeightsImplInt.IndexMutable) indexToId;
 				}
 
 				@Override

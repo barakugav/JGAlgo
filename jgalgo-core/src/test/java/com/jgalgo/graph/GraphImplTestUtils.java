@@ -500,7 +500,7 @@ class GraphImplTestUtils extends TestUtils {
 
 				/* assign some weights to the vertices of g */
 				final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
-				Weights.Obj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+				WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 				Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 				for (int u : g.vertices()) {
 					Object data = JGAlgoUtils.labeledObj("data" + u);
@@ -510,7 +510,7 @@ class GraphImplTestUtils extends TestUtils {
 
 				/* assign some weights to the edges of g */
 				final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
-				Weights.Obj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+				WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 				Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 				for (int e : g.edges()) {
 					Object data = JGAlgoUtils.labeledObj("data" + e);
@@ -558,7 +558,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the vertices of g */
 			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
-			Weights.Obj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
@@ -568,7 +568,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
-			Weights.Obj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
@@ -590,8 +590,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert weights were copied */
-			Weights.Obj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			Weights.Obj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			WeightsObj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
 			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
@@ -610,28 +610,28 @@ class GraphImplTestUtils extends TestUtils {
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				int u = vs[rand.nextInt(vs.length)];
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				g.<Object, Weights.Obj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			int[] copyVs = copy.vertices().toIntArray();
 			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
 				int u = copyVs[rand.nextInt(vs.length)];
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				copy.<Object, Weights.Obj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				copy.<Object, WeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
 				copyVDataMap.put(u, data);
 			}
 			int[] gEdges = g.edges().toIntArray();
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				int e = gEdges[rand.nextInt(g.edges().size())];
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				g.<Object, Weights.Obj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 			int[] copyEdges = copy.edges().toIntArray();
 			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
 				int e = copyEdges[rand.nextInt(copy.edges().size())];
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				copy.<Object, Weights.Obj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				copy.<Object, WeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
 				copyEDataMap.put(e, data);
 			}
 
@@ -656,7 +656,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the vertices of g */
 			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
-			Weights.Obj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
@@ -666,7 +666,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
-			Weights.Obj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
@@ -707,7 +707,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the vertices of g */
 			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
-			Weights.Obj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
@@ -717,7 +717,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
-			Weights.Obj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
@@ -739,8 +739,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert weights were copied */
-			Weights.Obj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			Weights.Obj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			WeightsObj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
 			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
@@ -759,14 +759,14 @@ class GraphImplTestUtils extends TestUtils {
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				int u = vs[rand.nextInt(vs.length)];
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				g.<Object, Weights.Obj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			int[] gEdges = g.edges().toIntArray();
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				int e = gEdges[rand.nextInt(g.edges().size())];
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				g.<Object, Weights.Obj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 
@@ -999,7 +999,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		void checkEdgesEqual(Graph g) {
 			assertEquals(edgesNum(), g.edges().size());
-			Weights.Int edgeData = g.getEdgesWeights(dataKey);
+			WeightsInt edgeData = g.getEdgesWeights(dataKey);
 
 			List<IntList> actual = new ObjectArrayList<>();
 			List<IntList> expected = new ObjectArrayList<>();
@@ -1150,7 +1150,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		final Object dataKey = JGAlgoUtils.labeledObj("data");
-		Weights.Int edgeData = g.addEdgesWeights(dataKey, int.class);
+		WeightsInt edgeData = g.addEdgesWeights(dataKey, int.class);
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 
 		GraphTracker tracker = new GraphTracker(g, dataKey);

@@ -21,6 +21,8 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -116,7 +118,7 @@ public class RandomGraphBuilder {
 	public Graph build() {
 		IntList vertices = new IntArrayList();
 		final Graph g;
-		Weights.Bool partition = null;
+		WeightsBool partition = null;
 		if (!bipartite) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
@@ -158,14 +160,14 @@ public class RandomGraphBuilder {
 
 		Set<IntList> existingEdges = new ObjectOpenHashSet<>();
 		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
-		Weights.Int vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
+		WeightsInt vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
 		for (int v : g.vertices()) {
 			int ufIdx = uf.make();
 			vertexToUf.set(v, ufIdx);
 		}
 		int componentsNum = n;
 		Random rand = new Random(seedGen.nextSeed());
-		Weights.Bool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
+		WeightsBool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
 		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
 		int reachableFromRootCount = 1;
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();

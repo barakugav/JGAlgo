@@ -24,6 +24,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -174,7 +175,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 			/* build a 'random' lower bound by solving min-cost flow with a different cost function and use the flows */
 			WeightFunction cost1 = randCost(g, rand);
 			MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
-			Weights.Double lowerBound = Weights.createExternalEdgesWeights(g, double.class);
+			WeightsDouble lowerBound = Weights.createExternalEdgesWeights(g, double.class);
 			for (int e : g.edges()) {
 				lowerBound.set(e, (int) (net.getFlow(e) * 0.4 * rand.nextDouble()));
 				net.setFlow(e, 0);
@@ -194,7 +195,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 	}
 
 	private static WeightFunction randCost(Graph g, Random rand) {
-		Weights.Double cost = Weights.createExternalEdgesWeights(g, double.class);
+		WeightsDouble cost = Weights.createExternalEdgesWeights(g, double.class);
 		for (int e : g.edges())
 			cost.set(e, rand.nextDouble() * 2424 - 600);
 		return cost;
@@ -215,7 +216,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		IntSet sinksSet = new IntOpenHashSet(sinks);
 		IntList sourcesList = new IntArrayList(sources);
 
-		Weights.Double lowerBound = Weights.createExternalEdgesWeights(g, double.class);
+		WeightsDouble lowerBound = Weights.createExternalEdgesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		sourcesLoop: for (;;) {
@@ -319,7 +320,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		Weights.Double supply = Weights.createExternalVerticesWeights(g, double.class);
+		WeightsDouble supply = Weights.createExternalVerticesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {
@@ -591,7 +592,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		GraphBuilder b = GraphBuilder.newDirected();
 		for (int v : g.vertices())
 			b.addVertex(v);
-		Weights.Double residualWeights = b.addEdgesWeights("cost", double.class);
+		WeightsDouble residualWeights = b.addEdgesWeights("cost", double.class);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

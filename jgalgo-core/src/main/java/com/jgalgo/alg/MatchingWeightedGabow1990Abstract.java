@@ -30,7 +30,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SplitFindMin;
@@ -379,7 +379,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		/* the graph */
 		final IndexGraph g;
 
-		final Weights.Obj<EdgeVal> edgeVal;
+		final WeightsObj<EdgeVal> edgeVal;
 
 		/* the weight function */
 		final WeightFunction w;

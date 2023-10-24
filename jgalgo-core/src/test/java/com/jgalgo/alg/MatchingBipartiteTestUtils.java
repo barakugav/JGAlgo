@@ -22,6 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -71,7 +72,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {
-		Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
+		WeightsBool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight" + Weights.DefaultBipartiteWeightKey);
 

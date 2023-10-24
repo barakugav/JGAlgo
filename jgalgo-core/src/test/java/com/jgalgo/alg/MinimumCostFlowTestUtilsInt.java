@@ -23,6 +23,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -173,7 +174,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 			/* build a 'random' lower bound by solving min-cost flow with a different cost function and use the flows */
 			WeightFunction.Int cost1 = randCost(g, rand);
 			MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
-			Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);
+			WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);
 			for (int e : g.edges()) {
 				lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));
 				net.setFlow(e, 0);
@@ -193,7 +194,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 	}
 
 	private static WeightFunction.Int randCost(Graph g, Random rand) {
-		Weights.Int cost = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt cost = Weights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
 			cost.set(e, rand.nextInt(2424) - 600);
 		return cost;
@@ -214,7 +215,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		IntSet sinksSet = new IntOpenHashSet(sinks);
 		IntList sourcesList = new IntArrayList(sources);
 
-		Weights.Int lowerBound = Weights.createExternalEdgesWeights(g, int.class);
+		WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		sourcesLoop: for (;;) {
@@ -464,7 +465,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		GraphBuilder b = GraphBuilder.newDirected();
 		for (int v : g.vertices())
 			b.addVertex(v);
-		Weights.Int residualWeights = b.addEdgesWeights("cost", int.class);
+		WeightsInt residualWeights = b.addEdgesWeights("cost", int.class);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

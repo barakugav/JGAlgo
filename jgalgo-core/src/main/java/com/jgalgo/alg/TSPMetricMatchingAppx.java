@@ -21,6 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -67,7 +68,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
 		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
-		Weights.Double mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);
+		WeightsDouble mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);
 		for (int m = mG.edges().size(), e = 0; e < m; e++) {
 			int u = mVtoV[mG.edgeSource(e)];
 			int v = mVtoV[mG.edgeTarget(e)];

@@ -40,42 +40,42 @@ public class GraphsTestUtils extends TestUtils {
 				.build();
 	}
 
-	public static Weights.Double assignRandWeights(Graph g, long seed) {
+	public static WeightsDouble assignRandWeights(Graph g, long seed) {
 		return assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	public static Weights.Double assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
+	public static WeightsDouble assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(seed);
-		Weights.Double weight = g.addEdgesWeights("weight", double.class);
+		WeightsDouble weight = g.addEdgesWeights("weight", double.class);
 		for (int e : g.edges())
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 		return weight;
 	}
 
-	public static Weights.Int assignRandWeightsIntPos(Graph g, long seed) {
+	public static WeightsInt assignRandWeightsIntPos(Graph g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	public static Weights.Int assignRandWeightsIntNeg(Graph g, long seed) {
+	public static WeightsInt assignRandWeightsIntNeg(Graph g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	public static Weights.Int assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
+	public static WeightsInt assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
-		Weights.Int weight = g.addEdgesWeights("weight", int.class);
+		WeightsInt weight = g.addEdgesWeights("weight", int.class);
 		for (int e : g.edges())
 			weight.set(e, rand.next());
 		return weight;

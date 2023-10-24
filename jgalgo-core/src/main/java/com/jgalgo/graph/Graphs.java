@@ -750,7 +750,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return (WeightsT) WeightsImpl.immutableView(graph.getVerticesWeights(key));
+			return (WeightsT) WeightsImpl.ImmutableView.newInstance(graph.getVerticesWeights(key));
 		}
 
 		@Override
@@ -772,7 +772,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return (WeightsT) WeightsImpl.immutableView(graph.getEdgesWeights(key));
+			return (WeightsT) WeightsImpl.ImmutableView.newInstance(graph.getEdgesWeights(key));
 		}
 
 		@Override

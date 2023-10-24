@@ -1,0 +1,72 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+/**
+ * Specific weights of {@code PRIMITIVE_TYPE_REAL}.
+ *
+ * @author Barak Ugav
+ */
+public interface WEIGHTS KEY_GENERIC extends Weights<KEY_GENERIC_CLASS> WEIGHT_FUNC_IMPLEMENT {
+
+	/**
+	 * Get the weight associated with the given id.
+	 *
+	 * @param  id an id of edge/vertex.
+	 * @return    the weight associated with the given id.
+	 */
+	public PRIMITIVE_TYPE get(int id);
+
+	@Deprecated
+	@Override
+	default KEY_GENERIC_CLASS getAsObj(int id) {
+		return PRIMITIVE_TO_BOXED(get(id));
+	}
+
+	/**
+	 * Set the weight associated with the given id.
+	 *
+	 * @param id     an id of edge/vertex
+	 * @param weight new weight that will be associated with the given id
+	 */
+	public void set(int id, PRIMITIVE_TYPE weight);
+
+	@Deprecated
+	@Override
+	default void setAsObj(int id, KEY_GENERIC_CLASS weight) {
+		set(id, BOXED_TO_PRIMITIVE(weight));
+	}
+
+	/**
+	 * Get the default weight of this weights container.
+	 * <p>
+	 * The default weight is the weight associated with all ids that were not explicitly set using
+	 * {@link #set(int, PRIMITIVE_TYPE_REAL)}.
+	 *
+	 * @return the default weight of this weights container.
+	 */
+	public PRIMITIVE_TYPE defaultWeight();
+
+	@Deprecated
+	@Override
+	default KEY_GENERIC_CLASS defaultWeightAsObj() {
+		return PRIMITIVE_TO_BOXED(defaultWeight());
+	}
+
+	WEIGHT_FUNC_IMPLEMENTATION
+
+}

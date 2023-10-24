@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * Weights.Double w = g.addEdgesWeights("weightsKey", double.class);
+ * WeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
  * w.set(e1, 1.2);
  * w.set(e2, 3.1);
  * w.set(e3, 15.1);
@@ -418,7 +418,7 @@ public interface Graph {
 	 * names.set(v1, "Alice");
 	 * names.set(v2, "Bob");
 	 *
-	 * Weights.Int ages = g.addVerticesWeights("age", int.class);
+	 * WeightsInt ages = g.addVerticesWeights("age", int.class);
 	 * ages.set(v1, 42);
 	 * ages.set(v2, 35);
 	 * }</pre>
@@ -519,7 +519,7 @@ public interface Graph {
 	 * roadTypes.set(e1, "Asphalt");
 	 * roadTypes.set(e2, "Gravel");
 	 *
-	 * Weights.Double roadLengths = g.addEdgesWeights("roadLength", double.class);
+	 * WeightsDouble roadLengths = g.addEdgesWeights("roadLength", double.class);
 	 * roadLengths.set(e1, 42);
 	 * roadLengths.set(e2, 35);
 	 * }</pre>

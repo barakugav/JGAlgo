@@ -406,18 +406,18 @@ public class ReversedGraphTest extends TestBase {
 
 				Object key1 = new Object(), key2 = new Object();
 				{
-					Weights.Int vWeights1 = gOrig.addVerticesWeights(key1, int.class);
+					WeightsInt vWeights1 = gOrig.addVerticesWeights(key1, int.class);
 					for (int v : gOrig.vertices())
 						vWeights1.set(v, rand.nextInt(10000));
-					Weights.Int vWeights2 = gRev.addVerticesWeights(key2, int.class);
+					WeightsInt vWeights2 = gRev.addVerticesWeights(key2, int.class);
 					for (int v : gRev.vertices())
 						vWeights2.set(v, rand.nextInt(10000));
 				}
 
 				assertEquals(gOrig.getVerticesWeightsKeys(), gRev.getVerticesWeightsKeys());
 				for (Object key : List.of(key1, key2)) {
-					Weights.Int wOrig = gOrig.getVerticesWeights(key);
-					Weights.Int wRev = gRev.getVerticesWeights(key);
+					WeightsInt wOrig = gOrig.getVerticesWeights(key);
+					WeightsInt wRev = gRev.getVerticesWeights(key);
 
 					for (int v : gRev.vertices())
 						assertEquals(wOrig.get(v), wRev.get(v));
@@ -443,18 +443,18 @@ public class ReversedGraphTest extends TestBase {
 
 				Object key1 = new Object(), key2 = new Object();
 				{
-					Weights.Int eWeights1 = gOrig.addEdgesWeights(key1, int.class);
+					WeightsInt eWeights1 = gOrig.addEdgesWeights(key1, int.class);
 					for (int e : gOrig.edges())
 						eWeights1.set(e, rand.nextInt(10000));
-					Weights.Int eWeights2 = gRev.addEdgesWeights(key2, int.class);
+					WeightsInt eWeights2 = gRev.addEdgesWeights(key2, int.class);
 					for (int e : gRev.edges())
 						eWeights2.set(e, rand.nextInt(10000));
 				}
 
 				assertEquals(gOrig.getEdgesWeightsKeys(), gRev.getEdgesWeightsKeys());
 				for (Object key : List.of(key1, key2)) {
-					Weights.Int wOrig = gOrig.getEdgesWeights(key);
-					Weights.Int wRev = gRev.getEdgesWeights(key);
+					WeightsInt wOrig = gOrig.getEdgesWeights(key);
+					WeightsInt wRev = gRev.getEdgesWeights(key);
 
 					for (int e : gRev.edges())
 						assertEquals(wOrig.get(e), wRev.get(e));

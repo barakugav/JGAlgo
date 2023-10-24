@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -85,7 +86,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(false);
@@ -101,7 +102,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(true);
@@ -110,7 +111,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	private class Worker {
 
 		private final IndexGraph g;
-		private final Weights.Bool partition;
+		private final WeightsBool partition;
 		private final WeightFunction w;
 
 		private final BitSet inTree;
@@ -124,7 +125,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(IndexGraph g, Weights.Bool partition, WeightFunction w) {
+		Worker(IndexGraph g, WeightsBool partition, WeightFunction w) {
 			Assertions.Graphs.onlyBipartite(g, partition);
 
 			this.g = g;

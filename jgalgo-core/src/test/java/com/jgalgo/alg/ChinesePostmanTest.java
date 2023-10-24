@@ -23,7 +23,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -77,7 +77,7 @@ public class ChinesePostmanTest extends TestBase {
 		int[] es = g.edges().toIntArray();
 		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 			GraphBuilder b = GraphBuilder.newFrom(g);
-			Weights.Int bWeights = b.addEdgesWeights("weights", int.class);
+			WeightsInt bWeights = b.addEdgesWeights("weights", int.class);
 			for (int e : g.edges())
 				bWeights.set(e, w.weightInt(e));
 

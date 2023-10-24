@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -48,7 +48,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 			RandomIntUnique rand = new RandomIntUnique(0, 163454, seedGen.nextSeed());
-			Weights.Int weight = g.addVerticesWeights("weight", int.class);
+			WeightsInt weight = g.addVerticesWeights("weight", int.class);
 			for (int e : g.vertices())
 				weight.set(e, rand.next());
 

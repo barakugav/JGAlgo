@@ -16,6 +16,15 @@
 package com.jgalgo.io;
 
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
 
 interface WeightsStringer {
 
@@ -35,32 +44,32 @@ interface WeightsStringer {
 			nonNumberEnclosing = true;
 		}
 
-		if (weights instanceof Weights.Byte) {
-			Weights.Byte ws = (Weights.Byte) weights;
+		if (weights instanceof WeightsByte) {
+			WeightsByte ws = (WeightsByte) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Short) {
-			Weights.Short ws = (Weights.Short) weights;
+		} else if (weights instanceof WeightsShort) {
+			WeightsShort ws = (WeightsShort) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Int) {
-			Weights.Int ws = (Weights.Int) weights;
+		} else if (weights instanceof WeightsInt) {
+			WeightsInt ws = (WeightsInt) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Long) {
-			Weights.Long ws = (Weights.Long) weights;
+		} else if (weights instanceof WeightsLong) {
+			WeightsLong ws = (WeightsLong) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Float) {
-			Weights.Float ws = (Weights.Float) weights;
+		} else if (weights instanceof WeightsFloat) {
+			WeightsFloat ws = (WeightsFloat) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Double) {
-			Weights.Double ws = (Weights.Double) weights;
+		} else if (weights instanceof WeightsDouble) {
+			WeightsDouble ws = (WeightsDouble) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof Weights.Bool) {
-			Weights.Bool ws = (Weights.Bool) weights;
+		} else if (weights instanceof WeightsBool) {
+			WeightsBool ws = (WeightsBool) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
 				return elm -> pre + String.valueOf(ws.get(elm)) + post;
@@ -68,8 +77,8 @@ interface WeightsStringer {
 				return elm -> String.valueOf(ws.get(elm));
 			}
 
-		} else if (weights instanceof Weights.Char) {
-			Weights.Char ws = (Weights.Char) weights;
+		} else if (weights instanceof WeightsChar) {
+			WeightsChar ws = (WeightsChar) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
 				return elm -> pre + String.valueOf(ws.get(elm)) + post;
@@ -77,8 +86,8 @@ interface WeightsStringer {
 				return elm -> String.valueOf(ws.get(elm));
 			}
 
-		} else if (weights instanceof Weights.Obj) {
-			Weights.Obj<?> ws = (Weights.Obj<?>) weights;
+		} else if (weights instanceof WeightsObj) {
+			WeightsObj<?> ws = (WeightsObj<?>) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
 				return elm -> pre + String.valueOf(ws.get(elm)) + post;

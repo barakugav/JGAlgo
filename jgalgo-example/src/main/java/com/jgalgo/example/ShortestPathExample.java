@@ -18,7 +18,7 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ShortestPathExample {
@@ -34,7 +34,7 @@ public class ShortestPathExample {
 		int e3 = g.addEdge(v1, v3);
 
 		/* Assign some weights to the edges */
-		Weights.Double w = g.addEdgesWeights("weightsKey", double.class);
+		WeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
 		w.set(e1, 1.2);
 		w.set(e2, 3.1);
 		w.set(e3, 15.1);
