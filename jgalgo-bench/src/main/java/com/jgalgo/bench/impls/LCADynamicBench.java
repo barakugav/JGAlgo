@@ -101,13 +101,18 @@ public class LCADynamicBench {
 	}
 
 	@Benchmark
-	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-linear"), blackhole);
+	public void GabowSimple(Blackhole blackhole) {
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-simple"), blackhole);
 	}
 
 	@Benchmark
-	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-simple"), blackhole);
+	public void GabowLinear(Blackhole blackhole) {
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-ints"), blackhole);
+	}
+
+	@Benchmark
+	public void GabowLongs(Blackhole blackhole) {
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-longs"), blackhole);
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {

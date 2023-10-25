@@ -29,8 +29,8 @@ import java.util.Objects;
  * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
  * in constant time.
  * <p>
- * This implementation is used by the better linear LCA algorithm {@link LowestCommonAncestorDynamicGabowLinear} and
- * rarely should be used directly.
+ * This implementation is used by the better linear LCA algorithm {@link LowestCommonAncestorDynamicGabowInts} and
+ * {@link LowestCommonAncestorDynamicGabowLongs} and rarely should be used directly.
  * <p>
  * Based on the simpler data structure presented in 'Data Structures for Weighted Matching and Nearest Common Ancestors
  * with Linking' by Harold N. Gabow (1990).

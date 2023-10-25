@@ -19,18 +19,18 @@ package com.jgalgo.alg;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
-public class LowestCommonAncestorDynamicGabowLinearTest extends TestBase {
+public class LowestCommonAncestorDynamicGabowLongsTest extends TestBase {
 
 	@Test
 	public void testFullBinaryTreesRandOps() {
-		final long seed = 0xe7af3a14bd2eb884L;
-		LowestCommonAncestorDynamicTestUtils.fullBinaryTreesRandOps(LowestCommonAncestorDynamicGabowLinear::new, seed);
+		final long seed = 0xf4c2c5ff1be1ffa2L;
+		LowestCommonAncestorDynamicTestUtils.fullBinaryTreesRandOps(LowestCommonAncestorDynamicGabowLongs::new, seed);
 	}
 
 	@Test
 	public void testRandTrees() {
-		final long seed = 0xae1b6bdbf6cd69dcL;
-		LowestCommonAncestorDynamicTestUtils.randTrees(LowestCommonAncestorDynamicGabowLinear::new, seed);
+		final long seed = 0xd0846dd66d9c66acL;
+		LowestCommonAncestorDynamicTestUtils.randTrees(LowestCommonAncestorDynamicGabowLongs::new, seed);
 	}
 
 }

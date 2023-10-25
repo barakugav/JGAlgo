@@ -33,11 +33,15 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
  * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
  * in constant time.
  * <p>
+ * This class implements all the bit operations on {@code long} primitive. For a version that uses {@code int} see
+ * {@link LowestCommonAncestorDynamicGabowInts}, which usually perform worse, but may perform better for (significantly)
+ * smaller graphs.
+ * <p>
  * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by Harold N. Gabow (1990).
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDynamic {
+class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncestorDynamic {
 
 	/*
 	 * implementation note: in the original paper, Gabow stated to use look tables for the bit tricks (lsb, msb). It's
@@ -48,12 +52,12 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 	private int vertices2Num;
 	private final LowestCommonAncestorDynamicGabowSimple lca0;
 
-	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
+	private static final int SUB_TREE_MAX_SIZE = Long.SIZE;
 
 	/**
 	 * Create a new dynamic LCA data structure that contains zero vertices.
 	 */
-	LowestCommonAncestorDynamicGabowLinear() {
+	LowestCommonAncestorDynamicGabowLongs() {
 		lca0 = new LowestCommonAncestorDynamicGabowSimple();
 	}
 
@@ -161,17 +165,17 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 
 			assert x1.subTree == y1.subTree;
 			/* calculate LCA within sub tree */
-			int commonAncestors1 = x1.ancestorsBitmap & y1.ancestorsBitmap;
-			Vertex1 a1 = x1.subTree.vertices[31 - Integer.numberOfLeadingZeros(commonAncestors1)];
+			long commonAncestors1 = x1.ancestorsBitmap & y1.ancestorsBitmap;
+			Vertex1 a1 = x1.subTree.vertices[63 - Long.numberOfLeadingZeros(commonAncestors1)];
 			if (a1 != x1) {
-				int x1UncommonAncestors = x1.ancestorsBitmap & ~y1.ancestorsBitmap;
-				ax1 = x1.subTree.vertices[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
+				long x1UncommonAncestors = x1.ancestorsBitmap & ~y1.ancestorsBitmap;
+				ax1 = x1.subTree.vertices[Long.numberOfTrailingZeros(x1UncommonAncestors)];
 			} else if (ax1 == null) {
 				ax1 = x1;
 			}
 			if (a1 != y1) {
-				int x1UncommonAncestors = ~x1.ancestorsBitmap & y1.ancestorsBitmap;
-				ay1 = x1.subTree.vertices[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
+				long x1UncommonAncestors = ~x1.ancestorsBitmap & y1.ancestorsBitmap;
+				ay1 = x1.subTree.vertices[Long.numberOfTrailingZeros(x1UncommonAncestors)];
 			} else if (ay1 == null) {
 				ay1 = y1;
 			}
@@ -184,8 +188,8 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 
 		assert x2.subTree == y2.subTree;
 		/* calculate LCA within sub tree */
-		int commonAncestors = x2.ancestorsBitmap & y2.ancestorsBitmap;
-		return x2.subTree.vertices[31 - Integer.numberOfLeadingZeros(commonAncestors)];
+		long commonAncestors = x2.ancestorsBitmap & y2.ancestorsBitmap;
+		return x2.subTree.vertices[63 - Long.numberOfLeadingZeros(commonAncestors)];
 	}
 
 	@Override
@@ -210,8 +214,8 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		/* level 2 info */
 		final Vertex2 parent;
 		Vertex1 subTree;
-		int idWithinSubTree;
-		int ancestorsBitmap;
+		byte idWithinSubTree;
+		long ancestorsBitmap;
 
 		Vertex2(Vertex2 parent) {
 			this.parent = parent;
@@ -242,12 +246,12 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		/* level 2 info */
 		final Vertex2 top;
 		Vertex2[] vertices;
-		int size;
+		byte size;
 
 		/* level 1 info */
 		Vertex0 subTree;
-		int idWithinSubTree;
-		int ancestorsBitmap;
+		byte idWithinSubTree;
+		long ancestorsBitmap;
 
 		Vertex1(Vertex2 top) {
 			this.top = top;
@@ -280,7 +284,7 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		/* level 1 info */
 		final Vertex1 top;
 		Vertex1[] vertices;
-		int size;
+		byte size;
 
 		/* level 0 info */
 		LowestCommonAncestorDynamic.Vertex lcaId;
@@ -307,9 +311,9 @@ class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDyna
 		// }
 	}
 
-	private static int ithBit(int b) {
-		assert 0 <= b && b < Integer.SIZE;
-		return 1 << b;
+	private static long ithBit(long b) {
+		assert 0 <= b && b < Long.SIZE;
+		return 1L << b;
 	}
 
 }

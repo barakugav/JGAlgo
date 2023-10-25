@@ -144,13 +144,15 @@ public interface LowestCommonAncestorDynamic {
 					switch (impl) {
 						case "gabow-simple":
 							return new LowestCommonAncestorDynamicGabowSimple();
-						case "gabow-linear":
-							return new LowestCommonAncestorDynamicGabowLinear();
+						case "gabow-ints":
+							return new LowestCommonAncestorDynamicGabowInts();
+						case "gabow-longs":
+							return new LowestCommonAncestorDynamicGabowLongs();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				return new LowestCommonAncestorDynamicGabowLinear();
+				return new LowestCommonAncestorDynamicGabowLongs();
 			}
 
 			@Override
