@@ -22,7 +22,6 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 class ArraysUtils {
@@ -103,9 +102,9 @@ class ArraysUtils {
 			if (from == to + 1)
 				return;
 			int pivotIdx = calcPivot(a, from, to, c);
-			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);
-			int lastSmaller = p.firstInt();
-			int firstGreater = p.secondInt();
+			long p = pivotPartition0(a, from, to, pivotIdx, c);
+			int lastSmaller = JGAlgoUtils.long2low(p);
+			int firstGreater = JGAlgoUtils.long2high(p);
 			if (k <= lastSmaller) {
 				to = lastSmaller + 1;
 			} else if (k >= firstGreater) {
@@ -122,9 +121,9 @@ class ArraysUtils {
 			if (from == to + 1)
 				return;
 			int pivotIdx = calcPivot(a, from, to, c);
-			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);
-			int lastSmaller = p.firstInt();
-			int firstGreater = p.secondInt();
+			long p = pivotPartition0(a, from, to, pivotIdx, c);
+			int lastSmaller = JGAlgoUtils.long2low(p);
+			int firstGreater = JGAlgoUtils.long2high(p);
 			if (k <= lastSmaller) {
 				to = lastSmaller + 1;
 			} else if (k >= firstGreater) {
@@ -165,7 +164,7 @@ class ArraysUtils {
 		if (pivotIdx == -1)
 			return 0; // all elements are greater than the pivot
 
-		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();
+		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));
 	}
 
 	/**
@@ -196,10 +195,10 @@ class ArraysUtils {
 		if (pivotIdx == -1)
 			return 0; // all elements are greater than the pivot
 
-		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();
+		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));
 	}
 
-	private static <E> IntIntPair pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator<? super E> c) {
+	private static <E> long pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator<? super E> c) {
 		E pivot = a[pivotIdx];
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
@@ -210,10 +209,10 @@ class ArraysUtils {
 			if (c.compare(a[i], pivot) == 0)
 				ObjectArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
-		return IntIntPair.of(lastSmaller, firstGreater);
+		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);
 	}
 
-	private static IntIntPair pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
+	private static long pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
 		int pivot = a[pivotIdx];
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
@@ -224,7 +223,7 @@ class ArraysUtils {
 			if (c.compare(a[i], pivot) == 0)
 				IntArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
-		return IntIntPair.of(lastSmaller, firstGreater);
+		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);
 	}
 
 	private static <E> int calcPivot(E[] a, int from, int to, Comparator<? super E> c) {
