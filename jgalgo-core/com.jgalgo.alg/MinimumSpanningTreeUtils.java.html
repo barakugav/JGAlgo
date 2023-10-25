@@ -22,46 +22,47 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="nc" id="L29">class MinimumSpanningTreeUtils {</span>
+<span class="nc" id="L30">class MinimumSpanningTreeUtils {</span>
 
-<span class="fc" id="L31">	static abstract class AbstractUndirected implements MinimumSpanningTree {</span>
+<span class="fc" id="L32">	static abstract class AbstractUndirected implements MinimumSpanningTree {</span>
 
 		@Override
 		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
-<span class="fc bfc" id="L35" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
-<span class="fc" id="L36">				return computeMinimumSpanningTree((IndexGraph) g, w);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
+<span class="fc" id="L37">				return computeMinimumSpanningTree((IndexGraph) g, w);</span>
 
-<span class="fc" id="L38">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L39">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L40">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L39">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L41">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="fc" id="L42">			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, w);</span>
-<span class="fc" id="L43">			return new ResultFromIndexResult(indexResult, eiMap);</span>
+<span class="fc" id="L43">			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, w);</span>
+<span class="fc" id="L44">			return new ResultFromIndexResult(indexResult, eiMap);</span>
 		}
 
 		abstract MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w);
 
 	}
 
-<span class="fc" id="L50">	static abstract class AbstractDirected implements MinimumDirectedSpanningTree {</span>
+<span class="fc" id="L51">	static abstract class AbstractDirected implements MinimumDirectedSpanningTree {</span>
 
 		@Override
 		public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
-<span class="fc" id="L55">				return computeMinimumDirectedSpanningTree((IndexGraph) g, w, root);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			if (g instanceof IndexGraph)</span>
+<span class="fc" id="L56">				return computeMinimumDirectedSpanningTree((IndexGraph) g, w, root);</span>
 
-<span class="fc" id="L57">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L58">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L59">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L60">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L61">			int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L58">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L59">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L60">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L61">			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L62">			int iRoot = viMap.idToIndex(root);</span>
 
-<span class="fc" id="L63">			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, w, iRoot);</span>
-<span class="fc" id="L64">			return new ResultFromIndexResult(indexResult, eiMap);</span>
+<span class="fc" id="L64">			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, w, iRoot);</span>
+<span class="fc" id="L65">			return new ResultFromIndexResult(indexResult, eiMap);</span>
 		}
 
 		abstract MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w,
@@ -72,20 +73,24 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	static class ResultImpl implements MinimumSpanningTree.Result {
 
 		private final IntCollection edges;
-<span class="fc" id="L75">		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntLists.emptyList());</span>
+<span class="fc" id="L76">		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);</span>
 
-<span class="fc" id="L77">		ResultImpl(IntCollection edges) {</span>
-<span class="fc" id="L78">			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
-<span class="fc" id="L79">		}</span>
+<span class="fc" id="L78">		ResultImpl(IntCollection edges) {</span>
+<span class="fc" id="L79">			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L80">		}</span>
+
+<span class="fc" id="L82">		ResultImpl(int[] edges) {</span>
+<span class="fc" id="L83">			this.edges = ImmutableIntArraySet.withNaiveContains(edges);</span>
+<span class="fc" id="L84">		}</span>
 
 		@Override
 		public IntCollection edges() {
-<span class="fc" id="L83">			return edges;</span>
+<span class="fc" id="L88">			return edges;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L88">			return edges().toString();</span>
+<span class="nc" id="L93">			return edges().toString();</span>
 		}
 
 	}
@@ -95,14 +100,14 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		private final MinimumSpanningTree.Result res;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L98">		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {</span>
-<span class="fc" id="L99">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L100">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L101">		}</span>
+<span class="fc" id="L103">		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {</span>
+<span class="fc" id="L104">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L105">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L106">		}</span>
 
 		@Override
 		public IntCollection edges() {
-<span class="fc" id="L105">			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);</span>
+<span class="fc" id="L110">			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);</span>
 		}
 
 	}

@@ -20,7 +20,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L25">abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {</span>
 
@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L52">		}</span>
 
 		@Override
-		public IntCollection getVertexBiCcs(int vertex) {
+		public IntSet getVertexBiCcs(int vertex) {
 <span class="fc" id="L56">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
 		}
 
@@ -62,13 +62,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		}
 
 		@Override
-		public IntCollection getBiCcVertices(int biccIdx) {
-<span class="fc" id="L66">			return IndexIdMaps.indexToIdCollection(res.getBiCcVertices(biccIdx), viMap);</span>
+		public IntSet getBiCcVertices(int biccIdx) {
+<span class="fc" id="L66">			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);</span>
 		}
 
 		@Override
-		public IntCollection getBiCcEdges(int biccIdx) {
-<span class="fc" id="L71">			return IndexIdMaps.indexToIdCollection(res.getBiCcEdges(biccIdx), eiMap);</span>
+		public IntSet getBiCcEdges(int biccIdx) {
+<span class="fc" id="L71">			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);</span>
 		}
 
 	}

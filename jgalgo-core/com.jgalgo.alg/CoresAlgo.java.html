@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Cores computing algorithm.
@@ -118,7 +118,7 @@ public interface CoresAlgo {
 		 * @param  core the core number (order)
 		 * @return      the vertices of the core
 		 */
-		IntCollection coreVertices(int core);
+		IntSet coreVertices(int core);
 
 	}
 

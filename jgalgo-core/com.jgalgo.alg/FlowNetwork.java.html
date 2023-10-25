@@ -21,7 +21,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -133,7 +133,7 @@ public interface FlowNetwork {
 	 * @param  sources a set of source vertices
 	 * @return         the sum of flow units going out of {@code sources}
 	 */
-	default double getFlowSum(Graph g, IntCollection sources) {
+	default double getFlowSum(Graph g, IntIterable sources) {
 <span class="fc" id="L137">		double sum = 0;</span>
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
 <span class="fc bfc" id="L139" title="All 2 branches covered.">			for (int source : sources) {</span>
@@ -166,7 +166,7 @@ public interface FlowNetwork {
 	 * @param  cost  a edge weight cost function
 	 * @return       the sum of the cost of the flow along the edges
 	 */
-	default double getCostSum(IntCollection edges, WeightFunction cost) {
+	default double getCostSum(IntIterable edges, WeightFunction cost) {
 <span class="nc" id="L170">		double sum = 0;</span>
 <span class="nc bnc" id="L171" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
 <span class="nc" id="L172">			WeightFunctionInt costInt = (WeightFunctionInt) cost;</span>

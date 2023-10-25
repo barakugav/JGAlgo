@@ -20,33 +20,33 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="nc" id="L25">class MaximalCliquesUtils {</span>
 
 <span class="fc" id="L27">	static abstract class AbstractImpl implements MaximalCliques {</span>
 
 		@Override
-		public Iterator&lt;IntCollection&gt; iterateMaximalCliques(Graph g) {
+		public Iterator&lt;IntSet&gt; iterateMaximalCliques(Graph g) {
 <span class="pc bpc" id="L31" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
 <span class="nc" id="L32">				return iterateMaximalCliques((IndexGraph) g);</span>
 
 <span class="fc" id="L34">			IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L35">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L36">			Iterator&lt;IntCollection&gt; indexResult = iterateMaximalCliques(iGraph);</span>
+<span class="fc" id="L36">			Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
 <span class="fc" id="L37">			return new ResultFromIndexResult(indexResult, viMap);</span>
 		}
 
-		abstract Iterator&lt;IntCollection&gt; iterateMaximalCliques(IndexGraph g);
+		abstract Iterator&lt;IntSet&gt; iterateMaximalCliques(IndexGraph g);
 
 	}
 
-	private static class ResultFromIndexResult implements Iterator&lt;IntCollection&gt; {
+	private static class ResultFromIndexResult implements Iterator&lt;IntSet&gt; {
 
-		private final Iterator&lt;IntCollection&gt; indexResult;
+		private final Iterator&lt;IntSet&gt; indexResult;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L49">		ResultFromIndexResult(Iterator&lt;IntCollection&gt; indexResult, IndexIdMap viMap) {</span>
+<span class="fc" id="L49">		ResultFromIndexResult(Iterator&lt;IntSet&gt; indexResult, IndexIdMap viMap) {</span>
 <span class="fc" id="L50">			this.indexResult = indexResult;</span>
 <span class="fc" id="L51">			this.viMap = viMap;</span>
 <span class="fc" id="L52">		}</span>
@@ -57,8 +57,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		}
 
 		@Override
-		public IntCollection next() {
-<span class="fc" id="L61">			return IndexIdMaps.indexToIdCollection(indexResult.next(), viMap);</span>
+		public IntSet next() {
+<span class="fc" id="L61">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
 		}
 
 	}

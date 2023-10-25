@@ -16,11 +16,11 @@
 package com.jgalgo.internal.util;
 
 import java.util.NoSuchElementException;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
-public class Range extends AbstractIntList {
+public class Range extends AbstractIntSet {
 
 	private final int from, to;
 
@@ -48,71 +48,28 @@ public class Range extends AbstractIntList {
 	}
 
 	@Override
-	public IntListIterator listIterator(int index) {
-<span class="fc" id="L52">		return new IntListIterator() {</span>
+	public IntIterator iterator() {
+<span class="fc" id="L52">		return new IntIterator() {</span>
 
-			int x;
-
-			@Override
-			public int previousInt() {
-<span class="nc bnc" id="L58" title="All 2 branches missed.">				if (x &lt;= from)</span>
-<span class="nc" id="L59">					throw new NoSuchElementException();</span>
-<span class="nc" id="L60">				return --x;</span>
-			}
+<span class="fc" id="L54">			int x = from;</span>
 
 			@Override
 			public int nextInt() {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">				if (x &gt;= to)</span>
-<span class="nc" id="L66">					throw new NoSuchElementException();</span>
-<span class="fc" id="L67">				return x++;</span>
-			}
-
-			@Override
-			public boolean hasPrevious() {
-<span class="nc bnc" id="L72" title="All 2 branches missed.">				return x &gt; from;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">				if (x &gt;= to)</span>
+<span class="nc" id="L59">					throw new NoSuchElementException();</span>
+<span class="fc" id="L60">				return x++;</span>
 			}
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				return x &lt; to;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				return x &lt; to;</span>
 			}
-
-			@Override
-			public int nextIndex() {
-<span class="nc" id="L82">				return x - from;</span>
-			}
-
-			@Override
-			public int previousIndex() {
-<span class="nc" id="L87">				return x - from - 1;</span>
-			}
-
 		};
 	}
 
 	@Override
-	public IntList subList(int from, int to) {
-<span class="nc bnc" id="L95" title="All 4 branches missed.">		if (from == 0 &amp;&amp; to == size())</span>
-<span class="nc" id="L96">			return this;</span>
-<span class="nc" id="L97">		ensureIndex(from);</span>
-<span class="nc" id="L98">		ensureIndex(to);</span>
-<span class="nc" id="L99">		return new Range(this.from + from, this.from + to);</span>
-	}
-
-	@Override
-	public int getInt(int index) {
-<span class="nc" id="L104">		ensureIndex(index);</span>
-<span class="nc" id="L105">		return from + index;</span>
-	}
-
-	@Override
-	public int indexOf(int k) {
-<span class="nc bnc" id="L110" title="All 2 branches missed.">		return contains(k) ? k - from : -1;</span>
-	}
-
-	@Override
-	public int lastIndexOf(int k) {
-<span class="nc bnc" id="L115" title="All 2 branches missed.">		return contains(k) ? k - from : -1;</span>
+	public IntSpliterator spliterator() {
+<span class="nc" id="L72">		return super.spliterator();</span>
 	}
 
 }

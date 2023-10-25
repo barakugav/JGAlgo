@@ -494,9 +494,27 @@ public class JGAlgoUtils {
 		};
 	}
 
+	public static int[] toArray(BitSet bitSet) {
+<span class="fc" id="L498">		int[] arr = new int[bitSet.cardinality()];</span>
+<span class="fc" id="L499">		int i = 0;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">		for (int b : iterable(bitSet))</span>
+<span class="fc" id="L501">			arr[i++] = b;</span>
+<span class="fc" id="L502">		return arr;</span>
+	}
+
 	@FunctionalInterface
-	public static interface BiInt2IntFunction {
+	public static interface BiInt2IntFunc {
 		int apply(int a1, int a2);
+	}
+
+	@FunctionalInterface
+	public static interface BiInt2LongFunc {
+		long apply(int a1, int a2);
+	}
+
+	@FunctionalInterface
+	public static interface BiInt2ObjFunc&lt;R&gt; {
+		R apply(int a1, int a2);
 	}
 
 	@FunctionalInterface
@@ -505,38 +523,38 @@ public class JGAlgoUtils {
 	}
 
 	public static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
-<span class="pc bpc" id="L508" title="1 of 2 branches missed.">		if (parallel) {</span>
-<span class="fc" id="L509">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
+<span class="pc bpc" id="L526" title="1 of 2 branches missed.">		if (parallel) {</span>
+<span class="fc" id="L527">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
 		} else {
-<span class="nc" id="L511">			IntArrays.quickSort(arr, from, to, cmp);</span>
+<span class="nc" id="L529">			IntArrays.quickSort(arr, from, to, cmp);</span>
 		}
-<span class="fc" id="L513">	}</span>
+<span class="fc" id="L531">	}</span>
 
 	public static ForkJoinPool getPool() {
-<span class="fc" id="L516">		ForkJoinPool current = ForkJoinTask.getPool();</span>
-<span class="pc bpc" id="L517" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
+<span class="fc" id="L534">		ForkJoinPool current = ForkJoinTask.getPool();</span>
+<span class="pc bpc" id="L535" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
 	}
 
 	public static &lt;Exec extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(Exec exec) {
-<span class="nc" id="L521">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="nc" id="L539">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	public static &lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(Exec exec) {
-<span class="nc" id="L525">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
+<span class="nc" id="L543">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
 	}
 
 	private static class RecursiveActionFromRunnable&lt;Exec extends Runnable &amp; Serializable&gt; extends RecursiveAction {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L532">		RecursiveActionFromRunnable(Exec exec) {</span>
-<span class="nc" id="L533">			this.exec = exec;</span>
-<span class="nc" id="L534">		}</span>
+<span class="nc" id="L550">		RecursiveActionFromRunnable(Exec exec) {</span>
+<span class="nc" id="L551">			this.exec = exec;</span>
+<span class="nc" id="L552">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="nc" id="L538">			exec.run();</span>
-<span class="nc" id="L539">		}</span>
+<span class="nc" id="L556">			exec.run();</span>
+<span class="nc" id="L557">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;
@@ -544,48 +562,48 @@ public class JGAlgoUtils {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L547">		RecursiveTaskFromSupplier(Exec exec) {</span>
-<span class="nc" id="L548">			this.exec = exec;</span>
-<span class="nc" id="L549">		}</span>
+<span class="nc" id="L565">		RecursiveTaskFromSupplier(Exec exec) {</span>
+<span class="nc" id="L566">			this.exec = exec;</span>
+<span class="nc" id="L567">		}</span>
 
 		@Override
 		protected V compute() {
-<span class="nc" id="L553">			return exec.get();</span>
+<span class="nc" id="L571">			return exec.get();</span>
 		}
 	}
 
 	private static class LabeledObj {
 		private final String s;
 
-<span class="fc" id="L560">		LabeledObj(String label) {</span>
-<span class="fc" id="L561">			this.s = Objects.requireNonNull(label);</span>
-<span class="fc" id="L562">		}</span>
+<span class="fc" id="L578">		LabeledObj(String label) {</span>
+<span class="fc" id="L579">			this.s = Objects.requireNonNull(label);</span>
+<span class="fc" id="L580">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L566">			return s;</span>
+<span class="nc" id="L584">			return s;</span>
 		}
 	}
 
 	public static Object labeledObj(String label) {
-<span class="fc" id="L571">		return new LabeledObj(label);</span>
+<span class="fc" id="L589">		return new LabeledObj(label);</span>
 	}
 
 	public static WeightFunction potentialWeightFunc(IndexGraph g, WeightFunction w, double[] potential) {
-<span class="fc" id="L575">		return e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L593">		return e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	public static WeightFunctionInt potentialWeightFunc(IndexGraph g, WeightFunctionInt w, int[] potential) {
-<span class="fc" id="L579">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L597">		return e -&gt; w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L583">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
-<span class="fc" id="L584">	};</span>
+<span class="fc" id="L601">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
+<span class="fc" id="L602">	};</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T&gt; Consumer&lt;T&gt; consumerNoOp() {
-<span class="fc" id="L588">		return ConsumerNoOp;</span>
+<span class="fc" id="L606">		return ConsumerNoOp;</span>
 	}
 
 	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
@@ -594,149 +612,149 @@ public class JGAlgoUtils {
 
 		private final int defVal;
 
-<span class="fc" id="L597">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
-<span class="fc" id="L598">			this.defVal = defVal;</span>
-<span class="fc" id="L599">		}</span>
+<span class="fc" id="L615">		Int2IntMapEmptyWithDefVal(int defVal) {</span>
+<span class="fc" id="L616">			this.defVal = defVal;</span>
+<span class="fc" id="L617">		}</span>
 
 		@Override
 		public int get(int key) {
-<span class="fc" id="L603">			return defVal;</span>
+<span class="fc" id="L621">			return defVal;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L608">			return true;</span>
+<span class="fc" id="L626">			return true;</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L613">			return 0;</span>
+<span class="fc" id="L631">			return 0;</span>
 		}
 
 		@Override
-<span class="fc" id="L617">		public void clear() {}</span>
+<span class="fc" id="L635">		public void clear() {}</span>
 
 		@Override
 		public void defaultReturnValue(int rv) {
-<span class="nc" id="L621">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L639">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public int defaultReturnValue() {
-<span class="nc" id="L626">			return defVal;</span>
+<span class="nc" id="L644">			return defVal;</span>
 		}
 
 		@Override
 		public int remove(int key) {
-<span class="fc" id="L631">			return defVal;</span>
+<span class="fc" id="L649">			return defVal;</span>
 		}
 
 		@Override
 		public ObjectSet&lt;Int2IntMap.Entry&gt; int2IntEntrySet() {
-<span class="fc" id="L636">			return ObjectSets.emptySet();</span>
+<span class="fc" id="L654">			return ObjectSets.emptySet();</span>
 		}
 
 		@Override
 		public IntSet keySet() {
-<span class="nc" id="L641">			return IntSets.emptySet();</span>
+<span class="nc" id="L659">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public IntCollection values() {
-<span class="fc" id="L646">			return IntSets.emptySet();</span>
+<span class="fc" id="L664">			return IntSets.emptySet();</span>
 		}
 
 		@Override
 		public boolean containsKey(int key) {
-<span class="nc" id="L651">			return false;</span>
+<span class="nc" id="L669">			return false;</span>
 		}
 
 		@Override
 		public boolean containsValue(int value) {
-<span class="nc" id="L656">			return false;</span>
+<span class="nc" id="L674">			return false;</span>
 		}
 	}
 
-<span class="fc" id="L660">	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);</span>
+<span class="fc" id="L678">	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);</span>
 
 	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
-<span class="fc bfc" id="L663" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
-<span class="fc" id="L664">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L665">			int mid = from + half;</span>
-<span class="fc bfc" id="L666" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
-<span class="fc" id="L667">				from = mid + 1;</span>
-<span class="fc" id="L668">				len = len - half - 1;</span>
+<span class="fc bfc" id="L681" title="All 2 branches covered.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L682">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L683">			int mid = from + half;</span>
+<span class="fc bfc" id="L684" title="All 2 branches covered.">			if (idx2key.applyAsInt(mid) &lt; key) {</span>
+<span class="fc" id="L685">				from = mid + 1;</span>
+<span class="fc" id="L686">				len = len - half - 1;</span>
 			} else {
-<span class="fc" id="L670">				len = half;</span>
+<span class="fc" id="L688">				len = half;</span>
 			}
-<span class="fc" id="L672">		}</span>
-<span class="fc" id="L673">		return from;</span>
+<span class="fc" id="L690">		}</span>
+<span class="fc" id="L691">		return from;</span>
 	}
 
 	private static int upperBound(int to, int from, int key, IntUnaryOperator idx2key) {
-<span class="fc bfc" id="L677" title="All 2 branches covered.">		for (int len = from - to; len &gt; 0;) {</span>
-<span class="fc" id="L678">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L679">			int mid = to + half;</span>
-<span class="fc bfc" id="L680" title="All 2 branches covered.">			if (key &lt; idx2key.applyAsInt(mid)) {</span>
-<span class="fc" id="L681">				len = half;</span>
+<span class="fc bfc" id="L695" title="All 2 branches covered.">		for (int len = from - to; len &gt; 0;) {</span>
+<span class="fc" id="L696">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L697">			int mid = to + half;</span>
+<span class="fc bfc" id="L698" title="All 2 branches covered.">			if (key &lt; idx2key.applyAsInt(mid)) {</span>
+<span class="fc" id="L699">				len = half;</span>
 			} else {
-<span class="fc" id="L683">				to = mid + 1;</span>
-<span class="fc" id="L684">				len = len - half - 1;</span>
+<span class="fc" id="L701">				to = mid + 1;</span>
+<span class="fc" id="L702">				len = len - half - 1;</span>
 			}
-<span class="fc" id="L686">		}</span>
-<span class="fc" id="L687">		return to;</span>
+<span class="fc" id="L704">		}</span>
+<span class="fc" id="L705">		return to;</span>
 	}
 
 	public static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
-<span class="pc bpc" id="L691" title="1 of 2 branches missed.">		for (int len = to - from; len &gt; 0;) {</span>
-<span class="fc" id="L692">			int half = len &gt;&gt; 1;</span>
-<span class="fc" id="L693">			int mid = from + half;</span>
-<span class="fc" id="L694">			int midKey = idx2key.applyAsInt(mid);</span>
-<span class="fc bfc" id="L695" title="All 2 branches covered.">			if (midKey &lt; key) {</span>
-<span class="fc" id="L696">				from = mid + 1;</span>
-<span class="fc" id="L697">				len = len - half - 1;</span>
-<span class="fc bfc" id="L698" title="All 2 branches covered.">			} else if (key &lt; midKey) {</span>
-<span class="fc" id="L699">				len = half;</span>
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">		for (int len = to - from; len &gt; 0;) {</span>
+<span class="fc" id="L710">			int half = len &gt;&gt; 1;</span>
+<span class="fc" id="L711">			int mid = from + half;</span>
+<span class="fc" id="L712">			int midKey = idx2key.applyAsInt(mid);</span>
+<span class="fc bfc" id="L713" title="All 2 branches covered.">			if (midKey &lt; key) {</span>
+<span class="fc" id="L714">				from = mid + 1;</span>
+<span class="fc" id="L715">				len = len - half - 1;</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">			} else if (key &lt; midKey) {</span>
+<span class="fc" id="L717">				len = half;</span>
 			} else {
-<span class="fc" id="L701">				int left = lowerBound(from, mid, key, idx2key);</span>
-<span class="fc" id="L702">				from += len;</span>
-<span class="fc" id="L703">				int right = upperBound(++mid, from, key, idx2key);</span>
-<span class="fc" id="L704">				return IntIntPair.of(left, right);</span>
+<span class="fc" id="L719">				int left = lowerBound(from, mid, key, idx2key);</span>
+<span class="fc" id="L720">				from += len;</span>
+<span class="fc" id="L721">				int right = upperBound(++mid, from, key, idx2key);</span>
+<span class="fc" id="L722">				return IntIntPair.of(left, right);</span>
 			}
-<span class="fc" id="L706">		}</span>
-<span class="nc" id="L707">		return null;</span>
+<span class="fc" id="L724">		}</span>
+<span class="nc" id="L725">		return null;</span>
 	}
 
 	public static class Variant {
 
 		final Object val;
 
-<span class="fc" id="L714">		private Variant(Object val) {</span>
-<span class="fc" id="L715">			this.val = Objects.requireNonNull(val);</span>
-<span class="fc" id="L716">		}</span>
+<span class="fc" id="L732">		private Variant(Object val) {</span>
+<span class="fc" id="L733">			this.val = Objects.requireNonNull(val);</span>
+<span class="fc" id="L734">		}</span>
 
 		public boolean contains(Class&lt;?&gt; type) {
-<span class="fc" id="L719">			return type.isInstance(val);</span>
+<span class="fc" id="L737">			return type.isInstance(val);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;E&gt; Optional&lt;E&gt; get(Class&lt;E&gt; type) {
-<span class="pc bpc" id="L724" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
+<span class="pc bpc" id="L742" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
 		}
 
 		@SuppressWarnings(&quot;unused&quot;)
 		public static class Of2&lt;A, B&gt; extends Variant {
 
 			private Of2(Object val) {
-<span class="fc" id="L731">				super(val);</span>
-<span class="fc" id="L732">			}</span>
+<span class="fc" id="L749">				super(val);</span>
+<span class="fc" id="L750">			}</span>
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withA(A val) {
-<span class="fc" id="L735">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L753">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withB(B val) {
-<span class="fc" id="L739">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L757">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 		}
@@ -744,15 +762,15 @@ public class JGAlgoUtils {
 	}
 
 	public static long longCompose(int low, int high) {
-<span class="fc" id="L747">		return ((high &amp; 0xffffffffL) &lt;&lt; 32) | ((low &amp; 0xffffffffL) &lt;&lt; 0);</span>
+<span class="fc" id="L765">		return ((high &amp; 0xffffffffL) &lt;&lt; 32) | ((low &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	public static int long2low(long endpoints) {
-<span class="fc" id="L751">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
+<span class="fc" id="L769">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	public static int long2high(long endpoints) {
-<span class="fc" id="L755">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
+<span class="fc" id="L773">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 }

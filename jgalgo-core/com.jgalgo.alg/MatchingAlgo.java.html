@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Maximum/minimum matching algorithm.
@@ -102,7 +101,7 @@ public interface MatchingAlgo {
 	 * @return a default implementation of {@link MatchingAlgo}
 	 */
 	static MatchingAlgo newInstance() {
-<span class="fc" id="L105">		return newBuilder().build();</span>
+<span class="fc" id="L104">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -113,73 +112,73 @@ public interface MatchingAlgo {
 	 * @return a new builder that can build {@link MatchingAlgo} objects
 	 */
 	static MatchingAlgo.Builder newBuilder() {
-<span class="fc" id="L116">		return new MatchingAlgo.Builder() {</span>
+<span class="fc" id="L115">		return new MatchingAlgo.Builder() {</span>
 
-<span class="fc" id="L118">			boolean cardinality = false;</span>
-<span class="fc" id="L119">			boolean isBipartite = false;</span>
+<span class="fc" id="L117">			boolean cardinality = false;</span>
+<span class="fc" id="L118">			boolean isBipartite = false;</span>
 			String impl;
 
 			@Override
 			public MatchingAlgo build() {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L125" title="All 8 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L124" title="All 8 branches missed.">					switch (impl) {</span>
 						case &quot;cardinality-bipartite-hopcroft-karp&quot;:
-<span class="nc" id="L127">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
+<span class="nc" id="L126">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
 						case &quot;cardinality-gabow-1976&quot;:
-<span class="nc" id="L129">							return new MatchingCardinalityGabow1976();</span>
+<span class="nc" id="L128">							return new MatchingCardinalityGabow1976();</span>
 						case &quot;bipartite-hungarian-method&quot;:
-<span class="nc" id="L131">							return new MatchingWeightedBipartiteHungarianMethod();</span>
+<span class="nc" id="L130">							return new MatchingWeightedBipartiteHungarianMethod();</span>
 						case &quot;bipartite-sssp&quot;:
-<span class="nc" id="L133">							return new MatchingWeightedBipartiteSSSP();</span>
+<span class="nc" id="L132">							return new MatchingWeightedBipartiteSSSP();</span>
 						case &quot;gabow-1990&quot;:
-<span class="nc" id="L135">							return new MatchingWeightedGabow1990();</span>
+<span class="nc" id="L134">							return new MatchingWeightedGabow1990();</span>
 						case &quot;gabow-1990-simpler&quot;:
-<span class="nc" id="L137">							return new MatchingWeightedGabow1990Simpler();</span>
+<span class="nc" id="L136">							return new MatchingWeightedGabow1990Simpler();</span>
 						case &quot;blossom-v&quot;:
-<span class="nc" id="L139">							return new MatchingWeightedBlossomV();</span>
+<span class="nc" id="L138">							return new MatchingWeightedBlossomV();</span>
 						default:
-<span class="nc" id="L141">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L140">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc bfc" id="L144" title="All 2 branches covered.">				final MatchingAlgo cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()</span>
-<span class="fc" id="L145">						: new MatchingCardinalityGabow1976();</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (cardinality) {</span>
-<span class="fc" id="L147">					return cardinalityAlgo;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				final MatchingAlgo cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()</span>
+<span class="fc" id="L144">						: new MatchingCardinalityGabow1976();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (cardinality) {</span>
+<span class="fc" id="L146">					return cardinalityAlgo;</span>
 				} else {
-<span class="fc" id="L149">					final MatchingAlgo weightedAlgo = new MatchingWeightedBlossomV();</span>
-<span class="fc" id="L150">					return new MatchingAlgo() {</span>
+<span class="fc" id="L148">					final MatchingAlgo weightedAlgo = new MatchingWeightedBlossomV();</span>
+<span class="fc" id="L149">					return new MatchingAlgo() {</span>
 
 						@Override
 						public Matching computeMaximumCardinalityMatching(Graph g) {
-<span class="nc" id="L154">							return cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="nc" id="L153">							return cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
 						}
 
 						@Override
 						public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L159" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
-<span class="fc" id="L161">									: weightedAlgo.computeMaximumWeightedMatching(g, w);</span>
+<span class="pc bpc" id="L158" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L160">									: weightedAlgo.computeMaximumWeightedMatching(g, w);</span>
 						}
 
 						@Override
 						public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L166" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">							return isCardinality ? new Matchings.MatchingImpl(g.indexGraph(), IntLists.emptyList())</span>
-<span class="nc" id="L168">									: weightedAlgo.computeMinimumWeightedMatching(g, w);</span>
+<span class="nc bnc" id="L165" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">							return isCardinality ? Matchings.MatchingImpl.emptyMatching(g.indexGraph())</span>
+<span class="nc" id="L167">									: weightedAlgo.computeMinimumWeightedMatching(g, w);</span>
 						}
 
 						@Override
 						public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L173" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
-<span class="nc" id="L175">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
+<span class="nc bnc" id="L172" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="nc" id="L174">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
 						}
 
 						@Override
 						public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L180" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
-<span class="fc" id="L182">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
+<span class="pc bpc" id="L179" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L181">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
 						}
 
 					};
@@ -188,26 +187,26 @@ public interface MatchingAlgo {
 
 			@Override
 			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
-<span class="fc" id="L191">				isBipartite = bipartite;</span>
-<span class="fc" id="L192">				return this;</span>
+<span class="fc" id="L190">				isBipartite = bipartite;</span>
+<span class="fc" id="L191">				return this;</span>
 			}
 
 			@Override
 			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
-<span class="fc" id="L197">				this.cardinality = cardinality;</span>
-<span class="fc" id="L198">				return this;</span>
+<span class="fc" id="L196">				this.cardinality = cardinality;</span>
+<span class="fc" id="L197">				return this;</span>
 			}
 
 			@Override
 			public MatchingAlgo.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L203" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L205">						impl = (String) value;</span>
-<span class="nc" id="L206">						break;</span>
+<span class="nc" id="L204">						impl = (String) value;</span>
+<span class="nc" id="L205">						break;</span>
 					default:
-<span class="nc" id="L208">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L207">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L210">				return this;</span>
+<span class="nc" id="L209">				return this;</span>
 			}
 		};
 	}
@@ -262,7 +261,7 @@ public interface MatchingAlgo {
 		 * @return       this builder
 		 */
 		default MatchingAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L265">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L264">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

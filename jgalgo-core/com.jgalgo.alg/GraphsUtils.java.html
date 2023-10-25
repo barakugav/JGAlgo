@@ -19,7 +19,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
  * Static methods class for {@linkplain Graph graphs}.
@@ -30,7 +30,7 @@ public class GraphsUtils {
 
 	private GraphsUtils() {}
 
-	static int[] calcDegree(IndexGraph g, IntCollection edges) {
+	static int[] calcDegree(IndexGraph g, IntIterable edges) {
 <span class="fc" id="L34">		int[] degree = new int[g.vertices().size()];</span>
 <span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int e : edges) {</span>
 <span class="fc" id="L36">			degree[g.edgeSource(e)]++;</span>

@@ -36,7 +36,7 @@ import com.jgalgo.graph.IndexIdMap;
 <span class="fc" id="L36">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
 <span class="fc" id="L38">			VertexPartition indexResult = findStronglyConnectedComponents(iGraph);</span>
-<span class="fc" id="L39">			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L39">			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);</span>
 		}
 
 		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
@@ -70,7 +70,7 @@ import com.jgalgo.graph.IndexIdMap;
 <span class="fc" id="L70">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
 <span class="fc" id="L72">			VertexPartition indexResult = findWeaklyConnectedComponents(iGraph);</span>
-<span class="fc" id="L73">			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L73">			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);</span>
 		}
 
 		@Override

@@ -49,8 +49,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="pc bpc" id="L49" title="1 of 2 branches missed.">			else if (end == -1)</span>
 <span class="fc" id="L50">				end = u;</span>
 			else
-<span class="nc" id="L52">				throw new IllegalArgumentException(</span>
-						&quot;More than two vertices have an odd degree (&quot; + start + &quot;, &quot; + end + &quot;, &quot; + u + &quot;)&quot;);
+<span class="nc" id="L52">				throw new IllegalArgumentException(&quot;More than two vertices have an odd degree. Vertices indices: &quot;</span>
+						+ start + &quot;, &quot; + end + &quot;, &quot; + u);
 		}
 <span class="pc bpc" id="L55" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>
 <span class="nc" id="L56">			throw new IllegalArgumentException(</span>
@@ -124,18 +124,18 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L124">					start = u;</span>
 				} else {
 <span class="nc" id="L126">					throw new IllegalArgumentException(</span>
-							&quot;More than one vertex have an extra out edge (&quot; + start + &quot;, &quot; + u + &quot;)&quot;);
+							&quot;More than one vertex have an extra out edge. Vertices indices: &quot; + start + &quot;, &quot; + u);
 				}
 <span class="pc bpc" id="L129" title="1 of 2 branches missed.">			} else if (outD + 1 == inD) {</span>
 <span class="pc bpc" id="L130" title="1 of 2 branches missed.">				if (end == -1) {</span>
 <span class="fc" id="L131">					end = u;</span>
 				} else {
 <span class="nc" id="L133">					throw new IllegalArgumentException(</span>
-							&quot;More than one vertex have an extra in edge (&quot; + end + &quot;, &quot; + u + &quot;)&quot;);
+							&quot;More than one vertex have an extra in edge. Vertices indices: &quot; + end + &quot;, &quot; + u);
 				}
 			} else {
 <span class="nc" id="L137">				throw new IllegalArgumentException(</span>
-						&quot;Can't compute Eulerian tour with vertex degrees (&quot; + u + &quot;: in=&quot; + inD + &quot; out=&quot; + outD + &quot;)&quot;);
+						&quot;Can't compute Eulerian tour with vertex degrees, index=&quot; + u + &quot;: in=&quot; + inD + &quot; out=&quot; + outD);
 			}
 		}
 <span class="pc bpc" id="L141" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>

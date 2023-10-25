@@ -67,8 +67,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 <span class="fc" id="L67">				int v = g.edgeTarget(e);</span>
 <span class="fc" id="L68">				int oldVal = ensureEdgesMapMutable(edges, u).put(v, e);</span>
 <span class="pc bpc" id="L69" title="1 of 2 branches missed.">				if (oldVal != -1)</span>
-<span class="nc" id="L70">					throw new IllegalStateException(</span>
-							&quot;Parallel edge (&quot; + u + &quot;,&quot; + v + &quot;) already exists. Parallel edges are not allowed.&quot;);
+<span class="nc" id="L70">					throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + u + &quot;,idx=&quot; + v</span>
+							+ &quot;) already exists. Parallel edges are not allowed.&quot;);
 <span class="pc bpc" id="L72" title="1 of 2 branches missed.">				if (u != v) {</span>
 <span class="fc" id="L73">					int oldVal2 = ensureEdgesMapMutable(edges, v).put(u, e);</span>
 <span class="pc bnc" id="L74" title="All 2 branches missed.">					assert oldVal2 == -1;</span>
@@ -165,7 +165,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	public int addEdge(int source, int target) {
 <span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (getEdge(source, target) != -1)</span>
 <span class="nc" id="L167">			throw new IllegalArgumentException(</span>
-					&quot;Edge (&quot; + source + &quot;,&quot; + target + &quot;) already exists. Parallel edges are not allowed.&quot;);
+					&quot;Edge (idx=&quot; + source + &quot;,idx=&quot; + target + &quot;) already exists. Parallel edges are not allowed.&quot;);
 <span class="fc" id="L169">		int edge = super.addEdge(source, target);</span>
 
 <span class="fc" id="L171">		ensureEdgesMapMutable(edges, source).put(target, edge);</span>

@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -57,9 +57,9 @@ public interface MaximalCliques {
 	 * @param  g a graph
 	 * @return   a collection containing all maximal cliques in the graph
 	 */
-	default Collection&lt;IntCollection&gt; findAllMaximalCliques(Graph g) {
-<span class="fc" id="L61">		List&lt;IntCollection&gt; cliques = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (Iterator&lt;IntCollection&gt; it = iterateMaximalCliques(g); it.hasNext();)</span>
+	default Collection&lt;IntSet&gt; findAllMaximalCliques(Graph g) {
+<span class="fc" id="L61">		List&lt;IntSet&gt; cliques = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (Iterator&lt;IntSet&gt; it = iterateMaximalCliques(g); it.hasNext();)</span>
 <span class="fc" id="L63">			cliques.add(it.next());</span>
 <span class="fc" id="L64">		return cliques;</span>
 	}
@@ -73,7 +73,7 @@ public interface MaximalCliques {
 	 * @param  g a graph
 	 * @return   an iterator that iterates over all maximal cliques in the graph
 	 */
-	Iterator&lt;IntCollection&gt; iterateMaximalCliques(Graph g);
+	Iterator&lt;IntSet&gt; iterateMaximalCliques(Graph g);
 
 	/**
 	 * Create a new maximal cliques algorithm object.

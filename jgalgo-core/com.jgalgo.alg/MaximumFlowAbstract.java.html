@@ -204,7 +204,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			IndexGraphBuilder builder =
 <span class="fc bfc" id="L205" title="All 2 branches covered.">					gOrig.isDirected() ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
 <span class="fc" id="L206">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
-<span class="fc" id="L207">			builder.expectedVerticesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
+<span class="fc" id="L207">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
 
 <span class="fc bfc" id="L209" title="All 2 branches covered.">			for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L210">				builder.addVertex();</span>

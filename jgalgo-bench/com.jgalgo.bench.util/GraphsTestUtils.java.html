@@ -105,159 +105,162 @@ public class GraphsTestUtils extends TestUtils {
 <span class="nc" id="L105">			throw new IllegalArgumentException();</span>
 
 <span class="fc bfc" id="L107" title="All 2 branches covered.">		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L109">			builder.addVertex();</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (p &gt; 0) {</span>
-<span class="fc" id="L111">			Random rand = new Random(seed);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L115" title="All 4 branches covered.">						if (u != v &amp;&amp; rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L116">							builder.addEdge(u, v);</span>
+<span class="fc" id="L108">		builder.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L110">			builder.addVertex();</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (p &gt; 0) {</span>
+<span class="fc" id="L112">			Random rand = new Random(seed);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">						if (u != v &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L117">							builder.addEdge(u, v);</span>
 			} else {
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">					for (int v = u + 1; v &lt; n; v++)</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L121">							builder.addEdge(u, v);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">					for (int v = u + 1; v &lt; n; v++)</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L122">							builder.addEdge(u, v);</span>
 			}
 		}
 
-<span class="fc" id="L125">		return builder.reIndexAndBuild(true, true).graph();</span>
+<span class="fc" id="L126">		return builder.reIndexAndBuild(true, true).graph();</span>
 	}
 
 	public static Graph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
-<span class="fc" id="L129">		final int nInit = 20;</span>
-<span class="fc" id="L130">		final int m = 10;</span>
-<span class="fc" id="L131">		return randomGraphBarabasiAlbert(n, nInit, m, directed, seed);</span>
+<span class="fc" id="L130">		final int nInit = 20;</span>
+<span class="fc" id="L131">		final int m = 10;</span>
+<span class="fc" id="L132">		return randomGraphBarabasiAlbert(n, nInit, m, directed, seed);</span>
 	}
 
 	public static Graph randomGraphBarabasiAlbert(int n, int nInit, int m, boolean directed, long seed) {
-<span class="pc bpc" id="L135" title="2 of 4 branches missed.">		if (nInit &lt;= 0 || nInit &gt; n)</span>
-<span class="nc" id="L136">			throw new IllegalArgumentException();</span>
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		if (m &gt; nInit)</span>
-<span class="nc" id="L138">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">		if (nInit &lt;= 0 || nInit &gt; n)</span>
+<span class="nc" id="L137">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (m &gt; nInit)</span>
+<span class="nc" id="L139">			throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L140">		int[] endpoints = new int[(nInit * (nInit - 1) / 2 + (n - nInit) * m) * 2];</span>
-<span class="fc" id="L141">		int edgeNum = 0;</span>
+<span class="fc" id="L141">		int[] endpoints = new int[(nInit * (nInit - 1) / 2 + (n - nInit) * m) * 2];</span>
+<span class="fc" id="L142">		int edgeNum = 0;</span>
 
 		/* start with a complete graph of size nInit */
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int u = 0; u &lt; nInit; u++) {</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int v = u + 1; v &lt; nInit; v++) {</span>
-<span class="fc" id="L146">				int e = edgeNum++;</span>
-<span class="fc" id="L147">				endpoints[e * 2 + 0] = u;</span>
-<span class="fc" id="L148">				endpoints[e * 2 + 1] = v;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int u = 0; u &lt; nInit; u++) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int v = u + 1; v &lt; nInit; v++) {</span>
+<span class="fc" id="L147">				int e = edgeNum++;</span>
+<span class="fc" id="L148">				endpoints[e * 2 + 0] = u;</span>
+<span class="fc" id="L149">				endpoints[e * 2 + 1] = v;</span>
 			}
 		}
 
 		/* add n-nInit vertices, each with m edges */
-<span class="fc" id="L153">		Random rand = new Random(seed);</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (int vNum = nInit; vNum &lt; n; vNum++) {</span>
-<span class="fc" id="L155">			final int edgeNumAtStart = edgeNum;</span>
-<span class="fc" id="L156">			final int u = vNum;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">			for (int i = 0; i &lt; m; i++) {</span>
+<span class="fc" id="L154">		Random rand = new Random(seed);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		for (int vNum = nInit; vNum &lt; n; vNum++) {</span>
+<span class="fc" id="L156">			final int edgeNumAtStart = edgeNum;</span>
+<span class="fc" id="L157">			final int u = vNum;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int i = 0; i &lt; m; i++) {</span>
 				/* by sampling from the current endpoints, we sample a vertex with prob of its degree */
-<span class="fc" id="L159">				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];</span>
-<span class="fc" id="L160">				int e = edgeNum++;</span>
-<span class="fc" id="L161">				endpoints[e * 2 + 0] = u;</span>
-<span class="fc" id="L162">				endpoints[e * 2 + 1] = v;</span>
+<span class="fc" id="L160">				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];</span>
+<span class="fc" id="L161">				int e = edgeNum++;</span>
+<span class="fc" id="L162">				endpoints[e * 2 + 0] = u;</span>
+<span class="fc" id="L163">				endpoints[e * 2 + 1] = v;</span>
 			}
 		}
 
-<span class="fc bfc" id="L166" title="All 2 branches covered.">		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L168">			builder.addVertex();</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (int e = 0; e &lt; edgeNum; e++) {</span>
-<span class="fc" id="L170">			int u = endpoints[e * 2 + 0];</span>
-<span class="fc" id="L171">			int v = endpoints[e * 2 + 1];</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (rand.nextBoolean()) {</span>
-<span class="fc" id="L173">				int tmp = u;</span>
-<span class="fc" id="L174">				u = v;</span>
-<span class="fc" id="L175">				v = tmp;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L168">		builder.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L170">			builder.addVertex();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		for (int e = 0; e &lt; edgeNum; e++) {</span>
+<span class="fc" id="L172">			int u = endpoints[e * 2 + 0];</span>
+<span class="fc" id="L173">			int v = endpoints[e * 2 + 1];</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (rand.nextBoolean()) {</span>
+<span class="fc" id="L175">				int tmp = u;</span>
+<span class="fc" id="L176">				u = v;</span>
+<span class="fc" id="L177">				v = tmp;</span>
 			}
-<span class="fc" id="L177">			builder.addEdge(u, v);</span>
+<span class="fc" id="L179">			builder.addEdge(u, v);</span>
 		}
-<span class="fc" id="L179">		return builder.reIndexAndBuild(true, true).graph();</span>
+<span class="fc" id="L181">		return builder.reIndexAndBuild(true, true).graph();</span>
 	}
 
 	public static Graph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		if (directed) {</span>
-<span class="fc" id="L184">			final double a = 0.57;</span>
-<span class="fc" id="L185">			final double b = 0.21;</span>
-<span class="fc" id="L186">			final double c = 0.17;</span>
-<span class="fc" id="L187">			final double d = 0.05;</span>
-<span class="fc" id="L188">			return randomGraphRecursiveMatrix(n, m, a, b, c, d, true, seed);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (directed) {</span>
+<span class="fc" id="L186">			final double a = 0.57;</span>
+<span class="fc" id="L187">			final double b = 0.21;</span>
+<span class="fc" id="L188">			final double c = 0.17;</span>
+<span class="fc" id="L189">			final double d = 0.05;</span>
+<span class="fc" id="L190">			return randomGraphRecursiveMatrix(n, m, a, b, c, d, true, seed);</span>
 		} else {
-<span class="fc" id="L190">			final double a = 0.57;</span>
-<span class="fc" id="L191">			final double b = 0.19;</span>
-<span class="fc" id="L192">			final double c = 0.19;</span>
-<span class="fc" id="L193">			final double d = 0.05;</span>
-<span class="fc" id="L194">			return randomGraphRecursiveMatrix(n, m, a, b, c, d, false, seed);</span>
+<span class="fc" id="L192">			final double a = 0.57;</span>
+<span class="fc" id="L193">			final double b = 0.19;</span>
+<span class="fc" id="L194">			final double c = 0.19;</span>
+<span class="fc" id="L195">			final double d = 0.05;</span>
+<span class="fc" id="L196">			return randomGraphRecursiveMatrix(n, m, a, b, c, d, false, seed);</span>
 		}
 	}
 
 	public static Graph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d,
 			boolean directed, long seed) {
-<span class="pc bpc" id="L200" title="2 of 4 branches missed.">		if (n &lt;= 0 || m &lt; 0)</span>
-<span class="nc" id="L201">			throw new IllegalArgumentException();</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">		if (m &gt; 0.75 * n * (n - 1))</span>
-<span class="nc" id="L203">			throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L202" title="2 of 4 branches missed.">		if (n &lt;= 0 || m &lt; 0)</span>
+<span class="nc" id="L203">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		if (m &gt; 0.75 * n * (n - 1))</span>
+<span class="nc" id="L205">			throw new IllegalArgumentException(</span>
 					&quot;too many edges for random sampling (max=&quot; + (int) (0.75 * n * (n - 1)) + &quot;)&quot;);
-<span class="pc bpc" id="L205" title="4 of 8 branches missed.">		if (a &lt; 0 || b &lt; 0 || c &lt; 0 || d &lt; 0)</span>
-<span class="nc" id="L206">			throw new IllegalArgumentException();</span>
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">		if (a + b + c + d != 1)</span>
+<span class="pc bpc" id="L207" title="4 of 8 branches missed.">		if (a &lt; 0 || b &lt; 0 || c &lt; 0 || d &lt; 0)</span>
 <span class="nc" id="L208">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		if (a + b + c + d != 1)</span>
+<span class="nc" id="L210">			throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L210">		final double p1 = a;</span>
-<span class="fc" id="L211">		final double p2 = a + b;</span>
-<span class="fc" id="L212">		final double p3 = a + b + c;</span>
-<span class="fc" id="L213">		final double p4 = a + b + c + d;</span>
+<span class="fc" id="L212">		final double p1 = a;</span>
+<span class="fc" id="L213">		final double p2 = a + b;</span>
+<span class="fc" id="L214">		final double p3 = a + b + c;</span>
+<span class="fc" id="L215">		final double p4 = a + b + c + d;</span>
 
-<span class="fc" id="L215">		final int depth = nextPowerOf2(n);</span>
-<span class="fc" id="L216">		final int N = 1 &lt;&lt; depth;</span>
-<span class="fc" id="L217">		BitSet edges = new BitSet(N * N);</span>
+<span class="fc" id="L217">		final int depth = nextPowerOf2(n);</span>
+<span class="fc" id="L218">		final int N = 1 &lt;&lt; depth;</span>
+<span class="fc" id="L219">		BitSet edges = new BitSet(N * N);</span>
 
-<span class="fc" id="L219">		Random rand = new Random(seed);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		for (int edgeNum = 0; edgeNum &lt; m;) {</span>
-<span class="fc" id="L221">			int u = 0, v = 0;</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">			for (int s = depth; s &gt; 0; s--) {</span>
-<span class="fc" id="L223">				double p = rand.nextDouble();</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">				if (p &lt; p1) {</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">				} else if (p &lt; p2) {</span>
-<span class="fc" id="L226">					v += 1 &lt;&lt; (s - 1);</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">				} else if (p &lt; p3) {</span>
-<span class="fc" id="L228">					u += 1 &lt;&lt; (s - 1);</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">				} else if (p &lt; p4) {</span>
+<span class="fc" id="L221">		Random rand = new Random(seed);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		for (int edgeNum = 0; edgeNum &lt; m;) {</span>
+<span class="fc" id="L223">			int u = 0, v = 0;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int s = depth; s &gt; 0; s--) {</span>
+<span class="fc" id="L225">				double p = rand.nextDouble();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">				if (p &lt; p1) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				} else if (p &lt; p2) {</span>
+<span class="fc" id="L228">					v += 1 &lt;&lt; (s - 1);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">				} else if (p &lt; p3) {</span>
 <span class="fc" id="L230">					u += 1 &lt;&lt; (s - 1);</span>
-<span class="fc" id="L231">					v += 1 &lt;&lt; (s - 1);</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">				} else if (p &lt; p4) {</span>
+<span class="fc" id="L232">					u += 1 &lt;&lt; (s - 1);</span>
+<span class="fc" id="L233">					v += 1 &lt;&lt; (s - 1);</span>
 				} else {
-<span class="nc" id="L233">					throw new AssertionError();</span>
+<span class="nc" id="L235">					throw new AssertionError();</span>
 				}
 			}
-<span class="fc bfc" id="L236" title="All 2 branches covered.">			if (edges.get(u * N + v))</span>
-<span class="fc" id="L237">				continue;</span>
-<span class="fc" id="L238">			edges.set(u * N + v);</span>
-<span class="fc" id="L239">			edgeNum++;</span>
-<span class="fc" id="L240">		}</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">			if (edges.get(u * N + v))</span>
+<span class="fc" id="L239">				continue;</span>
+<span class="fc" id="L240">			edges.set(u * N + v);</span>
+<span class="fc" id="L241">			edgeNum++;</span>
+<span class="fc" id="L242">		}</span>
 
-<span class="fc bfc" id="L242" title="All 2 branches covered.">		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L244">			builder.addVertex();</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">		if (directed) {</span>
-<span class="fc bfc" id="L246" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">					if (edges.get(u * N + v))</span>
-<span class="fc" id="L249">						builder.addEdge(u, v);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L245">		builder.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L247">			builder.addVertex();</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (directed) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">					if (edges.get(u * N + v))</span>
+<span class="fc" id="L252">						builder.addEdge(u, v);</span>
 		} else {
-<span class="fc bfc" id="L251" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">				for (int v = u; v &lt; n; v++)</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">					if (edges.get(u * N + v))</span>
-<span class="fc" id="L254">						builder.addEdge(u, v);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">				for (int v = u; v &lt; n; v++)</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					if (edges.get(u * N + v))</span>
+<span class="fc" id="L257">						builder.addEdge(u, v);</span>
 		}
-<span class="fc" id="L256">		return builder.reIndexAndBuild(true, true).graph();</span>
+<span class="fc" id="L259">		return builder.reIndexAndBuild(true, true).graph();</span>
 	}
 
 	private static int nextPowerOf2(int x) {
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">		return x == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(x - 1);</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">		return x == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(x - 1);</span>
 	}
 
 }

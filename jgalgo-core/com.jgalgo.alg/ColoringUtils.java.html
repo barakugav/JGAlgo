@@ -33,7 +33,7 @@ import com.jgalgo.graph.IndexIdMap;
 <span class="fc" id="L33">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 
 <span class="fc" id="L35">			VertexPartition indexResult = computeColoring(iGraph);</span>
-<span class="fc" id="L36">			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L36">			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);</span>
 		}
 
 		abstract VertexPartition computeColoring(IndexGraph g);

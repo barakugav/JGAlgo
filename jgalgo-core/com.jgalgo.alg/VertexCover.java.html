@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Minimum weighted vertex cover algorithm.
@@ -65,7 +65,7 @@ public interface VertexCover {
 		 *
 		 * @return the vertices that are included in the cover
 		 */
-		IntCollection vertices();
+		IntSet vertices();
 
 		/**
 		 * Check whether a vertex is included in the cover.

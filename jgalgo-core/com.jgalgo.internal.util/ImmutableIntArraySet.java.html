@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImmutableIntArraySet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">ImmutableIntArraySet.java</span></div><h1>ImmutableIntArraySet.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.util;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Objects;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+
+<span class="fc" id="L26">public abstract class ImmutableIntArraySet extends AbstractIntSet {</span>
+
+	final int[] arr;
+	final int from, to, size;
+
+	public ImmutableIntArraySet(int[] arr) {
+<span class="fc" id="L32">		this(arr, 0, arr.length);</span>
+<span class="fc" id="L33">	}</span>
+
+<span class="fc" id="L35">	public ImmutableIntArraySet(int[] arr, int from, int to) {</span>
+<span class="pc bpc" id="L36" title="3 of 6 branches missed.">		if (!(0 &lt;= from &amp;&amp; from &lt;= to &amp;&amp; to &lt;= arr.length))</span>
+<span class="nc" id="L37">			throw new IndexOutOfBoundsException();</span>
+<span class="fc" id="L38">		this.arr = Objects.requireNonNull(arr);</span>
+<span class="fc" id="L39">		this.from = from;</span>
+<span class="fc" id="L40">		this.to = to;</span>
+<span class="fc" id="L41">		this.size = to - from;</span>
+
+<span class="pc bnc" id="L43" title="All 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
+<span class="fc" id="L44">	}</span>
+
+	@Override
+	public abstract boolean contains(int key);
+
+	@Override
+	public int size() {
+<span class="fc" id="L51">		return size;</span>
+	}
+
+	@Override
+	public int[] toIntArray() {
+<span class="nc" id="L56">		return Arrays.copyOfRange(arr, from, to);</span>
+	}
+
+	@Override
+	public int[] toArray(int[] a) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		if (a.length &gt;= size) {</span>
+<span class="nc" id="L62">			System.arraycopy(arr, from, a, 0, size);</span>
+<span class="nc" id="L63">			return a;</span>
+		} else {
+<span class="nc" id="L65">			return toIntArray();</span>
+		}
+	}
+
+	@Override
+	public Object[] toArray() {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (isEmpty())</span>
+<span class="nc" id="L72">			return ObjectArrays.EMPTY_ARRAY;</span>
+<span class="nc" id="L73">		Object[] a = new Object[size];</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
+<span class="nc" id="L75">			a[i - from] = Integer.valueOf(arr[i]);</span>
+<span class="nc" id="L76">		return a;</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;T&gt; T[] toArray(T[] a) {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		if (a.length &lt; size)</span>
+<span class="nc" id="L83">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
+<span class="nc" id="L85">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
+<span class="nc" id="L86">		return a;</span>
+	}
+
+	@Override
+	public IntIterator iterator() {
+<span class="fc" id="L91">		return new Iter();</span>
+	}
+
+<span class="fc" id="L94">	private class Iter implements IntIterator {</span>
+
+<span class="fc" id="L96">		private int idx = from;</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			return idx &lt; to;</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L105">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L106">			return arr[idx++];</span>
+		}
+
+	}
+
+	public static ImmutableIntArraySet withNaiveContains(int[] arr) {
+<span class="fc" id="L112">		return new WithNaiveContains(arr);</span>
+	}
+
+	public static ImmutableIntArraySet withNaiveContains(int[] arr, int from, int to) {
+<span class="fc" id="L116">		return new WithNaiveContains(arr, from, to);</span>
+	}
+
+	private static class WithNaiveContains extends ImmutableIntArraySet {
+
+		WithNaiveContains(int[] arr) {
+<span class="fc" id="L122">			this(arr, 0, arr.length);</span>
+<span class="fc" id="L123">		}</span>
+
+		WithNaiveContains(int[] arr, int from, int to) {
+<span class="fc" id="L126">			super(arr, from, to);</span>
+<span class="fc" id="L127">		}</span>
+
+		@Override
+		public boolean contains(int key) {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">			for (int i = from; i &lt; to; i++)</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">				if (key == arr[i])</span>
+<span class="nc" id="L133">					return true;</span>
+<span class="nc" id="L134">			return false;</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

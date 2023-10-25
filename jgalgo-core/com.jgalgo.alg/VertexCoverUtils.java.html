@@ -22,27 +22,25 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L31">class VertexCoverUtils {</span>
+<span class="nc" id="L29">class VertexCoverUtils {</span>
 
-<span class="fc" id="L33">	static abstract class AbstractImpl implements VertexCover {</span>
+<span class="fc" id="L31">	static abstract class AbstractImpl implements VertexCover {</span>
 
 		@Override
 		public VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L38">				return computeMinimumVertexCover((IndexGraph) g, w);</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L36">				return computeMinimumVertexCover((IndexGraph) g, w);</span>
 
-<span class="fc" id="L40">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L41">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L42">			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L38">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L39">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L40">			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
 
-<span class="fc" id="L44">			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);</span>
-<span class="fc" id="L45">			return new ResultFromIndexResult(indexResult, viMap);</span>
+<span class="fc" id="L42">			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);</span>
+<span class="fc" id="L43">			return new ResultFromIndexResult(indexResult, viMap);</span>
 		}
 
 		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w);
@@ -53,22 +51,24 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 		private final IndexGraph g;
 		private final BitSet cover;
-		private IntCollection vertices;
+		private IntSet vertices;
 
-<span class="fc" id="L58">		ResultImpl(IndexGraph g, BitSet cover) {</span>
-<span class="fc" id="L59">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L60">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L61">		}</span>
+<span class="fc" id="L56">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L57">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L58">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L59">		}</span>
 
 		@Override
-		public IntCollection vertices() {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			if (this.vertices == null) {</span>
-<span class="fc" id="L66">				IntList vertices = new IntArrayList(cover.cardinality());</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int v : JGAlgoUtils.iterable(cover))</span>
-<span class="fc" id="L68">					vertices.add(v);</span>
-<span class="fc" id="L69">				this.vertices = IntLists.unmodifiable(vertices);</span>
+		public IntSet vertices() {
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			if (vertices == null) {</span>
+<span class="fc" id="L64">				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
+					@Override
+					public boolean contains(int v) {
+<span class="nc bnc" id="L67" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; g.vertices().size() &amp;&amp; cover.get(v);</span>
+					}
+				};
 			}
-<span class="fc" id="L71">			return this.vertices;</span>
+<span class="fc" id="L71">			return vertices;</span>
 		}
 
 		@Override
@@ -91,8 +91,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L91">		}</span>
 
 		@Override
-		public IntCollection vertices() {
-<span class="fc" id="L95">			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);</span>
+		public IntSet vertices() {
+<span class="fc" id="L95">			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);</span>
 		}
 
 		@Override

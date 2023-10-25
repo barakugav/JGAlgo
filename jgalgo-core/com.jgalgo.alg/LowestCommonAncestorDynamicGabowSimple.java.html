@@ -40,6 +40,7 @@ import java.util.Objects;
 class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDynamic {
 
 	private int verticesNum;
+<span class="fc" id="L43">	private final CharacteristicAncestors reusedResultObj = new CharacteristicAncestors(null, null, null);</span>
 
 	/* Hyper parameters */
 	private static final double alpha = 6.0 / 5.0;
@@ -47,216 +48,229 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	private static final int e = 4;
 	private static final int c = 5;
 
-<span class="fc" id="L50">	private static final VertexImpl[] EMPTY_VERTICES_ARR = new VertexImpl[0];</span>
+<span class="fc" id="L51">	private static final VertexImpl[] EMPTY_VERTICES_ARR = new VertexImpl[0];</span>
 
 	/**
 	 * Create a new dynamic LCA data structure that contains zero vertices.
 	 */
-<span class="fc" id="L55">	LowestCommonAncestorDynamicGabowSimple() {</span>
-<span class="fc" id="L56">		verticesNum = 0;</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L56">	LowestCommonAncestorDynamicGabowSimple() {</span>
+<span class="fc" id="L57">		verticesNum = 0;</span>
+<span class="fc" id="L58">	}</span>
 
 	@Override
 	public Vertex initTree() {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (size() != 0)</span>
-<span class="nc" id="L62">			throw new IllegalStateException(&quot;Tree already initialized&quot;);</span>
-<span class="fc" id="L63">		return newVertex(null);</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (size() != 0)</span>
+<span class="nc" id="L63">			throw new IllegalStateException(&quot;Tree already initialized&quot;);</span>
+<span class="fc" id="L64">		return newVertex(null);</span>
 	}
 
 	@Override
 	public Vertex addLeaf(Vertex parent) {
-<span class="fc" id="L68">		return newVertex((VertexImpl) Objects.requireNonNull(parent));</span>
+<span class="fc" id="L69">		return newVertex((VertexImpl) Objects.requireNonNull(parent));</span>
 	}
 
 	private Vertex newVertex(VertexImpl parent) {
-<span class="fc" id="L72">		verticesNum++;</span>
-<span class="fc" id="L73">		VertexImpl vertex = new VertexImpl(parent);</span>
+<span class="fc" id="L73">		verticesNum++;</span>
+<span class="fc" id="L74">		VertexImpl vertex = new VertexImpl(parent);</span>
 
-<span class="fc" id="L75">		vertex.isApex = true;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (parent != null) {</span>
-<span class="fc" id="L77">			parent.addChild(vertex);</span>
-<span class="fc" id="L78">			vertex.cParent = parent.getPathApex();</span>
+<span class="fc" id="L76">		vertex.isApex = true;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc" id="L78">			parent.addChild(vertex);</span>
+<span class="fc" id="L79">			vertex.cParent = parent.getPathApex();</span>
 		}
 
-<span class="fc" id="L81">		VertexImpl lastAncestorRequireCompress = null;</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (VertexImpl a = vertex; a != null; a = a.cParent) {</span>
-<span class="fc" id="L83">			a.size++;</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (a.isRequireRecompress())</span>
-<span class="fc" id="L85">				lastAncestorRequireCompress = a;</span>
+<span class="fc" id="L82">		VertexImpl lastAncestorRequireCompress = null;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (VertexImpl a = vertex; a != null; a = a.cParent) {</span>
+<span class="fc" id="L84">			a.size++;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (a.isRequireRecompress())</span>
+<span class="fc" id="L86">				lastAncestorRequireCompress = a;</span>
 		}
-<span class="fc" id="L87">		recompress(lastAncestorRequireCompress);</span>
+<span class="pc bnc" id="L88" title="All 2 branches missed.">		assert lastAncestorRequireCompress != null;</span>
+<span class="fc" id="L89">		recompress(lastAncestorRequireCompress);</span>
 
-<span class="fc" id="L89">		return vertex;</span>
+<span class="fc" id="L91">		return vertex;</span>
 	}
 
 	private void recompress(VertexImpl subtreeRoot) {
 		/* first, compute the size of each vertex subtree */
-<span class="fc" id="L94">		computeSize(subtreeRoot);</span>
+<span class="fc" id="L96">		computeSize(subtreeRoot);</span>
 
 		/* actual recompress */
-<span class="fc" id="L97">		buildCompressedTree(subtreeRoot);</span>
-<span class="pc bnc" id="L98" title="All 2 branches missed.">		assert subtreeRoot.isApex;</span>
+<span class="fc" id="L99">		buildCompressedTree(subtreeRoot);</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">		assert subtreeRoot.isApex;</span>
 
 		/* recompute ancestor tables */
-<span class="fc" id="L101">		computeAncestorTables(subtreeRoot);</span>
-<span class="fc" id="L102">	}</span>
+<span class="fc" id="L103">		computeAncestorTables(subtreeRoot);</span>
+<span class="fc" id="L104">	}</span>
 
 	private int computeSize(VertexImpl vertex) {
-<span class="fc" id="L105">		int size = 1;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++)</span>
-<span class="fc" id="L107">			size += computeSize(vertex.children[i]);</span>
-<span class="fc" id="L108">		return vertex.size = size;</span>
+<span class="fc" id="L107">		int size = 1;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++)</span>
+<span class="fc" id="L109">			size += computeSize(vertex.children[i]);</span>
+<span class="fc" id="L110">		return vertex.size = size;</span>
 	}
 
 	private void buildCompressedTree(VertexImpl vertex) {
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		vertex.cParent = vertex.isRoot() ? null : vertex.parent.getPathApex();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		vertex.cParent = vertex.isRoot() ? null : vertex.parent.getPathApex();</span>
 
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		vertex.path = vertex.isApex ? EMPTY_VERTICES_ARR : null;</span>
-<span class="fc" id="L115">		vertex.pathSize = 0;</span>
-<span class="fc" id="L116">		vertex.pathIdx = vertex.getPathApex().pathSize;</span>
-<span class="fc" id="L117">		vertex.getPathApex().addToPath(vertex);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		vertex.path = vertex.isApex ? EMPTY_VERTICES_ARR : null;</span>
+<span class="fc" id="L117">		vertex.pathSize = 0;</span>
+<span class="fc" id="L118">		vertex.pathIdx = vertex.getPathApex().pathSize;</span>
+<span class="fc" id="L119">		vertex.getPathApex().addToPath(vertex);</span>
 
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		vertex.sigma = vertex.isApex ? vertex.size : 1;</span>
-<span class="fc" id="L120">		double /* integer */ v = pow(vertex.sigma, e);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		vertex.idxLowerFat = vertex.isRoot() ? 0 : vertex.cParent.idxUpperFatMaxChild;</span>
-<span class="fc" id="L122">		vertex.idxUpperFat = vertex.idxLowerFat + c * v;</span>
-<span class="fc" id="L123">		vertex.idxLower = vertex.idxLowerFat + v;</span>
-<span class="fc" id="L124">		vertex.idxUpper = vertex.idxUpperFat - v;</span>
-<span class="pc bnc" id="L125" title="All 4 branches missed.">		assert vertex.isRoot() || vertex.idxUpperFat &lt;= vertex.cParent.idxUpperFat;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">		if (!vertex.isRoot())</span>
-<span class="fc" id="L127">			vertex.cParent.idxUpperFatMaxChild = vertex.idxUpperFat;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		vertex.sigma = vertex.isApex ? vertex.size : 1;</span>
+<span class="fc" id="L122">		double /* integer */ v = pow(vertex.sigma, e);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		vertex.idxLowerFat = vertex.isRoot() ? 0 : vertex.cParent.idxUpperFatMaxChild;</span>
+<span class="fc" id="L124">		vertex.idxUpperFat = vertex.idxLowerFat + c * v;</span>
+<span class="fc" id="L125">		vertex.idxLower = vertex.idxLowerFat + v;</span>
+<span class="fc" id="L126">		vertex.idxUpper = vertex.idxUpperFat - v;</span>
+<span class="pc bnc" id="L127" title="All 4 branches missed.">		assert vertex.isRoot() || vertex.idxUpperFat &lt;= vertex.cParent.idxUpperFat;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (!vertex.isRoot())</span>
+<span class="fc" id="L129">			vertex.cParent.idxUpperFatMaxChild = vertex.idxUpperFat;</span>
 
-<span class="fc" id="L129">		vertex.idxUpperFatMaxChild = vertex.idxLower + 1;</span>
+<span class="fc" id="L131">		vertex.idxUpperFatMaxChild = vertex.idxLower + 1;</span>
 
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++) {</span>
-<span class="fc" id="L132">			VertexImpl child = vertex.children[i];</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			child.isApex = child.size &lt;= vertex.size / 2;</span>
-<span class="fc" id="L134">			buildCompressedTree(child);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++) {</span>
+<span class="fc" id="L134">			VertexImpl child = vertex.children[i];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			child.isApex = child.size &lt;= vertex.size / 2;</span>
+<span class="fc" id="L136">			buildCompressedTree(child);</span>
 		}
-<span class="fc" id="L136">	}</span>
+<span class="fc" id="L138">	}</span>
 
 	private void computeAncestorTables(VertexImpl vertex) {
-<span class="fc" id="L139">		int ancestorTableSize = logBetaFloor(c * pow(verticesNum, e));</span>
-<span class="fc" id="L140">		vertex.ancestorTableInit(ancestorTableSize);</span>
+<span class="fc" id="L141">		int ancestorTableSize = logBetaFloor(c * pow(verticesNum, e));</span>
+<span class="fc" id="L142">		vertex.ancestorTableInit(ancestorTableSize);</span>
 
-<span class="fc" id="L142">		int tableIdx = 0;</span>
-<span class="fc" id="L143">		for (VertexImpl a = vertex, last = null;; a = a.cParent) {</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (; (c - 2) * pow(a.sigma, e) &gt;= pow(beta, tableIdx); tableIdx++)</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (last != null)</span>
-<span class="fc" id="L146">					vertex.ancestorTable[tableIdx] = last;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			if (a.isRoot()) {</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">				for (; tableIdx &lt; ancestorTableSize; tableIdx++)</span>
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">					if ((c - 2) * pow(a.sigma, e) &lt; pow(beta, tableIdx))</span>
-<span class="fc" id="L150">						vertex.ancestorTable[tableIdx] = a;</span>
+<span class="fc" id="L144">		int tableIdx = 0;</span>
+<span class="fc" id="L145">		for (VertexImpl a = vertex, last = null;; a = a.cParent) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (; (c - 2) * pow(a.sigma, e) &gt;= pow(beta, tableIdx); tableIdx++)</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				if (last != null)</span>
+<span class="fc" id="L148">					vertex.ancestorTable[tableIdx] = last;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (a.isRoot()) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				for (; tableIdx &lt; ancestorTableSize; tableIdx++)</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">					if ((c - 2) * pow(a.sigma, e) &lt; pow(beta, tableIdx))</span>
+<span class="fc" id="L152">						vertex.ancestorTable[tableIdx] = a;</span>
 				break;
 			}
-<span class="fc" id="L153">			last = a;</span>
+<span class="fc" id="L155">			last = a;</span>
 		}
 
-<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++)</span>
-<span class="fc" id="L157">			computeAncestorTables(vertex.children[i]);</span>
-<span class="fc" id="L158">	}</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int i = 0; i &lt; vertex.childrenNum; i++)</span>
+<span class="fc" id="L159">			computeAncestorTables(vertex.children[i]);</span>
+<span class="fc" id="L160">	}</span>
 
 	private static double /* integer */ pow(double /* integer */ a, double /* integer */ b) {
-<span class="fc" id="L161">		return assertOverflowDouble(Math.pow(a, b));</span>
+<span class="fc" id="L163">		return assertOverflowDouble(Math.pow(a, b));</span>
 	}
 
+<span class="fc" id="L166">	private static final double LogBetaInv = 1 / Math.log(beta);</span>
+
 	private static int logBetaFloor(double x) {
-<span class="fc" id="L165">		return assertOverflowInt(Math.floor(Math.log(x) / Math.log(beta)));</span>
+<span class="fc" id="L169">		return assertOverflowInt(Math.floor(Math.log(x) * LogBetaInv));</span>
 	}
 
 	private static double assertOverflowDouble(double x) {
-<span class="pc bnc" id="L169" title="All 2 branches missed.">		assert Double.isFinite(x);</span>
-<span class="fc" id="L170">		return x;</span>
+<span class="pc bnc" id="L173" title="All 2 branches missed.">		assert Double.isFinite(x);</span>
+<span class="fc" id="L174">		return x;</span>
 	}
 
 	private static int assertOverflowInt(double x) {
-<span class="pc bnc" id="L174" title="All 4 branches missed.">		assert Integer.MIN_VALUE &lt;= x &amp;&amp; x &lt;= Integer.MAX_VALUE;</span>
-<span class="fc" id="L175">		return (int) x;</span>
+<span class="pc bnc" id="L178" title="All 4 branches missed.">		assert Integer.MIN_VALUE &lt;= x &amp;&amp; x &lt;= Integer.MAX_VALUE;</span>
+<span class="fc" id="L179">		return (int) x;</span>
 	}
 
-	private static CharacteristicAncestors calcCACompressed(VertexImpl x, VertexImpl y) {
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">		if (x == y)</span>
-<span class="nc" id="L180">			return new CharacteristicAncestors(x, x, x);</span>
-<span class="fc" id="L181">		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));</span>
+	private static void calcCACompressed(VertexImpl x, VertexImpl y, CharacteristicAncestors res) {
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">		if (x == y) {</span>
+<span class="nc" id="L184">			res.a = res.ax = res.ay = x;</span>
+<span class="nc" id="L185">			return;</span>
+		}
+<span class="fc" id="L187">		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));</span>
 
-<span class="fc" id="L183">		VertexImpl[] a = new VertexImpl[2];</span>
-<span class="fc" id="L184">		VertexImpl[] az = new VertexImpl[2];</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int zIdx = 0; zIdx &lt; 2; zIdx++) {</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			VertexImpl z = zIdx == 0 ? x : y;</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			VertexImpl z0 = zIdx == 0 ? y : x;</span>
+<span class="fc" id="L189">		VertexImpl[] a = new VertexImpl[2];</span>
+<span class="fc" id="L190">		VertexImpl[] az = new VertexImpl[2];</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		for (int zIdx = 0; zIdx &lt; 2; zIdx++) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">			VertexImpl z = zIdx == 0 ? x : y;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">			VertexImpl z0 = zIdx == 0 ? y : x;</span>
 
-<span class="fc" id="L189">			VertexImpl v = z.ancestorTable[i];</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">			VertexImpl w = v != null ? v.cParent : z;</span>
+<span class="fc" id="L195">			VertexImpl v = z.ancestorTable[i];</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			VertexImpl w = v != null ? v.cParent : z;</span>
 
 			VertexImpl b, bz;
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			if ((c - 2) * pow(w.sigma, e) &gt; Math.abs(x.idxLower - y.idxLower)) {</span>
-<span class="fc" id="L194">				b = w;</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">				bz = v != null ? v : z;</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">			if ((c - 2) * pow(w.sigma, e) &gt; Math.abs(x.idxLower - y.idxLower)) {</span>
+<span class="fc" id="L200">				b = w;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">				bz = v != null ? v : z;</span>
 			} else {
-<span class="fc" id="L197">				b = w.cParent;</span>
-<span class="fc" id="L198">				bz = w;</span>
+<span class="fc" id="L203">				b = w.cParent;</span>
+<span class="fc" id="L204">				bz = w;</span>
 			}
 
-<span class="pc bpc" id="L201" title="1 of 4 branches missed.">			if (b.idxLower &lt;= z0.idxLower &amp;&amp; z0.idxLower &lt; b.idxUpper) { /* b is an ancestor of z0 */</span>
-<span class="fc" id="L202">				a[zIdx] = b;</span>
-<span class="fc" id="L203">				az[zIdx] = bz;</span>
+<span class="pc bpc" id="L207" title="1 of 4 branches missed.">			if (b.idxLower &lt;= z0.idxLower &amp;&amp; z0.idxLower &lt; b.idxUpper) { /* b is an ancestor of z0 */</span>
+<span class="fc" id="L208">				a[zIdx] = b;</span>
+<span class="fc" id="L209">				az[zIdx] = bz;</span>
 			} else {
-<span class="fc" id="L205">				a[zIdx] = b.cParent;</span>
-<span class="fc" id="L206">				az[zIdx] = b;</span>
+<span class="fc" id="L211">				a[zIdx] = b.cParent;</span>
+<span class="fc" id="L212">				az[zIdx] = b;</span>
 			}
 		}
 
-<span class="fc" id="L210">		VertexImpl ax = az[0], ay = az[1];</span>
-<span class="pc bnc" id="L211" title="All 2 branches missed.">		assert a[0] == a[1];</span>
-<span class="pc bnc" id="L212" title="All 4 branches missed.">		assert ax == a[0] || ax.cParent == a[0];</span>
-<span class="pc bnc" id="L213" title="All 4 branches missed.">		assert ay == a[0] || ay.cParent == a[0];</span>
-<span class="fc" id="L214">		return new CharacteristicAncestors(a[0], ax, ay);</span>
-	}
+<span class="fc" id="L216">		VertexImpl ax = az[0], ay = az[1];</span>
+<span class="pc bnc" id="L217" title="All 2 branches missed.">		assert a[0] == a[1];</span>
+<span class="pc bnc" id="L218" title="All 4 branches missed.">		assert ax == a[0] || ax.cParent == a[0];</span>
+<span class="pc bnc" id="L219" title="All 4 branches missed.">		assert ay == a[0] || ay.cParent == a[0];</span>
+<span class="fc" id="L220">		res.a = a[0];</span>
+<span class="fc" id="L221">		res.ax = ax;</span>
+<span class="fc" id="L222">		res.ay = ay;</span>
+<span class="fc" id="L223">	}</span>
 
-	CharacteristicAncestors calcCA(Vertex x0, Vertex y0) {
-<span class="fc" id="L218">		VertexImpl x = (VertexImpl) x0, y = (VertexImpl) y0;</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (x == y)</span>
-<span class="fc" id="L220">			return new CharacteristicAncestors(x, x, x);</span>
-<span class="fc" id="L221">		CharacteristicAncestors cac = calcCACompressed(x, y);</span>
+	void calcCA(Vertex x0, Vertex y0, CharacteristicAncestors res) {
+<span class="fc" id="L226">		VertexImpl x = (VertexImpl) x0, y = (VertexImpl) y0;</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (x == y) {</span>
+<span class="fc" id="L228">			res.a = res.ax = res.ay = x;</span>
+<span class="fc" id="L229">			return;</span>
+		}
+<span class="fc" id="L231">		calcCACompressed(x, y, res);</span>
+<span class="fc" id="L232">		CharacteristicAncestors cac = res;</span>
 
 		/* c is an apex of path P */
-<span class="fc" id="L224">		VertexImpl c = (VertexImpl) cac.a, cx = (VertexImpl) cac.ax, cy = (VertexImpl) cac.ay;</span>
-<span class="pc bnc" id="L225" title="All 2 branches missed.">		assert c == c.getPathApex();</span>
+<span class="fc" id="L235">		VertexImpl c = (VertexImpl) cac.a, cx = (VertexImpl) cac.ax, cy = (VertexImpl) cac.ay;</span>
+<span class="pc bnc" id="L236" title="All 2 branches missed.">		assert c == c.getPathApex();</span>
 
 		/* bz is the first ancestor of cz on P */
-<span class="fc bfc" id="L228" title="All 4 branches covered.">		VertexImpl bx = cx != c &amp;&amp; cx.isApex ? cx.parent : cx;</span>
-<span class="fc bfc" id="L229" title="All 4 branches covered.">		VertexImpl by = cy != c &amp;&amp; cy.isApex ? cy.parent : cy;</span>
-<span class="pc bnc" id="L230" title="All 2 branches missed.">		assert c == bx.getPathApex();</span>
-<span class="pc bnc" id="L231" title="All 2 branches missed.">		assert c == by.getPathApex();</span>
+<span class="fc bfc" id="L239" title="All 4 branches covered.">		VertexImpl bx = cx != c &amp;&amp; cx.isApex ? cx.parent : cx;</span>
+<span class="fc bfc" id="L240" title="All 4 branches covered.">		VertexImpl by = cy != c &amp;&amp; cy.isApex ? cy.parent : cy;</span>
+<span class="pc bnc" id="L241" title="All 2 branches missed.">		assert c == bx.getPathApex();</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">		assert c == by.getPathApex();</span>
 
 		/* a is the shallower vertex of bx and by */
-<span class="fc bfc" id="L234" title="All 2 branches covered.">		VertexImpl a = bx.pathIdx &lt; by.pathIdx ? bx : by;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		VertexImpl a = bx.pathIdx &lt; by.pathIdx ? bx : by;</span>
 
-<span class="fc bfc" id="L236" title="All 2 branches covered.">		VertexImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;</span>
-<span class="fc bfc" id="L237" title="All 2 branches covered.">		VertexImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		VertexImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		VertexImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;</span>
 
-<span class="pc bnc" id="L239" title="All 4 branches missed.">		assert ax == a || ax.parent == a;</span>
-<span class="pc bnc" id="L240" title="All 4 branches missed.">		assert ay == a || ay.parent == a;</span>
-<span class="fc" id="L241">		return new CharacteristicAncestors(a, ax, ay);</span>
-	}
+<span class="pc bnc" id="L250" title="All 4 branches missed.">		assert ax == a || ax.parent == a;</span>
+<span class="pc bnc" id="L251" title="All 4 branches missed.">		assert ay == a || ay.parent == a;</span>
+<span class="fc" id="L252">		res.a = a;</span>
+<span class="fc" id="L253">		res.ax = ax;</span>
+<span class="fc" id="L254">		res.ay = ay;</span>
+<span class="fc" id="L255">	}</span>
 
 	@Override
 	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
-<span class="fc" id="L246">		return calcCA(x, y).a;</span>
+<span class="fc" id="L259">		calcCA(x, y, reusedResultObj);</span>
+<span class="fc" id="L260">		return reusedResultObj.a;</span>
 	}
 
 	@Override
 	public int size() {
-<span class="fc" id="L251">		return verticesNum;</span>
+<span class="fc" id="L265">		return verticesNum;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L256">		verticesNum = 0;</span>
-<span class="fc" id="L257">	}</span>
+<span class="fc" id="L270">		verticesNum = 0;</span>
+<span class="fc" id="L271">	}</span>
 
-<span class="fc" id="L259">	private static class VertexImpl implements Vertex {</span>
+<span class="fc" id="L273">	private static class VertexImpl implements Vertex {</span>
 		/* --- user tree data --- */
 		Object vertexData;
 		/* tree parent */
@@ -292,62 +306,62 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		/* ancestor table */
 		VertexImpl[] ancestorTable;
 
-<span class="fc" id="L295">		VertexImpl(VertexImpl parent) {</span>
-<span class="fc" id="L296">			this.parent = parent;</span>
-<span class="fc" id="L297">			children = EMPTY_VERTICES_ARR;</span>
-<span class="fc" id="L298">		}</span>
+<span class="fc" id="L309">		VertexImpl(VertexImpl parent) {</span>
+<span class="fc" id="L310">			this.parent = parent;</span>
+<span class="fc" id="L311">			children = EMPTY_VERTICES_ARR;</span>
+<span class="fc" id="L312">		}</span>
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;D&gt; D getData() {
-<span class="fc" id="L303">			return (D) vertexData;</span>
+<span class="fc" id="L317">			return (D) vertexData;</span>
 		}
 
 		@Override
 		public void setData(Object data) {
-<span class="fc" id="L308">			vertexData = data;</span>
-<span class="fc" id="L309">		}</span>
+<span class="fc" id="L322">			vertexData = data;</span>
+<span class="fc" id="L323">		}</span>
 
 		@Override
 		public Vertex getParent() {
-<span class="fc" id="L313">			return parent;</span>
+<span class="fc" id="L327">			return parent;</span>
 		}
 
 		boolean isRoot() {
-<span class="pc bnc" id="L317" title="All 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">			return parent == null;</span>
+<span class="pc bnc" id="L331" title="All 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">			return parent == null;</span>
 		}
 
 		void addChild(VertexImpl c) {
-<span class="fc bfc" id="L322" title="All 2 branches covered.">			if (childrenNum &gt;= children.length)</span>
-<span class="fc" id="L323">				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));</span>
-<span class="fc" id="L324">			children[childrenNum++] = c;</span>
-<span class="fc" id="L325">		}</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">			if (childrenNum &gt;= children.length)</span>
+<span class="fc" id="L337">				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));</span>
+<span class="fc" id="L338">			children[childrenNum++] = c;</span>
+<span class="fc" id="L339">		}</span>
 
 		VertexImpl getPathApex() {
-<span class="fc bfc" id="L328" title="All 2 branches covered.">			return isApex ? this : cParent;</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">			return isApex ? this : cParent;</span>
 		}
 
 		void addToPath(VertexImpl c) {
-<span class="fc bfc" id="L332" title="All 2 branches covered.">			if (pathSize &gt;= path.length)</span>
-<span class="fc" id="L333">				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));</span>
-<span class="fc" id="L334">			path[pathSize++] = c;</span>
-<span class="fc" id="L335">		}</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">			if (pathSize &gt;= path.length)</span>
+<span class="fc" id="L347">				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));</span>
+<span class="fc" id="L348">			path[pathSize++] = c;</span>
+<span class="fc" id="L349">		}</span>
 
 		boolean isRequireRecompress() {
-<span class="fc bfc" id="L338" title="All 2 branches covered.">			return size &gt;= alpha * sigma;</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">			return size &gt;= alpha * sigma;</span>
 		}
 
 		void ancestorTableInit(int size) {
-<span class="fc bfc" id="L342" title="All 4 branches covered.">			if (ancestorTable != null &amp;&amp; ancestorTable.length &gt;= size)</span>
-<span class="fc" id="L343">				Arrays.fill(ancestorTable, null);</span>
+<span class="fc bfc" id="L356" title="All 4 branches covered.">			if (ancestorTable != null &amp;&amp; ancestorTable.length &gt;= size)</span>
+<span class="fc" id="L357">				Arrays.fill(ancestorTable, null);</span>
 			else
-<span class="fc" id="L345">				ancestorTable = new VertexImpl[size];</span>
-<span class="fc" id="L346">		}</span>
+<span class="fc" id="L359">				ancestorTable = new VertexImpl[size];</span>
+<span class="fc" id="L360">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L350" title="All 2 branches missed.">			return &quot;V&quot; + (isApex ? &quot;*&quot; : &quot;&quot;) + &quot;&lt;&quot; + getData() + &quot;&gt;&quot;;</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">			return &quot;V&quot; + (isApex ? &quot;*&quot; : &quot;&quot;) + &quot;&lt;&quot; + getData() + &quot;&gt;&quot;;</span>
 		}
 
 		// void clear() {
@@ -361,13 +375,13 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	}
 
 	static class CharacteristicAncestors {
-		final Vertex a, ax, ay;
+		Vertex a, ax, ay;
 
-<span class="fc" id="L366">		CharacteristicAncestors(Vertex a, Vertex ax, Vertex ay) {</span>
-<span class="fc" id="L367">			this.a = a;</span>
-<span class="fc" id="L368">			this.ax = ax;</span>
-<span class="fc" id="L369">			this.ay = ay;</span>
-<span class="fc" id="L370">		}</span>
+<span class="fc" id="L380">		CharacteristicAncestors(Vertex a, Vertex ax, Vertex ay) {</span>
+<span class="fc" id="L381">			this.a = a;</span>
+<span class="fc" id="L382">			this.ax = ax;</span>
+<span class="fc" id="L383">			this.ay = ay;</span>
+<span class="fc" id="L384">		}</span>
 	}
 
 }

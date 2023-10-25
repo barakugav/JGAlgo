@@ -149,58 +149,60 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L149">			}</span>
 
 			void addAllOriginalEdges() {
-<span class="fc" id="L152">				gBuilder.expectedVerticesNum(gOrig.vertices().size());</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L154">					int vBuilder = gBuilder.addVertex();</span>
-<span class="pc bnc" id="L155" title="All 2 branches missed.">					assert u == vBuilder;</span>
+<span class="pc bnc" id="L152" title="All 2 branches missed.">				assert gBuilder.vertices().isEmpty();</span>
+<span class="fc" id="L153">				gBuilder.expectedVerticesNum(gOrig.vertices().size());</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L155">					int vBuilder = gBuilder.addVertex();</span>
+<span class="pc bnc" id="L156" title="All 2 branches missed.">					assert u == vBuilder;</span>
 				}
 
-<span class="fc" id="L158">				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L160">					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">					if (u != v)</span>
-<span class="fc" id="L162">						addEdge(u, v, e);</span>
+<span class="pc bnc" id="L159" title="All 2 branches missed.">				assert gBuilder.edges().isEmpty();</span>
+<span class="fc" id="L160">				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L162">					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					if (u != v)</span>
+<span class="fc" id="L164">						addEdge(u, v, e);</span>
 				}
-<span class="fc" id="L164">			}</span>
+<span class="fc" id="L166">			}</span>
 
 			int addVertex() {
-<span class="fc" id="L167">				return gBuilder.addVertex();</span>
+<span class="fc" id="L169">				return gBuilder.addVertex();</span>
 			}
 
 			void addEdge(int u, int v, int e) {
-<span class="fc" id="L171">				int e1Builder = gBuilder.addEdge(u, v);</span>
-<span class="fc" id="L172">				int e2Builder = gBuilder.addEdge(v, u);</span>
-<span class="pc bnc" id="L173" title="All 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
-<span class="fc" id="L174">				edgeRef.add(e);</span>
-<span class="pc bnc" id="L175" title="All 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
+<span class="fc" id="L173">				int e1Builder = gBuilder.addEdge(u, v);</span>
+<span class="fc" id="L174">				int e2Builder = gBuilder.addEdge(v, u);</span>
+<span class="pc bnc" id="L175" title="All 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
 <span class="fc" id="L176">				edgeRef.add(e);</span>
-<span class="pc bnc" id="L177" title="All 2 branches missed.">				assert e1Builder == twin.size();</span>
-<span class="fc" id="L178">				twin.add(e2Builder);</span>
-<span class="pc bnc" id="L179" title="All 2 branches missed.">				assert e2Builder == twin.size();</span>
-<span class="fc" id="L180">				twin.add(e1Builder);</span>
-<span class="fc" id="L181">			}</span>
+<span class="pc bnc" id="L177" title="All 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
+<span class="fc" id="L178">				edgeRef.add(e);</span>
+<span class="pc bnc" id="L179" title="All 2 branches missed.">				assert e1Builder == twin.size();</span>
+<span class="fc" id="L180">				twin.add(e2Builder);</span>
+<span class="pc bnc" id="L181" title="All 2 branches missed.">				assert e2Builder == twin.size();</span>
+<span class="fc" id="L182">				twin.add(e1Builder);</span>
+<span class="fc" id="L183">			}</span>
 
 			ResidualGraph build() {
-<span class="fc" id="L184">				IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);</span>
-<span class="fc" id="L185">				IndexGraph g = reindexedGraph.graph();</span>
-<span class="fc" id="L186">				final int m = g.edges().size();</span>
-<span class="fc" id="L187">				int[] edgeRefTemp = edgeRef.elements();</span>
-<span class="fc" id="L188">				int[] twinTemp = twin.elements();</span>
-<span class="fc" id="L189">				int[] edgeRef = new int[m];</span>
-<span class="fc" id="L190">				int[] twin = new int[m];</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">				if (reindexedGraph.edgesReIndexing().isPresent()) {</span>
-<span class="fc" id="L192">					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">					for (int eBuilder = 0; eBuilder &lt; m; eBuilder++) {</span>
-<span class="fc" id="L194">						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];</span>
-<span class="fc" id="L195">						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);</span>
+<span class="fc" id="L186">				IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);</span>
+<span class="fc" id="L187">				IndexGraph g = reindexedGraph.graph();</span>
+<span class="fc" id="L188">				final int m = g.edges().size();</span>
+<span class="fc" id="L189">				int[] edgeRefTemp = edgeRef.elements();</span>
+<span class="fc" id="L190">				int[] twinTemp = twin.elements();</span>
+<span class="fc" id="L191">				int[] edgeRef = new int[m];</span>
+<span class="fc" id="L192">				int[] twin = new int[m];</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">				if (reindexedGraph.edgesReIndexing().isPresent()) {</span>
+<span class="fc" id="L194">					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">					for (int eBuilder = 0; eBuilder &lt; m; eBuilder++) {</span>
+<span class="fc" id="L196">						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];</span>
+<span class="fc" id="L197">						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);</span>
 					}
-<span class="fc" id="L197">				} else {</span>
-<span class="nc bnc" id="L198" title="All 2 branches missed.">					for (int eBuilder = 0; eBuilder &lt; m; eBuilder++) {</span>
-<span class="nc" id="L199">						edgeRef[eBuilder] = edgeRefTemp[eBuilder];</span>
-<span class="nc" id="L200">						twin[eBuilder] = twinTemp[eBuilder];</span>
+<span class="fc" id="L199">				} else {</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">					for (int eBuilder = 0; eBuilder &lt; m; eBuilder++) {</span>
+<span class="nc" id="L201">						edgeRef[eBuilder] = edgeRefTemp[eBuilder];</span>
+<span class="nc" id="L202">						twin[eBuilder] = twinTemp[eBuilder];</span>
 					}
 				}
-<span class="fc" id="L203">				return new ResidualGraph(gOrig, g, edgeRef, twin);</span>
+<span class="fc" id="L205">				return new ResidualGraph(gOrig, g, edgeRef, twin);</span>
 			}
 
 		}
@@ -212,201 +214,201 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		private final FlowNetwork idNet;
 		final IndexIdMap eiMap;
 
-<span class="nc" id="L215">		IndexNetFromNet(FlowNetwork idNet, IndexIdMap eiMap) {</span>
-<span class="nc bnc" id="L216" title="All 4 branches missed.">			if (idNet instanceof NetImplEdgeWeights || idNet instanceof NetImplEdgeWeightsInt)</span>
-<span class="nc" id="L217">				throw new IllegalArgumentException(&quot;net is already an index flow network&quot;);</span>
-<span class="nc" id="L218">			this.idNet = Objects.requireNonNull(idNet);</span>
-<span class="nc" id="L219">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="nc" id="L220">		}</span>
+<span class="nc" id="L217">		IndexNetFromNet(FlowNetwork idNet, IndexIdMap eiMap) {</span>
+<span class="nc bnc" id="L218" title="All 4 branches missed.">			if (idNet instanceof NetImplEdgeWeights || idNet instanceof NetImplEdgeWeightsInt)</span>
+<span class="nc" id="L219">				throw new IllegalArgumentException(&quot;net is already an index flow network&quot;);</span>
+<span class="nc" id="L220">			this.idNet = Objects.requireNonNull(idNet);</span>
+<span class="nc" id="L221">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="nc" id="L222">		}</span>
 
 		FlowNetwork idNet() {
-<span class="nc" id="L223">			return idNet;</span>
+<span class="nc" id="L225">			return idNet;</span>
 		}
 
 		@Override
 		public double getCapacity(int edge) {
-<span class="nc" id="L228">			return idNet.getCapacity(eiMap.indexToId(edge));</span>
+<span class="nc" id="L230">			return idNet.getCapacity(eiMap.indexToId(edge));</span>
 		}
 
 		@Override
 		public void setCapacity(int edge, double capacity) {
-<span class="nc" id="L233">			idNet.setCapacity(eiMap.indexToId(edge), capacity);</span>
-<span class="nc" id="L234">		}</span>
+<span class="nc" id="L235">			idNet.setCapacity(eiMap.indexToId(edge), capacity);</span>
+<span class="nc" id="L236">		}</span>
 
 		@Override
 		public double getFlow(int edge) {
-<span class="nc" id="L238">			return idNet.getFlow(eiMap.indexToId(edge));</span>
+<span class="nc" id="L240">			return idNet.getFlow(eiMap.indexToId(edge));</span>
 		}
 
 		@Override
 		public void setFlow(int edge, double flow) {
-<span class="nc" id="L243">			idNet.setFlow(eiMap.indexToId(edge), flow);</span>
-<span class="nc" id="L244">		}</span>
+<span class="nc" id="L245">			idNet.setFlow(eiMap.indexToId(edge), flow);</span>
+<span class="nc" id="L246">		}</span>
 
 	}
 
 	private static class IndexNetFromNetInt extends IndexNetFromNet implements FlowNetworkInt {
 
 		IndexNetFromNetInt(FlowNetworkInt idNet, IndexIdMap eiMap) {
-<span class="nc" id="L251">			super(idNet, eiMap);</span>
-<span class="nc" id="L252">		}</span>
+<span class="nc" id="L253">			super(idNet, eiMap);</span>
+<span class="nc" id="L254">		}</span>
 
 		@Override
 		FlowNetworkInt idNet() {
-<span class="nc" id="L256">			return (FlowNetworkInt) super.idNet();</span>
+<span class="nc" id="L258">			return (FlowNetworkInt) super.idNet();</span>
 		}
 
 		@Override
 		public int getCapacityInt(int edge) {
-<span class="nc" id="L261">			return idNet().getCapacityInt(eiMap.indexToId(edge));</span>
+<span class="nc" id="L263">			return idNet().getCapacityInt(eiMap.indexToId(edge));</span>
 		}
 
 		@Override
 		public void setCapacity(int edge, int capacity) {
-<span class="nc" id="L266">			idNet().setCapacity(eiMap.indexToId(edge), capacity);</span>
-<span class="nc" id="L267">		}</span>
+<span class="nc" id="L268">			idNet().setCapacity(eiMap.indexToId(edge), capacity);</span>
+<span class="nc" id="L269">		}</span>
 
 		@Override
 		public int getFlowInt(int edge) {
-<span class="nc" id="L271">			return idNet().getFlowInt(eiMap.indexToId(edge));</span>
+<span class="nc" id="L273">			return idNet().getFlowInt(eiMap.indexToId(edge));</span>
 		}
 
 		@Override
 		public void setFlow(int edge, int flow) {
-<span class="nc" id="L276">			idNet().setFlow(eiMap.indexToId(edge), flow);</span>
-<span class="nc" id="L277">		}</span>
+<span class="nc" id="L278">			idNet().setFlow(eiMap.indexToId(edge), flow);</span>
+<span class="nc" id="L279">		}</span>
 
 		@Deprecated
 		@Override
 		public double getCapacity(int edge) {
-<span class="nc" id="L282">			return FlowNetworkInt.super.getCapacity(edge);</span>
+<span class="nc" id="L284">			return FlowNetworkInt.super.getCapacity(edge);</span>
 		}
 
 		@Deprecated
 		@Override
 		public void setCapacity(int edge, double capacity) {
-<span class="nc" id="L288">			FlowNetworkInt.super.setCapacity(edge, capacity);</span>
-<span class="nc" id="L289">		}</span>
+<span class="nc" id="L290">			FlowNetworkInt.super.setCapacity(edge, capacity);</span>
+<span class="nc" id="L291">		}</span>
 
 		@Deprecated
 		@Override
 		public double getFlow(int edge) {
-<span class="nc" id="L294">			return FlowNetworkInt.super.getFlow(edge);</span>
+<span class="nc" id="L296">			return FlowNetworkInt.super.getFlow(edge);</span>
 		}
 
 		@Deprecated
 		@Override
 		public void setFlow(int edge, double flow) {
-<span class="nc" id="L300">			FlowNetworkInt.super.setFlow(edge, flow);</span>
-<span class="nc" id="L301">		}</span>
+<span class="nc" id="L302">			FlowNetworkInt.super.setFlow(edge, flow);</span>
+<span class="nc" id="L303">		}</span>
 	}
 
 	static FlowNetworkInt indexNetFromNet(FlowNetworkInt net, IndexIdMap eiMap) {
-<span class="pc bpc" id="L305" title="1 of 2 branches missed.">		if (net instanceof NetImplEdgeWeightsInt) {</span>
-<span class="fc" id="L306">			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">		if (net instanceof NetImplEdgeWeightsInt) {</span>
+<span class="fc" id="L308">			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;</span>
 
 			/* Create a network from the underlying index weights containers */
-<span class="fc" id="L309">			WeightsInt capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
-<span class="fc" id="L310">			WeightsInt flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
-<span class="fc" id="L311">			return new NetImplEdgeWeightsInt(capacityWeights, flowWeights);</span>
+<span class="fc" id="L311">			WeightsInt capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
+<span class="fc" id="L312">			WeightsInt flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
+<span class="fc" id="L313">			return new NetImplEdgeWeightsInt(capacityWeights, flowWeights);</span>
 		} else {
 
 			/* Unknown network implementation, create a mapped wrapper */
-<span class="nc" id="L315">			return new IndexNetFromNetInt(net, eiMap);</span>
+<span class="nc" id="L317">			return new IndexNetFromNetInt(net, eiMap);</span>
 		}
 	}
 
 	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIdMap eiMap) {
-<span class="fc bfc" id="L320" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt)</span>
-<span class="fc" id="L321">			return indexNetFromNet((FlowNetworkInt) net, eiMap);</span>
-<span class="pc bpc" id="L322" title="1 of 2 branches missed.">		if (net instanceof NetImplEdgeWeights) {</span>
-<span class="fc" id="L323">			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt)</span>
+<span class="fc" id="L323">			return indexNetFromNet((FlowNetworkInt) net, eiMap);</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">		if (net instanceof NetImplEdgeWeights) {</span>
+<span class="fc" id="L325">			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;</span>
 
 			/* Create a network from the underlying index weights containers */
-<span class="fc" id="L326">			WeightsDouble capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
-<span class="fc" id="L327">			WeightsDouble flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
-<span class="fc" id="L328">			return new NetImplEdgeWeights(capacityWeights, flowWeights);</span>
+<span class="fc" id="L328">			WeightsDouble capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);</span>
+<span class="fc" id="L329">			WeightsDouble flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);</span>
+<span class="fc" id="L330">			return new NetImplEdgeWeights(capacityWeights, flowWeights);</span>
 
 		} else {
 
 			/* Unknown network implementation, create a mapped wrapper */
-<span class="nc" id="L333">			return new IndexNetFromNet(net, eiMap);</span>
+<span class="nc" id="L335">			return new IndexNetFromNet(net, eiMap);</span>
 		}
 	}
 
 	static double hugeCapacity(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-<span class="pc bpc" id="L338" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
-<span class="fc" id="L339">			return hugeCapacityLong(g, (FlowNetworkInt) net, sources, sinks);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
+<span class="fc" id="L341">			return hugeCapacityLong(g, (FlowNetworkInt) net, sources, sinks);</span>
 
-<span class="nc" id="L341">		double sourcesOutCapacity = 0;</span>
-<span class="nc" id="L342">		double sinksOutCapacity = 0;</span>
-<span class="nc bnc" id="L343" title="All 2 branches missed.">		for (int s : sources)</span>
-<span class="nc bnc" id="L344" title="All 2 branches missed.">			for (int e : g.outEdges(s))</span>
-<span class="nc" id="L345">				sourcesOutCapacity += net.getCapacity(e);</span>
-<span class="nc bnc" id="L346" title="All 2 branches missed.">		for (int s : sinks)</span>
-<span class="nc bnc" id="L347" title="All 2 branches missed.">			for (int e : g.inEdges(s))</span>
-<span class="nc" id="L348">				sinksOutCapacity += net.getCapacity(e);</span>
-<span class="nc" id="L349">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
+<span class="nc" id="L343">		double sourcesOutCapacity = 0;</span>
+<span class="nc" id="L344">		double sinksOutCapacity = 0;</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">		for (int s : sources)</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">			for (int e : g.outEdges(s))</span>
+<span class="nc" id="L347">				sourcesOutCapacity += net.getCapacity(e);</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">		for (int s : sinks)</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">			for (int e : g.inEdges(s))</span>
+<span class="nc" id="L350">				sinksOutCapacity += net.getCapacity(e);</span>
+<span class="nc" id="L351">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
 	}
 
 	static int hugeCapacity(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
-<span class="nc" id="L353">		long hugeCapacity = hugeCapacityLong(g, net, sources, sinks);</span>
-<span class="nc" id="L354">		int hugeCapacityInt = (int) hugeCapacity;</span>
-<span class="nc bnc" id="L355" title="All 2 branches missed.">		if (hugeCapacityInt != hugeCapacity)</span>
-<span class="nc" id="L356">			throw new AssertionError(&quot;integer overflow, huge capacity can't fit in 32bit int&quot;);</span>
-<span class="nc" id="L357">		return hugeCapacityInt;</span>
+<span class="nc" id="L355">		long hugeCapacity = hugeCapacityLong(g, net, sources, sinks);</span>
+<span class="nc" id="L356">		int hugeCapacityInt = (int) hugeCapacity;</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">		if (hugeCapacityInt != hugeCapacity)</span>
+<span class="nc" id="L358">			throw new AssertionError(&quot;integer overflow, huge capacity can't fit in 32bit int&quot;);</span>
+<span class="nc" id="L359">		return hugeCapacityInt;</span>
 	}
 
 	static long hugeCapacityLong(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L361">		long sourcesOutCapacity = 0;</span>
-<span class="fc" id="L362">		long sinksOutCapacity = 0;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">		for (int s : sources)</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">			for (int e : g.outEdges(s))</span>
-<span class="fc" id="L365">				sourcesOutCapacity += net.getCapacityInt(e);</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">		for (int s : sinks)</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">			for (int e : g.inEdges(s))</span>
-<span class="fc" id="L368">				sinksOutCapacity += net.getCapacityInt(e);</span>
-<span class="fc" id="L369">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
+<span class="fc" id="L363">		long sourcesOutCapacity = 0;</span>
+<span class="fc" id="L364">		long sinksOutCapacity = 0;</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">		for (int s : sources)</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">			for (int e : g.outEdges(s))</span>
+<span class="fc" id="L367">				sourcesOutCapacity += net.getCapacityInt(e);</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">		for (int s : sinks)</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">			for (int e : g.inEdges(s))</span>
+<span class="fc" id="L370">				sinksOutCapacity += net.getCapacityInt(e);</span>
+<span class="fc" id="L371">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
 	}
 
 	static double vertexMaxSupply(IndexGraph g, FlowNetwork net, int v) {
-<span class="pc bpc" id="L373" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
-<span class="nc" id="L374">			return vertexMaxSupply(g, (FlowNetworkInt) net, v);</span>
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
+<span class="nc" id="L376">			return vertexMaxSupply(g, (FlowNetworkInt) net, v);</span>
 
-<span class="fc" id="L376">		double maxSupply = 0;</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
-<span class="fc" id="L378">			maxSupply += net.getCapacity(e);</span>
-<span class="fc" id="L379">		return maxSupply;</span>
+<span class="fc" id="L378">		double maxSupply = 0;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc" id="L380">			maxSupply += net.getCapacity(e);</span>
+<span class="fc" id="L381">		return maxSupply;</span>
 	}
 
 	static int vertexMaxSupply(IndexGraph g, FlowNetworkInt net, int v) {
-<span class="fc" id="L383">		long maxSupply = 0;</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
-<span class="fc" id="L385">			maxSupply += net.getCapacityInt(e);</span>
-<span class="fc" id="L386">		int maxSupplyInt = (int) maxSupply;</span>
-<span class="pc bpc" id="L387" title="1 of 2 branches missed.">		if (maxSupplyInt != maxSupply)</span>
-<span class="nc" id="L388">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
-<span class="fc" id="L389">		return maxSupplyInt;</span>
+<span class="fc" id="L385">		long maxSupply = 0;</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc" id="L387">			maxSupply += net.getCapacityInt(e);</span>
+<span class="fc" id="L388">		int maxSupplyInt = (int) maxSupply;</span>
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">		if (maxSupplyInt != maxSupply)</span>
+<span class="nc" id="L390">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
+<span class="fc" id="L391">		return maxSupplyInt;</span>
 	}
 
 	static double vertexMaxDemand(IndexGraph g, FlowNetwork net, int v) {
-<span class="pc bpc" id="L393" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
-<span class="nc" id="L394">			return vertexMaxDemand(g, (FlowNetworkInt) net, v);</span>
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">		if (net instanceof FlowNetworkInt)</span>
+<span class="nc" id="L396">			return vertexMaxDemand(g, (FlowNetworkInt) net, v);</span>
 
-<span class="fc" id="L396">		double maxDemand = 0;</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
-<span class="fc" id="L398">			maxDemand += net.getCapacity(e);</span>
-<span class="fc" id="L399">		return maxDemand;</span>
+<span class="fc" id="L398">		double maxDemand = 0;</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
+<span class="fc" id="L400">			maxDemand += net.getCapacity(e);</span>
+<span class="fc" id="L401">		return maxDemand;</span>
 	}
 
 	static int vertexMaxDemand(IndexGraph g, FlowNetworkInt net, int v) {
-<span class="fc" id="L403">		long maxDemand = 0;</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
-<span class="fc" id="L405">			maxDemand += net.getCapacityInt(e);</span>
-<span class="fc" id="L406">		int maxDemandInt = (int) maxDemand;</span>
-<span class="pc bpc" id="L407" title="1 of 2 branches missed.">		if (maxDemandInt != maxDemand)</span>
-<span class="nc" id="L408">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
-<span class="fc" id="L409">		return maxDemandInt;</span>
+<span class="fc" id="L405">		long maxDemand = 0;</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
+<span class="fc" id="L407">			maxDemand += net.getCapacityInt(e);</span>
+<span class="fc" id="L408">		int maxDemandInt = (int) maxDemand;</span>
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">		if (maxDemandInt != maxDemand)</span>
+<span class="nc" id="L410">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
+<span class="fc" id="L411">		return maxDemandInt;</span>
 	}
 
 }

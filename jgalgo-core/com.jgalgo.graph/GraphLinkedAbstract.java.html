@@ -47,8 +47,8 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 <span class="pc bpc" id="L47" title="1 of 2 branches missed.">		} else if (endpoint == n.target) {</span>
 <span class="fc" id="L48">			return n.source;</span>
 		} else {
-<span class="nc" id="L50">			throw new IllegalArgumentException(&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot;</span>
-					+ n.source + &quot;, &quot; + n.target + &quot;)&quot;);
+<span class="nc" id="L50">			throw new IllegalArgumentException(&quot;The given vertex (idx=&quot; + endpoint</span>
+					+ &quot;) is not an endpoint of the edge (idx=&quot; + n.source + &quot;, idx=&quot; + n.target + &quot;)&quot;);
 		}
 	}
 
