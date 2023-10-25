@@ -75,8 +75,13 @@ abstract class GraphBase implements Graph {
 		int h = Boolean.hashCode(getCapabilities().directed());
 		h += vertices().hashCode();
 		h += edges().hashCode();
-		for (int e : edges())
-			h += edgeSource(e) + edgeTarget(e);
+		if (getCapabilities().directed()) {
+			for (int e : edges())
+				h += edgeSource(e) + 31 * edgeTarget(e);
+		} else {
+			for (int e : edges())
+				h += edgeSource(e) + edgeTarget(e);
+		}
 		for (Object key : getVerticesWeightsKeys())
 			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));
 		for (Object key : getEdgesWeightsKeys())
