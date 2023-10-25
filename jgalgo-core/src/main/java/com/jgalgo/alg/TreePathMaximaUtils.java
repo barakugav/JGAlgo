@@ -23,10 +23,10 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 
 class TreePathMaximaUtils {
 
@@ -54,26 +54,30 @@ class TreePathMaximaUtils {
 	}
 
 	static class QueriesImpl implements TreePathMaxima.Queries {
-		private final IntList qs;
+		private final LongList qs;
 
 		QueriesImpl() {
-			qs = new IntArrayList();
+			qs = new LongArrayList();
 		}
 
 		@Override
 		public void addQuery(int u, int v) {
-			qs.add(u);
-			qs.add(v);
+			qs.add(JGAlgoUtils.longCompose(u, v));
 		}
 
 		@Override
-		public IntIntPair getQuery(int idx) {
-			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));
+		public int getQuerySource(int idx) {
+			return JGAlgoUtils.long2low(qs.getLong(idx));
+		}
+
+		@Override
+		public int getQueryTarget(int idx) {
+			return JGAlgoUtils.long2high(qs.getLong(idx));
 		}
 
 		@Override
 		public int size() {
-			return qs.size() / 2;
+			return qs.size();
 		}
 
 		@Override
@@ -117,9 +121,13 @@ class TreePathMaximaUtils {
 		}
 
 		@Override
-		public IntIntPair getQuery(int idx) {
-			IntIntPair idQuery = qs.getQuery(idx);
-			return IntIntPair.of(viMap.idToIndex(idQuery.firstInt()), viMap.idToIndex(idQuery.secondInt()));
+		public int getQuerySource(int idx) {
+			return viMap.idToIndex(qs.getQuerySource(idx));
+		}
+
+		@Override
+		public int getQueryTarget(int idx) {
+			return viMap.idToIndex(qs.getQueryTarget(idx));
 		}
 
 		@Override

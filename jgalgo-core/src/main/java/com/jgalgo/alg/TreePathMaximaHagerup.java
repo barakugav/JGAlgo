@@ -30,7 +30,6 @@ import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -424,8 +423,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 			LowestCommonAncestorStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);
 			for (int q = 0; q < queriesNum; q++) {
-				IntIntPair query = queries.getQuery(q);
-				int u = query.firstInt(), v = query.secondInt();
+				int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 				if (u == v)
 					throw new IllegalArgumentException(
 							"Tree path maxima query can not be composed of two identical vertices");

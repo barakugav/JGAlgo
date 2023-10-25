@@ -22,7 +22,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
  * Tree Path Maxima (TPM) algorithm.
@@ -85,13 +84,28 @@ public interface TreePathMaxima {
 		void addQuery(int u, int v);
 
 		/**
-		 * Get a query by index.
+		 * Get a query source by index.
+		 * <p>
+		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
-		 * @return                           pair with the two vertices of the query
+		 * @return                           the first vertex of the query
 		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
 		 */
-		IntIntPair getQuery(int idx);
+		int getQuerySource(int idx);
+
+		/**
+		 * Get a query target by index.
+		 * <p>
+		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the second vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
+		 */
+		int getQueryTarget(int idx);
 
 		/**
 		 * Get the number of queries in this container.

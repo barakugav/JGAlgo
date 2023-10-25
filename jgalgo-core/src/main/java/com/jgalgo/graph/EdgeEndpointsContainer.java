@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.JGAlgoUtils;
+
 class EdgeEndpointsContainer {
 
 	private static final int None = -1;
@@ -29,15 +31,15 @@ class EdgeEndpointsContainer {
 	}
 
 	static long sourceTarget2Endpoints(int source, int target) {
-		return ((source & 0xffffffffL) << 32) | ((target & 0xffffffffL) << 0);
+		return JGAlgoUtils.longCompose(source, target);
 	}
 
 	private static int endpoints2Source(long endpoints) {
-		return (int) ((endpoints >> 32) & 0xffffffffL);
+		return JGAlgoUtils.long2low(endpoints);
 	}
 
 	private static int endpoints2Target(long endpoints) {
-		return (int) ((endpoints >> 0) & 0xffffffffL);
+		return JGAlgoUtils.long2high(endpoints);
 	}
 
 	static interface GraphWithEdgeEndpointsContainer extends IndexGraphImpl {

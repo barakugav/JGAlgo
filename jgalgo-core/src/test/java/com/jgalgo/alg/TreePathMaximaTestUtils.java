@@ -28,7 +28,6 @@ import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 public class TreePathMaximaTestUtils extends TestUtils {
 
@@ -38,8 +37,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		int queriesNum = queries.size();
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
-			IntIntPair query = queries.getQuery(q);
-			int u = query.firstInt(), v = query.secondInt();
+			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 
 			Path path = Path.findPath(t, u, v);
 
@@ -84,8 +82,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			int[] expected, WeightFunction w) {
 		assertEquals(expected.length, actual.size(), "Unexpected result size");
 		for (int i = 0; i < actual.size(); i++) {
-			IntIntPair query = queries.getQuery(i);
-			int u = query.firstInt(), v = query.secondInt();
+			int u = queries.getQuerySource(i), v = queries.getQueryTarget(i);
 			double aw = actual.getHeaviestEdge(i) != -1 ? w.weight(actual.getHeaviestEdge(i)) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
 			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdge(i)

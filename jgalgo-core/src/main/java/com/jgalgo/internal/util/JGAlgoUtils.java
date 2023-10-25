@@ -743,4 +743,16 @@ public class JGAlgoUtils {
 
 	}
 
+	public static long longCompose(int low, int high) {
+		return ((high & 0xffffffffL) << 32) | ((low & 0xffffffffL) << 0);
+	}
+
+	public static int long2low(long endpoints) {
+		return (int) ((endpoints >> 0) & 0xffffffffL);
+	}
+
+	public static int long2high(long endpoints) {
+		return (int) ((endpoints >> 32) & 0xffffffffL);
+	}
+
 }
