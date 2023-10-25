@@ -15,7 +15,6 @@
  */
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
 
 class GraphCSRDirected extends GraphCSRAbstractUnindexed {
@@ -23,70 +22,64 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
+<span class="fc" id="L25">	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);</span>
+
 	GraphCSRDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-<span class="fc" id="L27">		super(builder, processEdges);</span>
-<span class="fc" id="L28">		edgesIn = processEdges.edgesIn;</span>
-<span class="fc" id="L29">		edgesInBegin = processEdges.edgesInBegin;</span>
-<span class="fc" id="L30">	}</span>
+<span class="fc" id="L28">		super(Capabilities, builder, processEdges);</span>
+<span class="fc" id="L29">		edgesIn = processEdges.edgesIn;</span>
+<span class="fc" id="L30">		edgesInBegin = processEdges.edgesInBegin;</span>
+<span class="fc" id="L31">	}</span>
 
 	GraphCSRDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L33">		super(g, copyWeights);</span>
-<span class="fc" id="L34">		Assertions.Graphs.onlyDirected(g);</span>
-<span class="fc" id="L35">		final int n = g.vertices().size();</span>
-<span class="fc" id="L36">		final int m = g.edges().size();</span>
+<span class="fc" id="L34">		super(Capabilities, g, copyWeights);</span>
+<span class="fc" id="L35">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L36">		final int n = g.vertices().size();</span>
+<span class="fc" id="L37">		final int m = g.edges().size();</span>
 
-<span class="fc" id="L38">		edgesIn = new int[m];</span>
-<span class="fc" id="L39">		edgesInBegin = new int[n + 1];</span>
+<span class="fc" id="L39">		edgesIn = new int[m];</span>
+<span class="fc" id="L40">		edgesInBegin = new int[n + 1];</span>
 
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L42">			edgesInBegin[v] = eIdx;</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">			for (int e : g.inEdges(v))</span>
-<span class="fc" id="L44">				edgesIn[eIdx++] = e;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L43">			edgesInBegin[v] = eIdx;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">			for (int e : g.inEdges(v))</span>
+<span class="fc" id="L45">				edgesIn[eIdx++] = e;</span>
 		}
-<span class="fc" id="L46">		edgesInBegin[n] = m;</span>
-<span class="fc" id="L47">	}</span>
+<span class="fc" id="L47">		edgesInBegin[n] = m;</span>
+<span class="fc" id="L48">	}</span>
 
 	@Override
 	public EdgeSet outEdges(int source) {
-<span class="fc" id="L51">		return new EdgeSetOut(source);</span>
+<span class="fc" id="L52">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
 	public EdgeSet inEdges(int target) {
-<span class="fc" id="L56">		return new EdgeSetIn(target);</span>
+<span class="fc" id="L57">		return new EdgeSetIn(target);</span>
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L61">		return Capabilities;</span>
-	}
-
-<span class="fc" id="L64">	private static final GraphCapabilities Capabilities =</span>
-<span class="fc" id="L65">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
-<span class="fc" id="L71">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L72">			super(source);</span>
-<span class="fc" id="L73">			begin = edgesOutBegin[source];</span>
-<span class="fc" id="L74">			end = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L75">		}</span>
+<span class="fc" id="L64">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L65">			super(source);</span>
+<span class="fc" id="L66">			begin = edgesOutBegin[source];</span>
+<span class="fc" id="L67">			end = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L79">			return end - begin;</span>
+<span class="fc" id="L72">			return end - begin;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L84" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L89">			return new EdgeIterOut(source, edgesOut, begin, end);</span>
+<span class="fc" id="L82">			return new EdgeIterOut(source, edgesOut, begin, end);</span>
 		}
 	}
 
@@ -94,63 +87,63 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 
 		final int begin, end;
 
-<span class="fc" id="L97">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L98">			super(target);</span>
-<span class="fc" id="L99">			begin = edgesInBegin[target];</span>
-<span class="fc" id="L100">			end = edgesInBegin[target + 1];</span>
-<span class="fc" id="L101">		}</span>
+<span class="fc" id="L90">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L91">			super(target);</span>
+<span class="fc" id="L92">			begin = edgesInBegin[target];</span>
+<span class="fc" id="L93">			end = edgesInBegin[target + 1];</span>
+<span class="fc" id="L94">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L105">			return edgesInBegin[target + 1] - edgesInBegin[target];</span>
+<span class="fc" id="L98">			return edgesInBegin[target + 1] - edgesInBegin[target];</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L110" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L115">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
+<span class="fc" id="L108">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterAbstract {
 		private final int source;
 
-<span class="fc" id="L122">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L123">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L124">			this.source = source;</span>
-<span class="fc" id="L125">		}</span>
+<span class="fc" id="L115">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L116">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L117">			this.source = source;</span>
+<span class="fc" id="L118">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L129">			return source;</span>
+<span class="fc" id="L122">			return source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L134">			return edgeTarget(lastEdge);</span>
+<span class="fc" id="L127">			return edgeTarget(lastEdge);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L141">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L142">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L143">			this.target = target;</span>
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L134">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L135">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L136">			this.target = target;</span>
+<span class="fc" id="L137">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L148">			return edgeSource(lastEdge);</span>
+<span class="fc" id="L141">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L153">			return target;</span>
+<span class="fc" id="L146">			return target;</span>
 		}
 	}
 

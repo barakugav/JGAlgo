@@ -21,7 +21,6 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -35,81 +34,75 @@ class CutImpl implements Cut {
 	private IntCollection cutVertices;
 	private IntCollection crossEdges;
 
-<span class="fc" id="L38">	CutImpl(IndexGraph g, IntCollection cutVertices) {</span>
-<span class="fc" id="L39">		this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L40">		this.cutVertices = IntCollections.unmodifiable(Objects.requireNonNull(cutVertices));</span>
-<span class="fc" id="L41">	}</span>
+<span class="fc" id="L37">	CutImpl(IndexGraph g, IntCollection cutVertices) {</span>
+<span class="fc" id="L38">		this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L39">		this.cutVertices = IntCollections.unmodifiable(Objects.requireNonNull(cutVertices));</span>
+<span class="fc" id="L40">	}</span>
 
-<span class="fc" id="L43">	CutImpl(IndexGraph g, BitSet cutBitmap) {</span>
-<span class="fc" id="L44">		this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L45">		this.cutBitmap = Objects.requireNonNull(cutBitmap);</span>
-<span class="fc" id="L46">	}</span>
+<span class="fc" id="L42">	CutImpl(IndexGraph g, BitSet cutBitmap) {</span>
+<span class="fc" id="L43">		this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L44">		this.cutBitmap = Objects.requireNonNull(cutBitmap);</span>
+<span class="fc" id="L45">	}</span>
 
 	@Override
 	public boolean containsVertex(int vertex) {
-<span class="nc" id="L50">		computeCutBitmap();</span>
-<span class="nc" id="L51">		return cutBitmap.get(vertex);</span>
+<span class="nc" id="L49">		computeCutBitmap();</span>
+<span class="nc" id="L50">		return cutBitmap.get(vertex);</span>
 	}
 
 	@Override
 	public IntCollection vertices() {
-<span class="nc" id="L56">		computeVerticesCollection();</span>
-<span class="nc" id="L57">		return cutVertices;</span>
+<span class="nc" id="L55">		computeVerticesCollection();</span>
+<span class="nc" id="L56">		return cutVertices;</span>
 	}
 
 	@Override
 	public IntCollection edges() {
-<span class="nc" id="L62">		computeCrossEdgesCollection();</span>
-<span class="nc" id="L63">		return cutVertices;</span>
-	}
-
-	@Override
-	public double weight(WeightFunction w) {
-<span class="fc" id="L68">		computeCrossEdgesCollection();</span>
-<span class="fc" id="L69">		return GraphsUtils.weightSum(crossEdges, w);</span>
+<span class="fc" id="L61">		computeCrossEdgesCollection();</span>
+<span class="fc" id="L62">		return crossEdges;</span>
 	}
 
 	private void computeVerticesCollection() {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">		if (cutVertices != null)</span>
-<span class="nc" id="L74">			return;</span>
-<span class="nc" id="L75">		IntArrayList cutVertices0 = new IntArrayList();</span>
-<span class="nc" id="L76">		int n = g.vertices().size();</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">			if (cutBitmap.get(v))</span>
-<span class="nc" id="L79">				cutVertices0.add(v);</span>
-<span class="nc" id="L80">		cutVertices0.trim();</span>
-<span class="nc" id="L81">		cutVertices = IntLists.unmodifiable(cutVertices0);</span>
-<span class="nc" id="L82">	}</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (cutVertices != null)</span>
+<span class="nc" id="L67">			return;</span>
+<span class="nc" id="L68">		IntArrayList cutVertices0 = new IntArrayList();</span>
+<span class="nc" id="L69">		int n = g.vertices().size();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">			if (cutBitmap.get(v))</span>
+<span class="nc" id="L72">				cutVertices0.add(v);</span>
+<span class="nc" id="L73">		cutVertices0.trim();</span>
+<span class="nc" id="L74">		cutVertices = IntLists.unmodifiable(cutVertices0);</span>
+<span class="nc" id="L75">	}</span>
 
 	private void computeCutBitmap() {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (cutBitmap != null)</span>
-<span class="fc" id="L86">			return;</span>
-<span class="fc" id="L87">		cutBitmap = new BitSet(g.vertices().size());</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int v : cutVertices)</span>
-<span class="fc" id="L89">			cutBitmap.set(v);</span>
-<span class="fc" id="L90">	}</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (cutBitmap != null)</span>
+<span class="fc" id="L79">			return;</span>
+<span class="fc" id="L80">		cutBitmap = new BitSet(g.vertices().size());</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v : cutVertices)</span>
+<span class="fc" id="L82">			cutBitmap.set(v);</span>
+<span class="fc" id="L83">	}</span>
 
 	private void computeCrossEdgesCollection() {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (crossEdges != null)</span>
-<span class="fc" id="L94">			return;</span>
-<span class="fc" id="L95">		computeCutBitmap();</span>
-<span class="fc" id="L96">		IntArrayList crossEdges0 = new IntArrayList();</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int u : JGAlgoUtils.iterable(cutBitmap)) {</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L99">				int e = eit.nextInt();</span>
-<span class="fc" id="L100">				int v = eit.target();</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">				if (!cutBitmap.get(v))</span>
-<span class="fc" id="L102">					crossEdges0.add(e);</span>
-<span class="fc" id="L103">			}</span>
-<span class="fc" id="L104">		}</span>
-<span class="fc" id="L105">		crossEdges0.trim();</span>
-<span class="fc" id="L106">		crossEdges = IntLists.unmodifiable(crossEdges0);</span>
-<span class="fc" id="L107">	}</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (crossEdges != null)</span>
+<span class="fc" id="L87">			return;</span>
+<span class="fc" id="L88">		computeCutBitmap();</span>
+<span class="fc" id="L89">		IntArrayList crossEdges0 = new IntArrayList();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int u : JGAlgoUtils.iterable(cutBitmap)) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L92">				int e = eit.nextInt();</span>
+<span class="fc" id="L93">				int v = eit.target();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (!cutBitmap.get(v))</span>
+<span class="fc" id="L95">					crossEdges0.add(e);</span>
+<span class="fc" id="L96">			}</span>
+<span class="fc" id="L97">		}</span>
+<span class="fc" id="L98">		crossEdges0.trim();</span>
+<span class="fc" id="L99">		crossEdges = IntLists.unmodifiable(crossEdges0);</span>
+<span class="fc" id="L100">	}</span>
 
 	@Override
 	public String toString() {
-<span class="nc" id="L111">		computeCutBitmap();</span>
-<span class="nc" id="L112">		return cutBitmap.toString();</span>
+<span class="nc" id="L104">		computeCutBitmap();</span>
+<span class="nc" id="L105">		return cutBitmap.toString();</span>
 	}
 
 	static class CutFromIndexCut implements Cut {
@@ -118,30 +111,25 @@ class CutImpl implements Cut {
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L121">		CutFromIndexCut(Cut cut, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L122">			this.cut = Objects.requireNonNull(cut);</span>
-<span class="fc" id="L123">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L124">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L125">		}</span>
+<span class="fc" id="L114">		CutFromIndexCut(Cut cut, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L115">			this.cut = Objects.requireNonNull(cut);</span>
+<span class="fc" id="L116">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L117">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L118">		}</span>
 
 		@Override
 		public boolean containsVertex(int vertex) {
-<span class="nc" id="L129">			return cut.containsVertex(viMap.idToIndex(vertex));</span>
+<span class="nc" id="L122">			return cut.containsVertex(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IntCollection vertices() {
-<span class="nc" id="L134">			return IndexIdMaps.indexToIdCollection(cut.vertices(), viMap);</span>
+<span class="nc" id="L127">			return IndexIdMaps.indexToIdCollection(cut.vertices(), viMap);</span>
 		}
 
 		@Override
 		public IntCollection edges() {
-<span class="nc" id="L139">			return IndexIdMaps.indexToIdCollection(cut.edges(), eiMap);</span>
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-<span class="fc" id="L144">			return cut.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));</span>
+<span class="fc" id="L132">			return IndexIdMaps.indexToIdCollection(cut.edges(), eiMap);</span>
 		}
 
 	}

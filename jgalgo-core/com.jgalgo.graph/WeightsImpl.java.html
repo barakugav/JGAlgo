@@ -128,7 +128,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
 		static class Manager {
 
-<span class="fc" id="L131">			final Map&lt;Object, WeightsImpl.IndexMutable&lt;?&gt;&gt; weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L131">			final Map&lt;String, WeightsImpl.IndexMutable&lt;?&gt;&gt; weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
 			private int weightsCapacity;
 
 <span class="fc" id="L134">			Manager(int initCapacity) {</span>
@@ -141,7 +141,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L141">					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), elements));</span>
 <span class="fc" id="L142">			}</span>
 
-			void addWeights(Object key, WeightsImpl.IndexMutable&lt;?&gt; weight) {
+			void addWeights(String key, WeightsImpl.IndexMutable&lt;?&gt; weight) {
 <span class="fc" id="L145">				WeightsImpl.IndexMutable&lt;?&gt; oldContainer = weights.put(key, weight);</span>
 <span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (oldContainer != null)</span>
 <span class="nc" id="L147">					throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
@@ -149,16 +149,16 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="fc" id="L149">					weight.expand(weightsCapacity);</span>
 <span class="fc" id="L150">			}</span>
 
-			void removeWeights(Object key) {
+			void removeWeights(String key) {
 <span class="fc" id="L153">				weights.remove(key);</span>
 <span class="fc" id="L154">			}</span>
 
 			@SuppressWarnings(&quot;unchecked&quot;)
-			&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getWeights(Object key) {
+			&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getWeights(String key) {
 <span class="fc" id="L158">				return (WeightsT) weights.get(key);</span>
 			}
 
-			Set&lt;Object&gt; weightsKeys() {
+			Set&lt;String&gt; weightsKeys() {
 <span class="fc" id="L162">				return Collections.unmodifiableSet(weights.keySet());</span>
 			}
 
@@ -248,20 +248,20 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 		static class Builder {
 
 			private final GraphElementSet.FixedSize elements;
-			private final Map&lt;Object, WeightsImpl.IndexImmutable&lt;?&gt;&gt; weights;
+			private final Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; weights;
 
 <span class="fc" id="L253">			Builder(GraphElementSet.FixedSize elements) {</span>
 <span class="fc" id="L254">				this.elements = Objects.requireNonNull(elements);</span>
 <span class="fc" id="L255">				weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
 <span class="fc" id="L256">			}</span>
 
-			void copyAndAddWeights(Object key, Weights&lt;?&gt; weights) {
+			void copyAndAddWeights(String key, Weights&lt;?&gt; weights) {
 <span class="fc" id="L259">				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements));</span>
 <span class="pc bpc" id="L260" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
 <span class="nc" id="L261">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
 <span class="fc" id="L262">			}</span>
 
-			void copyAndAddWeightsReindexed(Object key, Weights&lt;?&gt; weights,
+			void copyAndAddWeightsReindexed(String key, Weights&lt;?&gt; weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
 <span class="fc" id="L266">				Object oldWeights = this.weights.put(key,</span>
 <span class="fc" id="L267">						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, reIndexMap));</span>
@@ -269,7 +269,7 @@ interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 <span class="nc" id="L269">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
 <span class="fc" id="L270">			}</span>
 
-			Map&lt;Object, WeightsImpl.IndexImmutable&lt;?&gt;&gt; build() {
+			Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; build() {
 <span class="fc" id="L273">				return Map.copyOf(weights);</span>
 			}
 		}

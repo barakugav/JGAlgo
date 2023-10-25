@@ -196,8 +196,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc bfc" id="L196" title="All 2 branches covered.">						} else if (weight &lt; 0) {</span>
 							// negative cycle
 <span class="fc" id="L198">							Path negCycle0 = Path.findPath(gNeg, v, u);</span>
-<span class="fc" id="L199">							IntList negCycle = new IntArrayList(negCycle0.size() + 1);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">							for (int e2 : negCycle0)</span>
+<span class="fc" id="L199">							IntList negCycle = new IntArrayList(negCycle0.edges().size() + 1);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">							for (int e2 : negCycle0.edges())</span>
 <span class="fc" id="L201">								negCycle.add(gNegEdgeRefs[e2]);</span>
 <span class="fc" id="L202">							negCycle.add(gNegEdgeRefs[e]);</span>
 <span class="fc" id="L203">							return Pair.of(null, new PathImpl(g, v, v, negCycle));</span>

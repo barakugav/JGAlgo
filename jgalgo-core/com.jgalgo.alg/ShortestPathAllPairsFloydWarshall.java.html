@@ -43,7 +43,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc bfc" id="L43" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L44">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L45">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
 	}
 
 	@Override
@@ -148,8 +148,8 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc" id="L148">				continue;</span>
 <span class="fc bfc" id="L149" title="All 2 branches covered.">			if (d1 + d2 &lt; 0) {</span>
 <span class="fc" id="L150">				IntList negCycle = new IntArrayList();</span>
-<span class="fc" id="L151">				negCycle.addAll(res.getPath(u, k));</span>
-<span class="fc" id="L152">				negCycle.addAll(res.getPath(k, u));</span>
+<span class="fc" id="L151">				negCycle.addAll(res.getPath(u, k).edges());</span>
+<span class="fc" id="L152">				negCycle.addAll(res.getPath(k, u).edges());</span>
 <span class="fc" id="L153">				res.setNegCycle(new PathImpl(res.g, u, u, negCycle));</span>
 <span class="fc" id="L154">				return true;</span>
 			}

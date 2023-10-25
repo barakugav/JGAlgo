@@ -4,11 +4,11 @@ JGAlgo - IO,com.jgalgo.io,FormatGML,32,86,18,20,4,13,16,12,1,8
 JGAlgo - IO,com.jgalgo.io,FormatCSV,18,0,0,0,5,0,4,0,4,0
 JGAlgo - IO,com.jgalgo.io,FormatLEDA.ReaderImpl,267,335,36,47,81,99,36,17,0,1
 JGAlgo - IO,com.jgalgo.io,FormatGraphML.WriterImpl,5,0,0,0,1,0,1,0,1,0
-JGAlgo - IO,com.jgalgo.io,FormatGML.WriterImpl,6,253,0,14,2,48,0,8,0,1
+JGAlgo - IO,com.jgalgo.io,FormatGML.WriterImpl,6,248,0,14,2,46,0,8,0,1
 JGAlgo - IO,com.jgalgo.io,GraphWriter,36,4,0,0,12,1,2,1,2,1
 JGAlgo - IO,com.jgalgo.io,FormatSparse6,18,0,0,0,5,0,4,0,4,0
 JGAlgo - IO,com.jgalgo.io,GraphIO,151,0,12,0,34,0,12,0,6,0
-JGAlgo - IO,com.jgalgo.io,FormatDIMACS.WriterImpl,16,117,2,16,4,22,2,8,0,1
+JGAlgo - IO,com.jgalgo.io,FormatDIMACS.WriterImpl,16,116,2,16,4,22,2,8,0,1
 JGAlgo - IO,com.jgalgo.io,FormatCSV.WriterImpl,5,0,0,0,1,0,1,0,1,0
 JGAlgo - IO,com.jgalgo.io,FormatGraph6.WriterImpl,5,0,0,0,1,0,1,0,1,0
 JGAlgo - IO,com.jgalgo.io,GraphFormat,16,15,6,3,6,4,6,3,0,1
@@ -18,7 +18,7 @@ JGAlgo - IO,com.jgalgo.io,FormatDIMACS,2,17,0,0,1,4,1,3,1,3
 JGAlgo - IO,com.jgalgo.io,FormatGEXF.WriterImpl,5,0,0,0,1,0,1,0,1,0
 JGAlgo - IO,com.jgalgo.io,FormatGraphML.ReaderImpl,5,0,0,0,1,0,1,0,1,0
 JGAlgo - IO,com.jgalgo.io,FormatGML.ReaderImpl,225,846,55,127,40,190,46,53,0,8
-JGAlgo - IO,com.jgalgo.io,FormatLEDA.WriterImpl,57,256,16,30,18,53,12,12,0,1
+JGAlgo - IO,com.jgalgo.io,FormatLEDA.WriterImpl,57,257,16,30,18,53,12,12,0,1
 JGAlgo - IO,com.jgalgo.io,GraphReader,36,9,0,0,8,2,2,2,2,2
 JGAlgo - IO,com.jgalgo.io,FormatLEDA,2,16,0,0,1,4,1,3,1,3
 JGAlgo - IO,com.jgalgo.io,FormatSparse6.ReaderImpl,5,0,0,0,1,0,1,0,1,0

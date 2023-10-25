@@ -190,7 +190,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		}
 
 		/* handle self edges separately, as the algorithm skip SCC of size one */
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (g.getCapabilities().selfEdges()) {</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (g.isAllowSelfEdges()) {</span>
 <span class="fc" id="L194">			int bestSelfEdge = 1;</span>
 <span class="fc" id="L195">			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>

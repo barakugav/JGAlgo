@@ -80,7 +80,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L80">		IndexGraph g1 = g1Builder.build();</span>
 
 <span class="fc" id="L82">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bnc" id="L83" title="All 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="pc bnc" id="L83" title="All 2 branches missed.">		assert cycle.edges().size() == n;</span>
 <span class="pc bnc" id="L84" title="All 2 branches missed.">		assert cycle.isCycle();</span>
 
 		/* Convert cycle of edges to list of vertices */

@@ -16,131 +16,126 @@
 
 package com.jgalgo.graph;
 
-import java.util.Collection;
 import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
 	private Edge[] edges;
 	private final DataContainer.Obj&lt;Edge&gt; edgesContainer;
-<span class="fc" id="L26">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
+<span class="fc" id="L25">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
 
-	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L30">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="fc" id="L31">		addInternalEdgesContainer(edgesContainer);</span>
-<span class="fc" id="L32">	}</span>
+	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L28">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L29">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L30">		addInternalEdgesContainer(edgesContainer);</span>
+<span class="fc" id="L31">	}</span>
 
-	GraphLinkedAbstract(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L35">		super(g, copyWeights);</span>
-<span class="fc" id="L36">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="fc" id="L37">		addInternalEdgesContainer(edgesContainer);</span>
-<span class="fc" id="L38">		final int m = g.edges().size();</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L40">			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L41">	}</span>
+	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L34">		super(capabilities, g, copyWeights);</span>
+<span class="fc" id="L35">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L36">		addInternalEdgesContainer(edgesContainer);</span>
+<span class="fc" id="L37">		final int m = g.edges().size();</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L39">			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L40">	}</span>
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L45">		Edge n = getEdge(edge);</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (endpoint == n.source) {</span>
-<span class="fc" id="L47">			return n.target;</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		} else if (endpoint == n.target) {</span>
-<span class="fc" id="L49">			return n.source;</span>
+<span class="fc" id="L44">		Edge n = getEdge(edge);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (endpoint == n.source) {</span>
+<span class="fc" id="L46">			return n.target;</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		} else if (endpoint == n.target) {</span>
+<span class="fc" id="L48">			return n.source;</span>
 		} else {
-<span class="nc" id="L51">			throw new IllegalArgumentException(&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot;</span>
+<span class="nc" id="L50">			throw new IllegalArgumentException(&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot;</span>
 					+ n.source + &quot;, &quot; + n.target + &quot;)&quot;);
 		}
 	}
 
 	Edge getEdge(int edge) {
-<span class="fc" id="L57">		Edge n = edges[edge];</span>
-<span class="pc bnc" id="L58" title="All 2 branches missed.">		assert n.id == edge;</span>
-<span class="fc" id="L59">		return n;</span>
+<span class="fc" id="L56">		Edge n = edges[edge];</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert n.id == edge;</span>
+<span class="fc" id="L58">		return n;</span>
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-<span class="fc" id="L64">		edgesContainer.clear(edges, edge);</span>
-<span class="fc" id="L65">		super.removeEdgeImpl(edge);</span>
-<span class="fc" id="L66">	}</span>
+<span class="fc" id="L63">		edgesContainer.clear(edges, edge);</span>
+<span class="fc" id="L64">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L65">	}</span>
 
 	Edge addEdgeObj(int source, int target) {
-<span class="fc" id="L69">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L70">		Edge n = allocEdge(e, source, target);</span>
-<span class="fc" id="L71">		edges[e] = n;</span>
-<span class="fc" id="L72">		return n;</span>
+<span class="fc" id="L68">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L69">		Edge n = allocEdge(e, source, target);</span>
+<span class="fc" id="L70">		edges[e] = n;</span>
+<span class="fc" id="L71">		return n;</span>
 	}
 
 	abstract Edge allocEdge(int id, int source, int target);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L79">		Edge n1 = getEdge(e1), n2 = getEdge(e2);</span>
-<span class="fc" id="L80">		n1.id = e2;</span>
-<span class="fc" id="L81">		n2.id = e1;</span>
-<span class="fc" id="L82">		edgesContainer.swap(edges, e1, e2);</span>
-<span class="fc" id="L83">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L78">		Edge n1 = getEdge(e1), n2 = getEdge(e2);</span>
+<span class="fc" id="L79">		n1.id = e2;</span>
+<span class="fc" id="L80">		n2.id = e1;</span>
+<span class="fc" id="L81">		edgesContainer.swap(edges, e1, e2);</span>
+<span class="fc" id="L82">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L83">	}</span>
 
 	@Override
 	public int edgeSource(int edge) {
-<span class="fc" id="L88">		checkEdge(edge);</span>
-<span class="fc" id="L89">		return getEdge(edge).source;</span>
+<span class="fc" id="L87">		checkEdge(edge);</span>
+<span class="fc" id="L88">		return getEdge(edge).source;</span>
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
-<span class="fc" id="L94">		checkEdge(edge);</span>
-<span class="fc" id="L95">		return getEdge(edge).target;</span>
-	}
-
-	Collection&lt;Edge&gt; edgeObjs() {
-<span class="fc" id="L99">		return edgesContainer.values();</span>
+<span class="fc" id="L93">		checkEdge(edge);</span>
+<span class="fc" id="L94">		return getEdge(edge).target;</span>
 	}
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L104">		edgesContainer.clear(edges);</span>
-<span class="fc" id="L105">		super.clearEdges();</span>
-<span class="fc" id="L106">	}</span>
+<span class="fc" id="L99">		edgesContainer.clear(edges);</span>
+<span class="fc" id="L100">		super.clearEdges();</span>
+<span class="fc" id="L101">	}</span>
 
 	abstract class EdgeItr implements EdgeIter {
 
 		private Edge next;
 		Edge last;
 
-<span class="fc" id="L113">		EdgeItr(Edge p) {</span>
-<span class="fc" id="L114">			this.next = p;</span>
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L108">		EdgeItr(Edge p) {</span>
+<span class="fc" id="L109">			this.next = p;</span>
+<span class="fc" id="L110">		}</span>
 
 		abstract Edge nextEdge(Edge n);
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			return next != null;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			return next != null;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L126">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L127">			next = nextEdge(last = next);</span>
-<span class="fc" id="L128">			return last.id;</span>
+<span class="fc" id="L121">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L122">			next = nextEdge(last = next);</span>
+<span class="fc" id="L123">			return last.id;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="fc" id="L133">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L134">			return next.id;</span>
+<span class="fc" id="L128">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L129">			return next.id;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			if (last == null)</span>
-<span class="nc" id="L140">				throw new IllegalStateException();</span>
-<span class="fc" id="L141">			removeEdge(last.id);</span>
-<span class="fc" id="L142">			last = null;</span>
-<span class="fc" id="L143">		}</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (last == null)</span>
+<span class="nc" id="L135">				throw new IllegalStateException();</span>
+<span class="fc" id="L136">			removeEdge(last.id);</span>
+<span class="fc" id="L137">			last = null;</span>
+<span class="fc" id="L138">		}</span>
 	}
 
 	abstract static class Edge {
@@ -148,11 +143,11 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		int id;
 		int source, target;
 
-<span class="fc" id="L151">		Edge(int id, int source, int target) {</span>
-<span class="fc" id="L152">			this.id = id;</span>
-<span class="fc" id="L153">			this.source = source;</span>
-<span class="fc" id="L154">			this.target = target;</span>
-<span class="fc" id="L155">		}</span>
+<span class="fc" id="L146">		Edge(int id, int source, int target) {</span>
+<span class="fc" id="L147">			this.id = id;</span>
+<span class="fc" id="L148">			this.source = source;</span>
+<span class="fc" id="L149">			this.target = target;</span>
+<span class="fc" id="L150">		}</span>
 
 	}
 

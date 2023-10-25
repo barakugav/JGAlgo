@@ -1050,7 +1050,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	static void saturateNegativeCostSelfEdges(IndexGraph g, FlowNetwork net, WeightFunction cost) {
-<span class="pc bpc" id="L1053" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
+<span class="pc bpc" id="L1053" title="1 of 2 branches missed.">		if (!g.isAllowSelfEdges())</span>
 <span class="nc" id="L1054">			return;</span>
 <span class="fc bfc" id="L1055" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
 <span class="fc" id="L1056">			FlowNetworkInt netInt = (FlowNetworkInt) net;</span>

@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="pc bnc" id="L71" title="All 2 branches missed.">		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));</span>
 <span class="fc" id="L72">		System.out.println(&quot;The minimum spanning tree of the graph has the following edges: &quot; + mst.edges());</span>
-<span class="fc" id="L73">		System.out.println(&quot;The minimum spanning tree weight is &quot; + mst.weight(w));</span>
+<span class="fc" id="L73">		System.out.println(&quot;The minimum spanning tree weight is &quot; + w.weightSum(mst.edges()));</span>
 <span class="fc" id="L74">	}</span>
 
 	public static void main(String[] args) {

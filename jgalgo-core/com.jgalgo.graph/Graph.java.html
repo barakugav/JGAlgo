@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
  * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
  * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
- * directed or not, use the {@link #getCapabilities()} method.
+ * directed or not, use the {@link #isDirected()} method.
  * &lt;p&gt;
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
  * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * to &lt;i&gt;all&lt;/i&gt; the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in case
  * the weight type is primitive). The weights are accessed via the {@link Weights} container, which can be used to get
  * or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
- * {@link #addVerticesWeights(Object, Class)} and {@link #addEdgesWeights(Object, Class)}, or {@link Weights} for the
+ * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link Weights} for the
  * full weights documentation.
  * &lt;p&gt;
  * Each graph expose an &lt;i&gt;Index&lt;/i&gt; view on itself via the {@link #indexGraph()} method. The returned
@@ -71,10 +71,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
  * &lt;p&gt;
- * Although the Graph API does not expose an explicit method to check whether it is a directed or undirected graph, the
- * information can be accessed via {@link #getCapabilities()}. The number of vertices and edges can be read via
- * {@code g.vertices().size()} and {@code g.edges().size()}. The out or in degree of a vertex is exposed by
- * {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
+ * in degree of a vertex is exposed by {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
  * &lt;p&gt;
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
@@ -115,7 +113,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }&lt;/pre&gt;
  *
  * @see    GraphFactory
- * @see    GraphCapabilities
+ * @see    GraphBuilder
  * @see    IndexGraph
  * @author Barak Ugav
  */
@@ -223,12 +221,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L226" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L227">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L229">				return e;</span>
-<span class="fc" id="L230">		}</span>
-<span class="fc" id="L231">		return -1;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L225">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L227">				return e;</span>
+<span class="fc" id="L228">		}</span>
+<span class="fc" id="L229">		return -1;</span>
 	}
 
 	/**
@@ -284,9 +282,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L287">		removeOutEdgesOf(vertex);</span>
-<span class="fc" id="L288">		removeInEdgesOf(vertex);</span>
-<span class="fc" id="L289">	}</span>
+<span class="fc" id="L285">		removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L286">		removeInEdgesOf(vertex);</span>
+<span class="fc" id="L287">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -295,11 +293,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
-<span class="fc bfc" id="L298" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L299">			eit.nextInt();</span>
-<span class="fc" id="L300">			eit.remove();</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L297">			eit.nextInt();</span>
+<span class="fc" id="L298">			eit.remove();</span>
 		}
-<span class="fc" id="L302">	}</span>
+<span class="fc" id="L300">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -308,11 +306,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
-<span class="fc bfc" id="L311" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L312">			eit.nextInt();</span>
-<span class="fc" id="L313">			eit.remove();</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L310">			eit.nextInt();</span>
+<span class="fc" id="L311">			eit.remove();</span>
 		}
-<span class="fc" id="L315">	}</span>
+<span class="fc" id="L313">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -362,14 +360,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L365">		int u = edgeSource(edge);</span>
-<span class="fc" id="L366">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L368">			return v;</span>
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L370">			return u;</span>
+<span class="fc" id="L363">		int u = edgeSource(edge);</span>
+<span class="fc" id="L364">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L366">			return v;</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L368">			return u;</span>
 		} else {
-<span class="nc" id="L372">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L370">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -395,19 +393,20 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 * @param  &lt;V&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
 	 * &lt;p&gt;
-	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
-	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
-	 * {@link Weights#createExternalVerticesWeights(Graph, Class)}.
+	 * The created weights will be bounded to this graph, and will be updated when the graph is updated (when vertices
+	 * are added or removed). To create an external weights container, for example in cases the graph is a user input
+	 * and we are not allowed to modify it, use {@link Weights#createExternalVerticesWeights(Graph, Class)}.
 	 *
 	 * &lt;pre&gt; {@code
 	 * Graph g = ...;
@@ -425,14 +424,15 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  &lt;V&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
+	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type) {
 <span class="fc" id="L436">		return addVerticesWeights(key, type, null);</span>
 	}
 
@@ -460,15 +460,16 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  &lt;V&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type, V defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
@@ -477,7 +478,7 @@ public interface Graph {
 	 *
 	 * @param key the key of the weights
 	 */
-	void removeVerticesWeights(Object key);
+	void removeVerticesWeights(String key);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
@@ -486,19 +487,20 @@ public interface Graph {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set&lt;Object&gt; getVerticesWeightsKeys();
+	Set&lt;String&gt; getVerticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  &lt;E&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
@@ -526,15 +528,16 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  &lt;E&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L537">		return addEdgesWeights(key, type, null);</span>
+	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type) {
+<span class="fc" id="L540">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -564,15 +567,16 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  &lt;E&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type, E defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.
@@ -581,7 +585,7 @@ public interface Graph {
 	 *
 	 * @param key the key of the weights
 	 */
-	void removeEdgesWeights(Object key);
+	void removeEdgesWeights(String key);
 
 	/**
 	 * Get the keys of all the associated edges weights.
@@ -590,15 +594,32 @@ public interface Graph {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	Set&lt;Object&gt; getEdgesWeightsKeys();
+	Set&lt;String&gt; getEdgesWeightsKeys();
 
 	/**
-	 * Get the {@linkplain GraphCapabilities capabilities} of this graph.
+	 * Checks whether the graph is directed.
 	 *
-	 * @return a {@link GraphCapabilities} object describing what this graph support and what not.
-	 * @see    GraphCapabilities
+	 * @return {@code true} if the graph is directed, else {@code false}.
 	 */
-	GraphCapabilities getCapabilities();
+	boolean isDirected();
+
+	/**
+	 * Checks whether self edges are supported.
+	 * &lt;p&gt;
+	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
+	 *
+	 * @return {@code true} if the graph support self edges, else {@code false}.
+	 */
+	boolean isAllowSelfEdges();
+
+	/**
+	 * Checks whether parallel edges are supported.
+	 * &lt;p&gt;
+	 * Parallel edges are multiple edges with identical source and target.
+	 *
+	 * @return {@code true} if the graph support parallel edges, else {@code false}.
+	 */
+	boolean isAllowParallelEdges();
 
 	/**
 	 * Get an Index graph view of this graph.
@@ -662,7 +683,7 @@ public interface Graph {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph copy() {
-<span class="fc" id="L665">		return copy(false);</span>
+<span class="fc" id="L686">		return copy(false);</span>
 	}
 
 	/**
@@ -681,7 +702,7 @@ public interface Graph {
 	 *                     graph weights
 	 */
 	default Graph copy(boolean copyWeights) {
-<span class="fc" id="L684">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="fc" id="L705">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	/**
@@ -702,7 +723,7 @@ public interface Graph {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph immutableCopy() {
-<span class="fc" id="L705">		return GraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L726">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -725,20 +746,20 @@ public interface Graph {
 	 *                     weights
 	 */
 	default Graph immutableCopy(boolean copyWeights) {
-<span class="fc" id="L728">		IndexIdMap viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L729">		IndexIdMap eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L730" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
-<span class="fc" id="L731">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L732">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
-<span class="fc" id="L733">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L734">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L735">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="pc bpc" id="L736" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
-<span class="pc bpc" id="L737" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
-<span class="fc" id="L738">			return new GraphImpl.Directed(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L749">		IndexIdMap viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L750">		IndexIdMap eiMap = indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L751" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L752">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L753">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
+<span class="fc" id="L754">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L755">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L756">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L757" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L758" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
+<span class="fc" id="L759">			return new GraphImpl.Directed(iGraph, viMap, eiMap);</span>
 		} else {
-<span class="fc" id="L740">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="fc" id="L741">			return new GraphImpl.Undirected(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L761">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="fc" id="L762">			return new GraphImpl.Undirected(iGraph, viMap, eiMap);</span>
 		}
 	}
 
@@ -752,7 +773,7 @@ public interface Graph {
 	 * @return an immutable view of this graph
 	 */
 	default Graph immutableView() {
-<span class="fc" id="L755">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L776">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -767,7 +788,7 @@ public interface Graph {
 	 * @return a reversed view of this graph
 	 */
 	default Graph reverseView() {
-<span class="fc" id="L770">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L791">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -779,7 +800,7 @@ public interface Graph {
 	 * @return a new undirected empty graph
 	 */
 	static Graph newUndirected() {
-<span class="fc" id="L782">		return GraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L803">		return GraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -791,7 +812,7 @@ public interface Graph {
 	 * @return a new directed empty graph
 	 */
 	static Graph newDirected() {
-<span class="fc" id="L794">		return GraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L815">		return GraphFactory.newDirected().newGraph();</span>
 	}
 
 }

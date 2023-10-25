@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * A directed graph implementation using linked lists to store edge lists.
  * &lt;p&gt;
@@ -35,7 +33,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private final DataContainer.Obj&lt;Edge&gt; edgesInContainer;
 	private final DataContainer.Obj&lt;Edge&gt; edgesOutContainer;
 
-<span class="fc" id="L38">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
+<span class="fc" id="L36">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
+
+<span class="fc" id="L38">	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);</span>
 
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
@@ -44,7 +44,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L47">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L47">		super(Capabilities, expectedVerticesNum, expectedEdgesNum);</span>
 
 <span class="fc" id="L49">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgeArr, newArr -&gt; edgesIn = newArr);</span>
 <span class="fc" id="L50">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgeArr, newArr -&gt; edgesOut = newArr);</span>
@@ -53,7 +53,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L53">	}</span>
 
 	GraphLinkedDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L56">		super(g, copyWeights);</span>
+<span class="fc" id="L56">		super(Capabilities, g, copyWeights);</span>
 
 <span class="fc" id="L58">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgeArr, newArr -&gt; edgesIn = newArr);</span>
 <span class="fc" id="L59">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgeArr, newArr -&gt; edgesOut = newArr);</span>
@@ -212,80 +212,72 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	public void clearEdges() {
-<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (GraphLinkedAbstract.Edge p0 : edgeObjs()) {</span>
-<span class="fc" id="L216">			Edge p = (Edge) p0;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L216">			Edge p = getEdge(e);</span>
 <span class="fc" id="L217">			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;</span>
-<span class="fc" id="L218">		}</span>
+		}
 <span class="fc" id="L219">		edgesOutContainer.clear(edgesOut);</span>
 <span class="fc" id="L220">		edgesInContainer.clear(edgesIn);</span>
 <span class="fc" id="L221">		super.clearEdges();</span>
 <span class="fc" id="L222">	}</span>
 
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L226">		return Capabilities;</span>
-	}
-
-<span class="fc" id="L229">	private static final GraphCapabilities Capabilities =</span>
-<span class="fc" id="L230">			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();</span>
-
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
-<span class="fc" id="L233">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L234">			super(source);</span>
-<span class="fc" id="L235">		}</span>
+<span class="fc" id="L225">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L226">			super(source);</span>
+<span class="fc" id="L227">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L239">			return new EdgeIterOut(edgesOut[source]);</span>
+<span class="fc" id="L231">			return new EdgeIterOut(edgesOut[source]);</span>
 		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
-<span class="fc" id="L244">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L245">			super(target);</span>
-<span class="fc" id="L246">		}</span>
+<span class="fc" id="L236">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L237">			super(target);</span>
+<span class="fc" id="L238">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L250">			return new EdgeIterIn(edgesIn[target]);</span>
+<span class="fc" id="L242">			return new EdgeIterIn(edgesIn[target]);</span>
 		}
 	}
 
 	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
-<span class="fc" id="L255">		EdgeIterImpl(Edge p) {</span>
-<span class="fc" id="L256">			super(p);</span>
-<span class="fc" id="L257">		}</span>
+<span class="fc" id="L247">		EdgeIterImpl(Edge p) {</span>
+<span class="fc" id="L248">			super(p);</span>
+<span class="fc" id="L249">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L261">			return last.source;</span>
+<span class="fc" id="L253">			return last.source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L266">			return last.target;</span>
+<span class="fc" id="L258">			return last.target;</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterImpl {
-<span class="fc" id="L271">		EdgeIterOut(Edge p) {</span>
-<span class="fc" id="L272">			super(p);</span>
-<span class="fc" id="L273">		}</span>
+<span class="fc" id="L263">		EdgeIterOut(Edge p) {</span>
+<span class="fc" id="L264">			super(p);</span>
+<span class="fc" id="L265">		}</span>
 
 		@Override
 		Edge nextEdge(GraphLinkedAbstract.Edge n) {
-<span class="fc" id="L277">			return ((Edge) n).nextOut;</span>
+<span class="fc" id="L269">			return ((Edge) n).nextOut;</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterImpl {
-<span class="fc" id="L282">		EdgeIterIn(Edge p) {</span>
-<span class="fc" id="L283">			super(p);</span>
-<span class="fc" id="L284">		}</span>
+<span class="fc" id="L274">		EdgeIterIn(Edge p) {</span>
+<span class="fc" id="L275">			super(p);</span>
+<span class="fc" id="L276">		}</span>
 
 		@Override
 		Edge nextEdge(GraphLinkedAbstract.Edge n) {
-<span class="fc" id="L288">			return ((Edge) n).nextIn;</span>
+<span class="fc" id="L280">			return ((Edge) n).nextIn;</span>
 		}
 	}
 
@@ -297,8 +289,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		private Edge prevIn;
 
 		Edge(int id, int source, int target) {
-<span class="fc" id="L300">			super(id, source, target);</span>
-<span class="fc" id="L301">		}</span>
+<span class="fc" id="L292">			super(id, source, target);</span>
+<span class="fc" id="L293">		}</span>
 	}
 
 }

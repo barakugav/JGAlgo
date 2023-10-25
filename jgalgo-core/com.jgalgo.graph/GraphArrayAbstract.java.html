@@ -25,15 +25,15 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 	private final DataContainer.Long edgeEndpointsContainer;
 	private long[] edgeEndpoints;
 
-	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+<span class="fc" id="L29">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L30">		edgeEndpointsContainer =</span>
 <span class="fc" id="L31">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L32">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L33">	}</span>
 
-	GraphArrayAbstract(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L36">		super(g, copyWeights);</span>
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L36">		super(capabilities, g, copyWeights);</span>
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof GraphArrayAbstract) {</span>
 <span class="fc" id="L38">			GraphArrayAbstract g0 = (GraphArrayAbstract) g;</span>
 <span class="fc" id="L39">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -&gt; edgeEndpoints = newArr);</span>
@@ -49,8 +49,8 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 <span class="fc" id="L50">	}</span>
 
-	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
-<span class="fc" id="L53">		super(builder);</span>
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+<span class="fc" id="L53">		super(capabilities, builder);</span>
 <span class="fc" id="L54">		final int m = edges.size();</span>
 <span class="fc" id="L55">		edgeEndpointsContainer =</span>
 <span class="fc" id="L56">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>

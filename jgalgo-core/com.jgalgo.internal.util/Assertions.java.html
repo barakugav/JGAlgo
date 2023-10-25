@@ -42,12 +42,12 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="nc" id="L42">	public static class Graphs {</span>
 
 		public static void onlyDirected(Graph g) {
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			if (!g.getCapabilities().directed())</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			if (!g.isDirected())</span>
 <span class="nc" id="L46">				throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="fc" id="L47">		}</span>
 
 		public static void onlyUndirected(Graph g) {
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (g.getCapabilities().directed())</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (g.isDirected())</span>
 <span class="fc" id="L51">				throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
 <span class="fc" id="L52">		}</span>
 

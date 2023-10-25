@@ -40,7 +40,7 @@ import com.jgalgo.graph.IndexIdMap;
 		}
 
 		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
-<span class="fc bfc" id="L43" title="All 2 branches covered.">			if (g.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			if (g.isDirected()) {</span>
 <span class="fc" id="L44">				return findStronglyConnectedComponentsDirected(g);</span>
 			} else {
 <span class="fc" id="L46">				return weaklyConnectedComponentsAlgo.findWeaklyConnectedComponents(g);</span>
@@ -75,7 +75,7 @@ import com.jgalgo.graph.IndexIdMap;
 
 		@Override
 		public boolean isWeaklyConnected(Graph g) {
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
 		}
 
 		abstract VertexPartition findWeaklyConnectedComponents(IndexGraph g);

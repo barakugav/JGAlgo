@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.ShortestPathSingleSource;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Weights of graph vertices or edges.
@@ -29,7 +28,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * cardinality maximum matching in bipartite graphs.
  * &lt;p&gt;
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
- * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
+ * {@link Graph#addVerticesWeights(String, Class)} and {@link Graph#addEdgesWeights(String, Class)}. Weights of
  * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
  * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource}
  * algorithm:
@@ -113,7 +112,8 @@ public interface Weights&lt;E&gt; {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
 	 * @param  &lt;E&gt;        the weights type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type) {
@@ -131,19 +131,20 @@ public interface Weights&lt;E&gt; {
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
 	 * @param  &lt;E&gt;        the weights type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L139">		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();</span>
-<span class="fc" id="L140">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (vertices.size() &gt; 0)</span>
-<span class="fc" id="L142">			weights.expand(vertices.size());</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L144">			return (WeightsT) weights;</span>
+<span class="fc" id="L140">		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();</span>
+<span class="fc" id="L141">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (vertices.size() &gt; 0)</span>
+<span class="fc" id="L143">			weights.expand(vertices.size());</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L145">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L146">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L147">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -157,10 +158,11 @@ public interface Weights&lt;E&gt; {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
 	 * @param  &lt;E&gt;        the weights type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type) {
-<span class="fc" id="L163">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L165">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -174,19 +176,20 @@ public interface Weights&lt;E&gt; {
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
 	 * @param  &lt;E&gt;        the weights type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L182">		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();</span>
-<span class="fc" id="L183">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
-<span class="fc" id="L185">			weights.expand(edges.size());</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L187">			return (WeightsT) weights;</span>
+<span class="fc" id="L185">		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();</span>
+<span class="fc" id="L186">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
+<span class="fc" id="L188">			weights.expand(edges.size());</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L190">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L189">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L192">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());</span>
 		}
 	}
 
@@ -197,9 +200,9 @@ public interface Weights&lt;E&gt; {
 	 * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an
 	 * input, and the partition V1,V2 is expected to be a vertex boolean weight keyed by
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
-	 * {@code setBipartiteVerticesWeightKey(Object)} function.
+	 * {@code setBipartiteVerticesWeightKey(String)} function.
 	 */
-<span class="fc" id="L202">	public static final Object DefaultBipartiteWeightKey = JGAlgoUtils.labeledObj(&quot;DefaultBipartiteVerticesWeightKey&quot;);</span>
+	public static final String DefaultBipartiteWeightKey = &quot;_bipartite_partition&quot;;
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

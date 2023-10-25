@@ -141,28 +141,30 @@ public interface LowestCommonAncestorDynamic {
 			@Override
 			public LowestCommonAncestorDynamic build() {
 <span class="pc bpc" id="L143" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L144" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L144" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;gabow-simple&quot;:
 <span class="nc" id="L146">							return new LowestCommonAncestorDynamicGabowSimple();</span>
-						case &quot;gabow-linear&quot;:
-<span class="nc" id="L148">							return new LowestCommonAncestorDynamicGabowLinear();</span>
+						case &quot;gabow-ints&quot;:
+<span class="nc" id="L148">							return new LowestCommonAncestorDynamicGabowInts();</span>
+						case &quot;gabow-longs&quot;:
+<span class="nc" id="L150">							return new LowestCommonAncestorDynamicGabowLongs();</span>
 						default:
-<span class="nc" id="L150">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L152">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L153">				return new LowestCommonAncestorDynamicGabowLinear();</span>
+<span class="fc" id="L155">				return new LowestCommonAncestorDynamicGabowLongs();</span>
 			}
 
 			@Override
 			public LowestCommonAncestorDynamic.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L158" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L160">						impl = (String) value;</span>
-<span class="nc" id="L161">						break;</span>
+<span class="nc" id="L162">						impl = (String) value;</span>
+<span class="nc" id="L163">						break;</span>
 					default:
-<span class="nc" id="L163">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L165">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L165">				return this;</span>
+<span class="nc" id="L167">				return this;</span>
 			}
 		};
 	}
@@ -196,7 +198,7 @@ public interface LowestCommonAncestorDynamic {
 		 * @return       this builder
 		 */
 		default LowestCommonAncestorDynamic.Builder setOption(String key, Object value) {
-<span class="nc" id="L199">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L201">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

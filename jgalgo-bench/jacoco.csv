@@ -21,7 +21,7 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.Gnp,0,78,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench,8,251,3,19,3,52,3,20,0,12
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RMQStaticBench.Query.PlusMinusOne,0,117,0,4,0,21,0,7,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfectBipartite,45,183,7,3,3,38,6,9,2,8
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,LCADynamicBench,12,292,3,14,3,63,3,13,0,7
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,LCADynamicBench,12,300,3,14,3,65,3,14,0,8
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.Task,0,54,0,0,0,15,0,2,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapReferenceableBench.GraphArgs,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,ColoringBench,0,114,0,2,0,24,0,8,0,7

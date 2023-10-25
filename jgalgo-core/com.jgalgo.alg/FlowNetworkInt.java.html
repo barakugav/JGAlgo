@@ -21,7 +21,6 @@ import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -47,7 +46,7 @@ public interface FlowNetworkInt extends FlowNetwork {
 	@Deprecated
 	@Override
 	default double getCapacity(int edge) {
-<span class="fc" id="L50">		return getCapacityInt(edge);</span>
+<span class="fc" id="L49">		return getCapacityInt(edge);</span>
 	}
 
 	/**
@@ -63,8 +62,8 @@ public interface FlowNetworkInt extends FlowNetwork {
 	@Deprecated
 	@Override
 	default void setCapacity(int edge, double capacity) {
-<span class="nc" id="L66">		setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L67">	}</span>
+<span class="nc" id="L65">		setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L66">	}</span>
 
 	/**
 	 * Get the integer amount of flow units going along an edge.
@@ -86,7 +85,7 @@ public interface FlowNetworkInt extends FlowNetwork {
 	@Deprecated
 	@Override
 	default double getFlow(int edge) {
-<span class="fc" id="L89">		return getFlowInt(edge);</span>
+<span class="fc" id="L88">		return getFlowInt(edge);</span>
 	}
 
 	/**
@@ -101,22 +100,22 @@ public interface FlowNetworkInt extends FlowNetwork {
 	@Deprecated
 	@Override
 	default void setFlow(int edge, double flow) {
-<span class="fc" id="L104">		setFlow(edge, (int) flow);</span>
-<span class="fc" id="L105">	}</span>
+<span class="fc" id="L103">		setFlow(edge, (int) flow);</span>
+<span class="fc" id="L104">	}</span>
 
 	@Override
 	default double getCostSum(IntCollection edges, WeightFunction cost) {
-<span class="nc bnc" id="L109" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
-<span class="nc" id="L110">			WeightFunctionInt costInt = (WeightFunctionInt) cost;</span>
-<span class="nc" id="L111">			int sum = 0;</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">			for (int e : edges)</span>
-<span class="nc" id="L113">				sum += getFlowInt(e) * costInt.weightInt(e);</span>
-<span class="nc" id="L114">			return sum;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L109">			WeightFunctionInt costInt = (WeightFunctionInt) cost;</span>
+<span class="nc" id="L110">			int sum = 0;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">			for (int e : edges)</span>
+<span class="nc" id="L112">				sum += getFlowInt(e) * costInt.weightInt(e);</span>
+<span class="nc" id="L113">			return sum;</span>
 		} else {
-<span class="nc" id="L116">			double sum = 0;</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">			for (int e : edges)</span>
-<span class="nc" id="L118">				sum += getFlowInt(e) * cost.weight(e);</span>
-<span class="nc" id="L119">			return sum;</span>
+<span class="nc" id="L115">			double sum = 0;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">			for (int e : edges)</span>
+<span class="nc" id="L117">				sum += getFlowInt(e) * cost.weight(e);</span>
+<span class="nc" id="L118">			return sum;</span>
 		}
 	}
 
@@ -136,9 +135,9 @@ public interface FlowNetworkInt extends FlowNetwork {
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
 	static FlowNetworkInt createFromEdgeWeights(Graph g) {
-<span class="fc" id="L139">		WeightsInt capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), int.class);</span>
-<span class="fc" id="L140">		WeightsInt flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), int.class);</span>
-<span class="fc" id="L141">		return createFromEdgeWeights(capacities, flows);</span>
+<span class="fc" id="L138">		WeightsInt capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
+<span class="fc" id="L139">		WeightsInt flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
+<span class="fc" id="L140">		return createFromEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
@@ -153,7 +152,7 @@ public interface FlowNetworkInt extends FlowNetwork {
 	 * @return            a flow network implemented as external edge weights containers
 	 */
 	static FlowNetworkInt createFromEdgeWeights(WeightsInt capacities, WeightsInt flows) {
-<span class="fc" id="L156">		return new FlowNetworks.NetImplEdgeWeightsInt(capacities, flows);</span>
+<span class="fc" id="L155">		return new FlowNetworks.NetImplEdgeWeightsInt(capacities, flows);</span>
 	}
 
 }

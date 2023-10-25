@@ -171,8 +171,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L171">			return Pair.of(potential, null);</span>
 		} else {
 <span class="fc" id="L173">			Path negCycleRef = res.getNegativeCycle();</span>
-<span class="fc" id="L174">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			for (int e : negCycleRef)</span>
+<span class="fc" id="L174">			IntList negCycle = new IntArrayList(negCycleRef.edges().size());</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			for (int e : negCycleRef.edges())</span>
 <span class="fc" id="L176">				negCycle.add(e);</span>
 <span class="fc" id="L177">			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
 		}

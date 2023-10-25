@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * A undirected graph implementation using a two dimensional matrix to store all edges.
  * &lt;p&gt;
@@ -32,6 +30,8 @@ import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
  */
 class GraphMatrixUndirected extends GraphMatrixAbstract {
 
+<span class="fc" id="L33">	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);</span>
+
 	GraphMatrixUndirected() {
 <span class="nc" id="L36">		this(0, 0);</span>
 <span class="nc" id="L37">	}</span>
@@ -43,11 +43,11 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L46">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L46">		super(Capabilities, expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L47">	}</span>
 
 	GraphMatrixUndirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L50">		super(g, copyWeights);</span>
+<span class="fc" id="L50">		super(Capabilities, g, copyWeights);</span>
 <span class="fc" id="L51">	}</span>
 
 	@Override
@@ -133,33 +133,25 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 <span class="fc" id="L133">		super.vertexSwap(v1, v2);</span>
 <span class="fc" id="L134">	}</span>
 
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L138">		return Capabilities;</span>
-	}
-
-<span class="fc" id="L141">	private static final GraphCapabilities Capabilities =</span>
-<span class="fc" id="L142">			GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();</span>
-
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
-<span class="fc" id="L145">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L146">			super(source);</span>
-<span class="fc" id="L147">		}</span>
+<span class="fc" id="L137">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L138">			super(source);</span>
+<span class="fc" id="L139">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L151">			return new EdgeIterOut(source);</span>
+<span class="fc" id="L143">			return new EdgeIterOut(source);</span>
 		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
-<span class="fc" id="L156">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L157">			super(target);</span>
-<span class="fc" id="L158">		}</span>
+<span class="fc" id="L148">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L149">			super(target);</span>
+<span class="fc" id="L150">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L162">			return new EdgeIterInUndirected(target);</span>
+<span class="fc" id="L154">			return new EdgeIterInUndirected(target);</span>
 		}
 	}
 

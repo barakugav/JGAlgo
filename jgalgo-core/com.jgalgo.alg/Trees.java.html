@@ -115,7 +115,7 @@ public class Trees {
 <span class="fc" id="L115">		int n = g.vertices().size();</span>
 <span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L117">			return true;</span>
-<span class="fc" id="L118">		boolean directed = g.getCapabilities().directed();</span>
+<span class="fc" id="L118">		boolean directed = g.isDirected();</span>
 
 <span class="fc" id="L120">		BitSet visited = new BitSet(n);</span>
 <span class="fc" id="L121">		int[] parent = new int[n];</span>

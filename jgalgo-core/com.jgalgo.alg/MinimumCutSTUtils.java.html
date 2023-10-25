@@ -113,7 +113,7 @@ class MinimumCutSTUtils {
 <span class="fc" id="L113">			queue.enqueue(source);</span>
 <span class="fc" id="L114">		}</span>
 
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (g.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (g.isDirected()) {</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
 <span class="fc" id="L118">				int u = queue.dequeueInt();</span>
 
@@ -224,7 +224,7 @@ class MinimumCutSTUtils {
 <span class="fc" id="L224">				final int source = 0;</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
 <span class="fc" id="L226">					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);</span>
-<span class="fc" id="L227">					double cutWeight = cut.weight(w);</span>
+<span class="fc" id="L227">					double cutWeight = w.weightSum(cut.edges());</span>
 <span class="fc bfc" id="L228" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
 <span class="fc" id="L229">						bestCutWeight = cutWeight;</span>
 <span class="fc" id="L230">						bestCut = cut;</span>

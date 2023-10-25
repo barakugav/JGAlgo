@@ -237,7 +237,7 @@ public interface IndexGraph extends Graph {
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyWeights) {
-<span class="fc bfc" id="L240" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">		if (isDirected()) {</span>
 <span class="fc" id="L241">			return new GraphCSRDirected(this, copyWeights);</span>
 		} else {
 <span class="fc" id="L243">			return new GraphCSRUndirected(this, copyWeights);</span>

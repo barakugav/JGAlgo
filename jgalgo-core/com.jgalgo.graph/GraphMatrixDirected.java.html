@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * A directed graph implementation using a two dimensional matrix to store all edges.
  * &lt;p&gt;
@@ -32,6 +30,8 @@ import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
  */
 class GraphMatrixDirected extends GraphMatrixAbstract {
 
+<span class="fc" id="L33">	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, false);</span>
+
 	GraphMatrixDirected() {
 <span class="nc" id="L36">		this(0, 0);</span>
 <span class="nc" id="L37">	}</span>
@@ -43,11 +43,11 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphMatrixDirected(int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L46">		super(expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L46">		super(Capabilities, expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L47">	}</span>
 
 	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L50">		super(g, copyWeights);</span>
+<span class="fc" id="L50">		super(Capabilities, g, copyWeights);</span>
 <span class="fc" id="L51">	}</span>
 
 	@Override
@@ -116,33 +116,25 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 <span class="fc" id="L116">		super.vertexSwap(v1, v2);</span>
 <span class="fc" id="L117">	}</span>
 
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L121">		return Capabilities;</span>
-	}
-
-<span class="fc" id="L124">	private static final GraphCapabilities Capabilities =</span>
-<span class="fc" id="L125">			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();</span>
-
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
-<span class="fc" id="L128">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L129">			super(source);</span>
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L120">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L121">			super(source);</span>
+<span class="fc" id="L122">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L134">			return new EdgeIterOut(source);</span>
+<span class="fc" id="L126">			return new EdgeIterOut(source);</span>
 		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
-<span class="fc" id="L139">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L140">			super(target);</span>
-<span class="fc" id="L141">		}</span>
+<span class="fc" id="L131">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L132">			super(target);</span>
+<span class="fc" id="L133">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L145">			return new EdgeIterInDirected(target);</span>
+<span class="fc" id="L137">			return new EdgeIterInDirected(target);</span>
 		}
 	}
 

@@ -246,7 +246,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="fc bfc" id="L246" title="All 2 branches covered.">			if (distances[target] == Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L247">				return null;</span>
 <span class="fc" id="L248">			IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">			if (g.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			if (g.isDirected()) {</span>
 <span class="fc" id="L250">				for (int v = target;;) {</span>
 <span class="fc" id="L251">					int e = backtrack[v];</span>
 <span class="fc bfc" id="L252" title="All 2 branches covered.">					if (e == -1) {</span>

@@ -17,362 +17,243 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.longs.AbstractLongList;
 import it.unimi.dsi.fastutil.longs.LongArrays;
-import it.unimi.dsi.fastutil.longs.LongCollection;
-import it.unimi.dsi.fastutil.longs.LongIterators;
-import it.unimi.dsi.fastutil.longs.LongListIterator;
-import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import it.unimi.dsi.fastutil.objects.ObjectCollection;
-import it.unimi.dsi.fastutil.objects.ObjectIterators;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
-abstract class DataContainer&lt;E&gt; {
+abstract class DataContainer {
 
 	final GraphElementSet elements;
 
-<span class="fc" id="L45">	DataContainer(GraphElementSet elements) {</span>
-<span class="fc" id="L46">		this.elements = Objects.requireNonNull(elements);</span>
-<span class="fc" id="L47">	}</span>
+<span class="fc" id="L32">	DataContainer(GraphElementSet elements) {</span>
+<span class="fc" id="L33">		this.elements = Objects.requireNonNull(elements);</span>
+<span class="fc" id="L34">	}</span>
 
 	int size() {
-<span class="fc" id="L50">		return elements.size();</span>
-	}
-
-	@Override
-	public int hashCode() {
-<span class="nc" id="L55">		return values().hashCode();</span>
-	}
-
-	@Override
-	public String toString() {
-<span class="nc" id="L60">		return values().toString();</span>
+<span class="fc" id="L37">		return elements.size();</span>
 	}
 
 	void checkIdx(int idx) {
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (!elements.contains(idx))</span>
-<span class="nc" id="L65">			throw new IndexOutOfBoundsException(idx);</span>
-<span class="fc" id="L66">	}</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		if (!elements.contains(idx))</span>
+<span class="nc" id="L42">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L43">	}</span>
 
 	abstract void expand(int newCapacity);
 
-	abstract Collection&lt;E&gt; values();
+	abstract int capacity();
 
-	private static abstract class Abstract&lt;E&gt; extends DataContainer&lt;E&gt; {
-
-		Abstract(GraphElementSet elements) {
-<span class="fc" id="L75">			super(elements);</span>
-<span class="fc" id="L76">		}</span>
-
-		abstract int capacity();
-
-	}
-
-<span class="fc" id="L82">	static class Obj&lt;E&gt; extends DataContainer.Abstract&lt;E&gt; {</span>
+<span class="fc" id="L49">	static class Obj&lt;E&gt; extends DataContainer {</span>
 
 		private E[] weights;
 		private final E defaultWeight;
-		private final ObjectCollection&lt;E&gt; values;
 		private final Consumer&lt;E[]&gt; onArrayAlloc;
 
 		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
-<span class="fc" id="L90">			super(elements);</span>
+<span class="fc" id="L56">			super(elements);</span>
 
-<span class="fc" id="L92">			defaultWeight = defVal;</span>
-<span class="fc" id="L93">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L94">			weights = emptyArr;</span>
-<span class="fc" id="L95">			Arrays.fill(weights, defaultWeight);</span>
-<span class="fc" id="L96">			onArrayAlloc.accept(weights);</span>
-
-<span class="fc" id="L98">			values = new AbstractObjectList&lt;&gt;() {</span>
-				@Override
-				public int size() {
-<span class="fc" id="L101">					return DataContainer.Obj.super.size();</span>
-				}
-
-				@Override
-				public ObjectListIterator&lt;E&gt; iterator() {
-<span class="fc" id="L106">					return ObjectIterators.wrap(weights, 0, size());</span>
-				}
-
-				@Override
-				public E get(int index) {
-<span class="nc" id="L111">					checkIdx(index);</span>
-<span class="nc" id="L112">					return weights[index];</span>
-				}
-			};
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L58">			defaultWeight = defVal;</span>
+<span class="fc" id="L59">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L60">			weights = emptyArr;</span>
+<span class="fc" id="L61">			Arrays.fill(weights, defaultWeight);</span>
+<span class="fc" id="L62">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L63">		}</span>
 
 		public E get(int idx) {
-<span class="fc" id="L118">			checkIdx(idx);</span>
-<span class="fc" id="L119">			return weights[idx];</span>
+<span class="fc" id="L66">			checkIdx(idx);</span>
+<span class="fc" id="L67">			return weights[idx];</span>
 		}
 
 		public void set(int idx, E weight) {
-<span class="fc" id="L123">			checkIdx(idx);</span>
-<span class="fc" id="L124">			weights[idx] = weight;</span>
-<span class="fc" id="L125">		}</span>
+<span class="fc" id="L71">			checkIdx(idx);</span>
+<span class="fc" id="L72">			weights[idx] = weight;</span>
+<span class="fc" id="L73">		}</span>
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L129">			return weights.length;</span>
+<span class="fc" id="L77">			return weights.length;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L134">			int oldCapacity = weights.length;</span>
-<span class="pc bnc" id="L135" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L136">			weights = Arrays.copyOf(weights, newCapacity);</span>
-<span class="fc" id="L137">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
-<span class="fc" id="L138">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L82">			int oldCapacity = weights.length;</span>
+<span class="pc bnc" id="L83" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L84">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L85">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L86">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L87">		}</span>
 
 		void swap(int idx1, int idx2) {
-<span class="fc" id="L142">			checkIdx(idx1);</span>
-<span class="fc" id="L143">			checkIdx(idx2);</span>
-<span class="fc" id="L144">			ObjectArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L145">		}</span>
+<span class="fc" id="L90">			checkIdx(idx1);</span>
+<span class="fc" id="L91">			checkIdx(idx2);</span>
+<span class="fc" id="L92">			ObjectArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L93">		}</span>
 
 		void swap(E[] weights, int idx1, int idx2) {
-<span class="fc" id="L148">			ObjectArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L149">		}</span>
+<span class="fc" id="L96">			ObjectArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L97">		}</span>
 
 		void clear(int idx) {
-<span class="nc" id="L152">			weights[idx] = defaultWeight;</span>
-<span class="nc" id="L153">		}</span>
+<span class="nc" id="L100">			weights[idx] = defaultWeight;</span>
+<span class="nc" id="L101">		}</span>
 
 		void clear(E[] weights, int idx) {
-<span class="fc" id="L156">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L157">		}</span>
+<span class="fc" id="L104">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L105">		}</span>
 
 		void clear() {
-<span class="nc" id="L160">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="nc" id="L161">		}</span>
+<span class="nc" id="L108">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L109">		}</span>
 
 		public void clear(E[] weights) {
-<span class="fc" id="L164">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L165">		}</span>
-
-		@Override
-		public Collection&lt;E&gt; values() {
-<span class="fc" id="L169">			return values;</span>
-		}
+<span class="fc" id="L112">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L113">		}</span>
 
 		public DataContainer.Obj&lt;E&gt; copy(GraphElementSet elements, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L174">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L175">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultWeight, emptyArr, onArrayAlloc);</span>
-<span class="fc" id="L176">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
-<span class="fc" id="L177">			onArrayAlloc.accept(copy.weights);</span>
-<span class="fc" id="L178">			return copy;</span>
-		}
-
-		@Override
-		public boolean equals(Object other) {
-<span class="nc bnc" id="L183" title="All 2 branches missed.">			if (other == this)</span>
-<span class="nc" id="L184">				return true;</span>
-<span class="nc bnc" id="L185" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Obj&lt;?&gt;))</span>
-<span class="nc" id="L186">				return false;</span>
-<span class="nc" id="L187">			DataContainer.Obj&lt;?&gt; o = (DataContainer.Obj&lt;?&gt;) other;</span>
-<span class="nc" id="L188">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
+<span class="nc" id="L117">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L118">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultWeight, emptyArr, onArrayAlloc);</span>
+<span class="fc" id="L119">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
+<span class="fc" id="L120">			onArrayAlloc.accept(copy.weights);</span>
+<span class="fc" id="L121">			return copy;</span>
 		}
 	}
 
-<span class="fc" id="L192">	static class Int extends DataContainer.Abstract&lt;Integer&gt; {</span>
+<span class="fc" id="L125">	static class Int extends DataContainer {</span>
 
 		private int[] weights;
 		private final int defaultWeight;
-		private final IntCollection values;
 		private final Consumer&lt;int[]&gt; onArrayAlloc;
 
 		Int(GraphElementSet elements, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="fc" id="L200">			super(elements);</span>
+<span class="fc" id="L132">			super(elements);</span>
 
-<span class="fc" id="L202">			weights = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L203">			defaultWeight = defVal;</span>
-<span class="fc" id="L204">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L205">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L206">			values = new AbstractIntList() {</span>
-
-				@Override
-				public int size() {
-<span class="nc" id="L210">					return DataContainer.Int.super.size();</span>
-				}
-
-				@Override
-				public IntListIterator iterator() {
-<span class="nc" id="L215">					return IntIterators.wrap(weights, 0, size());</span>
-				}
-
-				@Override
-				public int getInt(int index) {
-<span class="nc" id="L220">					checkIdx(index);</span>
-<span class="nc" id="L221">					return weights[index];</span>
-				}
-			};
-<span class="fc" id="L224">		}</span>
+<span class="fc" id="L134">			weights = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L135">			defaultWeight = defVal;</span>
+<span class="fc" id="L136">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L137">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L138">		}</span>
 
 		public int get(int idx) {
-<span class="fc" id="L227">			checkIdx(idx);</span>
-<span class="fc" id="L228">			return weights[idx];</span>
+<span class="fc" id="L141">			checkIdx(idx);</span>
+<span class="fc" id="L142">			return weights[idx];</span>
 		}
 
 		public void set(int idx, int weight) {
-<span class="fc" id="L232">			checkIdx(idx);</span>
-<span class="fc" id="L233">			weights[idx] = weight;</span>
-<span class="fc" id="L234">		}</span>
+<span class="fc" id="L146">			checkIdx(idx);</span>
+<span class="fc" id="L147">			weights[idx] = weight;</span>
+<span class="fc" id="L148">		}</span>
 
 		public int defaultWeight() {
-<span class="nc" id="L237">			return defaultWeight;</span>
+<span class="nc" id="L151">			return defaultWeight;</span>
 		}
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L242">			return weights.length;</span>
+<span class="fc" id="L156">			return weights.length;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L247">			int oldCapacity = weights.length;</span>
-<span class="pc bnc" id="L248" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L249">			weights = Arrays.copyOf(weights, newCapacity);</span>
-<span class="fc" id="L250">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
-<span class="fc" id="L251">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L252">		}</span>
+<span class="fc" id="L161">			int oldCapacity = weights.length;</span>
+<span class="pc bnc" id="L162" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L163">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L164">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L165">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L166">		}</span>
 
 		void swap(int idx1, int idx2) {
-<span class="fc" id="L255">			checkIdx(idx1);</span>
-<span class="fc" id="L256">			checkIdx(idx2);</span>
-<span class="fc" id="L257">			IntArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L258">		}</span>
+<span class="fc" id="L169">			checkIdx(idx1);</span>
+<span class="fc" id="L170">			checkIdx(idx2);</span>
+<span class="fc" id="L171">			IntArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L172">		}</span>
 
 		void swap(int[] weights, int idx1, int idx2) {
-<span class="fc" id="L261">			IntArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L262">		}</span>
+<span class="fc" id="L175">			IntArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L176">		}</span>
 
 		void clear(int idx) {
-<span class="fc" id="L265">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L266">		}</span>
+<span class="fc" id="L179">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L180">		}</span>
 
 		void clear(int[] weights, int idx) {
-<span class="fc" id="L269">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L270">		}</span>
+<span class="fc" id="L183">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L184">		}</span>
 
 		void clear() {
-<span class="fc" id="L273">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L274">		}</span>
+<span class="fc" id="L187">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L188">		}</span>
 
 		void clear(int[] weights) {
-<span class="fc" id="L277">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L278">		}</span>
-
-		@Override
-		IntCollection values() {
-<span class="nc" id="L282">			return values;</span>
-		}
+<span class="fc" id="L191">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L192">		}</span>
 
 		DataContainer.Int copy(GraphElementSet elements, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L287">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L288">			DataContainer.Int copy = new DataContainer.Int(elements, defaultWeight, onArrayAlloc);</span>
-<span class="fc" id="L289">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
-<span class="fc" id="L290">			onArrayAlloc.accept(copy.weights);</span>
-<span class="fc" id="L291">			return copy;</span>
-		}
-
-		@Override
-		public boolean equals(Object other) {
-<span class="nc bnc" id="L296" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L297">				return true;</span>
-<span class="nc bnc" id="L298" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Int))</span>
-<span class="nc" id="L299">				return false;</span>
-<span class="nc" id="L300">			DataContainer.Int o = (DataContainer.Int) other;</span>
-<span class="nc" id="L301">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
+<span class="nc" id="L196">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L197">			DataContainer.Int copy = new DataContainer.Int(elements, defaultWeight, onArrayAlloc);</span>
+<span class="fc" id="L198">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
+<span class="fc" id="L199">			onArrayAlloc.accept(copy.weights);</span>
+<span class="fc" id="L200">			return copy;</span>
 		}
 	}
 
-<span class="fc" id="L305">	static class Long extends DataContainer.Abstract&lt;java.lang.Long&gt; {</span>
+<span class="fc" id="L204">	static class Long extends DataContainer {</span>
 
 		private long[] weights;
 		private final long defaultWeight;
-<span class="fc" id="L309">		private final LongCollection values = new AbstractLongList() {</span>
-
-			@Override
-			public int size() {
-<span class="nc" id="L313">				return DataContainer.Long.super.size();</span>
-			}
-
-			@Override
-			public LongListIterator iterator() {
-<span class="nc" id="L318">				return LongIterators.wrap(weights, 0, size());</span>
-			}
-
-			@Override
-			public long getLong(int index) {
-<span class="nc" id="L323">				checkIdx(index);</span>
-<span class="nc" id="L324">				return weights[index];</span>
-			}
-		};
 		private final Consumer&lt;long[]&gt; onArrayAlloc;
 
 		Long(GraphElementSet elements, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L330">			super(elements);</span>
+<span class="fc" id="L211">			super(elements);</span>
 
-<span class="fc" id="L332">			weights = LongArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L333">			defaultWeight = defVal;</span>
-<span class="fc" id="L334">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L335">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L336">		}</span>
+<span class="fc" id="L213">			weights = LongArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L214">			defaultWeight = defVal;</span>
+<span class="fc" id="L215">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L216">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L217">		}</span>
 
 		Long(DataContainer.Long orig, GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L339">			super(elements);</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L341">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L220">			super(elements);</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
+<span class="nc" id="L222">				throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L343">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
-<span class="fc" id="L344">			defaultWeight = orig.defaultWeight;</span>
-<span class="fc" id="L345">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L346">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L347">		}</span>
+<span class="fc" id="L224">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
+<span class="fc" id="L225">			defaultWeight = orig.defaultWeight;</span>
+<span class="fc" id="L226">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L227">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L228">		}</span>
 
 		long get(int idx) {
-<span class="nc" id="L350">			checkIdx(idx);</span>
-<span class="nc" id="L351">			return weights[idx];</span>
+<span class="nc" id="L231">			checkIdx(idx);</span>
+<span class="nc" id="L232">			return weights[idx];</span>
 		}
 
 		void set(int idx, long weight) {
-<span class="nc" id="L355">			checkIdx(idx);</span>
-<span class="nc" id="L356">			weights[idx] = weight;</span>
-<span class="nc" id="L357">		}</span>
+<span class="nc" id="L236">			checkIdx(idx);</span>
+<span class="nc" id="L237">			weights[idx] = weight;</span>
+<span class="nc" id="L238">		}</span>
 
 		long defaultWeight() {
-<span class="nc" id="L360">			return defaultWeight;</span>
+<span class="nc" id="L241">			return defaultWeight;</span>
 		}
 
 		@Override
 		int capacity() {
-<span class="fc" id="L365">			return weights.length;</span>
+<span class="fc" id="L246">			return weights.length;</span>
 		}
 
 		@Override
 		void expand(int newCapacity) {
-<span class="fc" id="L370">			int oldCapacity = weights.length;</span>
-<span class="pc bnc" id="L371" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L372">			weights = Arrays.copyOf(weights, newCapacity);</span>
-<span class="fc" id="L373">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
-<span class="fc" id="L374">			onArrayAlloc.accept(weights);</span>
-<span class="fc" id="L375">		}</span>
+<span class="fc" id="L251">			int oldCapacity = weights.length;</span>
+<span class="pc bnc" id="L252" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L253">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L254">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L255">			onArrayAlloc.accept(weights);</span>
+<span class="fc" id="L256">		}</span>
 
 		// void swap(int idx1, int idx2) {
 		// checkIdx(idx1);
@@ -381,70 +262,55 @@ abstract class DataContainer&lt;E&gt; {
 		// }
 
 		void swap(long[] weights, int idx1, int idx2) {
-<span class="fc" id="L384">			checkIdx(idx1);</span>
-<span class="fc" id="L385">			checkIdx(idx2);</span>
-<span class="fc" id="L386">			LongArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L387">		}</span>
+<span class="fc" id="L265">			checkIdx(idx1);</span>
+<span class="fc" id="L266">			checkIdx(idx2);</span>
+<span class="fc" id="L267">			LongArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L268">		}</span>
 
 		// void clear(int idx) {
 		// weights[idx] = defaultWeight;
 		// }
 
 		void clear(long[] weights, int idx) {
-<span class="fc" id="L394">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L395">		}</span>
+<span class="fc" id="L275">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L276">		}</span>
 
 		// void clear() {
 		// Arrays.fill(weights, 0, size(), defaultWeight);
 		// }
 
 		void clear(long[] weights) {
-<span class="fc" id="L402">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="fc" id="L403">		}</span>
-
-		@Override
-		LongCollection values() {
-<span class="nc" id="L407">			return values;</span>
-		}
+<span class="fc" id="L283">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L284">		}</span>
 
 		DataContainer.Long copy(GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L411">			return new DataContainer.Long(this, elements, onArrayAlloc);</span>
-		}
-
-		@Override
-		public boolean equals(Object other) {
-<span class="nc bnc" id="L416" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L417">				return true;</span>
-<span class="nc bnc" id="L418" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Long))</span>
-<span class="nc" id="L419">				return false;</span>
-<span class="nc" id="L420">			DataContainer.Long o = (DataContainer.Long) other;</span>
-<span class="nc" id="L421">			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+<span class="fc" id="L287">			return new DataContainer.Long(this, elements, onArrayAlloc);</span>
 		}
 	}
 
 	static class Manager {
 
-<span class="fc" id="L427">		final List&lt;DataContainer&lt;?&gt;&gt; containers = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L293">		final List&lt;DataContainer&gt; containers = new ObjectArrayList&lt;&gt;();</span>
 		private int containersCapacity;
 
-<span class="fc" id="L430">		Manager(int initCapacity) {</span>
-<span class="fc" id="L431">			containersCapacity = initCapacity;</span>
-<span class="fc" id="L432">		}</span>
+<span class="fc" id="L296">		Manager(int initCapacity) {</span>
+<span class="fc" id="L297">			containersCapacity = initCapacity;</span>
+<span class="fc" id="L298">		}</span>
 
-		void addContainer(DataContainer&lt;?&gt; container) {
-<span class="fc" id="L435">			containers.add(container);</span>
-<span class="fc bfc" id="L436" title="All 2 branches covered.">			if (containersCapacity &gt; ((DataContainer.Abstract&lt;?&gt;) container).capacity())</span>
-<span class="fc" id="L437">				container.expand(containersCapacity);</span>
-<span class="fc" id="L438">		}</span>
+		void addContainer(DataContainer container) {
+<span class="fc" id="L301">			containers.add(container);</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">			if (containersCapacity &gt; container.capacity())</span>
+<span class="fc" id="L303">				container.expand(containersCapacity);</span>
+<span class="fc" id="L304">		}</span>
 
 		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L441" title="All 2 branches covered.">			if (capacity &lt;= containersCapacity)</span>
-<span class="fc" id="L442">				return;</span>
-<span class="fc" id="L443">			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">			for (DataContainer&lt;?&gt; container : containers)</span>
-<span class="fc" id="L445">				container.expand(newCapacity);</span>
-<span class="fc" id="L446">			containersCapacity = newCapacity;</span>
-<span class="fc" id="L447">		}</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">			if (capacity &lt;= containersCapacity)</span>
+<span class="fc" id="L308">				return;</span>
+<span class="fc" id="L309">			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">			for (DataContainer container : containers)</span>
+<span class="fc" id="L311">				container.expand(newCapacity);</span>
+<span class="fc" id="L312">			containersCapacity = newCapacity;</span>
+<span class="fc" id="L313">		}</span>
 	}
 
 }

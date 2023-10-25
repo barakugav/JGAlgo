@@ -85,7 +85,7 @@ import com.jgalgo.graph.WeightFunction;
 		} else {
 <span class="fc" id="L86">			double[] weightSum = new double[n];</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L88">				weightSum[u] = GraphsUtils.weightSum(g.outEdges(u), w);</span>
+<span class="fc" id="L88">				weightSum[u] = w.weightSum(g.outEdges(u));</span>
 
 <span class="pc bpc" id="L90" title="1 of 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
 <span class="fc" id="L91">				double rFactor = randomFactor.getAsDouble();</span>
@@ -122,7 +122,7 @@ import com.jgalgo.graph.WeightFunction;
 <span class="fc" id="L122">			final int m = g.edges().size();</span>
 <span class="fc" id="L123">			neighborsBegin = new int[n + 1];</span>
 
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			if (g.getCapabilities().directed()) {</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			if (g.isDirected()) {</span>
 <span class="nc" id="L126">				neighbors = new int[m];</span>
 			} else {
 <span class="fc" id="L128">				int outDegreeSum = 0;</span>

@@ -78,11 +78,6 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L78">			return cover.get(vertex);</span>
 		}
 
-		@Override
-		public double weight(WeightFunction w) {
-<span class="fc" id="L83">			return GraphsUtils.weightSum(vertices(), w);</span>
-		}
-
 	}
 
 	private static class ResultFromIndexResult implements VertexCover.Result {
@@ -90,24 +85,19 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		private final VertexCover.Result res;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L93">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
-<span class="fc" id="L94">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L95">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L96">		}</span>
+<span class="fc" id="L88">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
+<span class="fc" id="L89">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L90">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L91">		}</span>
 
 		@Override
 		public IntCollection vertices() {
-<span class="nc" id="L100">			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);</span>
+<span class="fc" id="L95">			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="fc" id="L105">			return res.isInCover(viMap.idToIndex(vertex));</span>
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-<span class="fc" id="L110">			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, viMap));</span>
+<span class="fc" id="L100">			return res.isInCover(viMap.idToIndex(vertex));</span>
 		}
 
 	}

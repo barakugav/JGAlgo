@@ -119,27 +119,29 @@ public interface GraphBuilder {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 * @param  &lt;V&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of the built graph.
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  &lt;V&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
-<span class="nc" id="L142">		return addVerticesWeights(key, type, null);</span>
+	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type) {
+<span class="nc" id="L144">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -147,15 +149,16 @@ public interface GraphBuilder {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  &lt;V&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type, V defVal);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
@@ -164,34 +167,36 @@ public interface GraphBuilder {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set&lt;Object&gt; getVerticesWeightsKeys();
+	Set&lt;String&gt; getVerticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  &lt;E&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph.
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  &lt;E&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L194">		return addEdgesWeights(key, type, null);</span>
+	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type) {
+<span class="fc" id="L199">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -199,15 +204,16 @@ public interface GraphBuilder {
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  &lt;E&gt;                      The weight data type
-	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
+	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type, E defVal);
 
 	/**
 	 * Get the keys of all the associated edges weights.
@@ -216,7 +222,7 @@ public interface GraphBuilder {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	Set&lt;Object&gt; getEdgesWeightsKeys();
+	Set&lt;String&gt; getEdgesWeightsKeys();
 
 	/**
 	 * Clear the builder by removing all vertices and edges added to it.
@@ -243,7 +249,7 @@ public interface GraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static GraphBuilder newUndirected() {
-<span class="fc" id="L246">		return new GraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L252">		return new GraphBuilderImpl.Undirected();</span>
 	}
 
 	/**
@@ -252,7 +258,7 @@ public interface GraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static GraphBuilder newDirected() {
-<span class="fc" id="L255">		return new GraphBuilderImpl.Directed();</span>
+<span class="fc" id="L261">		return new GraphBuilderImpl.Directed();</span>
 	}
 
 	/**
@@ -265,7 +271,7 @@ public interface GraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static GraphBuilder newFrom(Graph g) {
-<span class="fc" id="L268">		return newFrom(g, false);</span>
+<span class="fc" id="L274">		return newFrom(g, false);</span>
 	}
 
 	/**
@@ -279,7 +285,7 @@ public interface GraphBuilder {
 	 *                     graph vertices/edges weights.
 	 */
 	static GraphBuilder newFrom(Graph g, boolean copyWeights) {
-<span class="fc" id="L282">		return GraphBuilderImpl.newFrom(g, copyWeights);</span>
+<span class="fc" id="L288">		return GraphBuilderImpl.newFrom(g, copyWeights);</span>
 	}
 
 }

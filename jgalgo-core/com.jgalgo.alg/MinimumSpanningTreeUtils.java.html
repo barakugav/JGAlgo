@@ -84,13 +84,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		}
 
 		@Override
-		public double weight(WeightFunction w) {
-<span class="nc" id="L88">			return GraphsUtils.weightSum(edges, w);</span>
-		}
-
-		@Override
 		public String toString() {
-<span class="nc" id="L93">			return edges().toString();</span>
+<span class="nc" id="L88">			return edges().toString();</span>
 		}
 
 	}
@@ -100,19 +95,14 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		private final MinimumSpanningTree.Result res;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L103">		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {</span>
-<span class="fc" id="L104">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L105">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L106">		}</span>
+<span class="fc" id="L98">		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {</span>
+<span class="fc" id="L99">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L100">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L101">		}</span>
 
 		@Override
 		public IntCollection edges() {
-<span class="fc" id="L110">			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);</span>
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-<span class="nc" id="L115">			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));</span>
+<span class="fc" id="L105">			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);</span>
 		}
 
 	}

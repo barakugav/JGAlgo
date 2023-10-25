@@ -80,7 +80,7 @@ class FormatLEDA implements GraphFormat {
 <span class="fc" id="L80">					w_vertices = null;</span>
 				} else {
 					// for now, take the first weights collection
-<span class="fc" id="L83">					Object key = graph.getVerticesWeightsKeys().iterator().next();</span>
+<span class="fc" id="L83">					String key = graph.getVerticesWeightsKeys().iterator().next();</span>
 <span class="fc" id="L84">					w_vertices = graph.getVerticesWeights(key);</span>
 <span class="pc bpc" id="L85" title="1 of 2 branches missed.">					if (w_vertices instanceof WeightsInt) {</span>
 <span class="nc" id="L86">						info_type_for_vertices = &quot;int&quot;;</span>
@@ -104,7 +104,7 @@ class FormatLEDA implements GraphFormat {
 <span class="fc" id="L104">					w_edges = null;</span>
 				} else {
 					// for now, take the first weights collection
-<span class="fc" id="L107">					Object key = graph.getEdgesWeightsKeys().iterator().next();</span>
+<span class="fc" id="L107">					String key = graph.getEdgesWeightsKeys().iterator().next();</span>
 <span class="fc" id="L108">					w_edges = graph.getEdgesWeights(key);</span>
 <span class="pc bpc" id="L109" title="1 of 2 branches missed.">					if (w_edges instanceof WeightsInt) {</span>
 <span class="fc" id="L110">						info_type_for_edges = &quot;int&quot;;</span>
@@ -124,7 +124,7 @@ class FormatLEDA implements GraphFormat {
 <span class="fc" id="L124">				writer.append(&quot;LEDA.GRAPH&quot;).append(System.lineSeparator());</span>
 <span class="fc" id="L125">				writer.append(info_type_for_vertices).append(System.lineSeparator()); // void/string/int etc</span>
 <span class="fc" id="L126">				writer.append(info_type_for_edges).append(System.lineSeparator()); // void/string/int etc</span>
-<span class="fc" id="L127">				final boolean is_directed = graph.getCapabilities().directed();</span>
+<span class="fc" id="L127">				final boolean is_directed = graph.isDirected();</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">				writer.append(is_directed ? &quot;-1&quot; : &quot;-2&quot;).append(System.lineSeparator());</span>
 
 <span class="fc" id="L130">				writer.append(&quot;# section nodes/vertices&quot;).append(System.lineSeparator());</span>

@@ -75,7 +75,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L75">		IndexGraph g = resGraph.g;</span>
 <span class="fc" id="L76">		int[] edgeRef = resGraph.edgeRef;</span>
 
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		if (gOrig.getCapabilities().directed()) {</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		if (gOrig.isDirected()) {</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L80">				int eRef = edgeRef[e];</span>
 <span class="fc" id="L81">				double eFlow = net.getFlow(eRef);</span>
@@ -132,17 +132,17 @@ import com.jgalgo.internal.util.Assertions;
 		/* Repeatedly find the cycle with the minimum mean cost and push flow through it */
 		for (;;) {
 <span class="fc" id="L134">			Path minCycle = minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);</span>
-<span class="pc bpc" id="L135" title="1 of 4 branches missed.">			if (minCycle == null || minCycle.weight(cost0) &gt;= -EPS)</span>
+<span class="pc bpc" id="L135" title="1 of 4 branches missed.">			if (minCycle == null || cost0.weightSum(minCycle.edges()) &gt;= -EPS)</span>
 <span class="fc" id="L136">				break; /* no cycle or cycle that will increase the total cost */</span>
 
 			/* find the maximum amount of flow we can push through the cycle */
 <span class="fc" id="L139">			double f = Double.POSITIVE_INFINITY;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int e : minCycle)</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int e : minCycle.edges())</span>
 <span class="fc" id="L141">				f = Math.min(f, capacity[e] - flow[e]);</span>
 <span class="pc bnc" id="L142" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			/* Push flow along the cycle, lowering the overall cost */
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int e : minCycle) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
 <span class="fc" id="L146">				int eTwin = twin[e];</span>
 <span class="fc" id="L147">				flow[e] += f;</span>
 <span class="fc" id="L148">				flow[eTwin] -= f;</span>

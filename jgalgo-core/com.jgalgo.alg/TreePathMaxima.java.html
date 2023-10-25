@@ -22,7 +22,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
  * Tree Path Maxima (TPM) algorithm.
@@ -73,7 +72,7 @@ public interface TreePathMaxima {
 		 * @return a new queries container
 		 */
 		static TreePathMaxima.Queries newInstance() {
-<span class="fc" id="L76">			return new TreePathMaximaUtils.QueriesImpl();</span>
+<span class="fc" id="L75">			return new TreePathMaximaUtils.QueriesImpl();</span>
 		}
 
 		/**
@@ -85,13 +84,28 @@ public interface TreePathMaxima {
 		void addQuery(int u, int v);
 
 		/**
-		 * Get a query by index.
+		 * Get a query source by index.
+		 * &lt;p&gt;
+		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
-		 * @return                           pair with the two vertices of the query
+		 * @return                           the first vertex of the query
 		 * @throws IndexOutOfBoundsException if {@code idx &lt; 0} or {@code idx &gt;= size()}
 		 */
-		IntIntPair getQuery(int idx);
+		int getQuerySource(int idx);
+
+		/**
+		 * Get a query target by index.
+		 * &lt;p&gt;
+		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the second vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx &lt; 0} or {@code idx &gt;= size()}
+		 */
+		int getQueryTarget(int idx);
 
 		/**
 		 * Get the number of queries in this container.
@@ -149,7 +163,7 @@ public interface TreePathMaxima {
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="nc" id="L152">		return newBuilder().build();</span>
+<span class="nc" id="L166">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -160,27 +174,27 @@ public interface TreePathMaxima {
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder newBuilder() {
-<span class="nc" id="L163">		return new TreePathMaxima.Builder() {</span>
+<span class="nc" id="L177">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
 
 			@Override
 			public TreePathMaxima build() {
-<span class="nc" id="L169">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="nc" id="L170">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="nc" id="L171">				return tpm;</span>
+<span class="nc" id="L183">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
+<span class="nc" id="L184">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
+<span class="nc" id="L185">				return tpm;</span>
 			}
 
 			@Override
 			public TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L176" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;bits-lookup-tables-enable&quot;:
-<span class="nc" id="L178">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
-<span class="nc" id="L179">						break;</span>
+<span class="nc" id="L192">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
+<span class="nc" id="L193">						break;</span>
 					default:
-<span class="nc" id="L181">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L195">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L183">				return this;</span>
+<span class="nc" id="L197">				return this;</span>
 			}
 
 		};
@@ -215,7 +229,7 @@ public interface TreePathMaxima {
 		 * @return       this builder
 		 */
 		default TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc" id="L218">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L232">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 
@@ -235,13 +249,13 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L239">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);</span>
-<span class="fc" id="L240">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L241">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L242">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L243">		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L244">		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L253">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);</span>
+<span class="fc" id="L254">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L255">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L256">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L257">		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L258">		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);</span>
 	}
 
 }

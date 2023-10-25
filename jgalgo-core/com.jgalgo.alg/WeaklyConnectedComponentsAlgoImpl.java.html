@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 	@Override
 	VertexPartition findWeaklyConnectedComponents(IndexGraph g) {
-<span class="fc" id="L29">		final boolean directed = g.getCapabilities().directed();</span>
+<span class="fc" id="L29">		final boolean directed = g.isDirected();</span>
 <span class="fc" id="L30">		final int n = g.vertices().size();</span>
 <span class="fc" id="L31">		int[] comp = new int[n];</span>
 <span class="fc" id="L32">		Arrays.fill(comp, -1);</span>
@@ -73,29 +73,29 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 	@Override
 	boolean isWeaklyConnected(IndexGraph g) {
-<span class="fc" id="L76">		final boolean directed = g.getCapabilities().directed();</span>
-<span class="fc" id="L77">		final int n = g.vertices().size();</span>
-<span class="fc" id="L78">		BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L79">		int visitedCount = 0;</span>
+<span class="nc" id="L76">		final boolean directed = g.isDirected();</span>
+<span class="nc" id="L77">		final int n = g.vertices().size();</span>
+<span class="nc" id="L78">		BitSet visited = new BitSet(n);</span>
+<span class="nc" id="L79">		int visitedCount = 0;</span>
 
-<span class="fc" id="L81">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L82">		int root = 0;</span>
-<span class="fc" id="L83">		stack.push(root);</span>
+<span class="nc" id="L81">		IntStack stack = new IntArrayList();</span>
+<span class="nc" id="L82">		int root = 0;</span>
+<span class="nc" id="L83">		stack.push(root);</span>
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
-<span class="fc" id="L86">			int u = stack.popInt();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		while (!stack.isEmpty()) {</span>
+<span class="nc" id="L86">			int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L89">				eit.nextInt();</span>
-<span class="fc" id="L90">				int v = eit.target();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L92">					continue;</span>
-<span class="fc" id="L93">				visited.set(v);</span>
-<span class="fc" id="L94">				visitedCount++;</span>
-<span class="fc" id="L95">				stack.push(v);</span>
-<span class="fc" id="L96">			}</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L89">				eit.nextInt();</span>
+<span class="nc" id="L90">				int v = eit.target();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">				if (visited.get(v))</span>
+<span class="nc" id="L92">					continue;</span>
+<span class="nc" id="L93">				visited.set(v);</span>
+<span class="nc" id="L94">				visitedCount++;</span>
+<span class="nc" id="L95">				stack.push(v);</span>
+<span class="nc" id="L96">			}</span>
 
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">			if (directed) {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">			if (directed) {</span>
 <span class="nc bnc" id="L99" title="All 2 branches missed.">				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L100">					eit.nextInt();</span>
 <span class="nc" id="L101">					int v = eit.source();</span>
@@ -106,8 +106,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="nc" id="L106">					stack.push(v);</span>
 <span class="nc" id="L107">				}</span>
 			}
-<span class="fc" id="L109">		}</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		return visitedCount == n;</span>
+<span class="nc" id="L109">		}</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">		return visitedCount == n;</span>
 	}
 
 }

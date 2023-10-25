@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
 <span class="nc" id="L85">		final int n = g.vertices().size();</span>
 <span class="nc" id="L86">		BitSet visited = new BitSet(n);</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (int e : path) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (int e : path.edges()) {</span>
 <span class="nc" id="L88">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="nc" id="L89">			visited.set(u);</span>
 <span class="nc" id="L90">			visited.set(v);</span>

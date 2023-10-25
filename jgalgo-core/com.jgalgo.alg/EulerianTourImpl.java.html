@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
 	Path computeEulerianTour(IndexGraph g) {
-<span class="fc bfc" id="L36" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		return g.isDirected() ? computeTourDirected(g) : computeTourUndirected(g);</span>
 	}
 
 	private static Path computeTourUndirected(IndexGraph g) {

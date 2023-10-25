@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L47">		Objects.requireNonNull(degreeType);</span>
 
 <span class="fc" id="L49">		final int n = g.vertices().size();</span>
-<span class="fc" id="L50">		final boolean directed = g.getCapabilities().directed();</span>
+<span class="fc" id="L50">		final boolean directed = g.isDirected();</span>
 
 		/* cache the degree of each vertex */
 <span class="fc" id="L53">		int[] degree = new int[n];</span>

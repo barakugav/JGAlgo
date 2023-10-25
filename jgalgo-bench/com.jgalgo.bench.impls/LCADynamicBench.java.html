@@ -101,56 +101,61 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L101">	}</span>
 
 	@Benchmark
-	public void GabowLinear(Blackhole blackhole) {
-<span class="fc" id="L105">		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption(&quot;impl&quot;, &quot;gabow-linear&quot;), blackhole);</span>
+	public void GabowSimple(Blackhole blackhole) {
+<span class="fc" id="L105">		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption(&quot;impl&quot;, &quot;gabow-simple&quot;), blackhole);</span>
 <span class="fc" id="L106">	}</span>
 
 	@Benchmark
-	public void GabowSimple(Blackhole blackhole) {
-<span class="fc" id="L110">		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption(&quot;impl&quot;, &quot;gabow-simple&quot;), blackhole);</span>
+	public void GabowLinear(Blackhole blackhole) {
+<span class="fc" id="L110">		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption(&quot;impl&quot;, &quot;gabow-ints&quot;), blackhole);</span>
 <span class="fc" id="L111">	}</span>
 
+	@Benchmark
+	public void GabowLongs(Blackhole blackhole) {
+<span class="fc" id="L115">		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption(&quot;impl&quot;, &quot;gabow-longs&quot;), blackhole);</span>
+<span class="fc" id="L116">	}</span>
+
 	private static Collection&lt;Op&gt; generateRandOps(int n, int m, long seed) {
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
-<span class="nc" id="L115">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L116">		final SeedGenerator seedGen = new SeedGenerator(seed);</span>
-<span class="fc" id="L117">		Random rand = new Random(seedGen.nextSeed());</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
+<span class="nc" id="L120">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L121">		final SeedGenerator seedGen = new SeedGenerator(seed);</span>
+<span class="fc" id="L122">		Random rand = new Random(seedGen.nextSeed());</span>
 
-<span class="fc" id="L119">		final int addLeafOp = 0;</span>
-<span class="fc" id="L120">		final int lcaOp = 1;</span>
-<span class="fc" id="L121">		int[] opsOrder = new int[n - 2 + m];</span>
-<span class="fc" id="L122">		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);</span>
-<span class="fc" id="L123">		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);</span>
-<span class="fc" id="L124">		IntArrays.shuffle(opsOrder, rand);</span>
+<span class="fc" id="L124">		final int addLeafOp = 0;</span>
+<span class="fc" id="L125">		final int lcaOp = 1;</span>
+<span class="fc" id="L126">		int[] opsOrder = new int[n - 2 + m];</span>
+<span class="fc" id="L127">		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);</span>
+<span class="fc" id="L128">		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);</span>
+<span class="fc" id="L129">		IntArrays.shuffle(opsOrder, rand);</span>
 
-<span class="fc" id="L126">		List&lt;Op&gt; ops = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L127">		int verticesNum = 0;</span>
+<span class="fc" id="L131">		List&lt;Op&gt; ops = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L132">		int verticesNum = 0;</span>
 
 		/* insert first two elements */
-<span class="fc" id="L130">		ops.add(new OpInitTree());</span>
-<span class="fc" id="L131">		int root = verticesNum++;</span>
-<span class="fc" id="L132">		ops.add(new OpAddLeaf(root));</span>
-<span class="fc" id="L133">		verticesNum++;</span>
+<span class="fc" id="L135">		ops.add(new OpInitTree());</span>
+<span class="fc" id="L136">		int root = verticesNum++;</span>
+<span class="fc" id="L137">		ops.add(new OpAddLeaf(root));</span>
+<span class="fc" id="L138">		verticesNum++;</span>
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		for (int op : opsOrder) {</span>
-<span class="pc bpc" id="L136" title="1 of 3 branches missed.">			switch (op) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		for (int op : opsOrder) {</span>
+<span class="pc bpc" id="L141" title="1 of 3 branches missed.">			switch (op) {</span>
 				case addLeafOp: {
-<span class="fc" id="L138">					int p = rand.nextInt(verticesNum);</span>
-<span class="fc" id="L139">					ops.add(new OpAddLeaf(p));</span>
-<span class="fc" id="L140">					verticesNum++;</span>
-<span class="fc" id="L141">					break;</span>
+<span class="fc" id="L143">					int p = rand.nextInt(verticesNum);</span>
+<span class="fc" id="L144">					ops.add(new OpAddLeaf(p));</span>
+<span class="fc" id="L145">					verticesNum++;</span>
+<span class="fc" id="L146">					break;</span>
 				}
 				case lcaOp: {
-<span class="fc" id="L144">					int x = rand.nextInt(verticesNum);</span>
-<span class="fc" id="L145">					int y = rand.nextInt(verticesNum);</span>
-<span class="fc" id="L146">					ops.add(new OpLCAQuery(x, y));</span>
-<span class="fc" id="L147">					break;</span>
+<span class="fc" id="L149">					int x = rand.nextInt(verticesNum);</span>
+<span class="fc" id="L150">					int y = rand.nextInt(verticesNum);</span>
+<span class="fc" id="L151">					ops.add(new OpLCAQuery(x, y));</span>
+<span class="fc" id="L152">					break;</span>
 				}
 				default:
-<span class="nc" id="L150">					throw new IllegalStateException();</span>
+<span class="nc" id="L155">					throw new IllegalStateException();</span>
 			}
 		}
-<span class="fc" id="L153">		return ops;</span>
+<span class="fc" id="L158">		return ops;</span>
 	}
 
 	private static class Op {
@@ -162,18 +167,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	private static class OpAddLeaf extends Op {
 		final int parent;
 
-<span class="fc" id="L165">		OpAddLeaf(int parent) {</span>
-<span class="fc" id="L166">			this.parent = parent;</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L170">		OpAddLeaf(int parent) {</span>
+<span class="fc" id="L171">			this.parent = parent;</span>
+<span class="fc" id="L172">		}</span>
 	}
 
 	private static class OpLCAQuery extends Op {
 		final int x, y;
 
-<span class="fc" id="L173">		OpLCAQuery(int x, int y) {</span>
-<span class="fc" id="L174">			this.x = x;</span>
-<span class="fc" id="L175">			this.y = y;</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc" id="L178">		OpLCAQuery(int x, int y) {</span>
+<span class="fc" id="L179">			this.x = x;</span>
+<span class="fc" id="L180">			this.y = y;</span>
+<span class="fc" id="L181">		}</span>
 	}
 
 }

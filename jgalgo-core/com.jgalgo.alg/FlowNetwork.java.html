@@ -21,7 +21,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -124,7 +123,7 @@ public interface FlowNetwork {
 	 * @return        the sum of flow units going out of {@code source}
 	 */
 	default double getFlowSum(Graph g, int source) {
-<span class="fc" id="L127">		return getFlowSum(g, IntList.of(source));</span>
+<span class="fc" id="L126">		return getFlowSum(g, IntList.of(source));</span>
 	}
 
 	/**
@@ -135,26 +134,26 @@ public interface FlowNetwork {
 	 * @return         the sum of flow units going out of {@code sources}
 	 */
 	default double getFlowSum(Graph g, IntCollection sources) {
-<span class="fc" id="L138">		double sum = 0;</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">		if (g.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int source : sources) {</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				for (int e : g.outEdges(source))</span>
-<span class="fc" id="L142">					sum += getFlow(e);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int e : g.inEdges(source))</span>
-<span class="fc" id="L144">					sum -= getFlow(e);</span>
-<span class="fc" id="L145">			}</span>
+<span class="fc" id="L137">		double sum = 0;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (int source : sources) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (int e : g.outEdges(source))</span>
+<span class="fc" id="L141">					sum += getFlow(e);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (int e : g.inEdges(source))</span>
+<span class="fc" id="L143">					sum -= getFlow(e);</span>
+<span class="fc" id="L144">			}</span>
 		} else {
-<span class="nc bnc" id="L147" title="All 2 branches missed.">			for (int source : sources) {</span>
-<span class="nc bnc" id="L148" title="All 2 branches missed.">				for (int e : g.outEdges(source)) {</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">					if (source != g.edgeTarget(e)) {</span>
-<span class="nc" id="L150">						sum += getFlow(e);</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">					} else if (source != g.edgeSource(e)) {</span>
-<span class="nc" id="L152">						sum -= getFlow(e);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">			for (int source : sources) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">				for (int e : g.outEdges(source)) {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">					if (source != g.edgeTarget(e)) {</span>
+<span class="nc" id="L149">						sum += getFlow(e);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">					} else if (source != g.edgeSource(e)) {</span>
+<span class="nc" id="L151">						sum -= getFlow(e);</span>
 					}
-<span class="nc" id="L154">				}</span>
-<span class="nc" id="L155">			}</span>
+<span class="nc" id="L153">				}</span>
+<span class="nc" id="L154">			}</span>
 		}
-<span class="fc" id="L157">		return sum;</span>
+<span class="fc" id="L156">		return sum;</span>
 	}
 
 	/**
@@ -168,16 +167,16 @@ public interface FlowNetwork {
 	 * @return       the sum of the cost of the flow along the edges
 	 */
 	default double getCostSum(IntCollection edges, WeightFunction cost) {
-<span class="nc" id="L171">		double sum = 0;</span>
-<span class="nc bnc" id="L172" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
-<span class="nc" id="L173">			WeightFunctionInt costInt = (WeightFunctionInt) cost;</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">			for (int e : edges)</span>
-<span class="nc" id="L175">				sum += getFlow(e) * costInt.weightInt(e);</span>
-<span class="nc" id="L176">		} else {</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">			for (int e : edges)</span>
-<span class="nc" id="L178">				sum += getFlow(e) * cost.weight(e);</span>
+<span class="nc" id="L170">		double sum = 0;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L172">			WeightFunctionInt costInt = (WeightFunctionInt) cost;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">			for (int e : edges)</span>
+<span class="nc" id="L174">				sum += getFlow(e) * costInt.weightInt(e);</span>
+<span class="nc" id="L175">		} else {</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">			for (int e : edges)</span>
+<span class="nc" id="L177">				sum += getFlow(e) * cost.weight(e);</span>
 		}
-<span class="nc" id="L180">		return sum;</span>
+<span class="nc" id="L179">		return sum;</span>
 	}
 
 	/**
@@ -196,9 +195,9 @@ public interface FlowNetwork {
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
 	static FlowNetwork createFromEdgeWeights(Graph g) {
-<span class="fc" id="L199">		WeightsDouble capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;capacity&quot;), double.class);</span>
-<span class="fc" id="L200">		WeightsDouble flows = g.addEdgesWeights(JGAlgoUtils.labeledObj(&quot;flow&quot;), double.class);</span>
-<span class="fc" id="L201">		return createFromEdgeWeights(capacities, flows);</span>
+<span class="fc" id="L198">		WeightsDouble capacities = g.addEdgesWeights(&quot;_capacity&quot;, double.class);</span>
+<span class="fc" id="L199">		WeightsDouble flows = g.addEdgesWeights(&quot;_flow&quot;, double.class);</span>
+<span class="fc" id="L200">		return createFromEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
@@ -213,7 +212,7 @@ public interface FlowNetwork {
 	 * @return            a flow network implemented as external edge weights containers
 	 */
 	static FlowNetwork createFromEdgeWeights(WeightsDouble capacities, WeightsDouble flows) {
-<span class="fc" id="L216">		return new FlowNetworks.NetImplEdgeWeights(capacities, flows);</span>
+<span class="fc" id="L215">		return new FlowNetworks.NetImplEdgeWeights(capacities, flows);</span>
 	}
 
 }

@@ -75,14 +75,6 @@ public interface VertexCover {
 		 */
 		boolean isInCover(int vertex);
 
-		/**
-		 * Get the weight of the cover with respect to a vertex weight function.
-		 *
-		 * @param  w a vertex weight function
-		 * @return   the weight sum of the vertices of the cover
-		 */
-		double weight(WeightFunction w);
-
 	}
 
 	/**
@@ -94,7 +86,7 @@ public interface VertexCover {
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-<span class="nc" id="L97">		return newBuilder().build();</span>
+<span class="nc" id="L89">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -105,7 +97,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L108">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L100">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
@@ -137,7 +129,7 @@ public interface VertexCover {
 		 * @return       this builder
 		 */
 		default VertexCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L140">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L132">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

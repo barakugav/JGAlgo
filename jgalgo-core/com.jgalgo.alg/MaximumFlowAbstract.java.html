@@ -90,7 +90,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L90">				this.sink = sink;</span>
 <span class="fc" id="L91">				this.n = g.vertices().size();</span>
 <span class="fc" id="L92">				this.net = net;</span>
-<span class="fc" id="L93">				directed = g.getCapabilities().directed();</span>
+<span class="fc" id="L93">				directed = g.isDirected();</span>
 <span class="fc" id="L94">			}</span>
 
 			void initCapacities(int[] capacities) {
@@ -201,8 +201,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L201">				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());</span>
 <span class="fc" id="L202">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
 
-<span class="fc bfc" id="L204" title="All 2 branches covered.">			IndexGraphBuilder builder = gOrig.getCapabilities().directed() ? IndexGraphBuilder.newDirected()</span>
-<span class="fc" id="L205">					: IndexGraphBuilder.newUndirected();</span>
+			IndexGraphBuilder builder =
+<span class="fc bfc" id="L205" title="All 2 branches covered.">					gOrig.isDirected() ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
 <span class="fc" id="L206">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
 <span class="fc" id="L207">			builder.expectedVerticesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
 
@@ -392,7 +392,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L392">			}</span>
 
 			void initCapacities(double[] residualCapacity) {
-<span class="fc bfc" id="L395" title="All 2 branches covered.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
 <span class="fc bfc" id="L396" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L397" title="All 2 branches covered.">						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;</span>
 					}
@@ -420,7 +420,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 			void initCapacities(int[] residualCapacity) {
 <span class="fc" id="L422">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
-<span class="fc bfc" id="L423" title="All 2 branches covered.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
 <span class="fc bfc" id="L424" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L425" title="All 2 branches covered.">						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;</span>
 					}
@@ -462,7 +462,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 				}
 
 <span class="fc" id="L464">				double totalFlow = 0;</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
 <span class="fc bfc" id="L466" title="All 2 branches covered.">					for (int s : sources) {</span>
 <span class="fc bfc" id="L467" title="All 2 branches covered.">						for (int e : gOrig.outEdges(s))</span>
 <span class="fc" id="L468">							totalFlow += net.getFlow(e);</span>
@@ -487,7 +487,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 				}
 
 <span class="fc" id="L489">				int totalFlow = 0;</span>
-<span class="fc bfc" id="L490" title="All 2 branches covered.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
 <span class="fc bfc" id="L491" title="All 2 branches covered.">					for (int s : sources) {</span>
 <span class="fc bfc" id="L492" title="All 2 branches covered.">						for (int e : gOrig.outEdges(s))</span>
 <span class="fc" id="L493">							totalFlow += net.getFlowInt(e);</span>
@@ -511,7 +511,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 				}
 
 <span class="nc" id="L513">				double totalFlow = 0;</span>
-<span class="nc bnc" id="L514" title="All 2 branches missed.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="nc bnc" id="L514" title="All 2 branches missed.">				if (gOrig.isDirected()) {</span>
 <span class="nc bnc" id="L515" title="All 2 branches missed.">					for (int s : sources) {</span>
 <span class="nc bnc" id="L516" title="All 2 branches missed.">						for (int e : gOrig.outEdges(s))</span>
 <span class="nc" id="L517">							totalFlow += net.getFlow(e);</span>
@@ -536,7 +536,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 				}
 
 <span class="nc" id="L538">				int totalFlow = 0;</span>
-<span class="nc bnc" id="L539" title="All 2 branches missed.">				if (gOrig.getCapabilities().directed()) {</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">				if (gOrig.isDirected()) {</span>
 <span class="nc bnc" id="L540" title="All 2 branches missed.">					for (int s : sources) {</span>
 <span class="nc bnc" id="L541" title="All 2 branches missed.">						for (int e : gOrig.outEdges(s))</span>
 <span class="nc" id="L542">							totalFlow += net.getFlowInt(e);</span>
