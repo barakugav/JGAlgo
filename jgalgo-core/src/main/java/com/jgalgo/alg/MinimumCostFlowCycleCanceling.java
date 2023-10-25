@@ -132,17 +132,17 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* Repeatedly find the cycle with the minimum mean cost and push flow through it */
 		for (;;) {
 			Path minCycle = minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);
-			if (minCycle == null || minCycle.weight(cost0) >= -EPS)
+			if (minCycle == null || cost0.weightSum(minCycle.edges()) >= -EPS)
 				break; /* no cycle or cycle that will increase the total cost */
 
 			/* find the maximum amount of flow we can push through the cycle */
 			double f = Double.POSITIVE_INFINITY;
-			for (int e : minCycle)
+			for (int e : minCycle.edges())
 				f = Math.min(f, capacity[e] - flow[e]);
 			assert f > 0;
 
 			/* Push flow along the cycle, lowering the overall cost */
-			for (int e : minCycle) {
+			for (int e : minCycle.edges()) {
 				int eTwin = twin[e];
 				flow[e] += f;
 				flow[eTwin] -= f;

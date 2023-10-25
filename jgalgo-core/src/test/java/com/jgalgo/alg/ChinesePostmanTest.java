@@ -64,11 +64,11 @@ public class ChinesePostmanTest extends TestBase {
 
 		/* Asserts all edges are traversed by the tour */
 		IntSet tourEdges = new IntOpenHashSet();
-		for (int e : chinesePostmanTour)
+		for (int e : chinesePostmanTour.edges())
 			tourEdges.add(e);
 		assertEquals(g.edges(), tourEdges);
 
-		double chinesePostmanTourWeight = chinesePostmanTour.weight(w);
+		double chinesePostmanTourWeight = w.weightSum(chinesePostmanTour.edges());
 		final int m = g.edges().size();
 		if (m >= 32)
 			return;
@@ -95,7 +95,7 @@ public class ChinesePostmanTest extends TestBase {
 				continue;
 
 			Path eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
-			double eulerianTourWeight = eulerianTour.weight(bWeights);
+			double eulerianTourWeight = bWeights.weightSum(eulerianTour.edges());
 			if (bestWeight > eulerianTourWeight)
 				bestWeight = eulerianTourWeight;
 			assertTrue(eulerianTourWeight >= chinesePostmanTourWeight - 1e-6);

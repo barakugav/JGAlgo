@@ -171,7 +171,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 				break;
 
 			// avoid using augPath.iterator() as we modify the graph during iteration
-			IntIterator it = new IntArrayList(augPath).iterator();
+			IntIterator it = new IntArrayList(augPath.edges()).iterator();
 			// 'remove' edge from S to new matched vertex
 			w.set(it.nextInt(), RemovedEdgeWeight);
 			for (;;) {

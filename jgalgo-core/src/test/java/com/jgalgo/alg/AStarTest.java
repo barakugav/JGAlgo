@@ -144,7 +144,7 @@ public class AStarTest extends TestBase {
 					Path path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
 						paths.put(target, path);
-						distances.put(target, path.weight(w));
+						distances.put(target, w.weightSum(path.edges()));
 					}
 				}
 

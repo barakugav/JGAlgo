@@ -171,8 +171,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return Pair.of(potential, null);
 		} else {
 			Path negCycleRef = res.getNegativeCycle();
-			IntList negCycle = new IntArrayList(negCycleRef.size());
-			for (int e : negCycleRef)
+			IntList negCycle = new IntArrayList(negCycleRef.edges().size());
+			for (int e : negCycleRef.edges())
 				negCycle.add(e);
 			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}

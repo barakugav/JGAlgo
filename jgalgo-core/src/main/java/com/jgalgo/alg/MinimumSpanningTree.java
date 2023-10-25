@@ -59,14 +59,6 @@ public interface MinimumSpanningTree {
 		 * @return a collection of the MST edges.
 		 */
 		IntCollection edges();
-
-		/**
-		 * Get the MST weight with respect to a weight function
-		 *
-		 * @param  w a weight function
-		 * @return   the sum of the tree edges weights
-		 */
-		double weight(WeightFunction w);
 	}
 
 	/**

@@ -84,7 +84,7 @@ class TSPMetricUtils {
 	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
-		for (int e : path) {
+		for (int e : path.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			visited.set(u);
 			visited.set(v);

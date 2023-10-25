@@ -70,7 +70,7 @@ public class MinimumSpanningTreeExample {
 
 		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));
 		System.out.println("The minimum spanning tree of the graph has the following edges: " + mst.edges());
-		System.out.println("The minimum spanning tree weight is " + mst.weight(w));
+		System.out.println("The minimum spanning tree weight is " + w.weightSum(mst.edges()));
 	}
 
 	public static void main(String[] args) {

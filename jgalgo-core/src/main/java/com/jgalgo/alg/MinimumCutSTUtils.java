@@ -224,7 +224,7 @@ class MinimumCutSTUtils {
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
 					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);
-					double cutWeight = cut.weight(w);
+					double cutWeight = w.weightSum(cut.edges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;
 						bestCut = cut;

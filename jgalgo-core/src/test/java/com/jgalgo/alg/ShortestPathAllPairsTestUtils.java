@@ -103,7 +103,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 				} catch (UnsupportedOperationException e) {
 				}
 				if (cycle != null) {
-					double cycleWeight = cycle.weight(w);
+					double cycleWeight = w.weightSum(cycle.edges());
 					assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 					assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 					if (!expectedRes.foundNegativeCycle())
@@ -121,7 +121,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
 				Path path = result.getPath(source, target);
 				if (path != null) {
-					double pathWeight = path.weight(w);
+					double pathWeight = WeightFunction.weightSum(w, path.edges());
 					assertEquals(pathWeight, actualDistance, "Path to vertex " + target + " doesn't match distance ("
 							+ actualDistance + " != " + pathWeight + "): " + path);
 				} else {

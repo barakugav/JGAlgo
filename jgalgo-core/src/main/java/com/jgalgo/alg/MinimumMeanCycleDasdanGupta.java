@@ -75,7 +75,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				}
 			}
 			if (bestSelfEdge != -1) {
-				double bestCycleWeight = cycle != null ? cycle.weight(w) / cycle.size() : Double.POSITIVE_INFINITY;
+				double bestCycleWeight =
+						cycle != null ? w.weightSum(cycle.edges()) / cycle.edges().size() : Double.POSITIVE_INFINITY;
 				if (bestSelfEdgeWeight < bestCycleWeight) {
 					int selfEdgeVertex = g.edgeSource(bestSelfEdge);
 					cycle = new PathImpl(g, selfEdgeVertex, selfEdgeVertex, IntList.of(bestSelfEdge));

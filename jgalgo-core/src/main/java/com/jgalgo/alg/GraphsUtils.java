@@ -16,15 +16,10 @@
 
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterable;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Static methods class for {@linkplain Graph graphs}.
@@ -91,35 +86,6 @@ public class GraphsUtils {
 			}
 		}
 		return false;
-	}
-
-	static double weightSum(IntIterable collection, WeightFunction w) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction && collection instanceof Collection<?>)
-			return ((Collection<?>) collection).size();
-		return weightSum(collection.iterator(), w);
-	}
-
-	static double weightSum(IntIterator it, WeightFunction w) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
-			int cardinality = 0;
-			for (; it.hasNext(); it.nextInt())
-				cardinality++;
-			return cardinality;
-		}
-
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
-			int sum = 0;
-			while (it.hasNext())
-				sum += wInt.weightInt(it.nextInt());
-			return sum;
-
-		} else {
-			double sum = 0;
-			while (it.hasNext())
-				sum += w.weight(it.nextInt());
-			return sum;
-		}
 	}
 
 }

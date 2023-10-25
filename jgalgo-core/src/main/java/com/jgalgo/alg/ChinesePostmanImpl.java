@@ -88,7 +88,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		/* Compute an Eulerian tour in the new graph */
 		Path eulerianTour = eulerianTourAlgo.computeEulerianTour(eulerianGraph);
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
-		IntList path = new IntArrayList(eulerianTour.size());
+		IntList path = new IntArrayList(eulerianTour.edges().size());
 		for (EdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {
 			int e = eit.nextInt();
 			if (e < originalEdgesThreshold) {
@@ -96,7 +96,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 				path.add(e);
 			} else {
 				/* artificial edge connecting two odd vertices */
-				path.addAll(allPairsRes.getPath(eit.source(), eit.target()));
+				path.addAll(allPairsRes.getPath(eit.source(), eit.target()).edges());
 			}
 		}
 

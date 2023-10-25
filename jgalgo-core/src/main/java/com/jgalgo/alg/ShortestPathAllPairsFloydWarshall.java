@@ -148,8 +148,8 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 				continue;
 			if (d1 + d2 < 0) {
 				IntList negCycle = new IntArrayList();
-				negCycle.addAll(res.getPath(u, k));
-				negCycle.addAll(res.getPath(k, u));
+				negCycle.addAll(res.getPath(u, k).edges());
+				negCycle.addAll(res.getPath(k, u).edges());
 				res.setNegCycle(new PathImpl(res.g, u, u, negCycle));
 				return true;
 			}

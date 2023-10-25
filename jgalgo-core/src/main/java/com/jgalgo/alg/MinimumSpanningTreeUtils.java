@@ -84,11 +84,6 @@ class MinimumSpanningTreeUtils {
 		}
 
 		@Override
-		public double weight(WeightFunction w) {
-			return GraphsUtils.weightSum(edges, w);
-		}
-
-		@Override
 		public String toString() {
 			return edges().toString();
 		}
@@ -108,11 +103,6 @@ class MinimumSpanningTreeUtils {
 		@Override
 		public IntCollection edges() {
 			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 		}
 
 	}

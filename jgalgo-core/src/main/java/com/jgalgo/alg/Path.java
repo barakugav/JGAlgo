@@ -20,11 +20,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * A path of edges in a graph.
@@ -32,8 +28,6 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge \(e_i\) is the source vertex of the
  * next edge \(e_{i+1}\). If the graph is undirected the definition of a 'source' and 'target' are interchangeable, and
  * each pair of consecutive edges simply share an endpoint.
- * <p>
- * The Path object can be treated as a {@link IntList} of edges.
  * <p>
  * A Path object might be used to represent a cycle as well, if the source and target of the path are the same vertex.
  * <p>
@@ -55,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-public interface Path extends IntList {
+public interface Path {
 
 	/**
 	 * Get the source vertex of the path.
@@ -76,19 +70,6 @@ public interface Path extends IntList {
 	int target();
 
 	/**
-	 * Get an iterator that iterate over the edges of the path.
-	 */
-	@Override
-	IntListIterator iterator();
-
-	/**
-	 * Get an {@link EdgeIter} that iterate over the edges of the path.
-	 *
-	 * @return an {@link EdgeIter} that iterate over the edges of the path.
-	 */
-	EdgeIter edgeIter();
-
-	/**
 	 * Check whether this path form a cycle.
 	 * <p>
 	 * A cycle is a path which start and ends at the same vertex.
@@ -100,43 +81,33 @@ public interface Path extends IntList {
 	}
 
 	/**
+	 * Get an {@link EdgeIter} that iterate over the edges of the path.
+	 *
+	 * @return an {@link EdgeIter} that iterate over the edges of the path.
+	 */
+	EdgeIter edgeIter();
+
+	/**
+	 * Get the edges forming this path.
+	 * <p>
+	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
+	 * source vertex of the next edge \(e_{i+1}\).
+	 *
+	 * @return the edges forming this path, by the path order
+	 */
+	IntList edges();
+
+	/**
 	 * Get the vertices forming this path.
 	 * <p>
-	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of edge \(e_i\) is the source
-	 * vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by this
-	 * path, ordered by their visit order. If this path form a cycle, the vertices list size is the same as the edge
-	 * list, otherwise it is greater by one.
+	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
+	 * source vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by
+	 * this path, ordered by their visit order. If this path form a cycle, the vertices list size is the same as the
+	 * edge list, otherwise it is greater by one.
 	 *
 	 * @return the vertices visited by this path, by the path order
 	 */
-	default IntList toVerticesList() {
-		if (isEmpty())
-			return IntLists.emptyList();
-		IntList res = new IntArrayList(size() + (isCycle() ? 0 : 1));
-		for (EdgeIter it = edgeIter();;) {
-			it.nextInt();
-			res.add(it.source());
-			if (!it.hasNext()) {
-				if (!isCycle()) {
-					assert it.target() == target();
-					res.add(target());
-				}
-				return res;
-			}
-		}
-	}
-
-	/**
-	 * Get the weight of the path with respect to some weight function.
-	 * <p>
-	 * The weight of a path is defined as the sum of its edges weights.
-	 *
-	 * @param  w an edge weight function
-	 * @return   the sum of this path edges weights
-	 */
-	default double weight(WeightFunction w) {
-		return GraphsUtils.weightSum(this, w);
-	}
+	IntList vertices();
 
 	/**
 	 * Find a valid path from \(u\) to \(v\).

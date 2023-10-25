@@ -21,7 +21,6 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -61,12 +60,6 @@ class CutImpl implements Cut {
 	public IntCollection edges() {
 		computeCrossEdgesCollection();
 		return cutVertices;
-	}
-
-	@Override
-	public double weight(WeightFunction w) {
-		computeCrossEdgesCollection();
-		return GraphsUtils.weightSum(crossEdges, w);
 	}
 
 	private void computeVerticesCollection() {
@@ -137,11 +130,6 @@ class CutImpl implements Cut {
 		@Override
 		public IntCollection edges() {
 			return IndexIdMaps.indexToIdCollection(cut.edges(), eiMap);
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-			return cut.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 		}
 
 	}

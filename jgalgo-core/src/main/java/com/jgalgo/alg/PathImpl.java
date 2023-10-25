@@ -22,18 +22,18 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-class PathImpl extends AbstractIntList implements Path {
+class PathImpl implements Path {
 
 	private final IndexGraph g;
 	private final int source;
 	private final int target;
 	private final IntList edges;
+	private IntList vertices;
 
 	/**
 	 * Construct a new path in a graph from an edge list, a source and a target vertices.
@@ -62,13 +62,37 @@ class PathImpl extends AbstractIntList implements Path {
 	}
 
 	@Override
-	public IntListIterator iterator() {
-		return edges.iterator();
+	public EdgeIter edgeIter() {
+		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
 	}
 
 	@Override
-	public EdgeIter edgeIter() {
-		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
+	public IntList edges() {
+		return edges;
+	}
+
+	@Override
+	public IntList vertices() {
+		if (vertices == null) {
+			if (edges.isEmpty()) {
+				return IntLists.emptyList();
+			} else {
+				IntList res = new IntArrayList(edges().size() + (isCycle() ? 0 : 1));
+				for (EdgeIter it = edgeIter();;) {
+					it.nextInt();
+					res.add(it.source());
+					if (!it.hasNext()) {
+						if (!isCycle()) {
+							assert it.target() == target();
+							res.add(target());
+						}
+						break;
+					}
+				}
+				vertices = IntLists.unmodifiable(res);
+			}
+		}
+		return vertices;
 	}
 
 	private static class IterUndirected implements EdgeIter {
@@ -160,26 +184,6 @@ class PathImpl extends AbstractIntList implements Path {
 
 	}
 
-	@Override
-	public int size() {
-		return edges.size();
-	}
-
-	@Override
-	public int getInt(int index) {
-		return edges.getInt(index);
-	}
-
-	@Override
-	public int indexOf(int k) {
-		return edges.indexOf(k);
-	}
-
-	@Override
-	public int lastIndexOf(int k) {
-		return edges.lastIndexOf(k);
-	}
-
 	static Path pathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
 		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
 	}
@@ -211,7 +215,7 @@ class PathImpl extends AbstractIntList implements Path {
 		return new PathImpl(g, source, target, path);
 	}
 
-	private static class PathFromIndexPath extends AbstractIntList implements Path {
+	private static class PathFromIndexPath implements Path {
 
 		private final Path path;
 		private final IndexIdMap viMap;
@@ -234,18 +238,18 @@ class PathImpl extends AbstractIntList implements Path {
 		}
 
 		@Override
-		public int getInt(int index) {
-			return eiMap.indexToId(path.getInt(index));
-		}
-
-		@Override
-		public int size() {
-			return path.size();
-		}
-
-		@Override
 		public EdgeIter edgeIter() {
 			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);
+		}
+
+		@Override
+		public IntList edges() {
+			return IndexIdMaps.indexToIdList(path.edges(), eiMap);
+		}
+
+		@Override
+		public IntList vertices() {
+			return IndexIdMaps.indexToIdList(path.vertices(), viMap);
 		}
 	}
 

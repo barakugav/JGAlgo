@@ -68,7 +68,7 @@ public class TSPMetricTest extends TestBase {
 
 		Predicate<Path> isPathVisitAllVertices = path -> {
 			BitSet visited = new BitSet(n);
-			for (int u : path.toVerticesList())
+			for (int u : path.vertices())
 				visited.set(u);
 			for (int u = 0; u < n; u++)
 				if (!visited.get(u))
@@ -78,8 +78,8 @@ public class TSPMetricTest extends TestBase {
 		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
 		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");
 
-		double mstAppxLen = appxMst.weight(distances);
-		double matchAppxLen = appxMatch.weight(distances);
+		double mstAppxLen = distances.weightSum(appxMst.edges());
+		double matchAppxLen = distances.weightSum(appxMatch.edges());
 
 		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
 				"Approximations factor doesn't match");

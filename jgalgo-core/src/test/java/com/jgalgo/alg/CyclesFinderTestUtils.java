@@ -80,7 +80,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		int expectedCount = 0;
 		Set<IntList> cycles0 = new TreeSet<>();
 		for (Path cycle : JGAlgoUtils.iterable(cycles)) {
-			IntArrayList cycle0 = new IntArrayList(cycle);
+			IntArrayList cycle0 = new IntArrayList(cycle.edges());
 			transformCycleToCanonical(cycle0);
 			cycles0.add(cycle0);
 			expectedCount++;

@@ -45,7 +45,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			int maxEdge = -1;
 			double maxEdgeWeight = 0;
-			for (int e : path) {
+			for (int e : path.edges()) {
 				if (maxEdge == -1 || w.weight(e) > maxEdgeWeight) {
 					maxEdge = e;
 					maxEdgeWeight = w.weight(e);
@@ -173,7 +173,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 					continue;
 
 				Path mstPath = Path.findPath(mst, badEdgeSource, badEdgeTarget);
-				int goodEdge = mstPath.getInt(rand.nextInt(mstPath.size()));
+				int goodEdge = mstPath.edges().getInt(rand.nextInt(mstPath.edges().size()));
 
 				if (w.weightInt(goodEdge) < w.weightInt(badEdge)) {
 					mstEdges.rem(goodEdge);

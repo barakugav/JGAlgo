@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -89,16 +88,6 @@ public interface Matching {
 	 * @return collection containing all the edges that are part of this matching
 	 */
 	IntCollection edges();
-
-	/**
-	 * Get the weight of the matching with respect to some weight function.
-	 * <p>
-	 * The weight of a matching is defined as the sum of its edges weights.
-	 *
-	 * @param  w an edge weight function
-	 * @return   the sum of this matching edges weights
-	 */
-	double weight(WeightFunction w);
 
 	/**
 	 * Check whether this matching is perfect.

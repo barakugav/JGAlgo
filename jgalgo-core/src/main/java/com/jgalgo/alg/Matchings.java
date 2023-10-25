@@ -98,12 +98,6 @@ class Matchings {
 			return edges;
 		}
 
-		@Override
-		public double weight(WeightFunction w) {
-			computeEdgesCollection();
-			return GraphsUtils.weightSum(edges, w);
-		}
-
 		private void computeEdgesCollection() {
 			if (edges != null)
 				return;
@@ -273,11 +267,6 @@ class Matchings {
 			@Override
 			public IntCollection edges() {
 				return IndexIdMaps.indexToIdCollection(match.edges(), eiMap);
-			}
-
-			@Override
-			public double weight(WeightFunction w) {
-				return match.weight(IndexIdMaps.idToIndexWeightFunc(w, eiMap));
 			}
 
 			@Override

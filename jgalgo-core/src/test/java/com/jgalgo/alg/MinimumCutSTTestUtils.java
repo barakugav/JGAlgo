@@ -166,7 +166,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 
 	private static void testMinCut(Graph g, WeightFunction w, int source, int sink, MinimumCutST alg) {
 		Cut minCut = alg.computeMinimumCut(g, w, source, sink);
-		double minCutWeight = minCut.weight(w);
+		double minCutWeight = w.weightSum(minCut.edges());
 
 		final int n = g.vertices().size();
 		if (n == 2) {
@@ -204,7 +204,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
-			double minCutWeightExpected = minCutExpected.weight(w);
+			double minCutWeightExpected = w.weightSum(minCutExpected.edges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");
 		}
@@ -213,7 +213,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 	private static void testMinCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks,
 			MinimumCutST alg) {
 		Cut minCut = alg.computeMinimumCut(g, w, sources, sinks);
-		double minCutWeight = minCut.weight(w);
+		double minCutWeight = w.weightSum(minCut.edges());
 
 		final int terminalsNum = sources.size() + sinks.size();
 		final int n = g.vertices().size();
@@ -252,7 +252,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
-			double minCutWeightExpected = minCutExpected.weight(w);
+			double minCutWeightExpected = w.weightSum(minCutExpected.edges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");
 		}

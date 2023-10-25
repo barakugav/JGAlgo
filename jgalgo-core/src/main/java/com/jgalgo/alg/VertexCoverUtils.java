@@ -78,11 +78,6 @@ class VertexCoverUtils {
 			return cover.get(vertex);
 		}
 
-		@Override
-		public double weight(WeightFunction w) {
-			return GraphsUtils.weightSum(vertices(), w);
-		}
-
 	}
 
 	private static class ResultFromIndexResult implements VertexCover.Result {
@@ -103,11 +98,6 @@ class VertexCoverUtils {
 		@Override
 		public boolean isInCover(int vertex) {
 			return res.isInCover(viMap.idToIndex(vertex));
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-			return res.weight(IndexIdMaps.idToIndexWeightFunc(w, viMap));
 		}
 
 	}

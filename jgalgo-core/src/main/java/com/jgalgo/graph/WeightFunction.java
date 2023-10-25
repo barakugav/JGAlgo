@@ -16,10 +16,12 @@
 
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
  * Weight function that maps graph edges (or vertices) to weights.
@@ -64,6 +66,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * }
  * }</pre>
  *
+ * @see    WeightFunctionInt
  * @author Barak Ugav
  */
 @FunctionalInterface
@@ -84,6 +87,45 @@ public interface WeightFunction extends IntComparator {
 	@Override
 	default int compare(int e1, int e2) {
 		return Double.compare(weight(e1), weight(e2));
+	}
+
+	/**
+	 * Get the sum of the weights of multiple elements.
+	 *
+	 * @param  elements a collection of elements
+	 * @return          the sum of the weights of the elements
+	 */
+	default double weightSum(IntIterable elements) {
+		double sum = 0;
+		for (int e : elements)
+			sum += weight(e);
+		return sum;
+	}
+
+	/**
+	 * Get the sum of the weights of multiple elements.
+	 * <p>
+	 * This method is equivalent to {@link #weightSum(IntIterable)}, but it also support {@code null} weight function,
+	 * which is treated is cardinality weight function.
+	 *
+	 * @param  weightFunc the weight function to use, or {@code null} to use cardinality weight function
+	 * @param  elements   a collection of elements
+	 * @return            the sum of the weights of the elements
+	 */
+	static double weightSum(WeightFunction weightFunc, IntIterable elements) {
+		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {
+			if (elements instanceof Collection) {
+				return ((Collection<?>) elements).size();
+			} else {
+				int s = 0;
+				for (@SuppressWarnings("unused")
+				int elm : elements)
+					s++;
+				return s;
+			}
+		} else {
+			return weightFunc.weightSum(elements);
+		}
 	}
 
 	/**

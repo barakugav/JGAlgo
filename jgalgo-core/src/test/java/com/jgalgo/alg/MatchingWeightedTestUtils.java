@@ -119,10 +119,10 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			MatchingAlgo validationAlgo) {
 		Matching actual = algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
-		double actualWeight = actual.weight(w);
+		double actualWeight = w.weightSum(actual.edges());
 
 		Matching expected = validationAlgo.computeMaximumWeightedMatching(g, w);
-		double expectedWeight = expected.weight(w);
+		double expectedWeight = w.weightSum(expected.edges());
 
 		if (actualWeight > expectedWeight) {
 			System.err
@@ -174,7 +174,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		int actualSize = actual.edges().size();
-		double actualWeight = actual.weight(w);
+		double actualWeight = w.weightSum(actual.edges());
 
 		int expectedSize = validationUnweightedAlgo.computeMaximumCardinalityMatching(g).edges().size();
 		if (actualSize > expectedSize) {
@@ -185,7 +185,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		assertEquals(expectedSize, actualSize, "unexpected match size");
 
 		Matching expected = validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
-		double expectedWeight = expected.weight(w);
+		double expectedWeight = w.weightSum(expected.edges());
 		if (actualWeight > expectedWeight) {
 			System.err.println(
 					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);

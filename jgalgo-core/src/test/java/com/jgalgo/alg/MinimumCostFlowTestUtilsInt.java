@@ -489,7 +489,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 		/* the circulation is optimal if no circle with negative mean cost exists */
 		Path cycle = MinimumMeanCycle.newInstance().computeMinimumMeanCycle(residualGraph, residualWeights);
-		assertTrue(cycle == null || cycle.weight(residualWeights) >= 0,
+		assertTrue(cycle == null || residualWeights.weightSum(cycle.edges()) >= 0,
 				"Negative cycle found in residual graph, the circulation is not optimal");
 	}
 

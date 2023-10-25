@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -60,16 +59,5 @@ public interface Cut {
 	 * @return a collection of all the edges that cross the cut partition
 	 */
 	IntCollection edges();
-
-	/**
-	 * Get the weight of the cut with respect to the given weight function.
-	 * <p>
-	 * Given a weight function, the weight of a cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that
-	 * \(u\) is in \(C\) and \(v\) is in \(\bar{C}\).
-	 *
-	 * @param  w an edge weight function
-	 * @return   the sum of edge weights \((u,v)\) such that \(u\) is in \(C\) and \(v\) is in \(\bar{C}\)
-	 */
-	double weight(WeightFunction w);
 
 }

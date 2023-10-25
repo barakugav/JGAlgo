@@ -85,7 +85,7 @@ class PageRank {
 		} else {
 			double[] weightSum = new double[n];
 			for (int u = 0; u < n; u++)
-				weightSum[u] = GraphsUtils.weightSum(g.outEdges(u), w);
+				weightSum[u] = w.weightSum(g.outEdges(u));
 
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();

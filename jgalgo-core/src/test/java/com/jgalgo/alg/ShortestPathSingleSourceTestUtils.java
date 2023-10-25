@@ -145,7 +145,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			} catch (UnsupportedOperationException e) {
 			}
 			if (cycle != null) {
-				double cycleWeight = cycle.weight(w);
+				double cycleWeight = w.weightSum(cycle.edges());
 				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 				assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 				if (!expectedRes.foundNegativeCycle())
@@ -163,7 +163,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
 			Path path = result.getPath(v);
 			if (path != null) {
-				double pathWeight = path.weight(w);
+				double pathWeight = WeightFunction.weightSum(w, path.edges());
 				assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("
 						+ actualDistance + " != " + pathWeight + "): " + path);
 			} else {

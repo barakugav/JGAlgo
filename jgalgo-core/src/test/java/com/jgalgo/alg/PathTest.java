@@ -50,7 +50,7 @@ public class PathTest extends TestBase {
 				assertNull(actual, "found non existing path");
 			} else {
 				assertNotNull(actual, "failed to found a path");
-				assertEquals(expected.size(), actual.size(), "failed to find shortest path");
+				assertEquals(expected.edges().size(), actual.edges().size(), "failed to find shortest path");
 			}
 		});
 	}

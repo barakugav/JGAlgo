@@ -80,7 +80,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 		IndexGraph g1 = g1Builder.build();
 
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
-		assert cycle.size() == n;
+		assert cycle.edges().size() == n;
 		assert cycle.isCycle();
 
 		/* Convert cycle of edges to list of vertices */

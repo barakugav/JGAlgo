@@ -71,7 +71,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			IntSet bestCover = null;
 			IntList vertices = new IntArrayList(g.vertices());
 			IntSet cover = new IntOpenHashSet(n);
-			ToDoubleFunction<IntSet> coverWeight = c -> GraphsUtils.weightSum(c, w);
+			ToDoubleFunction<IntSet> coverWeight = c -> w.weightSum(c);
 			coverLoop: for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
 				for (int i = 0; i < n; i++)
 					if ((bitmap & (1 << i)) != 0)
@@ -85,7 +85,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			}
 
 			assertNotNull(bestCover);
-			assertTrue(vc.weight(w) / appxFactor <= coverWeight.applyAsDouble(bestCover));
+			assertTrue(w.weightSum(vc.vertices()) / appxFactor <= coverWeight.applyAsDouble(bestCover));
 		}
 	}
 

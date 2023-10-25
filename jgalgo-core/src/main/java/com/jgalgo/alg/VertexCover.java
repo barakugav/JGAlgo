@@ -75,14 +75,6 @@ public interface VertexCover {
 		 */
 		boolean isInCover(int vertex);
 
-		/**
-		 * Get the weight of the cover with respect to a vertex weight function.
-		 *
-		 * @param  w a vertex weight function
-		 * @return   the weight sum of the vertices of the cover
-		 */
-		double weight(WeightFunction w);
-
 	}
 
 	/**

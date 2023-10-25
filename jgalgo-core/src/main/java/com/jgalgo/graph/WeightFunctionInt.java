@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import it.unimi.dsi.fastutil.ints.IntIterable;
+
 /**
  * Weight function that maps graph edges (or vertices) to integer weights.
  * <p>
@@ -76,6 +78,14 @@ public interface WeightFunctionInt extends WeightFunction {
 	@Override
 	default int compare(int e1, int e2) {
 		return Integer.compare(weightInt(e1), weightInt(e2));
+	}
+
+	@Override
+	default double weightSum(IntIterable elements) {
+		long sum = 0;
+		for (int e : elements)
+			sum += weightInt(e);
+		return sum;
 	}
 
 }

@@ -133,7 +133,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	}
 
 	private static double getMeanWeight(Path cycle, WeightFunction w) {
-		return cycle.weight(w) / cycle.size();
+		return w.weightSum(cycle.edges()) / cycle.edges().size();
 	}
 
 }
