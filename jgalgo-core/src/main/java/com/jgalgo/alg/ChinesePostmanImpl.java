@@ -29,25 +29,25 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class ChinesePostmanImpl implements ChinesePostman {
 
-	private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo = WeaklyConnectedComponentsAlgo.newInstance();
+	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
+	// WeaklyConnectedComponentsAlgo.newInstance();
 	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();
 	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
 		int nonSelfEdgesCount = 0;
-		for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
-			eit.nextInt();
-			if (eit.target() != v)
+		for (int e : g.outEdges(v))
+			if (g.edgeSource(e) != g.edgeTarget(e))
 				nonSelfEdgesCount++;
-		}
 		return nonSelfEdgesCount;
 	}
 
 	Path computeShortestEdgeVisitorCircle(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		if (!connectedComponentsAlgo.isWeaklyConnected(g))
-			throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
+		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
+		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
+		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later
 
 		/* Find all vertices with odd degree */
 		IntList oddVertices = new IntArrayList();
@@ -73,8 +73,14 @@ class ChinesePostmanImpl implements ChinesePostman {
 		Matching oddMatching = matchingAlgo.computeMinimumWeightedPerfectMatching(oddGraph, oddW);
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
-		IndexGraphBuilder b = IndexGraphBuilder.newFrom(g);
-		final int originalEdgesThreshold = g.edges().size();
+		IndexGraphBuilder b = IndexGraphBuilder.newUndirected();
+		b.expectedVerticesNum(g.vertices().size());
+		b.expectedEdgesNum(g.edges().size() + oddMatching.edges().size());
+		for (int n = g.vertices().size(), v = 0; v < n; v++)
+			b.addVertex();
+		for (int m = g.edges().size(), e = 0; e < m; e++)
+			b.addEdge(g.edgeSource(e), g.edgeTarget(e));
+		final int originalEdgesThreshold = b.edges().size();
 		for (int e : oddMatching.edges()) {
 			int u = oddVertices.getInt(oddGraph.edgeSource(e));
 			int v = oddVertices.getInt(oddGraph.edgeTarget(e));
