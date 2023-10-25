@@ -105,6 +105,7 @@ public class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException();
 
 		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+		builder.expectedVerticesNum(n);
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
 		if (p > 0) {
@@ -164,6 +165,7 @@ public class GraphsTestUtils extends TestUtils {
 		}
 
 		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+		builder.expectedVerticesNum(n);
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
 		for (int e = 0; e < edgeNum; e++) {
@@ -240,6 +242,7 @@ public class GraphsTestUtils extends TestUtils {
 		}
 
 		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+		builder.expectedVerticesNum(n);
 		for (int i = 0; i < n; i++)
 			builder.addVertex();
 		if (directed) {
