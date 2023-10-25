@@ -36,7 +36,7 @@ class ConnectedComponentsUtils {
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 			VertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
 		}
 
 		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
@@ -70,7 +70,7 @@ class ConnectedComponentsUtils {
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 			VertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
-			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
 		}
 
 		@Override

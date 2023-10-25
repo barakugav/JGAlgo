@@ -21,7 +21,13 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2ObjFunc;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 class VertexPartitions {
 
@@ -31,6 +37,7 @@ class VertexPartitions {
 		private final int[] vertexToBlock;
 		private IntSet[] blockVertices;
 		private IntSet[] blockEdges;
+		private BiInt2ObjFunc<IntSet> crossEdges;
 
 		ImplIndex(IndexGraph g, int blockNum, int[] vertexToBlock) {
 			this.g = Objects.requireNonNull(g);
@@ -134,15 +141,139 @@ class VertexPartitions {
 			return blockEdges[block];
 		}
 
+		@Override
+		public IntSet crossEdges(int block1, int block2) {
+			if (crossEdges == null) {
+				final int m = g.edges().size();
+
+				if (blockNum * blockNum < m * 4) {
+					/* number of blocks is not too high, use 2D table */
+
+					int[][] crossEdgesNum = new int[blockNum][blockNum];
+					IntSet[][] crossEdgesMatrix = new IntSet[blockNum][blockNum];
+
+					if (g.isDirected()) {
+						for (int e = 0; e < m; e++) {
+							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
+							crossEdgesNum[b1][b2]++;
+						}
+					} else {
+						for (int e = 0; e < m; e++) {
+							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
+							crossEdgesNum[b1][b2]++;
+							if (b1 != b2)
+								crossEdgesNum[b2][b1]++;
+						}
+					}
+					int crossNumTotal = 0;
+					for (int b1 = 0; b1 < blockNum; b1++) {
+						for (int b2 = 0; b2 < blockNum; b2++) {
+							int k = crossEdgesNum[b1][b2];
+							crossEdgesNum[b1][b2] = crossNumTotal;
+							crossNumTotal += k;
+						}
+					}
+
+					int[] sortedEdges = new int[crossNumTotal];
+					int[][] crossEdgesOffset = crossEdgesNum;
+					if (g.isDirected()) {
+						assert crossNumTotal == m;
+						for (int e = 0; e < m; e++) {
+							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
+							sortedEdges[crossEdgesOffset[b1][b2]++] = e;
+						}
+
+					} else {
+						assert crossNumTotal >= m && crossNumTotal <= 2 * m;
+						for (int e = 0; e < m; e++) {
+							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
+							sortedEdges[crossEdgesOffset[b1][b2]++] = e;
+							if (b1 != b2)
+								sortedEdges[crossEdgesOffset[b2][b1]++] = e;
+						}
+					}
+
+					for (int b1 = blockNum - 1; b1 >= 0; b1--) {
+						for (int b2 = blockNum - 1; b2 >= 0; b2--) {
+							if (b1 == 0 && b2 == 0)
+								continue;
+							int p1, p2;
+							if (b2 > 0) {
+								p1 = b1;
+								p2 = b2 - 1;
+							} else {
+								p1 = b1 - 1;
+								p2 = blockNum - 1;
+							}
+							crossEdgesNum[b1][b2] = crossEdgesNum[p1][p2];
+						}
+					}
+					crossEdgesNum[0][0] = 0;
+
+					for (int b1 = 0; b1 < blockNum; b1++) {
+						for (int b2 = 0; b2 < blockNum; b2++) {
+							int begin = crossEdgesNum[b1][b2], end;
+							if (b2 < blockNum - 1) {
+								end = crossEdgesNum[b1][b2 + 1];
+							} else if (b1 < blockNum - 1) {
+								end = crossEdgesNum[b1 + 1][0];
+							} else {
+								end = crossNumTotal;
+							}
+							crossEdgesMatrix[b1][b2] = ImmutableIntArraySet.withNaiveContains(sortedEdges, begin, end);
+						}
+					}
+					crossEdges = (b1, b2) -> crossEdgesMatrix[b1][b2];
+
+				} else {
+					/* number of blocks is high, use hashtable */
+					Long2ObjectOpenHashMap<int[]> map = new Long2ObjectOpenHashMap<>();
+					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longCompose : (b1, b2) -> {
+						if (b1 < b2) {
+							int temp = b1;
+							b1 = b2;
+							b2 = temp;
+						}
+						return JGAlgoUtils.longCompose(b1, b2);
+					};
+					for (int e = 0; e < m; e++) {
+						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
+						long key = buildKey.apply(b1, b2);
+						int[] arr = map.computeIfAbsent(key, k -> new int[2]);
+						int arrSize = arr[0] + 1;
+						if (arrSize == arr.length) {
+							arr = Arrays.copyOf(arr, arr.length * 2);
+							map.put(key, arr);
+						}
+						arr[arrSize] = e;
+						arr[0] = arrSize;
+					}
+					for (var it = map.long2ObjectEntrySet().fastIterator(); it.hasNext();) {
+						var entry = it.next();
+						int[] a = entry.getValue();
+						int size = a[0];
+						@SuppressWarnings({ "unchecked", "rawtypes" })
+						Long2ObjectMap.Entry<IntSet> entry0 = (Long2ObjectMap.Entry) entry;
+						entry0.setValue(ImmutableIntArraySet.withNaiveContains(a, 1, size + 1));
+					}
+					@SuppressWarnings({ "unchecked", "rawtypes" })
+					Long2ObjectMap<IntSet> crossEdgesMap = (Long2ObjectMap) map;
+					crossEdgesMap.defaultReturnValue(IntSets.emptySet());
+					crossEdges = (b1, b2) -> crossEdgesMap.get(buildKey.apply(b1, b2));
+				}
+			}
+			return crossEdges.apply(block1, block2);
+		}
+
 	}
 
-	static class ResultFromIndexResult implements VertexPartition {
+	static class PartitionFromIndexPartition implements VertexPartition {
 
 		private final VertexPartition res;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(VertexPartition res, IndexIdMap viMap, IndexIdMap eiMap) {
+		PartitionFromIndexPartition(VertexPartition res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -166,6 +297,11 @@ class VertexPartitions {
 		@Override
 		public IntSet blockEdges(int block) {
 			return IndexIdMaps.indexToIdSet(res.blockEdges(block), eiMap);
+		}
+
+		@Override
+		public IntSet crossEdges(int block1, int block2) {
+			return IndexIdMaps.indexToIdSet(res.crossEdges(block1, block2), eiMap);
 		}
 
 	}

@@ -503,8 +503,18 @@ public class JGAlgoUtils {
 	}
 
 	@FunctionalInterface
-	public static interface BiInt2IntFunction {
+	public static interface BiInt2IntFunc {
 		int apply(int a1, int a2);
+	}
+
+	@FunctionalInterface
+	public static interface BiInt2LongFunc {
+		long apply(int a1, int a2);
+	}
+
+	@FunctionalInterface
+	public static interface BiInt2ObjFunc<R> {
+		R apply(int a1, int a2);
 	}
 
 	@FunctionalInterface

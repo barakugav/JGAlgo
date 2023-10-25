@@ -25,7 +25,7 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -98,7 +98,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 		private int root;
 
 		private final Int2IntFunction getBitCount;
-		private final BiInt2IntFunction getIthbit;
+		private final BiInt2IntFunc getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
 		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {

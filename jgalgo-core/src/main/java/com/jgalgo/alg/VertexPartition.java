@@ -15,6 +15,10 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -65,5 +69,52 @@ public interface VertexPartition {
 	 * @throws IndexOutOfBoundsException if {@code block} is not in range \([0, blocksNum)\)
 	 */
 	IntSet blockEdges(int block);
+
+	/**
+	 * Get all the edges that cross between two different blocks.
+	 * <p>
+	 * An edge \((u,v)\) is said to cross between two blocks \(b_1\) and \(b_2\) if \(u\) is contained in \(b_1\) and
+	 * \(v\) is contained in \(b_2\). Note that if the graph is directed, the cross edges of \((b_1,b_2)\) are different
+	 * that \((b_2,b_1)\), since the direction of the edge matters.
+	 *
+	 * @param  block1 the first block
+	 * @param  block2 the second block
+	 * @return        the set of edges that cross between the two blocks
+	 */
+	IntSet crossEdges(int block1, int block2);
+
+	/**
+	 * Create a new vertex partition from a vertex-blockIndex map.
+	 * <p>
+	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
+	 * range [0, maxBlockIndex].
+	 *
+	 * @param  g   the graph
+	 * @param  map a map from vertex to block index
+	 * @return     a new vertex partition
+	 */
+	static VertexPartition fromMap(Graph g, Int2IntMap map) {
+		final int n = g.vertices().size();
+		int[] vertexToBlock = new int[n];
+		if (g instanceof IndexGraph) {
+			int maxBlock = -1;
+			for (int v = 0; v < n; v++) {
+				vertexToBlock[v] = map.get(v);
+				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
+			}
+			return new VertexPartitions.ImplIndex((IndexGraph) g, maxBlock + 1, vertexToBlock);
+		} else {
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			int maxBlock = -1;
+			for (int v = 0; v < n; v++) {
+				vertexToBlock[v] = map.get(viMap.indexToId(v));
+				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
+			}
+			VertexPartition indexPartition =
+					new VertexPartitions.ImplIndex(g.indexGraph(), maxBlock + 1, vertexToBlock);
+			return new VertexPartitions.PartitionFromIndexPartition(indexPartition, viMap, eiMap);
+		}
+	}
 
 }

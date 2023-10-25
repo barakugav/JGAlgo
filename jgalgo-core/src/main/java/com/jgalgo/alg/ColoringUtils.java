@@ -33,7 +33,7 @@ class ColoringUtils {
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 			VertexPartition indexResult = computeColoring(iGraph);
-			return new VertexPartitions.ResultFromIndexResult(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
 		}
 
 		abstract VertexPartition computeColoring(IndexGraph g);

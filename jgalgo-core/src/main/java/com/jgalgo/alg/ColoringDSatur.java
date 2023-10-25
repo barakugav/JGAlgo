@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunction;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**
@@ -78,7 +78,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 			maxDegree = Math.max(maxDegree, g.outEdges(u).size());
 		final int maxDegreeFactor = maxDegree + 1;
 		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
-		BiInt2IntFunction createKey =
+		BiInt2IntFunc createKey =
 				(saturationDegree, uncoloredDegree) -> -(saturationDegree * maxDegreeFactor + uncoloredDegree);
 		Int2IntFunction keyToSaturationDegree = key -> (-key) / maxDegreeFactor;
 		Int2IntFunction keyToUncoloredDegree = key -> (-key) % maxDegreeFactor;
