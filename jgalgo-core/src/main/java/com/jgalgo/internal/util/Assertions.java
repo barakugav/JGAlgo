@@ -196,7 +196,7 @@ public class Assertions {
 			for (int n = g.vertices().size(), v = 0; v < n; v++) {
 				double d = supply.weight(v);
 				if (!Double.isFinite(d))
-					throw new IllegalArgumentException("Supply must be non-negative for vertex " + v);
+					throw new IllegalArgumentException("Supply must be finite for vertex " + v);
 				sum += d;
 			}
 			if (Math.abs(sum) > 1e-6)
