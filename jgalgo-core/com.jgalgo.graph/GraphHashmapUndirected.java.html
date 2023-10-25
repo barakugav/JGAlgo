@@ -37,7 +37,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	 */
 	GraphHashmapUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L39">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L40">		edgesContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L40">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="fc" id="L41">				EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 
 <span class="fc" id="L43">		addInternalVerticesContainer(edgesContainer);</span>
@@ -49,14 +49,14 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g instanceof GraphHashmapUndirected) {</span>
 <span class="fc" id="L51">			GraphHashmapUndirected g0 = (GraphHashmapUndirected) g;</span>
-<span class="fc" id="L52">			edgesContainer = g0.edgesContainer.copy(verticesIdStrat, EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L52">			edgesContainer = g0.edgesContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L53">			addInternalVerticesContainer(edgesContainer);</span>
 
 <span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">				if (!edges[v].isEmpty())</span>
 <span class="fc" id="L57">					edges[v] = new Int2IntOpenHashMap(edges[v]);</span>
 <span class="fc" id="L58">		} else {</span>
-<span class="fc" id="L59">			edgesContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L59">			edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
 <span class="fc" id="L60">					EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 
 <span class="fc" id="L62">			addInternalVerticesContainer(edgesContainer);</span>

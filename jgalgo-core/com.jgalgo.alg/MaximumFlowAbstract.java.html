@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L94">			}</span>
 
 			void initCapacities(int[] capacities) {
-<span class="fc" id="L97">				FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
+<span class="fc" id="L97">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L99">					capacities[e] = net.getCapacityInt(e);</span>
 <span class="fc" id="L100">			}</span>
@@ -171,7 +171,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-<span class="fc" id="L174">				FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
+<span class="fc" id="L174">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
 <span class="fc bfc" id="L175" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L176">					net.setFlow(e, capacity[e] - residualCapacity[e]);</span>
 
@@ -215,8 +215,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L215">			final int source = builder.addVertex();</span>
 <span class="fc" id="L216">			final int sink = builder.addVertex();</span>
 			Object capacities;
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (netOrig instanceof FlowNetwork.Int) {</span>
-<span class="fc" id="L219">				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (netOrig instanceof FlowNetworkInt) {</span>
+<span class="fc" id="L219">				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;</span>
 <span class="fc" id="L220">				int[] capacities0 = new int[sources.size() + sinks.size()];</span>
 <span class="fc" id="L221">				int capIdx = 0;</span>
 <span class="fc bfc" id="L222" title="All 2 branches covered.">				for (int s : sources) {</span>
@@ -244,10 +244,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L244">			IndexGraph g = builder.build();</span>
 
 			FlowNetwork net;
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (netOrig instanceof FlowNetwork.Int) {</span>
-<span class="fc" id="L248">				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (netOrig instanceof FlowNetworkInt) {</span>
+<span class="fc" id="L248">				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;</span>
 
-<span class="fc" id="L250">				FlowNetwork.Int netInt = new FlowNetwork.Int() {</span>
+<span class="fc" id="L250">				FlowNetworkInt netInt = new FlowNetworkInt() {</span>
 <span class="fc" id="L251">					final int[] caps = (int[]) capacities;</span>
 <span class="fc" id="L252">					final int[] flows = new int[caps.length];</span>
 
@@ -259,7 +259,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 					@Override
 					public void setCapacity(int edge, int capacity) {
-<span class="nc" id="L262">						throw new UnsupportedOperationException();</span>
+<span class="nc" id="L262">						throw new UnsupportedOperationException(&quot;capacities are immutable&quot;);</span>
 					}
 
 					@Override
@@ -292,7 +292,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 					@Override
 					public void setCapacity(int edge, double capacity) {
-<span class="nc" id="L295">						throw new UnsupportedOperationException();</span>
+<span class="nc" id="L295">						throw new UnsupportedOperationException(&quot;capacities are immutable&quot;);</span>
 					}
 
 					@Override
@@ -419,7 +419,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L419">			}</span>
 
 			void initCapacities(int[] residualCapacity) {
-<span class="fc" id="L422">				FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
+<span class="fc" id="L422">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
 <span class="fc bfc" id="L423" title="All 2 branches covered.">				if (gOrig.getCapabilities().directed()) {</span>
 <span class="fc bfc" id="L424" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L425" title="All 2 branches covered.">						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;</span>
@@ -479,7 +479,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			}
 
 			int constructResult(int[] flow) {
-<span class="fc" id="L482">				FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
+<span class="fc" id="L482">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
 <span class="fc bfc" id="L483" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L484" title="All 2 branches covered.">					if (isOriginalEdge(e))</span>
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
@@ -528,7 +528,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-<span class="nc" id="L531">				FlowNetwork.Int net = (FlowNetwork.Int) this.net;</span>
+<span class="nc" id="L531">				FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
 <span class="nc bnc" id="L532" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="nc bnc" id="L533" title="All 2 branches missed.">					if (isOriginalEdge(e))</span>
 						/* The flow of e might be negative if the original graph is undirected, which is fine */

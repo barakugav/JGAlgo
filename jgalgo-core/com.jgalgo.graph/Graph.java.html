@@ -78,10 +78,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * &lt;p&gt;
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
+ * &lt;p&gt;
+ * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
+ * default implementation. For more control over the graph details, see {@link GraphFactory}. To construct an immutable
+ * graph, use {@link GraphBuilder}.
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -90,13 +94,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * Weights.Double w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
+ * WeightsDouble w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
  * w.set(e1, 1.2);
  * w.set(e2, 3.1);
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -219,12 +223,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L223">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L225">				return e;</span>
-<span class="fc" id="L226">		}</span>
-<span class="fc" id="L227">		return -1;</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L227">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L229">				return e;</span>
+<span class="fc" id="L230">		}</span>
+<span class="fc" id="L231">		return -1;</span>
 	}
 
 	/**
@@ -280,9 +284,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L283">		removeOutEdgesOf(vertex);</span>
-<span class="fc" id="L284">		removeInEdgesOf(vertex);</span>
-<span class="fc" id="L285">	}</span>
+<span class="fc" id="L287">		removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L288">		removeInEdgesOf(vertex);</span>
+<span class="fc" id="L289">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -291,11 +295,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
-<span class="fc bfc" id="L294" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L295">			eit.nextInt();</span>
-<span class="fc" id="L296">			eit.remove();</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L299">			eit.nextInt();</span>
+<span class="fc" id="L300">			eit.remove();</span>
 		}
-<span class="fc" id="L298">	}</span>
+<span class="fc" id="L302">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -304,11 +308,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
-<span class="fc bfc" id="L307" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L308">			eit.nextInt();</span>
-<span class="fc" id="L309">			eit.remove();</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L312">			eit.nextInt();</span>
+<span class="fc" id="L313">			eit.remove();</span>
 		}
-<span class="fc" id="L311">	}</span>
+<span class="fc" id="L315">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -358,14 +362,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L361">		int u = edgeSource(edge);</span>
-<span class="fc" id="L362">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L364">			return v;</span>
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L366">			return u;</span>
+<span class="fc" id="L365">		int u = edgeSource(edge);</span>
+<span class="fc" id="L366">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L368">			return v;</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L370">			return u;</span>
 		} else {
-<span class="nc" id="L368">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L372">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -414,7 +418,7 @@ public interface Graph {
 	 * names.set(v1, &quot;Alice&quot;);
 	 * names.set(v2, &quot;Bob&quot;);
 	 *
-	 * Weights.Int ages = g.addVerticesWeights(&quot;age&quot;, int.class);
+	 * WeightsInt ages = g.addVerticesWeights(&quot;age&quot;, int.class);
 	 * ages.set(v1, 42);
 	 * ages.set(v2, 35);
 	 * }&lt;/pre&gt;
@@ -429,7 +433,7 @@ public interface Graph {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
-<span class="fc" id="L432">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L436">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -515,7 +519,7 @@ public interface Graph {
 	 * roadTypes.set(e1, &quot;Asphalt&quot;);
 	 * roadTypes.set(e2, &quot;Gravel&quot;);
 	 *
-	 * Weights.Double roadLengths = g.addEdgesWeights(&quot;roadLength&quot;, double.class);
+	 * WeightsDouble roadLengths = g.addEdgesWeights(&quot;roadLength&quot;, double.class);
 	 * roadLengths.set(e1, 42);
 	 * roadLengths.set(e2, 35);
 	 * }&lt;/pre&gt;
@@ -530,7 +534,7 @@ public interface Graph {
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
 	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L533">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L537">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -658,7 +662,7 @@ public interface Graph {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph copy() {
-<span class="fc" id="L661">		return copy(false);</span>
+<span class="fc" id="L665">		return copy(false);</span>
 	}
 
 	/**
@@ -677,7 +681,7 @@ public interface Graph {
 	 *                     graph weights
 	 */
 	default Graph copy(boolean copyWeights) {
-<span class="fc" id="L680">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="fc" id="L684">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	/**
@@ -698,7 +702,7 @@ public interface Graph {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph immutableCopy() {
-<span class="fc" id="L701">		return GraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L705">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -721,20 +725,20 @@ public interface Graph {
 	 *                     weights
 	 */
 	default Graph immutableCopy(boolean copyWeights) {
-<span class="fc" id="L724">		IndexIdMap viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L725">		IndexIdMap eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L726" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
-<span class="fc" id="L727">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L728">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
-<span class="fc" id="L729">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L730">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L731">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="pc bpc" id="L732" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
-<span class="pc bpc" id="L733" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
-<span class="fc" id="L734">			return new GraphImpl.Directed(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L728">		IndexIdMap viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L729">		IndexIdMap eiMap = indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L730" title="All 2 branches covered.">		if (getCapabilities().directed()) {</span>
+<span class="fc" id="L731">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L732">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
+<span class="fc" id="L733">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L734">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L735">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L736" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L737" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
+<span class="fc" id="L738">			return new GraphImpl.Directed(iGraph, viMap, eiMap);</span>
 		} else {
-<span class="fc" id="L736">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="fc" id="L737">			return new GraphImpl.Undirected(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L740">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="fc" id="L741">			return new GraphImpl.Undirected(iGraph, viMap, eiMap);</span>
 		}
 	}
 
@@ -748,7 +752,7 @@ public interface Graph {
 	 * @return an immutable view of this graph
 	 */
 	default Graph immutableView() {
-<span class="fc" id="L751">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L755">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -763,7 +767,31 @@ public interface Graph {
 	 * @return a reversed view of this graph
 	 */
 	default Graph reverseView() {
-<span class="fc" id="L766">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L770">		return Graphs.reverseView(this);</span>
+	}
+
+	/**
+	 * Create a new undirected empty graph.
+	 * &lt;p&gt;
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link GraphFactory}.
+	 *
+	 * @return a new undirected empty graph
+	 */
+	static Graph newUndirected() {
+<span class="fc" id="L782">		return GraphFactory.newUndirected().newGraph();</span>
+	}
+
+	/**
+	 * Create a new directed empty graph.
+	 * &lt;p&gt;
+	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
+	 * see {@link GraphFactory}.
+	 *
+	 * @return a new directed empty graph
+	 */
+	static Graph newDirected() {
+<span class="fc" id="L794">		return GraphFactory.newDirected().newGraph();</span>
 	}
 
 }

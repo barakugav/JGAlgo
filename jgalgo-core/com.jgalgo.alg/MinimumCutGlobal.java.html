@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.
@@ -31,6 +30,9 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
  * &lt;p&gt;
  * Algorithms implementing this interface compute the global minimum cut without terminal vertices.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Minimum_cut&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -51,14 +53,26 @@ public interface MinimumCutGlobal {
 	Cut computeMinimumCut(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new minimum global cut algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object. The
+	 * {@link MinimumCutGlobal.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCutGlobal}
+	 */
+	static MinimumCutGlobal newInstance() {
+<span class="nc" id="L64">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new global minimum cut algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCutGlobal} objects
 	 */
 	static MinimumCutGlobal.Builder newBuilder() {
-<span class="nc" id="L61">		return MinimumCutGlobalStoerWagner::new;</span>
+<span class="nc" id="L75">		return MinimumCutGlobalStoerWagner::new;</span>
 	}
 
 	/**
@@ -67,7 +81,7 @@ public interface MinimumCutGlobal {
 	 * @see    MinimumCutGlobal#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MinimumCutGlobal.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for global minimum cut computation.
@@ -75,6 +89,23 @@ public interface MinimumCutGlobal {
 		 * @return a new minimum cut algorithm
 		 */
 		MinimumCutGlobal build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MinimumCutGlobal.Builder setOption(String key, Object value) {
+<span class="nc" id="L107">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

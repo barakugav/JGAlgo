@@ -16,8 +16,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Algorithm that calculate a topological order of graph vertices.
@@ -27,6 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * directed and acyclic (DAG).
  * &lt;p&gt;
  * This algorithm compute the topological ordering of a given DAG graph in linear time and space.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -48,24 +51,54 @@ public interface TopologicalOrderAlgo {
 	 * @author Barak Ugav
 	 */
 	static interface Result {
+
 		/**
-		 * Get an iterator that iterate over the vertices of the graph in the order computed by the
-		 * {@link TopologicalOrderAlgo}.
+		 * Get all the vertices ordered in the list by the topological order.
 		 *
-		 * @return an iterator that iterate over the vertices of the graph in the order computed
+		 * @return all the vertices ordered in the list by the topological order
 		 */
-		IntIterator verticesIterator();
+		IntList orderedVertices();
+
+		/**
+		 * Get the index of a vertex in the topological order.
+		 *
+		 * @param  vertex the vertex
+		 * @return        the index of the vertex in the topological order, in range \([0, n)\)
+		 */
+		int vertexOrderIndex(int vertex);
+
+		/**
+		 * Get a comparator that compare vertices by their order in the topological order.
+		 *
+		 * @return a comparator that compare vertices by their order in the topological order
+		 */
+		default IntComparator orderComparator() {
+<span class="nc" id="L76">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+		}
+
+	}
+
+	/**
+	 * Create a new topological order algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object. The
+	 * {@link TopologicalOrderAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link TopologicalOrderAlgo}
+	 */
+	static TopologicalOrderAlgo newInstance() {
+<span class="fc" id="L90">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new topological order algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
 	 */
 	static TopologicalOrderAlgo.Builder newBuilder() {
-<span class="fc" id="L68">		return TopologicalOrderAlgoImpl::new;</span>
+<span class="fc" id="L101">		return TopologicalOrderAlgoImpl::new;</span>
 	}
 
 	/**
@@ -74,7 +107,7 @@ public interface TopologicalOrderAlgo {
 	 * @see    TopologicalOrderAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;TopologicalOrderAlgo.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for topological order computation.
@@ -82,6 +115,23 @@ public interface TopologicalOrderAlgo {
 		 * @return a new topological order algorithm
 		 */
 		TopologicalOrderAlgo build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default TopologicalOrderAlgo.Builder setOption(String key, Object value) {
+<span class="nc" id="L133">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

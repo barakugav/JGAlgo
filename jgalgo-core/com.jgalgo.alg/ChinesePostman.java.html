@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm for the chinese postman problem.
@@ -26,6 +25,9 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * weight sum with respect to a given edge weight function.
  * &lt;p&gt;
  * The problem can be solved in polynomial time.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -42,14 +44,26 @@ public interface ChinesePostman {
 	Path computeShortestEdgeVisitorCircle(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new algorithm object for chinese postman problem.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link ChinesePostman} object. The
+	 * {@link ChinesePostman.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ChinesePostman}
+	 */
+	static ChinesePostman newInstance() {
+<span class="nc" id="L55">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new builder for chinese postman algorithms.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link ChinesePostman} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link ChinesePostman} objects
 	 */
 	static ChinesePostman.Builder newBuilder() {
-<span class="nc" id="L52">		return ChinesePostmanImpl::new;</span>
+<span class="nc" id="L66">		return ChinesePostmanImpl::new;</span>
 	}
 
 	/**
@@ -58,7 +72,7 @@ public interface ChinesePostman {
 	 * @see    ChinesePostman#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;ChinesePostman.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for chinese postman problem.
@@ -66,6 +80,23 @@ public interface ChinesePostman {
 		 * @return a new chinese postman algorithm
 		 */
 		ChinesePostman build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default ChinesePostman.Builder setOption(String key, Object value) {
+<span class="nc" id="L98">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 
 	}
 

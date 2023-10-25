@@ -49,14 +49,14 @@ public class WeightFunctions {
 <span class="fc" id="L49">			return w;</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
 <span class="fc" id="L51">			return w;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
-<span class="fc" id="L53">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
-<span class="fc" id="L54">			Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (w instanceof WeightFunctionInt) {</span>
+<span class="fc" id="L53">			WeightFunctionInt wInt = (WeightFunctionInt) w;</span>
+<span class="fc" id="L54">			WeightsInt wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L56">				wLocal.set(e, wInt.weightInt(e));</span>
 <span class="fc" id="L57">			return wLocal;</span>
 		} else {
-<span class="fc" id="L59">			Weights.Double wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc" id="L59">			WeightsDouble wLocal = Weights.createExternalEdgesWeights(g, double.class);</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L61">				wLocal.set(e, w.weight(e));</span>
 <span class="fc" id="L62">			return wLocal;</span>
@@ -83,12 +83,12 @@ public class WeightFunctions {
 	 * @param  w a weight function
 	 * @return   a local version of the weight function
 	 */
-	public static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
+	public static WeightFunctionInt localEdgeWeightFunction(IndexGraph g, WeightFunctionInt w) {
 <span class="pc bpc" id="L87" title="2 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction)</span>
 <span class="nc" id="L88">			return w;</span>
 <span class="pc bpc" id="L89" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
 <span class="fc" id="L90">			return w;</span>
-<span class="nc" id="L91">		Weights.Int wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc" id="L91">		WeightsInt wLocal = Weights.createExternalEdgesWeights(g, int.class);</span>
 <span class="nc bnc" id="L92" title="All 2 branches missed.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="nc" id="L93">			wLocal.set(e, w.weightInt(e));</span>
 <span class="nc" id="L94">		return wLocal;</span>

@@ -33,7 +33,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.Coloring;
+import com.jgalgo.alg.ColoringAlgo;
+import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -46,52 +47,52 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L49">public class ColoringBench {</span>
+<span class="fc" id="L50">public class ColoringBench {</span>
 
 	@Param({ &quot;|V|=100 |E|=100&quot;, &quot;|V|=200 |E|=1000&quot;, &quot;|V|=1600 |E|=10000&quot; })
 	public String args;
 
 	private List&lt;Graph&gt; graphs;
-<span class="fc" id="L55">	private final int graphsNum = 31;</span>
-<span class="fc" id="L56">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L56">	private final int graphsNum = 31;</span>
+<span class="fc" id="L57">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Iteration)
 	public void setup() {
-<span class="fc" id="L60">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L61">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L62">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L61">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L62">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L63">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L64">		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);</span>
-<span class="fc" id="L65">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L67">			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
-<span class="fc" id="L68">			graphs.add(g);</span>
+<span class="fc" id="L65">		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);</span>
+<span class="fc" id="L66">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L68">			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L69">			graphs.add(g);</span>
 		}
-<span class="fc" id="L70">	}</span>
+<span class="fc" id="L71">	}</span>
 
-	private void benchColoring(Coloring.Builder builder, Blackhole blackhole) {
-<span class="fc" id="L73">		Graph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L74">		Coloring algo = builder.build();</span>
-<span class="fc" id="L75">		Coloring.Result res = algo.computeColoring(g);</span>
-<span class="fc" id="L76">		blackhole.consume(res);</span>
-<span class="fc" id="L77">	}</span>
+	private void benchColoring(ColoringAlgo.Builder builder, Blackhole blackhole) {
+<span class="fc" id="L74">		Graph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L75">		ColoringAlgo algo = builder.build();</span>
+<span class="fc" id="L76">		VertexPartition res = algo.computeColoring(g);</span>
+<span class="fc" id="L77">		blackhole.consume(res);</span>
+<span class="fc" id="L78">	}</span>
 
 	@Benchmark
 	public void Greedy(Blackhole blackhole) {
-<span class="fc" id="L81">		final long seed = 0xefeae78aba502d4aL;</span>
-<span class="fc" id="L82">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;greedy&quot;).setOption(&quot;seed&quot;, Long.valueOf(seed)),</span>
+<span class="fc" id="L82">		final long seed = 0xefeae78aba502d4aL;</span>
+<span class="fc" id="L83">		benchColoring(ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;greedy&quot;).setOption(&quot;seed&quot;, Long.valueOf(seed)),</span>
 				blackhole);
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L85">	}</span>
 
 	@Benchmark
 	public void DSatur(Blackhole blackhole) {
-<span class="fc" id="L88">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;dsatur&quot;), blackhole);</span>
-<span class="fc" id="L89">	}</span>
+<span class="fc" id="L89">		benchColoring(ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;dsatur&quot;), blackhole);</span>
+<span class="fc" id="L90">	}</span>
 
 	@Benchmark
 	public void RecursiveLargestFirst(Blackhole blackhole) {
-<span class="fc" id="L93">		benchColoring(Coloring.newBuilder().setOption(&quot;impl&quot;, &quot;rlf&quot;), blackhole);</span>
-<span class="fc" id="L94">	}</span>
+<span class="fc" id="L94">		benchColoring(ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;rlf&quot;), blackhole);</span>
+<span class="fc" id="L95">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

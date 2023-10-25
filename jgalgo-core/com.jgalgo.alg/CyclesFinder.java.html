@@ -18,10 +18,12 @@ package com.jgalgo.alg;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * An algorithm that finds all cycles in a graph.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -36,41 +38,53 @@ public interface CyclesFinder {
 	public Iterator&lt;Path&gt; findAllCycles(Graph g);
 
 	/**
+	 * Create a new algorithm for cycles finding.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link CyclesFinder} object. The {@link CyclesFinder.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link CyclesFinder}
+	 */
+	static CyclesFinder newInstance() {
+<span class="nc" id="L49">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new cycles finder algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link CyclesFinder} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link CyclesFinder} objects
 	 */
 	static CyclesFinder.Builder newBuilder() {
-<span class="nc" id="L46">		return new CyclesFinder.Builder() {</span>
+<span class="nc" id="L60">		return new CyclesFinder.Builder() {</span>
 			String impl;
 
 			@Override
 			public CyclesFinder build() {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L52" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L66" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L54">							return new CyclesFinderJohnson();</span>
+<span class="nc" id="L68">							return new CyclesFinderJohnson();</span>
 						case &quot;tarjan&quot;:
-<span class="nc" id="L56">							return new CyclesFinderTarjan();</span>
+<span class="nc" id="L70">							return new CyclesFinderTarjan();</span>
 						default:
-<span class="nc" id="L58">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L72">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L61">				return new CyclesFinderTarjan();</span>
+<span class="nc" id="L75">				return new CyclesFinderTarjan();</span>
 			}
 
 			@Override
 			public CyclesFinder.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L66" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L68">						impl = (String) value;</span>
-<span class="nc" id="L69">						break;</span>
+<span class="nc" id="L82">						impl = (String) value;</span>
+<span class="nc" id="L83">						break;</span>
 					default:
-<span class="nc" id="L71">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L85">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L73">				return this;</span>
+<span class="nc" id="L87">				return this;</span>
 			}
 		};
 	}
@@ -81,7 +95,7 @@ public interface CyclesFinder {
 	 * @see    CyclesFinder#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;CyclesFinder.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for cycles computation.
@@ -89,6 +103,23 @@ public interface CyclesFinder {
 		 * @return a new cycles finder algorithm
 		 */
 		CyclesFinder build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default CyclesFinder.Builder setOption(String key, Object value) {
+<span class="nc" id="L121">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

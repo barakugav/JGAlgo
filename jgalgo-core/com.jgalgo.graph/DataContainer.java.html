@@ -40,14 +40,14 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
 abstract class DataContainer&lt;E&gt; {
 
-	final IdStrategy idStrat;
+	final GraphElementSet elements;
 
-<span class="fc" id="L45">	DataContainer(IdStrategy idStrat) {</span>
-<span class="fc" id="L46">		this.idStrat = Objects.requireNonNull(idStrat);</span>
+<span class="fc" id="L45">	DataContainer(GraphElementSet elements) {</span>
+<span class="fc" id="L46">		this.elements = Objects.requireNonNull(elements);</span>
 <span class="fc" id="L47">	}</span>
 
 	int size() {
-<span class="fc" id="L50">		return idStrat.size();</span>
+<span class="fc" id="L50">		return elements.size();</span>
 	}
 
 	@Override
@@ -61,7 +61,7 @@ abstract class DataContainer&lt;E&gt; {
 	}
 
 	void checkIdx(int idx) {
-<span class="pc bpc" id="L64" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; idStrat.size()))</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (!elements.contains(idx))</span>
 <span class="nc" id="L65">			throw new IndexOutOfBoundsException(idx);</span>
 <span class="fc" id="L66">	}</span>
 
@@ -71,8 +71,8 @@ abstract class DataContainer&lt;E&gt; {
 
 	private static abstract class Abstract&lt;E&gt; extends DataContainer&lt;E&gt; {
 
-		Abstract(IdStrategy idStrat) {
-<span class="fc" id="L75">			super(idStrat);</span>
+		Abstract(GraphElementSet elements) {
+<span class="fc" id="L75">			super(elements);</span>
 <span class="fc" id="L76">		}</span>
 
 		abstract int capacity();
@@ -86,8 +86,8 @@ abstract class DataContainer&lt;E&gt; {
 		private final ObjectCollection&lt;E&gt; values;
 		private final Consumer&lt;E[]&gt; onArrayAlloc;
 
-		Obj(IdStrategy idStrat, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
-<span class="fc" id="L90">			super(idStrat);</span>
+		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+<span class="fc" id="L90">			super(elements);</span>
 
 <span class="fc" id="L92">			defaultWeight = defVal;</span>
 <span class="fc" id="L93">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
@@ -169,11 +169,11 @@ abstract class DataContainer&lt;E&gt; {
 <span class="fc" id="L169">			return values;</span>
 		}
 
-		public DataContainer.Obj&lt;E&gt; copy(IdStrategy idStrat, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+		public DataContainer.Obj&lt;E&gt; copy(GraphElementSet elements, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
 <span class="nc" id="L174">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L175">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(idStrat, defaultWeight, emptyArr, onArrayAlloc);</span>
-<span class="fc" id="L176">			copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L175">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultWeight, emptyArr, onArrayAlloc);</span>
+<span class="fc" id="L176">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
 <span class="fc" id="L177">			onArrayAlloc.accept(copy.weights);</span>
 <span class="fc" id="L178">			return copy;</span>
 		}
@@ -196,8 +196,8 @@ abstract class DataContainer&lt;E&gt; {
 		private final IntCollection values;
 		private final Consumer&lt;int[]&gt; onArrayAlloc;
 
-		Int(IdStrategy idStrat, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="fc" id="L200">			super(idStrat);</span>
+		Int(GraphElementSet elements, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
+<span class="fc" id="L200">			super(elements);</span>
 
 <span class="fc" id="L202">			weights = IntArrays.EMPTY_ARRAY;</span>
 <span class="fc" id="L203">			defaultWeight = defVal;</span>
@@ -223,7 +223,7 @@ abstract class DataContainer&lt;E&gt; {
 			};
 <span class="fc" id="L224">		}</span>
 
-		public int getInt(int idx) {
+		public int get(int idx) {
 <span class="fc" id="L227">			checkIdx(idx);</span>
 <span class="fc" id="L228">			return weights[idx];</span>
 		}
@@ -233,7 +233,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="fc" id="L233">			weights[idx] = weight;</span>
 <span class="fc" id="L234">		}</span>
 
-		public int defaultWeightInt() {
+		public int defaultWeight() {
 <span class="nc" id="L237">			return defaultWeight;</span>
 		}
 
@@ -282,11 +282,11 @@ abstract class DataContainer&lt;E&gt; {
 <span class="nc" id="L282">			return values;</span>
 		}
 
-		DataContainer.Int copy(IdStrategy idStrat, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+		DataContainer.Int copy(GraphElementSet elements, Consumer&lt;int[]&gt; onArrayAlloc) {
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
 <span class="nc" id="L287">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L288">			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultWeight, onArrayAlloc);</span>
-<span class="fc" id="L289">			copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L288">			DataContainer.Int copy = new DataContainer.Int(elements, defaultWeight, onArrayAlloc);</span>
+<span class="fc" id="L289">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
 <span class="fc" id="L290">			onArrayAlloc.accept(copy.weights);</span>
 <span class="fc" id="L291">			return copy;</span>
 		}
@@ -326,8 +326,8 @@ abstract class DataContainer&lt;E&gt; {
 		};
 		private final Consumer&lt;long[]&gt; onArrayAlloc;
 
-		Long(IdStrategy idStrat, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L330">			super(idStrat);</span>
+		Long(GraphElementSet elements, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L330">			super(elements);</span>
 
 <span class="fc" id="L332">			weights = LongArrays.EMPTY_ARRAY;</span>
 <span class="fc" id="L333">			defaultWeight = defVal;</span>
@@ -335,18 +335,18 @@ abstract class DataContainer&lt;E&gt; {
 <span class="fc" id="L335">			onArrayAlloc.accept(weights);</span>
 <span class="fc" id="L336">		}</span>
 
-		Long(DataContainer.Long orig, IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L339">			super(idStrat);</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (idStrat.size() != this.idStrat.size())</span>
+		Long(DataContainer.Long orig, GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L339">			super(elements);</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
 <span class="nc" id="L341">				throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L343">			weights = Arrays.copyOf(orig.weights, idStrat.size());</span>
+<span class="fc" id="L343">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
 <span class="fc" id="L344">			defaultWeight = orig.defaultWeight;</span>
 <span class="fc" id="L345">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
 <span class="fc" id="L346">			onArrayAlloc.accept(weights);</span>
 <span class="fc" id="L347">		}</span>
 
-		long getLong(int idx) {
+		long get(int idx) {
 <span class="nc" id="L350">			checkIdx(idx);</span>
 <span class="nc" id="L351">			return weights[idx];</span>
 		}
@@ -356,7 +356,7 @@ abstract class DataContainer&lt;E&gt; {
 <span class="nc" id="L356">			weights[idx] = weight;</span>
 <span class="nc" id="L357">		}</span>
 
-		long defaultWeightLong() {
+		long defaultWeight() {
 <span class="nc" id="L360">			return defaultWeight;</span>
 		}
 
@@ -407,8 +407,8 @@ abstract class DataContainer&lt;E&gt; {
 <span class="nc" id="L407">			return values;</span>
 		}
 
-		DataContainer.Long copy(IdStrategy idStrat, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L411">			return new DataContainer.Long(this, idStrat, onArrayAlloc);</span>
+		DataContainer.Long copy(GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
+<span class="fc" id="L411">			return new DataContainer.Long(this, elements, onArrayAlloc);</span>
 		}
 
 		@Override

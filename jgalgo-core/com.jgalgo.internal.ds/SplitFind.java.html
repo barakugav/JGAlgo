@@ -16,8 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import com.jgalgo.internal.util.BuilderAbstract;
-
 /**
  * Data structure of a finite set of elements supporting split and find operations.
  * &lt;p&gt;
@@ -30,9 +28,12 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * &lt;li&gt;{@link #split(int)} - split a set into two, to a set with elements smaller than the given element and a set with
  * elements greater or equals the given element.&lt;/li&gt;
  * &lt;/ul&gt;
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
- * SplitFind sf = SplitFind.newBuilder().build();
+ * SplitFind sf = SplitFind.newInstance();
  * sf.init(5);
  * assert sf.find(1) == sf.find(2);
  * assert sf.find(1) == sf.find(3);
@@ -77,14 +78,26 @@ interface SplitFind {
 	void split(int x);
 
 	/**
+	 * Create a new split-find object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link SplitFind} object. The {@link SplitFind.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SplitFind}
+	 */
+	static SplitFind newInstance() {
+<span class="nc" id="L89">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new split-find data structure builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link SplitFind} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SplitFind} objects
 	 */
 	static SplitFind.Builder newBuilder() {
-<span class="nc" id="L87">		return SplitFindMinArray::new;</span>
+<span class="nc" id="L100">		return SplitFindMinArray::new;</span>
 	}
 
 	/**
@@ -93,7 +106,7 @@ interface SplitFind {
 	 * @see    SplitFind#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;SplitFind.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new split-find data structure
@@ -101,6 +114,23 @@ interface SplitFind {
 		 * @return a new split-find data structure
 		 */
 		SplitFind build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default SplitFind.Builder setOption(String key, Object value) {
+<span class="nc" id="L132">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

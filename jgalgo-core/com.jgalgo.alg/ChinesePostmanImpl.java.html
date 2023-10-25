@@ -29,10 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 <span class="fc" id="L30">class ChinesePostmanImpl implements ChinesePostman {</span>
 
-<span class="fc" id="L32">	private final ConnectedComponentsAlgo connectedComponentsAlgo = ConnectedComponentsAlgo.newBuilder().build();</span>
-<span class="fc" id="L33">	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newBuilder().build();</span>
-<span class="fc" id="L34">	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newBuilder().build();</span>
-<span class="fc" id="L35">	private final MatchingAlgorithm matchingAlgo = MatchingAlgorithm.newBuilder().build();</span>
+<span class="fc" id="L32">	private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo = WeaklyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L33">	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();</span>
+<span class="fc" id="L34">	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();</span>
+<span class="fc" id="L35">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
 
 	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
 <span class="fc" id="L38">		int nonSelfEdgesCount = 0;</span>
@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	Path computeShortestEdgeVisitorCircle(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L48">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (connectedComponentsAlgo.findConnectedComponents(g).getNumberOfCcs() != 1)</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (!connectedComponentsAlgo.isWeaklyConnected(g))</span>
 <span class="nc" id="L50">			throw new IllegalArgumentException(&quot;Graph is not connected, cannot compute shortest edge visitor circle&quot;);</span>
 
 		/* Find all vertices with odd degree */

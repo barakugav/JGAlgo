@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -28,9 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * all the maximal bi-connected components of the graph. Note that the bi-connected components are not disjoint, namely
  * a single vertex can be included in multiple bi-connected components, differing from the regular connected components
  * of a graph.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Biconnected_component&quot;&gt;Wikipedia&lt;/a&gt;
- * @see    ConnectedComponentsAlgo
+ * @see    StronglyConnectedComponentsAlgo
+ * @see    WeaklyConnectedComponentsAlgo
  * @author Barak Ugav
  */
 public interface BiConnectedComponentsAlgo {
@@ -97,14 +100,26 @@ public interface BiConnectedComponentsAlgo {
 	}
 
 	/**
+	 * Create a new bi-connected components algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object. The
+	 * {@link BiConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
+	 */
+	static BiConnectedComponentsAlgo newInstance() {
+<span class="fc" id="L111">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new bi-connected components algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
 	 */
 	static BiConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L107">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
+<span class="fc" id="L122">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
 	}
 
 	/**
@@ -113,7 +128,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @see    BiConnectedComponentsAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;BiConnectedComponentsAlgo.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for bi-connected components computation.
@@ -121,6 +136,23 @@ public interface BiConnectedComponentsAlgo {
 		 * @return a new bi-connected components algorithm
 		 */
 		BiConnectedComponentsAlgo build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default BiConnectedComponentsAlgo.Builder setOption(String key, Object value) {
+<span class="nc" id="L154">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 
 	}
 

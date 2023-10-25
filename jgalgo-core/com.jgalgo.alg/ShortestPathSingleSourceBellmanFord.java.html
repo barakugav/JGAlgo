@@ -211,14 +211,14 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		@Override
 		public double distance(int target) {
 <span class="pc bpc" id="L213" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L214">				throw new IllegalStateException();</span>
+<span class="nc" id="L214">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc" id="L215">			return super.distance(target);</span>
 		}
 
 		@Override
 		public Path getPath(int target) {
 <span class="pc bpc" id="L220" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L221">				throw new IllegalStateException();</span>
+<span class="nc" id="L221">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc" id="L222">			return super.getPath(target);</span>
 		}
 

@@ -19,7 +19,6 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -27,6 +26,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * &lt;p&gt;
  * A spanning tree is an edge sub set of the graph edges which form a tree and connect (span) all the vertices of the
  * graph. A minimum spanning tree (MST) is a spanning tree with the minimum edge weights sum over all spanning trees.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Minimum_spanning_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @see    MinimumDirectedSpanningTree
@@ -68,58 +70,70 @@ public interface MinimumSpanningTree {
 	}
 
 	/**
+	 * Create a new MST algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
+	 * {@link MinimumSpanningTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumSpanningTree}
+	 */
+	static MinimumSpanningTree newInstance() {
+<span class="fc" id="L81">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new minimum spanning tree algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */
 	static MinimumSpanningTree.Builder newBuilder() {
-<span class="fc" id="L78">		return new MinimumSpanningTree.Builder() {</span>
+<span class="fc" id="L92">		return new MinimumSpanningTree.Builder() {</span>
 			String impl;
 			private HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L85" title="All 7 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L99" title="All 7 branches missed.">					switch (impl) {</span>
 						case &quot;kruskal&quot;:
-<span class="nc" id="L87">							return new MinimumSpanningTreeKruskal();</span>
+<span class="nc" id="L101">							return new MinimumSpanningTreeKruskal();</span>
 						case &quot;prim&quot;:
-<span class="nc" id="L89">							return new MinimumSpanningTreePrim();</span>
+<span class="nc" id="L103">							return new MinimumSpanningTreePrim();</span>
 						case &quot;boruvka&quot;:
-<span class="nc" id="L91">							return new MinimumSpanningTreeBoruvka();</span>
+<span class="nc" id="L105">							return new MinimumSpanningTreeBoruvka();</span>
 						case &quot;yao&quot;:
-<span class="nc" id="L93">							return new MinimumSpanningTreeYao();</span>
+<span class="nc" id="L107">							return new MinimumSpanningTreeYao();</span>
 						case &quot;fredman-tarjan&quot;:
-<span class="nc" id="L95">							return new MinimumSpanningTreeFredmanTarjan();</span>
+<span class="nc" id="L109">							return new MinimumSpanningTreeFredmanTarjan();</span>
 						case &quot;karger-klein-tarjan&quot;:
-<span class="nc" id="L97">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
+<span class="nc" id="L111">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
 						default:
-<span class="nc" id="L99">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L113">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
 
 				// TODO check for which graphs sizes Kruskal is faster
-<span class="fc" id="L104">				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
-<span class="nc" id="L106">					algo.setHeapBuilder(heapBuilder);</span>
-<span class="fc" id="L107">				return algo;</span>
+<span class="fc" id="L118">				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
+<span class="nc" id="L120">					algo.setHeapBuilder(heapBuilder);</span>
+<span class="fc" id="L121">				return algo;</span>
 			}
 
 			@Override
 			public MinimumSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L112" title="All 3 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L126" title="All 3 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L114">						impl = (String) value;</span>
-<span class="nc" id="L115">						break;</span>
+<span class="nc" id="L128">						impl = (String) value;</span>
+<span class="nc" id="L129">						break;</span>
 					case &quot;heap-builder&quot;:
-<span class="nc" id="L117">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
-<span class="nc" id="L118">						break;</span>
+<span class="nc" id="L131">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
+<span class="nc" id="L132">						break;</span>
 					default:
-<span class="nc" id="L120">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L134">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L122">				return this;</span>
+<span class="nc" id="L136">				return this;</span>
 			}
 		};
 	}
@@ -130,7 +144,7 @@ public interface MinimumSpanningTree {
 	 * @see    MinimumSpanningTree#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MinimumSpanningTree.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum spanning tree computation.
@@ -138,6 +152,23 @@ public interface MinimumSpanningTree {
 		 * @return a new minimum spanning tree algorithm
 		 */
 		MinimumSpanningTree build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MinimumSpanningTree.Builder setOption(String key, Object value) {
+<span class="nc" id="L170">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

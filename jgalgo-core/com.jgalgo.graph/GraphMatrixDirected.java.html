@@ -96,7 +96,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	public void reverseEdge(int edge) {
 <span class="fc" id="L98">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
-<span class="pc bpc" id="L99" title="1 of 4 branches missed.">		if (edges.get(v).getInt(u) != EdgeNone &amp;&amp; u != v)</span>
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">		if (edges.get(v).get(u) != EdgeNone &amp;&amp; u != v)</span>
 <span class="nc" id="L100">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
 <span class="fc" id="L101">		edges.get(u).set(v, EdgeNone);</span>
 <span class="fc" id="L102">		edges.get(v).set(u, edge);</span>

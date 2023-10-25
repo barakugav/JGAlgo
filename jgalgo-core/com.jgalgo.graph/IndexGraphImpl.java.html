@@ -17,29 +17,31 @@ package com.jgalgo.graph;
 
 interface IndexGraphImpl extends IndexGraph {
 
-	IdStrategy getVerticesIdStrategy();
+	@Override
+	GraphElementSet vertices();
 
-	IdStrategy getEdgesIdStrategy();
+	@Override
+	GraphElementSet edges();
 
 	@Override
 	default void addVertexSwapListener(IndexSwapListener listener) {
-<span class="fc" id="L26">		getVerticesIdStrategy().addIdSwapListener(listener);</span>
-<span class="fc" id="L27">	}</span>
+<span class="fc" id="L28">		vertices().addIdSwapListener(listener);</span>
+<span class="fc" id="L29">	}</span>
 
 	@Override
 	default void removeVertexSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L31">		getVerticesIdStrategy().removeIdSwapListener(listener);</span>
-<span class="nc" id="L32">	}</span>
+<span class="nc" id="L33">		vertices().removeIdSwapListener(listener);</span>
+<span class="nc" id="L34">	}</span>
 
 	@Override
 	default void addEdgeSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L36">		getEdgesIdStrategy().addIdSwapListener(listener);</span>
-<span class="nc" id="L37">	}</span>
+<span class="nc" id="L38">		edges().addIdSwapListener(listener);</span>
+<span class="nc" id="L39">	}</span>
 
 	@Override
 	default void removeEdgeSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L41">		getEdgesIdStrategy().removeIdSwapListener(listener);</span>
-<span class="nc" id="L42">	}</span>
+<span class="nc" id="L43">		edges().removeIdSwapListener(listener);</span>
+<span class="nc" id="L44">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

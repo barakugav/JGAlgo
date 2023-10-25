@@ -165,7 +165,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			@Override
 			public Path getNegativeCycle() {
 <span class="pc bpc" id="L167" title="1 of 2 branches missed.">				if (!foundNegativeCycle())</span>
-<span class="nc" id="L168">					throw new IllegalStateException();</span>
+<span class="nc" id="L168">					throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 <span class="fc" id="L169">				return negCycle;</span>
 			}
 
@@ -202,14 +202,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			@Override
 			public double distance(int source, int target) {
 <span class="pc bpc" id="L204" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L205">					throw new IllegalStateException();</span>
+<span class="nc" id="L205">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc bfc" id="L206" title="All 2 branches covered.">				return source != target ? distances[index(source, target)] : 0;</span>
 			}
 
 			@Override
 			public Path getPath(int source, int target) {
 <span class="pc bpc" id="L211" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L212">					throw new IllegalStateException();</span>
+<span class="nc" id="L212">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc bfc" id="L213" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L214">					return null;</span>
 <span class="fc" id="L215">				IntList path = new IntArrayList();</span>
@@ -244,14 +244,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			@Override
 			public double distance(int source, int target) {
 <span class="pc bpc" id="L246" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L247">					throw new IllegalStateException();</span>
+<span class="nc" id="L247">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc" id="L248">				return distances[source][target];</span>
 			}
 
 			@Override
 			public Path getPath(int source, int target) {
 <span class="pc bpc" id="L253" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L254">					throw new IllegalStateException();</span>
+<span class="nc" id="L254">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc bfc" id="L255" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L256">					return null;</span>
 <span class="fc" id="L257">				IntList path = new IntArrayList();</span>
@@ -283,7 +283,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc" id="L286">			throw new IllegalStateException();</span>
+<span class="nc" id="L286">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 		}
 
 		static class AllVertices extends ResFromSSSP {

@@ -54,7 +54,7 @@ class ContractableGraph {
 <span class="fc" id="L54">		checkSuperVertex(V);</span>
 <span class="fc" id="L55">		int uTail = tail[U], vHead = head[V];</span>
 <span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (uf.find(uTail) == uf.find(vHead))</span>
-<span class="nc" id="L57">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L57">			throw new IllegalArgumentException(&quot;U and V are already in the same super vertices&quot;);</span>
 
 <span class="fc" id="L59">		findToSuperV[uf.union(uTail, vHead)] = U;</span>
 <span class="fc" id="L60">		vs.setNext(uTail, vHead);</span>

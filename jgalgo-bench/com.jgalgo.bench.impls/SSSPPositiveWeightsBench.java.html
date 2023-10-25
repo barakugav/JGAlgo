@@ -39,7 +39,7 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L45">public class SSSPPositiveWeightsBench {</span>
@@ -78,7 +78,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L78">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L80">				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
-<span class="fc" id="L81">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L81">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L82">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L83">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L84">				graphs.add(new GraphArgs(g, w, source));</span>
@@ -119,7 +119,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L119">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L121">				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
-<span class="fc" id="L122">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L122">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L123">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L124">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L125">				graphs.add(new GraphArgs(g, w, source));</span>
@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L161">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L162" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L163">				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
-<span class="fc" id="L164">				WeightFunction.Int w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L164">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L165">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L166">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L167">				graphs.add(new GraphArgs(g, w, source));</span>
@@ -181,10 +181,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	private static class GraphArgs {
 		final Graph g;
-		final WeightFunction.Int w;
+		final WeightFunctionInt w;
 		final int source;
 
-<span class="fc" id="L187">		GraphArgs(Graph g, WeightFunction.Int w, int source) {</span>
+<span class="fc" id="L187">		GraphArgs(Graph g, WeightFunctionInt w, int source) {</span>
 <span class="fc" id="L188">			this.g = g;</span>
 <span class="fc" id="L189">			this.w = w;</span>
 <span class="fc" id="L190">			this.source = source;</span>

@@ -33,11 +33,11 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	GraphMatrixAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L34">		super(expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L37">		addInternalVerticesContainer(edges);</span>
 
 <span class="fc" id="L39">		edgeEndpointsContainer =</span>
-<span class="fc" id="L40">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L40">				new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L41">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L42">	}</span>
 
@@ -47,22 +47,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof GraphMatrixAbstract) {</span>
 <span class="fc" id="L49">			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;</span>
-<span class="fc" id="L50">			edges = g0.edges.copy(verticesIdStrat, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L50">			edges = g0.edges.copy(vertices, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L51">			addInternalVerticesContainer(edges);</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L53">				DataContainer.Int vEdges = edges.get(v).copy(verticesIdStrat, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L53">				DataContainer.Int vEdges = edges.get(v).copy(vertices, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L54">				addInternalVerticesContainer(vEdges);</span>
 <span class="fc" id="L55">				edges.set(v, vEdges);</span>
 			}
 
-<span class="fc" id="L58">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L58">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(super.edges, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L59">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L60">		} else {</span>
 
-<span class="fc" id="L62">			edges = new DataContainer.Obj&lt;&gt;(verticesIdStrat, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L62">			edges = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L63">			addInternalVerticesContainer(edges);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L65">				DataContainer.Int vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L65">				DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L66">				addInternalVerticesContainer(vEdges);</span>
 <span class="fc" id="L67">				edges.set(v, vEdges);</span>
 
@@ -72,8 +72,8 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L72">				}</span>
 			}
 
-<span class="fc" id="L75">			final int m = edgesIdStrat.size();</span>
-<span class="fc" id="L76">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
+<span class="fc" id="L75">			final int m = edges.size();</span>
+<span class="fc" id="L76">			edgeEndpointsContainer = new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal,</span>
 <span class="fc" id="L77">					newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L78">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
@@ -86,7 +86,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L86">		int v = super.addVertex();</span>
 <span class="fc" id="L87">		DataContainer.Int vEdges = edges.get(v);</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">		if (vEdges == null) {</span>
-<span class="fc" id="L89">			vEdges = new DataContainer.Int(verticesIdStrat, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L89">			vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
 <span class="fc" id="L90">			addInternalVerticesContainer(vEdges);</span>
 <span class="fc" id="L91">			edges.set(v, vEdges);</span>
 		}
@@ -117,12 +117,12 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 	@Override
 	public int getEdge(int source, int target) {
-<span class="fc" id="L120">		return edges.get(source).getInt(target);</span>
+<span class="fc" id="L120">		return edges.get(source).get(target);</span>
 	}
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
-<span class="fc" id="L125">		int edge = edges.get(source).getInt(target);</span>
+<span class="fc" id="L125">		int edge = edges.get(source).get(target);</span>
 <span class="pc bpc" id="L126" title="1 of 2 branches missed.">		if (edge == EdgeNone) {</span>
 <span class="nc" id="L127">			return Edges.EmptyEdgeSet;</span>
 		} else {
@@ -132,7 +132,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (edges.get(source).getInt(target) != EdgeNone)</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (edges.get(source).get(target) != EdgeNone)</span>
 <span class="nc" id="L136">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
 <span class="fc" id="L137">		int e = super.addEdge(source, target);</span>
 <span class="fc" id="L138">		setEndpoints(e, source, target);</span>
@@ -200,7 +200,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 <span class="fc" id="L202">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L203">			int e = sourceEdges.getInt(lastTarget = target);</span>
+<span class="fc" id="L203">			int e = sourceEdges.get(lastTarget = target);</span>
 <span class="fc" id="L204">			advanceUntilNext(target + 1);</span>
 <span class="fc" id="L205">			return e;</span>
 		}
@@ -208,13 +208,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 <span class="fc" id="L210">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L211">			return sourceEdges.getInt(target);</span>
+<span class="fc" id="L211">			return sourceEdges.get(target);</span>
 		}
 
 		void advanceUntilNext(int next) {
 <span class="fc" id="L215">			int n = vertices().size();</span>
 <span class="fc bfc" id="L216" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">				if (sourceEdges.getInt(next) != EdgeNone) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">				if (sourceEdges.get(next) != EdgeNone) {</span>
 <span class="fc" id="L218">					target = next;</span>
 <span class="fc" id="L219">					return;</span>
 				}
@@ -234,7 +234,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-<span class="fc" id="L237">			removeEdge(sourceEdges.getInt(target()));</span>
+<span class="fc" id="L237">			removeEdge(sourceEdges.get(target()));</span>
 <span class="fc" id="L238">		}</span>
 	}
 
@@ -261,7 +261,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 <span class="fc" id="L263">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L264">			int e = targetEdges.getInt(lastSource = source);</span>
+<span class="fc" id="L264">			int e = targetEdges.get(lastSource = source);</span>
 <span class="fc" id="L265">			advanceUntilNext(source + 1);</span>
 <span class="fc" id="L266">			return e;</span>
 		}
@@ -269,13 +269,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 <span class="fc" id="L271">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L272">			return targetEdges.getInt(source);</span>
+<span class="fc" id="L272">			return targetEdges.get(source);</span>
 		}
 
 		private void advanceUntilNext(int next) {
 <span class="fc" id="L276">			int n = vertices().size();</span>
 <span class="fc bfc" id="L277" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">				if (targetEdges.getInt(next) != EdgeNone) {</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">				if (targetEdges.get(next) != EdgeNone) {</span>
 <span class="fc" id="L279">					source = next;</span>
 <span class="fc" id="L280">					return;</span>
 				}
@@ -295,7 +295,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-<span class="fc" id="L298">			removeEdge(targetEdges.getInt(source()));</span>
+<span class="fc" id="L298">			removeEdge(targetEdges.get(source()));</span>
 <span class="fc" id="L299">		}</span>
 	}
 
@@ -320,7 +320,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int nextInt() {
 <span class="fc" id="L322">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L323">			int e = edges.get(lastSource = source).getInt(target);</span>
+<span class="fc" id="L323">			int e = edges.get(lastSource = source).get(target);</span>
 <span class="fc" id="L324">			advanceUntilNext(source + 1);</span>
 <span class="fc" id="L325">			return e;</span>
 		}
@@ -328,13 +328,13 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		@Override
 		public int peekNext() {
 <span class="fc" id="L330">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L331">			return edges.get(source).getInt(target);</span>
+<span class="fc" id="L331">			return edges.get(source).get(target);</span>
 		}
 
 		private void advanceUntilNext(int next) {
 <span class="fc" id="L335">			int n = vertices().size();</span>
 <span class="fc bfc" id="L336" title="All 2 branches covered.">			for (; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">				if (edges.get(next).getInt(target) != EdgeNone) {</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">				if (edges.get(next).get(target) != EdgeNone) {</span>
 <span class="fc" id="L338">					source = next;</span>
 <span class="fc" id="L339">					return;</span>
 				}
@@ -354,7 +354,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		@Override
 		public void remove() {
-<span class="fc" id="L357">			removeEdge(edges.get(source()).getInt(target()));</span>
+<span class="fc" id="L357">			removeEdge(edges.get(source()).get(target()));</span>
 <span class="fc" id="L358">		}</span>
 	}
 

@@ -16,60 +16,59 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.Matching;
-import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="pc" id="L25">public class MaximumMatchingExample {</span>
+<span class="pc" id="L24">public class MaximumMatchingExample {</span>
 
 	public static void maximumMatchingExample() {
 		/* Create a graph with few vertices and edges */
-<span class="fc" id="L29">		Graph g = createGraph();</span>
+<span class="fc" id="L28">		Graph g = createGraph();</span>
 
 		/* Compute a maximum (cardinality) matching */
-<span class="fc" id="L32">		MatchingAlgorithm matchingAlgo = MatchingAlgorithm.newBuilder().build();</span>
-<span class="fc" id="L33">		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L31">		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
+<span class="fc" id="L32">		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);</span>
 
 		/* Validate the matching is valid */
-<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
 
 			/* Find the matched edges adjacent to u */
-<span class="fc" id="L39">			IntSet uEdges = new IntOpenHashSet(g.outEdges(u));</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">			uEdges.removeIf(e -&gt; !matching.containsEdge(e));</span>
+<span class="fc" id="L38">			IntSet uEdges = new IntOpenHashSet(g.outEdges(u));</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">			uEdges.removeIf(e -&gt; !matching.containsEdge(e));</span>
 
 			/* No vertex is allowed to have more than one matched edge */
-<span class="pc bnc" id="L43" title="All 2 branches missed.">			assert uEdges.size() &lt;= 1;</span>
-<span class="fc" id="L44">		}</span>
+<span class="pc bnc" id="L42" title="All 2 branches missed.">			assert uEdges.size() &lt;= 1;</span>
+<span class="fc" id="L43">		}</span>
 
-<span class="fc" id="L46">		System.out.println(&quot;The maximum matching in the graph has a size of &quot; + matching.edges().size());</span>
-<span class="fc" id="L47">		System.out.println(&quot;The maximum matching is: &quot; + matching.edges());</span>
-<span class="fc" id="L48">	}</span>
+<span class="fc" id="L45">		System.out.println(&quot;The maximum matching in the graph has a size of &quot; + matching.edges().size());</span>
+<span class="fc" id="L46">		System.out.println(&quot;The maximum matching is: &quot; + matching.edges());</span>
+<span class="fc" id="L47">	}</span>
 
 	public static Graph createGraph() {
-<span class="fc" id="L51">		Graph g = GraphFactory.newUndirected().newGraph();</span>
-<span class="fc" id="L52">		int v1 = g.addVertex();</span>
-<span class="fc" id="L53">		int v2 = g.addVertex();</span>
-<span class="fc" id="L54">		int v3 = g.addVertex();</span>
-<span class="fc" id="L55">		int v4 = g.addVertex();</span>
-<span class="fc" id="L56">		int v5 = g.addVertex();</span>
-<span class="fc" id="L57">		int v6 = g.addVertex();</span>
-<span class="fc" id="L58">		int v7 = g.addVertex();</span>
+<span class="fc" id="L50">		Graph g = Graph.newUndirected();</span>
+<span class="fc" id="L51">		int v1 = g.addVertex();</span>
+<span class="fc" id="L52">		int v2 = g.addVertex();</span>
+<span class="fc" id="L53">		int v3 = g.addVertex();</span>
+<span class="fc" id="L54">		int v4 = g.addVertex();</span>
+<span class="fc" id="L55">		int v5 = g.addVertex();</span>
+<span class="fc" id="L56">		int v6 = g.addVertex();</span>
+<span class="fc" id="L57">		int v7 = g.addVertex();</span>
 
-<span class="fc" id="L60">		g.addEdge(v1, v2);</span>
-<span class="fc" id="L61">		g.addEdge(v2, v3);</span>
-<span class="fc" id="L62">		g.addEdge(v1, v3);</span>
-<span class="fc" id="L63">		g.addEdge(v7, v5);</span>
-<span class="fc" id="L64">		g.addEdge(v6, v1);</span>
-<span class="fc" id="L65">		g.addEdge(v3, v4);</span>
+<span class="fc" id="L59">		g.addEdge(v1, v2);</span>
+<span class="fc" id="L60">		g.addEdge(v2, v3);</span>
+<span class="fc" id="L61">		g.addEdge(v1, v3);</span>
+<span class="fc" id="L62">		g.addEdge(v7, v5);</span>
+<span class="fc" id="L63">		g.addEdge(v6, v1);</span>
+<span class="fc" id="L64">		g.addEdge(v3, v4);</span>
 
-<span class="fc" id="L67">		return g;</span>
+<span class="fc" id="L66">		return g;</span>
 	}
 
 	public static void main(String[] args) {
-<span class="fc" id="L71">		maximumMatchingExample();</span>
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L70">		maximumMatchingExample();</span>
+<span class="fc" id="L71">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

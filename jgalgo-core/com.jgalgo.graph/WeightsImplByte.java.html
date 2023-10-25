@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightsImplByte.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">WeightsImplByte.java</span></div><h1>WeightsImplByte.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Arrays;
+import it.unimi.dsi.fastutil.bytes.ByteArrays;
+
+<span class="nc" id="L22">class WeightsImplByte {</span>
+
+	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Byte&gt; implements WeightsByte  {
+
+		byte[] weights;
+		final byte defaultWeight;
+
+		IndexImpl(GraphElementSet elements, byte defVal) {
+<span class="fc" id="L30">			super(elements);</span>
+
+<span class="fc" id="L32">			weights = ByteArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L33">			defaultWeight = defVal;</span>
+<span class="fc" id="L34">		}</span>
+
+		IndexImpl(WeightsImplByte.IndexImpl  orig, GraphElementSet elements) {
+<span class="fc" id="L37">			this(elements, orig.defaultWeight);</span>
+<span class="fc" id="L38">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
+<span class="fc" id="L39">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
+<span class="fc" id="L40">		}</span>
+
+		IndexImpl(WeightsImplByte.IndexImpl  orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L43">			this(elements, orig.defaultWeight);</span>
+<span class="fc" id="L44">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
+<span class="fc" id="L45">			weights = Arrays.copyOf(weights, elements.size());</span>
+<span class="fc" id="L46">			final int s = elements.size();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int i = 0; i &lt; s; i++)</span>
+<span class="fc" id="L48">				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];</span>
+<span class="fc" id="L49">		}</span>
+
+		
+		@Override
+		public byte get(int idx) {
+<span class="fc" id="L54">			checkIdx(idx);</span>
+<span class="fc" id="L55">			return  weights[idx];</span>
+		}
+
+		@Override
+		public byte defaultWeight() {
+<span class="fc" id="L60">			return defaultWeight;</span>
+		}
+	}
+
+	static class IndexImmutable  extends WeightsImplByte.IndexImpl  implements WeightsImpl.IndexImmutable&lt;Byte&gt; {
+
+		IndexImmutable(WeightsImplByte.IndexImpl  orig, GraphElementSet.FixedSize elements) {
+<span class="fc" id="L67">			super(orig, elements);</span>
+<span class="fc" id="L68">		}</span>
+
+		IndexImmutable(WeightsImplByte.IndexImpl  orig, GraphElementSet.FixedSize elements,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L72">			super(orig, elements, reIndexMap);</span>
+<span class="fc" id="L73">		}</span>
+
+		@Override
+		public void set(int idx, byte weight) {
+<span class="fc" id="L77">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+		}
+	}
+
+<span class="fc" id="L81">	static class IndexMutable  extends WeightsImplByte.IndexImpl  implements WeightsImpl.IndexMutable&lt;Byte&gt; {</span>
+
+		IndexMutable(GraphElementSet elements, byte defVal) {
+<span class="fc" id="L84">			super(elements, defVal);</span>
+<span class="fc" id="L85">		}</span>
+
+		IndexMutable(WeightsImplByte.IndexImpl  orig, GraphElementSet elements) {
+<span class="fc" id="L88">			super(orig, elements);</span>
+<span class="fc" id="L89">		}</span>
+
+		@Override
+		public void set(int idx, byte weight) {
+<span class="fc" id="L93">			checkIdx(idx);</span>
+<span class="fc" id="L94">			weights[idx] = weight;</span>
+<span class="fc" id="L95">		}</span>
+
+		@Override
+		public int capacity() {
+<span class="fc" id="L99">			return weights.length;</span>
+		}
+
+		@Override
+		public void expand(int newCapacity) {
+<span class="fc" id="L104">			int oldCapacity = weights.length;</span>
+<span class="pc bnc" id="L105" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L106">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L107">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L108">		}</span>
+
+		@Override
+		public void swap(int idx1, int idx2) {
+<span class="fc" id="L112">			checkIdx(idx1);</span>
+<span class="fc" id="L113">			checkIdx(idx2);</span>
+<span class="fc" id="L114">			ByteArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L115">		}</span>
+
+		@Override
+		public void clear(int idx) {
+<span class="fc" id="L119">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L120">		}</span>
+
+		@Override
+		public void clear() {
+<span class="nc" id="L124">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L125">		}</span>
+	}
+
+	static class Mapped  extends WeightsImpl.Mapped&lt;Byte&gt; implements WeightsByte  {
+		Mapped(WeightsImplByte.IndexImpl  weights, IndexIdMap indexMap) {
+<span class="fc" id="L130">			super(weights, indexMap);</span>
+<span class="fc" id="L131">		}</span>
+
+		@Override
+		public WeightsImplByte.IndexImpl  weights() {
+<span class="fc" id="L135">			return (WeightsImplByte.IndexImpl ) super.weights();</span>
+		}
+
+		@Override
+		public byte get(int id) {
+<span class="fc" id="L140">			return weights().get(indexMap.idToIndex(id));</span>
+		}
+
+		@Override
+		public void set(int id, byte weight) {
+<span class="fc" id="L145">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L146">		}</span>
+
+		@Override
+		public byte defaultWeight() {
+<span class="fc" id="L150">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class ImmutableView  extends WeightsImpl.ImmutableView&lt;Byte&gt; implements WeightsByte  {
+		ImmutableView(WeightsByte  w) {
+<span class="fc" id="L156">			super(w);</span>
+<span class="fc" id="L157">		}</span>
+
+		@Override
+		WeightsByte  weights() {
+<span class="fc" id="L161">			return (WeightsByte ) super.weights();</span>
+		}
+
+		@Override
+		public byte get(int id) {
+<span class="fc" id="L166">			return weights().get(id);</span>
+		}
+
+		@Override
+		public void set(int id, byte weight) {
+<span class="fc" id="L171">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+		}
+
+		@Override
+		public byte defaultWeight() {
+<span class="fc" id="L176">			return weights().defaultWeight();</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

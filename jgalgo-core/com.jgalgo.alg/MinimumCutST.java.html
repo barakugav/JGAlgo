@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -34,6 +33,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * &lt;p&gt;
  * Algorithms implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
  * {@code sink (T)}.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Minimum_cut&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -73,14 +75,26 @@ public interface MinimumCutST {
 	Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
 
 	/**
+	 * Create a new minimum S-T cut algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumCutST} object. The {@link MinimumCutST.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCutST}
+	 */
+	static MinimumCutST newInstance() {
+<span class="nc" id="L86">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new minimum cut algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumCutST} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-<span class="nc" id="L83">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
+<span class="nc" id="L97">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
 	}
 
 	/**
@@ -93,7 +107,7 @@ public interface MinimumCutST {
 	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L96">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
+<span class="fc" id="L110">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
 	}
 
 	/**
@@ -102,7 +116,7 @@ public interface MinimumCutST {
 	 * @see    MinimumCutST#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MinimumCutST.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum cut computation.
@@ -110,6 +124,23 @@ public interface MinimumCutST {
 		 * @return a new minimum cut algorithm
 		 */
 		MinimumCutST build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MinimumCutST.Builder setOption(String key, Object value) {
+<span class="nc" id="L142">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

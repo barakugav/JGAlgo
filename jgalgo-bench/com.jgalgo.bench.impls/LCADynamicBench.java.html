@@ -75,21 +75,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	private void benchLCA(LowestCommonAncestorDynamic.Builder builder, Blackhole blackhole) {
 <span class="fc" id="L76">		Collection&lt;Op&gt; ops = lcaOps.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L77">		LowestCommonAncestorDynamic lca = builder.build();</span>
-<span class="fc" id="L78">		LowestCommonAncestorDynamic.Node[] nodes = new LowestCommonAncestorDynamic.Node[n];</span>
-<span class="fc" id="L79">		int nodesNum = 0;</span>
+<span class="fc" id="L78">		LowestCommonAncestorDynamic.Vertex[] vertices = new LowestCommonAncestorDynamic.Vertex[n];</span>
+<span class="fc" id="L79">		int verticesNum = 0;</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">		for (Op op0 : ops) {</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">			if (op0 instanceof OpInitTree) {</span>
-<span class="fc" id="L82">				nodes[nodesNum++] = lca.initTree();</span>
+<span class="fc" id="L82">				vertices[verticesNum++] = lca.initTree();</span>
 
 <span class="fc bfc" id="L84" title="All 2 branches covered.">			} else if (op0 instanceof OpAddLeaf) {</span>
 <span class="fc" id="L85">				OpAddLeaf op = (OpAddLeaf) op0;</span>
-<span class="fc" id="L86">				LowestCommonAncestorDynamic.Node parent = nodes[op.parent];</span>
-<span class="fc" id="L87">				nodes[nodesNum++] = lca.addLeaf(parent);</span>
+<span class="fc" id="L86">				LowestCommonAncestorDynamic.Vertex parent = vertices[op.parent];</span>
+<span class="fc" id="L87">				vertices[verticesNum++] = lca.addLeaf(parent);</span>
 
 <span class="pc bpc" id="L89" title="1 of 2 branches missed.">			} else if (op0 instanceof OpLCAQuery) {</span>
 <span class="fc" id="L90">				OpLCAQuery op = (OpLCAQuery) op0;</span>
-<span class="fc" id="L91">				LowestCommonAncestorDynamic.Node x = nodes[op.x], y = nodes[op.y];</span>
-<span class="fc" id="L92">				LowestCommonAncestorDynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);</span>
+<span class="fc" id="L91">				LowestCommonAncestorDynamic.Vertex x = vertices[op.x], y = vertices[op.y];</span>
+<span class="fc" id="L92">				LowestCommonAncestorDynamic.Vertex lcaRes = lca.findLowestCommonAncestor(x, y);</span>
 <span class="fc" id="L93">				blackhole.consume(lcaRes);</span>
 
 <span class="fc" id="L95">			} else {</span>
@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 			}
 <span class="fc" id="L98">		}</span>
 <span class="fc" id="L99">		blackhole.consume(lca);</span>
-<span class="fc" id="L100">		blackhole.consume(nodes);</span>
+<span class="fc" id="L100">		blackhole.consume(vertices);</span>
 <span class="fc" id="L101">	}</span>
 
 	@Benchmark
@@ -124,25 +124,25 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L124">		IntArrays.shuffle(opsOrder, rand);</span>
 
 <span class="fc" id="L126">		List&lt;Op&gt; ops = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L127">		int nodesCount = 0;</span>
+<span class="fc" id="L127">		int verticesNum = 0;</span>
 
 		/* insert first two elements */
 <span class="fc" id="L130">		ops.add(new OpInitTree());</span>
-<span class="fc" id="L131">		int root = nodesCount++;</span>
+<span class="fc" id="L131">		int root = verticesNum++;</span>
 <span class="fc" id="L132">		ops.add(new OpAddLeaf(root));</span>
-<span class="fc" id="L133">		nodesCount++;</span>
+<span class="fc" id="L133">		verticesNum++;</span>
 
 <span class="fc bfc" id="L135" title="All 2 branches covered.">		for (int op : opsOrder) {</span>
 <span class="pc bpc" id="L136" title="1 of 3 branches missed.">			switch (op) {</span>
 				case addLeafOp: {
-<span class="fc" id="L138">					int p = rand.nextInt(nodesCount);</span>
+<span class="fc" id="L138">					int p = rand.nextInt(verticesNum);</span>
 <span class="fc" id="L139">					ops.add(new OpAddLeaf(p));</span>
-<span class="fc" id="L140">					nodesCount++;</span>
+<span class="fc" id="L140">					verticesNum++;</span>
 <span class="fc" id="L141">					break;</span>
 				}
 				case lcaOp: {
-<span class="fc" id="L144">					int x = rand.nextInt(nodesCount);</span>
-<span class="fc" id="L145">					int y = rand.nextInt(nodesCount);</span>
+<span class="fc" id="L144">					int x = rand.nextInt(verticesNum);</span>
+<span class="fc" id="L145">					int y = rand.nextInt(verticesNum);</span>
 <span class="fc" id="L146">					ops.add(new OpLCAQuery(x, y));</span>
 <span class="fc" id="L147">					break;</span>
 				}

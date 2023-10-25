@@ -107,45 +107,53 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 
-<span class="fc" id="L110">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L111">			super(source);</span>
-<span class="fc" id="L112">		}</span>
+		final int begin, end;
+
+<span class="fc" id="L112">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L113">			super(source);</span>
+<span class="fc" id="L114">			begin = edgesOutBegin[source];</span>
+<span class="fc" id="L115">			end = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L116">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L116">			return edgesOutBegin[source + 1] - edgesOutBegin[source];</span>
+<span class="fc" id="L120">			return end - begin;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L121" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L126">			return new EdgeIterOut(source, edgesOutBegin[source], edgesOutBegin[source + 1]);</span>
+<span class="fc" id="L130">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
 
-<span class="fc" id="L132">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L133">			super(target);</span>
-<span class="fc" id="L134">		}</span>
+		final int begin, end;
+
+<span class="fc" id="L138">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L139">			super(target);</span>
+<span class="fc" id="L140">			begin = edgesInBegin[target];</span>
+<span class="fc" id="L141">			end = edgesInBegin[target + 1];</span>
+<span class="fc" id="L142">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L138">			return edgesInBegin[target + 1] - edgesInBegin[target];</span>
+<span class="fc" id="L146">			return end - begin;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L143" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L148">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
+<span class="fc" id="L156">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
 		}
 	}
 
@@ -154,63 +162,63 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		int nextEdge;
 		private final int endIdx;
 
-<span class="fc" id="L157">		EdgeIterOutAbstract(int source, int beginEdge, int endEdge) {</span>
-<span class="fc" id="L158">			this.source = source;</span>
-<span class="fc" id="L159">			this.nextEdge = beginEdge;</span>
-<span class="fc" id="L160">			this.endIdx = endEdge;</span>
-<span class="fc" id="L161">		}</span>
+<span class="fc" id="L165">		EdgeIterOutAbstract(int source, int beginEdge, int endEdge) {</span>
+<span class="fc" id="L166">			this.source = source;</span>
+<span class="fc" id="L167">			this.nextEdge = beginEdge;</span>
+<span class="fc" id="L168">			this.endIdx = endEdge;</span>
+<span class="fc" id="L169">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L170">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L171">			return nextEdge++;</span>
+<span class="fc" id="L178">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L179">			return nextEdge++;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="fc" id="L176">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L177">			return nextEdge;</span>
+<span class="fc" id="L184">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L185">			return nextEdge;</span>
 		}
 
 		@Override
 		public int source() {
-<span class="fc" id="L182">			return source;</span>
+<span class="fc" id="L190">			return source;</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterOutAbstract {
-<span class="fc" id="L187">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
-<span class="fc" id="L188">			super(source, beginEdge, endEdge);</span>
-<span class="fc" id="L189">		}</span>
+<span class="fc" id="L195">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
+<span class="fc" id="L196">			super(source, beginEdge, endEdge);</span>
+<span class="fc" id="L197">		}</span>
 
 		@Override
 		public int target() {
-<span class="fc" id="L193">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
-<span class="fc" id="L194">			return edgeTarget(lastEdge);</span>
+<span class="fc" id="L201">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
+<span class="fc" id="L202">			return edgeTarget(lastEdge);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L201">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L202">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L203">			this.target = target;</span>
-<span class="fc" id="L204">		}</span>
+<span class="fc" id="L209">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L210">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L211">			this.target = target;</span>
+<span class="fc" id="L212">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L208">			return edgeSource(lastEdge);</span>
+<span class="fc" id="L216">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L213">			return target;</span>
+<span class="fc" id="L221">			return target;</span>
 		}
 	}
 

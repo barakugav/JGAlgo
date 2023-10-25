@@ -144,7 +144,7 @@ class BitsLookupTable {
 <span class="pc bpc" id="L144" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
 <span class="nc" id="L145">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
 <span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
-<span class="nc" id="L147">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L147">				throw new IllegalArgumentException(&quot;bitCount table can't handle the requested word size&quot;);</span>
 <span class="fc" id="L148">			this.count = count;</span>
 <span class="fc" id="L149">			this.wordsize = wordsize;</span>
 <span class="fc" id="L150">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>

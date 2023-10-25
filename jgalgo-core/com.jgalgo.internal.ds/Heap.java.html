@@ -18,7 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value.
@@ -27,9 +26,12 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * constant time.
  * &lt;p&gt;
  * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
- * Heap&lt;Integer&gt; h = Heap.newBuilder().build();
+ * Heap&lt;Integer&gt; h = Heap.newInstance();
  * h.insert(5);
  * h.insert(10);
  * h.insert(1);
@@ -116,39 +118,63 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	Comparator&lt;? super E&gt; comparator();
 
 	/**
+	 * Create a new heap.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
+	 * different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link Heap}
+	 */
+	static &lt;E&gt; Heap&lt;E&gt; newInstance() {
+<span class="nc" id="L129">		return newBuilder().&lt;E&gt;elementsTypeObj().build();</span>
+	}
+
+	/**
+	 * Create a new heap with custom comparator.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
+	 * different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link Heap}
+	 */
+	static &lt;E&gt; Heap&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
+<span class="nc" id="L141">		return newBuilder().&lt;E&gt;elementsTypeObj().build(cmp);</span>
+	}
+
+	/**
 	 * Create a new heaps builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link Heap} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	static Heap.Builder&lt;Object&gt; newBuilder() {
-<span class="fc" id="L127">		return new Heap.Builder&lt;&gt;() {</span>
+<span class="fc" id="L153">		return new Heap.Builder&lt;&gt;() {</span>
 
 			Class&lt;?&gt; elmsType;
 
 			@Override
 			public Heap build(Comparator cmp) {
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
-<span class="nc" id="L134">					return new HeapBinaryInt(cmp);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
+<span class="nc" id="L160">					return new HeapBinaryInt(cmp);</span>
 				} else {
-<span class="fc" id="L136">					return new HeapBinary&lt;&gt;(cmp);</span>
+<span class="fc" id="L162">					return new HeapBinary&lt;&gt;(cmp);</span>
 				}
 			}
 
 			@Override
 			public Heap.Builder elementsTypeObj() {
-<span class="fc" id="L142">				elmsType = null;</span>
-<span class="fc" id="L143">				return this;</span>
+<span class="fc" id="L168">				elmsType = null;</span>
+<span class="fc" id="L169">				return this;</span>
 			}
 
 			@Override
 			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-<span class="nc bnc" id="L148" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L149">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="nc" id="L150">				elmsType = primitiveType;</span>
-<span class="nc" id="L151">				return this;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L175">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="nc" id="L176">				elmsType = primitiveType;</span>
+<span class="nc" id="L177">				return this;</span>
 			}
 		};
 	}
@@ -160,7 +186,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @see        Heap#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	static interface Builder&lt;E&gt; extends BuilderAbstract&lt;Heap.Builder&lt;E&gt;&gt; {
+	static interface Builder&lt;E&gt; {
 		/**
 		 * Build a new heap with the given comparator.
 		 * &lt;p&gt;
@@ -178,7 +204,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return the newly constructed heap
 		 */
 		default Heap&lt;E&gt; build() {
-<span class="nc" id="L181">			return build(null);</span>
+<span class="nc" id="L207">			return build(null);</span>
 		}
 
 		/**
@@ -202,6 +228,23 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 *                                      {@code int.class, double.class} ect.
 		 */
 		&lt;Elements&gt; Heap.Builder&lt;Elements&gt; elementsTypePrimitive(Class&lt;? extends Elements&gt; primitiveType);
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default Heap.Builder&lt;E&gt; setOption(String key, Object value) {
+<span class="nc" id="L246">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -28,6 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * addition, a maximum flow maximize the number of flow units originated at the source and reaching the sink, which is
  * equivalent to the sum of flows going out(in) of the source(sink) subtracted by the sum of flows going in(out) to the
  * source(sink).
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
  * Graph g = ...;
@@ -37,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaxFlow maxFlowAlg = MaximumFlow.newBuilder().build();
+ * MaxFlow maxFlowAlg = MaximumFlow.newInstance();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println(&quot;The maximum flow that can be pushed in the network is &quot; + totalFlow);
@@ -84,55 +86,67 @@ public interface MaximumFlow {
 	double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MaximumFlow} object. The {@link MaximumFlow.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MaximumFlow}
+	 */
+	static MaximumFlow newInstance() {
+<span class="fc" id="L97">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new maximum flow algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-<span class="fc" id="L94">		return new MaximumFlow.Builder() {</span>
+<span class="fc" id="L108">		return new MaximumFlow.Builder() {</span>
 			String impl;
 
 			@Override
 			public MaximumFlow build() {
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L100" title="All 10 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L114" title="All 10 branches missed.">					switch (impl) {</span>
 						case &quot;edmonds-karp&quot;:
-<span class="nc" id="L102">							return new MaximumFlowEdmondsKarp();</span>
+<span class="nc" id="L116">							return new MaximumFlowEdmondsKarp();</span>
 						case &quot;dinic&quot;:
-<span class="nc" id="L104">							return new MaximumFlowDinic();</span>
+<span class="nc" id="L118">							return new MaximumFlowDinic();</span>
 						case &quot;dinic-dynamic-trees&quot;:
-<span class="nc" id="L106">							return new MaximumFlowDinicDynamicTrees();</span>
+<span class="nc" id="L120">							return new MaximumFlowDinicDynamicTrees();</span>
 						case &quot;push-relabel-fifo&quot;:
-<span class="nc" id="L108">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
+<span class="nc" id="L122">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
 						case &quot;push-relabel-highest-first&quot;:
-<span class="nc" id="L110">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
+<span class="nc" id="L124">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 						case &quot;push-relabel-partial-augment&quot;:
-<span class="nc" id="L112">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
+<span class="nc" id="L126">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
 						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L114">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
+<span class="nc" id="L128">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
 						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L116">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
+<span class="nc" id="L130">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
 						case &quot;push-relabel-fifo-dynamic-trees&quot;:
-<span class="nc" id="L118">							return new MaximumFlowPushRelabelDynamicTrees();</span>
+<span class="nc" id="L132">							return new MaximumFlowPushRelabelDynamicTrees();</span>
 						default:
-<span class="nc" id="L120">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L134">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L123">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
+<span class="fc" id="L137">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 			}
 
 			@Override
 			public MaximumFlow.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L128" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L130">						impl = (String) value;</span>
-<span class="nc" id="L131">						break;</span>
+<span class="nc" id="L144">						impl = (String) value;</span>
+<span class="nc" id="L145">						break;</span>
 					default:
-<span class="nc" id="L133">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L147">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L135">				return this;</span>
+<span class="nc" id="L149">				return this;</span>
 			}
 		};
 	}
@@ -143,7 +157,7 @@ public interface MaximumFlow {
 	 * @see    MaximumFlow#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MaximumFlow.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for maximum flow computation.
@@ -152,6 +166,22 @@ public interface MaximumFlow {
 		 */
 		MaximumFlow build();
 
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MaximumFlow.Builder setOption(String key, Object value) {
+<span class="nc" id="L183">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

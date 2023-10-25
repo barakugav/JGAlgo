@@ -18,48 +18,47 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="pc" id="L25">public class ShortestPathExample {</span>
+<span class="pc" id="L24">public class ShortestPathExample {</span>
 
 	public static void shortestPathExample() {
 		/* Create a directed graph with three vertices and edges between them */
-<span class="fc" id="L29">		Graph g = GraphFactory.newDirected().newGraph();</span>
-<span class="fc" id="L30">		int v1 = g.addVertex();</span>
-<span class="fc" id="L31">		int v2 = g.addVertex();</span>
-<span class="fc" id="L32">		int v3 = g.addVertex();</span>
-<span class="fc" id="L33">		int e1 = g.addEdge(v1, v2);</span>
-<span class="fc" id="L34">		int e2 = g.addEdge(v2, v3);</span>
-<span class="fc" id="L35">		int e3 = g.addEdge(v1, v3);</span>
+<span class="fc" id="L28">		Graph g = Graph.newDirected();</span>
+<span class="fc" id="L29">		int v1 = g.addVertex();</span>
+<span class="fc" id="L30">		int v2 = g.addVertex();</span>
+<span class="fc" id="L31">		int v3 = g.addVertex();</span>
+<span class="fc" id="L32">		int e1 = g.addEdge(v1, v2);</span>
+<span class="fc" id="L33">		int e2 = g.addEdge(v2, v3);</span>
+<span class="fc" id="L34">		int e3 = g.addEdge(v1, v3);</span>
 
 		/* Assign some weights to the edges */
-<span class="fc" id="L38">		Weights.Double w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
-<span class="fc" id="L39">		w.set(e1, 1.2);</span>
-<span class="fc" id="L40">		w.set(e2, 3.1);</span>
-<span class="fc" id="L41">		w.set(e3, 15.1);</span>
+<span class="fc" id="L37">		WeightsDouble w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
+<span class="fc" id="L38">		w.set(e1, 1.2);</span>
+<span class="fc" id="L39">		w.set(e2, 3.1);</span>
+<span class="fc" id="L40">		w.set(e3, 15.1);</span>
 
 		/* Calculate the shortest paths from v1 to all other vertices */
-<span class="fc" id="L44">		ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();</span>
-<span class="fc" id="L45">		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);</span>
+<span class="fc" id="L43">		ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();</span>
+<span class="fc" id="L44">		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);</span>
 
-<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert ssspRes.distance(v3) == 4.3;</span>
-<span class="pc bnc" id="L48" title="All 2 branches missed.">		assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));</span>
-<span class="fc" id="L49">		System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));</span>
+<span class="pc bnc" id="L46" title="All 2 branches missed.">		assert ssspRes.distance(v3) == 4.3;</span>
+<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));</span>
+<span class="fc" id="L48">		System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));</span>
 
 		/* Print the shortest path from v1 to v3 */
-<span class="fc" id="L52">		System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int e : ssspRes.getPath(v3)) {</span>
-<span class="fc" id="L54">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L55">			int v = g.edgeTarget(e);</span>
-<span class="fc" id="L56">			System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
-<span class="fc" id="L57">		}</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L51">		System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (int e : ssspRes.getPath(v3)) {</span>
+<span class="fc" id="L53">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L54">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L55">			System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
+<span class="fc" id="L56">		}</span>
+<span class="fc" id="L57">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L61">		shortestPathExample();</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc" id="L60">		shortestPathExample();</span>
+<span class="fc" id="L61">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

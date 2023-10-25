@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.
@@ -28,9 +27,12 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * &lt;p&gt;
  * Most implementation of this interface achieve linear or near linear preprocessing time and constant or logarithmic
  * query time.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
- * Graph tree = GraphFactory.newUndirected().newGraph();
+ * Graph tree = Graph.newUndirected();
  * int rt = tree.addVertex();
  * int v1 = tree.addVertex();
  * int v2 = tree.addVertex();
@@ -44,7 +46,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * tree.addEdge(rt, v4);
  * tree.addEdge(v4, v5);
  *
- * LowestCommonAncestorStatic lca = LowestCommonAncestorStatic.newBuilder().build();
+ * LowestCommonAncestorStatic lca = LowestCommonAncestorStatic.newInstance();
  * LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(tree, rt);
  * assert lcaDS.findLowestCommonAncestor(v1, v4) == rt;
  * assert lcaDS.findLowestCommonAncestor(v2, v3) == v1;
@@ -52,6 +54,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * assert lcaDS.findLowestCommonAncestor(v2, v5) == rt;
  * }&lt;/pre&gt;
  *
+ * @see    LowestCommonAncestorDynamic
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorStatic {
@@ -83,14 +86,26 @@ public interface LowestCommonAncestorStatic {
 	}
 
 	/**
+	 * Create a new algorithm for static LCA queries.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object. The
+	 * {@link LowestCommonAncestorStatic.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link LowestCommonAncestorStatic}
+	 */
+	static LowestCommonAncestorStatic newInstance() {
+<span class="nc" id="L97">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new static LCA algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link LowestCommonAncestorStatic} objects
 	 */
 	static LowestCommonAncestorStatic.Builder newBuilder() {
-<span class="nc" id="L93">		return LowestCommonAncestorStaticRMQ::new;</span>
+<span class="nc" id="L108">		return LowestCommonAncestorStaticRMQ::new;</span>
 	}
 
 	/**
@@ -99,7 +114,7 @@ public interface LowestCommonAncestorStatic {
 	 * @see    LowestCommonAncestorStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;LowestCommonAncestorStatic.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new static LCA algorithm.
@@ -107,6 +122,23 @@ public interface LowestCommonAncestorStatic {
 		 * @return a new static LCA algorithm
 		 */
 		LowestCommonAncestorStatic build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default LowestCommonAncestorStatic.Builder setOption(String key, Object value) {
+<span class="nc" id="L140">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

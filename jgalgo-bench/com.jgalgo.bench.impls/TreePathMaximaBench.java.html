@@ -40,6 +40,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -48,74 +49,74 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L51">public class TreePathMaximaBench {</span>
+<span class="fc" id="L52">public class TreePathMaximaBench {</span>
 
 	@Param({ &quot;N=128 M=128&quot;, &quot;N=2500 M=2500&quot;, &quot;N=15000 M=15000&quot; })
 	public String args;
 	public int n, m;
 
 	private List&lt;TPMArgs&gt; graphs;
-<span class="fc" id="L58">	private final int graphsNum = 31;</span>
-<span class="fc" id="L59">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L59">	private final int graphsNum = 31;</span>
+<span class="fc" id="L60">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Iteration)
 	public void setup() {
-<span class="fc" id="L63">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L64">		n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
-<span class="fc" id="L65">		m = Integer.parseInt(argsMap.get(&quot;M&quot;));</span>
+<span class="fc" id="L64">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L65">		n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
+<span class="fc" id="L66">		m = Integer.parseInt(argsMap.get(&quot;M&quot;));</span>
 
-<span class="fc" id="L67">		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);</span>
-<span class="fc" id="L68">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L70">			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());</span>
-<span class="fc" id="L71">			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());</span>
-<span class="fc" id="L72">			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());</span>
-<span class="fc" id="L73">			graphs.add(new TPMArgs(tree, w, queries));</span>
+<span class="fc" id="L68">		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);</span>
+<span class="fc" id="L69">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L71">			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());</span>
+<span class="fc" id="L72">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());</span>
+<span class="fc" id="L73">			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());</span>
+<span class="fc" id="L74">			graphs.add(new TPMArgs(tree, w, queries));</span>
 		}
-<span class="fc" id="L75">	}</span>
+<span class="fc" id="L76">	}</span>
 
 	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
-<span class="fc" id="L78">		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L79">		TreePathMaxima algo = builder.build();</span>
-<span class="fc" id="L80">		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);</span>
-<span class="fc" id="L81">		blackhole.consume(result);</span>
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L79">		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L80">		TreePathMaxima algo = builder.build();</span>
+<span class="fc" id="L81">		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);</span>
+<span class="fc" id="L82">		blackhole.consume(result);</span>
+<span class="fc" id="L83">	}</span>
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-<span class="fc" id="L86">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.FALSE), blackhole);</span>
-<span class="fc" id="L87">	}</span>
+<span class="fc" id="L87">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.FALSE), blackhole);</span>
+<span class="fc" id="L88">	}</span>
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-<span class="fc" id="L91">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.TRUE), blackhole);</span>
-<span class="fc" id="L92">	}</span>
+<span class="fc" id="L92">		benchTPM(TreePathMaxima.newBuilder().setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.TRUE), blackhole);</span>
+<span class="fc" id="L93">	}</span>
 
 	private static class TPMArgs {
 		final Graph tree;
 		final WeightFunction w;
 		final TreePathMaxima.Queries queries;
 
-<span class="fc" id="L99">		TPMArgs(Graph tree, WeightFunction w, TreePathMaxima.Queries queries) {</span>
-<span class="fc" id="L100">			this.tree = tree;</span>
-<span class="fc" id="L101">			this.w = w;</span>
-<span class="fc" id="L102">			this.queries = queries;</span>
-<span class="fc" id="L103">		}</span>
+<span class="fc" id="L100">		TPMArgs(Graph tree, WeightFunction w, TreePathMaxima.Queries queries) {</span>
+<span class="fc" id="L101">			this.tree = tree;</span>
+<span class="fc" id="L102">			this.w = w;</span>
+<span class="fc" id="L103">			this.queries = queries;</span>
+<span class="fc" id="L104">		}</span>
 	}
 
 	private static TreePathMaxima.Queries generateRandQueries(Graph tree, int m, long seed) {
-<span class="fc" id="L107">		Random rand = new Random(seed);</span>
-<span class="fc" id="L108">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
-<span class="fc" id="L109">		int[] vs = tree.vertices().toIntArray();</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int q = 0; q &lt; m; q++) {</span>
+<span class="fc" id="L108">		Random rand = new Random(seed);</span>
+<span class="fc" id="L109">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
+<span class="fc" id="L110">		int[] vs = tree.vertices().toIntArray();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (int q = 0; q &lt; m; q++) {</span>
 			int i, j;
 			do {
-<span class="fc" id="L113">				i = rand.nextInt(vs.length);</span>
-<span class="fc" id="L114">				j = rand.nextInt(vs.length);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			} while (i == j);</span>
-<span class="fc" id="L116">			queries.addQuery(vs[i], vs[j]);</span>
+<span class="fc" id="L114">				i = rand.nextInt(vs.length);</span>
+<span class="fc" id="L115">				j = rand.nextInt(vs.length);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			} while (i == j);</span>
+<span class="fc" id="L117">			queries.addQuery(vs[i], vs[j]);</span>
 		}
-<span class="fc" id="L118">		return queries;</span>
+<span class="fc" id="L119">		return queries;</span>
 	}
 
 }

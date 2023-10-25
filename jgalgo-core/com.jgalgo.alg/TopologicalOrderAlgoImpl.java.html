@@ -21,7 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 <span class="fc" id="L27">class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {</span>
@@ -36,33 +36,57 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L36">		int topolSortSize = 0;</span>
 
 		// calc in degree of all vertices
-<span class="fc" id="L39">		Arrays.fill(inDegree, 0, n, 0);</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L41">			inDegree[v] = g.inEdges(v).size();</span>
-
 		// Find vertices with zero in degree and insert them to the queue
-<span class="pc bnc" id="L44" title="All 2 branches missed.">		assert queue.isEmpty();</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
-<span class="fc" id="L47">				queue.enqueue(v);</span>
+<span class="fc" id="L40">		Arrays.fill(inDegree, 0);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L42">			inDegree[v] = g.inEdges(v).size();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
+<span class="fc" id="L44">				queue.enqueue(v);</span>
+		}
 
 		// Poll vertices from the queue and &quot;remove&quot; each one from the tree and add new
 		// zero in degree vertices to the queue
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L52">			int u = queue.dequeueInt();</span>
-<span class="fc" id="L53">			topolSort[topolSortSize++] = u;</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L55">				eit.nextInt();</span>
-<span class="fc" id="L56">				int v = eit.target();</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
-<span class="fc" id="L58">					queue.enqueue(v);</span>
-<span class="fc" id="L59">			}</span>
-<span class="fc" id="L60">		}</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L50">			int u = queue.dequeueInt();</span>
+<span class="fc" id="L51">			topolSort[topolSortSize++] = u;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L53">				eit.nextInt();</span>
+<span class="fc" id="L54">				int v = eit.target();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
+<span class="fc" id="L56">					queue.enqueue(v);</span>
+<span class="fc" id="L57">			}</span>
+<span class="fc" id="L58">		}</span>
 
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
-<span class="nc" id="L63">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
+<span class="nc" id="L61">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
 
-<span class="fc" id="L65">		return () -&gt; IntIterators.wrap(topolSort);</span>
+<span class="fc" id="L63">		return new Res(topolSort);</span>
+	}
+
+	private static class Res implements TopologicalOrderAlgo.Result {
+
+		private final IntList orderedVertices;
+		private int[] vertexOrderIndex;
+
+<span class="fc" id="L71">		Res(int[] topolSort) {</span>
+<span class="fc" id="L72">			orderedVertices = IntList.of(topolSort);</span>
+<span class="fc" id="L73">		}</span>
+
+		@Override
+		public IntList orderedVertices() {
+<span class="fc" id="L77">			return orderedVertices;</span>
+		}
+
+		@Override
+		public int vertexOrderIndex(int vertex) {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">			if (vertexOrderIndex == null) {</span>
+<span class="fc" id="L83">				vertexOrderIndex = new int[orderedVertices.size()];</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				for (int i = 0; i &lt; orderedVertices.size(); i++)</span>
+<span class="fc" id="L85">					vertexOrderIndex[orderedVertices.getInt(i)] = i;</span>
+			}
+<span class="fc" id="L87">			return vertexOrderIndex[vertex];</span>
+		}
+
 	}
 
 }

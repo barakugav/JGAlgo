@@ -21,28 +21,28 @@ import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
-	private Node[] edges;
-	private final DataContainer.Obj&lt;Node&gt; edgesContainer;
-<span class="fc" id="L26">	private static final Node[] EmptyNodeArr = new Node[0];</span>
+	private Edge[] edges;
+	private final DataContainer.Obj&lt;Edge&gt; edgesContainer;
+<span class="fc" id="L26">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L30">		edgesContainer = new DataContainer.Obj&lt;&gt;(edgesIdStrat, null, EmptyNodeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L30">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L31">		addInternalEdgesContainer(edgesContainer);</span>
 <span class="fc" id="L32">	}</span>
 
 	GraphLinkedAbstract(IndexGraph g, boolean copyWeights) {
 <span class="fc" id="L35">		super(g, copyWeights);</span>
-<span class="fc" id="L36">		edgesContainer = new DataContainer.Obj&lt;&gt;(edgesIdStrat, null, EmptyNodeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L36">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L37">		addInternalEdgesContainer(edgesContainer);</span>
 <span class="fc" id="L38">		final int m = g.edges().size();</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L40">			edges[e] = allocNode(e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L40">			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));</span>
 <span class="fc" id="L41">	}</span>
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L45">		Node n = getNode(edge);</span>
+<span class="fc" id="L45">		Edge n = getEdge(edge);</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		if (endpoint == n.source) {</span>
 <span class="fc" id="L47">			return n.target;</span>
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">		} else if (endpoint == n.target) {</span>
@@ -53,8 +53,8 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		}
 	}
 
-	Node getNode(int edge) {
-<span class="fc" id="L57">		Node n = edges[edge];</span>
+	Edge getEdge(int edge) {
+<span class="fc" id="L57">		Edge n = edges[edge];</span>
 <span class="pc bnc" id="L58" title="All 2 branches missed.">		assert n.id == edge;</span>
 <span class="fc" id="L59">		return n;</span>
 	}
@@ -65,18 +65,18 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 <span class="fc" id="L65">		super.removeEdgeImpl(edge);</span>
 <span class="fc" id="L66">	}</span>
 
-	Node addEdgeNode(int source, int target) {
+	Edge addEdgeObj(int source, int target) {
 <span class="fc" id="L69">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L70">		Node n = allocNode(e, source, target);</span>
+<span class="fc" id="L70">		Edge n = allocEdge(e, source, target);</span>
 <span class="fc" id="L71">		edges[e] = n;</span>
 <span class="fc" id="L72">		return n;</span>
 	}
 
-	abstract Node allocNode(int id, int source, int target);
+	abstract Edge allocEdge(int id, int source, int target);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L79">		Node n1 = getNode(e1), n2 = getNode(e2);</span>
+<span class="fc" id="L79">		Edge n1 = getEdge(e1), n2 = getEdge(e2);</span>
 <span class="fc" id="L80">		n1.id = e2;</span>
 <span class="fc" id="L81">		n2.id = e1;</span>
 <span class="fc" id="L82">		edgesContainer.swap(edges, e1, e2);</span>
@@ -86,16 +86,16 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 	@Override
 	public int edgeSource(int edge) {
 <span class="fc" id="L88">		checkEdge(edge);</span>
-<span class="fc" id="L89">		return getNode(edge).source;</span>
+<span class="fc" id="L89">		return getEdge(edge).source;</span>
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
 <span class="fc" id="L94">		checkEdge(edge);</span>
-<span class="fc" id="L95">		return getNode(edge).target;</span>
+<span class="fc" id="L95">		return getEdge(edge).target;</span>
 	}
 
-	Collection&lt;Node&gt; nodes() {
+	Collection&lt;Edge&gt; edgeObjs() {
 <span class="fc" id="L99">		return edgesContainer.values();</span>
 	}
 
@@ -107,14 +107,14 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 
 	abstract class EdgeItr implements EdgeIter {
 
-		private Node next;
-		Node last;
+		private Edge next;
+		Edge last;
 
-<span class="fc" id="L113">		EdgeItr(Node p) {</span>
+<span class="fc" id="L113">		EdgeItr(Edge p) {</span>
 <span class="fc" id="L114">			this.next = p;</span>
 <span class="fc" id="L115">		}</span>
 
-		abstract Node nextNode(Node n);
+		abstract Edge nextEdge(Edge n);
 
 		@Override
 		public boolean hasNext() {
@@ -124,7 +124,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		@Override
 		public int nextInt() {
 <span class="fc" id="L126">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L127">			next = nextNode(last = next);</span>
+<span class="fc" id="L127">			next = nextEdge(last = next);</span>
 <span class="fc" id="L128">			return last.id;</span>
 		}
 
@@ -143,12 +143,12 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 <span class="fc" id="L143">		}</span>
 	}
 
-	abstract static class Node {
+	abstract static class Edge {
 
 		int id;
 		int source, target;
 
-<span class="fc" id="L151">		Node(int id, int source, int target) {</span>
+<span class="fc" id="L151">		Edge(int id, int source, int target) {</span>
 <span class="fc" id="L152">			this.id = id;</span>
 <span class="fc" id="L153">			this.source = source;</span>
 <span class="fc" id="L154">			this.target = target;</span>

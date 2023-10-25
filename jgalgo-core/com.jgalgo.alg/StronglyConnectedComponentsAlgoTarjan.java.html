@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StronglyConnectedComponentsAlgoTarjan.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">StronglyConnectedComponentsAlgoTarjan.java</span></div><h1>StronglyConnectedComponentsAlgoTarjan.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Arrays;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
+<span class="fc" id="L24">class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {</span>
+
+	@Override
+	VertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+<span class="fc" id="L28">		final int n = g.vertices().size();</span>
+<span class="fc" id="L29">		IntStack s = new IntArrayList();</span>
+<span class="fc" id="L30">		IntStack p = new IntArrayList();</span>
+<span class="fc" id="L31">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L32">		int[] c = new int[n];</span>
+<span class="fc" id="L33">		EdgeIter[] edges = new EdgeIter[n];</span>
+		// TODO DFS stack class
+
+		// implementation of Tarjan's strongly connected components algorithm
+		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+
+<span class="fc" id="L39">		int[] comp = new int[n];</span>
+<span class="fc" id="L40">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L41">		int compNum = 0;</span>
+
+<span class="fc" id="L43">		Arrays.fill(c, 0);</span>
+<span class="fc" id="L44">		int cNext = 1;</span>
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L48">				continue;</span>
+<span class="fc" id="L49">			dfsPath[0] = root;</span>
+<span class="fc" id="L50">			edges[0] = g.outEdges(root).iterator();</span>
+<span class="fc" id="L51">			c[root] = cNext++;</span>
+<span class="fc" id="L52">			s.push(root);</span>
+<span class="fc" id="L53">			p.push(root);</span>
+
+<span class="fc" id="L55">			dfs: for (int depth = 0;;) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L57">					eit.nextInt();</span>
+<span class="fc" id="L58">					int v = eit.target();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (c[v] == 0) {</span>
+<span class="fc" id="L60">						c[v] = cNext++;</span>
+<span class="fc" id="L61">						s.push(v);</span>
+<span class="fc" id="L62">						p.push(v);</span>
+
+<span class="fc" id="L64">						dfsPath[++depth] = v;</span>
+<span class="fc" id="L65">						edges[depth] = g.outEdges(v).iterator();</span>
+<span class="fc" id="L66">						continue dfs;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
+<span class="fc" id="L69">							p.popInt();</span>
+<span class="fc" id="L70">				}</span>
+<span class="fc" id="L71">				int u = dfsPath[depth];</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
+					int v;
+					do {
+<span class="fc" id="L75">						v = s.popInt();</span>
+<span class="fc" id="L76">						comp[v] = compNum;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					} while (v != u);</span>
+<span class="fc" id="L78">					compNum++;</span>
+<span class="fc" id="L79">					p.popInt();</span>
+				}
+
+<span class="fc" id="L82">				edges[depth] = null;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (depth-- == 0)</span>
+<span class="fc" id="L84">					break;</span>
+<span class="fc" id="L85">			}</span>
+		}
+<span class="fc" id="L87">		return new VertexPartitions.ImplIndex(g, compNum, comp);</span>
+	}
+
+	@Override
+	boolean isStronglyConnected(IndexGraph g) {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">		return findStronglyConnectedComponentsDirected(g).numberOfBlocks() &lt;= 1;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

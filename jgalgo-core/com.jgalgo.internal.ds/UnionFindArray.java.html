@@ -100,37 +100,46 @@ import java.util.Arrays;
 <span class="fc bfc" id="L100" title="All 2 branches covered.">		if (a == b)</span>
 <span class="fc" id="L101">			return a;</span>
 
-<span class="fc" id="L103">		int aRank = -parent[a];</span>
-<span class="fc" id="L104">		int bRank = -parent[b];</span>
-<span class="pc bnc" id="L105" title="All 2 branches missed.">		assert aRank &gt; 0;</span>
-<span class="pc bnc" id="L106" title="All 2 branches missed.">		assert bRank &gt; 0;</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (aRank &lt; bRank) {</span>
-<span class="fc" id="L108">			int temp = a;</span>
-<span class="fc" id="L109">			a = b;</span>
-<span class="fc" id="L110">			b = temp;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		} else if (aRank == bRank) {</span>
-<span class="fc" id="L112">			aRank++;</span>
-<span class="fc" id="L113">			parent[a] = -aRank;</span>
+<span class="fc" id="L103">		int aRank = getRank(a);</span>
+<span class="fc" id="L104">		int bRank = getRank(b);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (aRank &lt; bRank) {</span>
+<span class="fc" id="L106">			int temp = a;</span>
+<span class="fc" id="L107">			a = b;</span>
+<span class="fc" id="L108">			b = temp;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		} else if (aRank == bRank) {</span>
+<span class="fc" id="L110">			aRank++;</span>
+<span class="fc" id="L111">			setRank(a, aRank);</span>
 		}
 
-<span class="fc" id="L116">		unionSetParent(b, a);</span>
-<span class="fc" id="L117">		return a;</span>
+<span class="fc" id="L114">		unionSetParent(b, a);</span>
+<span class="fc" id="L115">		return a;</span>
 	}
 
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L121">		parent[c] = p;</span>
-<span class="fc" id="L122">	}</span>
+<span class="fc" id="L119">		parent[c] = p;</span>
+<span class="fc" id="L120">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L126">		return size;</span>
+<span class="fc" id="L124">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L131">		Arrays.fill(parent, 0, size, -1);</span>
-<span class="fc" id="L132">		size = 0;</span>
-<span class="fc" id="L133">	}</span>
+<span class="fc" id="L129">		Arrays.fill(parent, 0, size, -1);</span>
+<span class="fc" id="L130">		size = 0;</span>
+<span class="fc" id="L131">	}</span>
+
+	int getRank(int idx) {
+<span class="fc" id="L134">		int rank = parent[idx];</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">		assert rank &lt; 0;</span>
+<span class="fc" id="L136">		return -rank;</span>
+	}
+
+	void setRank(int idx, int rank) {
+<span class="pc bnc" id="L140" title="All 2 branches missed.">		assert rank &gt; 0;</span>
+<span class="fc" id="L141">		parent[idx] = -rank;</span>
+<span class="fc" id="L142">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

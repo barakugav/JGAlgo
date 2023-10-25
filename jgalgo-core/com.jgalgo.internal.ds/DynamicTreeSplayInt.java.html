@@ -39,7 +39,7 @@ package com.jgalgo.internal.ds;
 	 *
 	 * @param weightLimit a limit on the weights of the edges. The limit is an upper bound on the sum of each edge
 	 *                        weight and the weights modification that are performed using
-	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
+	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 	 */
 	DynamicTreeSplayInt(int weightLimit) {
 <span class="fc" id="L45">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
@@ -58,7 +58,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public Node findRoot(Node v) {
+	public DynamicTree.Vertex findRoot(DynamicTree.Vertex v) {
 <span class="fc" id="L62">		SplayNode n = (SplayNode) v;</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L64">			return n;</span>
@@ -67,7 +67,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public MinEdge findMinEdge(Node v) {
+	public MinEdge findMinEdge(DynamicTree.Vertex v) {
 <span class="fc" id="L71">		SplayNode n = (SplayNode) v;</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L73">			return null;</span>
@@ -95,7 +95,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public void addWeight(Node v, double w) {
+	public void addWeight(DynamicTree.Vertex v, double w) {
 <span class="fc" id="L99">		int wInt = (int) w;</span>
 <span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if (w != wInt)</span>
 <span class="nc" id="L101">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
@@ -121,14 +121,14 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L121">	}</span>
 
 	@Override
-	public void link(Node child, Node parent, double w) {
+	public void link(DynamicTree.Vertex child, DynamicTree.Vertex parent, double w) {
 <span class="fc" id="L125">		int wInt = (int) w;</span>
 <span class="pc bpc" id="L126" title="1 of 2 branches missed.">		if (w != wInt)</span>
 <span class="nc" id="L127">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
 <span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (child != findRoot(child))</span>
-<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;child node must be a root&quot;);</span>
+<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;child vertex must be a root&quot;);</span>
 <span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (child == findRoot(parent))</span>
-<span class="nc" id="L131">			throw new IllegalArgumentException(&quot;Both nodes are in the same tree&quot;);</span>
+<span class="nc" id="L131">			throw new IllegalArgumentException(&quot;Both vertices are in the same tree&quot;);</span>
 <span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (wInt &gt;= rootWeight / 2)</span>
 <span class="nc" id="L133">			throw new IllegalArgumentException(&quot;Weight is over the limit&quot;);</span>
 <span class="fc" id="L134">		SplayNode t1 = splay((SplayNode) child);</span>
@@ -150,7 +150,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L150">	}</span>
 
 	@Override
-	public void cut(Node v) {
+	public void cut(DynamicTree.Vertex v) {
 <span class="fc" id="L154">		SplayNode n = splay((SplayNode) v);</span>
 <span class="pc bpc" id="L155" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
 <span class="nc" id="L156">			return;</span>
@@ -269,7 +269,7 @@ package com.jgalgo.internal.ds;
 
 	}
 
-<span class="fc" id="L272">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements Node {</span>
+<span class="fc" id="L272">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
 
 		SplayNode userParent;
 
@@ -287,17 +287,17 @@ package com.jgalgo.internal.ds;
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
-		public &lt;V&gt; V getNodeData() {
+		public &lt;V&gt; V getData() {
 <span class="fc" id="L291">			return (V) key;</span>
 		}
 
 		@Override
-		public void setNodeData(Object data) {
+		public void setData(Object data) {
 <span class="fc" id="L296">			this.key = data;</span>
 <span class="fc" id="L297">		}</span>
 
 		@Override
-		public Node getParent() {
+		public DynamicTree.Vertex getParent() {
 <span class="fc" id="L301">			return userParent;</span>
 		}
 

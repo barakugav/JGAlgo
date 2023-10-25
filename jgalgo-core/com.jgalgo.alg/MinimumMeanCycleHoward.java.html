@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 <span class="fc" id="L45">class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {</span>
 
-<span class="fc" id="L47">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
+<span class="fc" id="L47">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 	private static final double EPS = 0.0001;
 
@@ -65,8 +65,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L65">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 
 		/* find all SCC */
-<span class="fc" id="L68">		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);</span>
-<span class="fc" id="L69">		final int ccNum = cc.getNumberOfCcs();</span>
+<span class="fc" id="L68">		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L69">		final int ccNum = cc.numberOfBlocks();</span>
 
 		/* init distances and policy */
 <span class="fc" id="L72">		double[] d = new double[n];</span>
@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L74">		int[] policy = new int[n];</span>
 <span class="fc" id="L75">		Arrays.fill(policy, 0, n, -1);</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int c = 0; c &lt; ccNum; c++) {</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int e : cc.getCcEdges(c)) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int e : cc.blockEdges(c)) {</span>
 <span class="fc" id="L78">				double ew = w.weight(e);</span>
 <span class="fc" id="L79">				int u = g.edgeSource(e);</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">				if (ew &lt; d[u]) {</span>
@@ -93,7 +93,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L93">		Arrays.fill(visitIdx, 0, n, 0);</span>
 		/* operate on each SCC separately */
 <span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (cc.getCcVertices(ccIdx).size() &lt; 2)</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (cc.blockVertices(ccIdx).size() &lt; 2)</span>
 <span class="fc" id="L97">				continue;</span>
 			/* run in iteration as long as we find improvements */
 			sccLoop: for (;;) {
@@ -103,7 +103,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L103">				final int iterationFirstSearchIdx = nextSearchIdx;</span>
 <span class="fc bfc" id="L104" title="All 2 branches covered.">				IntPredicate visited = v -&gt; visitIdx[v] &gt;= iterationFirstSearchIdx;</span>
 				/* DFS root loop */
-<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (final int root : cc.getCcVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (final int root : cc.blockVertices(ccIdx)) {</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">					if (visited.test(root))</span>
 <span class="fc" id="L108">						continue;</span>
 <span class="fc" id="L109">					final int searchIdx = nextSearchIdx++;</span>
@@ -136,7 +136,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L136">						}</span>
 
 						/* compare to best */
-<span class="fc" id="L139">						cycleWeight = cycleWeight / cycleLength;</span>
+<span class="fc" id="L139">						cycleWeight /= cycleLength;</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">						if (bestCycleMeanWeight &gt; cycleWeight) {</span>
 <span class="fc" id="L141">							bestCycleMeanWeight = cycleWeight;</span>
 <span class="fc" id="L142">							bestCycleVertex = cycleVertex;</span>
@@ -172,7 +172,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 				/* check for improvements */
 <span class="fc" id="L174">				boolean improved = false;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (int e : cc.getCcEdges(ccIdx)) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (int e : cc.blockEdges(ccIdx)) {</span>
 <span class="fc" id="L176">					int u = g.edgeSource(e);</span>
 <span class="fc" id="L177">					int v = g.edgeTarget(e);</span>
 <span class="fc" id="L178">					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;</span>

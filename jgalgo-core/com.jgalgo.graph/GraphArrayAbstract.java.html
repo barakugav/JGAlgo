@@ -28,7 +28,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L30">		edgeEndpointsContainer =</span>
-<span class="fc" id="L31">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L31">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L32">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L33">	}</span>
 
@@ -36,13 +36,13 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 <span class="fc" id="L36">		super(g, copyWeights);</span>
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof GraphArrayAbstract) {</span>
 <span class="fc" id="L38">			GraphArrayAbstract g0 = (GraphArrayAbstract) g;</span>
-<span class="fc" id="L39">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edgesIdStrat, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L39">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L40">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc" id="L41">		} else {</span>
 
-<span class="fc" id="L43">			final int m = edgesIdStrat.size();</span>
-<span class="fc" id="L44">			edgeEndpointsContainer = new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal,</span>
-<span class="fc" id="L45">					newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L43">			final int m = edges.size();</span>
+<span class="fc" id="L44">			edgeEndpointsContainer =</span>
+<span class="fc" id="L45">					new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L46">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
 <span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L48">				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
@@ -51,9 +51,9 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 
 	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L53">		super(builder);</span>
-<span class="fc" id="L54">		final int m = edgesIdStrat.size();</span>
+<span class="fc" id="L54">		final int m = edges.size();</span>
 <span class="fc" id="L55">		edgeEndpointsContainer =</span>
-<span class="fc" id="L56">				new DataContainer.Long(edgesIdStrat, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L56">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L57">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
 
 <span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>

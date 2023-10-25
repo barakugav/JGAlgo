@@ -42,7 +42,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L75">			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)</span>
 <span class="fc" id="L76">					.selfEdges(true).cycles(true).connected(false).build();</span>
-<span class="fc" id="L77">			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L77">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 <span class="fc" id="L78">			int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L79">			int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L80">			graphs.add(new GraphArgs(g, w, source));</span>
@@ -162,10 +162,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	private static class GraphArgs {
 		final Graph g;
-		final WeightFunction.Int w;
+		final WeightFunctionInt w;
 		final int source;
 
-<span class="fc" id="L168">		GraphArgs(Graph g, WeightFunction.Int w, int source) {</span>
+<span class="fc" id="L168">		GraphArgs(Graph g, WeightFunctionInt w, int source) {</span>
 <span class="fc" id="L169">			this.g = g;</span>
 <span class="fc" id="L170">			this.w = w;</span>
 <span class="fc" id="L171">			this.source = source;</span>

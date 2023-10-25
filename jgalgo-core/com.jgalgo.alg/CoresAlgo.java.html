@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoresAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">CoresAlgo.java</span></div><h1>CoresAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Cores computing algorithm.
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), a subgraph \(H\) induced by a subset of vertices \(W\) is a \(k\)-core or a core of order
+ * \(k\) if \(\forall v \in W : deg_H(v) \geq k\) and \(H\) is a maximum subgraph with this property. The core number of
+ * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
+ * in-degree + out-degree, determining different types of cores.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    CoresAlgo.DegreeType
+ * @author Barak Ugav
+ */
+public interface CoresAlgo {
+
+	/**
+	 * Compute the cores of the graph with respect to both in and out degree of the vertices.
+	 * &lt;p&gt;
+	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
+	 *
+	 * @param  g a graph
+	 * @return   the cores of the graph
+	 */
+	default CoresAlgo.Result computeCores(Graph g) {
+<span class="fc" id="L46">		return computeCores(g, DegreeType.OutAndInDegree);</span>
+	}
+
+	/**
+	 * Compute the cores of the graph with respect the given degree type.
+	 * &lt;p&gt;
+	 * Cores are defined with respect to either the out edges, in edges, or both. For undirected graphs the degree type
+	 * is ignored.
+	 * &lt;p&gt;
+	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
+	 *
+	 * @param  g          a graph
+	 * @param  degreeType the degree type the cores are computed with respect to
+	 * @return            the cores of the graph
+	 */
+	CoresAlgo.Result computeCores(Graph g, DegreeType degreeType);
+
+	/**
+	 * The degree type the cores are defined with respect to.
+	 * &lt;p&gt;
+	 * A \(k\)-core is a maximal set of vertices such that the graph induced by the set has minimum degree \(k\).
+	 * Different types of degrees can be considered, yielding different types of cores. For undirected graphs the degree
+	 * type has no effect.
+	 *
+	 * @see    CoresAlgo
+	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
+	 * @author Barak Ugav
+	 */
+<span class="fc" id="L74">	static enum DegreeType {</span>
+		/**
+		 * Cores will be computed with respect to the out-degree of the vertices, namely the number of outgoing edges.
+		 */
+<span class="fc" id="L78">		OutDegree,</span>
+
+		/**
+		 * Cores will be computed with respect to the in-degree of the vertices, namely the number of incoming edges.
+		 */
+<span class="fc" id="L83">		InDegree,</span>
+
+		/**
+		 * Cores will be computed with respect to the sum of the in and out degrees of the vertices.
+		 */
+<span class="fc" id="L88">		OutAndInDegree</span>
+	}
+
+	/**
+	 * The result of the cores computation.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * The core number of the given vertex.
+		 * &lt;p&gt;
+		 * The core number of a vertex is the highest order of a core that contains this vertex.
+		 *
+		 * @param  v a vertex in the graph
+		 * @return   the core number of the vertex
+		 */
+		int vertexCoreNum(int v);
+
+		/**
+		 * The maximum core number of the graph.
+		 *
+		 * @return the maximum core number of the graph
+		 */
+		int maxCore();
+
+		/**
+		 * The vertices of the given core.
+		 *
+		 * @param  core the core number (order)
+		 * @return      the vertices of the core
+		 */
+		IntCollection coreVertices(int core);
+
+	}
+
+	/**
+	 * Create a new cores algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link CoresAlgo} object. The {@link CoresAlgo.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link CoresAlgo}
+	 */
+	static CoresAlgo newInstance() {
+<span class="nc" id="L134">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new builder for core algorithms.
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder for core algorithms
+	 */
+	static CoresAlgo.Builder newBuilder() {
+<span class="nc" id="L145">		return CoresAlgoImpl::new;</span>
+	}
+
+	/**
+	 * A builder for {@link CoresAlgo} objects.
+	 *
+	 * @see    CoresAlgo#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Build a new {@link CoresAlgo} object.
+		 *
+		 * @return a new {@link CoresAlgo} object
+		 */
+		CoresAlgo build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default CoresAlgo.Builder setOption(String key, Object value) {
+<span class="nc" id="L177">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

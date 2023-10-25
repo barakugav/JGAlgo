@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchingAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MatchingAlgo.java</span></div><h1>MatchingAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+/**
+ * Maximum/minimum matching algorithm.
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
+ * adjacent edge in \(M\). A maximum cardinality matching is a matching with the maximum &lt;b&gt;number&lt;/b&gt; of edges in
+ * \(M\). A maximum/minimum weighted matching is a matching with the maximum/minimum edges weight sum with respect to
+ * some weight function. A perfect maximum/minimum weighted matching is a matching with the maximum/minimum edges weight
+ * sum out of all the matchings in which each vertex has an adjacent matched edge. Note that the weight of a perfect
+ * maximum matching is smaller or equal to the weight of a maximum weight matching.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Matching_(graph_theory)&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface MatchingAlgo {
+
+	/**
+	 * Compute the maximum matching of unweighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumCardinalityMatching(Graph g);
+
+	/**
+	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumWeightedMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the minimum weighted matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMinimumWeightedMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the maximum perfect matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
+	 * if no such matching exist the behavior is undefined.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed perfect matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Compute the minimum perfect matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
+	 * if no such matching exist the behavior is undefined.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          the computed perfect matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w);
+
+	/**
+	 * Create a new matching algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MatchingAlgo} object. The {@link MatchingAlgo.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MatchingAlgo}
+	 */
+	static MatchingAlgo newInstance() {
+<span class="fc" id="L105">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new matching algorithm builder.
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link MatchingAlgo} objects
+	 */
+	static MatchingAlgo.Builder newBuilder() {
+<span class="fc" id="L116">		return new MatchingAlgo.Builder() {</span>
+
+<span class="fc" id="L118">			boolean cardinality = false;</span>
+<span class="fc" id="L119">			boolean isBipartite = false;</span>
+			String impl;
+
+			@Override
+			public MatchingAlgo build() {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L125" title="All 8 branches missed.">					switch (impl) {</span>
+						case &quot;cardinality-bipartite-hopcroft-karp&quot;:
+<span class="nc" id="L127">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
+						case &quot;cardinality-gabow-1976&quot;:
+<span class="nc" id="L129">							return new MatchingCardinalityGabow1976();</span>
+						case &quot;bipartite-hungarian-method&quot;:
+<span class="nc" id="L131">							return new MatchingWeightedBipartiteHungarianMethod();</span>
+						case &quot;bipartite-sssp&quot;:
+<span class="nc" id="L133">							return new MatchingWeightedBipartiteSSSP();</span>
+						case &quot;gabow-1990&quot;:
+<span class="nc" id="L135">							return new MatchingWeightedGabow1990();</span>
+						case &quot;gabow-1990-simpler&quot;:
+<span class="nc" id="L137">							return new MatchingWeightedGabow1990Simpler();</span>
+						case &quot;blossom-v&quot;:
+<span class="nc" id="L139">							return new MatchingWeightedBlossomV();</span>
+						default:
+<span class="nc" id="L141">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				final MatchingAlgo cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()</span>
+<span class="fc" id="L145">						: new MatchingCardinalityGabow1976();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (cardinality) {</span>
+<span class="fc" id="L147">					return cardinalityAlgo;</span>
+				} else {
+<span class="fc" id="L149">					final MatchingAlgo weightedAlgo = new MatchingWeightedBlossomV();</span>
+<span class="fc" id="L150">					return new MatchingAlgo() {</span>
+
+						@Override
+						public Matching computeMaximumCardinalityMatching(Graph g) {
+<span class="nc" id="L154">							return cardinalityAlgo.computeMaximumCardinalityMatching(g);</span>
+						}
+
+						@Override
+						public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+<span class="pc bpc" id="L159" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L161">									: weightedAlgo.computeMaximumWeightedMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L166" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">							return isCardinality ? new Matchings.MatchingImpl(g.indexGraph(), IntLists.emptyList())</span>
+<span class="nc" id="L168">									: weightedAlgo.computeMinimumWeightedMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L173" title="All 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="nc" id="L175">									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);</span>
+						}
+
+						@Override
+						public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="pc bpc" id="L180" title="2 of 4 branches missed.">							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)</span>
+<span class="fc" id="L182">									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);</span>
+						}
+
+					};
+				}
+			}
+
+			@Override
+			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
+<span class="fc" id="L191">				isBipartite = bipartite;</span>
+<span class="fc" id="L192">				return this;</span>
+			}
+
+			@Override
+			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
+<span class="fc" id="L197">				this.cardinality = cardinality;</span>
+<span class="fc" id="L198">				return this;</span>
+			}
+
+			@Override
+			public MatchingAlgo.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L203" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L205">						impl = (String) value;</span>
+<span class="nc" id="L206">						break;</span>
+					default:
+<span class="nc" id="L208">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L210">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MatchingAlgo} objects.
+	 *
+	 * @see    MatchingAlgo#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new matching algorithm object.
+		 *
+		 * @return a new matching algorithm
+		 */
+		MatchingAlgo build();
+
+		/**
+		 * Set whether the matching algorithms built by this builder should only support bipartite graphs.
+		 * &lt;p&gt;
+		 * If the input graphs are known to be bipartite, simpler or more efficient algorithm may exists.
+		 *
+		 * @param  bipartite if {@code true}, the created matching algorithms will support bipartite graphs only
+		 * @return           this builder
+		 */
+		MatchingAlgo.Builder setBipartite(boolean bipartite);
+
+		/**
+		 * Set whether the matching algorithms built by this builder should support only maximum cardinality matching.
+		 * &lt;p&gt;
+		 * For cardinality weights, simpler or more efficient algorithm may exists.
+		 *
+		 * @param  cardinality if {@code true}, the created matching algorithms will support maximum cardinality
+		 *                         matching only
+		 * @return             this builder
+		 */
+		MatchingAlgo.Builder setCardinality(boolean cardinality);
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MatchingAlgo.Builder setOption(String key, Object value) {
+<span class="nc" id="L265">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

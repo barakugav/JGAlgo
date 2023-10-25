@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
-<span class="fc" id="L41">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
+<span class="fc" id="L41">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 	private static final double EPS = 0.00001;
 
 	/* Although the paper suggest a value of 10, this seems only to slow us down */
@@ -90,14 +90,14 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L90">		final int n = g.vertices().size();</span>
 
 		/* find all SCC */
-<span class="fc" id="L93">		ConnectedComponentsAlgo.Result cc = ccAlg.findConnectedComponents(g);</span>
-<span class="fc" id="L94">		final int ccNum = cc.getNumberOfCcs();</span>
+<span class="fc" id="L93">		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L94">		final int ccNum = cc.numberOfBlocks();</span>
 <span class="fc" id="L95">		SourceChooser sourceChooser = new SourceChooser(g, cc);</span>
 
 		/* init distances and policy */
 <span class="fc" id="L98">		int maxCcSize = -1;</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L100">			maxCcSize = Math.max(maxCcSize, cc.getCcVertices(c).size());</span>
+<span class="fc" id="L100">			maxCcSize = Math.max(maxCcSize, cc.blockVertices(c).size());</span>
 <span class="fc" id="L101">		double[][] d = new double[maxCcSize + 1][n];</span>
 <span class="fc" id="L102">		int[][] policy = new int[maxCcSize + 1][n];</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int k = 0; k &lt; maxCcSize + 1; k++) {</span>
@@ -113,7 +113,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L113">		final IntList bestCycleLengths = new IntArrayList();</span>
 <span class="fc" id="L114">		IntList bestVertexCycleLengths = new IntArrayList();</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
-<span class="fc" id="L116">			final int ccSize = cc.getCcVertices(ccIdx).size();</span>
+<span class="fc" id="L116">			final int ccSize = cc.blockVertices(ccIdx).size();</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			if (ccSize &lt; 2)</span>
 <span class="fc" id="L118">				continue;</span>
 
@@ -126,14 +126,14 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int k = 0; k &lt; ccSize; k++) {</span>
 <span class="fc bfc" id="L127" title="All 2 branches covered.">				boolean[] visit = k % 2 == 0 ? visit1 : visit2;</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int u : cc.getCcVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int u : cc.blockVertices(ccIdx)) {</span>
 <span class="fc bfc" id="L130" title="All 2 branches covered.">					if (!visit[u])</span>
 <span class="fc" id="L131">						continue;</span>
 <span class="fc" id="L132">					visit[u] = false;</span>
 <span class="fc bfc" id="L133" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L134">						int e = eit.nextInt();</span>
 <span class="fc" id="L135">						int v = eit.target();</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">						if (cc.getVertexCc(v) != ccIdx)</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">						if (cc.vertexBlock(v) != ccIdx)</span>
 <span class="fc" id="L137">							continue;</span>
 <span class="fc" id="L138">						double newDistance = d[k][u] + w.weight(e);</span>
 <span class="fc bfc" id="L139" title="All 2 branches covered.">						if (d[k + 1][v] &gt; newDistance) {</span>
@@ -146,7 +146,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 			}
 
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			boolean[] lastVisit = ccSize % 2 == 0 ? visit1 : visit2;</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u : cc.getCcVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u : cc.blockVertices(ccIdx)) {</span>
 <span class="fc bfc" id="L150" title="All 2 branches covered.">				if (!lastVisit[u])</span>
 <span class="fc" id="L151">					continue;</span>
 <span class="fc" id="L152">				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;</span>
@@ -173,8 +173,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 <span class="fc bfc" id="L174" title="All 2 branches covered.">		if (bestCycleMeanWeightVertex == -1)</span>
 <span class="fc" id="L175">			return null;</span>
-<span class="fc" id="L176">		final int ccIdx = cc.getVertexCc(bestCycleMeanWeightVertex);</span>
-<span class="fc" id="L177">		final int ccSize = cc.getCcVertices(ccIdx).size();</span>
+<span class="fc" id="L176">		final int ccIdx = cc.vertexBlock(bestCycleMeanWeightVertex);</span>
+<span class="fc" id="L177">		final int ccSize = cc.blockVertices(ccIdx).size();</span>
 <span class="fc" id="L178">		int[] path = new int[ccSize];</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">		for (int k = ccSize, v = bestCycleMeanWeightVertex; k &gt; 0; k--) {</span>
 <span class="fc" id="L180">			int e = path[k - 1] = policy[k][v];</span>
@@ -203,12 +203,12 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	private static class SourceChooser {
 
 		final IndexGraph g;
-		final ConnectedComponentsAlgo.Result cc;
+		final VertexPartition cc;
 		final int[] interCcDegree;
 		final int[] f;
 		final int[] l;
 
-<span class="fc" id="L211">		SourceChooser(IndexGraph g, ConnectedComponentsAlgo.Result cc) {</span>
+<span class="fc" id="L211">		SourceChooser(IndexGraph g, VertexPartition cc) {</span>
 <span class="fc" id="L212">			this.g = g;</span>
 <span class="fc" id="L213">			this.cc = cc;</span>
 
@@ -218,11 +218,11 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				f = new int[n];
 				l = new int[n];
 				for (int u = 0; u &lt; n; u++) {
-					final int uCc = cc.getVertexCc(u);
+					final int uCc = cc.vertexBlock(u);
 					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
 						int v = eit.target();
-						if (uCc == cc.getVertexCc(v))
+						if (uCc == cc.vertexBlock(v))
 							interCcDegree[u]++;
 					}
 				}
@@ -234,26 +234,26 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L234">		}</span>
 
 		int chooseSource(int ccIdx) {
-<span class="fc" id="L237">			int source = cc.getCcVertices(ccIdx).iterator().nextInt();</span>
+<span class="fc" id="L237">			int source = cc.blockVertices(ccIdx).iterator().nextInt();</span>
 			if (SourceChoosingUnfoldingDepth &gt; 0) {
 				/* choose a source by unfolding the graph N layers from each possible source */
-				for (int v : cc.getCcVertices(ccIdx))
+				for (int v : cc.blockVertices(ccIdx))
 					f[v] = l[v] = 0;
 				for (int i = 0; i &lt; SourceChoosingUnfoldingDepth; i++) {
-					for (int u : cc.getCcVertices(ccIdx)) {
-						final int uCc = cc.getVertexCc(u);
+					for (int u : cc.blockVertices(ccIdx)) {
+						final int uCc = cc.vertexBlock(u);
 						l[u] = interCcDegree[u];
 						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
 							int v = eit.target();
-							if (uCc == cc.getVertexCc(v))
+							if (uCc == cc.vertexBlock(v))
 								l[u] += f[v];
 						}
 					}
-					for (int u : cc.getCcVertices(ccIdx))
+					for (int u : cc.blockVertices(ccIdx))
 						f[u] = l[u];
 				}
-				for (int u : cc.getCcVertices(ccIdx))
+				for (int u : cc.blockVertices(ccIdx))
 					if (l[source] &gt; l[u])
 						source = u;
 			}

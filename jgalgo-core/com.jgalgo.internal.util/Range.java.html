@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Range.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">Range.java</span></div><h1>Range.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.util;
+
+import java.util.NoSuchElementException;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+
+public class Range extends AbstractIntList {
+
+	private final int from, to;
+
+<span class="fc" id="L27">	private Range(int from, int to) {</span>
+<span class="fc" id="L28">		this.from = from;</span>
+<span class="fc" id="L29">		this.to = to;</span>
+<span class="fc" id="L30">	}</span>
+
+	public static Range of(int to) {
+<span class="fc" id="L33">		return new Range(0, to);</span>
+	}
+
+	public static Range of(int from, int to) {
+<span class="nc" id="L37">		return new Range(from, to);</span>
+	}
+
+	@Override
+	public int size() {
+<span class="nc" id="L42">		return to - from;</span>
+	}
+
+	@Override
+	public boolean contains(int key) {
+<span class="nc bnc" id="L47" title="All 4 branches missed.">		return from &lt;= key &amp;&amp; key &lt; to;</span>
+	}
+
+	@Override
+	public IntListIterator listIterator(int index) {
+<span class="fc" id="L52">		return new IntListIterator() {</span>
+
+			int x;
+
+			@Override
+			public int previousInt() {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">				if (x &lt;= from)</span>
+<span class="nc" id="L59">					throw new NoSuchElementException();</span>
+<span class="nc" id="L60">				return --x;</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">				if (x &gt;= to)</span>
+<span class="nc" id="L66">					throw new NoSuchElementException();</span>
+<span class="fc" id="L67">				return x++;</span>
+			}
+
+			@Override
+			public boolean hasPrevious() {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">				return x &gt; from;</span>
+			}
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				return x &lt; to;</span>
+			}
+
+			@Override
+			public int nextIndex() {
+<span class="nc" id="L82">				return x - from;</span>
+			}
+
+			@Override
+			public int previousIndex() {
+<span class="nc" id="L87">				return x - from - 1;</span>
+			}
+
+		};
+	}
+
+	@Override
+	public IntList subList(int from, int to) {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">		if (from == 0 &amp;&amp; to == size())</span>
+<span class="nc" id="L96">			return this;</span>
+<span class="nc" id="L97">		ensureIndex(from);</span>
+<span class="nc" id="L98">		ensureIndex(to);</span>
+<span class="nc" id="L99">		return new Range(this.from + from, this.from + to);</span>
+	}
+
+	@Override
+	public int getInt(int index) {
+<span class="nc" id="L104">		ensureIndex(index);</span>
+<span class="nc" id="L105">		return from + index;</span>
+	}
+
+	@Override
+	public int indexOf(int k) {
+<span class="nc bnc" id="L110" title="All 2 branches missed.">		return contains(k) ? k - from : -1;</span>
+	}
+
+	@Override
+	public int lastIndexOf(int k) {
+<span class="nc bnc" id="L115" title="All 2 branches missed.">		return contains(k) ? k - from : -1;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

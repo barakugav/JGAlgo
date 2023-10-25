@@ -49,83 +49,91 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 
-<span class="fc" id="L52">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L53">			super(source);</span>
-<span class="fc" id="L54">		}</span>
+		final int begin, end;
+
+<span class="fc" id="L54">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L55">			super(source);</span>
+<span class="fc" id="L56">			begin = edgesOutBegin[source];</span>
+<span class="fc" id="L57">			end = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L58">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L58">			return edgesOutBegin[source + 1] - edgesOutBegin[source];</span>
+<span class="fc" id="L62">			return end - begin;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L68">			return new EdgeIterOut(source, edgesOut, edgesOutBegin[source], edgesOutBegin[source + 1]);</span>
+<span class="fc" id="L72">			return new EdgeIterOut(source, edgesOut, begin, end);</span>
 		}
 	}
 
 	class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
 
-<span class="fc" id="L74">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L75">			super(target);</span>
-<span class="fc" id="L76">		}</span>
+		final int begin, end;
+
+<span class="fc" id="L80">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L81">			super(target);</span>
+<span class="fc" id="L82">			begin = edgesOutBegin[target];</span>
+<span class="fc" id="L83">			end = edgesOutBegin[target + 1];</span>
+<span class="fc" id="L84">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L80">			return edgesOutBegin[target + 1] - edgesOutBegin[target];</span>
+<span class="fc" id="L88">			return end - begin;</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc bnc" id="L85" title="All 2 branches missed.">			return size() == 0;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">			return size() == 0;</span>
 		}
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L90">			return new EdgeIterIn(target, edgesOut, edgesOutBegin[target], edgesOutBegin[target + 1]);</span>
+<span class="fc" id="L98">			return new EdgeIterIn(target, edgesOut, begin, end);</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterAbstract {
 		private final int source;
 
-<span class="fc" id="L97">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L98">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L99">			this.source = source;</span>
-<span class="fc" id="L100">		}</span>
+<span class="fc" id="L105">		EdgeIterOut(int source, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L106">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L107">			this.source = source;</span>
+<span class="fc" id="L108">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L104">			return source;</span>
+<span class="fc" id="L112">			return source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L109">			return edgeEndpoint(lastEdge, source);</span>
+<span class="fc" id="L117">			return edgeEndpoint(lastEdge, source);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L116">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L117">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L118">			this.target = target;</span>
-<span class="fc" id="L119">		}</span>
+<span class="fc" id="L124">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L125">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L126">			this.target = target;</span>
+<span class="fc" id="L127">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L123">			return edgeEndpoint(lastEdge, target);</span>
+<span class="fc" id="L131">			return edgeEndpoint(lastEdge, target);</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L128">			return target;</span>
+<span class="fc" id="L136">			return target;</span>
 		}
 	}
 

@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 
 /**
  * Algorithm that find the cycle with the minimum mean weight.
@@ -27,6 +26,9 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * last edge target. Given an edge weight function, we can define for each such cycle its mean weight, by summing its
  * edges weights and dividing by its length (the number of edges in the cycle). Algorithms implementing this interface
  * find the cycle with the minimum mean weight among all the cycles in the given graph.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -42,41 +44,53 @@ public interface MinimumMeanCycle {
 	Path computeMinimumMeanCycle(Graph g, WeightFunction w);
 
 	/**
+	 * Create a new min mean cycle algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object. The
+	 * {@link MinimumMeanCycle.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumMeanCycle}
+	 */
+	static MinimumMeanCycle newInstance() {
+<span class="fc" id="L55">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new minimum mean cycle algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
 	static MinimumMeanCycle.Builder newBuilder() {
-<span class="fc" id="L52">		return new MinimumMeanCycle.Builder() {</span>
+<span class="fc" id="L66">		return new MinimumMeanCycle.Builder() {</span>
 			String impl;
 
 			@Override
 			public MinimumMeanCycle build() {
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L58" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L72" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;dasdan-gupta&quot;:
-<span class="nc" id="L60">							return new MinimumMeanCycleDasdanGupta();</span>
+<span class="nc" id="L74">							return new MinimumMeanCycleDasdanGupta();</span>
 						case &quot;howard&quot;:
-<span class="nc" id="L62">							return new MinimumMeanCycleHoward();</span>
+<span class="nc" id="L76">							return new MinimumMeanCycleHoward();</span>
 						default:
-<span class="nc" id="L64">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L78">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L67">				return new MinimumMeanCycleHoward();</span>
+<span class="fc" id="L81">				return new MinimumMeanCycleHoward();</span>
 			}
 
 			@Override
 			public MinimumMeanCycle.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L72" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L74">						impl = (String) value;</span>
-<span class="nc" id="L75">						break;</span>
+<span class="nc" id="L88">						impl = (String) value;</span>
+<span class="nc" id="L89">						break;</span>
 					default:
-<span class="nc" id="L77">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L91">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L79">				return this;</span>
+<span class="nc" id="L93">				return this;</span>
 			}
 		};
 	}
@@ -87,7 +101,7 @@ public interface MinimumMeanCycle {
 	 * @see    MinimumMeanCycle#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MinimumMeanCycle.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum mean cycle computation.
@@ -95,6 +109,23 @@ public interface MinimumMeanCycle {
 		 * @return a new minimum mean cycle algorithm
 		 */
 		MinimumMeanCycle build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MinimumMeanCycle.Builder setOption(String key, Object value) {
+<span class="nc" id="L127">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 	RunBoruvkaResult runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds) {
 <span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
-<span class="nc" id="L75">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L75">			throw new IllegalArgumentException(&quot;number of rounds must be positive&quot;);</span>
 <span class="fc" id="L76">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
 
 <span class="fc" id="L78">		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.newUndirected();</span>

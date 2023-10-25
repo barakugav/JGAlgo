@@ -25,6 +25,9 @@ import java.util.Comparator;
  * an element, not just {@link Heap#findMin()}. Every element could be found in \(O(\log n)\) time, notably
  * {@link #findMax()} in addition to {@link Heap#findMin()}. Also, given an element, the nearest (smaller or larger)
  * element in the tree can be found efficiently.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @param  &lt;K&gt; the keys type
  * @param  &lt;V&gt; the values type
@@ -157,6 +160,30 @@ public interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&
 	BinarySearchTree&lt;K, V&gt; split(HeapReference&lt;K, V&gt; ref);
 
 	/**
+	 * Create a new BST.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
+	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BinarySearchTree}
+	 */
+	static &lt;K, V&gt; BinarySearchTree&lt;K, V&gt; newInstance() {
+<span class="nc" id="L171">		return newBuilder().&lt;K&gt;keysTypeObj().&lt;V&gt;valuesTypeObj().build();</span>
+	}
+
+	/**
+	 * Create a new BST with custom comparator.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
+	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link BinarySearchTree}
+	 */
+	static &lt;K, V&gt; BinarySearchTree&lt;K, V&gt; newInstance(Comparator&lt;? super K&gt; cmp) {
+<span class="nc" id="L183">		return newBuilder().&lt;K&gt;keysTypeObj().&lt;V&gt;valuesTypeObj().build(cmp);</span>
+	}
+
+	/**
 	 * Create a new binary search tree algorithm builder.
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object.
@@ -165,7 +192,7 @@ public interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	static BinarySearchTree.Builder&lt;Object, Object&gt; newBuilder() {
-<span class="fc" id="L168">		return new BinarySearchTree.Builder&lt;&gt;() {</span>
+<span class="fc" id="L195">		return new BinarySearchTree.Builder&lt;&gt;() {</span>
 
 			boolean splitRequired;
 			boolean meldRequired;
@@ -173,70 +200,70 @@ public interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&
 
 			@Override
 			public BinarySearchTree build(Comparator cmp) {
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="pc bpc" id="L177" title="1 of 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="pc bpc" id="L204" title="1 of 3 branches missed.">					switch (impl) {</span>
 						case &quot;splay&quot;:
-<span class="fc" id="L179">							return new SplayTree(cmp);</span>
+<span class="fc" id="L206">							return new SplayTree(cmp);</span>
 						case &quot;red-black&quot;:
-<span class="fc" id="L181">							return new RedBlackTree(cmp);</span>
+<span class="fc" id="L208">							return new RedBlackTree(cmp);</span>
 						default:
-<span class="nc" id="L183">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L210">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc bnc" id="L186" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
-<span class="nc" id="L187">					return new SplayTree(cmp);</span>
+<span class="nc bnc" id="L213" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
+<span class="nc" id="L214">					return new SplayTree(cmp);</span>
 				} else {
-<span class="nc" id="L189">					return new RedBlackTree(cmp);</span>
+<span class="nc" id="L216">					return new RedBlackTree(cmp);</span>
 				}
 			}
 
 			@Override
 			public BinarySearchTree.Builder setSplits(boolean enable) {
-<span class="nc" id="L195">				splitRequired = enable;</span>
-<span class="nc" id="L196">				return this;</span>
+<span class="nc" id="L222">				splitRequired = enable;</span>
+<span class="nc" id="L223">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder setMelds(boolean enable) {
-<span class="nc" id="L201">				meldRequired = enable;</span>
-<span class="nc" id="L202">				return this;</span>
+<span class="nc" id="L228">				meldRequired = enable;</span>
+<span class="nc" id="L229">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder keysTypeObj() {
-<span class="nc" id="L207">				return this;</span>
+<span class="nc" id="L234">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder keysTypePrimitive(Class primitiveType) {
-<span class="fc" id="L212">				return this;</span>
+<span class="fc" id="L239">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypeObj() {
-<span class="nc" id="L217">				return this;</span>
+<span class="nc" id="L244">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypePrimitive(Class primitiveType) {
-<span class="nc" id="L222">				return this;</span>
+<span class="nc" id="L249">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypeVoid() {
-<span class="fc" id="L227">				return this;</span>
+<span class="fc" id="L254">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder setOption(String key, Object value) {
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">				switch (key) {</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="fc" id="L234">						impl = (String) value;</span>
-<span class="fc" id="L235">						break;</span>
+<span class="fc" id="L261">						impl = (String) value;</span>
+<span class="fc" id="L262">						break;</span>
 					default:
-<span class="nc" id="L237">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L264">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="fc" id="L239">				return this;</span>
+<span class="fc" id="L266">				return this;</span>
 			}
 		};
 	}
@@ -254,7 +281,7 @@ public interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&
 
 		@Override
 		default BinarySearchTree&lt;K, V&gt; build() {
-<span class="nc" id="L257">			return build(null);</span>
+<span class="nc" id="L284">			return build(null);</span>
 		}
 
 		/**
@@ -294,8 +321,8 @@ public interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&
 
 		@Override
 		default BinarySearchTree.Builder&lt;K, V&gt; setOption(String key, Object value) {
-<span class="nc" id="L297">			HeapReferenceable.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L298">			return this;</span>
+<span class="nc" id="L324">			HeapReferenceable.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L325">			return this;</span>
 		}
 	}
 

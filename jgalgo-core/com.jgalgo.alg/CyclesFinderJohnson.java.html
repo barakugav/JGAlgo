@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class CyclesFinderJohnson extends CyclesFinderAbstract {
 
-<span class="fc" id="L44">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
+<span class="fc" id="L44">	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 <span class="fc" id="L198">				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
 
-<span class="fc" id="L200">				ConnectedComponentsAlgo.Result connectivityResult = ccAlg.findConnectedComponents(gSub);</span>
+<span class="fc" id="L200">				VertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);</span>
 
 <span class="fc" id="L202">				for (;; startV++) {</span>
 <span class="fc bfc" id="L203" title="All 2 branches covered.">					if (startV &gt;= nFull) {</span>
@@ -205,8 +205,8 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc" id="L205">						return;</span>
 					}
 <span class="fc" id="L207">					int uSub = startV - subToFull;</span>
-<span class="fc" id="L208">					int ccIdx = connectivityResult.getVertexCc(uSub);</span>
-<span class="fc bfc" id="L209" title="All 4 branches covered.">					if (connectivityResult.getCcVertices(ccIdx).size() &gt; 1 || hasSelfEdge(gSub, uSub)) {</span>
+<span class="fc" id="L208">					int ccIdx = connectivityResult.vertexBlock(uSub);</span>
+<span class="fc bfc" id="L209" title="All 4 branches covered.">					if (connectivityResult.blockVertices(ccIdx).size() &gt; 1 || hasSelfEdge(gSub, uSub)) {</span>
 <span class="fc" id="L210">						scc = new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx);</span>
 <span class="fc" id="L211">						return;</span>
 					}
@@ -235,10 +235,10 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final ConnectedComponentsAlgo.Result connectivityResult;
+		private final VertexPartition connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L241">		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L241">		StronglyConnectedComponent(int subToFull, VertexPartition connectivityResult, int ccIdx) {</span>
 <span class="fc" id="L242">			this.subToFull = subToFull;</span>
 <span class="fc" id="L243">			this.connectivityResult = connectivityResult;</span>
 <span class="fc" id="L244">			this.ccIdx = ccIdx;</span>
@@ -248,7 +248,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc" id="L248">			int vSub = v - subToFull;</span>
 <span class="fc bfc" id="L249" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
 <span class="fc" id="L250">				return false;</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCc(vSub);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">			return ccIdx == connectivityResult.vertexBlock(vSub);</span>
 		}
 
 	}

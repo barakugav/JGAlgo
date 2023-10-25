@@ -16,7 +16,7 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.alg.MatchingAlgorithm;
+import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -25,16 +25,16 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * Weight function that maps graph edges (or vertices) to weights.
  * &lt;p&gt;
  * This interface is usually used as weight function of edges, for example in algorithms such as
- * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgorithm} try to find a set of
- * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
- * edges. But it can represent weights assigned to vertices, in algorithms such as vertex cover.
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo} try to find a set of edges
+ * satisfying some constraint while minimizing/maximizing some objective function based on the weights of the edges. But
+ * it can represent weights assigned to vertices, in algorithms such as vertex cover.
  * &lt;p&gt;
  * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphFactory.newDirected().newGraph();
+ * Graph g = Graph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -43,14 +43,14 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * Weights.Double weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
+ * WeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
  * weights.set(e1, 1.2);
  * weights.set(e2, 3.1);
  * weights.set(e3, 15.1);
  * EdgeWeightFunc weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -87,74 +87,9 @@ public interface WeightFunction extends IntComparator {
 	}
 
 	/**
-	 * Weight function that maps graph edges (or vertices) to integer weights.
-	 * &lt;p&gt;
-	 * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is
-	 * the API for these algorithms for the edges (or vertices) integer weights.
-	 *
-	 * &lt;pre&gt; {@code
-	 * // Create a directed graph with three vertices and edges between them
-	 * Graph g = GraphFactory.newDirected().newGraph();
-	 * int v1 = g.addVertex();
-	 * int v2 = g.addVertex();
-	 * int v3 = g.addVertex();
-	 * int e1 = g.addEdge(v1, v2);
-	 * int e2 = g.addEdge(v2, v3);
-	 * int e3 = g.addEdge(v1, v3);
-	 *
-	 * // Assign some weights to the edges
-	 * Weights.Int weights = g.addEdgesWeights(&quot;weightsKey&quot;, int.class);
-	 * weights.set(e1, 1);
-	 * weights.set(e2, 3);
-	 * weights.set(e3, 15);
-	 * EdgeWeightFunc.Int weightFunc = weights;
-	 *
-	 * // Calculate the shortest paths from v1 to all other vertices
-	 * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().setIntWeights(true).build();
-	 * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
-	 *
-	 * // Print the shortest path from v1 to v3
-	 * assert ssspRes.distance(v3) == 4;
-	 * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
-	 * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
-	 * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
-	 * for (int e : ssspRes.getPath(v3)) {
-	 * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
-	 * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
-	 * }
-	 * }&lt;/pre&gt;
-	 *
-	 * @author Barak Ugav
-	 */
-	@FunctionalInterface
-	public static interface Int extends WeightFunction {
-
-		@Deprecated
-		@Override
-		default double weight(int element) {
-<span class="fc" id="L135">			return weightInt(element);</span>
-		}
-
-		/**
-		 * Get the integer weight of an element.
-		 *
-		 * @param  element                   an element identifier
-		 * @return                           the integer weight of the element
-		 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier
-		 */
-		public int weightInt(int element);
-
-		@Override
-		default int compare(int e1, int e2) {
-<span class="fc" id="L149">			return Integer.compare(weightInt(e1), weightInt(e2));</span>
-		}
-
-	}
-
-	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L157">	public static WeightFunction.Int CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L92">	public static WeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

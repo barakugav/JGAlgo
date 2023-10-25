@@ -15,8 +15,6 @@
  */
 package com.jgalgo.graph;
 
-import com.jgalgo.internal.util.BuilderAbstract;
-
 /**
  * A factory for {@link Graph} objects.
  *
@@ -24,7 +22,7 @@ import com.jgalgo.internal.util.BuilderAbstract;
  * @see    GraphFactory#newUndirected()
  * @author Barak Ugav
  */
-public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
+public interface GraphFactory {
 
 	/**
 	 * Create a new empty graph.
@@ -50,7 +48,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 *           weights
 	 */
 	default Graph newCopyOf(Graph g) {
-<span class="fc" id="L53">		return newCopyOf(g, false);</span>
+<span class="fc" id="L51">		return newCopyOf(g, false);</span>
 	}
 
 	/**
@@ -139,13 +137,13 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L142">	static enum Hint {</span>
+<span class="fc" id="L140">	static enum Hint {</span>
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L144">		FastEdgeRemoval,</span>
+<span class="fc" id="L142">		FastEdgeRemoval,</span>
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L146">		FastEdgeLookup,</span>
+<span class="fc" id="L144">		FastEdgeLookup,</span>
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
-<span class="fc" id="L148">		DenseGraph,</span>
+<span class="fc" id="L146">		DenseGraph,</span>
 	}
 
 	/**
@@ -156,7 +154,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build undirected graphs
 	 */
 	public static GraphFactory newUndirected() {
-<span class="fc" id="L159">		return new GraphImpl.Factory(false);</span>
+<span class="fc" id="L157">		return new GraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -167,7 +165,7 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return a new factory that can build directed graphs
 	 */
 	public static GraphFactory newDirected() {
-<span class="fc" id="L170">		return new GraphImpl.Factory(true);</span>
+<span class="fc" id="L168">		return new GraphImpl.Factory(true);</span>
 	}
 
 	/**
@@ -181,8 +179,24 @@ public interface GraphFactory extends BuilderAbstract&lt;GraphFactory&gt; {
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static GraphFactory newFrom(Graph g) {
-<span class="fc" id="L184">		return new GraphImpl.Factory(g);</span>
+<span class="fc" id="L182">		return new GraphImpl.Factory(g);</span>
 	}
 
+	/**
+	 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+	 * &lt;p&gt;
+	 * The builder might support different options to customize its implementation. These options never change the
+	 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+	 * because they are not part of the API and may change in the future.
+	 * &lt;p&gt;
+	 * These options are mainly for debug and benchmark purposes.
+	 *
+	 * @param  key   the option key
+	 * @param  value the option value
+	 * @return       this builder
+	 */
+	default GraphFactory setOption(String key, Object value) {
+<span class="nc" id="L199">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

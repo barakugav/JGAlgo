@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -31,6 +30,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Note that finding the actual minimum vertex cover is an NP-hard problem, even for a weight function that assign \(1\)
  * to each vertex. Therefore, algorithms implementing this interface provide an approximation for the actual optimal
  * solution.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Vertex_cover&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -84,14 +86,26 @@ public interface VertexCover {
 	}
 
 	/**
+	 * Create a new vertex cover algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link VertexCover} object. The {@link VertexCover.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link VertexCover}
+	 */
+	static VertexCover newInstance() {
+<span class="nc" id="L97">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new vertex cover algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link VertexCover} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L94">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L108">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
@@ -100,7 +114,7 @@ public interface VertexCover {
 	 * @see    VertexCover#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;VertexCover.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum vertex cover computation.
@@ -109,6 +123,22 @@ public interface VertexCover {
 		 */
 		VertexCover build();
 
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default VertexCover.Builder setOption(String key, Object value) {
+<span class="nc" id="L140">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

@@ -50,7 +50,7 @@ package com.jgalgo.graph;
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L53">			getEdgesIdStrategy().checkIdx(edge);</span>
+<span class="fc" id="L53">			edges().checkIdx(edge);</span>
 <span class="fc" id="L54">			long endpoints = edgeEndpoints()[edge];</span>
 <span class="fc" id="L55">			int u = endpoints2Source(endpoints);</span>
 <span class="fc" id="L56">			int v = endpoints2Target(endpoints);</span>
@@ -66,13 +66,13 @@ package com.jgalgo.graph;
 
 		@Override
 		default int edgeSource(int edge) {
-<span class="fc" id="L69">			getEdgesIdStrategy().checkIdx(edge);</span>
+<span class="fc" id="L69">			edges().checkIdx(edge);</span>
 <span class="fc" id="L70">			return endpoints2Source(edgeEndpoints()[edge]);</span>
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
-<span class="fc" id="L75">			getEdgesIdStrategy().checkIdx(edge);</span>
+<span class="fc" id="L75">			edges().checkIdx(edge);</span>
 <span class="fc" id="L76">			return endpoints2Target(edgeEndpoints()[edge]);</span>
 		}
 

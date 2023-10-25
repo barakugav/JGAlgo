@@ -40,7 +40,7 @@ package com.jgalgo.internal.ds;
 	 *
 	 * @param weightLimit a limit on the weights of the edges. The limit is an upper bound on the sum of each edge
 	 *                        weight and the weights modification that are performed using
-	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Node, double)}.
+	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 	 */
 	DynamicTreeSplay(double weightLimit) {
 <span class="fc" id="L46">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
@@ -59,7 +59,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public Node findRoot(Node v) {
+	public DynamicTree.Vertex findRoot(DynamicTree.Vertex v) {
 <span class="fc" id="L63">		SplayNode n = (SplayNode) v;</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L65">			return n;</span>
@@ -68,7 +68,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public MinEdge findMinEdge(Node v) {
+	public MinEdge findMinEdge(DynamicTree.Vertex v) {
 <span class="fc" id="L72">		SplayNode n = (SplayNode) v;</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L74">			return null;</span>
@@ -96,7 +96,7 @@ package com.jgalgo.internal.ds;
 	}
 
 	@Override
-	public void addWeight(Node v, double w) {
+	public void addWeight(DynamicTree.Vertex v, double w) {
 <span class="fc" id="L100">		SplayNode n = (SplayNode) v;</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L102">			return;</span>
@@ -118,7 +118,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L118">	}</span>
 
 	@Override
-	public void link(Node child, Node parent, double w) {
+	public void link(DynamicTree.Vertex child, DynamicTree.Vertex parent, double w) {
 <span class="pc bpc" id="L122" title="1 of 2 branches missed.">		if (child != findRoot(child))</span>
 <span class="nc" id="L123">			throw new IllegalArgumentException(&quot;child node must be a root&quot;);</span>
 <span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (child == findRoot(parent))</span>
@@ -144,7 +144,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L144">	}</span>
 
 	@Override
-	public void cut(Node v) {
+	public void cut(DynamicTree.Vertex v) {
 <span class="fc" id="L148">		SplayNode n = splay((SplayNode) v);</span>
 <span class="pc bpc" id="L149" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
 <span class="nc" id="L150">			return;</span>
@@ -263,7 +263,7 @@ package com.jgalgo.internal.ds;
 
 	}
 
-<span class="fc" id="L266">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements Node {</span>
+<span class="fc" id="L266">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
 
 		SplayNode userParent;
 
@@ -281,17 +281,17 @@ package com.jgalgo.internal.ds;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;V&gt; V getNodeData() {
+		public &lt;V&gt; V getData() {
 <span class="fc" id="L285">			return (V) key;</span>
 		}
 
 		@Override
-		public void setNodeData(Object data) {
+		public void setData(Object data) {
 <span class="fc" id="L290">			this.key = data;</span>
 <span class="fc" id="L291">		}</span>
 
 		@Override
-		public Node getParent() {
+		public Vertex getParent() {
 <span class="fc" id="L295">			return userParent;</span>
 		}
 

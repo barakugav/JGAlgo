@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 <span class="fc" id="L37">public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {</span>
 
-<span class="fc" id="L39">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();</span>
+<span class="fc" id="L39">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 	// /*
 	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
 	// * increases the running time to O(n^3)

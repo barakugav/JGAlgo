@@ -17,19 +17,22 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.BuilderAbstract;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Compute the minimum-cost (max) flow in a flow network.
  * &lt;p&gt;
- * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal nodes, and the
- * objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply, and
- * the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow units
- * going out of the vertex minus the sum of flow units going into it is equal to its supply.
+ * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal vertices, and
+ * the objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply,
+ * and the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow
+ * units going out of the vertex minus the sum of flow units going into it is equal to its supply.
  * &lt;p&gt;
  * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
  * be viewed as upper bounds.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    MaximumFlow
  * @see    FlowNetwork
@@ -120,102 +123,113 @@ public interface MinimumCostFlow {
 			WeightFunction supply);
 
 	/**
+	 * Create a new min-cost-flow algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object. The
+	 * {@link MinimumCostFlow.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumCostFlow}
+	 */
+	static MinimumCostFlow newInstance() {
+<span class="fc" id="L134">		return newBuilder().build();</span>
+	}
+
+	/**
 	 * Create a new minimum cost flow algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object.
+	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCostFlow} objects
 	 */
 	static MinimumCostFlow.Builder newBuilder() {
-<span class="fc" id="L130">		return new MinimumCostFlow.Builder() {</span>
+<span class="fc" id="L145">		return new MinimumCostFlow.Builder() {</span>
 			String impl;
 			boolean integerNetwork;
 			boolean integerCosts;
 
 			@Override
 			public MinimumCostFlow build() {
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L138" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L153" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;cycle-canceling&quot;:
-<span class="nc" id="L140">							return new MinimumCostFlowCycleCanceling();</span>
+<span class="nc" id="L155">							return new MinimumCostFlowCycleCanceling();</span>
 						case &quot;cost-scaling&quot;:
-<span class="nc" id="L142">							return new MinimumCostFlowCostScaling();</span>
+<span class="nc" id="L157">							return new MinimumCostFlowCostScaling();</span>
 						default:
-<span class="nc" id="L144">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L159">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="pc bpc" id="L147" title="3 of 4 branches missed.">				if (integerNetwork &amp;&amp; integerCosts) {</span>
-<span class="nc" id="L148">					return new MinimumCostFlowCostScaling();</span>
+<span class="pc bpc" id="L162" title="3 of 4 branches missed.">				if (integerNetwork &amp;&amp; integerCosts) {</span>
+<span class="nc" id="L163">					return new MinimumCostFlowCostScaling();</span>
 				} else {
-<span class="fc" id="L150">					return new MinimumCostFlow() {</span>
+<span class="fc" id="L165">					return new MinimumCostFlow() {</span>
 
-<span class="fc" id="L152">						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();</span>
-<span class="fc" id="L153">						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();</span>
+<span class="fc" id="L167">						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();</span>
+<span class="fc" id="L168">						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();</span>
 
 						@Override
 						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost, int source,
 								int sink) {
-<span class="nc bnc" id="L158" title="All 4 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int) {</span>
-<span class="nc" id="L159">								integerAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);</span>
+<span class="nc bnc" id="L173" title="All 4 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L174">								integerAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);</span>
 							} else {
-<span class="nc" id="L161">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);</span>
+<span class="nc" id="L176">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);</span>
 							}
-<span class="nc" id="L163">						}</span>
+<span class="nc" id="L178">						}</span>
 
 						@Override
 						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction lowerBound, int source, int sink) {
-<span class="nc bnc" id="L168" title="All 6 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int</span>
-									&amp;&amp; lowerBound instanceof WeightFunction.Int) {
-<span class="nc" id="L170">								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);</span>
+<span class="nc bnc" id="L183" title="All 6 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt</span>
+									&amp;&amp; lowerBound instanceof WeightFunctionInt) {
+<span class="nc" id="L185">								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);</span>
 							} else {
-<span class="nc" id="L172">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);</span>
+<span class="nc" id="L187">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);</span>
 							}
-<span class="nc" id="L174">						}</span>
+<span class="nc" id="L189">						}</span>
 
 						@Override
 						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								IntCollection sources, IntCollection sinks) {
-<span class="nc bnc" id="L179" title="All 4 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int) {</span>
-<span class="nc" id="L180">								integerAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L195">								integerAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);</span>
 							} else {
-<span class="nc" id="L182">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);</span>
+<span class="nc" id="L197">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);</span>
 							}
-<span class="nc" id="L184">						}</span>
+<span class="nc" id="L199">						}</span>
 
 						@Override
 						public void computeMinCostMaxFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
-<span class="nc bnc" id="L189" title="All 6 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int</span>
-									&amp;&amp; lowerBound instanceof WeightFunction.Int) {
-<span class="nc" id="L191">								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);</span>
+<span class="nc bnc" id="L204" title="All 6 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt</span>
+									&amp;&amp; lowerBound instanceof WeightFunctionInt) {
+<span class="nc" id="L206">								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);</span>
 							} else {
-<span class="nc" id="L193">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);</span>
+<span class="nc" id="L208">								floatsAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);</span>
 							}
-<span class="nc" id="L195">						}</span>
+<span class="nc" id="L210">						}</span>
 
 						@Override
 						public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction supply) {
-<span class="pc bpc" id="L200" title="2 of 6 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int</span>
-									&amp;&amp; supply instanceof WeightFunction.Int) {
-<span class="fc" id="L202">								integerAlgo.computeMinCostFlow(g, net, cost, supply);</span>
+<span class="pc bpc" id="L215" title="2 of 6 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt</span>
+									&amp;&amp; supply instanceof WeightFunctionInt) {
+<span class="fc" id="L217">								integerAlgo.computeMinCostFlow(g, net, cost, supply);</span>
 							} else {
-<span class="fc" id="L204">								floatsAlgo.computeMinCostFlow(g, net, cost, supply);</span>
+<span class="fc" id="L219">								floatsAlgo.computeMinCostFlow(g, net, cost, supply);</span>
 							}
-<span class="fc" id="L206">						}</span>
+<span class="fc" id="L221">						}</span>
 
 						@Override
 						public void computeMinCostFlow(Graph g, FlowNetwork net, WeightFunction cost,
 								WeightFunction lowerBound, WeightFunction supply) {
-<span class="nc bnc" id="L211" title="All 8 branches missed.">							if (net instanceof FlowNetwork.Int &amp;&amp; cost instanceof WeightFunction.Int</span>
-									&amp;&amp; lowerBound instanceof WeightFunction.Int
-									&amp;&amp; supply instanceof WeightFunction.Int) {
-<span class="nc" id="L214">								integerAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);</span>
+<span class="nc bnc" id="L226" title="All 8 branches missed.">							if (net instanceof FlowNetworkInt &amp;&amp; cost instanceof WeightFunctionInt</span>
+									&amp;&amp; lowerBound instanceof WeightFunctionInt &amp;&amp; supply instanceof WeightFunctionInt) {
+<span class="nc" id="L228">								integerAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);</span>
 							} else {
-<span class="nc" id="L216">								floatsAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);</span>
+<span class="nc" id="L230">								floatsAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);</span>
 							}
-<span class="nc" id="L218">						}</span>
+<span class="nc" id="L232">						}</span>
 
 					};
 				}
@@ -223,26 +237,26 @@ public interface MinimumCostFlow {
 
 			@Override
 			public MinimumCostFlow.Builder integerNetwork(boolean enable) {
-<span class="nc" id="L226">				integerNetwork = enable;</span>
-<span class="nc" id="L227">				return this;</span>
+<span class="nc" id="L240">				integerNetwork = enable;</span>
+<span class="nc" id="L241">				return this;</span>
 			}
 
 			@Override
 			public MinimumCostFlow.Builder integerCosts(boolean enable) {
-<span class="nc" id="L232">				integerCosts = enable;</span>
-<span class="nc" id="L233">				return this;</span>
+<span class="nc" id="L246">				integerCosts = enable;</span>
+<span class="nc" id="L247">				return this;</span>
 			}
 
 			@Override
 			public MinimumCostFlow.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L238" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L240">						impl = (String) value;</span>
-<span class="nc" id="L241">						break;</span>
+<span class="nc" id="L254">						impl = (String) value;</span>
+<span class="nc" id="L255">						break;</span>
 					default:
-<span class="nc" id="L243">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L257">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L245">				return this;</span>
+<span class="nc" id="L259">				return this;</span>
 			}
 		};
 	}
@@ -253,7 +267,7 @@ public interface MinimumCostFlow {
 	 * @see    MinimumCostFlow#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;MinimumCostFlow.Builder&gt; {
+	static interface Builder {
 
 		/**
 		 * Create a new algorithm object for minimum cost flow computation.
@@ -287,6 +301,23 @@ public interface MinimumCostFlow {
 		 * @return        this builder
 		 */
 		MinimumCostFlow.Builder integerCosts(boolean enable);
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default MinimumCostFlow.Builder setOption(String key, Object value) {
+<span class="nc" id="L319">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
 	}
 
 }

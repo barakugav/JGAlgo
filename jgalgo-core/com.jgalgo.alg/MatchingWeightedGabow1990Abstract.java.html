@@ -30,7 +30,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SplitFindMin;
@@ -307,7 +307,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final Blossom[] findToBlossom;
 
 <span class="fc" id="L309">		Odds(int n) {</span>
-<span class="fc" id="L310">			sf = SplitFindMin.newBuilder().buildWithFindMin();</span>
+<span class="fc" id="L310">			sf = SplitFindMin.newInstance();</span>
 <span class="fc" id="L311">			vToSf = new int[n];</span>
 <span class="fc" id="L312">			findToBlossom = new Blossom[n];</span>
 <span class="fc" id="L313">		}</span>
@@ -379,7 +379,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		/* the graph */
 		final IndexGraph g;
 
-		final Weights&lt;EdgeVal&gt; edgeVal;
+		final WeightsObj&lt;EdgeVal&gt; edgeVal;
 
 		/* the weight function */
 		final WeightFunction w;
@@ -633,40 +633,41 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 						}
 <span class="pc bpc" id="L634" title="1 of 2 branches missed.">					} else if (deltaNext == delta4) {</span>
 <span class="fc" id="L635">						expandStep();</span>
-					} else
+					} else {
 <span class="nc" id="L637">						throw new IllegalStateException();</span>
-<span class="fc" id="L638">				}</span>
+					}
+<span class="fc" id="L639">				}</span>
 
 				// Update dual values
-<span class="fc bfc" id="L641" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L642">					vertexDualValBase[u] = dualVal(u);</span>
-<span class="fc bfc" id="L643" title="All 2 branches covered.">				for (Blossom b : allBlossoms()) {</span>
-<span class="fc bfc" id="L644" title="All 2 branches covered.">					if (!b.isSingleton())</span>
-<span class="fc" id="L645">						b.z0 = dualVal(b);</span>
-<span class="fc" id="L646">					b.delta0 = b.delta1 = b.deltaOdd = 0;</span>
-<span class="fc" id="L647">				}</span>
-<span class="fc" id="L648">				delta1Threshold -= delta;</span>
-<span class="fc" id="L649">				delta = 0;</span>
+<span class="fc bfc" id="L642" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L643">					vertexDualValBase[u] = dualVal(u);</span>
+<span class="fc bfc" id="L644" title="All 2 branches covered.">				for (Blossom b : allBlossoms()) {</span>
+<span class="fc bfc" id="L645" title="All 2 branches covered.">					if (!b.isSingleton())</span>
+<span class="fc" id="L646">						b.z0 = dualVal(b);</span>
+<span class="fc" id="L647">					b.delta0 = b.delta1 = b.deltaOdd = 0;</span>
+<span class="fc" id="L648">				}</span>
+<span class="fc" id="L649">				delta1Threshold -= delta;</span>
+<span class="fc" id="L650">				delta = 0;</span>
 
 				// Reset blossoms search tree
-<span class="fc bfc" id="L652" title="All 2 branches covered.">				for (Blossom b : allBlossoms()) {</span>
-<span class="fc" id="L653">					b.root = -1;</span>
-<span class="fc" id="L654">					b.treeParentEdge = -1;</span>
-<span class="fc" id="L655">					b.isEven = false;</span>
-<span class="fc" id="L656">					b.find1SeqBegin = b.find1SeqEnd = 0;</span>
-<span class="fc" id="L657">					b.growRef = null;</span>
-<span class="fc" id="L658">					b.expandRef = null;</span>
-<span class="fc" id="L659">				}</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">				for (Blossom b : allBlossoms()) {</span>
+<span class="fc" id="L654">					b.root = -1;</span>
+<span class="fc" id="L655">					b.treeParentEdge = -1;</span>
+<span class="fc" id="L656">					b.isEven = false;</span>
+<span class="fc" id="L657">					b.find1SeqBegin = b.find1SeqEnd = 0;</span>
+<span class="fc" id="L658">					b.growRef = null;</span>
+<span class="fc" id="L659">					b.expandRef = null;</span>
+<span class="fc" id="L660">				}</span>
 
 				// Reset heaps
-<span class="fc" id="L662">				searchEnd();</span>
+<span class="fc" id="L663">				searchEnd();</span>
 			}
 
-<span class="fc" id="L665">			IntList matchingEdges = new IntArrayList();</span>
-<span class="fc bfc" id="L666" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L667" title="All 4 branches covered.">				if (isMatched(u) &amp;&amp; u &lt; g.edgeEndpoint(matched[u], u))</span>
-<span class="fc" id="L668">					matchingEdges.add(edgeVal.get(matched[u]).e);</span>
-<span class="fc" id="L669">			return new Matchings.MatchingImpl(gOrig, matchingEdges);</span>
+<span class="fc" id="L666">			IntList matchingEdges = new IntArrayList();</span>
+<span class="fc bfc" id="L667" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L668" title="All 4 branches covered.">				if (isMatched(u) &amp;&amp; u &lt; g.edgeEndpoint(matched[u], u))</span>
+<span class="fc" id="L669">					matchingEdges.add(edgeVal.get(matched[u]).e);</span>
+<span class="fc" id="L670">			return new Matchings.MatchingImpl(gOrig, matchingEdges);</span>
 		}
 
 		abstract void makeEven(Blossom V);
@@ -676,393 +677,393 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		abstract void blossomStep(int e);
 
 		void expandStep() {
-<span class="fc" id="L679">			debug.println(&quot;expandStep&quot;);</span>
+<span class="fc" id="L680">			debug.println(&quot;expandStep&quot;);</span>
 
-<span class="pc bnc" id="L681" title="All 2 branches missed.">			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key().doubleValue());</span>
-<span class="fc" id="L682">			final Blossom B = expandEvents.extractMin().value();</span>
+<span class="pc bnc" id="L682" title="All 2 branches missed.">			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key().doubleValue());</span>
+<span class="fc" id="L683">			final Blossom B = expandEvents.extractMin().value();</span>
 
-<span class="pc bnc" id="L684" title="All 8 branches missed.">			assert B.root != -1 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= EPS;</span>
+<span class="pc bnc" id="L685" title="All 8 branches missed.">			assert B.root != -1 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= EPS;</span>
 
-<span class="fc" id="L686">			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);</span>
-<span class="fc" id="L687">			Blossom base = null;</span>
-<span class="fc" id="L688">			Blossom top = null;</span>
+<span class="fc" id="L687">			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);</span>
+<span class="fc" id="L688">			Blossom base = null;</span>
+<span class="fc" id="L689">			Blossom top = null;</span>
 			// Remove parent pointer from all children, and find the sub blossom containing
 			// the base ('base') and the sub blossom containing the vertex of the edge from
 			// parent in search tree ('top')
-<span class="fc bfc" id="L692" title="All 2 branches covered.">			for (Blossom b : B.children()) {</span>
-<span class="fc bfc" id="L693" title="All 2 branches covered.">				if (odds.isInBlossom(b, baseV)) {</span>
-<span class="pc bnc" id="L694" title="All 2 branches missed.">					assert base == null;</span>
-<span class="fc" id="L695">					base = b;</span>
+<span class="fc bfc" id="L693" title="All 2 branches covered.">			for (Blossom b : B.children()) {</span>
+<span class="fc bfc" id="L694" title="All 2 branches covered.">				if (odds.isInBlossom(b, baseV)) {</span>
+<span class="pc bnc" id="L695" title="All 2 branches missed.">					assert base == null;</span>
+<span class="fc" id="L696">					base = b;</span>
 				}
-<span class="fc bfc" id="L697" title="All 2 branches covered.">				if (odds.isInBlossom(b, topV)) {</span>
-<span class="pc bnc" id="L698" title="All 2 branches missed.">					assert top == null;</span>
-<span class="fc" id="L699">					top = b;</span>
+<span class="fc bfc" id="L698" title="All 2 branches covered.">				if (odds.isInBlossom(b, topV)) {</span>
+<span class="pc bnc" id="L699" title="All 2 branches missed.">					assert top == null;</span>
+<span class="fc" id="L700">					top = b;</span>
 				}
-<span class="fc" id="L701">				b.parent = null;</span>
-<span class="fc" id="L702">			}</span>
-<span class="fc" id="L703">			B.deltaOdd += delta - B.delta1;</span>
-<span class="fc" id="L704">			B.delta0 = delta;</span>
+<span class="fc" id="L702">				b.parent = null;</span>
+<span class="fc" id="L703">			}</span>
+<span class="fc" id="L704">			B.deltaOdd += delta - B.delta1;</span>
+<span class="fc" id="L705">			B.delta0 = delta;</span>
 
 			// Iterate over sub blossom that should stay in the tree
-<span class="fc bfc" id="L707" title="All 2 branches covered.">			boolean left = matched[g.edgeSource(top.toLeftEdge)] == top.toLeftEdge;</span>
-<span class="fc" id="L708">			Consumer&lt;Blossom&gt; inBlossom = b -&gt; {</span>
-<span class="fc" id="L709">				b.root = B.root;</span>
-<span class="fc bfc" id="L710" title="All 2 branches covered.">				b.treeParentEdge = left ? b.toRightEdge : b.toLeftEdge;</span>
-<span class="fc" id="L711">				b.deltaOdd = B.deltaOdd;</span>
-<span class="fc" id="L712">			};</span>
-<span class="fc bfc" id="L713" title="All 2 branches covered.">			Function&lt;Blossom, Blossom&gt; next = b -&gt; left ? b.left : b.right;</span>
-<span class="fc" id="L714">			for (Blossom b = top;;) {</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">			boolean left = matched[g.edgeSource(top.toLeftEdge)] == top.toLeftEdge;</span>
+<span class="fc" id="L709">			Consumer&lt;Blossom&gt; inBlossom = b -&gt; {</span>
+<span class="fc" id="L710">				b.root = B.root;</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">				b.treeParentEdge = left ? b.toRightEdge : b.toLeftEdge;</span>
+<span class="fc" id="L712">				b.deltaOdd = B.deltaOdd;</span>
+<span class="fc" id="L713">			};</span>
+<span class="fc bfc" id="L714" title="All 2 branches covered.">			Function&lt;Blossom, Blossom&gt; next = b -&gt; left ? b.left : b.right;</span>
+<span class="fc" id="L715">			for (Blossom b = top;;) {</span>
 				// sub blossom odd
-<span class="fc" id="L716">				inBlossom.accept(b);</span>
-<span class="fc" id="L717">				b.isEven = false;</span>
-<span class="fc" id="L718">				b.delta1 = delta;</span>
-<span class="fc" id="L719">				odds.split(b);</span>
-<span class="pc bnc" id="L720" title="All 2 branches missed.">				assert b.expandRef == null;</span>
-<span class="fc bfc" id="L721" title="All 2 branches covered.">				if (!b.isSingleton())</span>
-<span class="fc" id="L722">					b.expandRef = expandEvents.insert(Double.valueOf(b.z0 / 2 + b.delta1), b);</span>
-<span class="fc bfc" id="L723" title="All 2 branches covered.">				if (b == base)</span>
-<span class="fc" id="L724">					break;</span>
-<span class="fc" id="L725">				b = next.apply(b);</span>
+<span class="fc" id="L717">				inBlossom.accept(b);</span>
+<span class="fc" id="L718">				b.isEven = false;</span>
+<span class="fc" id="L719">				b.delta1 = delta;</span>
+<span class="fc" id="L720">				odds.split(b);</span>
+<span class="pc bnc" id="L721" title="All 2 branches missed.">				assert b.expandRef == null;</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">				if (!b.isSingleton())</span>
+<span class="fc" id="L723">					b.expandRef = expandEvents.insert(Double.valueOf(b.z0 / 2 + b.delta1), b);</span>
+<span class="fc bfc" id="L724" title="All 2 branches covered.">				if (b == base)</span>
+<span class="fc" id="L725">					break;</span>
+<span class="fc" id="L726">				b = next.apply(b);</span>
 
 				// sub blossom even
-<span class="fc" id="L728">				inBlossom.accept(b);</span>
-<span class="fc" id="L729">				makeEven(b);</span>
-<span class="fc" id="L730">				b = next.apply(b);</span>
+<span class="fc" id="L729">				inBlossom.accept(b);</span>
+<span class="fc" id="L730">				makeEven(b);</span>
+<span class="fc" id="L731">				b = next.apply(b);</span>
 			}
-<span class="fc" id="L732">			top.treeParentEdge = B.treeParentEdge;</span>
-<span class="fc" id="L733">			B.root = -1;</span>
+<span class="fc" id="L733">			top.treeParentEdge = B.treeParentEdge;</span>
+<span class="fc" id="L734">			B.root = -1;</span>
 
 			// Iterate over sub blossoms that should not stay in the tree
-<span class="fc" id="L736">			for (Blossom b = base;;) {</span>
-<span class="fc" id="L737">				b = next.apply(b);</span>
-<span class="fc bfc" id="L738" title="All 2 branches covered.">				if (b == top)</span>
-<span class="fc" id="L739">					break;</span>
-<span class="fc" id="L740">				b.root = -1;</span>
-<span class="fc" id="L741">				b.treeParentEdge = -1;</span>
-<span class="fc" id="L742">				b.isEven = false;</span>
-<span class="fc" id="L743">				odds.split(b);</span>
-<span class="fc" id="L744">				b.deltaOdd = B.deltaOdd;</span>
-<span class="pc bnc" id="L745" title="All 2 branches missed.">				assert b.growRef == null;</span>
-<span class="fc" id="L746">				EdgeEvent inEdgeEvent = odds.findMin(b.base);</span>
-<span class="fc bfc" id="L747" title="All 2 branches covered.">				if (inEdgeEvent != null)</span>
-<span class="fc" id="L748">					b.growRef = growEvents.insert(inEdgeEvent);</span>
-<span class="fc" id="L749">			}</span>
+<span class="fc" id="L737">			for (Blossom b = base;;) {</span>
+<span class="fc" id="L738">				b = next.apply(b);</span>
+<span class="fc bfc" id="L739" title="All 2 branches covered.">				if (b == top)</span>
+<span class="fc" id="L740">					break;</span>
+<span class="fc" id="L741">				b.root = -1;</span>
+<span class="fc" id="L742">				b.treeParentEdge = -1;</span>
+<span class="fc" id="L743">				b.isEven = false;</span>
+<span class="fc" id="L744">				odds.split(b);</span>
+<span class="fc" id="L745">				b.deltaOdd = B.deltaOdd;</span>
+<span class="pc bnc" id="L746" title="All 2 branches missed.">				assert b.growRef == null;</span>
+<span class="fc" id="L747">				EdgeEvent inEdgeEvent = odds.findMin(b.base);</span>
+<span class="fc bfc" id="L748" title="All 2 branches covered.">				if (inEdgeEvent != null)</span>
+<span class="fc" id="L749">					b.growRef = growEvents.insert(inEdgeEvent);</span>
+<span class="fc" id="L750">			}</span>
 
 			// Disassemble right and left pointers of sub blossoms
-<span class="fc" id="L752">			for (Blossom b = top;;) {</span>
-<span class="fc" id="L753">				Blossom nextB = b.left;</span>
-<span class="fc" id="L754">				b.right = b.left = null;</span>
-<span class="fc" id="L755">				EdgeVal bRightData = edgeVal.get(b.toRightEdge);</span>
-<span class="fc" id="L756">				EdgeVal bRightTwinData = edgeVal.get(bRightData.twin);</span>
-<span class="fc" id="L757">				EdgeVal bLeftData = edgeVal.get(b.toLeftEdge);</span>
-<span class="fc" id="L758">				EdgeVal bLeftTwinData = edgeVal.get(bLeftData.twin);</span>
-<span class="fc" id="L759">				bRightData.b0 = bRightData.b1 = null;</span>
-<span class="fc" id="L760">				bRightTwinData.b0 = bRightTwinData.b1 = null;</span>
-<span class="fc" id="L761">				bLeftData.b0 = bLeftData.b1 = null;</span>
-<span class="fc" id="L762">				bLeftTwinData.b0 = bLeftTwinData.b1 = null;</span>
-<span class="fc" id="L763">				b.toRightEdge = b.toLeftEdge = -1;</span>
-<span class="fc bfc" id="L764" title="All 2 branches covered.">				if (nextB == top)</span>
-<span class="fc" id="L765">					break;</span>
-<span class="fc" id="L766">				b = nextB;</span>
-<span class="fc" id="L767">			}</span>
-<span class="fc" id="L768">		}</span>
+<span class="fc" id="L753">			for (Blossom b = top;;) {</span>
+<span class="fc" id="L754">				Blossom nextB = b.left;</span>
+<span class="fc" id="L755">				b.right = b.left = null;</span>
+<span class="fc" id="L756">				EdgeVal bRightData = edgeVal.get(b.toRightEdge);</span>
+<span class="fc" id="L757">				EdgeVal bRightTwinData = edgeVal.get(bRightData.twin);</span>
+<span class="fc" id="L758">				EdgeVal bLeftData = edgeVal.get(b.toLeftEdge);</span>
+<span class="fc" id="L759">				EdgeVal bLeftTwinData = edgeVal.get(bLeftData.twin);</span>
+<span class="fc" id="L760">				bRightData.b0 = bRightData.b1 = null;</span>
+<span class="fc" id="L761">				bRightTwinData.b0 = bRightTwinData.b1 = null;</span>
+<span class="fc" id="L762">				bLeftData.b0 = bLeftData.b1 = null;</span>
+<span class="fc" id="L763">				bLeftTwinData.b0 = bLeftTwinData.b1 = null;</span>
+<span class="fc" id="L764">				b.toRightEdge = b.toLeftEdge = -1;</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">				if (nextB == top)</span>
+<span class="fc" id="L766">					break;</span>
+<span class="fc" id="L767">				b = nextB;</span>
+<span class="fc" id="L768">			}</span>
+<span class="fc" id="L769">		}</span>
 
 		void augmentStep(int bridge) {
-<span class="fc" id="L771">			debug.print(&quot;augStep:&quot;);</span>
-<span class="fc" id="L772">			final int bu = g.edgeSource(bridge), bv = g.edgeTarget(bridge);</span>
-<span class="fc" id="L773">			Blossom U = topBlossom(bu), V = topBlossom(bv);</span>
-<span class="fc bfc" id="L774" title="All 2 branches covered.">			for (Blossom b : new Blossom[] { U, V }) {</span>
+<span class="fc" id="L772">			debug.print(&quot;augStep:&quot;);</span>
+<span class="fc" id="L773">			final int bu = g.edgeSource(bridge), bv = g.edgeTarget(bridge);</span>
+<span class="fc" id="L774">			Blossom U = topBlossom(bu), V = topBlossom(bv);</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">			for (Blossom b : new Blossom[] { U, V }) {</span>
 
-<span class="fc" id="L776">				int e = -1;</span>
-<span class="fc bfc" id="L777" title="All 2 branches covered.">				for (int u = b == U ? bu : bv;;) {</span>
-<span class="pc bnc" id="L778" title="All 2 branches missed.">					assert b.isEven;</span>
-<span class="fc" id="L779">					augmentPath(b, u);</span>
-<span class="fc bfc" id="L780" title="All 2 branches covered.">					if (e != -1) {</span>
-<span class="fc" id="L781">						int eu = g.edgeSource(e), ev = g.edgeTarget(e);</span>
-<span class="fc" id="L782">						matched[eu] = e;</span>
-<span class="fc" id="L783">						matched[ev] = edgeVal.get(e).twin;</span>
+<span class="fc" id="L777">				int e = -1;</span>
+<span class="fc bfc" id="L778" title="All 2 branches covered.">				for (int u = b == U ? bu : bv;;) {</span>
+<span class="pc bnc" id="L779" title="All 2 branches missed.">					assert b.isEven;</span>
+<span class="fc" id="L780">					augmentPath(b, u);</span>
+<span class="fc bfc" id="L781" title="All 2 branches covered.">					if (e != -1) {</span>
+<span class="fc" id="L782">						int eu = g.edgeSource(e), ev = g.edgeTarget(e);</span>
+<span class="fc" id="L783">						matched[eu] = e;</span>
+<span class="fc" id="L784">						matched[ev] = edgeVal.get(e).twin;</span>
 
-<span class="fc" id="L785">						debug.print(&quot; &quot;, Integer.valueOf(e));</span>
-<span class="pc bnc" id="L786" title="All 2 branches missed.">						assert matched[eu] != -1;</span>
-<span class="pc bnc" id="L787" title="All 2 branches missed.">						assert matched[ev] != -1;</span>
+<span class="fc" id="L786">						debug.print(&quot; &quot;, Integer.valueOf(e));</span>
+<span class="pc bnc" id="L787" title="All 2 branches missed.">						assert matched[eu] != -1;</span>
+<span class="pc bnc" id="L788" title="All 2 branches missed.">						assert matched[ev] != -1;</span>
 					}
-<span class="fc bfc" id="L789" title="All 2 branches covered.">					if (b.treeParentEdge == -1)</span>
-<span class="fc" id="L790">						break;</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">					if (b.treeParentEdge == -1)</span>
+<span class="fc" id="L791">						break;</span>
 					// Odd
-<span class="fc" id="L792">					b = topBlossom(g.edgeTarget(b.treeParentEdge));</span>
-<span class="pc bnc" id="L793" title="All 2 branches missed.">					assert !b.isEven;</span>
-<span class="fc" id="L794">					u = g.edgeSource(b.treeParentEdge);</span>
-<span class="fc" id="L795">					augmentPath(b, u);</span>
+<span class="fc" id="L793">					b = topBlossom(g.edgeTarget(b.treeParentEdge));</span>
+<span class="pc bnc" id="L794" title="All 2 branches missed.">					assert !b.isEven;</span>
+<span class="fc" id="L795">					u = g.edgeSource(b.treeParentEdge);</span>
+<span class="fc" id="L796">					augmentPath(b, u);</span>
 
 					// Even
-<span class="fc" id="L798">					e = b.treeParentEdge;</span>
-<span class="fc" id="L799">					u = g.edgeTarget(e);</span>
-<span class="fc" id="L800">					b = topBlossom(u);</span>
+<span class="fc" id="L799">					e = b.treeParentEdge;</span>
+<span class="fc" id="L800">					u = g.edgeTarget(e);</span>
+<span class="fc" id="L801">					b = topBlossom(u);</span>
 				}
 			}
-<span class="fc" id="L803">			matched[bu] = bridge;</span>
-<span class="fc" id="L804">			matched[bv] = edgeVal.get(bridge).twin;</span>
-<span class="fc" id="L805">			debug.println(&quot; &quot;, Integer.valueOf(bridge));</span>
-<span class="fc" id="L806">		}</span>
+<span class="fc" id="L804">			matched[bu] = bridge;</span>
+<span class="fc" id="L805">			matched[bv] = edgeVal.get(bridge).twin;</span>
+<span class="fc" id="L806">			debug.println(&quot; &quot;, Integer.valueOf(bridge));</span>
+<span class="fc" id="L807">		}</span>
 
 		private void augmentPath(Blossom B, int u) {
-<span class="fc bfc" id="L809" title="All 2 branches covered.">			if (B.base == u)</span>
-<span class="fc" id="L810">				return;</span>
+<span class="fc bfc" id="L810" title="All 2 branches covered.">			if (B.base == u)</span>
+<span class="fc" id="L811">				return;</span>
 
-<span class="fc" id="L812">			int m = matched[u];</span>
-<span class="fc" id="L813">			int v = g.edgeEndpoint(m, u);</span>
-<span class="fc" id="L814">			matched[u] = matched[v] = -1;</span>
-<span class="fc" id="L815">			EdgeVal mData = edgeVal.get(m);</span>
-<span class="fc" id="L816">			Blossom b0 = mData.b0;</span>
-<span class="fc" id="L817">			Blossom b1 = mData.b1;</span>
+<span class="fc" id="L813">			int m = matched[u];</span>
+<span class="fc" id="L814">			int v = g.edgeEndpoint(m, u);</span>
+<span class="fc" id="L815">			matched[u] = matched[v] = -1;</span>
+<span class="fc" id="L816">			EdgeVal mData = edgeVal.get(m);</span>
+<span class="fc" id="L817">			Blossom b0 = mData.b0;</span>
+<span class="fc" id="L818">			Blossom b1 = mData.b1;</span>
 
 			int xy;
 			Blossom b2;
-<span class="fc bfc" id="L821" title="All 2 branches covered.">			if (b0.right == b1) {</span>
-<span class="fc" id="L822">				b2 = b1.right;</span>
-<span class="fc" id="L823">				xy = b1.toRightEdge;</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">			if (b0.right == b1) {</span>
+<span class="fc" id="L823">				b2 = b1.right;</span>
+<span class="fc" id="L824">				xy = b1.toRightEdge;</span>
 			} else {
-<span class="pc bnc" id="L825" title="All 2 branches missed.">				assert b0.left == b1;</span>
-<span class="fc" id="L826">				b2 = b1.left;</span>
-<span class="fc" id="L827">				xy = b1.toLeftEdge;</span>
+<span class="pc bnc" id="L826" title="All 2 branches missed.">				assert b0.left == b1;</span>
+<span class="fc" id="L827">				b2 = b1.left;</span>
+<span class="fc" id="L828">				xy = b1.toLeftEdge;</span>
 			}
 
-<span class="pc bnc" id="L830" title="All 2 branches missed.">			assert b0 != b1;</span>
-<span class="pc bnc" id="L831" title="All 2 branches missed.">			assert b1 != b2;</span>
-<span class="pc bnc" id="L832" title="All 2 branches missed.">			assert b2 != b0;</span>
-<span class="pc bnc" id="L833" title="All 2 branches missed.">			assert b1.base == v;</span>
+<span class="pc bnc" id="L831" title="All 2 branches missed.">			assert b0 != b1;</span>
+<span class="pc bnc" id="L832" title="All 2 branches missed.">			assert b1 != b2;</span>
+<span class="pc bnc" id="L833" title="All 2 branches missed.">			assert b2 != b0;</span>
+<span class="pc bnc" id="L834" title="All 2 branches missed.">			assert b1.base == v;</span>
 
-<span class="fc" id="L835">			int xyU = g.edgeSource(xy), xyV = g.edgeTarget(xy);</span>
-<span class="fc" id="L836">			augmentPath(b1, xyU);</span>
-<span class="fc" id="L837">			augmentPath(B, xyV);</span>
-<span class="fc" id="L838">			matched[xyU] = xy;</span>
-<span class="fc" id="L839">			matched[xyV] = edgeVal.get(xy).twin;</span>
+<span class="fc" id="L836">			int xyU = g.edgeSource(xy), xyV = g.edgeTarget(xy);</span>
+<span class="fc" id="L837">			augmentPath(b1, xyU);</span>
+<span class="fc" id="L838">			augmentPath(B, xyV);</span>
+<span class="fc" id="L839">			matched[xyU] = xy;</span>
+<span class="fc" id="L840">			matched[xyV] = edgeVal.get(xy).twin;</span>
 
-<span class="pc bnc" id="L841" title="All 2 branches missed.">			assert g.edgeSource(matched[xyU]) == xyU;</span>
-<span class="pc bnc" id="L842" title="All 2 branches missed.">			assert g.edgeTarget(matched[xyU]) == xyV;</span>
-<span class="pc bnc" id="L843" title="All 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
+<span class="pc bnc" id="L842" title="All 2 branches missed.">			assert g.edgeSource(matched[xyU]) == xyU;</span>
+<span class="pc bnc" id="L843" title="All 2 branches missed.">			assert g.edgeTarget(matched[xyU]) == xyV;</span>
 <span class="pc bnc" id="L844" title="All 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
+<span class="pc bnc" id="L845" title="All 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
 
-<span class="pc bnc" id="L846" title="All 2 branches missed.">			assert isMatched(b1.base);</span>
-<span class="pc bnc" id="L847" title="All 2 branches missed.">			assert isMatched(b2.base);</span>
+<span class="pc bnc" id="L847" title="All 2 branches missed.">			assert isMatched(b1.base);</span>
+<span class="pc bnc" id="L848" title="All 2 branches missed.">			assert isMatched(b2.base);</span>
 
-<span class="fc" id="L849">			debug.print(&quot; &quot;, Integer.valueOf(xy));</span>
-<span class="fc" id="L850">			for (Blossom p = b0.parent;; p = p.parent) {</span>
-<span class="fc bfc" id="L851" title="All 2 branches covered.">				if (p == B.parent)</span>
-<span class="fc" id="L852">					break;</span>
-<span class="fc" id="L853">				p.base = u;</span>
+<span class="fc" id="L850">			debug.print(&quot; &quot;, Integer.valueOf(xy));</span>
+<span class="fc" id="L851">			for (Blossom p = b0.parent;; p = p.parent) {</span>
+<span class="fc bfc" id="L852" title="All 2 branches covered.">				if (p == B.parent)</span>
+<span class="fc" id="L853">					break;</span>
+<span class="fc" id="L854">				p.base = u;</span>
 			}
-<span class="fc" id="L855">		}</span>
+<span class="fc" id="L856">		}</span>
 
 		boolean isEven(int v) {
-<span class="fc" id="L858">			return blossoms[v].isEven;</span>
+<span class="fc" id="L859">			return blossoms[v].isEven;</span>
 		}
 
 		boolean isMatched(int v) {
-<span class="fc bfc" id="L862" title="All 2 branches covered.">			return matched[v] != -1;</span>
+<span class="fc bfc" id="L863" title="All 2 branches covered.">			return matched[v] != -1;</span>
 		}
 
 		boolean isInTree(int v) {
-<span class="nc bnc" id="L866" title="All 2 branches missed.">			return topBlossom(v).root != -1;</span>
+<span class="nc bnc" id="L867" title="All 2 branches missed.">			return topBlossom(v).root != -1;</span>
 		}
 
 		boolean isInTree(Blossom b) {
-<span class="pc bpc" id="L870" title="1 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root != -1;</span>
+<span class="pc bpc" id="L871" title="1 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root != -1;</span>
 		}
 
 		Blossom topBlossom(int v) {
-<span class="fc bfc" id="L874" title="All 2 branches covered.">			return isEven(v) ? evens.findBlossom(v) : odds.findBlossom(v);</span>
+<span class="fc bfc" id="L875" title="All 2 branches covered.">			return isEven(v) ? evens.findBlossom(v) : odds.findBlossom(v);</span>
 		}
 
 		Blossom topBlossom(Blossom v) {
-<span class="pc bnc" id="L878" title="All 2 branches missed.">			assert v.isSingleton();</span>
-<span class="fc bfc" id="L879" title="All 2 branches covered.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
+<span class="pc bnc" id="L879" title="All 2 branches missed.">			assert v.isSingleton();</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
 		}
 
 		Iterable&lt;Blossom&gt; allBlossoms() {
-<span class="fc" id="L883">			return () -&gt; new Iterator&lt;&gt;() {</span>
-<span class="fc" id="L884">				final int visitIdx = ++blossomVisitIdx;</span>
-<span class="fc" id="L885">				final int n = blossoms.length;</span>
-<span class="fc" id="L886">				int v = 0;</span>
-<span class="fc" id="L887">				Blossom b = blossoms[v];</span>
+<span class="fc" id="L884">			return () -&gt; new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L885">				final int visitIdx = ++blossomVisitIdx;</span>
+<span class="fc" id="L886">				final int n = blossoms.length;</span>
+<span class="fc" id="L887">				int v = 0;</span>
+<span class="fc" id="L888">				Blossom b = blossoms[v];</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L891" title="All 2 branches covered.">					return b != null;</span>
+<span class="fc bfc" id="L892" title="All 2 branches covered.">					return b != null;</span>
 				}
 
 				@Override
 				public Blossom next() {
-<span class="fc" id="L896">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L897">					Blossom ret = b;</span>
-<span class="fc" id="L898">					ret.lastVisitIdx = visitIdx;</span>
+<span class="fc" id="L897">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L898">					Blossom ret = b;</span>
+<span class="fc" id="L899">					ret.lastVisitIdx = visitIdx;</span>
 
-<span class="fc" id="L900">					b = b.parent;</span>
-<span class="fc bfc" id="L901" title="All 4 branches covered.">					if (b == null || b.lastVisitIdx == visitIdx) {</span>
-<span class="fc bfc" id="L902" title="All 2 branches covered.">						if (++v &lt; n) {</span>
-<span class="fc" id="L903">							b = blossoms[v];</span>
+<span class="fc" id="L901">					b = b.parent;</span>
+<span class="fc bfc" id="L902" title="All 4 branches covered.">					if (b == null || b.lastVisitIdx == visitIdx) {</span>
+<span class="fc bfc" id="L903" title="All 2 branches covered.">						if (++v &lt; n) {</span>
+<span class="fc" id="L904">							b = blossoms[v];</span>
 						} else {
-<span class="fc" id="L905">							b = null;</span>
+<span class="fc" id="L906">							b = null;</span>
 						}
 					}
-<span class="fc" id="L908">					return ret;</span>
+<span class="fc" id="L909">					return ret;</span>
 				}
 			};
 		}
 
 		Iterable&lt;Blossom&gt; topBlossoms() {
-<span class="fc" id="L914">			return () -&gt; new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L915">			return () -&gt; new Iterator&lt;&gt;() {</span>
 
-<span class="fc" id="L916">				final int visitIdx = ++blossomVisitIdx;</span>
-<span class="fc" id="L917">				final int n = blossoms.length;</span>
-<span class="fc" id="L918">				int v = 0;</span>
+<span class="fc" id="L917">				final int visitIdx = ++blossomVisitIdx;</span>
+<span class="fc" id="L918">				final int n = blossoms.length;</span>
+<span class="fc" id="L919">				int v = 0;</span>
 				Blossom b;
 
 				{
-<span class="fc bfc" id="L922" title="All 2 branches covered.">					for (b = blossoms[v]; b.parent != null;) {</span>
-<span class="fc" id="L923">						b.lastVisitIdx = visitIdx;</span>
-<span class="fc" id="L924">						b = b.parent;</span>
+<span class="fc bfc" id="L923" title="All 2 branches covered.">					for (b = blossoms[v]; b.parent != null;) {</span>
+<span class="fc" id="L924">						b.lastVisitIdx = visitIdx;</span>
+<span class="fc" id="L925">						b = b.parent;</span>
 					}
-<span class="fc" id="L926">				}</span>
+<span class="fc" id="L927">				}</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L930" title="All 2 branches covered.">					return b != null;</span>
+<span class="fc bfc" id="L931" title="All 2 branches covered.">					return b != null;</span>
 				}
 
 				@Override
 				public Blossom next() {
-<span class="fc" id="L935">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L936">					Blossom ret = b;</span>
-<span class="fc" id="L937">					ret.lastVisitIdx = visitIdx;</span>
+<span class="fc" id="L936">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L937">					Blossom ret = b;</span>
+<span class="fc" id="L938">					ret.lastVisitIdx = visitIdx;</span>
 
 					nextSingleton: for (;;) {
-<span class="fc bfc" id="L940" title="All 2 branches covered.">						if (++v &gt;= n) {</span>
-<span class="fc" id="L941">							b = null;</span>
-<span class="fc" id="L942">							break;</span>
+<span class="fc bfc" id="L941" title="All 2 branches covered.">						if (++v &gt;= n) {</span>
+<span class="fc" id="L942">							b = null;</span>
+<span class="fc" id="L943">							break;</span>
 						}
-<span class="fc bfc" id="L944" title="All 2 branches covered.">						for (b = blossoms[v]; b.parent != null;) {</span>
-<span class="fc" id="L945">							b.lastVisitIdx = visitIdx;</span>
-<span class="fc" id="L946">							b = b.parent;</span>
-<span class="fc bfc" id="L947" title="All 2 branches covered.">							if (b.lastVisitIdx == visitIdx)</span>
-<span class="fc" id="L948">								continue nextSingleton;</span>
+<span class="fc bfc" id="L945" title="All 2 branches covered.">						for (b = blossoms[v]; b.parent != null;) {</span>
+<span class="fc" id="L946">							b.lastVisitIdx = visitIdx;</span>
+<span class="fc" id="L947">							b = b.parent;</span>
+<span class="fc bfc" id="L948" title="All 2 branches covered.">							if (b.lastVisitIdx == visitIdx)</span>
+<span class="fc" id="L949">								continue nextSingleton;</span>
 						}
 						break;
 					}
 
-<span class="fc" id="L953">					return ret;</span>
+<span class="fc" id="L954">					return ret;</span>
 				}
 			};
 		}
 
 		double dualVal(int v) {
-<span class="fc" id="L959">			Blossom b = odds.findBlossom(v);</span>
-<span class="fc bfc" id="L960" title="All 2 branches covered.">			double deltaB = b == null ? 0 : b.deltaOdd;</span>
-<span class="fc" id="L961">			double val = vertexDualValBase[v] + deltaB;</span>
+<span class="fc" id="L960">			Blossom b = odds.findBlossom(v);</span>
+<span class="fc bfc" id="L961" title="All 2 branches covered.">			double deltaB = b == null ? 0 : b.deltaOdd;</span>
+<span class="fc" id="L962">			double val = vertexDualValBase[v] + deltaB;</span>
 			boolean isEven;
 
-<span class="fc bfc" id="L964" title="All 2 branches covered.">			if (b == null)</span>
+<span class="fc bfc" id="L965" title="All 2 branches covered.">			if (b == null)</span>
 				// v was part of an even blossom from the beginning of the current search
-<span class="fc" id="L966">				val -= delta;</span>
-<span class="fc bfc" id="L967" title="All 4 branches covered.">			else if ((isEven = isEven(v)) || b.root != -1)</span>
+<span class="fc" id="L967">				val -= delta;</span>
+<span class="fc bfc" id="L968" title="All 4 branches covered.">			else if ((isEven = isEven(v)) || b.root != -1)</span>
 				// v was part of an out blossom, b is max blossom before v became even
-<span class="fc bfc" id="L969" title="All 2 branches covered.">				val += isEven ? -(delta - b.delta0) : +(delta - b.delta1);</span>
-<span class="fc" id="L970">			return val;</span>
+<span class="fc bfc" id="L970" title="All 2 branches covered.">				val += isEven ? -(delta - b.delta0) : +(delta - b.delta1);</span>
+<span class="fc" id="L971">			return val;</span>
 		}
 
 		double dualVal(Blossom b) {
-<span class="pc bnc" id="L974" title="All 2 branches missed.">			assert !b.isSingleton();</span>
-<span class="fc" id="L975">			double zb = b.z0;</span>
-<span class="fc bfc" id="L976" title="All 4 branches covered.">			if (b.parent == null &amp;&amp; b.root != -1)</span>
-<span class="fc bfc" id="L977" title="All 2 branches covered.">				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));</span>
-<span class="fc" id="L978">			return zb;</span>
+<span class="pc bnc" id="L975" title="All 2 branches missed.">			assert !b.isSingleton();</span>
+<span class="fc" id="L976">			double zb = b.z0;</span>
+<span class="fc bfc" id="L977" title="All 4 branches covered.">			if (b.parent == null &amp;&amp; b.root != -1)</span>
+<span class="fc bfc" id="L978" title="All 2 branches covered.">				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));</span>
+<span class="fc" id="L979">			return zb;</span>
 		}
 
 		double growEventsKey(EdgeEvent event) {
-<span class="fc" id="L982">			int v = g.edgeTarget(event.e);</span>
-<span class="pc bnc" id="L983" title="All 2 branches missed.">			assert !isEven(v);</span>
-<span class="fc" id="L984">			return odds.findBlossom(v).deltaOdd + event.slack;</span>
+<span class="fc" id="L983">			int v = g.edgeTarget(event.e);</span>
+<span class="pc bnc" id="L984" title="All 2 branches missed.">			assert !isEven(v);</span>
+<span class="fc" id="L985">			return odds.findBlossom(v).deltaOdd + event.slack;</span>
 		}
 
 		void insertGrowEventsFromVertex(int u) {
-<span class="fc" id="L988">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L989" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L990">				int e = eit.nextInt();</span>
-<span class="fc" id="L991">				int v = eit.target();</span>
-<span class="fc bfc" id="L992" title="All 2 branches covered.">				if (isEven(v))</span>
-<span class="fc" id="L993">					continue;</span>
-<span class="fc" id="L994">				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);</span>
-<span class="fc bfc" id="L995" title="All 4 branches covered.">				if (vToGrowEvent[v] == null || slackBar &lt; vToGrowEvent[v].slack) {</span>
-<span class="fc" id="L996">					EdgeEvent event = vToGrowEvent[v] = new EdgeEvent(e, slackBar);</span>
-<span class="fc bfc" id="L997" title="All 2 branches covered.">					if (!odds.decreaseKey(v, event))</span>
-<span class="fc" id="L998">						continue;</span>
-<span class="pc bnc" id="L999" title="All 2 branches missed.">					assert odds.findMin(v) == event;</span>
+<span class="fc" id="L989">			double Yu = delta + dualVal(u);</span>
+<span class="fc bfc" id="L990" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L991">				int e = eit.nextInt();</span>
+<span class="fc" id="L992">				int v = eit.target();</span>
+<span class="fc bfc" id="L993" title="All 2 branches covered.">				if (isEven(v))</span>
+<span class="fc" id="L994">					continue;</span>
+<span class="fc" id="L995">				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);</span>
+<span class="fc bfc" id="L996" title="All 4 branches covered.">				if (vToGrowEvent[v] == null || slackBar &lt; vToGrowEvent[v].slack) {</span>
+<span class="fc" id="L997">					EdgeEvent event = vToGrowEvent[v] = new EdgeEvent(e, slackBar);</span>
+<span class="fc bfc" id="L998" title="All 2 branches covered.">					if (!odds.decreaseKey(v, event))</span>
+<span class="fc" id="L999">						continue;</span>
+<span class="pc bnc" id="L1000" title="All 2 branches missed.">					assert odds.findMin(v) == event;</span>
 
-<span class="fc" id="L1001">					Blossom V = odds.findBlossom(v);</span>
-<span class="fc bfc" id="L1002" title="All 2 branches covered.">					if (!isInTree(V)) {</span>
-<span class="fc bfc" id="L1003" title="All 2 branches covered.">						if (V.growRef == null)</span>
-<span class="fc" id="L1004">							V.growRef = growEvents.insert(event);</span>
+<span class="fc" id="L1002">					Blossom V = odds.findBlossom(v);</span>
+<span class="fc bfc" id="L1003" title="All 2 branches covered.">					if (!isInTree(V)) {</span>
+<span class="fc bfc" id="L1004" title="All 2 branches covered.">						if (V.growRef == null)</span>
+<span class="fc" id="L1005">							V.growRef = growEvents.insert(event);</span>
 						else
-<span class="fc" id="L1006">							growEvents.decreaseKey(V.growRef, event);</span>
+<span class="fc" id="L1007">							growEvents.decreaseKey(V.growRef, event);</span>
 					}
 				}
-<span class="fc" id="L1009">			}</span>
-<span class="fc" id="L1010">		}</span>
+<span class="fc" id="L1010">			}</span>
+<span class="fc" id="L1011">		}</span>
 
 		void insertBlossomEventsFromVertex(int u) {
-<span class="pc bnc" id="L1013" title="All 2 branches missed.">			assert isEven(u);</span>
-<span class="fc" id="L1014">			Blossom U = evens.findBlossom(u);</span>
-<span class="fc" id="L1015">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L1016" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L1017">				final int e = eit.nextInt();</span>
-<span class="fc" id="L1018">				int v = eit.target();</span>
-<span class="fc bfc" id="L1019" title="All 2 branches covered.">				if (!isEven(v))</span>
-<span class="fc" id="L1020">					continue;</span>
-<span class="fc" id="L1021">				Blossom V = evens.findBlossom(v);</span>
-<span class="fc bfc" id="L1022" title="All 2 branches covered.">				if (U == V)</span>
-<span class="fc" id="L1023">					continue;</span>
-<span class="fc" id="L1024">				double Yv = delta + dualVal(v);</span>
-<span class="fc" id="L1025">				double slackBar = Yu + Yv - w.weight(e);</span>
+<span class="pc bnc" id="L1014" title="All 2 branches missed.">			assert isEven(u);</span>
+<span class="fc" id="L1015">			Blossom U = evens.findBlossom(u);</span>
+<span class="fc" id="L1016">			double Yu = delta + dualVal(u);</span>
+<span class="fc bfc" id="L1017" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L1018">				final int e = eit.nextInt();</span>
+<span class="fc" id="L1019">				int v = eit.target();</span>
+<span class="fc bfc" id="L1020" title="All 2 branches covered.">				if (!isEven(v))</span>
+<span class="fc" id="L1021">					continue;</span>
+<span class="fc" id="L1022">				Blossom V = evens.findBlossom(v);</span>
+<span class="fc bfc" id="L1023" title="All 2 branches covered.">				if (U == V)</span>
+<span class="fc" id="L1024">					continue;</span>
+<span class="fc" id="L1025">				double Yv = delta + dualVal(v);</span>
+<span class="fc" id="L1026">				double slackBar = Yu + Yv - w.weight(e);</span>
 
-<span class="pc bnc" id="L1027" title="All 2 branches missed.">				assert slackBar &gt;= 0;</span>
-<span class="fc" id="L1028">				addBlossomEvent(e, slackBar);</span>
-<span class="fc" id="L1029">			}</span>
-<span class="fc" id="L1030">		};</span>
+<span class="pc bnc" id="L1028" title="All 2 branches missed.">				assert slackBar &gt;= 0;</span>
+<span class="fc" id="L1029">				addBlossomEvent(e, slackBar);</span>
+<span class="fc" id="L1030">			}</span>
+<span class="fc" id="L1031">		};</span>
 
 		abstract void addBlossomEvent(int e, double slackBar);
 
 		void connectSubBlossoms(Blossom left, Blossom right, int leftToRightEdge, boolean reverse) {
-<span class="fc bfc" id="L1035" title="All 2 branches covered.">			if (reverse) {</span>
-<span class="fc" id="L1036">				Blossom temp = left;</span>
-<span class="fc" id="L1037">				left = right;</span>
-<span class="fc" id="L1038">				right = temp;</span>
-<span class="fc" id="L1039">				leftToRightEdge = edgeVal.get(leftToRightEdge).twin;</span>
+<span class="fc bfc" id="L1036" title="All 2 branches covered.">			if (reverse) {</span>
+<span class="fc" id="L1037">				Blossom temp = left;</span>
+<span class="fc" id="L1038">				left = right;</span>
+<span class="fc" id="L1039">				right = temp;</span>
+<span class="fc" id="L1040">				leftToRightEdge = edgeVal.get(leftToRightEdge).twin;</span>
 			}
-<span class="fc" id="L1041">			EdgeVal edgeData = edgeVal.get(leftToRightEdge);</span>
-<span class="fc" id="L1042">			EdgeVal twinData = edgeVal.get(edgeData.twin);</span>
-<span class="fc" id="L1043">			left.right = right;</span>
-<span class="fc" id="L1044">			left.toRightEdge = leftToRightEdge;</span>
-<span class="fc" id="L1045">			right.left = left;</span>
-<span class="fc" id="L1046">			right.toLeftEdge = edgeData.twin;</span>
-<span class="fc" id="L1047">			edgeData.b0 = left;</span>
-<span class="fc" id="L1048">			edgeData.b1 = right;</span>
-<span class="fc" id="L1049">			twinData.b0 = right;</span>
-<span class="fc" id="L1050">			twinData.b1 = left;</span>
-<span class="fc" id="L1051">		}</span>
+<span class="fc" id="L1042">			EdgeVal edgeData = edgeVal.get(leftToRightEdge);</span>
+<span class="fc" id="L1043">			EdgeVal twinData = edgeVal.get(edgeData.twin);</span>
+<span class="fc" id="L1044">			left.right = right;</span>
+<span class="fc" id="L1045">			left.toRightEdge = leftToRightEdge;</span>
+<span class="fc" id="L1046">			right.left = left;</span>
+<span class="fc" id="L1047">			right.toLeftEdge = edgeData.twin;</span>
+<span class="fc" id="L1048">			edgeData.b0 = left;</span>
+<span class="fc" id="L1049">			edgeData.b1 = right;</span>
+<span class="fc" id="L1050">			twinData.b0 = right;</span>
+<span class="fc" id="L1051">			twinData.b1 = left;</span>
+<span class="fc" id="L1052">		}</span>
 
 		Blossom lcaInSearchTree(Blossom b1, Blossom b2) {
-<span class="fc" id="L1054">			int visitIdx = ++blossomVisitIdx;</span>
-<span class="fc" id="L1055">			for (Blossom[] bs = new Blossom[] { b1, b2 };;) {</span>
-<span class="pc bpc" id="L1056" title="1 of 4 branches missed.">				if (bs[0] == null &amp;&amp; bs[1] == null)</span>
-<span class="nc" id="L1057">					return null;</span>
-<span class="fc bfc" id="L1058" title="All 2 branches covered.">				for (int i = 0; i &lt; bs.length; i++) {</span>
-<span class="fc" id="L1059">					Blossom b = bs[i];</span>
-<span class="fc bfc" id="L1060" title="All 2 branches covered.">					if (b == null)</span>
-<span class="fc" id="L1061">						continue;</span>
-<span class="fc bfc" id="L1062" title="All 2 branches covered.">					if (b.lastVisitIdx == visitIdx)</span>
-<span class="fc" id="L1063">						return b;</span>
-<span class="fc" id="L1064">					b.lastVisitIdx = visitIdx;</span>
-<span class="fc bfc" id="L1065" title="All 2 branches covered.">					bs[i] = b.treeParentEdge == -1 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));</span>
+<span class="fc" id="L1055">			int visitIdx = ++blossomVisitIdx;</span>
+<span class="fc" id="L1056">			for (Blossom[] bs = new Blossom[] { b1, b2 };;) {</span>
+<span class="pc bpc" id="L1057" title="1 of 4 branches missed.">				if (bs[0] == null &amp;&amp; bs[1] == null)</span>
+<span class="nc" id="L1058">					return null;</span>
+<span class="fc bfc" id="L1059" title="All 2 branches covered.">				for (int i = 0; i &lt; bs.length; i++) {</span>
+<span class="fc" id="L1060">					Blossom b = bs[i];</span>
+<span class="fc bfc" id="L1061" title="All 2 branches covered.">					if (b == null)</span>
+<span class="fc" id="L1062">						continue;</span>
+<span class="fc bfc" id="L1063" title="All 2 branches covered.">					if (b.lastVisitIdx == visitIdx)</span>
+<span class="fc" id="L1064">						return b;</span>
+<span class="fc" id="L1065">					b.lastVisitIdx = visitIdx;</span>
+<span class="fc bfc" id="L1066" title="All 2 branches covered.">					bs[i] = b.treeParentEdge == -1 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));</span>
 				}
 			}
 		}

@@ -40,7 +40,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Param({ &quot;|V|=30 |E|=300&quot;, &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot; })
 	public String args;
 
-	private List&lt;Pair&lt;Graph, WeightFunction.Int&gt;&gt; graphs;
+	private List&lt;Pair&lt;Graph, WeightFunctionInt&gt;&gt; graphs;
 <span class="fc" id="L59">	private final int graphsNum = 31;</span>
 <span class="fc" id="L60">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
@@ -70,15 +70,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L71">			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)</span>
 <span class="fc" id="L72">					.selfEdges(false).cycles(true).connected(false).build();</span>
-<span class="fc" id="L73">			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L73">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 <span class="fc" id="L74">			graphs.add(Pair.of(g, w));</span>
 		}
 <span class="fc" id="L76">	}</span>
 
 	private void benchMaxFlow(MinimumMeanCycle.Builder builder, Blackhole blackhole) {
-<span class="fc" id="L79">		Pair&lt;Graph, WeightFunction.Int&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L79">		Pair&lt;Graph, WeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L80">		Graph g = gw.first();</span>
-<span class="fc" id="L81">		WeightFunction.Int w = gw.second();</span>
+<span class="fc" id="L81">		WeightFunctionInt w = gw.second();</span>
 <span class="fc" id="L82">		MinimumMeanCycle algo = builder.build();</span>
 <span class="fc" id="L83">		Path cycle = algo.computeMinimumMeanCycle(g, w);</span>
 <span class="fc" id="L84">		blackhole.consume(cycle);</span>

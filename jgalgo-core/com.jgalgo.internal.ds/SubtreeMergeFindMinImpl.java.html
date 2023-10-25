@@ -65,8 +65,8 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L65">	SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {</span>
 <span class="fc" id="L66">		nodes = new NodeImpl[2];</span>
 
-<span class="fc" id="L68">		uf = UnionFind.newBuilder().build();</span>
-<span class="fc" id="L69">		lca = LowestCommonAncestorDynamic.newBuilder().build();</span>
+<span class="fc" id="L68">		uf = UnionFind.newInstance();</span>
+<span class="fc" id="L69">		lca = LowestCommonAncestorDynamic.newInstance();</span>
 
 <span class="fc bfc" id="L71" title="All 2 branches covered.">		this.weightCmp = weightCmp != null ? weightCmp : JGAlgoUtils.getDefaultComparator();</span>
 <span class="fc" id="L72">		timestamp = 0;</span>
@@ -93,7 +93,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 		/* Add to LCA data structure */
 <span class="fc bfc" id="L95" title="All 2 branches covered.">		node.lcaNode = parent == null ? lca.initTree() : lca.addLeaf(parent.lcaNode);</span>
-<span class="fc" id="L96">		node.lcaNode.setNodeData(node);</span>
+<span class="fc" id="L96">		node.lcaNode.setData(node);</span>
 
 		/* Add to UF data structure */
 <span class="fc" id="L99">		node.ufIdx = uf.make();</span>
@@ -235,10 +235,10 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L235">		Edge&lt;E&gt; edge = new Edge&lt;&gt;(u, v, edgedata);</span>
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-<span class="fc" id="L238">		LowestCommonAncestorDynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
+<span class="fc" id="L238">		LowestCommonAncestorDynamic.Vertex l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
 <span class="fc bfc" id="L239" title="All 2 branches covered.">		if (u.lcaNode != l) {</span>
-<span class="fc" id="L240">			addEdgeNode(new EdgeNode&lt;&gt;(u, l.getNodeData(), edge));</span>
-<span class="fc" id="L241">			addEdgeNode(new EdgeNode&lt;&gt;(v, l.getNodeData(), edge));</span>
+<span class="fc" id="L240">			addEdgeNode(new EdgeNode&lt;&gt;(u, l.getData(), edge));</span>
+<span class="fc" id="L241">			addEdgeNode(new EdgeNode&lt;&gt;(v, l.getData(), edge));</span>
 		} else {
 <span class="fc" id="L243">			addEdgeNode(new EdgeNode&lt;&gt;(v, u, edge));</span>
 		}
@@ -340,7 +340,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		private final NodeImpl&lt;E&gt; parent;
 		private final int depth;
 		private int ufIdx;
-		private LowestCommonAncestorDynamic.Node lcaNode;
+		private LowestCommonAncestorDynamic.Vertex lcaNode;
 		private SubTree&lt;E&gt; subtree;
 
 <span class="fc" id="L346">		NodeImpl(NodeImpl&lt;E&gt; parent) {</span>

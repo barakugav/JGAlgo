@@ -99,8 +99,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L99">			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L100">			int[] level = new int[n];</span>
 <span class="pc bpc" id="L101" title="1 of 2 branches missed.">			DynamicTree dt = DynamicTree.newBuilder().setMaxWeight(capacitySum &gt; 0 ? capacitySum : 1e100).build();</span>
-<span class="fc" id="L102">			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];</span>
-<span class="fc" id="L103">			Stack&lt;DynamicTree.Node&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L102">			DynamicTree.Vertex[] vToDt = new DynamicTree.Vertex[n];</span>
+<span class="fc" id="L103">			Stack&lt;DynamicTree.Vertex&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
 
 <span class="fc" id="L105">			int[] edgeToParent = new int[n];</span>
 <span class="fc" id="L106">			Arrays.fill(edgeToParent, -1);</span>
@@ -138,7 +138,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 <span class="fc" id="L139">				dt.clear();</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L141">					(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));</span>
+<span class="fc" id="L141">					(vToDt[u] = dt.makeTree()).setData(Integer.valueOf(u));</span>
 
 <span class="fc" id="L143">				IntDoubleConsumer updateFlow = (e, weight) -&gt; {</span>
 <span class="fc" id="L144">					double currentFlow = flow[e];</span>
@@ -149,7 +149,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L149">				};</span>
 
 				calcBlockFlow: for (;;) {
-<span class="fc" id="L152">					int v = dt.findRoot(vToDt[source]).&lt;Integer&gt;getNodeData().intValue();</span>
+<span class="fc" id="L152">					int v = dt.findRoot(vToDt[source]).&lt;Integer&gt;getData().intValue();</span>
 <span class="fc bfc" id="L153" title="All 2 branches covered.">					if (v == sink) {</span>
 
 						/* Augment */
@@ -160,7 +160,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 						/* Delete all saturated edges */
 <span class="fc" id="L161">						debug.println(&quot;Delete&quot;);</span>
 						do {
-<span class="fc" id="L163">							int e = edgeToParent[min.source().&lt;Integer&gt;getNodeData().intValue()];</span>
+<span class="fc" id="L163">							int e = edgeToParent[min.source().&lt;Integer&gt;getData().intValue()];</span>
 <span class="pc bnc" id="L164" title="All 2 branches missed.">							assert vToDt[L.edgeSource(e)] == min.source();</span>
 <span class="fc" id="L165">							L.removeEdge(e);</span>
 
@@ -184,7 +184,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="pc bnc" id="L184" title="All 2 branches missed.">							assert vToDt[u].getParent() == vToDt[v];</span>
 
 <span class="fc" id="L186">							MinEdge m = dt.findMinEdge(vToDt[u]);</span>
-<span class="pc bnc" id="L187" title="All 2 branches missed.">							assert e == edgeToParent[m.source().&lt;Integer&gt;getNodeData().intValue()];</span>
+<span class="pc bnc" id="L187" title="All 2 branches missed.">							assert e == edgeToParent[m.source().&lt;Integer&gt;getData().intValue()];</span>
 <span class="fc" id="L188">							edgeToParent[u] = -1;</span>
 <span class="fc" id="L189">							updateFlow.accept(e, m.weight());</span>
 
@@ -206,13 +206,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 				/* Cleanup all the edges that stayed in the DT */
 <span class="fc bfc" id="L208" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">					for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">					for (DynamicTree.Vertex uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)</span>
 <span class="fc" id="L210">						cleanupStack.push(uDt);</span>
 <span class="fc bfc" id="L211" title="All 2 branches covered.">					while (!cleanupStack.isEmpty()) {</span>
-<span class="fc" id="L212">						DynamicTree.Node uDt = cleanupStack.pop();</span>
+<span class="fc" id="L212">						DynamicTree.Vertex uDt = cleanupStack.pop();</span>
 <span class="pc bnc" id="L213" title="All 2 branches missed.">						assert uDt.getParent() == dt.findRoot(uDt);</span>
 <span class="fc" id="L214">						MinEdge m = dt.findMinEdge(uDt);</span>
-<span class="fc" id="L215">						int eSource = m.source().&lt;Integer&gt;getNodeData().intValue();</span>
+<span class="fc" id="L215">						int eSource = m.source().&lt;Integer&gt;getData().intValue();</span>
 <span class="fc" id="L216">						int e = edgeToParent[eSource];</span>
 <span class="fc" id="L217">						edgeToParent[eSource] = -1;</span>
 <span class="fc" id="L218">						updateFlow.accept(e, m.weight());</span>

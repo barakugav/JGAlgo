@@ -51,12 +51,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L53">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L54">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY,</span>
-<span class="fc" id="L55">				IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L56">		edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesOutNum = newArr);</span>
-<span class="fc" id="L57">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L54">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L55">				newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L56">		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesOutNum = newArr);</span>
+<span class="fc" id="L57">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
 <span class="fc" id="L58">				newArr -&gt; edgesIn = newArr);</span>
-<span class="fc" id="L59">		edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesInNum = newArr);</span>
+<span class="fc" id="L59">		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesInNum = newArr);</span>
 
 <span class="fc" id="L61">		addInternalVerticesContainer(edgesOutContainer);</span>
 <span class="fc" id="L62">		addInternalVerticesContainer(edgesOutNumContainer);</span>
@@ -71,12 +71,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">		if (g instanceof GraphArrayDirected) {</span>
 <span class="fc" id="L72">			GraphArrayDirected g0 = (GraphArrayDirected) g;</span>
 
-<span class="fc" id="L74">			edgesOutContainer = g0.edgesOutContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY,</span>
-<span class="fc" id="L75">					newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L76">			edgesOutNumContainer = g0.edgesOutNumContainer.copy(verticesIdStrat, newArr -&gt; edgesOutNum = newArr);</span>
+<span class="fc" id="L74">			edgesOutContainer =</span>
+<span class="fc" id="L75">					g0.edgesOutContainer.copy(vertices, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L76">			edgesOutNumContainer = g0.edgesOutNumContainer.copy(vertices, newArr -&gt; edgesOutNum = newArr);</span>
 <span class="fc" id="L77">			edgesInContainer =</span>
-<span class="fc" id="L78">					g0.edgesInContainer.copy(verticesIdStrat, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesIn = newArr);</span>
-<span class="fc" id="L79">			edgesInNumContainer = g0.edgesInNumContainer.copy(verticesIdStrat, newArr -&gt; edgesInNum = newArr);</span>
+<span class="fc" id="L78">					g0.edgesInContainer.copy(vertices, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L79">			edgesInNumContainer = g0.edgesInNumContainer.copy(vertices, newArr -&gt; edgesInNum = newArr);</span>
 
 <span class="fc" id="L81">			addInternalVerticesContainer(edgesOutContainer);</span>
 <span class="fc" id="L82">			addInternalVerticesContainer(edgesOutNumContainer);</span>
@@ -88,12 +88,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L88">				edgesIn[v] = Arrays.copyOf(edgesIn[v], edgesInNum[v]);</span>
 			}
 <span class="fc" id="L90">		} else {</span>
-<span class="fc" id="L91">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY,</span>
-<span class="fc" id="L92">					IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L93">			edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesOutNum = newArr);</span>
-<span class="fc" id="L94">			edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY,</span>
-<span class="fc" id="L95">					IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesIn = newArr);</span>
-<span class="fc" id="L96">			edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesInNum = newArr);</span>
+<span class="fc" id="L91">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L92">					newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L93">			edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesOutNum = newArr);</span>
+<span class="fc" id="L94">			edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L95">					newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L96">			edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesInNum = newArr);</span>
 
 <span class="fc" id="L98">			addInternalVerticesContainer(edgesOutContainer);</span>
 <span class="fc" id="L99">			addInternalVerticesContainer(edgesOutNumContainer);</span>
@@ -123,12 +123,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	GraphArrayDirected(IndexGraphBuilderImpl.Directed builder) {
 <span class="fc" id="L125">		super(builder);</span>
-<span class="fc" id="L126">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY,</span>
-<span class="fc" id="L127">				IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L128">		edgesOutNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesOutNum = newArr);</span>
-<span class="fc" id="L129">		edgesInContainer = new DataContainer.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L126">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
+<span class="fc" id="L127">				newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L128">		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesOutNum = newArr);</span>
+<span class="fc" id="L129">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,</span>
 <span class="fc" id="L130">				newArr -&gt; edgesIn = newArr);</span>
-<span class="fc" id="L131">		edgesInNumContainer = new DataContainer.Int(verticesIdStrat, 0, newArr -&gt; edgesInNum = newArr);</span>
+<span class="fc" id="L131">		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesInNum = newArr);</span>
 
 <span class="fc" id="L133">		addInternalVerticesContainer(edgesOutContainer);</span>
 <span class="fc" id="L134">		addInternalVerticesContainer(edgesOutNumContainer);</span>
