@@ -59,7 +59,7 @@ class CutImpl implements Cut {
 	@Override
 	public IntCollection edges() {
 		computeCrossEdgesCollection();
-		return cutVertices;
+		return crossEdges;
 	}
 
 	private void computeVerticesCollection() {
