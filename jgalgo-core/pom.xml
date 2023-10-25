@@ -95,6 +95,7 @@
         <configuration>
           <excludes>
             <exclude>com/jgalgo/internal/util/FIFOQueueIntNoReduce**</exclude>
+            <exclude>com/jgalgo/internal/util/FIFOQueueLongNoReduce**</exclude>
             <exclude>com/jgalgo/internal/util/DebugPrinter**</exclude>
           </excludes>
         </configuration>

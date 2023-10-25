@@ -21,10 +21,11 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 class BfsIterImpl {
 
@@ -32,7 +33,7 @@ class BfsIterImpl {
 
 		final IndexGraph g;
 		final BitSet visited;
-		final IntPriorityQueue queue;
+		final LongPriorityQueue queue;
 		int inEdge;
 		int layer;
 		int firstVInLayer;
@@ -41,7 +42,7 @@ class BfsIterImpl {
 			this.g = g;
 			int n = g.vertices().size();
 			visited = new BitSet(n);
-			queue = new FIFOQueueIntNoReduce();
+			queue = new FIFOQueueLongNoReduce();
 			inEdge = -1;
 			layer = -1;
 
@@ -49,8 +50,7 @@ class BfsIterImpl {
 			do {
 				int source = sources.nextInt();
 				visited.set(source);
-				queue.enqueue(source);
-				queue.enqueue(-1);
+				queue.enqueue(JGAlgoUtils.longCompose(source, -1));
 				if (firstVInLayer == -1)
 					firstVInLayer = source;
 			} while (sources.hasNext());
@@ -98,8 +98,9 @@ class BfsIterImpl {
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			final int u = queue.dequeueInt();
-			inEdge = queue.dequeueInt();
+			long l = queue.dequeueLong();
+			final int u = JGAlgoUtils.long2low(l);
+			inEdge = JGAlgoUtils.long2high(l);
 			if (u == firstVInLayer) {
 				layer++;
 				firstVInLayer = -1;
@@ -111,8 +112,7 @@ class BfsIterImpl {
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				queue.enqueue(v);
-				queue.enqueue(e);
+				queue.enqueue(JGAlgoUtils.longCompose(v, e));
 				if (firstVInLayer == -1)
 					firstVInLayer = v;
 			}
@@ -134,8 +134,9 @@ class BfsIterImpl {
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			final int v = queue.dequeueInt();
-			inEdge = queue.dequeueInt();
+			long l = queue.dequeueLong();
+			final int v = JGAlgoUtils.long2low(l);
+			inEdge = JGAlgoUtils.long2high(l);
 			if (v == firstVInLayer) {
 				layer++;
 				firstVInLayer = -1;
@@ -147,8 +148,7 @@ class BfsIterImpl {
 				if (visited.get(u))
 					continue;
 				visited.set(u);
-				queue.enqueue(u);
-				queue.enqueue(e);
+				queue.enqueue(JGAlgoUtils.longCompose(u, e));
 				if (firstVInLayer == -1)
 					firstVInLayer = u;
 			}
