@@ -17,28 +17,15 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.longs.AbstractLongList;
 import it.unimi.dsi.fastutil.longs.LongArrays;
-import it.unimi.dsi.fastutil.longs.LongCollection;
-import it.unimi.dsi.fastutil.longs.LongIterators;
-import it.unimi.dsi.fastutil.longs.LongListIterator;
-import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import it.unimi.dsi.fastutil.objects.ObjectCollection;
-import it.unimi.dsi.fastutil.objects.ObjectIterators;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
-abstract class DataContainer<E> {
+abstract class DataContainer {
 
 	final GraphElementSet elements;
 
@@ -50,16 +37,6 @@ abstract class DataContainer<E> {
 		return elements.size();
 	}
 
-	@Override
-	public int hashCode() {
-		return values().hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return values().toString();
-	}
-
 	void checkIdx(int idx) {
 		if (!elements.contains(idx))
 			throw new IndexOutOfBoundsException(idx);
@@ -67,23 +44,12 @@ abstract class DataContainer<E> {
 
 	abstract void expand(int newCapacity);
 
-	abstract Collection<E> values();
+	abstract int capacity();
 
-	private static abstract class Abstract<E> extends DataContainer<E> {
-
-		Abstract(GraphElementSet elements) {
-			super(elements);
-		}
-
-		abstract int capacity();
-
-	}
-
-	static class Obj<E> extends DataContainer.Abstract<E> {
+	static class Obj<E> extends DataContainer {
 
 		private E[] weights;
 		private final E defaultWeight;
-		private final ObjectCollection<E> values;
 		private final Consumer<E[]> onArrayAlloc;
 
 		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
@@ -94,24 +60,6 @@ abstract class DataContainer<E> {
 			weights = emptyArr;
 			Arrays.fill(weights, defaultWeight);
 			onArrayAlloc.accept(weights);
-
-			values = new AbstractObjectList<>() {
-				@Override
-				public int size() {
-					return DataContainer.Obj.super.size();
-				}
-
-				@Override
-				public ObjectListIterator<E> iterator() {
-					return ObjectIterators.wrap(weights, 0, size());
-				}
-
-				@Override
-				public E get(int index) {
-					checkIdx(index);
-					return weights[index];
-				}
-			};
 		}
 
 		public E get(int idx) {
@@ -164,11 +112,6 @@ abstract class DataContainer<E> {
 			Arrays.fill(weights, 0, size(), defaultWeight);
 		}
 
-		@Override
-		public Collection<E> values() {
-			return values;
-		}
-
 		public DataContainer.Obj<E> copy(GraphElementSet elements, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
@@ -177,23 +120,12 @@ abstract class DataContainer<E> {
 			onArrayAlloc.accept(copy.weights);
 			return copy;
 		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof DataContainer.Obj<?>))
-				return false;
-			DataContainer.Obj<?> o = (DataContainer.Obj<?>) other;
-			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-		}
 	}
 
-	static class Int extends DataContainer.Abstract<Integer> {
+	static class Int extends DataContainer {
 
 		private int[] weights;
 		private final int defaultWeight;
-		private final IntCollection values;
 		private final Consumer<int[]> onArrayAlloc;
 
 		Int(GraphElementSet elements, int defVal, Consumer<int[]> onArrayAlloc) {
@@ -203,24 +135,6 @@ abstract class DataContainer<E> {
 			defaultWeight = defVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
 			onArrayAlloc.accept(weights);
-			values = new AbstractIntList() {
-
-				@Override
-				public int size() {
-					return DataContainer.Int.super.size();
-				}
-
-				@Override
-				public IntListIterator iterator() {
-					return IntIterators.wrap(weights, 0, size());
-				}
-
-				@Override
-				public int getInt(int index) {
-					checkIdx(index);
-					return weights[index];
-				}
-			};
 		}
 
 		public int get(int idx) {
@@ -277,11 +191,6 @@ abstract class DataContainer<E> {
 			Arrays.fill(weights, 0, size(), defaultWeight);
 		}
 
-		@Override
-		IntCollection values() {
-			return values;
-		}
-
 		DataContainer.Int copy(GraphElementSet elements, Consumer<int[]> onArrayAlloc) {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
@@ -290,40 +199,12 @@ abstract class DataContainer<E> {
 			onArrayAlloc.accept(copy.weights);
 			return copy;
 		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof DataContainer.Int))
-				return false;
-			DataContainer.Int o = (DataContainer.Int) other;
-			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
-		}
 	}
 
-	static class Long extends DataContainer.Abstract<java.lang.Long> {
+	static class Long extends DataContainer {
 
 		private long[] weights;
 		private final long defaultWeight;
-		private final LongCollection values = new AbstractLongList() {
-
-			@Override
-			public int size() {
-				return DataContainer.Long.super.size();
-			}
-
-			@Override
-			public LongListIterator iterator() {
-				return LongIterators.wrap(weights, 0, size());
-			}
-
-			@Override
-			public long getLong(int index) {
-				checkIdx(index);
-				return weights[index];
-			}
-		};
 		private final Consumer<long[]> onArrayAlloc;
 
 		Long(GraphElementSet elements, long defVal, Consumer<long[]> onArrayAlloc) {
@@ -402,38 +283,23 @@ abstract class DataContainer<E> {
 			Arrays.fill(weights, 0, size(), defaultWeight);
 		}
 
-		@Override
-		LongCollection values() {
-			return values;
-		}
-
 		DataContainer.Long copy(GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
 			return new DataContainer.Long(this, elements, onArrayAlloc);
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (this == other)
-				return true;
-			if (!(other instanceof DataContainer.Long))
-				return false;
-			DataContainer.Long o = (DataContainer.Long) other;
-			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
 		}
 	}
 
 	static class Manager {
 
-		final List<DataContainer<?>> containers = new ObjectArrayList<>();
+		final List<DataContainer> containers = new ObjectArrayList<>();
 		private int containersCapacity;
 
 		Manager(int initCapacity) {
 			containersCapacity = initCapacity;
 		}
 
-		void addContainer(DataContainer<?> container) {
+		void addContainer(DataContainer container) {
 			containers.add(container);
-			if (containersCapacity > ((DataContainer.Abstract<?>) container).capacity())
+			if (containersCapacity > container.capacity())
 				container.expand(containersCapacity);
 		}
 
@@ -441,7 +307,7 @@ abstract class DataContainer<E> {
 			if (capacity <= containersCapacity)
 				return;
 			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);
-			for (DataContainer<?> container : containers)
+			for (DataContainer container : containers)
 				container.expand(newCapacity);
 			containersCapacity = newCapacity;
 		}

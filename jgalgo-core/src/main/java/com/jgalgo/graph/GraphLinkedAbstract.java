@@ -16,7 +16,6 @@
 
 package com.jgalgo.graph;
 
-import java.util.Collection;
 import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
@@ -93,10 +92,6 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 	public int edgeTarget(int edge) {
 		checkEdge(edge);
 		return getEdge(edge).target;
-	}
-
-	Collection<Edge> edgeObjs() {
-		return edgesContainer.values();
 	}
 
 	@Override

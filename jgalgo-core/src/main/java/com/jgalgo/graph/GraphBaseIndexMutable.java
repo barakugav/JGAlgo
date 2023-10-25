@@ -214,11 +214,11 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		edgesUserWeights.removeWeights(key);
 	}
 
-	void addInternalVerticesContainer(DataContainer<?> container) {
+	void addInternalVerticesContainer(DataContainer container) {
 		verticesInternalContainers.addContainer(container);
 	}
 
-	void addInternalEdgesContainer(DataContainer<?> container) {
+	void addInternalEdgesContainer(DataContainer container) {
 		edgesInternalContainers.addContainer(container);
 	}
 

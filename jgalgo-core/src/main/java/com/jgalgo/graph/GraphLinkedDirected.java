@@ -212,8 +212,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	public void clearEdges() {
-		for (GraphLinkedAbstract.Edge p0 : edgeObjs()) {
-			Edge p = (Edge) p0;
+		for (int m = edges().size(), e = 0; e < m; e++) {
+			Edge p = getEdge(e);
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
 		edgesOutContainer.clear(edgesOut);
