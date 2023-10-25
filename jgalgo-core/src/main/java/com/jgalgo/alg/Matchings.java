@@ -22,10 +22,9 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 class Matchings {
@@ -58,11 +57,15 @@ class Matchings {
 		public IntCollection matchedVertices() {
 			if (matchedVertices == null) {
 				computeMatchedArray();
-				IntList matchedVertices0 = new IntArrayList();
+				int matchedCount = 0;
 				for (int v = 0; v < matched.length; v++)
 					if (matched[v] != -1)
-						matchedVertices0.add(v);
-				matchedVertices = matchedVertices0;
+						matchedCount++;
+				int[] matchedVertices0 = new int[matchedCount];
+				for (int i = 0, v = 0; v < matched.length; v++)
+					if (matched[v] != -1)
+						matchedVertices0[i++] = v;
+				matchedVertices = IntImmutableList.of(matchedVertices0);
 			}
 			return matchedVertices;
 		}
@@ -71,11 +74,15 @@ class Matchings {
 		public IntCollection unmatchedVertices() {
 			if (unmatchedVertices == null) {
 				computeMatchedArray();
-				IntList unmatchedVertices0 = new IntArrayList();
+				int unmatchedCount = 0;
 				for (int v = 0; v < matched.length; v++)
 					if (matched[v] == -1)
-						unmatchedVertices0.add(v);
-				unmatchedVertices = unmatchedVertices0;
+						unmatchedCount++;
+				int[] unmatchedVertices0 = new int[unmatchedCount];
+				for (int i = 0, v = 0; v < matched.length; v++)
+					if (matched[v] == -1)
+						unmatchedVertices0[i++] = v;
+				unmatchedVertices = IntImmutableList.of(unmatchedVertices0);
 			}
 			return unmatchedVertices;
 		}
@@ -101,16 +108,23 @@ class Matchings {
 		private void computeEdgesCollection() {
 			if (edges != null)
 				return;
-			IntArrayList edges0 = new IntArrayList();
-			int n = g.vertices().size();
-			for (int v = 0; v < n; v++) {
+			int edgesCount = 0;
+			for (int n = g.vertices().size(), v = 0; v < n; v++) {
 				int e = matched[v];
-				if (e == -1)
-					continue;
-				if (v == g.edgeSource(e))
-					edges0.add(e);
+				if (e != -1 && v == g.edgeSource(e)) {
+					assert g.edgeSource(e) != g.edgeTarget(e);
+					edgesCount++;
+				}
 			}
-			edges = IntLists.unmodifiable(edges0);
+			int[] edges0 = new int[edgesCount];
+			for (int i = 0, n = g.vertices().size(), v = 0; v < n; v++) {
+				int e = matched[v];
+				if (e != -1 && v == g.edgeSource(e)) {
+					assert g.edgeSource(e) != g.edgeTarget(e);
+					edges0[i++] = e;
+				}
+			}
+			edges = IntImmutableList.of(edges0);
 		}
 
 		private void computeMatchedArray() {
