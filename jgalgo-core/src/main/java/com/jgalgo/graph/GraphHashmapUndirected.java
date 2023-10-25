@@ -67,8 +67,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 				int v = g.edgeTarget(e);
 				int oldVal = ensureEdgesMapMutable(edges, u).put(v, e);
 				if (oldVal != -1)
-					throw new IllegalStateException(
-							"Parallel edge (" + u + "," + v + ") already exists. Parallel edges are not allowed.");
+					throw new IllegalStateException("Parallel edge (idx=" + u + ",idx=" + v
+							+ ") already exists. Parallel edges are not allowed.");
 				if (u != v) {
 					int oldVal2 = ensureEdgesMapMutable(edges, v).put(u, e);
 					assert oldVal2 == -1;
@@ -165,7 +165,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	public int addEdge(int source, int target) {
 		if (getEdge(source, target) != -1)
 			throw new IllegalArgumentException(
-					"Edge (" + source + "," + target + ") already exists. Parallel edges are not allowed.");
+					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
 
 		ensureEdgesMapMutable(edges, source).put(target, edge);

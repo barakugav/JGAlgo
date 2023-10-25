@@ -122,10 +122,10 @@ class Matchings {
 				int u = g.edgeSource(e);
 				int v = g.edgeTarget(e);
 				if (matched[u] != -1)
-					throw new IllegalArgumentException("vertex is matched twice: " + u);
+					throw new IllegalArgumentException("vertex with index " + u + " is matched twice");
 				matched[u] = e;
 				if (matched[v] != -1)
-					throw new IllegalArgumentException("vertex is matched twice: " + v);
+					throw new IllegalArgumentException("vertex with index " + v + " is matched twice");
 				matched[v] = e;
 			}
 		}

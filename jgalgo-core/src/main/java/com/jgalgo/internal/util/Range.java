@@ -16,11 +16,11 @@
 package com.jgalgo.internal.util;
 
 import java.util.NoSuchElementException;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
-public class Range extends AbstractIntList {
+public class Range extends AbstractIntSet {
 
 	private final int from, to;
 
@@ -48,17 +48,10 @@ public class Range extends AbstractIntList {
 	}
 
 	@Override
-	public IntListIterator listIterator(int index) {
-		return new IntListIterator() {
+	public IntIterator iterator() {
+		return new IntIterator() {
 
-			int x;
-
-			@Override
-			public int previousInt() {
-				if (x <= from)
-					throw new NoSuchElementException();
-				return --x;
-			}
+			int x = from;
 
 			@Override
 			public int nextInt() {
@@ -68,51 +61,15 @@ public class Range extends AbstractIntList {
 			}
 
 			@Override
-			public boolean hasPrevious() {
-				return x > from;
-			}
-
-			@Override
 			public boolean hasNext() {
 				return x < to;
 			}
-
-			@Override
-			public int nextIndex() {
-				return x - from;
-			}
-
-			@Override
-			public int previousIndex() {
-				return x - from - 1;
-			}
-
 		};
 	}
 
 	@Override
-	public IntList subList(int from, int to) {
-		if (from == 0 && to == size())
-			return this;
-		ensureIndex(from);
-		ensureIndex(to);
-		return new Range(this.from + from, this.from + to);
-	}
-
-	@Override
-	public int getInt(int index) {
-		ensureIndex(index);
-		return from + index;
-	}
-
-	@Override
-	public int indexOf(int k) {
-		return contains(k) ? k - from : -1;
-	}
-
-	@Override
-	public int lastIndexOf(int k) {
-		return contains(k) ? k - from : -1;
+	public IntSpliterator spliterator() {
+		return super.spliterator();
 	}
 
 }

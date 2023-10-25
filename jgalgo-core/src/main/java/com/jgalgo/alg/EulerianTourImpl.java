@@ -49,8 +49,8 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			else if (end == -1)
 				end = u;
 			else
-				throw new IllegalArgumentException(
-						"More than two vertices have an odd degree (" + start + ", " + end + ", " + u + ")");
+				throw new IllegalArgumentException("More than two vertices have an odd degree. Vertices indices: "
+						+ start + ", " + end + ", " + u);
 		}
 		if (start != -1 ^ end != -1)
 			throw new IllegalArgumentException(
@@ -124,18 +124,18 @@ class EulerianTourImpl implements EulerianTourAlgo {
 					start = u;
 				} else {
 					throw new IllegalArgumentException(
-							"More than one vertex have an extra out edge (" + start + ", " + u + ")");
+							"More than one vertex have an extra out edge. Vertices indices: " + start + ", " + u);
 				}
 			} else if (outD + 1 == inD) {
 				if (end == -1) {
 					end = u;
 				} else {
 					throw new IllegalArgumentException(
-							"More than one vertex have an extra in edge (" + end + ", " + u + ")");
+							"More than one vertex have an extra in edge. Vertices indices: " + end + ", " + u);
 				}
 			} else {
 				throw new IllegalArgumentException(
-						"Can't compute Eulerian tour with vertex degrees (" + u + ": in=" + inD + " out=" + outD + ")");
+						"Can't compute Eulerian tour with vertex degrees, index=" + u + ": in=" + inD + " out=" + outD);
 			}
 		}
 		if (start != -1 ^ end != -1)

@@ -47,8 +47,8 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		} else if (endpoint == n.target) {
 			return n.source;
 		} else {
-			throw new IllegalArgumentException("The given vertex (" + endpoint + ") is not an endpoint of the edge ("
-					+ n.source + ", " + n.target + ")");
+			throw new IllegalArgumentException("The given vertex (idx=" + endpoint
+					+ ") is not an endpoint of the edge (idx=" + n.source + ", idx=" + n.target + ")");
 		}
 	}
 

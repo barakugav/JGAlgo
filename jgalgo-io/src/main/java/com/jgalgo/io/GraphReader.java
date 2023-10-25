@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 
@@ -55,7 +56,7 @@ public interface GraphReader {
 		try (Reader reader = new FileReader(file, GraphIO.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -69,7 +70,7 @@ public interface GraphReader {
 		try (Reader reader = new FileReader(path, GraphIO.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 

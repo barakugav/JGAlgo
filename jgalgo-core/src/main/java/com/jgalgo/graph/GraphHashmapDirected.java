@@ -80,14 +80,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 					int e = eit.nextInt();
 					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.target(), e);
 					if (oldVal != -1)
-						throw new IllegalStateException("Parallel edge (" + v + "," + eit.target()
+						throw new IllegalStateException("Parallel edge (idx=" + v + ",idx=" + eit.target()
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.source(), e);
 					if (oldVal != -1)
-						throw new IllegalStateException("Parallel edge (" + eit.source() + "," + v
+						throw new IllegalStateException("Parallel edge (idx=" + eit.source() + ",idx=" + v
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 			}
@@ -233,7 +233,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	public int addEdge(int source, int target) {
 		if (getEdge(source, target) != -1)
 			throw new IllegalArgumentException(
-					"Edge (" + source + "," + target + ") already exists. Parallel edges are not allowed.");
+					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
 
 		ensureEdgesMapMutable(edgesOut, source).put(target, edge);
@@ -295,7 +295,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			return;
 		if (getEdge(target, source) != -1)
 			throw new IllegalArgumentException(
-					"Edge (" + target + "," + source + ") already exists. Parallel edges are not allowed.");
+					"Edge (idx=" + target + ",idx=" + source + ") already exists. Parallel edges are not allowed.");
 
 		int oldVal1 = edgesOut[source].remove(target);
 		int oldVal2 = edgesIn[target].remove(source);

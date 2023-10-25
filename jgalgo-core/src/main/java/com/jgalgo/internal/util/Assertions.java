@@ -96,25 +96,25 @@ public class Assertions {
 				throw new IllegalArgumentException("only positive weights are supported: " + w);
 		}
 
-		public static void checkId(int id, int length, boolean isEdge) {
+		public static void checkId(int idx, int length, boolean isEdge) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
-			if (id < 0 || id >= length)
-				throw new IndexOutOfBoundsException("No such " + (isEdge ? "edge" : "vertex") + ": " + id);
+			if (idx < 0 || idx >= length)
+				throw new IndexOutOfBoundsException("No such " + (isEdge ? "edge" : "vertex") + " index: " + idx);
 		}
 
 		public static void checkVertex(int vertex, int n) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
 			if (vertex < 0 || vertex >= n)
-				throw new IndexOutOfBoundsException("No such vertex: " + vertex);
+				throw new IndexOutOfBoundsException("No such vertex index: " + vertex);
 		}
 
 		public static void checkEdge(int edge, int m) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
 			if (edge < 0 || edge >= m)
-				throw new IndexOutOfBoundsException("No such edge: " + edge);
+				throw new IndexOutOfBoundsException("No such edge index: " + edge);
 		}
 
 	}
@@ -123,7 +123,7 @@ public class Assertions {
 
 		public static void sourceSinkNotTheSame(int source, int sink) {
 			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex (" + source + ")");
+				throw new IllegalArgumentException("Source and sink can't be the same vertex (idx=" + source + ")");
 		}
 
 		public static void sourcesSinksNotTheSame(IntCollection sources, IntCollection sinks) {
@@ -139,15 +139,16 @@ public class Assertions {
 			for (int v : sources) {
 				int vType = types.put(v, SOURCE);
 				if (vType != UNSEEN)
-					throw new IllegalArgumentException("Source vertex appear twice (" + v + ")");
+					throw new IllegalArgumentException("Source vertex appear twice (idx=" + v + ")");
 			}
 			for (int v : sinks) {
 				int vType = types.put(v, TARGET);
 				if (vType != UNSEEN) {
 					if (vType == SOURCE)
-						throw new IllegalArgumentException("A vertex can't be both a source and target (" + v + ")");
+						throw new IllegalArgumentException(
+								"A vertex can't be both a source and target (idx=" + v + ")");
 					if (vType == TARGET)
-						throw new IllegalArgumentException("Target vertex appear twice (" + v + ")");
+						throw new IllegalArgumentException("Target vertex appear twice (idx=" + v + ")");
 				}
 			}
 		}
@@ -158,13 +159,13 @@ public class Assertions {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap = netInt.getCapacityInt(e);
 					if (cap < 0)
-						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+						throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					double cap = net.getCapacity(e);
 					if (cap < 0)
-						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+						throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
 				}
 			}
 		}
@@ -178,7 +179,7 @@ public class Assertions {
 					int cap = netInt.getCapacityInt(e);
 					if (!(0 <= l && l <= cap))
 						throw new IllegalArgumentException(
-								"Lower bound " + l + " of edge " + e + " must be in [0, " + cap + "]");
+								"Lower bound " + l + " of edge with index " + e + " must be in [0, " + cap + "]");
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -186,7 +187,7 @@ public class Assertions {
 					double cap = net.getCapacity(e);
 					if (!(0 <= l && l <= cap))
 						throw new IllegalArgumentException(
-								"Lower bound " + l + " of edge " + e + " must be in [0, " + cap + "]");
+								"Lower bound " + l + " of edge with index " + e + " must be in [0, " + cap + "]");
 				}
 			}
 		}
@@ -196,7 +197,7 @@ public class Assertions {
 			for (int n = g.vertices().size(), v = 0; v < n; v++) {
 				double d = supply.weight(v);
 				if (!Double.isFinite(d))
-					throw new IllegalArgumentException("Supply must be finite for vertex " + v);
+					throw new IllegalArgumentException("Supply must be finite for vertex with index " + v);
 				sum += d;
 			}
 			if (Math.abs(sum) > 1e-6)

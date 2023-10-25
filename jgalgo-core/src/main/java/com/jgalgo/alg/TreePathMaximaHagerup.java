@@ -117,8 +117,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			} else {
 				getBitCount = Integer::bitCount;
 				getIthbit = (x, i) -> {
-					if (i < 0 || i >= getBitCount.applyAsInt(x))
-						throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + "[" + i + "]");
+					assert 0 <= i && i < getBitCount.applyAsInt(x);
 					for (; i > 0; i--) {
 						int z = Integer.numberOfTrailingZeros(x);
 						x &= ~(1 << z);

@@ -24,6 +24,7 @@ import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.Range;
 
 class FormatDIMACS implements GraphFormat {
 
@@ -56,12 +57,10 @@ class FormatDIMACS implements GraphFormat {
 				throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
 			final int numVertices = graph.vertices().size();
 			final int numEdges = graph.edges().size();
-			for (int v = 1; v <= numVertices; v++)
-				if (!graph.vertices().contains(v))
-					throw new IllegalArgumentException("the DIMACS format support graphs with vertices 1..n only");
-			for (int e = 1; e <= numEdges; e++)
-				if (!graph.edges().contains(e))
-					throw new IllegalArgumentException("the DIMACS format support graphs with edges 1..m only");
+			if (!Range.of(1, numVertices + 1).equals(graph.vertices()))
+				throw new IllegalArgumentException("the DIMACS format support graphs with vertices 1..n only");
+			if (!Range.of(1, numEdges + 1).equals(graph.edges()))
+				throw new IllegalArgumentException("the DIMACS format support graphs with edges 1..m only");
 
 			try {
 				writer.append("c DIMACS written graph by JGAlgo").append(System.lineSeparator());

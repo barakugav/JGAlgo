@@ -197,7 +197,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				}
 			}
 		}
-		throw new IllegalStateException("shouldn't happend! implementation bug");
+		throw new AssertionError("shouldn't happen! implementation bug");
 	}
 
 	@SuppressWarnings("unused")

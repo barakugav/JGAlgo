@@ -61,8 +61,8 @@ class EdgeEndpointsContainer {
 			} else if (endpoint == v) {
 				return u;
 			} else {
-				throw new IllegalArgumentException(
-						"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
+				throw new IllegalArgumentException("The given vertex (idx=" + endpoint
+						+ ") is not an endpoint of the edge (idx=" + u + ", idx=" + v + ")");
 			}
 		}
 

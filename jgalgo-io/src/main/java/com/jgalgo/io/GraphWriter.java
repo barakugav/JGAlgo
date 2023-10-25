@@ -18,6 +18,7 @@ package com.jgalgo.io;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import com.jgalgo.graph.Graph;
 
@@ -47,7 +48,7 @@ public interface GraphWriter {
 		try (Writer writer = new FileWriter(file, GraphIO.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -61,7 +62,7 @@ public interface GraphWriter {
 		try (Writer writer = new FileWriter(path, GraphIO.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
