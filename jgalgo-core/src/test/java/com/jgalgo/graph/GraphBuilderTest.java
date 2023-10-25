@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -66,7 +65,7 @@ public class GraphBuilderTest extends TestBase {
 				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
 					for (boolean edgesWeights : BooleanList.of(false, true)) {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
-							Object key = JGAlgoUtils.labeledObj("weight" + weightIdx.getAndIncrement());
+							String key = "weight" + weightIdx.getAndIncrement();
 							Object defVal = valSupplier.get();
 							Weights wG, wB;
 							IntSet elements;
@@ -100,10 +99,10 @@ public class GraphBuilderTest extends TestBase {
 				Graph gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
 
-				for (Object key : g.getVerticesWeightsKeys())
+				for (String key : g.getVerticesWeightsKeys())
 					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
 							gActual.getVerticesWeights(key).defaultWeightAsObj());
-				for (Object key : g.getEdgesWeightsKeys())
+				for (String key : g.getEdgesWeightsKeys())
 					assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
 							gActual.getEdgesWeights(key).defaultWeightAsObj());
 			}
@@ -145,7 +144,7 @@ public class GraphBuilderTest extends TestBase {
 				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
 					for (boolean edgesWeights : BooleanList.of(false, true)) {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
-							Object key = JGAlgoUtils.labeledObj("weight" + weightIdx.getAndIncrement());
+							String key = "weight" + weightIdx.getAndIncrement();
 							Object defVal = valSupplier.get();
 							Weights wG, wB;
 							IntSet elements;
@@ -179,24 +178,24 @@ public class GraphBuilderTest extends TestBase {
 				Graph gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
 
-				for (Object key : g.getVerticesWeightsKeys())
+				for (String key : g.getVerticesWeightsKeys())
 					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
 							gActual.getVerticesWeights(key).defaultWeightAsObj());
-				for (Object key : g.getEdgesWeightsKeys())
+				for (String key : g.getEdgesWeightsKeys())
 					assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
 							gActual.getEdgesWeights(key).defaultWeightAsObj());
 
 				if (!buildMut) {
 					int[] vs = gActual.vertices().toIntArray();
 					int[] es = gActual.edges().toIntArray();
-					for (Object key : gActual.getVerticesWeightsKeys()) {
+					for (String key : gActual.getVerticesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getVerticesWeights(key);
 						int v = vs[rand.nextInt(vs.length)];
 						Object data = w.getAsObj(vs[rand.nextInt(vs.length)]);
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(v, data));
 					}
-					for (Object key : gActual.getEdgesWeightsKeys()) {
+					for (String key : gActual.getEdgesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getEdgesWeights(key);
 						int e = es[rand.nextInt(es.length)];

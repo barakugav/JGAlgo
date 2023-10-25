@@ -210,7 +210,7 @@ abstract class GraphImpl extends GraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
 		proneRemovedVerticesWeights();
 		WeightsImpl.Index<V> indexWeights = indexGraph.getVerticesWeights(key);
 		if (indexWeights == null)
@@ -220,27 +220,27 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public Set<Object> getVerticesWeightsKeys() {
+	public Set<String> getVerticesWeightsKeys() {
 		proneRemovedVerticesWeights();
 		return indexGraph.getVerticesWeightsKeys();
 	}
 
 	@Override
-	public void removeVerticesWeights(Object key) {
+	public void removeVerticesWeights(String key) {
 		indexGraph.removeVerticesWeights(key);
 		proneRemovedVerticesWeights();
 	}
 
 	private void proneRemovedVerticesWeights() {
 		List<Weights<?>> indexWeights = new ReferenceArrayList<>();
-		for (Object key : indexGraph.getVerticesWeightsKeys())
+		for (String key : indexGraph.getVerticesWeightsKeys())
 			indexWeights.add(indexGraph.getVerticesWeights(key));
 		verticesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
 		proneRemovedEdgesWeights();
 		WeightsImpl.Index<E> indexWeights = indexGraph.getEdgesWeights(key);
 		if (indexWeights == null)
@@ -250,34 +250,34 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal) {
 		proneRemovedVerticesWeights();
 		indexGraph.addVerticesWeights(key, type, defVal);
 		return getVerticesWeights(key);
 	}
 
 	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
 		proneRemovedEdgesWeights();
 		indexGraph.addEdgesWeights(key, type, defVal);
 		return getEdgesWeights(key);
 	}
 
 	@Override
-	public Set<Object> getEdgesWeightsKeys() {
+	public Set<String> getEdgesWeightsKeys() {
 		proneRemovedEdgesWeights();
 		return indexGraph.getEdgesWeightsKeys();
 	}
 
 	@Override
-	public void removeEdgesWeights(Object key) {
+	public void removeEdgesWeights(String key) {
 		indexGraph.removeEdgesWeights(key);
 		proneRemovedEdgesWeights();
 	}
 
 	private void proneRemovedEdgesWeights() {
 		List<Weights<?>> indexWeights = new ReferenceArrayList<>();
-		for (Object key : indexGraph.getEdgesWeightsKeys())
+		for (String key : indexGraph.getEdgesWeightsKeys())
 			indexWeights.add(indexGraph.getEdgesWeights(key));
 		edgesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
 	}

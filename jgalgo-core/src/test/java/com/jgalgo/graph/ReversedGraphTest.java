@@ -397,6 +397,7 @@ public class ReversedGraphTest extends TestBase {
 	public void testVerticesWeights() {
 		final long seed = 0xd0c0957ff17f0eb4L;
 		Random rand = new Random(seed);
+		int keyCounter = 0;
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
 			Graph gRev0 = gOrig0.reverseView();
@@ -404,7 +405,7 @@ public class ReversedGraphTest extends TestBase {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 
-				Object key1 = new Object(), key2 = new Object();
+				String key1 = "key" + keyCounter++, key2 = "key" + keyCounter++;
 				{
 					WeightsInt vWeights1 = gOrig.addVerticesWeights(key1, int.class);
 					for (int v : gOrig.vertices())
@@ -415,7 +416,7 @@ public class ReversedGraphTest extends TestBase {
 				}
 
 				assertEquals(gOrig.getVerticesWeightsKeys(), gRev.getVerticesWeightsKeys());
-				for (Object key : List.of(key1, key2)) {
+				for (String key : List.of(key1, key2)) {
 					WeightsInt wOrig = gOrig.getVerticesWeights(key);
 					WeightsInt wRev = gRev.getVerticesWeights(key);
 
@@ -434,6 +435,7 @@ public class ReversedGraphTest extends TestBase {
 	public void testEdgesWeights() {
 		final long seed = 0xd0c0957ff17f0eb4L;
 		Random rand = new Random(seed);
+		int keyCounter = 0;
 		for (boolean directed : BooleanList.of(false, true)) {
 			Graph gOrig0 = createGraph(directed);
 			Graph gRev0 = gOrig0.reverseView();
@@ -441,7 +443,7 @@ public class ReversedGraphTest extends TestBase {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gRev = index ? gRev0.indexGraph() : gRev0;
 
-				Object key1 = new Object(), key2 = new Object();
+				String key1 = "key" + keyCounter++, key2 = "key" + keyCounter++;
 				{
 					WeightsInt eWeights1 = gOrig.addEdgesWeights(key1, int.class);
 					for (int e : gOrig.edges())
@@ -452,7 +454,7 @@ public class ReversedGraphTest extends TestBase {
 				}
 
 				assertEquals(gOrig.getEdgesWeightsKeys(), gRev.getEdgesWeightsKeys());
-				for (Object key : List.of(key1, key2)) {
+				for (String key : List.of(key1, key2)) {
 					WeightsInt wOrig = gOrig.getEdgesWeights(key);
 					WeightsInt wRev = gRev.getEdgesWeights(key);
 

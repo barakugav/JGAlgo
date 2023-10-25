@@ -41,11 +41,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImpl {
 
-	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
+	private String bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();
 	private ShortestPathSingleSource ssspNegative =
 			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
-	private static final Object EdgeWeightKey = JGAlgoUtils.labeledObj("weight");
 
 	/**
 	 * Create a new maximum weighted matching object.
@@ -68,14 +67,14 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
+	 * weights using {@link Graph#getVerticesWeights(String)}. By default, the weights are searched using the key
 	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
 	 * different key.
 	 *
 	 * @param key an object key that will be used to get the bipartite vertices partition by
 	 *                {@code g.verticesWeight(key)}.
 	 */
-	public void setBipartiteVerticesWeightKey(Object key) {
+	public void setBipartiteVerticesWeightKey(String key) {
 		bipartiteVerticesWeightKey = key;
 	}
 
@@ -83,7 +82,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 * {@inheritDoc}
 	 *
 	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
-	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 *                                      {@link #setBipartiteVerticesWeightKey(String)}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
@@ -105,7 +104,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		for (int v = 0; v < n; v++)
 			g.addVertex();
 		final int s = g.addVertex(), t = g.addVertex();
-		WeightsDouble w = g.addEdgesWeights(EdgeWeightKey, double.class);
+		WeightsDouble w = g.addEdgesWeights("weight", double.class);
 
 		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);

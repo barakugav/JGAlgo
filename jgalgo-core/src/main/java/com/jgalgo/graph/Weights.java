@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.ShortestPathSingleSource;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Weights of graph vertices or edges.
@@ -29,7 +28,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * cardinality maximum matching in bipartite graphs.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
- * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
+ * {@link Graph#addVerticesWeights(String, Class)} and {@link Graph#addEdgesWeights(String, Class)}. Weights of
  * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
  * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource}
  * algorithm:
@@ -113,7 +112,8 @@ public interface Weights<E> {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
 	 * @param  <E>        the weights type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type) {
@@ -131,7 +131,8 @@ public interface Weights<E> {
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
 	 * @param  <E>        the weights type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
@@ -157,7 +158,8 @@ public interface Weights<E> {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
 	 * @param  <E>        the weights type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type) {
 		return createExternalEdgesWeights(g, type, null);
@@ -174,7 +176,8 @@ public interface Weights<E> {
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
 	 * @param  <E>        the weights type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
@@ -197,8 +200,8 @@ public interface Weights<E> {
 	 * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an
 	 * input, and the partition V1,V2 is expected to be a vertex boolean weight keyed by
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
-	 * {@code setBipartiteVerticesWeightKey(Object)} function.
+	 * {@code setBipartiteVerticesWeightKey(String)} function.
 	 */
-	public static final Object DefaultBipartiteWeightKey = JGAlgoUtils.labeledObj("DefaultBipartiteVerticesWeightKey");
+	public static final String DefaultBipartiteWeightKey = "_bipartite_partition";
 
 }

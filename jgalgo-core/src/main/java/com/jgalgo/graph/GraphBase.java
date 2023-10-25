@@ -54,14 +54,14 @@ abstract class GraphBase implements Graph {
 
 		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))
 			return false;
-		for (Object key : getVerticesWeightsKeys()) {
+		for (String key : getVerticesWeightsKeys()) {
 			Weights<?> w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);
 			if (!WeightsImpl.isEqual(vertices(), w1, w2))
 				return false;
 		}
 		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))
 			return false;
-		for (Object key : getEdgesWeightsKeys()) {
+		for (String key : getEdgesWeightsKeys()) {
 			Weights<?> w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);
 			if (!WeightsImpl.isEqual(edges(), w1, w2))
 				return false;
@@ -82,9 +82,9 @@ abstract class GraphBase implements Graph {
 			for (int e : edges())
 				h += edgeSource(e) + edgeTarget(e);
 		}
-		for (Object key : getVerticesWeightsKeys())
+		for (String key : getVerticesWeightsKeys())
 			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));
-		for (Object key : getEdgesWeightsKeys())
+		for (String key : getEdgesWeightsKeys())
 			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));
 		return h;
 	}
@@ -94,14 +94,14 @@ abstract class GraphBase implements Graph {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
 
-		Set<Object> verticesWeightsKeys = getVerticesWeightsKeys();
+		Set<String> verticesWeightsKeys = getVerticesWeightsKeys();
 		Collection<Weights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
-		for (Object key : verticesWeightsKeys)
+		for (String key : verticesWeightsKeys)
 			verticesWeights.add(getVerticesWeights(key));
 
-		Set<Object> edgesWeightsKeys = getEdgesWeightsKeys();
+		Set<String> edgesWeightsKeys = getEdgesWeightsKeys();
 		Collection<Weights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
-		for (Object key : edgesWeightsKeys)
+		for (String key : edgesWeightsKeys)
 			edgesWeights.add(getEdgesWeights(key));
 
 		ObjIntConsumer<Collection<Weights<?>>> appendWeights = (weights, key) -> {

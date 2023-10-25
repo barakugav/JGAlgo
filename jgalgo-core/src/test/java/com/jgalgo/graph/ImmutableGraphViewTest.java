@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -33,8 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ImmutableGraphViewTest extends TestBase {
 
-	private static final Object VerticesWeightsKey = JGAlgoUtils.labeledObj("vWeights");
-	private static final Object EdgesWeightsKey = JGAlgoUtils.labeledObj("eWeights");
+	private static final String VerticesWeightsKey = "vWeights";
+	private static final String EdgesWeightsKey = "eWeights";
 
 	private static Graph createGraph(boolean directed) {
 		final long seed = 0x97dc96ffefd7165bL;

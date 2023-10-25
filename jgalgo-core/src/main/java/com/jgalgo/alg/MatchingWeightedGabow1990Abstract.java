@@ -456,8 +456,6 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			}
 		}
 
-		private static final Object EdgeValKey = JGAlgoUtils.labeledObj("edgeVal");
-
 		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrinter debugPrint) {
 			int n = gOrig.vertices().size();
@@ -465,7 +463,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			this.g = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
-			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
+			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);
 			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
 			this.w = e -> wLocal.weight(edgeVal.get(e).e);
 

@@ -499,7 +499,7 @@ class GraphImplTestUtils extends TestUtils {
 								.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 				/* assign some weights to the vertices of g */
-				final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
+				final String gVDataKey = "vData";
 				WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 				Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 				for (int u : g.vertices()) {
@@ -509,7 +509,7 @@ class GraphImplTestUtils extends TestUtils {
 				}
 
 				/* assign some weights to the edges of g */
-				final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
+				final String gEDataKey = "eData";
 				WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 				Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 				for (int e : g.edges()) {
@@ -557,7 +557,7 @@ class GraphImplTestUtils extends TestUtils {
 					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
-			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
+			final String gVDataKey = "vData";
 			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
@@ -567,7 +567,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* assign some weights to the edges of g */
-			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
+			final String gEDataKey = "eData";
 			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
@@ -655,7 +655,7 @@ class GraphImplTestUtils extends TestUtils {
 					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
-			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
+			final String gVDataKey = "vData";
 			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
@@ -665,7 +665,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* assign some weights to the edges of g */
-			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
+			final String gEDataKey = "eData";
 			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
@@ -706,7 +706,7 @@ class GraphImplTestUtils extends TestUtils {
 					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
-			final Object gVDataKey = JGAlgoUtils.labeledObj("vData");
+			final String gVDataKey = "vData";
 			WeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
 			for (int u : g.vertices()) {
@@ -716,7 +716,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* assign some weights to the edges of g */
-			final Object gEDataKey = JGAlgoUtils.labeledObj("eData");
+			final String gEDataKey = "eData";
 			WeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
 			for (int e : g.edges()) {
@@ -860,10 +860,10 @@ class GraphImplTestUtils extends TestUtils {
 		// private final Int2ObjectMap<Edge> edges = new Int2ObjectOpenHashMap<>();
 		private final List<Edge> edges = new ObjectArrayList<>();
 		private final boolean directed;
-		private final Object dataKey;
+		private final String dataKey;
 		private final boolean debugPrints = false;
 
-		GraphTracker(Graph g, Object dataKey) {
+		GraphTracker(Graph g, String dataKey) {
 			this.directed = g.isDirected();
 			this.dataKey = dataKey;
 
@@ -1148,7 +1148,7 @@ class GraphImplTestUtils extends TestUtils {
 			opRand.add(GraphOp.ReverseEdge, 6);
 		}
 
-		final Object dataKey = JGAlgoUtils.labeledObj("data");
+		final String dataKey = "data";
 		WeightsInt edgeData = g.addEdgesWeights(dataKey, int.class);
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 

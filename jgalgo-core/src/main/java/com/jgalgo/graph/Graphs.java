@@ -579,27 +579,27 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
 			return verticesWeights.getWeights(key);
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightsKeys() {
+		public Set<String> getVerticesWeightsKeys() {
 			return verticesWeights.weightsKeys();
 		}
 
 		@Override
-		public void removeVerticesWeights(Object key) {
+		public void removeVerticesWeights(String key) {
 			verticesWeights.removeWeights(key);
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
 			return edgesWeights.getWeights(key);
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type,
 				V defVal) {
 			WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 			verticesWeights.addWeights(key, weights);
@@ -609,7 +609,7 @@ public class Graphs {
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
 			WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
@@ -618,12 +618,12 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<Object> getEdgesWeightsKeys() {
+		public Set<String> getEdgesWeightsKeys() {
 			return edgesWeights.weightsKeys();
 		}
 
 		@Override
-		public void removeEdgesWeights(Object key) {
+		public void removeEdgesWeights(String key) {
 			edgesWeights.removeWeights(key);
 		}
 	}
@@ -763,44 +763,44 @@ public class Graphs {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
 			return (WeightsT) WeightsImpl.ImmutableView.newInstance(graph.getVerticesWeights(key));
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type,
 				V defVal) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add vertices weights");
 		}
 
 		@Override
-		public void removeVerticesWeights(Object key) {
+		public void removeVerticesWeights(String key) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices weights");
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightsKeys() {
+		public Set<String> getVerticesWeightsKeys() {
 			return graph.getVerticesWeightsKeys();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
 			return (WeightsT) WeightsImpl.ImmutableView.newInstance(graph.getEdgesWeights(key));
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add edges weights");
 		}
 
 		@Override
-		public void removeEdgesWeights(Object key) {
+		public void removeEdgesWeights(String key) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges weights");
 		}
 
 		@Override
-		public Set<Object> getEdgesWeightsKeys() {
+		public Set<String> getEdgesWeightsKeys() {
 			return graph.getEdgesWeightsKeys();
 		}
 
@@ -1045,32 +1045,32 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
 			return graph.getVerticesWeights(key);
 		}
 
 		@Override
-		public Set<Object> getVerticesWeightsKeys() {
+		public Set<String> getVerticesWeightsKeys() {
 			return graph.getVerticesWeightsKeys();
 		}
 
 		@Override
-		public void removeVerticesWeights(Object key) {
+		public void removeVerticesWeights(String key) {
 			graph.removeVerticesWeights(key);
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
 			return graph.getEdgesWeights(key);
 		}
 
 		@Override
-		public Set<Object> getEdgesWeightsKeys() {
+		public Set<String> getEdgesWeightsKeys() {
 			return graph.getEdgesWeightsKeys();
 		}
 
 		@Override
-		public void removeEdgesWeights(Object key) {
+		public void removeEdgesWeights(String key) {
 			graph.removeEdgesWeights(key);
 		}
 
@@ -1095,13 +1095,13 @@ public class Graphs {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type,
 				V defVal) {
 			return graph.addVerticesWeights(key, type, defVal);
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
 			return graph.addEdgesWeights(key, type, defVal);
 		}
 

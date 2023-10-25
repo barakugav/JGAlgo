@@ -21,7 +21,6 @@ import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -136,8 +135,8 @@ public interface FlowNetworkInt extends FlowNetwork {
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
 	static FlowNetworkInt createFromEdgeWeights(Graph g) {
-		WeightsInt capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), int.class);
-		WeightsInt flows = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), int.class);
+		WeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
+		WeightsInt flows = g.addEdgesWeights("_flow", int.class);
 		return createFromEdgeWeights(capacities, flows);
 	}
 

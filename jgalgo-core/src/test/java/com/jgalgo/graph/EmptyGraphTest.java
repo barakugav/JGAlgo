@@ -111,7 +111,7 @@ public class EmptyGraphTest extends TestBase {
 		assertEquals(Collections.emptySet(), Graphs.EmptyGraphUndirected.getEdgesWeightsKeys());
 		assertEquals(Collections.emptySet(), Graphs.EmptyGraphDirected.getVerticesWeightsKeys());
 		assertEquals(Collections.emptySet(), Graphs.EmptyGraphDirected.getEdgesWeightsKeys());
-		final Object weightsKey = new Object();
+		final String weightsKey = "keyName";
 		assertThrows(UnsupportedOperationException.class,
 				() -> Graphs.EmptyGraphUndirected.addVerticesWeights(weightsKey, null));
 		assertThrows(UnsupportedOperationException.class,

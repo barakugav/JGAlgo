@@ -119,26 +119,28 @@ public interface GraphBuilder {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <V>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key);
+	<V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of the built graph.
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+	default <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type) {
 		return addVerticesWeights(key, type, null);
 	}
 
@@ -147,15 +149,16 @@ public interface GraphBuilder {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal);
+	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
@@ -164,33 +167,35 @@ public interface GraphBuilder {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set<Object> getVerticesWeightsKeys();
+	Set<String> getVerticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        some key of the weights, could be anything
+	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <E>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key);
+	<E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph.
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  <E>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+	default <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type) {
 		return addEdgesWeights(key, type, null);
 	}
 
@@ -199,15 +204,16 @@ public interface GraphBuilder {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key                      some key of the weights, could be anything
+	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 * @param  <E>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal);
+	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal);
 
 	/**
 	 * Get the keys of all the associated edges weights.
@@ -216,7 +222,7 @@ public interface GraphBuilder {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	Set<Object> getEdgesWeightsKeys();
+	Set<String> getEdgesWeightsKeys();
 
 	/**
 	 * Clear the builder by removing all vertices and edges added to it.

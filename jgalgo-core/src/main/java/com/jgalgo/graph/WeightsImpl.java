@@ -128,7 +128,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static class Manager {
 
-			final Map<Object, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectOpenHashMap<>();
+			final Map<String, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectOpenHashMap<>();
 			private int weightsCapacity;
 
 			Manager(int initCapacity) {
@@ -141,7 +141,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), elements));
 			}
 
-			void addWeights(Object key, WeightsImpl.IndexMutable<?> weight) {
+			void addWeights(String key, WeightsImpl.IndexMutable<?> weight) {
 				WeightsImpl.IndexMutable<?> oldContainer = weights.put(key, weight);
 				if (oldContainer != null)
 					throw new IllegalArgumentException("Two weights types with the same key: " + key);
@@ -149,16 +149,16 @@ interface WeightsImpl<E> extends Weights<E> {
 					weight.expand(weightsCapacity);
 			}
 
-			void removeWeights(Object key) {
+			void removeWeights(String key) {
 				weights.remove(key);
 			}
 
 			@SuppressWarnings("unchecked")
-			<E, WeightsT extends Weights<E>> WeightsT getWeights(Object key) {
+			<E, WeightsT extends Weights<E>> WeightsT getWeights(String key) {
 				return (WeightsT) weights.get(key);
 			}
 
-			Set<Object> weightsKeys() {
+			Set<String> weightsKeys() {
 				return Collections.unmodifiableSet(weights.keySet());
 			}
 
@@ -248,20 +248,20 @@ interface WeightsImpl<E> extends Weights<E> {
 		static class Builder {
 
 			private final GraphElementSet.FixedSize elements;
-			private final Map<Object, WeightsImpl.IndexImmutable<?>> weights;
+			private final Map<String, WeightsImpl.IndexImmutable<?>> weights;
 
 			Builder(GraphElementSet.FixedSize elements) {
 				this.elements = Objects.requireNonNull(elements);
 				weights = new Object2ObjectOpenHashMap<>();
 			}
 
-			void copyAndAddWeights(Object key, Weights<?> weights) {
+			void copyAndAddWeights(String key, Weights<?> weights) {
 				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements));
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}
 
-			void copyAndAddWeightsReindexed(Object key, Weights<?> weights,
+			void copyAndAddWeightsReindexed(String key, Weights<?> weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				Object oldWeights = this.weights.put(key,
 						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, reIndexMap));
@@ -269,7 +269,7 @@ interface WeightsImpl<E> extends Weights<E> {
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}
 
-			Map<Object, WeightsImpl.IndexImmutable<?>> build() {
+			Map<String, WeightsImpl.IndexImmutable<?>> build() {
 				return Map.copyOf(weights);
 			}
 		}

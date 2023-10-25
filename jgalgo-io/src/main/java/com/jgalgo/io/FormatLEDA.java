@@ -80,7 +80,7 @@ class FormatLEDA implements GraphFormat {
 					w_vertices = null;
 				} else {
 					// for now, take the first weights collection
-					Object key = graph.getVerticesWeightsKeys().iterator().next();
+					String key = graph.getVerticesWeightsKeys().iterator().next();
 					w_vertices = graph.getVerticesWeights(key);
 					if (w_vertices instanceof WeightsInt) {
 						info_type_for_vertices = "int";
@@ -104,7 +104,7 @@ class FormatLEDA implements GraphFormat {
 					w_edges = null;
 				} else {
 					// for now, take the first weights collection
-					Object key = graph.getEdgesWeightsKeys().iterator().next();
+					String key = graph.getEdgesWeightsKeys().iterator().next();
 					w_edges = graph.getEdgesWeights(key);
 					if (w_edges instanceof WeightsInt) {
 						info_type_for_edges = "int";

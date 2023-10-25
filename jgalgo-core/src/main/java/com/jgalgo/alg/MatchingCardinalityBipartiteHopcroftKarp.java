@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
-	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
+	private String bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 
 	/**
 	 * Create a new maximum matching object.
@@ -51,14 +51,14 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
+	 * weights using {@link Graph#getVerticesWeights(String)}. By default, the weights are searched using the key
 	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
 	 * different key.
 	 *
 	 * @param key an object key that will be used to get the bipartite vertices partition by
 	 *                {@code g.verticesWeight(key)}.
 	 */
-	public void setBipartiteVerticesWeightKey(Object key) {
+	public void setBipartiteVerticesWeightKey(String key) {
 		bipartiteVerticesWeightKey = key;
 	}
 
@@ -66,7 +66,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * {@inheritDoc}
 	 *
 	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
-	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 *                                      {@link #setBipartiteVerticesWeightKey(String)}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
