@@ -33,7 +33,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
 	Path computeEulerianTour(IndexGraph g) {
-		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);
+		return g.isDirected() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
 
 	private static Path computeTourUndirected(IndexGraph g) {

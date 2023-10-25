@@ -26,7 +26,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 
 	@Override
 	VertexPartition findWeaklyConnectedComponents(IndexGraph g) {
-		final boolean directed = g.getCapabilities().directed();
+		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -73,7 +73,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 
 	@Override
 	boolean isWeaklyConnected(IndexGraph g) {
-		final boolean directed = g.getCapabilities().directed();
+		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		int visitedCount = 0;

@@ -141,8 +141,8 @@ public class EmptyGraphTest extends TestBase {
 
 	@Test
 	public void testCapabilities() {
-		assertFalse(Graphs.EmptyGraphUndirected.getCapabilities().directed());
-		assertTrue(Graphs.EmptyGraphDirected.getCapabilities().directed());
+		assertFalse(Graphs.EmptyGraphUndirected.isDirected());
+		assertTrue(Graphs.EmptyGraphDirected.isDirected());
 	}
 
 }

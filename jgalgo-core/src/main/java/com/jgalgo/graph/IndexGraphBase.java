@@ -19,11 +19,53 @@ import com.jgalgo.internal.util.Assertions;
 
 abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
+	private final boolean isDirected;
+	private final boolean isAllowSelfEdges;
+	private final boolean isAllowParallelEdges;
+
+	IndexGraphBase(IndexGraphBase.Capabilities capabilities) {
+		this.isDirected = capabilities.isDirected;
+		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
+		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
+	}
+
+	static class Capabilities {
+		private Capabilities(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
+			this.isDirected = isDirected;
+			this.isAllowSelfEdges = isAllowSelfEdges;
+			this.isAllowParallelEdges = isAllowParallelEdges;
+		}
+
+		static Capabilities of(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
+			return new Capabilities(isDirected, isAllowSelfEdges, isAllowParallelEdges);
+		}
+
+		private final boolean isDirected;
+		private final boolean isAllowSelfEdges;
+		private final boolean isAllowParallelEdges;
+
+	}
+
+	@Override
+	public boolean isDirected() {
+		return isDirected;
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+		return isAllowSelfEdges;
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+		return isAllowParallelEdges;
+	}
+
 	@Override
 	public EdgeSet getEdges(int source, int target) {
 		Assertions.Graphs.checkVertex(source, vertices().size());
 		Assertions.Graphs.checkVertex(target, vertices().size());
-		return getCapabilities().directed() ? new EdgeSetSourceTargetDirected(source, target)
+		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)
 				: new EdgeSetSourceTargetUndirected(source, target);
 	}
 

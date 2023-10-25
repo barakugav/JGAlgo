@@ -33,13 +33,13 @@ abstract class GraphBase implements Graph {
 			return false;
 		Graph o = (Graph) other;
 
-		if (getCapabilities().directed() != o.getCapabilities().directed())
+		if (isDirected() != o.isDirected())
 			return false;
 		if (!vertices().equals(o.vertices()))
 			return false;
 		if (!edges().equals(o.edges()))
 			return false;
-		if (getCapabilities().directed()) {
+		if (isDirected()) {
 			for (int e : edges())
 				if (edgeSource(e) != o.edgeSource(e) || edgeTarget(e) != o.edgeTarget(e))
 					return false;
@@ -72,10 +72,10 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public int hashCode() {
-		int h = Boolean.hashCode(getCapabilities().directed());
+		int h = Boolean.hashCode(isDirected());
 		h += vertices().hashCode();
 		h += edges().hashCode();
-		if (getCapabilities().directed()) {
+		if (isDirected()) {
 			for (int e : edges())
 				h += edgeSource(e) + 31 * edgeTarget(e);
 		} else {

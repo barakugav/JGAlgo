@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
  * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
  * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
- * directed or not, use the {@link #getCapabilities()} method.
+ * directed or not, use the {@link #isDirected()} method.
  * <p>
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
  * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
@@ -71,10 +71,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
  * <p>
- * Although the Graph API does not expose an explicit method to check whether it is a directed or undirected graph, the
- * information can be accessed via {@link #getCapabilities()}. The number of vertices and edges can be read via
- * {@code g.vertices().size()} and {@code g.edges().size()}. The out or in degree of a vertex is exposed by
- * {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
+ * in degree of a vertex is exposed by {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
  * <p>
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
@@ -115,7 +113,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }</pre>
  *
  * @see    GraphFactory
- * @see    GraphCapabilities
+ * @see    GraphBuilder
  * @see    IndexGraph
  * @author Barak Ugav
  */
@@ -593,12 +591,29 @@ public interface Graph {
 	Set<Object> getEdgesWeightsKeys();
 
 	/**
-	 * Get the {@linkplain GraphCapabilities capabilities} of this graph.
+	 * Checks whether the graph is directed.
 	 *
-	 * @return a {@link GraphCapabilities} object describing what this graph support and what not.
-	 * @see    GraphCapabilities
+	 * @return {@code true} if the graph is directed, else {@code false}.
 	 */
-	GraphCapabilities getCapabilities();
+	boolean isDirected();
+
+	/**
+	 * Checks whether self edges are supported.
+	 * <p>
+	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
+	 *
+	 * @return {@code true} if the graph support self edges, else {@code false}.
+	 */
+	boolean isAllowSelfEdges();
+
+	/**
+	 * Checks whether parallel edges are supported.
+	 * <p>
+	 * Parallel edges are multiple edges with identical source and target.
+	 *
+	 * @return {@code true} if the graph support parallel edges, else {@code false}.
+	 */
+	boolean isAllowParallelEdges();
 
 	/**
 	 * Get an Index graph view of this graph.
@@ -727,7 +742,7 @@ public interface Graph {
 	default Graph immutableCopy(boolean copyWeights) {
 		IndexIdMap viMap = indexGraphVerticesMap();
 		IndexIdMap eiMap = indexGraphEdgesMap();
-		if (getCapabilities().directed()) {
+		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
 					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();

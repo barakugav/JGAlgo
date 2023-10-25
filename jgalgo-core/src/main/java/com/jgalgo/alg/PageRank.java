@@ -122,7 +122,7 @@ class PageRank {
 			final int m = g.edges().size();
 			neighborsBegin = new int[n + 1];
 
-			if (g.getCapabilities().directed()) {
+			if (g.isDirected()) {
 				neighbors = new int[m];
 			} else {
 				int outDegreeSum = 0;

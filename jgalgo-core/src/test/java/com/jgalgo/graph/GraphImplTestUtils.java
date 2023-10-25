@@ -108,7 +108,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	private static void assertEndpoints(Graph g, int e, int source, int target) {
-		if (g.getCapabilities().directed()) {
+		if (g.isDirected()) {
 			assertEquals(source, g.edgeSource(e));
 			assertEquals(target, g.edgeTarget(e));
 		} else {
@@ -129,7 +129,7 @@ class GraphImplTestUtils extends TestUtils {
 			Object2IntMap<IntCollection> edges = new Object2IntOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					if (uIdx == vIdx && !g.getCapabilities().selfEdges())
+					if (uIdx == vIdx && !g.isAllowSelfEdges())
 						continue;
 					int u = vs[uIdx], v = vs[vIdx];
 					int e = g.addEdge(u, v);
@@ -166,7 +166,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs[uIdx], v = vs[vIdx];
-					if (u == v && !g.getCapabilities().selfEdges())
+					if (u == v && !g.isAllowSelfEdges())
 						continue;
 					int e = g.addEdge(u, v);
 					if (directed) {
@@ -224,12 +224,12 @@ class GraphImplTestUtils extends TestUtils {
 			int[] vs = g.vertices().toIntArray();
 
 			Object2ObjectMap<IntCollection, IntSet> edges = new Object2ObjectOpenHashMap<>();
-			final int edgeRepeat = g.getCapabilities().parallelEdges() ? 3 : 1;
+			final int edgeRepeat = g.isAllowParallelEdges() ? 3 : 1;
 			for (int repeat = 0; repeat < edgeRepeat; repeat++) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 						int u = vs[uIdx], v = vs[vIdx];
-						if (u == v && !g.getCapabilities().selfEdges())
+						if (u == v && !g.isAllowSelfEdges())
 							continue;
 						int e = g.addEdge(u, v);
 						IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
@@ -240,7 +240,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs[uIdx], v = vs[vIdx];
-					if (u == v && !g.getCapabilities().selfEdges())
+					if (u == v && !g.isAllowSelfEdges())
 						continue;
 					IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
 					assertEquals(edges.get(key), g.getEdges(u, v));
@@ -261,7 +261,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs[uIdx], v = vs[vIdx];
-					if (u == v && !g.getCapabilities().selfEdges())
+					if (u == v && !g.isAllowSelfEdges())
 						continue;
 					int e = g.addEdge(u, v);
 					assertEndpoints(g, e, u, v);
@@ -339,7 +339,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs[uIdx], v = vs[vIdx];
-					if (u == v && !g.getCapabilities().selfEdges())
+					if (u == v && !g.isAllowSelfEdges())
 						continue;
 					for (EdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
 						int peekNext = eit.peekNext();
@@ -372,7 +372,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs[uIdx], v = vs[vIdx];
-					if (u == v && !g.getCapabilities().selfEdges())
+					if (u == v && !g.isAllowSelfEdges())
 						continue;
 					g.addEdge(u, v);
 
@@ -395,7 +395,7 @@ class GraphImplTestUtils extends TestUtils {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
 			Graph g = graphImpl.get(directed);
-			boolean parallelEdges = g.getCapabilities().parallelEdges();
+			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
 			while (totalOpNum > 0) {
@@ -444,7 +444,7 @@ class GraphImplTestUtils extends TestUtils {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
 			Graph g = graphImpl.get(directed);
-			boolean parallelEdges = g.getCapabilities().parallelEdges();
+			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
 			int expectedN = 0;
@@ -864,7 +864,7 @@ class GraphImplTestUtils extends TestUtils {
 		private final boolean debugPrints = false;
 
 		GraphTracker(Graph g, Object dataKey) {
-			this.directed = g.getCapabilities().directed();
+			this.directed = g.isDirected();
 			this.dataKey = dataKey;
 
 			if (g instanceof IndexGraph) {
@@ -1119,7 +1119,6 @@ class GraphImplTestUtils extends TestUtils {
 
 	private static void testRandOps(Graph g, int opsNum, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		GraphCapabilities capabilities = g.getCapabilities();
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
 
@@ -1139,7 +1138,7 @@ class GraphImplTestUtils extends TestUtils {
 		opRand.add(GraphOp.RemoveEdgesOfVertexUsingIter, 1);
 		// opRand.add(GraphOp.ClearEdges, 1);
 
-		if (capabilities.directed()) {
+		if (g.isDirected()) {
 			opRand.add(GraphOp.RemoveEdgesInOfVertex, 1);
 			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingEdgeSet, 1);
 			opRand.add(GraphOp.RemoveEdgesInOfVertexUsingIter, 1);
@@ -1192,9 +1191,9 @@ class GraphImplTestUtils extends TestUtils {
 
 						u = tracker.getRandVertex(rand);
 						v = tracker.getRandVertex(rand);
-						if (!capabilities.selfEdges() && u == v)
+						if (!g.isAllowSelfEdges() && u == v)
 							continue;
-						if (!capabilities.parallelEdges() && tracker.getEdge(u, v) != null)
+						if (!g.isAllowParallelEdges() && tracker.getEdge(u, v) != null)
 							continue;
 						break;
 					}
@@ -1424,7 +1423,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.edgesNum() == 0)
 						continue;
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
-					if (edge.u != edge.v && g.getEdge(edge.v.id, edge.u.id) != -1 && !capabilities.parallelEdges())
+					if (edge.u != edge.v && g.getEdge(edge.v.id, edge.u.id) != -1 && !g.isAllowParallelEdges())
 						continue;
 					int e = getEdge.applyAsInt(edge);
 

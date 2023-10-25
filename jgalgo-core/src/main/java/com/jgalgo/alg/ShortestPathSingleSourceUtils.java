@@ -246,7 +246,7 @@ class ShortestPathSingleSourceUtils {
 			if (distances[target] == Double.POSITIVE_INFINITY)
 				return null;
 			IntArrayList path = new IntArrayList();
-			if (g.getCapabilities().directed()) {
+			if (g.isDirected()) {
 				for (int v = target;;) {
 					int e = backtrack[v];
 					if (e == -1) {

@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * A undirected graph implementation using a two dimensional matrix to store all edges.
  * <p>
@@ -32,6 +30,8 @@ import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
  */
 class GraphMatrixUndirected extends GraphMatrixAbstract {
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);
+
 	GraphMatrixUndirected() {
 		this(0, 0);
 	}
@@ -43,11 +43,11 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 	}
 
 	GraphMatrixUndirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 	}
 
 	@Override
@@ -132,14 +132,6 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 			replaceEdgeEndpoint(e, tempV, v2);
 		super.vertexSwap(v1, v2);
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {

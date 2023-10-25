@@ -72,7 +72,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyWeights) {
-		return g.getCapabilities().directed() ? new IndexGraphBuilderImpl.Directed(g, copyWeights)
+		return g.isDirected() ? new IndexGraphBuilderImpl.Directed(g, copyWeights)
 				: new IndexGraphBuilderImpl.Undirected(g, copyWeights);
 	}
 

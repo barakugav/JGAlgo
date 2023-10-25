@@ -25,15 +25,15 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 	private final DataContainer.Long edgeEndpointsContainer;
 	private long[] edgeEndpoints;
 
-	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgeEndpointsContainer =
 				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphArrayAbstract(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities, g, copyWeights);
 		if (g instanceof GraphArrayAbstract) {
 			GraphArrayAbstract g0 = (GraphArrayAbstract) g;
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
@@ -49,8 +49,8 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 	}
 
-	GraphArrayAbstract(IndexGraphBuilderImpl builder) {
-		super(builder);
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities, builder);
 		final int m = edges.size();
 		edgeEndpointsContainer =
 				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);

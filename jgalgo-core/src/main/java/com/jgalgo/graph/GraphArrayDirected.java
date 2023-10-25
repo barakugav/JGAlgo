@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntBigArrays;
 
@@ -43,6 +42,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesInContainer;
 	private final DataContainer.Int edgesInNumContainer;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
+
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
@@ -50,7 +51,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesOutContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edgesOut = newArr);
 		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
@@ -65,7 +66,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	GraphArrayDirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayDirected) {
@@ -122,7 +123,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	GraphArrayDirected(IndexGraphBuilderImpl.Directed builder) {
-		super(builder);
+		super(Capabilities, builder);
 		edgesOutContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edgesOut = newArr);
 		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
@@ -268,14 +269,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		// edgesOut.clear();
 		// edgesIn.clear();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {

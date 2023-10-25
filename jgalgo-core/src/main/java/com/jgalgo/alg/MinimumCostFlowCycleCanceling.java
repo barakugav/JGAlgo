@@ -75,7 +75,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;
 
-		if (gOrig.getCapabilities().directed()) {
+		if (gOrig.isDirected()) {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int eRef = edgeRef[e];
 				double eFlow = net.getFlow(eRef);

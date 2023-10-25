@@ -45,7 +45,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
 		@Override
 		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
-			if (g.getCapabilities().directed())
+			if (g.isDirected())
 				return algo.computeMinimumDirectedSpanningTree(g, w, 0);
 			int n = g.vertices().size();
 			Graph dg = GraphFactory.newDirected().expectedVerticesNum(n).newGraph();

@@ -21,21 +21,22 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 	final int[] edgesOut;
 
-	GraphCSRAbstractUnindexed(IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-		super(Variant.Of2.withB(builder), processEdges, null, true);
+	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder,
+			BuilderProcessEdges processEdges) {
+		super(capabilities, Variant.Of2.withB(builder), processEdges, null, true);
 		edgesOut = processEdges.edgesOut;
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
-	GraphCSRAbstractUnindexed(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
 		int edgesOutArrLen;
-		if (getCapabilities().directed()) {
+		if (isDirected()) {
 			edgesOutArrLen = m;
 		} else {
 			edgesOutArrLen = 0;

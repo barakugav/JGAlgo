@@ -1050,7 +1050,7 @@ class MinimumCostFlows {
 	}
 
 	static void saturateNegativeCostSelfEdges(IndexGraph g, FlowNetwork net, WeightFunction cost) {
-		if (!g.getCapabilities().selfEdges())
+		if (!g.isAllowSelfEdges())
 			return;
 		if (net instanceof FlowNetworkInt) {
 			FlowNetworkInt netInt = (FlowNetworkInt) net;

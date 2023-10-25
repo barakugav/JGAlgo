@@ -15,7 +15,6 @@
  */
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
 
 class GraphCSRDirected extends GraphCSRAbstractUnindexed {
@@ -23,14 +22,16 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
+
 	GraphCSRDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-		super(builder, processEdges);
+		super(Capabilities, builder, processEdges);
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
 	}
 
 	GraphCSRDirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -55,14 +56,6 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 	public EdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 

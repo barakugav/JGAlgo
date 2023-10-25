@@ -161,12 +161,19 @@ public class Graphs {
 		}
 
 		@Override
-		public GraphCapabilities getCapabilities() {
-			return Capabilities;
+		public boolean isDirected() {
+			return false;
 		}
 
-		private static final GraphCapabilities Capabilities =
-				GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(false).build();
+		@Override
+		public boolean isAllowSelfEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return false;
+		}
 
 		@Override
 		public EdgeSet outEdges(int source) {
@@ -254,12 +261,19 @@ public class Graphs {
 		}
 
 		@Override
-		public GraphCapabilities getCapabilities() {
-			return Capabilities;
+		public boolean isDirected() {
+			return true;
 		}
 
-		private static final GraphCapabilities Capabilities =
-				GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(false).build();
+		@Override
+		public boolean isAllowSelfEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return false;
+		}
 
 		@Override
 		public EdgeSet outEdges(int source) {
@@ -791,8 +805,18 @@ public class Graphs {
 		}
 
 		@Override
-		public GraphCapabilities getCapabilities() {
-			return graph.getCapabilities();
+		public boolean isDirected() {
+			return graph.isDirected();
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+			return graph.isAllowSelfEdges();
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return graph.isAllowParallelEdges();
 		}
 
 		@Override
@@ -1051,8 +1075,18 @@ public class Graphs {
 		}
 
 		@Override
-		public GraphCapabilities getCapabilities() {
-			return graph.getCapabilities();
+		public boolean isDirected() {
+			return graph.isDirected();
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+			return graph.isAllowSelfEdges();
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return graph.isAllowParallelEdges();
 		}
 
 		@Override
@@ -1225,111 +1259,6 @@ public class Graphs {
 				return "matrix";
 			if (g == g0)
 				return null;
-		}
-	}
-
-	static class GraphCapabilitiesBuilder {
-
-		private boolean parallelEdges;
-		private boolean parallelEdgesValid;
-		private boolean selfEdges;
-		private boolean selfEdgesValid;
-		private boolean directed;
-		private boolean directedValid;
-
-		private GraphCapabilitiesBuilder(boolean directed) {
-			this.directed = directed;
-			directedValid = true;
-		}
-
-		static GraphCapabilitiesBuilder newUndirected() {
-			return new GraphCapabilitiesBuilder(false);
-		}
-
-		static GraphCapabilitiesBuilder newDirected() {
-			return new GraphCapabilitiesBuilder(true);
-		}
-
-		GraphCapabilities build() {
-			if (!parallelEdgesValid || !selfEdgesValid || !directedValid)
-				throw new IllegalStateException();
-			return new GraphCapabilitiesImpl(parallelEdges, selfEdges, directed);
-		}
-
-		GraphCapabilitiesBuilder parallelEdges(boolean enable) {
-			parallelEdges = enable;
-			parallelEdgesValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder selfEdges(boolean enable) {
-			selfEdges = enable;
-			selfEdgesValid = true;
-			return this;
-		}
-
-		GraphCapabilitiesBuilder directed(boolean enable) {
-			directed = enable;
-			directedValid = true;
-			return this;
-		}
-
-	}
-
-	private static class GraphCapabilitiesImpl implements GraphCapabilities {
-
-		private final boolean parallelEdges;
-		private final boolean selfEdges;
-		private final boolean directed;
-
-		GraphCapabilitiesImpl(boolean parallelEdges, boolean selfEdges, boolean directed) {
-			this.parallelEdges = parallelEdges;
-			this.selfEdges = selfEdges;
-			this.directed = directed;
-		}
-
-		@Override
-		public boolean parallelEdges() {
-			return parallelEdges;
-		}
-
-		@Override
-		public boolean selfEdges() {
-			return selfEdges;
-		}
-
-		@Override
-		public boolean directed() {
-			return directed;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder s = new StringBuilder().append('<');
-			s.append(" parallelEdges=").append(parallelEdges ? 'v' : 'x');
-			s.append(" selfEdges=").append(selfEdges ? 'v' : 'x');
-			s.append(" directed=").append(directed ? 'v' : 'x');
-			return s.append('>').toString();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof GraphCapabilities))
-				return false;
-			GraphCapabilities o = (GraphCapabilities) other;
-			return parallelEdges == o.parallelEdges() && selfEdges == o.selfEdges() && directed == o.directed();
-		}
-
-		@Override
-		public int hashCode() {
-			int h = 0;
-			/* we must use addition as the order shouldn't matter */
-			h += parallelEdges ? 1 : 0;
-			h += selfEdges ? 1 : 0;
-			h += directed ? 1 : 0;
-			return h;
 		}
 	}
 

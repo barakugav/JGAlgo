@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * A directed graph implementation using linked lists to store edge lists.
  * <p>
@@ -37,6 +35,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
+
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
@@ -44,7 +44,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 
 		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
@@ -53,7 +53,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	GraphLinkedDirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 
 		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
@@ -220,14 +220,6 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		edgesInContainer.clear(edgesIn);
 		super.clearEdges();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {

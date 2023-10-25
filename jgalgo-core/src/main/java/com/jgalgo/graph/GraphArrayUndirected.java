@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntBigArrays;
 
@@ -39,6 +38,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesContainer;
 	private final DataContainer.Int edgesNumContainer;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
+
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
@@ -46,7 +47,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edges = newArr);
 		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
@@ -56,7 +57,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	GraphArrayUndirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayUndirected) {
@@ -90,7 +91,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	GraphArrayUndirected(IndexGraphBuilderImpl.Undirected builder) {
-		super(builder);
+		super(Capabilities, builder);
 		edgesContainer = new DataContainer.Obj<>(vertices, IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY,
 				newArr -> edges = newArr);
 		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
@@ -229,14 +230,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		// Don't clear allocated edges arrays
 		// edges.clear();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {

@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import java.util.Optional;
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
@@ -25,10 +24,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
+
 	private GraphCSRDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyWeights) {
-		super(graphOrBuilder, processEdges, edgesReIndexing, copyWeights);
+		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyWeights);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
@@ -96,14 +97,6 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	public EdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newDirected().parallelEdges(true).selfEdges(true).build();
 
 	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 

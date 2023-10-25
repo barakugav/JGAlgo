@@ -33,8 +33,10 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	final Map<Object, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<Object, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
 
-	GraphCSRBase(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
+	GraphCSRBase(IndexGraphBase.Capabilities capabilities,
+			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
 			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyWeights) {
+		super(capabilities);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
@@ -79,7 +81,8 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
-	GraphCSRBase(IndexGraph g, boolean copyWeights) {
+	GraphCSRBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

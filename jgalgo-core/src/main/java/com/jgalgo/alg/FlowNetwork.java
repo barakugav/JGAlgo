@@ -136,7 +136,7 @@ public interface FlowNetwork {
 	 */
 	default double getFlowSum(Graph g, IntCollection sources) {
 		double sum = 0;
-		if (g.getCapabilities().directed()) {
+		if (g.isDirected()) {
 			for (int source : sources) {
 				for (int e : g.outEdges(source))
 					sum += getFlow(e);

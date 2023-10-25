@@ -47,7 +47,7 @@ class CoresAlgoImpl implements CoresAlgo {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
-		final boolean directed = g.getCapabilities().directed();
+		final boolean directed = g.isDirected();
 
 		/* cache the degree of each vertex */
 		int[] degree = new int[n];

@@ -88,7 +88,7 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			WeightFunction w = params.w;
-			if (params.g.getCapabilities().directed())
+			if (params.g.isDirected())
 				g = g.reverseView();
 			ShortestPathSingleSource.Result ssspRes =
 					new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
@@ -101,7 +101,7 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			WeightFunction w = params.w;
-			if (params.g.getCapabilities().directed())
+			if (params.g.isDirected())
 				g = g.reverseView();
 
 			Int2DoubleMap w0 = new Int2DoubleOpenHashMap(g.edges().size());

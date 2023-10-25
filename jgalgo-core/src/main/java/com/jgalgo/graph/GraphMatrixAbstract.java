@@ -30,8 +30,8 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 	private static final DataContainer.Int[] EmptyEdgesArr = new DataContainer.Int[0];
 
-	GraphMatrixAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 
 		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 		addInternalVerticesContainer(edges);
@@ -41,8 +41,8 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphMatrixAbstract(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphMatrixAbstract) {

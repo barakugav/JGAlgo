@@ -190,7 +190,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		}
 
 		/* handle self edges separately, as the algorithm skip SCC of size one */
-		if (g.getCapabilities().selfEdges()) {
+		if (g.isAllowSelfEdges()) {
 			int bestSelfEdge = 1;
 			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;
 			for (int m = g.edges().size(), e = 0; e < m; e++) {

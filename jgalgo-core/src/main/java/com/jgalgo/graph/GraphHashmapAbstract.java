@@ -30,15 +30,15 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	private long[] edgeEndpoints;
 	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
 
-	GraphHashmapAbstract(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgeEndpointsContainer =
 				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphHashmapAbstract(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities, g, copyWeights);
 		if (g instanceof GraphHashmapAbstract) {
 			GraphHashmapAbstract g0 = (GraphHashmapAbstract) g;
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
@@ -168,7 +168,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 			}
 			int lastEdge = edges().size() - 1;
 			if (prevEdge != lastEdge) {
-				if (getCapabilities().directed()) {
+				if (isDirected()) {
 					if (this instanceof EdgeIterOut) {
 						if (edgeSource(lastEdge) == vertex) {
 							int oldVal = clonedMap.replace(edgeTarget(lastEdge), prevEdge);

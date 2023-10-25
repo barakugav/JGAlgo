@@ -115,7 +115,7 @@ public class Trees {
 		int n = g.vertices().size();
 		if (n == 0)
 			return true;
-		boolean directed = g.getCapabilities().directed();
+		boolean directed = g.isDirected();
 
 		BitSet visited = new BitSet(n);
 		int[] parent = new int[n];

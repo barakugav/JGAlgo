@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Iterator;
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -29,6 +28,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	private Int2IntMap[] edges;
 	private final DataContainer.Obj<Int2IntMap> edgesContainer;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);
+
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
@@ -36,7 +37,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphHashmapUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
@@ -44,7 +45,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	GraphHashmapUndirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphHashmapUndirected) {
@@ -250,14 +251,6 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		// Don't clear allocated edges arrays
 		// edges.clear();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newUndirected().parallelEdges(false).selfEdges(true).build();
 
 	class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
 		private final Int2IntMap edges;

@@ -42,12 +42,12 @@ public class Assertions {
 	public static class Graphs {
 
 		public static void onlyDirected(Graph g) {
-			if (!g.getCapabilities().directed())
+			if (!g.isDirected())
 				throw new IllegalArgumentException("only directed graphs are supported");
 		}
 
 		public static void onlyUndirected(Graph g) {
-			if (g.getCapabilities().directed())
+			if (g.isDirected())
 				throw new IllegalArgumentException("only undirected graphs are supported");
 		}
 

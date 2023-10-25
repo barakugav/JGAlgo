@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 class GraphBuilderImpl {
 
 	static GraphBuilder newFrom(Graph g, boolean copyWeights) {
-		return g.getCapabilities().directed() ? new GraphBuilderImpl.Directed(g, copyWeights)
+		return g.isDirected() ? new GraphBuilderImpl.Directed(g, copyWeights)
 				: new GraphBuilderImpl.Undirected(g, copyWeights);
 	}
 

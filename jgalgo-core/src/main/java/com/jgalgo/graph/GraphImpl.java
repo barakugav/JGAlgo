@@ -362,8 +362,18 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public GraphCapabilities getCapabilities() {
-		return indexGraph.getCapabilities();
+	public boolean isDirected() {
+		return indexGraph.isDirected();
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+		return indexGraph.isAllowSelfEdges();
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+		return indexGraph.isAllowParallelEdges();
 	}
 
 	static class Directed extends GraphImpl {
@@ -611,7 +621,7 @@ abstract class GraphImpl extends GraphBase {
 		@Override
 		public Graph newGraph() {
 			IndexGraph indexGraph = factory.newGraph();
-			if (indexGraph.getCapabilities().directed()) {
+			if (indexGraph.isDirected()) {
 				return new GraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			} else {
 				return new GraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
@@ -620,7 +630,7 @@ abstract class GraphImpl extends GraphBase {
 
 		@Override
 		public Graph newCopyOf(Graph g, boolean copyWeights) {
-			if (g.getCapabilities().directed()) {
+			if (g.isDirected()) {
 				return new GraphImpl.Directed(g, factory, copyWeights);
 			} else {
 				return new GraphImpl.Undirected(g, factory, copyWeights);

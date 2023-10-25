@@ -87,7 +87,7 @@ public class CoresAlgoTest extends TestBase {
 			res = algo.computeCores(g, degreeType);
 		}
 
-		final boolean directed = g.getCapabilities().directed();
+		final boolean directed = g.isDirected();
 		for (int k = 0;; k++) {
 			IntSet vs = new IntOpenHashSet(g.vertices());
 			for (;;) {

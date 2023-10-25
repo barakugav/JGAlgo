@@ -52,7 +52,7 @@ class FormatDIMACS implements GraphFormat {
 
 		@Override
 		public void writeGraph(Graph graph, Writer writer) {
-			if (graph.getCapabilities().directed())
+			if (graph.isDirected())
 				throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
 			final int numVertices = graph.vertices().size();
 			final int numEdges = graph.edges().size();

@@ -113,7 +113,7 @@ class MinimumCutSTUtils {
 			queue.enqueue(source);
 		}
 
-		if (g.getCapabilities().directed()) {
+		if (g.isDirected()) {
 			while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
 

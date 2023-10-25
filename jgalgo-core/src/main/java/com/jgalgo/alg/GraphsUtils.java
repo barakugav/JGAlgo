@@ -48,7 +48,7 @@ public class GraphsUtils {
 	 * @return   {@code true} if the graph contain at least one self edge, else {@code false}
 	 */
 	public static boolean containsSelfEdges(Graph g) {
-		if (!g.getCapabilities().selfEdges())
+		if (!g.isAllowSelfEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
 		for (int n = ig.vertices().size(), u = 0; u < n; u++) {
@@ -70,7 +70,7 @@ public class GraphsUtils {
 	 * @return   {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
 	 */
 	public static boolean containsParallelEdges(Graph g) {
-		if (!g.getCapabilities().parallelEdges())
+		if (!g.isAllowParallelEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
 		int n = ig.vertices().size();

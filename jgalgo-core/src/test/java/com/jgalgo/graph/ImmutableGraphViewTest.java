@@ -373,12 +373,9 @@ public class ImmutableGraphViewTest extends TestBase {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				GraphCapabilities capOrig = gOrig.getCapabilities();
-				GraphCapabilities capImmutable = gImmutable.getCapabilities();
-
-				assertEquals(capOrig.parallelEdges(), capImmutable.parallelEdges());
-				assertEquals(capOrig.selfEdges(), capImmutable.selfEdges());
-				assertEquals(capOrig.directed(), capImmutable.directed());
+				assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
+				assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
+				assertEquals(gOrig.isDirected(), gImmutable.isDirected());
 			}
 		}
 	}

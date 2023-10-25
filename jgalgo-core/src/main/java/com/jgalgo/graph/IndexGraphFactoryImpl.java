@@ -33,10 +33,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	IndexGraphFactoryImpl(IndexGraph g) {
-		GraphCapabilities capabilities = g.getCapabilities();
-		this.directed = capabilities.directed();
-		this.selfEdges = capabilities.selfEdges();
-		this.parallelEdges = capabilities.parallelEdges();
+		this.directed = g.isDirected();
+		this.selfEdges = g.isAllowSelfEdges();
+		this.parallelEdges = g.isAllowParallelEdges();
 		impl = Graphs.getIndexGraphImpl(g);
 	}
 
@@ -47,7 +46,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraph newCopyOf(IndexGraph g, boolean copyWeights) {
-		setDirected(g.getCapabilities().directed());
+		setDirected(g.isDirected());
 		return chooseImpl().newCopyOf(g, copyWeights);
 	}
 

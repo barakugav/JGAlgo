@@ -143,7 +143,7 @@ class AStar implements ShortestPathWithHeuristic {
 
 	private static Path computePath(IndexGraph g, int source, int target, Int2IntMap backtrack) {
 		IntArrayList path = new IntArrayList();
-		if (g.getCapabilities().directed()) {
+		if (g.isDirected()) {
 			for (int v = target;;) {
 				int e = backtrack.get(v);
 				if (e == -1) {

@@ -124,7 +124,7 @@ class FormatLEDA implements GraphFormat {
 				writer.append("LEDA.GRAPH").append(System.lineSeparator());
 				writer.append(info_type_for_vertices).append(System.lineSeparator()); // void/string/int etc
 				writer.append(info_type_for_edges).append(System.lineSeparator()); // void/string/int etc
-				final boolean is_directed = graph.getCapabilities().directed();
+				final boolean is_directed = graph.isDirected();
 				writer.append(is_directed ? "-1" : "-2").append(System.lineSeparator());
 
 				writer.append("# section nodes/vertices").append(System.lineSeparator());

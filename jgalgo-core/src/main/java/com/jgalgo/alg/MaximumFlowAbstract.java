@@ -90,7 +90,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				this.sink = sink;
 				this.n = g.vertices().size();
 				this.net = net;
-				directed = g.getCapabilities().directed();
+				directed = g.isDirected();
 			}
 
 			void initCapacities(int[] capacities) {
@@ -201,8 +201,8 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
-			IndexGraphBuilder builder = gOrig.getCapabilities().directed() ? IndexGraphBuilder.newDirected()
-					: IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder builder =
+					gOrig.isDirected() ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedVerticesNum(gOrig.edges().size() + sources.size() + sinks.size());
 
@@ -392,7 +392,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			void initCapacities(double[] residualCapacity) {
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int m = g.edges().size(), e = 0; e < m; e++) {
 						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;
 					}
@@ -420,7 +420,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 			void initCapacities(int[] residualCapacity) {
 				FlowNetworkInt net = (FlowNetworkInt) this.net;
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int m = g.edges().size(), e = 0; e < m; e++) {
 						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
 					}
@@ -462,7 +462,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				}
 
 				double totalFlow = 0;
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int s : sources) {
 						for (int e : gOrig.outEdges(s))
 							totalFlow += net.getFlow(e);
@@ -487,7 +487,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				}
 
 				int totalFlow = 0;
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int s : sources) {
 						for (int e : gOrig.outEdges(s))
 							totalFlow += net.getFlowInt(e);
@@ -511,7 +511,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				}
 
 				double totalFlow = 0;
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int s : sources) {
 						for (int e : gOrig.outEdges(s))
 							totalFlow += net.getFlow(e);
@@ -536,7 +536,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				}
 
 				int totalFlow = 0;
-				if (gOrig.getCapabilities().directed()) {
+				if (gOrig.isDirected()) {
 					for (int s : sources) {
 						for (int e : gOrig.outEdges(s))
 							totalFlow += net.getFlowInt(e);

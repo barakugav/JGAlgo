@@ -70,7 +70,7 @@ class FormatGML implements GraphFormat {
 
 		@Override
 		public void writeGraph(Graph graph, Writer writer) {
-			if (graph.getCapabilities().directed())
+			if (graph.isDirected())
 				throw new IllegalArgumentException("GML format support undirected graphs only");
 
 			try {

@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
-
 /**
  * An undirected graph implementation using linked lists to store edge lists.
  * <p>
@@ -35,6 +33,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
+
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
@@ -42,13 +42,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
@@ -210,14 +210,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		edgesContainer.clear(edges);
 		super.clearEdges();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newUndirected().parallelEdges(true).selfEdges(true).build();
 
 	private static class Edge extends GraphLinkedAbstract.Edge {
 

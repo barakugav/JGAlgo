@@ -40,7 +40,7 @@ class ConnectedComponentsUtils {
 		}
 
 		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
-			if (g.getCapabilities().directed()) {
+			if (g.isDirected()) {
 				return findStronglyConnectedComponentsDirected(g);
 			} else {
 				return weaklyConnectedComponentsAlgo.findWeaklyConnectedComponents(g);

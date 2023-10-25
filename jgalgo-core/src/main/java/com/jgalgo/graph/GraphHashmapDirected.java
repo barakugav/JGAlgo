@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Iterator;
-import com.jgalgo.graph.Graphs.GraphCapabilitiesBuilder;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -31,8 +30,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	private final DataContainer.Obj<Int2IntMap> edgesOutContainer;
 	private final DataContainer.Obj<Int2IntMap> edgesInContainer;
 
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, false);
+
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(expectedVerticesNum, expectedEdgesNum);
+		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 		edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
@@ -43,7 +44,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	}
 
 	GraphHashmapDirected(IndexGraph g, boolean copyWeights) {
-		super(g, copyWeights);
+		super(Capabilities, g, copyWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphHashmapDirected) {
@@ -326,14 +327,6 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		// edgesOut.clear();
 		// edgesIn.clear();
 	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities =
-			GraphCapabilitiesBuilder.newDirected().parallelEdges(false).selfEdges(true).build();
 
 	class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
 		private final Int2IntMap edges;

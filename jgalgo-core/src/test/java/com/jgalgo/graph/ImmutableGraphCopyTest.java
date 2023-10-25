@@ -365,10 +365,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph gImmutable = gOrig.immutableCopy();
 
-				GraphCapabilities capOrig = gOrig.getCapabilities();
-				GraphCapabilities capImmutable = gImmutable.getCapabilities();
-
-				assertEquals(capOrig.directed(), capImmutable.directed());
+				assertEquals(gOrig.isDirected(), gImmutable.isDirected());
+				assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
+				assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
 			}
 		}
 	}

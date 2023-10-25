@@ -63,7 +63,7 @@ class PathImpl implements Path {
 
 	@Override
 	public EdgeIter edgeIter() {
-		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
+		return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
 	}
 
 	@Override

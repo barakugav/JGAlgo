@@ -43,7 +43,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
+		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
 	@Override

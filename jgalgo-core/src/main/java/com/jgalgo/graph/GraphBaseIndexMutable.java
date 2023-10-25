@@ -28,7 +28,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
-	GraphBaseIndexMutable(int expectedVerticesNum, int expectedEdgesNum) {
+	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities);
 		vertices = new GraphElementSet.Default(0, false);
 		edges = new GraphElementSet.Default(0, true);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
@@ -37,15 +38,16 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseIndexMutable(IndexGraph g, boolean copyWeights) {
-		if (getCapabilities().directed()) {
+	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+		super(capabilities);
+		if (isDirected()) {
 			Assertions.Graphs.onlyDirected(g);
 		} else {
 			Assertions.Graphs.onlyUndirected(g);
 		}
-		if (!getCapabilities().selfEdges())
+		if (!isAllowSelfEdges())
 			Assertions.Graphs.noSelfEdges(g, "self edges are not supported");
-		if (!getCapabilities().parallelEdges())
+		if (!isAllowParallelEdges())
 			Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
 
 		vertices = new GraphElementSet.Default(g.vertices().size(), false);
@@ -68,7 +70,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
 	}
 
-	GraphBaseIndexMutable(IndexGraphBuilderImpl builder) {
+	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities);
 		vertices = builder.vertices.copy();
 		edges = builder.edges.copy();
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, vertices);

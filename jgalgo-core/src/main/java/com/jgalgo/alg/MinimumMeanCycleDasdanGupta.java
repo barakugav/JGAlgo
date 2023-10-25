@@ -62,7 +62,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		Path cycle = computeMinimumMeanCycle0(g, w);
 
 		/* The regular algorithm doesn't handle self edges (and specifically skip CC with a single vertex) */
-		if (g.getCapabilities().selfEdges()) {
+		if (g.isAllowSelfEdges()) {
 			int bestSelfEdge = -1;
 			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;
 			for (int m = g.edges().size(), e = 0; e < m; e++) {

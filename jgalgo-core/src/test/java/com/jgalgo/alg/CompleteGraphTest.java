@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphCapabilities;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -264,10 +263,9 @@ public class CompleteGraphTest extends TestBase {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
 				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
-				GraphCapabilities capabilities = g.getCapabilities();
-				assertFalse(capabilities.selfEdges());
-				assertFalse(capabilities.parallelEdges());
-				assertEquals(directed, capabilities.directed());
+				assertFalse(g.isAllowSelfEdges());
+				assertFalse(g.isAllowParallelEdges());
+				assertEquals(directed, g.isDirected());
 			}
 		}
 	}
