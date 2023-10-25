@@ -50,6 +50,7 @@ class LowestCommonAncestorDynamicGabowInts implements LowestCommonAncestorDynami
 
 	private int vertices2Num;
 	private final LowestCommonAncestorDynamicGabowSimple lca0;
+	private final CharacteristicAncestors lca0Result = new CharacteristicAncestors(null, null, null);
 
 	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
 
@@ -149,7 +150,8 @@ class LowestCommonAncestorDynamicGabowInts implements LowestCommonAncestorDynami
 
 				/* Calculate CAs in the next level tree */
 				Vertex0 x0 = x1.subTree, y0 = y1.subTree;
-				CharacteristicAncestors ca0 = lca0.calcCA(x0.lcaId, y0.lcaId);
+				lca0.calcCA(x0.lcaId, y0.lcaId, lca0Result);
+				CharacteristicAncestors ca0 = lca0Result;
 				Vertex0 a0 = ca0.a.getData(), ax0 = ca0.ax.getData(), ay0 = ca0.ay.getData();
 
 				if (a0 != ax0) {

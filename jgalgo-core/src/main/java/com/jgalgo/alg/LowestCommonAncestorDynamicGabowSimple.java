@@ -40,6 +40,7 @@ import java.util.Objects;
 class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDynamic {
 
 	private int verticesNum;
+	private final CharacteristicAncestors reusedResultObj = new CharacteristicAncestors(null, null, null);
 
 	/* Hyper parameters */
 	private static final double alpha = 6.0 / 5.0;
@@ -84,6 +85,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 			if (a.isRequireRecompress())
 				lastAncestorRequireCompress = a;
 		}
+		assert lastAncestorRequireCompress != null;
 		recompress(lastAncestorRequireCompress);
 
 		return vertex;
@@ -161,8 +163,10 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		return assertOverflowDouble(Math.pow(a, b));
 	}
 
+	private static final double LogBetaInv = 1 / Math.log(beta);
+
 	private static int logBetaFloor(double x) {
-		return assertOverflowInt(Math.floor(Math.log(x) / Math.log(beta)));
+		return assertOverflowInt(Math.floor(Math.log(x) * LogBetaInv));
 	}
 
 	private static double assertOverflowDouble(double x) {
@@ -175,9 +179,11 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		return (int) x;
 	}
 
-	private static CharacteristicAncestors calcCACompressed(VertexImpl x, VertexImpl y) {
-		if (x == y)
-			return new CharacteristicAncestors(x, x, x);
+	private static void calcCACompressed(VertexImpl x, VertexImpl y, CharacteristicAncestors res) {
+		if (x == y) {
+			res.a = res.ax = res.ay = x;
+			return;
+		}
 		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));
 
 		VertexImpl[] a = new VertexImpl[2];
@@ -211,14 +217,19 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 		assert a[0] == a[1];
 		assert ax == a[0] || ax.cParent == a[0];
 		assert ay == a[0] || ay.cParent == a[0];
-		return new CharacteristicAncestors(a[0], ax, ay);
+		res.a = a[0];
+		res.ax = ax;
+		res.ay = ay;
 	}
 
-	CharacteristicAncestors calcCA(Vertex x0, Vertex y0) {
+	void calcCA(Vertex x0, Vertex y0, CharacteristicAncestors res) {
 		VertexImpl x = (VertexImpl) x0, y = (VertexImpl) y0;
-		if (x == y)
-			return new CharacteristicAncestors(x, x, x);
-		CharacteristicAncestors cac = calcCACompressed(x, y);
+		if (x == y) {
+			res.a = res.ax = res.ay = x;
+			return;
+		}
+		calcCACompressed(x, y, res);
+		CharacteristicAncestors cac = res;
 
 		/* c is an apex of path P */
 		VertexImpl c = (VertexImpl) cac.a, cx = (VertexImpl) cac.ax, cy = (VertexImpl) cac.ay;
@@ -238,12 +249,15 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 		assert ax == a || ax.parent == a;
 		assert ay == a || ay.parent == a;
-		return new CharacteristicAncestors(a, ax, ay);
+		res.a = a;
+		res.ax = ax;
+		res.ay = ay;
 	}
 
 	@Override
 	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
-		return calcCA(x, y).a;
+		calcCA(x, y, reusedResultObj);
+		return reusedResultObj.a;
 	}
 
 	@Override
@@ -361,7 +375,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 	}
 
 	static class CharacteristicAncestors {
-		final Vertex a, ax, ay;
+		Vertex a, ax, ay;
 
 		CharacteristicAncestors(Vertex a, Vertex ax, Vertex ay) {
 			this.a = a;
