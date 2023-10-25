@@ -152,7 +152,7 @@ public class Assertions {
 			}
 		}
 
-		public static void positiveCapacities(Graph g, FlowNetwork net) {
+		public static void positiveCapacities(IndexGraph g, FlowNetwork net) {
 			if (net instanceof FlowNetworkInt) {
 				FlowNetworkInt netInt = (FlowNetworkInt) net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
