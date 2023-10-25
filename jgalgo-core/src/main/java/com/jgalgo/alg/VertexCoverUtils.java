@@ -22,11 +22,9 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexCoverUtils {
 
@@ -53,7 +51,7 @@ class VertexCoverUtils {
 
 		private final IndexGraph g;
 		private final BitSet cover;
-		private IntCollection vertices;
+		private IntSet vertices;
 
 		ResultImpl(IndexGraph g, BitSet cover) {
 			this.g = Objects.requireNonNull(g);
@@ -61,14 +59,16 @@ class VertexCoverUtils {
 		}
 
 		@Override
-		public IntCollection vertices() {
-			if (this.vertices == null) {
-				IntList vertices = new IntArrayList(cover.cardinality());
-				for (int v : JGAlgoUtils.iterable(cover))
-					vertices.add(v);
-				this.vertices = IntLists.unmodifiable(vertices);
+		public IntSet vertices() {
+			if (vertices == null) {
+				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {
+					@Override
+					public boolean contains(int v) {
+						return 0 <= v && v < g.vertices().size() && cover.get(v);
+					}
+				};
 			}
-			return this.vertices;
+			return vertices;
 		}
 
 		@Override
@@ -91,8 +91,8 @@ class VertexCoverUtils {
 		}
 
 		@Override
-		public IntCollection vertices() {
-			return IndexIdMaps.indexToIdCollection(res.vertices(), viMap);
+		public IntSet vertices() {
+			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);
 		}
 
 		@Override

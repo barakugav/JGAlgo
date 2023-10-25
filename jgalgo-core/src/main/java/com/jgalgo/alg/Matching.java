@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A matching in a graph.
@@ -59,7 +59,7 @@ public interface Matching {
 	 *
 	 * @return all the matched vertices
 	 */
-	IntCollection matchedVertices();
+	IntSet matchedVertices();
 
 	/**
 	 * Get all the vertices that are not matched by the matching.
@@ -69,7 +69,7 @@ public interface Matching {
 	 *
 	 * @return all the unmatched vertices
 	 */
-	IntCollection unmatchedVertices();
+	IntSet unmatchedVertices();
 
 	/**
 	 * Check whether an edge is part of the matching.
@@ -87,7 +87,7 @@ public interface Matching {
 	 *
 	 * @return collection containing all the edges that are part of this matching
 	 */
-	IntCollection edges();
+	IntSet edges();
 
 	/**
 	 * Check whether this matching is perfect.

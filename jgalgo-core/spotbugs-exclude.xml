@@ -203,6 +203,11 @@
       <Bug pattern="UUF_UNUSED_FIELD" />
     </Or>
   </Match>
-
-
+  <Match>
+    <!-- The immutable array set should not copy the array, it assumed the array will not be used
+    again by the user -->
+    <Class name="com.jgalgo.internal.util.ImmutableIntArraySet" />
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

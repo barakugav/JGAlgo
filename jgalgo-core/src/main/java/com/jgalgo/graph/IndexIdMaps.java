@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Static methods class for {@linkplain IndexIdMap index-id maps}.
@@ -213,6 +214,28 @@ public class IndexIdMaps {
 		@Override
 		public boolean rem(int key) {
 			return indexC.rem(map.idToIndex(key));
+		}
+	}
+
+	/**
+	 * Create an IDs set from a set of indices.
+	 *
+	 * @param  indexSet a set of indices
+	 * @param  map      index-id mapping
+	 * @return          a set that contain IDs matching the indices contained in the original index-set
+	 */
+	public static IntSet indexToIdSet(IntSet indexSet, IndexIdMap map) {
+		return new IndexToIdSet(indexSet, map);
+	}
+
+	private static class IndexToIdSet extends IndexToIdCollection implements IntSet {
+		IndexToIdSet(IntSet indexSet, IndexIdMap map) {
+			super(indexSet, map);
+		}
+
+		@Override
+		public boolean remove(int k) {
+			return rem(k);
 		}
 	}
 

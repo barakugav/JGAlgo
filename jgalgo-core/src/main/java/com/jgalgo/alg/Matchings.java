@@ -22,30 +22,29 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class Matchings {
 
 	static class MatchingImpl implements Matching {
 
 		private final IndexGraph g;
-		private IntCollection edges;
-		private int[] matched;
-		private IntCollection matchedVertices;
-		private IntCollection unmatchedVertices;
-
-		MatchingImpl(IndexGraph g, IntCollection edges) {
-			this.g = Objects.requireNonNull(g);
-			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
-		}
+		private IntSet edges;
+		private final int[] matched;
+		private IntSet matchedVertices;
+		private IntSet unmatchedVertices;
 
 		MatchingImpl(IndexGraph g, int[] matched) {
 			assert matched.length == g.vertices().size();
 			this.g = Objects.requireNonNull(g);
 			this.matched = Objects.requireNonNull(matched);
+		}
+
+		static MatchingImpl emptyMatching(IndexGraph g) {
+			int[] matched = new int[g.vertices().size()];
+			Arrays.fill(matched, -1);
+			return new MatchingImpl(g, matched);
 		}
 
 		@Override
@@ -54,9 +53,8 @@ class Matchings {
 		}
 
 		@Override
-		public IntCollection matchedVertices() {
+		public IntSet matchedVertices() {
 			if (matchedVertices == null) {
-				computeMatchedArray();
 				int matchedCount = 0;
 				for (int v = 0; v < matched.length; v++)
 					if (matched[v] != -1)
@@ -65,15 +63,19 @@ class Matchings {
 				for (int i = 0, v = 0; v < matched.length; v++)
 					if (matched[v] != -1)
 						matchedVertices0[i++] = v;
-				matchedVertices = IntImmutableList.of(matchedVertices0);
+				matchedVertices = new ImmutableIntArraySet(matchedVertices0) {
+					@Override
+					public boolean contains(int v) {
+						return 0 <= v && v < matched.length && matched[v] != -1;
+					}
+				};
 			}
 			return matchedVertices;
 		}
 
 		@Override
-		public IntCollection unmatchedVertices() {
+		public IntSet unmatchedVertices() {
 			if (unmatchedVertices == null) {
-				computeMatchedArray();
 				int unmatchedCount = 0;
 				for (int v = 0; v < matched.length; v++)
 					if (matched[v] == -1)
@@ -82,25 +84,28 @@ class Matchings {
 				for (int i = 0, v = 0; v < matched.length; v++)
 					if (matched[v] == -1)
 						unmatchedVertices0[i++] = v;
-				unmatchedVertices = IntImmutableList.of(unmatchedVertices0);
+				unmatchedVertices = new ImmutableIntArraySet(unmatchedVertices0) {
+					@Override
+					public boolean contains(int v) {
+						return 0 <= v && v < matched.length && matched[v] == -1;
+					}
+				};
 			}
 			return unmatchedVertices;
 		}
 
 		@Override
 		public int getMatchedEdge(int vertex) {
-			computeMatchedArray();
 			return matched[vertex];
 		}
 
 		@Override
 		public boolean containsEdge(int edge) {
-			computeMatchedArray();
 			return matched[g.edgeSource(edge)] == edge;
 		}
 
 		@Override
-		public IntCollection edges() {
+		public IntSet edges() {
 			computeEdgesCollection();
 			return edges;
 		}
@@ -124,24 +129,13 @@ class Matchings {
 					edges0[i++] = e;
 				}
 			}
-			edges = IntImmutableList.of(edges0);
-		}
+			edges = new ImmutableIntArraySet(edges0) {
 
-		private void computeMatchedArray() {
-			if (matched != null)
-				return;
-			matched = new int[g.vertices().size()];
-			Arrays.fill(matched, -1);
-			for (int e : edges) {
-				int u = g.edgeSource(e);
-				int v = g.edgeTarget(e);
-				if (matched[u] != -1)
-					throw new IllegalArgumentException("vertex with index " + u + " is matched twice");
-				matched[u] = e;
-				if (matched[v] != -1)
-					throw new IllegalArgumentException("vertex with index " + v + " is matched twice");
-				matched[v] = e;
-			}
+				@Override
+				public boolean contains(int e) {
+					return 0 <= e && e < g.edges().size() && matched[g.edgeSource(e)] == e;
+				}
+			};
 		}
 
 		@Override
@@ -151,7 +145,6 @@ class Matchings {
 
 		@Override
 		public boolean isPerfect() {
-			computeMatchedArray();
 			for (int e : matched)
 				if (e == -1)
 					return false;
@@ -259,13 +252,13 @@ class Matchings {
 			}
 
 			@Override
-			public IntCollection matchedVertices() {
-				return IndexIdMaps.indexToIdCollection(match.matchedVertices(), viMap);
+			public IntSet matchedVertices() {
+				return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);
 			}
 
 			@Override
-			public IntCollection unmatchedVertices() {
-				return IndexIdMaps.indexToIdCollection(match.unmatchedVertices(), viMap);
+			public IntSet unmatchedVertices() {
+				return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);
 			}
 
 			@Override
@@ -279,8 +272,8 @@ class Matchings {
 			}
 
 			@Override
-			public IntCollection edges() {
-				return IndexIdMaps.indexToIdCollection(match.edges(), eiMap);
+			public IntSet edges() {
+				return IndexIdMaps.indexToIdSet(match.edges(), eiMap);
 			}
 
 			@Override
@@ -308,7 +301,7 @@ class Matchings {
 		@Override
 		Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
 			onlyCardinality(w);
-			return new Matchings.MatchingImpl(g, IntLists.emptyList());
+			return Matchings.MatchingImpl.emptyMatching(g);
 		}
 
 		@Override

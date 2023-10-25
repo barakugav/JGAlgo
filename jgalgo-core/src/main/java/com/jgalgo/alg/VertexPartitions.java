@@ -20,10 +20,8 @@ import java.util.Objects;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexPartitions {
 
@@ -31,8 +29,8 @@ class VertexPartitions {
 		private final IndexGraph g;
 		private final int blockNum;
 		private final int[] vertexToBlock;
-		private IntList[] blockVertices;
-		private IntList[] blockEdges;
+		private IntSet[] blockVertices;
+		private IntSet[] blockEdges;
 
 		ImplIndex(IndexGraph g, int blockNum, int[] vertexToBlock) {
 			this.g = Objects.requireNonNull(g);
@@ -56,34 +54,82 @@ class VertexPartitions {
 		}
 
 		@Override
-		public IntCollection blockVertices(int block) {
+		public IntSet blockVertices(int block) {
 			if (blockVertices == null) {
-				blockVertices = new IntList[blockNum];
-				for (int b = 0; b < blockNum; b++)
-					blockVertices[b] = new IntArrayList();
 				final int n = vertexToBlock.length;
-				for (int u = 0; u < n; u++)
-					blockVertices[vertexToBlock[u]].add(u);
-				for (int b = 0; b < blockNum; b++)
-					blockVertices[b] = IntLists.unmodifiable(blockVertices[b]);
+
+				int[] blockSize = new int[blockNum + 1];
+				for (int v = 0; v < n; v++)
+					blockSize[vertexToBlock[v]]++;
+				for (int s = 0, b = 0; b < blockNum; b++) {
+					int k = blockSize[b];
+					blockSize[b] = s;
+					s += k;
+				}
+				int[] sortedVertices = new int[n];
+				int[] blockOffset = blockSize;
+				for (int v = 0; v < n; v++)
+					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;
+				for (int b = blockNum; b > 0; b--)
+					blockOffset[b] = blockOffset[b - 1];
+				blockOffset[0] = 0;
+
+				blockVertices = new IntSet[blockNum];
+				for (int b = 0; b < blockNum; b++) {
+					final int b0 = b;
+					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {
+						@Override
+						public boolean contains(int v) {
+							return 0 <= v && v < n && vertexToBlock[v] == b0;
+						}
+					};
+				}
 			}
 			return blockVertices[block];
 		}
 
 		@Override
-		public IntCollection blockEdges(int block) {
+		public IntSet blockEdges(int block) {
 			if (blockEdges == null) {
-				blockEdges = new IntList[blockNum];
-				for (int c = 0; c < blockNum; c++)
-					blockEdges[c] = new IntArrayList();
+
+				int[] blockSize = new int[blockNum + 1];
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int b1 = vertexToBlock[g.edgeSource(e)];
 					int b2 = vertexToBlock[g.edgeTarget(e)];
 					if (b1 == b2)
-						blockEdges[b1].add(e);
+						blockSize[b1]++;
 				}
-				for (int b = 0; b < blockNum; b++)
-					blockEdges[b] = IntLists.unmodifiable(blockEdges[b]);
+
+				int innerEdgesCount = 0;
+				for (int b = 0; b < blockNum; b++) {
+					int k = blockSize[b];
+					blockSize[b] = innerEdgesCount;
+					innerEdgesCount += k;
+				}
+				int[] sortedEdges = new int[innerEdgesCount];
+				int[] blockOffset = blockSize;
+				for (int m = g.edges().size(), e = 0; e < m; e++) {
+					int b1 = vertexToBlock[g.edgeSource(e)];
+					int b2 = vertexToBlock[g.edgeTarget(e)];
+					if (b1 == b2)
+						sortedEdges[blockOffset[b1]++] = e;
+				}
+				for (int b = blockNum; b > 0; b--)
+					blockOffset[b] = blockOffset[b - 1];
+				blockOffset[0] = 0;
+
+				final int m = g.edges().size();
+				blockEdges = new IntSet[blockNum];
+				for (int b = 0; b < blockNum; b++) {
+					final int b0 = b;
+					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {
+						@Override
+						public boolean contains(int e) {
+							return 0 <= e && e < m && vertexToBlock[g.edgeSource(e)] == b0
+									&& vertexToBlock[g.edgeSource(e)] == b0;
+						}
+					};
+				}
 			}
 			return blockEdges[block];
 		}
@@ -113,13 +159,13 @@ class VertexPartitions {
 		}
 
 		@Override
-		public IntCollection blockVertices(int block) {
-			return IndexIdMaps.indexToIdCollection(res.blockVertices(block), viMap);
+		public IntSet blockVertices(int block) {
+			return IndexIdMaps.indexToIdSet(res.blockVertices(block), viMap);
 		}
 
 		@Override
-		public IntCollection blockEdges(int block) {
-			return IndexIdMaps.indexToIdCollection(res.blockEdges(block), eiMap);
+		public IntSet blockEdges(int block) {
+			return IndexIdMaps.indexToIdSet(res.blockEdges(block), eiMap);
 		}
 
 	}

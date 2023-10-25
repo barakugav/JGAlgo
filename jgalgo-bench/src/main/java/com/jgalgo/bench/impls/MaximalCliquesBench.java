@@ -43,6 +43,7 @@ import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class MaximalCliquesBench {
@@ -54,7 +55,7 @@ public class MaximalCliquesBench {
 	void benchMaximalCliques(MaximalCliques.Builder builder, Blackhole blackhole) {
 		Graph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		MaximalCliques algo = builder.build();
-		for (Iterator<IntCollection> cliqueIter = algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
+		for (Iterator<IntSet> cliqueIter = algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
 			blackhole.consume(cliqueIter.next());
 	}
 

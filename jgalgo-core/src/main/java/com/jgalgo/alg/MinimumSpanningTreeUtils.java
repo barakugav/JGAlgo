@@ -22,9 +22,10 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 class MinimumSpanningTreeUtils {
 
@@ -72,10 +73,14 @@ class MinimumSpanningTreeUtils {
 	static class ResultImpl implements MinimumSpanningTree.Result {
 
 		private final IntCollection edges;
-		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntLists.emptyList());
+		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
 
 		ResultImpl(IntCollection edges) {
 			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
+		}
+
+		ResultImpl(int[] edges) {
+			this.edges = ImmutableIntArraySet.withNaiveContains(edges);
 		}
 
 		@Override

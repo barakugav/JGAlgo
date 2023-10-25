@@ -494,6 +494,14 @@ public class JGAlgoUtils {
 		};
 	}
 
+	public static int[] toArray(BitSet bitSet) {
+		int[] arr = new int[bitSet.cardinality()];
+		int i = 0;
+		for (int b : iterable(bitSet))
+			arr[i++] = b;
+		return arr;
+	}
+
 	@FunctionalInterface
 	public static interface BiInt2IntFunction {
 		int apply(int a1, int a2);

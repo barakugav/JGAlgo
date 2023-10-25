@@ -21,7 +21,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -133,7 +133,7 @@ public interface FlowNetwork {
 	 * @param  sources a set of source vertices
 	 * @return         the sum of flow units going out of {@code sources}
 	 */
-	default double getFlowSum(Graph g, IntCollection sources) {
+	default double getFlowSum(Graph g, IntIterable sources) {
 		double sum = 0;
 		if (g.isDirected()) {
 			for (int source : sources) {
@@ -166,7 +166,7 @@ public interface FlowNetwork {
 	 * @param  cost  a edge weight cost function
 	 * @return       the sum of the cost of the flow along the edges
 	 */
-	default double getCostSum(IntCollection edges, WeightFunction cost) {
+	default double getCostSum(IntIterable edges, WeightFunction cost) {
 		double sum = 0;
 		if (cost instanceof WeightFunctionInt) {
 			WeightFunctionInt costInt = (WeightFunctionInt) cost;

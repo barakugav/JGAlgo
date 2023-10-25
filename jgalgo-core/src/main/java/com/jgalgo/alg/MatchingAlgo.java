@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Maximum/minimum matching algorithm.
@@ -164,7 +163,7 @@ public interface MatchingAlgo {
 						@Override
 						public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
 							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-							return isCardinality ? new Matchings.MatchingImpl(g.indexGraph(), IntLists.emptyList())
+							return isCardinality ? Matchings.MatchingImpl.emptyMatching(g.indexGraph())
 									: weightedAlgo.computeMinimumWeightedMatching(g, w);
 						}
 

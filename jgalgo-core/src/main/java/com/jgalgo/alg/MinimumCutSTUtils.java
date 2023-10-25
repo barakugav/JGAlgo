@@ -25,9 +25,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -105,10 +103,8 @@ class MinimumCutSTUtils {
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 		/* perform a BFS from source and use only non saturated edges */
-		IntList cut = new IntArrayList();
 		final double eps = 0.00001;
 		for (int source : sources) {
-			cut.add(source);
 			visited.set(source);
 			queue.enqueue(source);
 		}
@@ -124,7 +120,6 @@ class MinimumCutSTUtils {
 						continue;
 					if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
 						continue; // saturated edge
-					cut.add(v);
 					visited.set(v);
 					queue.enqueue(v);
 				}
@@ -140,7 +135,6 @@ class MinimumCutSTUtils {
 						continue;
 					if (net.getFlow(e) < eps)
 						continue; // saturated edge
-					cut.add(v);
 					visited.set(v);
 					queue.enqueue(v);
 				}
@@ -157,14 +151,13 @@ class MinimumCutSTUtils {
 					double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
 					if (Math.abs(net.getCapacity(e) - directedFlow) < eps)
 						continue; // saturated edge
-					cut.add(v);
 					visited.set(v);
 					queue.enqueue(v);
 				}
 			}
 		}
 
-		return new CutImpl(g, cut);
+		return new CutImpl(g, visited);
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {

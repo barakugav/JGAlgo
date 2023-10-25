@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A partition of the vertices of a graph.
@@ -53,7 +53,7 @@ public interface VertexPartition {
 	 * @return                           the vertices that are part of the blocks
 	 * @throws IndexOutOfBoundsException if {@code block} is not in range \([0, blocksNum)\)
 	 */
-	IntCollection blockVertices(int block);
+	IntSet blockVertices(int block);
 
 	/**
 	 * Get all the edges that are contained in a block.
@@ -64,6 +64,6 @@ public interface VertexPartition {
 	 * @return                           the edges that are contained in the blocks
 	 * @throws IndexOutOfBoundsException if {@code block} is not in range \([0, blocksNum)\)
 	 */
-	IntCollection blockEdges(int block);
+	IntSet blockEdges(int block);
 
 }

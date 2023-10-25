@@ -21,23 +21,16 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class CutImpl implements Cut {
 
 	private final IndexGraph g;
 	private BitSet cutBitmap;
-	private IntCollection cutVertices;
-	private IntCollection crossEdges;
-
-	CutImpl(IndexGraph g, IntCollection cutVertices) {
-		this.g = Objects.requireNonNull(g);
-		this.cutVertices = IntCollections.unmodifiable(Objects.requireNonNull(cutVertices));
-	}
+	private IntSet cutVertices;
+	private IntSet crossEdges;
 
 	CutImpl(IndexGraph g, BitSet cutBitmap) {
 		this.g = Objects.requireNonNull(g);
@@ -51,27 +44,48 @@ class CutImpl implements Cut {
 	}
 
 	@Override
-	public IntCollection vertices() {
-		computeVerticesCollection();
+	public IntSet vertices() {
+		if (cutVertices == null) {
+			cutVertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cutBitmap)) {
+				@Override
+				public boolean contains(int v) {
+					return 0 <= v && v < g.vertices().size() && cutBitmap.get(v);
+				}
+			};
+		}
 		return cutVertices;
 	}
 
 	@Override
-	public IntCollection edges() {
-		computeCrossEdgesCollection();
+	public IntSet edges() {
+		if (crossEdges == null) {
+			computeCutBitmap();
+			int crossEdgesNum = 0;
+			for (int u : JGAlgoUtils.iterable(cutBitmap)) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					eit.nextInt();
+					if (!cutBitmap.get(eit.target()))
+						crossEdgesNum++;
+				}
+			}
+			int[] crossEdges0 = new int[crossEdgesNum];
+			crossEdgesNum = 0;
+			for (int u : JGAlgoUtils.iterable(cutBitmap)) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					if (!cutBitmap.get(eit.target()))
+						crossEdges0[crossEdgesNum++] = e;
+				}
+			}
+			crossEdges = new ImmutableIntArraySet(crossEdges0) {
+				@Override
+				public boolean contains(int e) {
+					return 0 <= e && e <= g.edges().size()
+							&& (cutBitmap.get(g.edgeSource(e)) ^ !cutBitmap.get(g.edgeTarget(e)));
+				}
+			};
+		}
 		return crossEdges;
-	}
-
-	private void computeVerticesCollection() {
-		if (cutVertices != null)
-			return;
-		IntArrayList cutVertices0 = new IntArrayList();
-		int n = g.vertices().size();
-		for (int v = 0; v < n; v++)
-			if (cutBitmap.get(v))
-				cutVertices0.add(v);
-		cutVertices0.trim();
-		cutVertices = IntLists.unmodifiable(cutVertices0);
 	}
 
 	private void computeCutBitmap() {
@@ -80,23 +94,6 @@ class CutImpl implements Cut {
 		cutBitmap = new BitSet(g.vertices().size());
 		for (int v : cutVertices)
 			cutBitmap.set(v);
-	}
-
-	private void computeCrossEdgesCollection() {
-		if (crossEdges != null)
-			return;
-		computeCutBitmap();
-		IntArrayList crossEdges0 = new IntArrayList();
-		for (int u : JGAlgoUtils.iterable(cutBitmap)) {
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				if (!cutBitmap.get(v))
-					crossEdges0.add(e);
-			}
-		}
-		crossEdges0.trim();
-		crossEdges = IntLists.unmodifiable(crossEdges0);
 	}
 
 	@Override
@@ -123,13 +120,13 @@ class CutImpl implements Cut {
 		}
 
 		@Override
-		public IntCollection vertices() {
-			return IndexIdMaps.indexToIdCollection(cut.vertices(), viMap);
+		public IntSet vertices() {
+			return IndexIdMaps.indexToIdSet(cut.vertices(), viMap);
 		}
 
 		@Override
-		public IntCollection edges() {
-			return IndexIdMaps.indexToIdCollection(cut.edges(), eiMap);
+		public IntSet edges() {
+			return IndexIdMaps.indexToIdSet(cut.edges(), eiMap);
 		}
 
 	}

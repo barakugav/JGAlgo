@@ -21,7 +21,7 @@ import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
  * Flow on graph edges, with integer capacities and flows values.
@@ -104,7 +104,7 @@ public interface FlowNetworkInt extends FlowNetwork {
 	}
 
 	@Override
-	default double getCostSum(IntCollection edges, WeightFunction cost) {
+	default double getCostSum(IntIterable edges, WeightFunction cost) {
 		if (cost instanceof WeightFunctionInt) {
 			WeightFunctionInt costInt = (WeightFunctionInt) cost;
 			int sum = 0;

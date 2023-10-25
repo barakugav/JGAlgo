@@ -40,10 +40,8 @@ import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -661,11 +659,15 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				searchEnd();
 			}
 
-			IntList matchingEdges = new IntArrayList();
-			for (int u = 0; u < n; u++)
-				if (isMatched(u) && u < g.edgeEndpoint(matched[u], u))
-					matchingEdges.add(edgeVal.get(matched[u]).e);
-			return new Matchings.MatchingImpl(gOrig, matchingEdges);
+			for (int u = 0; u < n; u++) {
+				if (!isMatched(u))
+					continue;
+				int e = matched[u];
+				int v = g.edgeEndpoint(e, u);
+				if (u > v)
+					matched[u] = matched[v] = edgeVal.get(e).e;
+			}
+			return new Matchings.MatchingImpl(gOrig, matched);
 		}
 
 		abstract void makeEven(Blossom V);

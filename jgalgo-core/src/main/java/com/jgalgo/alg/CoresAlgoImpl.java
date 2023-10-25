@@ -22,12 +22,8 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Linear cores computing algorithm.
@@ -154,14 +150,14 @@ class CoresAlgoImpl implements CoresAlgo {
 
 		private final int[] core;
 		private final int maxCore;
-		private IntCollection[] coreVertices;
+		private IntSet[] coreVertices;
 
 		public ResultImpl(int[] core) {
 			this.core = Objects.requireNonNull(core);
-			int m = 0;
+			int maxCore = -1;
 			for (int v = 0; v < core.length; v++)
-				m = Math.max(m, core[v]);
-			maxCore = m;
+				maxCore = Math.max(maxCore, core[v]);
+			this.maxCore = maxCore;
 		}
 
 		@Override
@@ -175,69 +171,37 @@ class CoresAlgoImpl implements CoresAlgo {
 		}
 
 		@Override
-		public IntCollection coreVertices(int core) {
+		public IntSet coreVertices(int core) {
 			if (coreVertices == null) {
-				/*  */
 				final int n = this.core.length;
-				IntList[] vs = new IntList[maxCore + 1];
-				for (int c = 0; c <= maxCore; c++)
-					vs[c] = new IntArrayList();
+				final int coreNum = maxCore + 1;
+				if (coreNum == 0)
+					throw new IndexOutOfBoundsException(core);
+
+				int[] coreOffset = new int[coreNum];
 				for (int v = 0; v < n; v++)
-					vs[this.core[v]].add(v);
+					coreOffset[this.core[v]]++;
+				for (int s = 0, c = 0; c < coreNum; c++) {
+					int k = coreOffset[c];
+					coreOffset[c] = s;
+					s += k;
+				}
+				int[] sortedVertices = new int[n];
+				for (int v = 0; v < n; v++)
+					sortedVertices[coreOffset[this.core[v]]++] = v;
+				assert coreOffset[coreNum - 1] == n;
+				for (int c = coreNum - 1; c > 0; c--)
+					coreOffset[c] = coreOffset[c - 1];
+				coreOffset[0] = 0;
 
-				coreVertices = new IntCollection[maxCore + 1];
-				for (int c0 = maxCore; c0 >= 0; c0--) {
-					final int c = c0;
-					coreVertices[c] = new AbstractIntSet() {
-
-						final int size = c == maxCore ? vs[maxCore].size() : coreVertices[c + 1].size() + vs[c].size();
-
+				coreVertices = new IntSet[coreNum];
+				for (int c = 0; c < coreNum; c++) {
+					final int c0 = c;
+					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {
 						@Override
-						public int size() {
-							return size;
+						public boolean contains(int v) {
+							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
 						}
-
-						@Override
-						public IntIterator iterator() {
-							return new IntIterator() {
-
-								int cIdx = c;
-								IntIterator it = vs[cIdx].iterator();
-								{
-									advance();
-								}
-
-								private void advance() {
-									for (;;) {
-										if (it.hasNext())
-											break;
-										if (cIdx == maxCore)
-											break;
-										cIdx++;
-										it = vs[cIdx].iterator();
-									}
-								}
-
-								@Override
-								public boolean hasNext() {
-									return it.hasNext();
-								}
-
-								@Override
-								public int nextInt() {
-									Assertions.Iters.hasNext(this);
-									int ret = it.nextInt();
-									advance();
-									return ret;
-								}
-							};
-						}
-
-						@Override
-						public boolean contains(int key) {
-							return key >= 0 && key < n && ResultImpl.this.core[key] >= c;
-						}
-
 					};
 				}
 			}
@@ -278,8 +242,8 @@ class CoresAlgoImpl implements CoresAlgo {
 		}
 
 		@Override
-		public IntCollection coreVertices(int core) {
-			return IndexIdMaps.indexToIdCollection(iResult.coreVertices(core), viMap);
+		public IntSet coreVertices(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);
 		}
 
 	}

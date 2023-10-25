@@ -20,7 +20,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {
 
@@ -52,7 +52,7 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 		}
 
 		@Override
-		public IntCollection getVertexBiCcs(int vertex) {
+		public IntSet getVertexBiCcs(int vertex) {
 			return res.getVertexBiCcs(viMap.idToIndex(vertex));
 		}
 
@@ -62,13 +62,13 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 		}
 
 		@Override
-		public IntCollection getBiCcVertices(int biccIdx) {
-			return IndexIdMaps.indexToIdCollection(res.getBiCcVertices(biccIdx), viMap);
+		public IntSet getBiCcVertices(int biccIdx) {
+			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);
 		}
 
 		@Override
-		public IntCollection getBiCcEdges(int biccIdx) {
-			return IndexIdMaps.indexToIdCollection(res.getBiCcEdges(biccIdx), eiMap);
+		public IntSet getBiCcEdges(int biccIdx) {
+			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);
 		}
 
 	}

@@ -19,10 +19,11 @@ import java.util.BitSet;
 import java.util.Iterator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -35,7 +36,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class MaximalCliquesBronKerbosch extends MaximalCliquesUtils.AbstractImpl {
 
 	@Override
-	Iterator<IntCollection> iterateMaximalCliques(IndexGraph g) {
+	Iterator<IntSet> iterateMaximalCliques(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 
 		return new Iterator<>() {
@@ -74,9 +75,9 @@ class MaximalCliquesBronKerbosch extends MaximalCliquesUtils.AbstractImpl {
 			}
 
 			@Override
-			public IntCollection next() {
+			public IntSet next() {
 				Assertions.Iters.hasNext(this);
-				IntList ret = new IntArrayList(currentClique);
+				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());
 				removeLastInsertedVertex(potentialStack.top(), excludedStack.top());
 				findNextClique();
 				return ret;

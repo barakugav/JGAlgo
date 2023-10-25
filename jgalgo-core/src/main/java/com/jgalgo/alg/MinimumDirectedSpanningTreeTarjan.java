@@ -25,7 +25,6 @@ import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
@@ -126,12 +125,14 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			}
 		}
 
-		IntCollection mst = new IntArrayList(cg.n - 1);
-		for (int v = 0; v < cg.n; v++) {
-			int e = inEdge[v];
-			if (v != root && e < artificialEdgesThreshold)
-				mst.add(e);
-		}
+		int mstSize = 0;
+		for (int v = 0; v < cg.n; v++)
+			if (v != root && inEdge[v] < artificialEdgesThreshold)
+				mstSize++;
+		int[] mst = new int[mstSize];
+		for (int e, i = 0, v = 0; v < cg.n; v++)
+			if (v != root && (e = inEdge[v]) < artificialEdgesThreshold)
+				mst[i++] = e;
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 

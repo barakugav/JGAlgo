@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * An algorithm that compute the bi-connected components of a graph.
@@ -65,7 +65,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           the labels of the bi-connected components containing the vertex
 		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
-		IntCollection getVertexBiCcs(int vertex);
+		IntSet getVertexBiCcs(int vertex);
 
 		/**
 		 * Get the number of bi-connected components computed in the graph.
@@ -83,7 +83,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           all the vertices that are contained in the bi-connected component
 		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
 		 */
-		IntCollection getBiCcVertices(int biccIdx);
+		IntSet getBiCcVertices(int biccIdx);
 
 		/**
 		 * Get the edges contained in a single bi-connected component.
@@ -95,7 +95,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           all the edges that are contained in the bi-connected component
 		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
 		 */
-		IntCollection getBiCcEdges(int biccIdx);
+		IntSet getBiCcEdges(int biccIdx);
 
 	}
 

@@ -16,18 +16,19 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -59,27 +60,42 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		Arrays.fill(depths, -1);
 
 		var biccVerticesFromBiccEdgesState = new Object() {
-			int[] visited = new int[n];
-			int nextVisitIdx = 1;
+			BitSet visited = new BitSet(n);
 		};
-		Function<IntCollection, IntList> biccVerticesFromBiccEdges = biccsEdges -> {
-			IntList biccVertices = new IntArrayList();
-			int[] visited = biccVerticesFromBiccEdgesState.visited;
-			final int visitIdx = biccVerticesFromBiccEdgesState.nextVisitIdx++;
+		Function<int[], int[]> biccVerticesFromBiccEdges = biccsEdges -> {
+			BitSet visited = biccVerticesFromBiccEdgesState.visited;
+			assert visited.isEmpty();
+			int biccVerticesCount = 0;
 			for (int e : biccsEdges) {
 				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
-					if (visited[w] != visitIdx) {
-						visited[w] = visitIdx;
-						biccVertices.add(w);
+					if (!visited.get(w)) {
+						visited.set(w);
+						biccVerticesCount++;
 					}
 				}
 			}
+			for (int e : biccsEdges)
+				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })
+					visited.clear(w);
+			int[] biccVertices = new int[biccVerticesCount];
+			biccVerticesCount = 0;
+			for (int e : biccsEdges) {
+				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
+					if (!visited.get(w)) {
+						visited.set(w);
+						biccVertices[biccVerticesCount++] = w;
+					}
+				}
+			}
+			assert biccVertices.length == biccVerticesCount;
+			for (int w : biccVertices)
+				visited.clear(w);
 			return biccVertices;
 		};
 
 		// BitSet separatingVertex = new BitSet(n);
-		List<IntList> biccsVertices = new ObjectArrayList<>();
-		// List<IntList> biccsEdges = new ObjectArrayList<>();
+		List<Pair<int[], int[]>> biccs = new ObjectArrayList<>();
+		IntList biccEdgesTemp = new IntArrayList();
 
 		for (int root = 0; root < n; root++) {
 			if (depths[root] != -1)
@@ -120,17 +136,18 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 					if (lowpoint[depth + 1] >= depth) {
 						// separatingVertex.set(parent);
 
-						IntList biccEdges = new IntArrayList();
+						assert biccEdgesTemp.isEmpty();
 						for (int lastEdge = edgePath[depth]; !edgeStack.isEmpty();) {
 							int e = edgeStack.popInt();
-							biccEdges.add(e);
+							biccEdgesTemp.add(e);
 							if (e == lastEdge)
 								break;
 						}
-						assert !biccEdges.isEmpty();
-						IntList biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);
-						biccsVertices.add(biccVertices);
-						// biccsEdges.add(biccEdges);
+						assert !biccEdgesTemp.isEmpty();
+						int[] biccEdges = biccEdgesTemp.toIntArray();
+						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);
+						biccs.add(Pair.of(biccVertices, biccEdges));
+						biccEdgesTemp.clear();
 					} else {
 						lowpoint[depth] = Math.min(lowpoint[depth], lowpoint[depth + 1]);
 					}
@@ -145,15 +162,13 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 					// separatingVertex.set(root);
 
 					if (rootChildrenCount == 0) {
-						biccsVertices.add(IntList.of(root));
-						// biccsEdges.add(IntList.of());
+						biccs.add(Pair.of(new int[] { root }, IntArrays.DEFAULT_EMPTY_ARRAY));
 
 					} else if (!edgeStack.isEmpty()) {
-						IntList biccEdges = new IntArrayList(edgeStack);
-						IntList biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);
+						int[] biccEdges = edgeStack.toIntArray();
+						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);
 						edgeStack.clear();
-						biccsVertices.add(biccVertices);
-						// biccsEdges.add(biccEdges);
+						biccs.add(Pair.of(biccVertices, biccEdges));
 
 					}
 					break;
@@ -161,40 +176,64 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			}
 		}
 
-		return new Res(g, biccsVertices.toArray(IntList[]::new));
+		return new Res(g, biccs);
 	}
 
 	private static class Res implements BiConnectedComponentsAlgo.Result {
 
 		private final IndexGraph g;
-		private final IntList[] biccsVertices;
-		private IntList[] biccsEdges;
-		private IntList[] vertexBiCcs;
+		private final IntSet[] biccsVertices;
+		private final int[][] biccsEdgesFromAlgo;
+		private IntSet[] biccsEdges;
+		private IntSet[] vertexBiCcs;
 		// private final BitSet separatingVerticesBitmap;
 		// private IntList separatingVertices;
 
-		Res(IndexGraph g, IntList[] biccsVertices) {
+		Res(IndexGraph g, List<Pair<int[], int[]>> biccs) {
 			this.g = Objects.requireNonNull(g);
-			this.biccsVertices = Objects.requireNonNull(biccsVertices);
-			for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
-				this.biccsVertices[biccIdx] = IntLists.unmodifiable(this.biccsVertices[biccIdx]);
+			final int biccsNum = biccs.size();
+
+			biccsVertices = new IntSet[biccsNum];
+			for (int biccIdx = 0; biccIdx < biccsNum; biccIdx++)
+				biccsVertices[biccIdx] = ImmutableIntArraySet.withNaiveContains(biccs.get(biccIdx).first());
+
+			biccsEdgesFromAlgo = new int[biccsNum][];
+			for (int biccIdx = 0; biccIdx < biccsNum; biccIdx++)
+				biccsEdgesFromAlgo[biccIdx] = biccs.get(biccIdx).second();
 			// this.separatingVerticesBitmap = Objects.requireNonNull(separatingVerticesBitmap);
 		}
 
 		@Override
-		public IntCollection getVertexBiCcs(int vertex) {
+		public IntSet getVertexBiCcs(int vertex) {
 			if (vertexBiCcs == null) {
 				final int n = g.vertices().size();
-				vertexBiCcs = new IntList[n];
-				for (int v = 0; v < n; v++)
-					vertexBiCcs[v] = new IntArrayList();
 
+				int[] vertexBiCcsCount = new int[n + 1];
 				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
 					for (int v : biccsVertices[biccIdx])
-						vertexBiCcs[v].add(biccIdx);
-
+						vertexBiCcsCount[v]++;
+				int vertexBiCcsCountTotal = 0;
 				for (int v = 0; v < n; v++)
-					vertexBiCcs[v] = IntLists.unmodifiable(vertexBiCcs[v]);
+					vertexBiCcsCountTotal += vertexBiCcsCount[v];
+
+				int[] sortedBiccs = new int[vertexBiCcsCountTotal];
+				int[] vertexOffset = vertexBiCcsCount;
+				for (int s = 0, v = 0; v < n; v++) {
+					int k = vertexOffset[v];
+					vertexOffset[v] = s;
+					s += k;
+				}
+				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
+					for (int v : biccsVertices[biccIdx])
+						sortedBiccs[vertexOffset[v]++] = biccIdx;
+				for (int v = n; v > 0; v--)
+					vertexOffset[v] = vertexOffset[v - 1];
+				vertexOffset[0] = 0;
+
+				vertexBiCcs = new IntSet[n];
+				for (int v = 0; v < n; v++)
+					vertexBiCcs[v] =
+							ImmutableIntArraySet.withNaiveContains(sortedBiccs, vertexOffset[v], vertexOffset[v + 1]);
 			}
 			return vertexBiCcs[vertex];
 		}
@@ -205,40 +244,128 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		}
 
 		@Override
-		public IntCollection getBiCcVertices(int biccIdx) {
+		public IntSet getBiCcVertices(int biccIdx) {
 			return biccsVertices[biccIdx];
 		}
 
 		@Override
-		public IntCollection getBiCcEdges(int biccIdx) {
-			/* unfortunately, this implementation is not linear */
+		public IntSet getBiCcEdges(int biccIdx) {
 			if (biccsEdges == null) {
-				biccsEdges = new IntList[getNumberOfBiCcs()];
-				for (int idx = 0; idx < biccsVertices.length; idx++)
-					biccsEdges[idx] = new IntArrayList();
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					int u = g.edgeSource(e);
-					int v = g.edgeTarget(e);
-					/* Both getVertexBiCcs(u) and getVertexBiCcs(v) are sorted */
-					/* Iterate over them in order and find BiConnected components containing both of u and v */
-					for (IntIterator uBiccs = getVertexBiCcs(u).iterator(),
-							vBiccs = getVertexBiCcs(v).iterator(); uBiccs.hasNext() && vBiccs.hasNext();) {
-						int ub = uBiccs.nextInt();
-						int vb = vBiccs.nextInt();
-						if (ub == vb) {
-							biccsEdges[ub].add(e);
-						} else if (ub > vb) {
-							/* roll back uBiccs */
-							((IntListIterator) uBiccs).previousInt();
-						} else { /* ub < vb */
-							/* roll back vBiccs */
-							((IntListIterator) vBiccs).previousInt();
+				final int biccsNum = getNumberOfBiCcs();
+				biccsEdges = new IntSet[biccsNum];
+
+				if (!g.isAllowParallelEdges() && !g.isAllowSelfEdges()) {
+					for (int b = 0; b < biccsNum; b++)
+						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);
+
+				} else {
+					/*
+					 * in case parallel edges exists in the graph, we may need to manually add them to the Bi-comp edges
+					 * collection, as they will not be added by the main algorithm.
+					 */
+					int[] biccExtraEdgesCount = new int[biccsNum];
+					final int n = g.vertices().size();
+					final int m = g.edges().size();
+
+					int[] edge2bicc = new int[m];
+					Arrays.fill(edge2bicc, -1);
+					for (int b = 0; b < biccsNum; b++) {
+						for (int e : biccsEdgesFromAlgo[b]) {
+							assert edge2bicc[e] == -1;
+							edge2bicc[e] = b;
 						}
 					}
-				}
-				for (int idx = 0; idx < biccsVertices.length; idx++)
-					biccsEdges[idx] = IntLists.unmodifiable(biccsEdges[idx]);
 
+					/* Search for parallel edges, which may not be included in the edges list by the main algorithm */
+					int[] extraEdgesBiccs = null;
+					if (g.isAllowParallelEdges()) {
+						int[] target2bicc = new int[n];
+						Arrays.fill(target2bicc, -1);
+						extraEdgesBiccs = new int[m];
+						Arrays.fill(extraEdgesBiccs, -1);
+						for (int u = 0; u < n; u++) {
+							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+								int e = eit.nextInt();
+								int v = eit.target();
+								if (u == v)
+									continue;
+								int b = edge2bicc[e];
+								if (b != -1)
+									target2bicc[v] = b;
+							}
+							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+								int e = eit.nextInt();
+								int v = eit.target();
+								if (u == v)
+									continue;
+								int b = edge2bicc[e];
+								if (b == -1) {
+									b = target2bicc[v];
+									edge2bicc[e] = b;
+									assert extraEdgesBiccs[e] == -1;
+									extraEdgesBiccs[e] = b;
+									biccExtraEdgesCount[b]++;
+								}
+							}
+							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+								eit.nextInt();
+								target2bicc[eit.target()] = -1;
+							}
+						}
+					}
+
+					/* search for self edges, which are not added to any bicc */
+					if (g.isAllowSelfEdges()) {
+						assert g.edges().intStream().filter(e -> g.edgeSource(e) == g.edgeTarget(e))
+								.allMatch(e -> edge2bicc[e] == -1);
+						for (int u = 0; u < n; u++) {
+							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+								eit.nextInt();
+								int v = eit.target();
+								if (u != v)
+									continue;
+								for (int b : getVertexBiCcs(u))
+									biccExtraEdgesCount[b]++;
+							}
+						}
+					}
+
+					for (int b = 0; b < biccsNum; b++) {
+						if (biccExtraEdgesCount[b] == 0)
+							continue;
+						int[] biccEdges = biccsEdgesFromAlgo[b];
+						int oldLength = biccEdges.length;
+						biccEdges = Arrays.copyOf(biccEdges, oldLength + biccExtraEdgesCount[b]);
+						biccsEdgesFromAlgo[b] = biccEdges;
+						biccExtraEdgesCount[b] = oldLength;
+					}
+
+					/* add parallel edges */
+					if (g.isAllowParallelEdges()) {
+						for (int b, e = 0; e < m; e++)
+							if ((b = extraEdgesBiccs[e]) != -1)
+								biccsEdgesFromAlgo[b][biccExtraEdgesCount[b]++] = e;
+					}
+
+					/* add self edges */
+					if (g.isAllowSelfEdges()) {
+						for (int u = 0; u < n; u++) {
+							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+								int e = eit.nextInt();
+								int v = eit.target();
+								if (u != v)
+									continue;
+								for (int b : getVertexBiCcs(u))
+									biccsEdgesFromAlgo[b][biccExtraEdgesCount[b]++] = e;
+							}
+						}
+					}
+
+					for (int b = 0; b < biccsNum; b++) {
+						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);
+						biccsEdgesFromAlgo[b] = null;
+					}
+				}
 			}
 			return biccsEdges[biccIdx];
 		}

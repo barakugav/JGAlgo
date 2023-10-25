@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
@@ -76,6 +77,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			IntSet eBiccs = edgeToBiccs.get(e);
+			assertNotNull(eBiccs, "edge doesn't belong to any ci-connected comps");
 			if (u != v) {
 				assertEquals(1, eBiccs.size(), "we expect each edge to be in exactly one BiCc: " + eBiccs);
 			} else {

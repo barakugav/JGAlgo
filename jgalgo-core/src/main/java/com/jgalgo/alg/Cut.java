@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A cut that partition the vertices of a graph into two sets.
@@ -48,7 +48,7 @@ public interface Cut {
 	 *
 	 * @return a collection of all the vertices of the first set of the partition, \(C\)
 	 */
-	IntCollection vertices();
+	IntSet vertices();
 
 	/**
 	 * Get the collection of all the edges that cross the cut.
@@ -58,6 +58,6 @@ public interface Cut {
 	 *
 	 * @return a collection of all the edges that cross the cut partition
 	 */
-	IntCollection edges();
+	IntSet edges();
 
 }
