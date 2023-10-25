@@ -23,6 +23,7 @@ import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -110,7 +111,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 	private static void testTPM(TreePathMaxima algo, int n, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-		WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
+		WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
 
 		TreePathMaxima.Queries queries = n <= 32 ? generateAllPossibleQueries(tree)
 				: generateRandQueries(tree, Math.min(n * 16, 1000), seedGen.nextSeed());
@@ -131,7 +132,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
@@ -151,7 +152,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());

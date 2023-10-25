@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -50,7 +51,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		return w instanceof WeightFunction.Int ? computeSsspInt(g, (WeightFunction.Int) w, source)
+		return w instanceof WeightFunctionInt ? computeSsspInt(g, (WeightFunctionInt) w, source)
 				: computeSsspDouble(g, w, source);
 	}
 
@@ -78,7 +79,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		return res;
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunctionInt w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 

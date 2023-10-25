@@ -21,6 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -106,8 +107,8 @@ public class GraphsUtils {
 			return cardinality;
 		}
 
-		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wInt = (WeightFunction.Int) w;
+		if (w instanceof WeightFunctionInt) {
+			WeightFunctionInt wInt = (WeightFunctionInt) w;
 			int sum = 0;
 			while (it.hasNext())
 				sum += wInt.weightInt(it.nextInt());

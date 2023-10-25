@@ -22,7 +22,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -54,12 +54,12 @@ public class ChinesePostmanTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(selfEdges).cycles(true).connected(true).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testGraph(g, w, algo);
 		});
 	}
 
-	private static void testGraph(Graph g, WeightFunction.Int w, ChinesePostman algo) {
+	private static void testGraph(Graph g, WeightFunctionInt w, ChinesePostman algo) {
 		Path chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
 
 		/* Asserts all edges are traversed by the tour */

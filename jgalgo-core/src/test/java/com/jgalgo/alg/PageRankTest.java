@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
 
 class PageRankTest extends TestBase {
@@ -36,7 +37,7 @@ class PageRankTest extends TestBase {
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testPageRank(g, w);
 		});
 	}

@@ -813,9 +813,9 @@ public class IndexIdMaps {
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-			if (w instanceof WeightFunction.Int) {
-				WeightFunction.Int wInt = (WeightFunction.Int) w;
-				WeightFunction.Int wIntMapped = idx -> wInt.weightInt(map.indexToId(idx));
+			if (w instanceof WeightFunctionInt) {
+				WeightFunctionInt wInt = (WeightFunctionInt) w;
+				WeightFunctionInt wIntMapped = idx -> wInt.weightInt(map.indexToId(idx));
 				return wIntMapped;
 			} else {
 				return idx -> w.weight(map.indexToId(idx));
@@ -830,14 +830,14 @@ public class IndexIdMaps {
 	 * @param  map index-id map
 	 * @return     a weight function that accept elements indices
 	 */
-	public static WeightFunction.Int idToIndexWeightFunc(WeightFunction.Int w, IndexIdMap map) {
+	public static WeightFunctionInt idToIndexWeightFunc(WeightFunctionInt w, IndexIdMap map) {
 		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
 			return w;
 
 		} else if (w instanceof WeightsImpl<?>) {
 			/* The weight function is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-			return (WeightFunction.Int) idToIndexWeights0((WeightsImpl<?>) w, map);
+			return (WeightFunctionInt) idToIndexWeights0((WeightsImpl<?>) w, map);
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */

@@ -22,7 +22,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -62,7 +62,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
 	}
 
-	private static void testMinCut(Graph g, WeightFunction.Int w, MinimumCutGlobal alg) {
+	private static void testMinCut(Graph g, WeightFunctionInt w, MinimumCutGlobal alg) {
 		Cut minCut = alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) minCut.weight(w);
 

@@ -37,6 +37,7 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -574,7 +575,7 @@ public class JGAlgoUtils {
 		return e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 
-	public static WeightFunction.Int potentialWeightFunc(IndexGraph g, WeightFunction.Int w, int[] potential) {
+	public static WeightFunctionInt potentialWeightFunc(IndexGraph g, WeightFunctionInt w, int[] potential) {
 		return e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 

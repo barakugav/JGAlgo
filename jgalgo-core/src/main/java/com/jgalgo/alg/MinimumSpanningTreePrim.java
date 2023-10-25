@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -73,8 +74,8 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		int n = g.vertices().size();
 		if (n == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		if (w instanceof WeightFunction.Int) {
-			return computeMSTInt(g, (WeightFunction.Int) w);
+		if (w instanceof WeightFunctionInt) {
+			return computeMSTInt(g, (WeightFunctionInt) w);
 		} else {
 			return computeMSTDouble(g, w);
 		}
@@ -137,7 +138,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, WeightFunction.Int w) {
+	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, WeightFunctionInt w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

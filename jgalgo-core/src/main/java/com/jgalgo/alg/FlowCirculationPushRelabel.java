@@ -19,6 +19,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
@@ -26,8 +27,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 	@Override
 	void computeCirculation(IndexGraph g, FlowNetwork net, WeightFunction supply) {
-		if (net instanceof FlowNetwork.Int && supply instanceof WeightFunction.Int) {
-			new WorkerInt(g, (FlowNetwork.Int) net, (WeightFunction.Int) supply).computeCirculation();
+		if (net instanceof FlowNetworkInt && supply instanceof WeightFunctionInt) {
+			new WorkerInt(g, (FlowNetworkInt) net, (WeightFunctionInt) supply).computeCirculation();
 		} else {
 			new WorkerDouble(g, net, supply).computeCirculation();
 		}
@@ -226,7 +227,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final int[] flow;
 		final int[] excess;
 
-		WorkerInt(IndexGraph g, FlowNetwork.Int net, WeightFunction.Int supply) {
+		WorkerInt(IndexGraph g, FlowNetworkInt net, WeightFunctionInt supply) {
 			super(g, net, supply);
 
 			final int n = g.vertices().size();
@@ -352,7 +353,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				}
 			}
 
-			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+			FlowNetworkInt netInt = (FlowNetworkInt) net;
 			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				netInt.setFlow(e, flow[e]);

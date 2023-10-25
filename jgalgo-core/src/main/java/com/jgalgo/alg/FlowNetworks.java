@@ -68,7 +68,7 @@ class FlowNetworks {
 
 	}
 
-	static class NetImplEdgeWeightsInt implements FlowNetwork.Int {
+	static class NetImplEdgeWeightsInt implements FlowNetworkInt {
 
 		final WeightsInt capacities;
 		final WeightsInt flows;
@@ -78,13 +78,13 @@ class FlowNetworks {
 			this.flows = Objects.requireNonNull(flows);
 		}
 
-		static FlowNetwork.Int addWeightsAndCreateNet(Graph g) {
+		static FlowNetworkInt addWeightsAndCreateNet(Graph g) {
 			WeightsInt capacities = g.addEdgesWeights(JGAlgoUtils.labeledObj("capacity"), int.class);
 			WeightsInt flows = g.addEdgesWeights(JGAlgoUtils.labeledObj("flow"), int.class);
 			return new NetImplEdgeWeightsInt(capacities, flows);
 		}
 
-		static FlowNetwork.Int createExternalWeightsAndCreateNet(Graph g) {
+		static FlowNetworkInt createExternalWeightsAndCreateNet(Graph g) {
 			WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);
 			WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
 			return new NetImplEdgeWeightsInt(capacities, flows);
@@ -246,15 +246,15 @@ class FlowNetworks {
 
 	}
 
-	private static class IndexNetFromNetInt extends IndexNetFromNet implements FlowNetwork.Int {
+	private static class IndexNetFromNetInt extends IndexNetFromNet implements FlowNetworkInt {
 
-		IndexNetFromNetInt(FlowNetwork.Int idNet, IndexIdMap eiMap) {
+		IndexNetFromNetInt(FlowNetworkInt idNet, IndexIdMap eiMap) {
 			super(idNet, eiMap);
 		}
 
 		@Override
-		FlowNetwork.Int idNet() {
-			return (FlowNetwork.Int) super.idNet();
+		FlowNetworkInt idNet() {
+			return (FlowNetworkInt) super.idNet();
 		}
 
 		@Override
@@ -280,29 +280,29 @@ class FlowNetworks {
 		@Deprecated
 		@Override
 		public double getCapacity(int edge) {
-			return FlowNetwork.Int.super.getCapacity(edge);
+			return FlowNetworkInt.super.getCapacity(edge);
 		}
 
 		@Deprecated
 		@Override
 		public void setCapacity(int edge, double capacity) {
-			FlowNetwork.Int.super.setCapacity(edge, capacity);
+			FlowNetworkInt.super.setCapacity(edge, capacity);
 		}
 
 		@Deprecated
 		@Override
 		public double getFlow(int edge) {
-			return FlowNetwork.Int.super.getFlow(edge);
+			return FlowNetworkInt.super.getFlow(edge);
 		}
 
 		@Deprecated
 		@Override
 		public void setFlow(int edge, double flow) {
-			FlowNetwork.Int.super.setFlow(edge, flow);
+			FlowNetworkInt.super.setFlow(edge, flow);
 		}
 	}
 
-	static FlowNetwork.Int indexNetFromNet(FlowNetwork.Int net, IndexIdMap eiMap) {
+	static FlowNetworkInt indexNetFromNet(FlowNetworkInt net, IndexIdMap eiMap) {
 		if (net instanceof NetImplEdgeWeightsInt) {
 			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;
 
@@ -318,8 +318,8 @@ class FlowNetworks {
 	}
 
 	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIdMap eiMap) {
-		if (net instanceof FlowNetwork.Int)
-			return indexNetFromNet((FlowNetwork.Int) net, eiMap);
+		if (net instanceof FlowNetworkInt)
+			return indexNetFromNet((FlowNetworkInt) net, eiMap);
 		if (net instanceof NetImplEdgeWeights) {
 			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;
 
@@ -336,8 +336,8 @@ class FlowNetworks {
 	}
 
 	static double hugeCapacity(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-		if (net instanceof FlowNetwork.Int)
-			return hugeCapacityLong(g, (FlowNetwork.Int) net, sources, sinks);
+		if (net instanceof FlowNetworkInt)
+			return hugeCapacityLong(g, (FlowNetworkInt) net, sources, sinks);
 
 		double sourcesOutCapacity = 0;
 		double sinksOutCapacity = 0;
@@ -350,7 +350,7 @@ class FlowNetworks {
 		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;
 	}
 
-	static int hugeCapacity(IndexGraph g, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+	static int hugeCapacity(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
 		long hugeCapacity = hugeCapacityLong(g, net, sources, sinks);
 		int hugeCapacityInt = (int) hugeCapacity;
 		if (hugeCapacityInt != hugeCapacity)
@@ -358,7 +358,7 @@ class FlowNetworks {
 		return hugeCapacityInt;
 	}
 
-	static long hugeCapacityLong(IndexGraph g, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+	static long hugeCapacityLong(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
 		long sourcesOutCapacity = 0;
 		long sinksOutCapacity = 0;
 		for (int s : sources)
@@ -371,8 +371,8 @@ class FlowNetworks {
 	}
 
 	static double vertexMaxSupply(IndexGraph g, FlowNetwork net, int v) {
-		if (net instanceof FlowNetwork.Int)
-			return vertexMaxSupply(g, (FlowNetwork.Int) net, v);
+		if (net instanceof FlowNetworkInt)
+			return vertexMaxSupply(g, (FlowNetworkInt) net, v);
 
 		double maxSupply = 0;
 		for (int e : g.outEdges(v))
@@ -380,7 +380,7 @@ class FlowNetworks {
 		return maxSupply;
 	}
 
-	static int vertexMaxSupply(IndexGraph g, FlowNetwork.Int net, int v) {
+	static int vertexMaxSupply(IndexGraph g, FlowNetworkInt net, int v) {
 		long maxSupply = 0;
 		for (int e : g.outEdges(v))
 			maxSupply += net.getCapacityInt(e);
@@ -391,8 +391,8 @@ class FlowNetworks {
 	}
 
 	static double vertexMaxDemand(IndexGraph g, FlowNetwork net, int v) {
-		if (net instanceof FlowNetwork.Int)
-			return vertexMaxDemand(g, (FlowNetwork.Int) net, v);
+		if (net instanceof FlowNetworkInt)
+			return vertexMaxDemand(g, (FlowNetworkInt) net, v);
 
 		double maxDemand = 0;
 		for (int e : g.inEdges(v))
@@ -400,7 +400,7 @@ class FlowNetworks {
 		return maxDemand;
 	}
 
-	static int vertexMaxDemand(IndexGraph g, FlowNetwork.Int net, int v) {
+	static int vertexMaxDemand(IndexGraph g, FlowNetworkInt net, int v) {
 		long maxDemand = 0;
 		for (int e : g.inEdges(v))
 			maxDemand += net.getCapacityInt(e);

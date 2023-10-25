@@ -46,8 +46,8 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
+		if (net instanceof FlowNetworkInt) {
+			return new WorkerInt(g, (FlowNetworkInt) net, source, sink).computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
@@ -55,8 +55,8 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, sources, sinks).computeMaxFlow();
+		if (net instanceof FlowNetworkInt) {
+			return new WorkerInt(g, (FlowNetworkInt) net, sources, sinks).computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, net, sources, sinks).computeMaxFlow();
 		}
@@ -178,7 +178,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 		final int[] flow;
 		final int[] capacity;
 
-		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = new int[g.edges().size()];
@@ -186,7 +186,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, IntCollection sources, IntCollection sinks) {
+		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
 			super(gOrig, net, sources, sinks);
 
 			flow = new int[g.edges().size()];

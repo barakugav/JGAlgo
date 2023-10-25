@@ -39,7 +39,7 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SSSPNegativeWeightsBench {
@@ -78,7 +78,7 @@ public class SSSPNegativeWeightsBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
-				WeightFunction.Int w =
+				WeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
@@ -120,7 +120,7 @@ public class SSSPNegativeWeightsBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, true, seedGen.nextSeed());
-				WeightFunction.Int w =
+				WeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
@@ -163,7 +163,7 @@ public class SSSPNegativeWeightsBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
-				WeightFunction.Int w =
+				WeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
@@ -184,10 +184,10 @@ public class SSSPNegativeWeightsBench {
 
 	private static class GraphArgs {
 		final Graph g;
-		final WeightFunction.Int w;
+		final WeightFunctionInt w;
 		final int source;
 
-		GraphArgs(Graph g, WeightFunction.Int w, int source) {
+		GraphArgs(Graph g, WeightFunctionInt w, int source) {
 			this.g = g;
 			this.w = w;
 			this.source = source;

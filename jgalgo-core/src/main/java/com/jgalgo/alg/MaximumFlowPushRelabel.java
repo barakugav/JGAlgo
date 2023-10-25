@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -112,8 +113,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 */
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink, activeOrderPolicy, dischargePolicy)
+		if (net instanceof FlowNetworkInt) {
+			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMaxFlow();
@@ -123,8 +124,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	@Override
 	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 		FlowNetwork net = flowNetFromEdgeWeights(w);
-		if (w instanceof WeightFunction.Int) {
-			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink, activeOrderPolicy, dischargePolicy)
+		if (w instanceof WeightFunctionInt) {
+			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMinimumCut();
 		} else {
 			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();
@@ -132,9 +133,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	private static FlowNetwork flowNetFromEdgeWeights(WeightFunction w) {
-		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wInt = (WeightFunction.Int) w;
-			FlowNetwork.Int net = new FlowNetwork.Int() {
+		if (w instanceof WeightFunctionInt) {
+			WeightFunctionInt wInt = (WeightFunctionInt) w;
+			FlowNetworkInt net = new FlowNetworkInt() {
 
 				@Override
 				public int getCapacityInt(int edge) {
@@ -1951,7 +1952,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final int[] excess;
 
-		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);
 

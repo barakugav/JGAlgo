@@ -22,6 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -160,7 +161,7 @@ class ShortestPathSingleSourceUtils {
 							int dialWork = n + m + maxDistance;
 							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
 							if (dialWork < dijkstraWork) {
-								return ssspDial.computeShortestPaths(g, (WeightFunction.Int) w, source, maxDistance);
+								return ssspDial.computeShortestPaths(g, (WeightFunctionInt) w, source, maxDistance);
 							} else {
 								return ssspDijkstra.computeShortestPaths(g, w, source);
 							}

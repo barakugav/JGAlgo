@@ -23,6 +23,7 @@ import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -43,7 +44,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
@@ -72,7 +73,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceGoldberg());
 		});
 	}

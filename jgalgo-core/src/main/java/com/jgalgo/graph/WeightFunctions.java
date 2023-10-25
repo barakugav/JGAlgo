@@ -49,8 +49,8 @@ public class WeightFunctions {
 			return w;
 		if (w instanceof WeightsImpl.Index)
 			return w;
-		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wInt = (WeightFunction.Int) w;
+		if (w instanceof WeightFunctionInt) {
+			WeightFunctionInt wInt = (WeightFunctionInt) w;
 			WeightsInt wLocal = Weights.createExternalEdgesWeights(g, int.class);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				wLocal.set(e, wInt.weightInt(e));
@@ -83,7 +83,7 @@ public class WeightFunctions {
 	 * @param  w a weight function
 	 * @return   a local version of the weight function
 	 */
-	public static WeightFunction.Int localEdgeWeightFunction(IndexGraph g, WeightFunction.Int w) {
+	public static WeightFunctionInt localEdgeWeightFunction(IndexGraph g, WeightFunctionInt w) {
 		if (w == null || w == WeightFunction.CardinalityWeightFunction)
 			return w;
 		if (w instanceof WeightsImpl.Index)

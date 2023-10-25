@@ -21,6 +21,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -52,15 +53,15 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if one of the edge weights is negative or the weight function is not of type
-	 *                                      {@link WeightFunction.Int}
+	 *                                      {@link WeightFunctionInt}
 	 */
 	@Override
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		if (!(w instanceof WeightFunction.Int))
+		if (!(w instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("only int weights are supported");
-		WeightFunction.Int w0 = (WeightFunction.Int) w;
+		WeightFunctionInt w0 = (WeightFunctionInt) w;
 
 		return computeShortestPaths(g, w0, source, -1);
 	}
@@ -77,7 +78,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source,
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunctionInt w, int source,
 			int maxDistance) {
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
 		heap.distances[source] = 0;

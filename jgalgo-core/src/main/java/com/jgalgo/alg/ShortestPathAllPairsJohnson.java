@@ -23,6 +23,7 @@ import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -155,9 +156,9 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		IndexGraph refG = refgBuilder.build();
 
 		WeightFunction refW;
-		if (w instanceof WeightFunction.Int) {
-			WeightFunction.Int wInt = (WeightFunction.Int) w;
-			WeightFunction.Int refWInt = e -> e < fakeEdgesThreshold ? wInt.weightInt(e) : 0;
+		if (w instanceof WeightFunctionInt) {
+			WeightFunctionInt wInt = (WeightFunctionInt) w;
+			WeightFunctionInt refWInt = e -> e < fakeEdgesThreshold ? wInt.weightInt(e) : 0;
 			refW = refWInt;
 		} else {
 			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;

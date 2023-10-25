@@ -40,7 +40,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -55,7 +55,7 @@ public class MinimumMeanCycleBench {
 	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
 	public String args;
 
-	private List<Pair<Graph, WeightFunction.Int>> graphs;
+	private List<Pair<Graph, WeightFunctionInt>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -70,15 +70,15 @@ public class MinimumMeanCycleBench {
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchMaxFlow(MinimumMeanCycle.Builder builder, Blackhole blackhole) {
-		Pair<Graph, WeightFunction.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
-		WeightFunction.Int w = gw.second();
+		WeightFunctionInt w = gw.second();
 		MinimumMeanCycle algo = builder.build();
 		Path cycle = algo.computeMinimumMeanCycle(g, w);
 		blackhole.consume(cycle);

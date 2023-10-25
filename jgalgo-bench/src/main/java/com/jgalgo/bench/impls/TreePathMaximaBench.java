@@ -40,6 +40,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -68,7 +69,7 @@ public class TreePathMaximaBench {
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
 			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(tree, w, queries));
 		}

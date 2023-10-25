@@ -94,7 +94,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			void initCapacities(int[] capacities) {
-				FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+				FlowNetworkInt net = (FlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					capacities[e] = net.getCapacityInt(e);
 			}
@@ -171,7 +171,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-				FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+				FlowNetworkInt net = (FlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					net.setFlow(e, capacity[e] - residualCapacity[e]);
 
@@ -215,8 +215,8 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 			Object capacities;
-			if (netOrig instanceof FlowNetwork.Int) {
-				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+			if (netOrig instanceof FlowNetworkInt) {
+				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
 				int[] capacities0 = new int[sources.size() + sinks.size()];
 				int capIdx = 0;
 				for (int s : sources) {
@@ -244,10 +244,10 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			IndexGraph g = builder.build();
 
 			FlowNetwork net;
-			if (netOrig instanceof FlowNetwork.Int) {
-				FlowNetwork.Int netOrigInt = (FlowNetwork.Int) netOrig;
+			if (netOrig instanceof FlowNetworkInt) {
+				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
 
-				FlowNetwork.Int netInt = new FlowNetwork.Int() {
+				FlowNetworkInt netInt = new FlowNetworkInt() {
 					final int[] caps = (int[]) capacities;
 					final int[] flows = new int[caps.length];
 
@@ -419,7 +419,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			void initCapacities(int[] residualCapacity) {
-				FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+				FlowNetworkInt net = (FlowNetworkInt) this.net;
 				if (gOrig.getCapabilities().directed()) {
 					for (int m = g.edges().size(), e = 0; e < m; e++) {
 						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
@@ -479,7 +479,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] flow) {
-				FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+				FlowNetworkInt net = (FlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
@@ -528,7 +528,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-				FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+				FlowNetworkInt net = (FlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */

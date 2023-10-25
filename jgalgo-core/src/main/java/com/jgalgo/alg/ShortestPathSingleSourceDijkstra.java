@@ -20,6 +20,7 @@ import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -70,8 +71,8 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
-		if (w instanceof WeightFunction.Int) {
-			return computeSsspInts(g, (WeightFunction.Int) w, source);
+		if (w instanceof WeightFunctionInt) {
+			return computeSsspInts(g, (WeightFunctionInt) w, source);
 		} else {
 			return computeSsspDoubles(g, w, source);
 		}
@@ -119,7 +120,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		return res;
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunctionInt w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

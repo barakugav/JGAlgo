@@ -204,14 +204,14 @@ def generate_weights(type):
     constants["WEIGHTS"] = "Weights" + type
 
     if type in ["Byte", "Short", "Int"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunction.Int"
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunctionInt"
         constants[
             "WEIGHT_FUNC_IMPLEMENTATION"
         ] = """
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * Implement the {@link WeightFunction.Int} interface by using the weights of the container.
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
 	default int weightInt(int id) {

@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -51,14 +52,14 @@ class FlowCirculationTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			FlowNetwork.Int net = randNetworkInt(g, rand);
-			WeightFunction.Int supply = randSupplyInt(g, net, rand);
+			FlowNetworkInt net = randNetworkInt(g, rand);
+			WeightFunctionInt supply = randSupplyInt(g, net, rand);
 
 			testRandCirculationInt(g, net, supply, algo);
 		});
 	}
 
-	private static void testRandCirculationInt(Graph g, FlowNetwork.Int net, WeightFunction.Int supply,
+	private static void testRandCirculationInt(Graph g, FlowNetworkInt net, WeightFunctionInt supply,
 			FlowCirculation algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
@@ -99,8 +100,8 @@ class FlowCirculationTestUtils extends TestUtils {
 		assertSupplySatisfied(g, net, supply);
 	}
 
-	private static FlowNetwork.Int randNetworkInt(Graph g, Random rand) {
-		FlowNetwork.Int net = FlowNetwork.Int.createFromEdgeWeights(g);
+	private static FlowNetworkInt randNetworkInt(Graph g, Random rand) {
+		FlowNetworkInt net = FlowNetworkInt.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextInt(1024));
 		return net;
@@ -113,7 +114,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		return net;
 	}
 
-	static WeightFunction.Int randSupplyInt(Graph g, FlowNetwork.Int net, Random rand) {
+	static WeightFunctionInt randSupplyInt(Graph g, FlowNetworkInt net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();

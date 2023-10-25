@@ -21,10 +21,12 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.alg.FlowNetwork;
+import com.jgalgo.alg.FlowNetworkInt;
 import com.jgalgo.alg.GraphsUtils;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
@@ -70,8 +72,8 @@ public class Assertions {
 		public static void onlyPositiveEdgesWeights(IndexGraph g, WeightFunction w) {
 			if (!JGAlgoConfigImpl.AssertionsGraphsPositiveWeights)
 				return;
-			if (w instanceof WeightFunction.Int) {
-				WeightFunction.Int wInt = (WeightFunction.Int) w;
+			if (w instanceof WeightFunctionInt) {
+				WeightFunctionInt wInt = (WeightFunctionInt) w;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					onlyPositiveWeight(wInt.weightInt(e));
 			} else {
@@ -151,8 +153,8 @@ public class Assertions {
 		}
 
 		public static void positiveCapacities(Graph g, FlowNetwork net) {
-			if (net instanceof FlowNetwork.Int) {
-				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+			if (net instanceof FlowNetworkInt) {
+				FlowNetworkInt netInt = (FlowNetworkInt) net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap = netInt.getCapacityInt(e);
 					if (cap < 0)
@@ -168,9 +170,9 @@ public class Assertions {
 		}
 
 		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-			if (net instanceof FlowNetwork.Int && lowerBound instanceof WeightFunction.Int) {
-				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-				WeightFunction.Int lowerBoundInt = (WeightFunction.Int) lowerBound;
+			if (net instanceof FlowNetworkInt && lowerBound instanceof WeightFunctionInt) {
+				FlowNetworkInt netInt = (FlowNetworkInt) net;
+				WeightFunctionInt lowerBoundInt = (WeightFunctionInt) lowerBound;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int l = lowerBoundInt.weightInt(e);
 					int cap = netInt.getCapacityInt(e);

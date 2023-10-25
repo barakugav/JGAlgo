@@ -38,7 +38,7 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -53,7 +53,7 @@ public class MSTBench {
 	@Param({ "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
 
-	private List<Pair<Graph, WeightFunction.Int>> graphs;
+	private List<Pair<Graph, WeightFunctionInt>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -67,15 +67,15 @@ public class MSTBench {
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchMST(MinimumSpanningTree.Builder builder, Blackhole blackhole) {
-		Pair<Graph, WeightFunction.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
-		WeightFunction.Int w = gw.second();
+		WeightFunctionInt w = gw.second();
 		MinimumSpanningTree algo = builder.build();
 		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);

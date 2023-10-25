@@ -21,6 +21,7 @@ import com.jgalgo.alg.FlowNetworks.ResidualGraph;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -45,11 +46,11 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 	@Override
 	void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
-		if (!(net instanceof FlowNetwork.Int && supply instanceof WeightFunction.Int))
+		if (!(net instanceof FlowNetworkInt && supply instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
-		if (!(cost instanceof WeightFunction.Int))
+		if (!(cost instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("only integer costs are supported");
-		new Worker(g, (FlowNetwork.Int) net, (WeightFunction.Int) cost, (WeightFunction.Int) supply).solve();
+		new Worker(g, (FlowNetworkInt) net, (WeightFunctionInt) cost, (WeightFunctionInt) supply).solve();
 	}
 
 	private static class Worker {
@@ -58,8 +59,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private final IndexGraph g;
 		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
-		private final FlowNetwork.Int net;
-		private final WeightFunction.Int costOrig;
+		private final FlowNetworkInt net;
+		private final WeightFunctionInt costOrig;
 
 		/* per-edge information */
 		private final int[] residualCapacity;
@@ -97,7 +98,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-		Worker(IndexGraph gOrig, FlowNetwork.Int net, WeightFunction.Int costOrig, WeightFunction.Int supply) {
+		Worker(IndexGraph gOrig, FlowNetworkInt net, WeightFunctionInt costOrig, WeightFunctionInt supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 			this.gOrig = gOrig;

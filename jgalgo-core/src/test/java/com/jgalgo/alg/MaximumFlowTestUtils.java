@@ -81,9 +81,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
+	static FlowNetworkInt randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetwork.Int flow = FlowNetwork.Int.createFromEdgeWeights(g);
+		FlowNetworkInt flow = FlowNetworkInt.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
@@ -174,7 +174,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
-			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
+			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			IntIntPair sourceSink = chooseSourceSink(g, rand);
 			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
@@ -195,7 +195,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			Graph g = randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
-			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
+			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
 			final int sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -232,7 +232,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
-			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
+			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			IntIntPair sourceSink = chooseSourceSink(g, rand);
 			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);

@@ -21,7 +21,7 @@ import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestBase;
@@ -56,7 +56,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		});
 	}
 
-	private static void testVC(Graph g, WeightFunction.Int w, VertexCover algo, double appxFactor) {
+	private static void testVC(Graph g, WeightFunctionInt w, VertexCover algo, double appxFactor) {
 		VertexCover.Result vc = algo.computeMinimumVertexCover(g, w);
 
 		for (int e : g.edges()) {
