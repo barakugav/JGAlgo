@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 
 	@Override
-	Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)
@@ -130,7 +130,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 			cg.contract(S, T);
 		}
 
-		return new CutImpl(g, minimumCut);
+		return new VertexBiPartitions.FromBitSet(g, minimumCut);
 	}
 
 }

@@ -122,7 +122,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	@Override
-	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+	public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 		FlowNetwork net = flowNetFromEdgeWeights(w);
 		if (w instanceof WeightFunctionInt) {
 			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
@@ -1638,7 +1638,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			return constructResult();
 		}
 
-		Cut computeMinimumCut() {
+		VertexBiPartition computeMinimumCut() {
 			// first phase
 			calcMaxPreflow();
 			// no need for second phase
@@ -1703,7 +1703,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				if (!visited.get(u))
 					cut.set(u);
 			visited.clear();
-			return new CutImpl(g, cut);
+			return new VertexBiPartitions.FromBitSet(g, cut);
 		}
 
 		abstract boolean hasExcess(int u);

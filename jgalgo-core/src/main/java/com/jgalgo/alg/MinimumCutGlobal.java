@@ -43,14 +43,14 @@ public interface MinimumCutGlobal {
 	 * Compute the global minimum cut in a graph.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
-	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
+	 * return value of this function is a partition into these two sets.
 	 *
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	Cut computeMinimumCut(Graph g, WeightFunction w);
+	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w);
 
 	/**
 	 * Create a new minimum global cut algorithm object.

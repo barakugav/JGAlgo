@@ -63,12 +63,12 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	@Override
-	Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
 	}
 
 	@Override
-	Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
 		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
 	}
 

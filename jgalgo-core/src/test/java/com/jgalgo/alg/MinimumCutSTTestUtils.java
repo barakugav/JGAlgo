@@ -165,12 +165,12 @@ class MinimumCutSTTestUtils extends TestUtils {
 	}
 
 	private static void testMinCut(Graph g, WeightFunction w, int source, int sink, MinimumCutST alg) {
-		Cut minCut = alg.computeMinimumCut(g, w, source, sink);
-		double minCutWeight = w.weightSum(minCut.edges());
+		VertexBiPartition minCut = alg.computeMinimumCut(g, w, source, sink);
+		double minCutWeight = w.weightSum(minCut.crossEdges());
 
 		final int n = g.vertices().size();
 		if (n == 2) {
-			assertEquals(IntList.of(source), minCut.vertices());
+			assertEquals(IntList.of(source), minCut.leftVertices());
 			return;
 		}
 
@@ -203,8 +203,8 @@ class MinimumCutSTTestUtils extends TestUtils {
 		} else {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
-			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
-			double minCutWeightExpected = w.weightSum(minCutExpected.edges());
+			VertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
+			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");
 		}
@@ -212,13 +212,13 @@ class MinimumCutSTTestUtils extends TestUtils {
 
 	private static void testMinCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks,
 			MinimumCutST alg) {
-		Cut minCut = alg.computeMinimumCut(g, w, sources, sinks);
-		double minCutWeight = w.weightSum(minCut.edges());
+		VertexBiPartition minCut = alg.computeMinimumCut(g, w, sources, sinks);
+		double minCutWeight = w.weightSum(minCut.crossEdges());
 
 		final int terminalsNum = sources.size() + sinks.size();
 		final int n = g.vertices().size();
 		if (n == terminalsNum) {
-			assertEquals(sources, minCut.vertices());
+			assertEquals(sources, minCut.leftEdges());
 			return;
 		}
 
@@ -251,8 +251,8 @@ class MinimumCutSTTestUtils extends TestUtils {
 		} else {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
-			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
-			double minCutWeightExpected = w.weightSum(minCutExpected.edges());
+			VertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
+			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");
 		}

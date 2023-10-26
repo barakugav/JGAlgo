@@ -36,7 +36,7 @@ class MinimumCutSTUtils {
 	static abstract class AbstractImpl implements MinimumCutST {
 
 		@Override
-		public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+		public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, source, sink);
 
@@ -48,12 +48,13 @@ class MinimumCutSTUtils {
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
 
-			Cut indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-			return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);
+			VertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
+			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);
 		}
 
 		@Override
-		public Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+		public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, IntCollection sources,
+				IntCollection sinks) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, sources, sinks);
 
@@ -65,17 +66,18 @@ class MinimumCutSTUtils {
 			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 
-			Cut indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-			return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);
+			VertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
+			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);
 		}
 
-		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, int sources, int sinks);
+		abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int sources, int sinks);
 
-		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks);
+		abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources,
+				IntCollection sinks);
 
 	}
 
-	static Cut computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, int source, int sink,
+	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, int source, int sink,
 			MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
 		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
@@ -86,8 +88,8 @@ class MinimumCutSTUtils {
 		return minCutFromMaxFlow(g, IntLists.singleton(source), net);
 	}
 
-	static Cut computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks,
-			MaximumFlow maxFlowAlg) {
+	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, IntCollection sources,
+			IntCollection sinks, MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
 		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
 
@@ -97,7 +99,7 @@ class MinimumCutSTUtils {
 		return minCutFromMaxFlow(g, sources, net);
 	}
 
-	private static Cut minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
+	private static VertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
@@ -157,19 +159,20 @@ class MinimumCutSTUtils {
 			}
 		}
 
-		return new CutImpl(g, visited);
+		return new VertexBiPartitions.FromBitSet(g, visited);
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
 		return new AbstractImpl() {
 
 			@Override
-			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+			public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);
 			}
 
 			@Override
-			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+			public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources,
+					IntCollection sinks) {
 				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);
 			}
 
@@ -206,18 +209,18 @@ class MinimumCutSTUtils {
 	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
 		return new MinimumCutGlobalAbstract() {
 			@Override
-			Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
+			VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w) {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
 				w = WeightFunctions.localEdgeWeightFunction(g, w);
 
-				Cut bestCut = null;
+				VertexBiPartition bestCut = null;
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
-					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);
-					double cutWeight = w.weightSum(cut.edges());
+					VertexBiPartition cut = stMinCut.computeMinimumCut(g, w, source, sink);
+					double cutWeight = w.weightSum(cut.crossEdges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;
 						bestCut = cut;

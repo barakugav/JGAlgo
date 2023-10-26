@@ -46,7 +46,7 @@ public interface MinimumCutST {
 	 * Compute the minimum cut in a graph between two terminal vertices.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
-	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
+	 * return value of this function is a partition into these two sets.
 	 *
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
@@ -55,14 +55,13 @@ public interface MinimumCutST {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink);
+	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, int source, int sink);
 
 	/**
 	 * Compute the minimum cut in a graph between two sets of vertices.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
-	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
-	 *
+	 * return value of this function is a partition into these two sets.
 	 *
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
@@ -72,7 +71,7 @@ public interface MinimumCutST {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	Cut computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
+	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new minimum S-T cut algorithm object.
