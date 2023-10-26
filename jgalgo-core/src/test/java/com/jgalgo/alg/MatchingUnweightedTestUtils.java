@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
@@ -66,6 +67,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 					fail("Invalid matching, clash: " + v + " " + e);
 			}
 		}
+		assertTrue(Matching.isMatching(g, matching.edges()));
 	}
 
 	/* implementation of general graphs maximum matching from the Internet */

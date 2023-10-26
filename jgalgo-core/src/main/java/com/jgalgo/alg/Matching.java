@@ -15,6 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import java.util.BitSet;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -97,5 +103,56 @@ public interface Matching {
 	 * @return {@code true} if this matching is perfect, else {@code false}.
 	 */
 	boolean isPerfect();
+
+	/**
+	 * Check whether the given collection of edges form a valid matching in the graph.
+	 * <p>
+	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
+	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a collection of edges
+	 * @return       {@code true} if {@code edges} form a valid matching in {@code g}, else {@code false}
+	 */
+	static boolean isMatching(Graph g, IntCollection edges) {
+		IndexGraph ig;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+		} else {
+			ig = g.indexGraph();
+			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+		}
+		final int n = ig.vertices().size();
+
+		if (edges.size() > n / 2)
+			return false;
+
+		if (edges.size() * 4 > n / 8) {
+			/* matching is big, use BitSet */
+			BitSet matched = new BitSet(n);
+			for (int e : edges) {
+				int u = ig.edgeSource(e), v = ig.edgeTarget(e);
+				if (matched.get(u))
+					return false;
+				matched.set(u);
+				if (matched.get(v))
+					return false;
+				matched.set(v);
+			}
+
+		} else {
+			/* matching is small, use hashtable */
+			IntSet matched = new IntOpenHashSet(edges.size() * 2);
+			for (int e : edges) {
+				int u = ig.edgeSource(e), v = ig.edgeTarget(e);
+				if (!matched.add(u))
+					return false;
+				if (!matched.add(v))
+					return false;
+			}
+
+		}
+		return true;
+	}
 
 }
