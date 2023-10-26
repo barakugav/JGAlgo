@@ -87,6 +87,10 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 	}
 
 	private static void verifyMST(Graph g, WeightFunction w, MinimumSpanningTree.Result mst) {
+		assertTrue(MinimumSpanningTree.isSpanningForest(g, mst.edges()));
+		if (WeaklyConnectedComponentsAlgo.newInstance().isWeaklyConnected(g))
+			assertTrue(MinimumSpanningTree.isSpanningTree(g, mst.edges()));
+
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
 		 * correct

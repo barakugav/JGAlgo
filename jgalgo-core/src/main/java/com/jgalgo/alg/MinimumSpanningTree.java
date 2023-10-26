@@ -16,10 +16,21 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
  * Minimum spanning tree algorithm.
@@ -59,6 +70,136 @@ public interface MinimumSpanningTree {
 		 * @return a collection of the MST edges.
 		 */
 		IntCollection edges();
+	}
+
+	/**
+	 * Check whether a given set of edges is a spanning tree of a given graph.
+	 * <p>
+	 * A set of edges is spanning tree if it is a tree and connects all the vertices of the graph. Specifically, if the
+	 * graph is not empty, the number of edges must be \(n-1\) where \(n\) denote the number of vertices in the graph.
+	 * The edge set should not contain any duplicate edges.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning tree
+	 * @return       {@code true} if the given set of edges is a spanning tree of the given graph, {@code false}
+	 *               otherwise
+	 */
+	static boolean isSpanningTree(Graph g, IntCollection edges) {
+		Assertions.Graphs.onlyUndirected(g);
+		IndexGraph ig;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+		} else {
+			ig = g.indexGraph();
+			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+		}
+		final int m = ig.edges().size();
+		final int n = ig.vertices().size();
+		if (n == 0) {
+			assert m == 0;
+			return edges.isEmpty();
+		}
+		if (edges.size() != n - 1)
+			return false;
+		BitSet edgesBitmap = new BitSet(m);
+		for (int e : edges) {
+			if (!ig.edges().contains(e))
+				throw new IllegalArgumentException("invalid edge index " + e);
+			if (edgesBitmap.get(e))
+				throw new IllegalArgumentException(
+						"edge with index " + e + " is included more than once in the spanning tree");
+			edgesBitmap.set(e);
+		}
+
+		/* perform a BFS from some vertex using only the spanning tree edges */
+		BitSet visited = new BitSet(n);
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		visited.set(0);
+		queue.enqueue(0);
+		while (!queue.isEmpty()) {
+			int u = queue.dequeueInt();
+			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				if (!edgesBitmap.get(e))
+					continue;
+				int v = eit.target();
+				if (visited.get(v))
+					continue;
+				visited.set(v);
+				queue.enqueue(v);
+			}
+		}
+		/* make sure we reached all vertices */
+		return visited.nextClearBit(0) == n;
+	}
+
+	/**
+	 * Check whether a given set of edges is a spanning forest of a given graph.
+	 * <p>
+	 * A set of edges is spanning forest if it is a forest (do not contains cycles) which connected any pair of vertices
+	 * that are connected in the original graph, namely its connected components are identical to the connected
+	 * components of the original graph. Specifically, the number of edges must be \(n-c\) where \(n\) denote the number
+	 * of vertices in the graph and \(c\) denote the number of connected components in the graph. The edge set should
+	 * not contain any duplicate edges.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning forest
+	 * @return       {@code true} if the given set of edges is a spanning forest of the given graph, {@code false}
+	 *               otherwise
+	 */
+	static boolean isSpanningForest(Graph g, IntCollection edges) {
+		Assertions.Graphs.onlyUndirected(g);
+		IndexGraph ig;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+		} else {
+			ig = g.indexGraph();
+			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+		}
+		final int m = ig.edges().size();
+		final int n = ig.vertices().size();
+		if (n == 0) {
+			assert m == 0;
+			return edges.isEmpty();
+		}
+		BitSet edgesBitmap = new BitSet(m);
+		for (int e : edges) {
+			if (!ig.edges().contains(e))
+				throw new IllegalArgumentException("invalid edge index " + e);
+			if (edgesBitmap.get(e))
+				throw new IllegalArgumentException(
+						"edge with index " + e + " is included more than once in the spanning tree");
+			edgesBitmap.set(e);
+		}
+
+		int[] root = new int[n];
+		Arrays.fill(root, -1);
+		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
+		for (int r = 0; r < n; r++) {
+			if (root[r] != -1)
+				continue;
+			root[r] = r;
+			queue.enqueue(JGAlgoUtils.longCompose(r, -1));
+			while (!queue.isEmpty()) {
+				long l = queue.dequeueLong();
+				int u = JGAlgoUtils.long2low(l);
+				int parentEdge = JGAlgoUtils.long2high(l);
+				for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					if (!edgesBitmap.get(e) || e == parentEdge)
+						continue;
+					int v = eit.target();
+					if (root[v] == r)
+						return false; /* cycle */
+					root[v] = r;
+					queue.enqueue(JGAlgoUtils.longCompose(v, e));
+				}
+			}
+		}
+		for (int e = 0; e < m; e++)
+			if (!edgesBitmap.get(e) && root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])
+				return false; /* two connected components of the given forest could have been connected */
+		return true;
 	}
 
 	/**
