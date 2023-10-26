@@ -38,7 +38,7 @@ import com.jgalgo.graph.WeightFunction;
  * @see    ShortestPathSingleSource
  * @author Barak Ugav
  */
-public interface ShortestPathWithHeuristic {
+public interface ShortestPathHeuristicST {
 
 	/**
 	 * Compute the shortest path between two vertices in a graph.
@@ -56,12 +56,12 @@ public interface ShortestPathWithHeuristic {
 	/**
 	 * Create a new shortest path algorithm with heuristic.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathWithHeuristic} object. The
-	 * {@link ShortestPathWithHeuristic.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ShortestPathHeuristicST} object. The
+	 * {@link ShortestPathHeuristicST.Builder} might support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link ShortestPathWithHeuristic}
+	 * @return a default implementation of {@link ShortestPathHeuristicST}
 	 */
-	static ShortestPathWithHeuristic newInstance() {
+	static ShortestPathHeuristicST newInstance() {
 		return newBuilder().build();
 	}
 
@@ -70,16 +70,16 @@ public interface ShortestPathWithHeuristic {
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link ShortestPathWithHeuristic} objects
+	 * @return a new builder that can build {@link ShortestPathHeuristicST} objects
 	 */
-	static ShortestPathWithHeuristic.Builder newBuilder() {
-		return AStar::new;
+	static ShortestPathHeuristicST.Builder newBuilder() {
+		return ShortestPathAStar::new;
 	}
 
 	/**
-	 * A builder for {@link ShortestPathWithHeuristic} objects.
+	 * A builder for {@link ShortestPathHeuristicST} objects.
 	 *
-	 * @see    ShortestPathWithHeuristic#newBuilder()
+	 * @see    ShortestPathHeuristicST#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -89,7 +89,7 @@ public interface ShortestPathWithHeuristic {
 		 *
 		 * @return a new heuristic shortest path algorithm
 		 */
-		ShortestPathWithHeuristic build();
+		ShortestPathHeuristicST build();
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -104,7 +104,7 @@ public interface ShortestPathWithHeuristic {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default ShortestPathWithHeuristic.Builder setOption(String key, Object value) {
+		default ShortestPathHeuristicST.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}

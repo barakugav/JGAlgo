@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * @see    <a href= "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class AStar implements ShortestPathWithHeuristic {
+class ShortestPathAStar implements ShortestPathHeuristicST {
 
 	private HeapReferenceable.Builder<Double, Integer> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
@@ -59,7 +59,7 @@ class AStar implements ShortestPathWithHeuristic {
 	/**
 	 * Construct a new AStart algorithm.
 	 */
-	AStar() {}
+	ShortestPathAStar() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

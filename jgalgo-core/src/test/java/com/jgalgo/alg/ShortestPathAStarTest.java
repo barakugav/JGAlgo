@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class AStarTest extends TestBase {
+public class ShortestPathAStarTest extends TestBase {
 
 	private static PhasedTester SsspPhases;
 	static {
@@ -138,7 +138,7 @@ public class AStarTest extends TestBase {
 				Int2DoubleMap distances = new Int2DoubleOpenHashMap(n);
 				distances.defaultReturnValue(Double.POSITIVE_INFINITY);
 
-				AStar aStar = new AStar();
+				ShortestPathAStar aStar = new ShortestPathAStar();
 				for (int target : g.vertices()) {
 					IntToDoubleFunction vHeuristic = vHeuristicBuilder.apply(new HeuristicParams(g, w, source, target));
 					Path path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
