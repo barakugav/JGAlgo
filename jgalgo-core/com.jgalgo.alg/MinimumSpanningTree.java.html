@@ -16,10 +16,21 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
  * Minimum spanning tree algorithm.
@@ -34,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    MinimumDirectedSpanningTree
  * @author Barak Ugav
  */
-public interface MinimumSpanningTree {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">public interface MinimumSpanningTree {</span>
 
 	/**
 	 * Compute the minimum spanning tree (MST) of a given graph.
@@ -62,6 +73,136 @@ public interface MinimumSpanningTree {
 	}
 
 	/**
+	 * Check whether a given set of edges is a spanning tree of a given graph.
+	 * &lt;p&gt;
+	 * A set of edges is spanning tree if it is a tree and connects all the vertices of the graph. Specifically, if the
+	 * graph is not empty, the number of edges must be \(n-1\) where \(n\) denote the number of vertices in the graph.
+	 * The edge set should not contain any duplicate edges.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning tree
+	 * @return       {@code true} if the given set of edges is a spanning tree of the given graph, {@code false}
+	 *               otherwise
+	 */
+	static boolean isSpanningTree(Graph g, IntCollection edges) {
+<span class="fc" id="L88">		Assertions.Graphs.onlyUndirected(g);</span>
+		IndexGraph ig;
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L91">			ig = (IndexGraph) g;</span>
+		} else {
+<span class="fc" id="L93">			ig = g.indexGraph();</span>
+<span class="fc" id="L94">			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L96">		final int m = ig.edges().size();</span>
+<span class="fc" id="L97">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L99" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L100">			return edges.isEmpty();</span>
+		}
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		if (edges.size() != n - 1)</span>
+<span class="nc" id="L103">			return false;</span>
+<span class="fc" id="L104">		BitSet edgesBitmap = new BitSet(m);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L107">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L109">				throw new IllegalArgumentException(</span>
+						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
+<span class="fc" id="L111">			edgesBitmap.set(e);</span>
+<span class="fc" id="L112">		}</span>
+
+		/* perform a BFS from some vertex using only the spanning tree edges */
+<span class="fc" id="L115">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L116">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L117">		visited.set(0);</span>
+<span class="fc" id="L118">		queue.enqueue(0);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L120">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L122">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (!edgesBitmap.get(e))</span>
+<span class="fc" id="L124">					continue;</span>
+<span class="fc" id="L125">				int v = eit.target();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L127">					continue;</span>
+<span class="fc" id="L128">				visited.set(v);</span>
+<span class="fc" id="L129">				queue.enqueue(v);</span>
+<span class="fc" id="L130">			}</span>
+<span class="fc" id="L131">		}</span>
+		/* make sure we reached all vertices */
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		return visited.nextClearBit(0) == n;</span>
+	}
+
+	/**
+	 * Check whether a given set of edges is a spanning forest of a given graph.
+	 * &lt;p&gt;
+	 * A set of edges is spanning forest if it is a forest (do not contains cycles) which connected any pair of vertices
+	 * that are connected in the original graph, namely its connected components are identical to the connected
+	 * components of the original graph. Specifically, the number of edges must be \(n-c\) where \(n\) denote the number
+	 * of vertices in the graph and \(c\) denote the number of connected components in the graph. The edge set should
+	 * not contain any duplicate edges.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning forest
+	 * @return       {@code true} if the given set of edges is a spanning forest of the given graph, {@code false}
+	 *               otherwise
+	 */
+	static boolean isSpanningForest(Graph g, IntCollection edges) {
+<span class="fc" id="L151">		Assertions.Graphs.onlyUndirected(g);</span>
+		IndexGraph ig;
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L154">			ig = (IndexGraph) g;</span>
+		} else {
+<span class="fc" id="L156">			ig = g.indexGraph();</span>
+<span class="fc" id="L157">			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L159">		final int m = ig.edges().size();</span>
+<span class="fc" id="L160">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L162" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L163">			return edges.isEmpty();</span>
+		}
+<span class="fc" id="L165">		BitSet edgesBitmap = new BitSet(m);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L168">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L170">				throw new IllegalArgumentException(</span>
+						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
+<span class="fc" id="L172">			edgesBitmap.set(e);</span>
+<span class="fc" id="L173">		}</span>
+
+<span class="fc" id="L175">		int[] root = new int[n];</span>
+<span class="fc" id="L176">		Arrays.fill(root, -1);</span>
+<span class="fc" id="L177">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (int r = 0; r &lt; n; r++) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">			if (root[r] != -1)</span>
+<span class="fc" id="L180">				continue;</span>
+<span class="fc" id="L181">			root[r] = r;</span>
+<span class="fc" id="L182">			queue.enqueue(JGAlgoUtils.longCompose(r, -1));</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L184">				long l = queue.dequeueLong();</span>
+<span class="fc" id="L185">				int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L186">				int parentEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L188">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L189" title="All 4 branches covered.">					if (!edgesBitmap.get(e) || e == parentEdge)</span>
+<span class="fc" id="L190">						continue;</span>
+<span class="fc" id="L191">					int v = eit.target();</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">					if (root[v] == r)</span>
+<span class="nc" id="L193">						return false; /* cycle */</span>
+<span class="fc" id="L194">					root[v] = r;</span>
+<span class="fc" id="L195">					queue.enqueue(JGAlgoUtils.longCompose(v, e));</span>
+<span class="fc" id="L196">				}</span>
+<span class="fc" id="L197">			}</span>
+		}
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L200" title="1 of 4 branches missed.">			if (!edgesBitmap.get(e) &amp;&amp; root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])</span>
+<span class="nc" id="L201">				return false; /* two connected components of the given forest could have been connected */</span>
+<span class="fc" id="L202">		return true;</span>
+	}
+
+	/**
 	 * Create a new MST algorithm object.
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
@@ -70,7 +211,7 @@ public interface MinimumSpanningTree {
 	 * @return a default implementation of {@link MinimumSpanningTree}
 	 */
 	static MinimumSpanningTree newInstance() {
-<span class="fc" id="L73">		return newBuilder().build();</span>
+<span class="fc" id="L214">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -81,51 +222,51 @@ public interface MinimumSpanningTree {
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */
 	static MinimumSpanningTree.Builder newBuilder() {
-<span class="fc" id="L84">		return new MinimumSpanningTree.Builder() {</span>
+<span class="fc" id="L225">		return new MinimumSpanningTree.Builder() {</span>
 			String impl;
 			private HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L91" title="All 7 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L232" title="All 7 branches missed.">					switch (impl) {</span>
 						case &quot;kruskal&quot;:
-<span class="nc" id="L93">							return new MinimumSpanningTreeKruskal();</span>
+<span class="nc" id="L234">							return new MinimumSpanningTreeKruskal();</span>
 						case &quot;prim&quot;:
-<span class="nc" id="L95">							return new MinimumSpanningTreePrim();</span>
+<span class="nc" id="L236">							return new MinimumSpanningTreePrim();</span>
 						case &quot;boruvka&quot;:
-<span class="nc" id="L97">							return new MinimumSpanningTreeBoruvka();</span>
+<span class="nc" id="L238">							return new MinimumSpanningTreeBoruvka();</span>
 						case &quot;yao&quot;:
-<span class="nc" id="L99">							return new MinimumSpanningTreeYao();</span>
+<span class="nc" id="L240">							return new MinimumSpanningTreeYao();</span>
 						case &quot;fredman-tarjan&quot;:
-<span class="nc" id="L101">							return new MinimumSpanningTreeFredmanTarjan();</span>
+<span class="nc" id="L242">							return new MinimumSpanningTreeFredmanTarjan();</span>
 						case &quot;karger-klein-tarjan&quot;:
-<span class="nc" id="L103">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
+<span class="nc" id="L244">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
 						default:
-<span class="nc" id="L105">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L246">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
 
 				// TODO check for which graphs sizes Kruskal is faster
-<span class="fc" id="L110">				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
-<span class="nc" id="L112">					algo.setHeapBuilder(heapBuilder);</span>
-<span class="fc" id="L113">				return algo;</span>
+<span class="fc" id="L251">				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
+<span class="nc" id="L253">					algo.setHeapBuilder(heapBuilder);</span>
+<span class="fc" id="L254">				return algo;</span>
 			}
 
 			@Override
 			public MinimumSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L118" title="All 3 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L259" title="All 3 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L120">						impl = (String) value;</span>
-<span class="nc" id="L121">						break;</span>
+<span class="nc" id="L261">						impl = (String) value;</span>
+<span class="nc" id="L262">						break;</span>
 					case &quot;heap-builder&quot;:
-<span class="nc" id="L123">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
-<span class="nc" id="L124">						break;</span>
+<span class="nc" id="L264">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
+<span class="nc" id="L265">						break;</span>
 					default:
-<span class="nc" id="L126">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L267">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L128">				return this;</span>
+<span class="nc" id="L269">				return this;</span>
 			}
 		};
 	}
@@ -159,7 +300,7 @@ public interface MinimumSpanningTree {
 		 * @return       this builder
 		 */
 		default MinimumSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc" id="L162">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L303">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

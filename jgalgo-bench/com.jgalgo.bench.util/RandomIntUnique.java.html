@@ -17,15 +17,15 @@
 package com.jgalgo.bench.util;
 
 import java.util.Random;
-import java.util.Set;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class RandomIntUnique {
 
 	private final Random rand;
 	private final int min;
 	private final int max;
-	private final Set&lt;Integer&gt; usedVals;
+	private final IntSet usedVals;
 
 <span class="nc" id="L30">	RandomIntUnique(int min, int max, long seed) {</span>
 <span class="nc bnc" id="L31" title="All 2 branches missed.">		if (min &gt;= max)</span>
@@ -34,21 +34,21 @@ class RandomIntUnique {
 <span class="nc" id="L34">		rand = new Random(seed);</span>
 <span class="nc" id="L35">		this.min = min;</span>
 <span class="nc" id="L36">		this.max = max;</span>
-<span class="nc" id="L37">		usedVals = new ObjectOpenHashSet&lt;&gt;();</span>
+<span class="nc" id="L37">		usedVals = new IntOpenHashSet();</span>
 <span class="nc" id="L38">	}</span>
 
 	int next() {
 <span class="nc bnc" id="L41" title="All 2 branches missed.">		if (usedVals.size() &gt; 0.9 * (max - min))</span>
 <span class="nc" id="L42">			throw new IllegalStateException();</span>
 
-		Integer x;
+		int x;
 		do {
-<span class="nc" id="L46">			x = Integer.valueOf(min + rand.nextInt(max - min));</span>
+<span class="nc" id="L46">			x = min + rand.nextInt(max - min);</span>
 <span class="nc bnc" id="L47" title="All 2 branches missed.">		} while (usedVals.contains(x));</span>
 
 <span class="nc" id="L49">		usedVals.add(x);</span>
 
-<span class="nc" id="L51">		return x.intValue();</span>
+<span class="nc" id="L51">		return x;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

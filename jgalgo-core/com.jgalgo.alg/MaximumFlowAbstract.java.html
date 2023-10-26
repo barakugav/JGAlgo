@@ -63,12 +63,12 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	@Override
-	Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 <span class="fc" id="L67">		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);</span>
 	}
 
 	@Override
-	Cut computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
 <span class="fc" id="L72">		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);</span>
 	}
 

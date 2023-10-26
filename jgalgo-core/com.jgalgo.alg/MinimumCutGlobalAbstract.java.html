@@ -24,7 +24,7 @@ import com.jgalgo.graph.WeightFunction;
 <span class="fc" id="L24">abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {</span>
 
 	@Override
-	public Cut computeMinimumCut(Graph g, WeightFunction w) {
+	public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w) {
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
 <span class="nc" id="L29">			return computeMinimumCut((IndexGraph) g, w);</span>
 
@@ -33,11 +33,11 @@ import com.jgalgo.graph.WeightFunction;
 <span class="fc" id="L33">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
 <span class="fc" id="L34">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="fc" id="L36">		Cut indexCut = computeMinimumCut(iGraph, w);</span>
-<span class="fc" id="L37">		return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);</span>
+<span class="fc" id="L36">		VertexBiPartition indexCut = computeMinimumCut(iGraph, w);</span>
+<span class="fc" id="L37">		return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);</span>
 	}
 
-	abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w);
+	abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w);
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
