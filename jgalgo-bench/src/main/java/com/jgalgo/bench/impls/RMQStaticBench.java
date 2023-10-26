@@ -39,6 +39,7 @@ import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.RMQStatic;
 import com.jgalgo.internal.ds.RMQStaticComparator;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -144,7 +145,7 @@ public class RMQStaticBench {
 			return TestUtils.randArray(size, seed);
 		}
 
-		Pair<RMQStatic.DataStructure, int[]> createArray(RMQStatic.Builder builder, int n) {
+		Pair<RMQStatic.DataStructure, long[]> createArray(RMQStatic.Builder builder, int n) {
 			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);
 
 			int[] arr = randArray(n, seedGen.nextSeed());
@@ -155,18 +156,20 @@ public class RMQStaticBench {
 			int queriesNum = n;
 			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());
 			for (int q = 0; q < queriesNum; q++) {
-				int i = queries[q * 2];
+				int i = queries[q * 2 + 0];
 				int j = queries[q * 2 + 1];
 				if (j < i) {
 					int temp = i;
 					i = j;
 					j = temp;
 				}
-				queries[q * 2] = i;
+				queries[q * 2 + 0] = i;
 				queries[q * 2 + 1] = j;
 			}
-
-			return Pair.of(rmqDS, queries);
+			long[] queries0 = new long[queriesNum];
+			for (int q = 0; q < queriesNum; q++)
+				queries0[q] = JGAlgoUtils.longCompose(queries[q * 2 + 0], queries[q * 2 + 1]);
+			return Pair.of(rmqDS, queries0);
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -182,31 +185,29 @@ public class RMQStaticBench {
 			public int n;
 
 			private RMQStatic.DataStructure rmq;
-			private int[] queries;
+			private long[] queries;
 			private int queryIdx;
-			private int queryI, queryJ;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 				n = Integer.parseInt(argsMap.get("N"));
 
-				Pair<RMQStatic.DataStructure, int[]> p =
+				Pair<RMQStatic.DataStructure, long[]> p =
 						createArray(RMQStatic.newBuilder().setOption("impl", "simple-lookup-table"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
 			}
 
-			@Setup(Level.Invocation)
-			public void setupQueryIndices() {
-				queryI = queries[queryIdx * 2 + 0];
-				queryJ = queries[queryIdx * 2 + 1];
-				queryIdx = (queryIdx + 1) % (queries.length / 2);
-			}
-
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
+				long q = queries[queryIdx];
+				int queryI = JGAlgoUtils.long2low(q);
+				int queryJ = JGAlgoUtils.long2high(q);
+				if (++queryIdx == queries.length)
+					queryIdx = 0;
+
 				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}
@@ -225,31 +226,29 @@ public class RMQStaticBench {
 			public int n;
 
 			private RMQStatic.DataStructure rmq;
-			private int[] queries;
+			private long[] queries;
 			private int queryIdx;
-			private int queryI, queryJ;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 				n = Integer.parseInt(argsMap.get("N"));
 
-				Pair<RMQStatic.DataStructure, int[]> p =
+				Pair<RMQStatic.DataStructure, long[]> p =
 						createArray(RMQStatic.newBuilder().setOption("impl", "power-of-2-table"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
 			}
 
-			@Setup(Level.Invocation)
-			public void setupQueryIndices() {
-				queryI = queries[queryIdx * 2 + 0];
-				queryJ = queries[queryIdx * 2 + 1];
-				queryIdx = (queryIdx + 1) % (queries.length / 2);
-			}
-
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
+				long q = queries[queryIdx];
+				int queryI = JGAlgoUtils.long2low(q);
+				int queryJ = JGAlgoUtils.long2high(q);
+				if (++queryIdx == queries.length)
+					queryIdx = 0;
+
 				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}
@@ -268,9 +267,8 @@ public class RMQStaticBench {
 			public int n;
 
 			private RMQStatic.DataStructure rmq;
-			private int[] queries;
+			private long[] queries;
 			private int queryIdx;
-			private int queryI, queryJ;
 
 			@Override
 			int[] randArray(int size, long seed) {
@@ -286,22 +284,21 @@ public class RMQStaticBench {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 				n = Integer.parseInt(argsMap.get("N"));
 
-				Pair<RMQStatic.DataStructure, int[]> p =
+				Pair<RMQStatic.DataStructure, long[]> p =
 						createArray(RMQStatic.newBuilder().setOption("impl", "plus-minus-one"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
 			}
 
-			@Setup(Level.Invocation)
-			public void setupQueryIndices() {
-				queryI = queries[queryIdx * 2 + 0];
-				queryJ = queries[queryIdx * 2 + 1];
-				queryIdx = (queryIdx + 1) % (queries.length / 2);
-			}
-
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
+				long q = queries[queryIdx];
+				int queryI = JGAlgoUtils.long2low(q);
+				int queryJ = JGAlgoUtils.long2high(q);
+				if (++queryIdx == queries.length)
+					queryIdx = 0;
+
 				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}
@@ -320,31 +317,29 @@ public class RMQStaticBench {
 			public int n;
 
 			private RMQStatic.DataStructure rmq;
-			private int[] queries;
+			private long[] queries;
 			private int queryIdx;
-			private int queryI, queryJ;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 				n = Integer.parseInt(argsMap.get("N"));
 
-				Pair<RMQStatic.DataStructure, int[]> p =
+				Pair<RMQStatic.DataStructure, long[]> p =
 						createArray(RMQStatic.newBuilder().setOption("impl", "cartesian-trees"), n);
 				rmq = p.first();
 				queries = p.second();
 				queryIdx = 0;
 			}
 
-			@Setup(Level.Invocation)
-			public void setupQueryIndices() {
-				queryI = queries[queryIdx * 2 + 0];
-				queryJ = queries[queryIdx * 2 + 1];
-				queryIdx = (queryIdx + 1) % (queries.length / 2);
-			}
-
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
+				long q = queries[queryIdx];
+				int queryI = JGAlgoUtils.long2low(q);
+				int queryJ = JGAlgoUtils.long2high(q);
+				if (++queryIdx == queries.length)
+					queryIdx = 0;
+
 				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}
