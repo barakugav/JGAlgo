@@ -17,6 +17,8 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
@@ -33,7 +35,7 @@ public class VertexPartitionTest extends TestBase {
 
 	@Test
 	public void testBlockVertices() {
-		final long seed = 0;
+		final long seed = 0xa8f42d4a6c48995dL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		PhasedTester tester = new PhasedTester();
@@ -64,7 +66,7 @@ public class VertexPartitionTest extends TestBase {
 
 	@Test
 	public void testBlockEdges() {
-		final long seed = 0;
+		final long seed = 0xf5281151efcb468eL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		PhasedTester tester = new PhasedTester();
@@ -96,7 +98,7 @@ public class VertexPartitionTest extends TestBase {
 
 	@Test
 	public void testCrossEdges() {
-		final long seed = 0;
+		final long seed = 0xd8458292eb56ed9L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		PhasedTester tester = new PhasedTester();
@@ -141,7 +143,47 @@ public class VertexPartitionTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
+	@Test
+	public void testIsPartition() {
+		final long seed = 0x30a53df6d88b87d5L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 32, 3).repeat(128);
+		tester.addPhase().withArgs(16, 32, 6).repeat(128);
+		tester.addPhase().withArgs(64, 256, 7).repeat(64);
+		tester.addPhase().withArgs(64, 256, 28).repeat(64);
+		tester.addPhase().withArgs(512, 1024, 5).repeat(8);
+		tester.addPhase().withArgs(512, 1024, 30).repeat(8);
+		tester.run((n, m, k) -> {
+			for (boolean directed : BooleanList.of(false, true)) {
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					int[] vs = g.vertices().toIntArray();
+
+					Int2IntMap partition1 = randPartitionMap(g, k, seedGen.nextSeed());
+					assertTrue(VertexPartition.isPartition(g, partition1::get));
+
+					Int2IntMap partition2 = new Int2IntOpenHashMap(partition1);
+					partition2.put(vs[rand.nextInt(n)], -1 - rand.nextInt(5));
+					assertFalse(VertexPartition.isPartition(g, partition2::get));
+
+					Int2IntMap partition3 = new Int2IntOpenHashMap(partition1);
+					int block = rand.nextInt(k);
+					partition3.replaceAll((v, b) -> b != block ? b : k);
+					assertFalse(VertexPartition.isPartition(g, partition3::get));
+				}
+			}
+		});
+	}
+
 	private static VertexPartition randPartition(Graph g, int k, long seed) {
+		return VertexPartition.fromMap(g, randPartitionMap(g, k, seed));
+	}
+
+	private static Int2IntMap randPartitionMap(Graph g, int k, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		final int n = g.vertices().size();
@@ -156,7 +198,7 @@ public class VertexPartitionTest extends TestBase {
 			partition.put(vs[idx], idx);
 		for (; idx < n; idx++)
 			partition.put(vs[idx], rand.nextInt(k));
-		return VertexPartition.fromMap(g, partition);
+		return partition;
 	}
 
 	private static Graph randGraph(int n, int m, boolean directed, boolean index, long seed) {

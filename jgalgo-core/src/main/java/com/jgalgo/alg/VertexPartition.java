@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import java.util.BitSet;
+import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
@@ -87,19 +89,33 @@ public interface VertexPartition {
 	 * Create a new vertex partition from a vertex-blockIndex map.
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
-	 * range [0, maxBlockIndex].
+	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
 	 *
 	 * @param  g   the graph
 	 * @param  map a map from vertex to block index
 	 * @return     a new vertex partition
 	 */
 	static VertexPartition fromMap(Graph g, Int2IntMap map) {
+		return fromMapping(g, map::get);
+	}
+
+	/**
+	 * Create a new vertex partition from a vertex-blockIndex mapping function.
+	 * <p>
+	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
+	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
+	 *
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to block index
+	 * @return         a new vertex partition
+	 */
+	static VertexPartition fromMapping(Graph g, IntUnaryOperator mapping) {
 		final int n = g.vertices().size();
 		int[] vertexToBlock = new int[n];
 		if (g instanceof IndexGraph) {
 			int maxBlock = -1;
 			for (int v = 0; v < n; v++) {
-				vertexToBlock[v] = map.get(v);
+				vertexToBlock[v] = mapping.applyAsInt(v);
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 			return new VertexPartitions.ImplIndex((IndexGraph) g, maxBlock + 1, vertexToBlock);
@@ -108,13 +124,52 @@ public interface VertexPartition {
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			int maxBlock = -1;
 			for (int v = 0; v < n; v++) {
-				vertexToBlock[v] = map.get(viMap.indexToId(v));
+				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 			VertexPartition indexPartition =
 					new VertexPartitions.ImplIndex(g.indexGraph(), maxBlock + 1, vertexToBlock);
 			return new VertexPartitions.PartitionFromIndexPartition(indexPartition, viMap, eiMap);
 		}
+	}
+
+	/**
+	 * Check if a mapping is a valid partition of the vertices of a graph.
+	 * <p>
+	 * A valid vertex partition is a mapping from each vertex to an integer number in range [0, numberOfBlocks), in
+	 * which there are not 'empty blocks', namely at least one vertex is mapped to each block.
+	 *
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to block index
+	 * @return         {@code true} if the mapping is a valid partition of the vertices of the graph, {@code false}
+	 *                 otherwise
+	 */
+	static boolean isPartition(Graph g, IntUnaryOperator mapping) {
+		final int n = g.vertices().size();
+		int[] vertexToBlock = new int[n];
+		int maxBlock = -1;
+		if (g instanceof IndexGraph) {
+			for (int v = 0; v < n; v++) {
+				vertexToBlock[v] = mapping.applyAsInt(v);
+				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
+			}
+		} else {
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			for (int v = 0; v < n; v++) {
+				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
+				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
+			}
+		}
+		final int blockNum = maxBlock + 1;
+		if (maxBlock > n)
+			return false;
+		BitSet seenBlocks = new BitSet(blockNum);
+		for (int b : vertexToBlock) {
+			if (b < 0)
+				return false;
+			seenBlocks.set(b);
+		}
+		return seenBlocks.nextClearBit(0) == blockNum;
 	}
 
 }
