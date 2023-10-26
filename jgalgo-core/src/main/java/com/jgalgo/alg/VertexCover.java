@@ -15,8 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import java.util.BitSet;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -75,6 +79,41 @@ public interface VertexCover {
 		 */
 		boolean isInCover(int vertex);
 
+	}
+
+	/**
+	 * Check whether a set of vertices is a vertex cover of a graph.
+	 * <p>
+	 * A set of vertices is a vertex cover of a graph if for every edge in the graph at least one of its vertices is in
+	 * the set. In addition, the collection of the vertices must not contain duplicates.
+	 *
+	 * @param  g        a graph
+	 * @param  vertices a collection of vertices that should cover all the edges in the graph
+	 * @return          {@code true} if {@code vertices} is a vertex cover of {@code g}
+	 */
+	static boolean isCover(Graph g, IntCollection vertices) {
+		IndexGraph ig;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+		} else {
+			ig = g.indexGraph();
+			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());
+		}
+		final int m = ig.edges().size();
+		final int n = ig.vertices().size();
+		BitSet visited = new BitSet(n);
+		for (int v : vertices) {
+			if (!ig.vertices().contains(v))
+				throw new IllegalArgumentException("invalid vertex index " + v);
+			if (visited.get(v))
+				throw new IllegalArgumentException(
+						"vertex with index " + v + " is included more than once in the cover");
+			visited.set(v);
+		}
+		for (int e = 0; e < m; e++)
+			if (!visited.get(ig.edgeSource(e)) && !visited.get(ig.edgeTarget(e)))
+				return false;
+		return true;
 	}
 
 	/**

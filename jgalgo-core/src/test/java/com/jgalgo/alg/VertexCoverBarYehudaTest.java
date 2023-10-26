@@ -64,6 +64,8 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			assertTrue(vc.isInCover(u) || vc.isInCover(v), "edge is not covered: " + e);
 		}
 
+		assertTrue(VertexCover.isCover(g, vc.vertices()));
+
 		final int n = g.vertices().size();
 		if (n < 16) {
 
