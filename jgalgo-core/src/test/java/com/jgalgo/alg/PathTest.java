@@ -17,16 +17,20 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class PathTest extends TestBase {
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void testFindPath() {
 		final long seed = 0x03afc698ec4c71ccL;
@@ -38,7 +42,8 @@ public class PathTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			boolean directed = rand.nextBoolean();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
@@ -51,8 +56,91 @@ public class PathTest extends TestBase {
 			} else {
 				assertNotNull(actual, "failed to found a path");
 				assertEquals(expected.edges().size(), actual.edges().size(), "failed to find shortest path");
+
+				assertTrue(Path.isPath(g, source, target, actual.edges()));
+
+				boolean isSimpleExpected = actual.vertices().intStream().distinct().count() == actual.vertices().size();
+				assertEquals(isSimpleExpected, actual.isSimple());
 			}
 		});
+	}
+
+	@Test
+	public void testIsPathUndirected() {
+		Graph g = Graph.newUndirected();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int v3 = g.addVertex();
+		int v4 = g.addVertex();
+		int e1 = g.addEdge(v1, v2);
+		int e2 = g.addEdge(v2, v3);
+		int e3 = g.addEdge(v3, v4);
+		int e4 = g.addEdge(v4, v1);
+		int e5 = g.addEdge(v2, v4);
+
+		assertTrue(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e5)));
+		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
+
+		assertTrue(Path.isPath(g, v1, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(Path.isPath(g, v2, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(Path.isPath(g, v4, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e3, e2)));
+		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e5, e3, e2)));
+		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e5, e3, e5)));
+		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e2, e5, e3, e2)));
+	}
+
+	@Test
+	public void testIsPathDirected() {
+		Graph g = Graph.newDirected();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int v3 = g.addVertex();
+		int v4 = g.addVertex();
+		int e1 = g.addEdge(v1, v2);
+		int e2 = g.addEdge(v2, v3);
+		int e3 = g.addEdge(v3, v4);
+		int e4 = g.addEdge(v4, v1);
+		int e5 = g.addEdge(v2, v4);
+
+		assertTrue(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
+		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4, e1)));
+		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
+
+		assertTrue(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(Path.isPath(g, v3, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(Path.isPath(g, v2, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2, e3)));
+		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e5, e2)));
+	}
+
+	@Test
+	public void testIsSimple() {
+		Graph g = Graph.newUndirected();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int v3 = g.addVertex();
+		int v4 = g.addVertex();
+		int e1 = g.addEdge(v1, v2);
+		int e2 = g.addEdge(v2, v3);
+		int e3 = g.addEdge(v3, v4);
+		int e4 = g.addEdge(v4, v1);
+		int e5 = g.addEdge(v2, v4);
+
+		assertFalse(Path.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
+		assertFalse(Path.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
+		assertTrue(Path.newInstance(g, v1, v3, IntList.of(e1, e5, e3)).isSimple());
 	}
 
 }

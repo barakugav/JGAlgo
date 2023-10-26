@@ -20,6 +20,9 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -81,6 +84,16 @@ public interface Path {
 	}
 
 	/**
+	 * Check whether this path is simple.
+	 * <p>
+	 * A path is <a href= "https://en.wikipedia.org/wiki/Path_(graph_theory)#simple_path">simple</a> if the path does
+	 * not visit the same vertex twice. Specifically, a cycle is not simple.
+	 *
+	 * @return {@code true} if this path is simple, else {@code false}
+	 */
+	boolean isSimple();
+
+	/**
 	 * Get an {@link EdgeIter} that iterate over the edges of the path.
 	 *
 	 * @return an {@link EdgeIter} that iterate over the edges of the path.
@@ -110,6 +123,96 @@ public interface Path {
 	IntList vertices();
 
 	/**
+	 * Create a new path from an edge list, a source and a target vertices.
+	 * <p>
+	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
+	 * for validity, use {@link #isPath(Graph, int, int, IntList)}.
+	 *
+	 * @param  g      the graph
+	 * @param  source a source vertex
+	 * @param  target a target vertex
+	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+	 * @return        a new path
+	 */
+	static Path newInstance(Graph g, int source, int target, IntList edges) {
+		if (g instanceof IndexGraph)
+			return new PathImpl((IndexGraph) g, source, target, edges);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		int iSource = viMap.idToIndex(source);
+		int iTarget = viMap.idToIndex(target);
+		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
+
+		Path indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
+		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+	}
+
+	/**
+	 * Check whether the given edge list is a valid path in the given graph.
+	 * <p>
+	 * A list of edges is a valid path in the graph if it is a list of edges \(e_1,e_2,\ldots\) where each target vertex
+	 * of an edge \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is undirected the definition
+	 * of a 'source' and 'target' are interchangeable, and each pair of consecutive edges simply share an endpoint. In
+	 * addition, the edge list must start with the {@code source} vertex and end with the {@code target} vertex.
+	 *
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @param  target a target vertex
+	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+	 *                    graph.
+	 * @return        {@code true} if the given edge list is a valid path in the given graph, else {@code false}
+	 */
+	static boolean isPath(Graph g, int source, int target, IntList edges) {
+		IndexGraph ig;
+		IntIterator eit;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			eit = edges.iterator();
+		} else {
+			ig = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			source = viMap.idToIndex(source);
+			target = viMap.idToIndex(target);
+			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
+		}
+
+		if (!ig.vertices().contains(source) || !ig.vertices().contains(target))
+			return false;
+		if (!eit.hasNext())
+			return source == target;
+
+		if (ig.isDirected()) {
+			int v = source;
+			while (eit.hasNext()) {
+				int e = eit.nextInt();
+				if (!ig.edges().contains(e) || ig.edgeSource(e) != v)
+					return false;
+				v = ig.edgeTarget(e);
+			}
+			return v == target;
+
+		} else {
+			int v = source;
+			while (eit.hasNext()) {
+				int e = eit.nextInt();
+				if (!ig.edges().contains(e))
+					return false;
+				if (ig.edgeSource(e) == v) {
+					v = ig.edgeTarget(e);
+				} else if (ig.edgeTarget(e) == v) {
+					v = ig.edgeSource(e);
+				} else {
+					return false;
+				}
+			}
+			return v == target;
+		}
+	}
+
+	/**
 	 * Find a valid path from \(u\) to \(v\).
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
@@ -119,7 +222,7 @@ public interface Path {
 	 * @param  target target vertex
 	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	public static Path findPath(Graph g, int source, int target) {
+	static Path findPath(Graph g, int source, int target) {
 		if (g instanceof IndexGraph)
 			return PathImpl.findPath((IndexGraph) g, source, target);
 

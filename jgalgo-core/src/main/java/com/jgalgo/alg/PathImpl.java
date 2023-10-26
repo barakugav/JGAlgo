@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -23,9 +24,12 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class PathImpl implements Path {
 
@@ -34,6 +38,7 @@ class PathImpl implements Path {
 	private final int target;
 	private final IntList edges;
 	private IntList vertices;
+	private boolean isSimple, isSimpleValid;
 
 	/**
 	 * Construct a new path in a graph from an edge list, a source and a target vertices.
@@ -45,10 +50,12 @@ class PathImpl implements Path {
 	 *                   graph.
 	 */
 	PathImpl(IndexGraph g, int source, int target, IntList edges) {
+		assert Path.isPath(g, source, target, edges);
 		this.g = g;
 		this.source = source;
 		this.target = target;
-		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
+		this.edges = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList ? edges
+				: IntLists.unmodifiable(edges);
 	}
 
 	@Override
@@ -75,24 +82,68 @@ class PathImpl implements Path {
 	public IntList vertices() {
 		if (vertices == null) {
 			if (edges.isEmpty()) {
-				return IntLists.emptyList();
+				vertices = IntLists.emptyList();
 			} else {
-				IntList res = new IntArrayList(edges().size() + (isCycle() ? 0 : 1));
+				int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
+				int resIdx = 0;
 				for (EdgeIter it = edgeIter();;) {
 					it.nextInt();
-					res.add(it.source());
+					res[resIdx++] = it.source();
 					if (!it.hasNext()) {
 						if (!isCycle()) {
 							assert it.target() == target();
-							res.add(target());
+							res[resIdx++] = target();
 						}
 						break;
 					}
 				}
-				vertices = IntLists.unmodifiable(res);
+				vertices = IntImmutableList.of(res);
 			}
 		}
 		return vertices;
+	}
+
+	@Override
+	public boolean isSimple() {
+		if (!isSimpleValid) {
+			final int n = g.vertices().size();
+			IntList vs;
+			if (edges().isEmpty()) {
+				assert source == target;
+				isSimple = true; /* a single vertex */
+
+			} else if (source == target) {
+				isSimple = false; /* a cycle */
+
+			} else if ((vs = vertices()).size() > n) {
+				isSimple = false; /* path with length greater than the vertices num */
+
+			} else if (vs.size() * 4 > n / 8) {
+				BitSet visited = new BitSet(n);
+				isSimple = true;
+				for (int v : vs) {
+					if (visited.get(v)) {
+						isSimple = false;
+						break;
+					}
+					visited.set(v);
+				}
+
+			} else {
+				IntSet visited = new IntOpenHashSet();
+				isSimple = true;
+				for (int v : vs) {
+					if (visited.contains(v)) {
+						isSimple = false;
+						break;
+					}
+					visited.add(v);
+				}
+
+			}
+			isSimpleValid = true;
+		}
+		return isSimple;
 	}
 
 	private static class IterUndirected implements EdgeIter {
@@ -250,6 +301,11 @@ class PathImpl implements Path {
 		@Override
 		public IntList vertices() {
 			return IndexIdMaps.indexToIdList(path.vertices(), viMap);
+		}
+
+		@Override
+		public boolean isSimple() {
+			return path.isSimple();
 		}
 	}
 
