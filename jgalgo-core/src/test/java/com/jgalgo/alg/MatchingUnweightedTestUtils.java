@@ -17,17 +17,17 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MatchingUnweightedTestUtils extends TestUtils {
 
@@ -59,12 +59,11 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	static void validateMatching(Graph g, Matching matching) {
-		Set<Integer> matched = new ObjectOpenHashSet<>();
+		IntSet matched = new IntOpenHashSet();
 		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
-				boolean dup = matched.contains(Integer.valueOf(v));
-				assertFalse(dup, "Invalid matching, clash: " + v + " " + e);
-				matched.add(Integer.valueOf(v));
+				if (!matched.add(v))
+					fail("Invalid matching, clash: " + v + " " + e);
 			}
 		}
 	}

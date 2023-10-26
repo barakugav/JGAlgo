@@ -17,15 +17,15 @@
 package com.jgalgo.bench.util;
 
 import java.util.Random;
-import java.util.Set;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class RandomIntUnique {
 
 	private final Random rand;
 	private final int min;
 	private final int max;
-	private final Set<Integer> usedVals;
+	private final IntSet usedVals;
 
 	RandomIntUnique(int min, int max, long seed) {
 		if (min >= max)
@@ -34,20 +34,20 @@ class RandomIntUnique {
 		rand = new Random(seed);
 		this.min = min;
 		this.max = max;
-		usedVals = new ObjectOpenHashSet<>();
+		usedVals = new IntOpenHashSet();
 	}
 
 	int next() {
 		if (usedVals.size() > 0.9 * (max - min))
 			throw new IllegalStateException();
 
-		Integer x;
+		int x;
 		do {
-			x = Integer.valueOf(min + rand.nextInt(max - min));
+			x = min + rand.nextInt(max - min);
 		} while (usedVals.contains(x));
 
 		usedVals.add(x);
 
-		return x.intValue();
+		return x;
 	}
 }
