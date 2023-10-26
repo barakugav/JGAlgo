@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.function.Supplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 
@@ -140,48 +141,33 @@ public interface MatchingAlgo {
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				final MatchingAlgo cardinalityAlgo = isBipartite ? new MatchingCardinalityBipartiteHopcroftKarp()
-						: new MatchingCardinalityGabow1976();
-				if (cardinality) {
-					return cardinalityAlgo;
+				Supplier<MatchingAlgo> cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;
+				Supplier<MatchingAlgo> cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;
+				Supplier<MatchingAlgo> weightedGeneralAlgo = MatchingWeightedBlossomV::new;
+				Supplier<MatchingAlgo> weightedBipartiteAlgo = weightedGeneralAlgo;
+
+				if (cardinality && isBipartite) {
+					return cardinalityBipartiteAlgo.get();
+
+				} else if (cardinality && !isBipartite) {
+					MatchingAlgo a = cardinalityGeneralAlgo.get();
+					MatchingAlgo b = cardinalityBipartiteAlgo.get();
+					return new Matchings.SuperImpl(a, b, a, b);
+
+				} else if (!cardinality && isBipartite) {
+					MatchingAlgo a = cardinalityBipartiteAlgo.get();
+					MatchingAlgo b = weightedBipartiteAlgo.get();
+					return new Matchings.SuperImpl(a, a, b, b);
+
+				} else if (!cardinality && !isBipartite) {
+					MatchingAlgo a = cardinalityGeneralAlgo.get();
+					MatchingAlgo b = cardinalityBipartiteAlgo.get();
+					MatchingAlgo c = weightedGeneralAlgo.get();
+					MatchingAlgo d = weightedBipartiteAlgo.get();
+					return new Matchings.SuperImpl(a, b, c, d);
+
 				} else {
-					final MatchingAlgo weightedAlgo = new MatchingWeightedBlossomV();
-					return new MatchingAlgo() {
-
-						@Override
-						public Matching computeMaximumCardinalityMatching(Graph g) {
-							return cardinalityAlgo.computeMaximumCardinalityMatching(g);
-						}
-
-						@Override
-						public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
-							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)
-									: weightedAlgo.computeMaximumWeightedMatching(g, w);
-						}
-
-						@Override
-						public Matching computeMinimumWeightedMatching(Graph g, WeightFunction w) {
-							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-							return isCardinality ? Matchings.MatchingImpl.emptyMatching(g.indexGraph())
-									: weightedAlgo.computeMinimumWeightedMatching(g, w);
-						}
-
-						@Override
-						public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
-							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)
-									: weightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
-						}
-
-						@Override
-						public Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w) {
-							boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-							return isCardinality ? cardinalityAlgo.computeMaximumCardinalityMatching(g)
-									: weightedAlgo.computeMinimumWeightedPerfectMatching(g, w);
-						}
-
-					};
+					throw new AssertionError();
 				}
 			}
 

@@ -20,9 +20,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -40,33 +38,16 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
-	private String bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-
 	/**
 	 * Create a new maximum matching object.
 	 */
 	MatchingCardinalityBipartiteHopcroftKarp() {}
 
 	/**
-	 * Set the key used to get the bipartiteness property of vertices.
-	 * <p>
-	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#getVerticesWeights(String)}. By default, the weights are searched using the key
-	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
-	 * different key.
-	 *
-	 * @param key an object key that will be used to get the bipartite vertices partition by
-	 *                {@code g.verticesWeight(key)}.
-	 */
-	public void setBipartiteVerticesWeightKey(String key) {
-		bipartiteVerticesWeightKey = key;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
-	 *                                      {@link #setBipartiteVerticesWeightKey(String)}.
+	 *                                      {@link BipartiteGraphs#VertexBiPartitionWeightKey}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
@@ -74,9 +55,9 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 
-		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		Assertions.Graphs.onlyBipartite(g, partition);
 
 		/* BFS */

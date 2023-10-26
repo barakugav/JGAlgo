@@ -21,7 +21,6 @@ import java.util.Random;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -67,7 +66,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.run((sn, tn, m) -> {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphsTestUtils.defaultGraphImpl(),
 					seedGen.nextSeed());
-			WeightsBool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
+			WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
 			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);

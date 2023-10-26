@@ -19,11 +19,9 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -43,7 +41,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  */
 class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
-	private String bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 
@@ -51,21 +48,6 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 * Create a new maximum weighted matching object.
 	 */
 	MatchingWeightedBipartiteHungarianMethod() {}
-
-	/**
-	 * Set the key used to get the bipartiteness property of vertices.
-	 * <p>
-	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#getVerticesWeights(String)}. By default, the weights are searched using the key
-	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
-	 * different key.
-	 *
-	 * @param key an object key that will be used to get the bipartite vertices partition by
-	 *                {@code g.verticesWeight(key)}.
-	 */
-	public void setBipartiteVerticesWeightKey(String key) {
-		bipartiteVerticesWeightKey = key;
-	}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -80,15 +62,15 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 * {@inheritDoc}
 	 *
 	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
-	 *                                      {@link #setBipartiteVerticesWeightKey(String)}.
+	 *                                      {@link BipartiteGraphs#VertexBiPartitionWeightKey}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(false);
 	}
 
@@ -102,9 +84,9 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
+		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(true);
 	}
 

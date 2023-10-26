@@ -17,6 +17,7 @@ package com.jgalgo.bench.util;
 
 import java.util.Random;
 import java.util.Set;
+import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -134,7 +135,7 @@ public class RandomGraphBuilder {
 			g = impl.get(directed);
 			for (int i = 0; i < n; i++)
 				vertices.add(g.addVertex());
-			partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
+			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 
 			IntIterator vit = vertices.iterator();
 			for (int u = 0; u < sn; u++)

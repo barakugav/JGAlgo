@@ -193,15 +193,4 @@ public interface Weights<E> {
 		}
 	}
 
-	/**
-	 * The default vertices weight key of the bipartite property.
-	 * <p>
-	 * A bipartite graph is a graph in which the vertices are partitioned into two sets V1,V2 and there are no edges
-	 * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an
-	 * input, and the partition V1,V2 is expected to be a vertex boolean weight keyed by
-	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
-	 * {@code setBipartiteVerticesWeightKey(String)} function.
-	 */
-	public static final String DefaultBipartiteWeightKey = "_bipartite_partition";
-
 }
