@@ -103,11 +103,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 				if (vPtr == null) {
 					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));
 					res.backtrack[v] = e;
-				} else {
-					if (distance < vPtr.key().doubleValue()) {
-						res.backtrack[v] = e;
-						heap.decreaseKey(vPtr, Double.valueOf(distance));
-					}
+				} else if (distance < vPtr.key().doubleValue()) {
+					heap.decreaseKey(vPtr, Double.valueOf(distance));
+					res.backtrack[v] = e;
 				}
 			}
 
@@ -145,11 +143,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 				if (vPtr == null) {
 					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));
 					res.backtrack[v] = e;
-				} else {
-					if (distance < vPtr.key().intValue()) {
-						res.backtrack[v] = e;
-						heap.decreaseKey(vPtr, Integer.valueOf(distance));
-					}
+				} else if (distance < vPtr.key().intValue()) {
+					heap.decreaseKey(vPtr, Integer.valueOf(distance));
+					res.backtrack[v] = e;
 				}
 			}
 

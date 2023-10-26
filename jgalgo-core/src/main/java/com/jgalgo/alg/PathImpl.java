@@ -235,6 +235,11 @@ class PathImpl implements Path {
 
 	}
 
+	@Override
+	public String toString() {
+		return edges().toString();
+	}
+
 	static Path pathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
 		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
 	}
@@ -306,6 +311,11 @@ class PathImpl implements Path {
 		@Override
 		public boolean isSimple() {
 			return path.isSimple();
+		}
+
+		@Override
+		public String toString() {
+			return edges().toString();
 		}
 	}
 
