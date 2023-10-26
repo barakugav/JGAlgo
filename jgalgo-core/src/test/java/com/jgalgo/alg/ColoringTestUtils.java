@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
@@ -68,6 +69,8 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void validateColoring(Graph g, VertexPartition coloring) {
+		assertTrue(ColoringAlgo.isColoring(g, coloring::vertexBlock));
+
 		int n = g.vertices().size();
 		if (n == 0)
 			return;

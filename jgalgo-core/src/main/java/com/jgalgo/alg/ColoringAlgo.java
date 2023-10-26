@@ -16,8 +16,12 @@
 
 package com.jgalgo.alg;
 
+import java.util.BitSet;
 import java.util.Random;
+import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -70,6 +74,52 @@ public interface ColoringAlgo {
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
 	VertexPartition computeColoring(Graph g);
+
+	/**
+	 * Check whether a given mapping is a valid coloring of a graph.
+	 * <p>
+	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
+	 * the color of \(u\) is different than the color of \(v\).
+	 *
+	 * @param  g       a graph
+	 * @param  mapping a mapping from the vertices of {@code g} to colors in range \([0, \textit{colorsNum})\)
+	 * @return         {@code true} if {@code mapping} is a valid coloring of {@code g}, {@code false} otherwise
+	 */
+	static boolean isColoring(Graph g, IntUnaryOperator mapping) {
+		final int n = g.vertices().size();
+		IndexGraph ig;
+		int[] vertexToColor = new int[n];
+		int maxColor = -1;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			for (int v = 0; v < n; v++) {
+				vertexToColor[v] = mapping.applyAsInt(v);
+				maxColor = Math.max(maxColor, vertexToColor[v]);
+			}
+		} else {
+			ig = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			for (int v = 0; v < n; v++) {
+				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));
+				maxColor = Math.max(maxColor, vertexToColor[v]);
+			}
+		}
+		final int colorNum = maxColor + 1;
+		if (maxColor > n)
+			return false;
+		BitSet seenColors = new BitSet(colorNum);
+		for (int b : vertexToColor) {
+			if (b < 0)
+				return false;
+			seenColors.set(b);
+		}
+		if (seenColors.nextClearBit(0) != colorNum)
+			return false;
+		for (int m = ig.edges().size(), e = 0; e < m; e++)
+			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])
+				return false;
+		return true;
+	}
 
 	/**
 	 * Create a new coloring algorithm object.
