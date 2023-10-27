@@ -88,12 +88,17 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 				return i;
 			return arr[indexOf(n, i, j)];
 		}
+
+		@Override
+		public long sizeInBytes() {
+			return 1 + 8 + arr.length;
+		}
 	}
 
 	private static class DSu16 implements RMQStatic.DataStructure {
 
-		private final short[] arr;
 		private final short n;
+		private final short[] arr;
 
 		private static final int LIMIT = 1 << ((Short.SIZE - 1) / 2);
 
@@ -119,12 +124,17 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 				return i;
 			return arr[indexOf(n, i, j)];
 		}
+
+		@Override
+		public long sizeInBytes() {
+			return 2 + 8 + 2 * arr.length;
+		}
 	}
 
 	private static class DSu32 implements RMQStatic.DataStructure {
 
-		private final int[] arr;
 		private final int n;
+		private final int[] arr;
 
 		private static final int LIMIT = 1 << ((Integer.SIZE - 1) / 2);
 
@@ -149,6 +159,11 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 			if (i == j)
 				return i;
 			return arr[indexOf(n, i, j)];
+		}
+
+		@Override
+		public long sizeInBytes() {
+			return 4 + 8 + 4 * arr.length;
 		}
 	}
 

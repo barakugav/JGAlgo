@@ -87,6 +87,16 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			int idx1 = arr[k - 1][j - kSize];
 			return c.compare(idx0, idx1) < 0 ? idx0 : idx1;
 		}
+
+		@Override
+		public long sizeInBytes() {
+			int len;
+			long s = 0;
+			s += 4; // n
+			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 4 * arr[0].length));
+			s += 8; // c
+			return s;
+		}
 	}
 
 	private static class DSu16 implements RMQStatic.DataStructure {
@@ -130,6 +140,16 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			int idx1 = arr[k - 1][j - kSize];
 			return c.compare(idx0, idx1) < 0 ? idx0 : idx1;
 		}
+
+		@Override
+		public long sizeInBytes() {
+			int len;
+			long s = 0;
+			s += 2; // n
+			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 2 * arr[0].length));
+			s += 8; // c
+			return s;
+		}
 	}
 
 	private static class DSu08 implements RMQStatic.DataStructure {
@@ -172,6 +192,16 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			int idx0 = arr[k - 1][i];
 			int idx1 = arr[k - 1][j - kSize];
 			return c.compare(idx0, idx1) < 0 ? idx0 : idx1;
+		}
+
+		@Override
+		public long sizeInBytes() {
+			int len;
+			long s = 0;
+			s += 1; // n
+			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 1 * arr[0].length));
+			s += 8; // c
+			return s;
 		}
 	}
 

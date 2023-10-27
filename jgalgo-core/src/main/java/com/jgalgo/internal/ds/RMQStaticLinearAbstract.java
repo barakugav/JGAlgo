@@ -20,6 +20,8 @@ import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 
@@ -160,7 +162,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		private final byte[][] blocksLeftMinimum;
 		private final RMQStatic.DataStructure xlogxTableDS;
 		private final RMQStatic.DataStructure[] interBlocksDs;
-		private final RMQStaticComparator cmpOrig;
+		private final RMQStaticComparator cmp;
 
 		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {
 			n = ds.n;
@@ -169,7 +171,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			blocksLeftMinimum = ds.blocksLeftMinimum;
 			xlogxTableDS = ds.xlogxTableDS;
 			interBlocksDs = ds.interBlocksDs;
-			cmpOrig = ds.cmpOrig;
+			cmp = ds.cmpOrig;
 		}
 
 		@Override
@@ -187,12 +189,12 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			if (blk0 != blk1) {
 				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blocksRightMinimum[blk0][innerI]);
 				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blocksLeftMinimum[blk1][innerJ - 1]);
-				int min = cmpOrig.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
+				int min = cmp.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
 
 				if (blk0 + 1 != blk1) {
 					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);
 					int middleMin = middleBlk * blockSize + blocksRightMinimum[middleBlk][0];
-					min = cmpOrig.compare(min, middleMin) < 0 ? min : middleMin;
+					min = cmp.compare(min, middleMin) < 0 ? min : middleMin;
 				}
 
 				return min;
@@ -204,6 +206,24 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		int calcRMQInnerBlock(int block, int i, int j) {
 			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
+		}
+
+		@Override
+		public long sizeInBytes() {
+			int len;
+			long s = 0;
+			s += 4; // n
+			s += 4; // blockSize
+			s += 8 + ((len = blocksRightMinimum.length) == 0 ? 0 : len * (8 + blocksRightMinimum[0].length));
+			s += 8 + ((len = blocksLeftMinimum.length) == 0 ? 0 : len * (8 + blocksLeftMinimum[0].length));
+			s += 8 + xlogxTableDS.sizeInBytes();
+			s += 8 * interBlocksDs.length;
+			ReferenceSet<RMQStatic.DataStructure> inBlocks = new ReferenceOpenHashSet<>();
+			for (RMQStatic.DataStructure ds : interBlocksDs)
+				if (inBlocks.add(ds))
+					s += ds.sizeInBytes();
+			s += 8; // cmp
+			return s;
 		}
 
 	}

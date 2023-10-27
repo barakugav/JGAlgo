@@ -61,6 +61,13 @@ public interface RMQStatic {
 		 */
 		int findMinimumInRange(int i, int j);
 
+		/**
+		 * Get the size of the data structure in bytes.
+		 *
+		 * @return the size of the data structure in bytes
+		 */
+		long sizeInBytes();
+
 	}
 
 	/**
