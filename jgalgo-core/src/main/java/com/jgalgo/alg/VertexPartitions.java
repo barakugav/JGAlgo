@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 class VertexPartitions {
 
 	static class ImplIndex implements VertexPartition {
-		private final IndexGraph g;
+		final IndexGraph g;
 		private final int blockNum;
 		private final int[] vertexToBlock;
 		private IntSet[] blockVertices;
@@ -269,9 +269,9 @@ class VertexPartitions {
 
 	static class PartitionFromIndexPartition implements VertexPartition {
 
-		private final VertexPartition res;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		final VertexPartition res;
+		final IndexIdMap viMap;
+		final IndexIdMap eiMap;
 
 		PartitionFromIndexPartition(VertexPartition res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
