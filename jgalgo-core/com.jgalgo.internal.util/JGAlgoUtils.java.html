@@ -761,16 +761,16 @@ public class JGAlgoUtils {
 
 	}
 
-	public static long longCompose(int low, int high) {
+	public static long longPack(int low, int high) {
 <span class="fc" id="L765">		return ((high &amp; 0xffffffffL) &lt;&lt; 32) | ((low &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
-	public static int long2low(long endpoints) {
-<span class="fc" id="L769">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
+	public static int long2low(long val) {
+<span class="fc" id="L769">		return (int) ((val &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
-	public static int long2high(long endpoints) {
-<span class="fc" id="L773">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
+	public static int long2high(long val) {
+<span class="fc" id="L773">		return (int) ((val &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 }

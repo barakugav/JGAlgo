@@ -209,7 +209,7 @@ class ArraysUtils {
 <span class="fc bfc" id="L209" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
 <span class="fc" id="L210">				ObjectArrays.swap(a, i, insertIdx++);</span>
 <span class="fc" id="L211">		final int firstGreater = insertIdx;</span>
-<span class="fc" id="L212">		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);</span>
+<span class="fc" id="L212">		return JGAlgoUtils.longPack(lastSmaller, firstGreater);</span>
 	}
 
 	private static long pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
@@ -223,7 +223,7 @@ class ArraysUtils {
 <span class="fc bfc" id="L223" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
 <span class="fc" id="L224">				IntArrays.swap(a, i, insertIdx++);</span>
 <span class="fc" id="L225">		final int firstGreater = insertIdx;</span>
-<span class="fc" id="L226">		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);</span>
+<span class="fc" id="L226">		return JGAlgoUtils.longPack(lastSmaller, firstGreater);</span>
 	}
 
 	private static &lt;E&gt; int calcPivot(E[] a, int from, int to, Comparator&lt;? super E&gt; c) {

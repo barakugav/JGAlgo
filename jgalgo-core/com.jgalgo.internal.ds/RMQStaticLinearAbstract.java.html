@@ -16,14 +16,15 @@
 
 package com.jgalgo.internal.ds;
 
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import java.util.BitSet;
+import it.unimi.dsi.fastutil.bytes.Byte2IntMap;
+import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2IntMap;
+import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 
-abstract class RMQStaticLinearAbstract implements RMQStatic {
+<span class="fc" id="L27">abstract class RMQStaticLinearAbstract implements RMQStatic {</span>
 
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block calculate the minimum in the block
@@ -38,105 +39,134 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-<span class="fc" id="L41">	RMQStaticLinearAbstract() {}</span>
+	abstract class PreProcessor extends DsBase {
 
-	abstract class DS implements RMQStatic.DataStructure {
-
-		final RMQStaticComparator cmpOrig;
 		final RMQStaticComparator cmpPadded;
-		final int n;
-		final byte blockSize;
 		final int blockNum;
 
-		private final byte[][] blocksRightMinimum;
-		private final byte[][] blocksLeftMinimum;
-		private final RMQStatic.DataStructure xlogxTableDS;
-
-		final RMQStatic.DataStructure[] interBlocksDs;
 		private final RMQStatic outerRMQ;
-		private final RMQStatic innerRMQ;
 
-<span class="fc" id="L59">		DS(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L60">			this.n = n;</span>
-<span class="fc" id="L61">			blockSize = getBlockSize(n);</span>
-<span class="fc" id="L62">			blockNum = (int) Math.ceil((double) n / blockSize);</span>
-<span class="fc" id="L63">			this.cmpOrig = c;</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			this.cmpPadded = n &lt; blockNum * blockSize ? new PaddedComparator(n, c) : c;</span>
-<span class="fc" id="L65">			blocksRightMinimum = new byte[blockNum][blockSize - 1];</span>
-<span class="fc" id="L66">			blocksLeftMinimum = new byte[blockNum][blockSize - 1];</span>
+<span class="fc" id="L49">		PreProcessor(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L50">			this.n = n;</span>
+<span class="fc" id="L51">			blockSize = getBlockSize(n);</span>
+<span class="fc" id="L52">			blockNum = (int) Math.ceil((double) n / blockSize);</span>
+<span class="fc" id="L53">			this.cmpOrig = c;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			this.cmpPadded = n &lt; blockNum * blockSize ? new PaddedComparator(n, c) : c;</span>
+<span class="fc" id="L55">			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];</span>
 
-<span class="fc" id="L68">			outerRMQ = new RMQStaticPowerOf2Table();</span>
-			// TODO probably better to use a simple lookup table, need to measure
-<span class="fc" id="L70">			innerRMQ = new RMQStaticPowerOf2Table();</span>
+<span class="fc" id="L57">			outerRMQ = new RMQStaticPowerOf2Table();</span>
 
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">				c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
-<span class="fc" id="L74">				int base = b * blockSize;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
+<span class="fc" id="L61">				int base = b * blockSize;</span>
 
-<span class="fc" id="L76">				byte min = 0;</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				for (byte i = 0; i &lt; blockSize - 1; i++) {</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
-<span class="fc" id="L79">						min = (byte) (i + 1);</span>
-<span class="fc" id="L80">					blocksLeftMinimum[b][i] = min;</span>
+<span class="fc" id="L63">				byte min = 0;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (byte i = 0; i &lt; blockSize - 1; i++) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
+<span class="fc" id="L66">						min = (byte) (i + 1);</span>
+<span class="fc" id="L67">					blockLeftMinimum(b, i, min);</span>
 				}
 
-<span class="fc" id="L83">				min = (byte) (blockSize - 1);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">				for (byte i = (byte) (blockSize - 2); i &gt;= 0; i--) {</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
-<span class="fc" id="L86">						min = i;</span>
-<span class="fc" id="L87">					blocksRightMinimum[b][i] = min;</span>
+<span class="fc" id="L70">				min = (byte) (blockSize - 1);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (byte i = (byte) (blockSize - 2); i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
+<span class="fc" id="L73">						min = i;</span>
+<span class="fc" id="L74">					blockRightMinimum(b, i, min);</span>
 				}
 			}
 
-<span class="fc" id="L91">			xlogxTableDS =</span>
-<span class="fc" id="L92">					outerRMQ.preProcessSequence((i, j) -&gt; cmpOrig.compare(i * blockSize + blocksRightMinimum[i][0],</span>
-							j * blockSize + blocksRightMinimum[j][0]), blockNum);
+<span class="fc" id="L78">			xlogxTableDS = outerRMQ.preProcessSequence(</span>
+<span class="fc" id="L79">					(i, j) -&gt; cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),</span>
+					blockNum);
 
-<span class="fc" id="L95">			interBlocksDs = new RMQStatic.DataStructure[blockNum];</span>
-<span class="fc" id="L96">		}</span>
+<span class="fc" id="L82">		}</span>
 
 		void preProcessInnerBlocks() {
-<span class="fc" id="L99">			int keySize = getBlockKeySize();</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (keySize &lt; Byte.SIZE) {</span>
-<span class="fc" id="L101">				Byte2ObjectMap&lt;RMQStatic.DataStructure&gt; tables = new Byte2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L103">					byte key = (byte) calcBlockKey(b);</span>
-
-<span class="fc" id="L105">					interBlocksDs[b] = tables.computeIfAbsent(key, k -&gt; {</span>
-<span class="fc" id="L106">						byte[] demoBlock = calcDemoBlock(k &amp; 0xff);</span>
-<span class="fc" id="L107">						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),</span>
-								demoBlock.length);
-					});
+<span class="fc" id="L85">			int keySize = getBlockKeySize();</span>
+<span class="fc" id="L86">			var innerBlocksIdx = new Object() {</span>
+<span class="fc" id="L87">				int val = 0;</span>
+			};
+<span class="fc" id="L89">			blockToInnerIdx = new int[blockNum];</span>
+<span class="fc" id="L90">			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (keySize &lt; Byte.SIZE) {</span>
+<span class="fc" id="L92">				Byte2IntMap tables = new Byte2IntOpenHashMap();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L94">					byte key = (byte) calcBlockKey(b);</span>
+<span class="fc" id="L95">					blockToInnerIdx[b] = key;</span>
+<span class="fc" id="L96">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
+				}
+<span class="fc" id="L98">				final int innerBlockNum = tables.size();</span>
+<span class="fc" id="L99">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="fc" id="L100">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L102">					byte key = (byte) blockToInnerIdx[b];</span>
+<span class="fc" id="L103">					int innerIdx = tables.get(key);</span>
+<span class="fc" id="L104">					blockToInnerIdx[b] = innerIdx;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (!builtInnerBlocks.get(innerIdx)) {</span>
+<span class="fc" id="L106">						byte[] demoBlock = calcDemoBlock(key &amp; 0xff);</span>
+<span class="fc" id="L107">						buildInnerBlock(innerIdx, demoBlock);</span>
+<span class="fc" id="L108">						builtInnerBlocks.set(innerIdx);</span>
+					}
 				}
 <span class="fc" id="L111">				tables.clear();</span>
 
 <span class="pc bpc" id="L113" title="1 of 2 branches missed.">			} else if (keySize &lt; Short.SIZE) {</span>
-<span class="fc" id="L114">				Short2ObjectMap&lt;RMQStatic.DataStructure&gt; tables = new Short2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L114">				Short2IntMap tables = new Short2IntOpenHashMap();</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
 <span class="fc" id="L116">					short key = (short) calcBlockKey(b);</span>
-
-<span class="fc" id="L118">					interBlocksDs[b] = tables.computeIfAbsent(key, k -&gt; {</span>
-<span class="fc" id="L119">						byte[] demoBlock = calcDemoBlock(k &amp; 0xffff);</span>
-<span class="fc" id="L120">						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),</span>
-								demoBlock.length);
-					});
+<span class="fc" id="L117">					blockToInnerIdx[b] = key;</span>
+<span class="fc" id="L118">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
 				}
-<span class="fc" id="L124">				tables.clear();</span>
-
-<span class="fc" id="L126">			} else {</span>
-<span class="nc" id="L127">				Int2ObjectMap&lt;RMQStatic.DataStructure&gt; tables = new Int2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="nc" id="L129">					int key = calcBlockKey(b);</span>
-
-<span class="nc" id="L131">					interBlocksDs[b] = tables.computeIfAbsent(key, k -&gt; {</span>
-<span class="nc" id="L132">						byte[] demoBlock = calcDemoBlock(k);</span>
-<span class="nc" id="L133">						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),</span>
-								demoBlock.length);
-					});
+<span class="fc" id="L120">				final int innerBlockNum = tables.size();</span>
+<span class="fc" id="L121">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="fc" id="L122">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L124">					short key = (short) blockToInnerIdx[b];</span>
+<span class="fc" id="L125">					int innerIdx = tables.get(key);</span>
+<span class="fc" id="L126">					blockToInnerIdx[b] = innerIdx;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					if (!builtInnerBlocks.get(innerIdx)) {</span>
+<span class="fc" id="L128">						byte[] demoBlock = calcDemoBlock(key &amp; 0xffff);</span>
+<span class="fc" id="L129">						buildInnerBlock(innerIdx, demoBlock);</span>
+<span class="fc" id="L130">						builtInnerBlocks.set(innerIdx);</span>
+					}
 				}
-<span class="nc" id="L137">				tables.clear();</span>
+<span class="fc" id="L133">				tables.clear();</span>
+
+<span class="fc" id="L135">			} else {</span>
+<span class="nc" id="L136">				Int2IntMap tables = new Int2IntOpenHashMap();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="nc" id="L138">					int key = calcBlockKey(b);</span>
+<span class="nc" id="L139">					blockToInnerIdx[b] = key;</span>
+<span class="nc" id="L140">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
+				}
+<span class="nc" id="L142">				final int innerBlockNum = tables.size();</span>
+<span class="nc" id="L143">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="nc" id="L144">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="nc" id="L146">					int key = blockToInnerIdx[b];</span>
+<span class="nc" id="L147">					int innerIdx = tables.get(key);</span>
+<span class="nc" id="L148">					blockToInnerIdx[b] = innerIdx;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">					if (!builtInnerBlocks.get(innerIdx)) {</span>
+<span class="nc" id="L150">						byte[] demoBlock = calcDemoBlock(key);</span>
+<span class="nc" id="L151">						buildInnerBlock(innerIdx, demoBlock);</span>
+<span class="nc" id="L152">						builtInnerBlocks.set(innerIdx);</span>
+					}
+				}
+<span class="nc" id="L155">				tables.clear();</span>
 			}
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L157">		}</span>
+
+		private void buildInnerBlock(int innerBlock, byte[] demoBlock) {
+<span class="fc" id="L160">			byte[] arr = innerBlocks;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 1; i++)</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				arr[innerBlockIndex(innerBlock, i, i + 1)] = demoBlock[i] &lt; demoBlock[i + 1] ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 2; i++) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; blockSize; j++) {</span>
+<span class="fc" id="L165">					byte m = arr[innerBlockIndex(innerBlock, i, j - 1)];</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">					arr[innerBlockIndex(innerBlock, i, j)] = demoBlock[m] &lt; demoBlock[j] ? m : j;</span>
+				}
+			}
+<span class="fc" id="L169">		}</span>
 
 		abstract byte getBlockSize(int n);
 
@@ -146,36 +176,116 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		abstract byte[] calcDemoBlock(int key);
 
-		@Override
-		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L151" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L152">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L154">				return i;</span>
-
-<span class="fc" id="L156">			int blk0 = i / blockSize;</span>
-<span class="fc" id="L157">			int blk1 = j / blockSize;</span>
-<span class="fc" id="L158">			int innerI = i % blockSize;</span>
-<span class="fc" id="L159">			int innerJ = j % blockSize;</span>
-
-<span class="fc bfc" id="L161" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blocksRightMinimum[blk0][innerI]);</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blocksLeftMinimum[blk1][innerJ - 1]);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">				int min = cmpOrig.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
-
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
-<span class="fc" id="L167">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
-<span class="fc" id="L168">					int middleMin = middleBlk * blockSize + blocksRightMinimum[middleBlk][0];</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">					min = cmpOrig.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
-				}
-
-<span class="fc" id="L172">				return min;</span>
-			} else {
-<span class="fc" id="L174">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
-			}
+		RMQStatic.DataStructure build() {
+<span class="fc" id="L180">			return new DataStructure(this);</span>
 		}
 
-		abstract int calcRMQInnerBlock(int block, int i, int j);
+	}
+
+	private static class DataStructure extends DsBase implements RMQStatic.DataStructure {
+
+<span class="fc" id="L187">		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {</span>
+<span class="fc" id="L188">			n = ds.n;</span>
+<span class="fc" id="L189">			blockSize = ds.blockSize;</span>
+<span class="fc" id="L190">			blocksRightLeftMinimum = ds.blocksRightLeftMinimum;</span>
+<span class="fc" id="L191">			xlogxTableDS = ds.xlogxTableDS;</span>
+<span class="fc" id="L192">			blockToInnerIdx = ds.blockToInnerIdx;</span>
+<span class="fc" id="L193">			innerBlocks = ds.innerBlocks;</span>
+<span class="fc" id="L194">			cmpOrig = ds.cmpOrig;</span>
+<span class="fc" id="L195">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="pc bpc" id="L199" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L200">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L202">				return i;</span>
+
+<span class="fc" id="L204">			int blk0 = i / blockSize;</span>
+<span class="fc" id="L205">			int blk1 = j / blockSize;</span>
+<span class="fc" id="L206">			int innerI = i % blockSize;</span>
+<span class="fc" id="L207">			int innerJ = j % blockSize;</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blockRightMinimum(blk0, innerI));</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blockLeftMinimum(blk1, innerJ - 1));</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">				int min = cmpOrig.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
+<span class="fc" id="L215">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
+<span class="fc" id="L216">					int middleMin = middleBlk * blockSize + blockMinimum(middleBlk);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">					min = cmpOrig.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
+				}
+
+<span class="fc" id="L220">				return min;</span>
+			} else {
+<span class="fc" id="L222">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
+			}
+
+		}
+
+		int calcRMQInnerBlock(int block, int i, int j) {
+<span class="fc" id="L228">			int r = block * blockSize;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc" id="L230">				return r + i;</span>
+<span class="fc" id="L231">			int innerBlock = blockToInnerIdx[block];</span>
+<span class="fc" id="L232">			return r + innerBlocks[innerBlockIndex(innerBlock, i, j)];</span>
+		}
+
+		@Override
+		public long sizeInBytes() {
+<span class="nc" id="L237">			long s = 0;</span>
+<span class="nc" id="L238">			s += 4; // n</span>
+<span class="nc" id="L239">			s += 4; // blockSize</span>
+<span class="nc" id="L240">			s += 8 + blocksRightLeftMinimum.length;</span>
+<span class="nc" id="L241">			s += 8 + xlogxTableDS.sizeInBytes();</span>
+<span class="nc" id="L242">			s += 8 + 4 * blockToInnerIdx.length;</span>
+<span class="nc" id="L243">			s += 8 + innerBlocks.length;</span>
+<span class="nc" id="L244">			s += 8; // cmp</span>
+<span class="nc" id="L245">			return s;</span>
+		}
+
+	}
+
+	private static class DsBase {
+
+		int n;
+		int blockSize;
+		byte[] blocksRightLeftMinimum;
+		RMQStatic.DataStructure xlogxTableDS;
+		int[] blockToInnerIdx;
+		byte[] innerBlocks;
+		RMQStaticComparator cmpOrig;
+
+		int blockMinimum(int block) {
+<span class="fc" id="L261">			return blockRightMinimum(block, 0);</span>
+		}
+
+		int blockRightMinimum(int block, int i) {
+<span class="fc" id="L265">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0];</span>
+		}
+
+		int blockLeftMinimum(int block, int i) {
+<span class="fc" id="L269">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1];</span>
+		}
+
+		void blockRightMinimum(int block, int i, byte val) {
+<span class="fc" id="L273">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0] = val;</span>
+<span class="fc" id="L274">		}</span>
+
+		void blockLeftMinimum(int block, int i, byte val) {
+<span class="fc" id="L277">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1] = val;</span>
+<span class="fc" id="L278">		}</span>
+
+		int innerBlockIndex(int innerBlock, int i, int j) {
+<span class="fc" id="L281">			int innerIdx = (2 * blockSize - i - 1) * i / 2 + j - i - 1;</span>
+<span class="fc" id="L282">			return innerBlock * innerBlockAllocSize() + innerIdx;</span>
+		}
+
+		int innerBlockAllocSize() {
+<span class="fc" id="L286">			return blockSize * (blockSize - 1) / 2;</span>
+		}
+
 	}
 
 	private static class PaddedComparator implements RMQStaticComparator {
@@ -183,16 +293,16 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		final int n;
 		final RMQStaticComparator c;
 
-<span class="fc" id="L186">		PaddedComparator(int n, RMQStaticComparator c) {</span>
-<span class="fc" id="L187">			this.n = n;</span>
-<span class="fc" id="L188">			this.c = c;</span>
-<span class="fc" id="L189">		}</span>
+<span class="fc" id="L296">		PaddedComparator(int n, RMQStaticComparator c) {</span>
+<span class="fc" id="L297">			this.n = n;</span>
+<span class="fc" id="L298">			this.c = c;</span>
+<span class="fc" id="L299">		}</span>
 
 		@Override
 		public int compare(int i, int j) {
-<span class="fc bfc" id="L193" title="All 4 branches covered.">			if (i &lt; n &amp;&amp; j &lt; n)</span>
-<span class="fc" id="L194">				return c.compare(i, j);</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			return i &gt;= n ? 1 : -1;</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">			if (i &lt; n &amp;&amp; j &lt; n)</span>
+<span class="fc" id="L304">				return c.compare(i, j);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">			return i &gt;= n ? 1 : -1;</span>
 		}
 
 	}

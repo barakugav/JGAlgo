@@ -80,8 +80,8 @@ public interface RMQStaticComparator {
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
 	 */
 	static RMQStaticComparator ofByteArray(byte[] arr) {
-<span class="fc" id="L83">		Objects.requireNonNull(arr);</span>
-<span class="fc" id="L84">		return (i, j) -&gt; Byte.compare(arr[i], arr[j]);</span>
+<span class="nc" id="L83">		Objects.requireNonNull(arr);</span>
+<span class="nc" id="L84">		return (i, j) -&gt; Byte.compare(arr[i], arr[j]);</span>
 	}
 
 	/**

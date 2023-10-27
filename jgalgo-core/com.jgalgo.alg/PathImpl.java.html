@@ -235,35 +235,40 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	}
 
+	@Override
+	public String toString() {
+<span class="nc" id="L240">		return edges().toString();</span>
+	}
+
 	static Path pathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
-<span class="fc bfc" id="L239" title="All 2 branches covered.">		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);</span>
 	}
 
 	static Path findPath(IndexGraph g, final int source, final int target) {
-<span class="fc bfc" id="L243" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L244">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L245">		int n = g.vertices().size();</span>
-<span class="fc" id="L246">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L247">		Arrays.fill(backtrack, -1);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L249">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L250">		int n = g.vertices().size();</span>
+<span class="fc" id="L251">		int[] backtrack = new int[n];</span>
+<span class="fc" id="L252">		Arrays.fill(backtrack, -1);</span>
 
-<span class="fc" id="L249">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">		for (BfsIter it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {</span>
-<span class="fc" id="L251">			int p = it.nextInt();</span>
-<span class="fc" id="L252">			backtrack[p] = it.lastEdge();</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			if (p == source)</span>
-<span class="fc" id="L254">				break;</span>
-<span class="fc" id="L255">		}</span>
+<span class="fc" id="L254">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">		for (BfsIter it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {</span>
+<span class="fc" id="L256">			int p = it.nextInt();</span>
+<span class="fc" id="L257">			backtrack[p] = it.lastEdge();</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			if (p == source)</span>
+<span class="fc" id="L259">				break;</span>
+<span class="fc" id="L260">		}</span>
 
-<span class="fc bfc" id="L257" title="All 2 branches covered.">		if (backtrack[source] == -1)</span>
-<span class="fc" id="L258">			return null;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">		if (backtrack[source] == -1)</span>
+<span class="fc" id="L263">			return null;</span>
 
-<span class="fc bfc" id="L260" title="All 2 branches covered.">		for (int p = source; p != target;) {</span>
-<span class="fc" id="L261">			int e = backtrack[p];</span>
-<span class="fc" id="L262">			path.add(e);</span>
-<span class="fc" id="L263">			p = g.edgeEndpoint(e, p);</span>
-<span class="fc" id="L264">		}</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">		for (int p = source; p != target;) {</span>
+<span class="fc" id="L266">			int e = backtrack[p];</span>
+<span class="fc" id="L267">			path.add(e);</span>
+<span class="fc" id="L268">			p = g.edgeEndpoint(e, p);</span>
+<span class="fc" id="L269">		}</span>
 
-<span class="fc" id="L266">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L271">		return new PathImpl(g, source, target, path);</span>
 	}
 
 	private static class PathFromIndexPath implements Path {
@@ -272,40 +277,45 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IndexIdMap viMap;
 		private final IndexIdMap eiMap;
 
-<span class="fc" id="L275">		PathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L276">			this.path = Objects.requireNonNull(path);</span>
-<span class="fc" id="L277">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L278">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L279">		}</span>
+<span class="fc" id="L280">		PathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L281">			this.path = Objects.requireNonNull(path);</span>
+<span class="fc" id="L282">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L283">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L284">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L283">			return viMap.indexToId(path.source());</span>
+<span class="fc" id="L288">			return viMap.indexToId(path.source());</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L288">			return viMap.indexToId(path.target());</span>
+<span class="fc" id="L293">			return viMap.indexToId(path.target());</span>
 		}
 
 		@Override
 		public EdgeIter edgeIter() {
-<span class="fc" id="L293">			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);</span>
+<span class="fc" id="L298">			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);</span>
 		}
 
 		@Override
 		public IntList edges() {
-<span class="fc" id="L298">			return IndexIdMaps.indexToIdList(path.edges(), eiMap);</span>
+<span class="fc" id="L303">			return IndexIdMaps.indexToIdList(path.edges(), eiMap);</span>
 		}
 
 		@Override
 		public IntList vertices() {
-<span class="fc" id="L303">			return IndexIdMaps.indexToIdList(path.vertices(), viMap);</span>
+<span class="fc" id="L308">			return IndexIdMaps.indexToIdList(path.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isSimple() {
-<span class="fc" id="L308">			return path.isSimple();</span>
+<span class="fc" id="L313">			return path.isSimple();</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="fc" id="L318">			return edges().toString();</span>
 		}
 	}
 

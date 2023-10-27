@@ -34,6 +34,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.Matching;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.bench.util.BenchUtils;
@@ -42,7 +43,6 @@ import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -347,7 +347,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L347">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L348" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L349">				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());</span>
-<span class="fc" id="L350">				WeightsBool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);</span>
+<span class="fc" id="L350">				WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
 
 				MatchingAlgo cardinalityAlgo =
 <span class="fc" id="L353">						MatchingAlgo.newBuilder().setCardinality(true).setBipartite(true).build();</span>

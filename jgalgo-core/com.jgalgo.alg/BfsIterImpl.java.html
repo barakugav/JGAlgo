@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 			do {
 <span class="fc" id="L51">				int source = sources.nextInt();</span>
 <span class="fc" id="L52">				visited.set(source);</span>
-<span class="fc" id="L53">				queue.enqueue(JGAlgoUtils.longCompose(source, -1));</span>
+<span class="fc" id="L53">				queue.enqueue(JGAlgoUtils.longPack(source, -1));</span>
 <span class="pc bpc" id="L54" title="1 of 2 branches missed.">				if (firstVInLayer == -1)</span>
 <span class="fc" id="L55">					firstVInLayer = source;</span>
 <span class="pc bpc" id="L56" title="1 of 2 branches missed.">			} while (sources.hasNext());</span>
@@ -112,7 +112,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="fc bfc" id="L112" title="All 2 branches covered.">				if (visited.get(v))</span>
 <span class="fc" id="L113">					continue;</span>
 <span class="fc" id="L114">				visited.set(v);</span>
-<span class="fc" id="L115">				queue.enqueue(JGAlgoUtils.longCompose(v, e));</span>
+<span class="fc" id="L115">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
 <span class="fc" id="L117">					firstVInLayer = v;</span>
 <span class="fc" id="L118">			}</span>
@@ -148,7 +148,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="fc bfc" id="L148" title="All 2 branches covered.">				if (visited.get(u))</span>
 <span class="fc" id="L149">					continue;</span>
 <span class="fc" id="L150">				visited.set(u);</span>
-<span class="fc" id="L151">				queue.enqueue(JGAlgoUtils.longCompose(u, e));</span>
+<span class="fc" id="L151">				queue.enqueue(JGAlgoUtils.longPack(u, e));</span>
 <span class="fc bfc" id="L152" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
 <span class="fc" id="L153">					firstVInLayer = u;</span>
 <span class="fc" id="L154">			}</span>

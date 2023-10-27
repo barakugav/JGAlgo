@@ -99,8 +99,8 @@ public interface VertexCover {
 <span class="fc" id="L99">			ig = g.indexGraph();</span>
 <span class="fc" id="L100">			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L102">		final int m = ig.edges().size();</span>
-<span class="fc" id="L103">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L102">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L103">		final int m = ig.edges().size();</span>
 <span class="fc" id="L104">		BitSet visited = new BitSet(n);</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int v : vertices) {</span>
 <span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>

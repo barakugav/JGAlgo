@@ -47,14 +47,14 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 <span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L48">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L49">		Objects.requireNonNull(c);</span>
-<span class="fc" id="L50">		return new DS(c, n);</span>
+<span class="fc" id="L50">		return new PreProcessor(c, n).build();</span>
 	}
 
-	private class DS extends RMQStaticLinearAbstract.DS {
+	private class PreProcessor extends RMQStaticLinearAbstract.PreProcessor {
 
 		private final byte[] tempNodesArray;
 
-<span class="fc" id="L57">		DS(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L57">		PreProcessor(RMQStaticComparator c, int n) {</span>
 <span class="fc" id="L58">			super(c, n);</span>
 <span class="fc" id="L59">			tempNodesArray = new byte[blockSize];</span>
 <span class="fc" id="L60">			preProcessInnerBlocks();</span>
@@ -117,11 +117,6 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 			}
 
 <span class="fc" id="L119">			return demoBlock;</span>
-		}
-
-		@Override
-		int calcRMQInnerBlock(int block, int i, int j) {
-<span class="fc" id="L124">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
 		}
 
 	}

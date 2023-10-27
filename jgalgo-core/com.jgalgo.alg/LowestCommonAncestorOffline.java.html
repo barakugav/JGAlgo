@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LowestCommonAncestorOffline.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">LowestCommonAncestorOffline.java</span></div><h1>LowestCommonAncestorOffline.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+
+/**
+ * An algorithm for computing the lowest common ancestor (LCA) of two vertices in a tree, offline.
+ * &lt;p&gt;
+ * Given a rooted tree, the lowest common ancestor (LCA) of two vertices {@code u} and {@code v} is the lowest vertex
+ * (farthest to root) that has both {@code u} and {@code v} as descendants. The offline version of this problem is given
+ * a tree and a set of pairs of vertices, find the LCA of each pair. There are also the
+ * {@linkplain LowestCommonAncestorStatic static} and {@linkplain LowestCommonAncestorDynamic online} versions of this
+ * problem.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    LowestCommonAncestorStatic
+ * @see    LowestCommonAncestorDynamic
+ * @author Barak Ugav
+ */
+public interface LowestCommonAncestorOffline {
+
+	/**
+	 * Find the lowest common ancestors of the given queries.
+	 *
+	 * @param  tree    the tree
+	 * @param  root    the root of the tree
+	 * @param  queries the queries
+	 * @return         the lowest common ancestors of the given queries
+	 */
+	LowestCommonAncestorOffline.Result findLCAs(Graph tree, int root, LowestCommonAncestorOffline.Queries queries);
+
+	/**
+	 * Queries container for {@link LowestCommonAncestorOffline} computations.
+	 * &lt;p&gt;
+	 * Queries are added one by one to this container, and than the Queries object is passed to a
+	 * {@link LowestCommonAncestorOffline} algorithm using
+	 * {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Queries {
+
+		/**
+		 * Create an empty queries container.
+		 *
+		 * @return a new queries container
+		 */
+		static LowestCommonAncestorOffline.Queries newInstance() {
+<span class="fc" id="L65">			return new LowestCommonAncestorOfflineUtils.QueriesImpl();</span>
+		}
+
+		/**
+		 * Add a query for the lowest common ancestor of {@code u} and {@code v}.
+		 *
+		 * @param u the first vertex
+		 * @param v the second vertex
+		 */
+		void addQuery(int u, int v);
+
+		/**
+		 * Get a query source by index.
+		 * &lt;p&gt;
+		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the first vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx &lt; 0} or {@code idx &gt;= size()}
+		 */
+		int getQuerySource(int idx);
+
+		/**
+		 * Get a query target by index.
+		 * &lt;p&gt;
+		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
+		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the second vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx &lt; 0} or {@code idx &gt;= size()}
+		 */
+		int getQueryTarget(int idx);
+
+		/**
+		 * Get the number of queries in this container.
+		 *
+		 * @return the number of queries in this container
+		 */
+		int size();
+
+		/**
+		 * Clear the container from all existing queries.
+		 */
+		void clear();
+	}
+
+	/**
+	 * Result of a {@link LowestCommonAncestorOffline} computation.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * Get the lowest common ancestor of the given query.
+		 * &lt;p&gt;
+		 * This result object was obtained by calling {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)},
+		 * which accept a set of multiple queries using the {@link LowestCommonAncestorOffline.Queries} object. This
+		 * method return the answer to a &lt;b&gt;single&lt;/b&gt; queries among them, by its index.
+		 *
+		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
+		 * @return          the lowest common ancestor of the given query
+		 */
+		int getLca(int queryIdx);
+
+		/**
+		 * Get the number of queries in this result.
+		 * &lt;p&gt;
+		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.Queries} object
+		 * passed to {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)}.
+		 *
+		 * @return the number of queries in this result
+		 */
+		int size();
+	}
+
+	/**
+	 * Create a new tree path maxima algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorOffline} object. The
+	 * {@link LowestCommonAncestorOffline.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link LowestCommonAncestorOffline}
+	 */
+	static LowestCommonAncestorOffline newInstance() {
+<span class="nc" id="L152">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new tree path maxima algorithm builder.
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link LowestCommonAncestorOffline} objects
+	 */
+	static LowestCommonAncestorOffline.Builder newBuilder() {
+<span class="nc" id="L163">		return LowestCommonAncestorOfflineUnionFind::new;</span>
+	}
+
+	/**
+	 * A builder for {@link LowestCommonAncestorOffline} objects.
+	 *
+	 * @see    LowestCommonAncestorOffline#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for tree path maxima computation.
+		 *
+		 * @return a new tree path maxima algorithm
+		 */
+		LowestCommonAncestorOffline build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default LowestCommonAncestorOffline.Builder setOption(String key, Object value) {
+<span class="nc" id="L195">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

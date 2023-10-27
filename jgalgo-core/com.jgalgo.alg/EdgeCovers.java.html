@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EdgeCovers.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">EdgeCovers.java</span></div><h1>EdgeCovers.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.BitSet;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+<span class="nc" id="L29">class EdgeCovers {</span>
+
+<span class="fc" id="L31">	static abstract class AbstractImpl implements EdgeCover {</span>
+
+		@Override
+		public EdgeCover.Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L36">				return computeMinimumEdgeCover((IndexGraph) g, w);</span>
+
+<span class="fc" id="L38">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L39">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L40">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L42">			EdgeCover.Result indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
+<span class="fc" id="L43">			return new ResultFromIndexResult(indexResult, eiMap);</span>
+		}
+
+		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w);
+
+	}
+
+	static class ResultImpl implements EdgeCover.Result {
+
+		private final IndexGraph g;
+		private final BitSet cover;
+		private IntSet edges;
+
+<span class="fc" id="L56">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L57">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L58">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L59">		}</span>
+
+		@Override
+		public IntSet edges() {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (edges == null) {</span>
+<span class="fc" id="L64">				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
+					@Override
+					public boolean contains(int e) {
+<span class="nc bnc" id="L67" title="All 6 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; g.edges().size() &amp;&amp; cover.get(e);</span>
+					}
+				};
+			}
+<span class="fc" id="L71">			return edges;</span>
+		}
+
+		@Override
+		public boolean isInCover(int edge) {
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			if (!g.edges().contains(edge))</span>
+<span class="nc" id="L77">				throw new IndexOutOfBoundsException(edge);</span>
+<span class="fc" id="L78">			return cover.get(edge);</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L83">			return edges().toString();</span>
+		}
+	}
+	private static class ResultFromIndexResult implements EdgeCover.Result {
+
+		private final EdgeCover.Result res;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L91">		ResultFromIndexResult(EdgeCover.Result res, IndexIdMap eiMap) {</span>
+<span class="fc" id="L92">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L93">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L94">		}</span>
+
+		@Override
+		public IntSet edges() {
+<span class="fc" id="L98">			return IndexIdMaps.indexToIdSet(res.edges(), eiMap);</span>
+		}
+
+		@Override
+		public boolean isInCover(int edge) {
+<span class="fc" id="L103">			return res.isInCover(eiMap.idToIndex(edge));</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L108">			return edges().toString();</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

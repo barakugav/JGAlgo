@@ -228,13 +228,13 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L228">				} else {</span>
 					/* number of blocks is high, use hashtable */
 <span class="nc" id="L230">					Long2ObjectOpenHashMap&lt;int[]&gt; map = new Long2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L231" title="All 2 branches missed.">					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longCompose : (b1, b2) -&gt; {</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longPack : (b1, b2) -&gt; {</span>
 <span class="nc bnc" id="L232" title="All 2 branches missed.">						if (b1 &lt; b2) {</span>
 <span class="nc" id="L233">							int temp = b1;</span>
 <span class="nc" id="L234">							b1 = b2;</span>
 <span class="nc" id="L235">							b2 = temp;</span>
 						}
-<span class="nc" id="L237">						return JGAlgoUtils.longCompose(b1, b2);</span>
+<span class="nc" id="L237">						return JGAlgoUtils.longPack(b1, b2);</span>
 					};
 <span class="nc bnc" id="L239" title="All 2 branches missed.">					for (int e = 0; e &lt; m; e++) {</span>
 <span class="nc" id="L240">						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>

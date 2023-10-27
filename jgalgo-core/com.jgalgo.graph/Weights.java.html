@@ -193,16 +193,5 @@ public interface Weights&lt;E&gt; {
 		}
 	}
 
-	/**
-	 * The default vertices weight key of the bipartite property.
-	 * &lt;p&gt;
-	 * A bipartite graph is a graph in which the vertices are partitioned into two sets V1,V2 and there are no edges
-	 * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an
-	 * input, and the partition V1,V2 is expected to be a vertex boolean weight keyed by
-	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
-	 * {@code setBipartiteVerticesWeightKey(String)} function.
-	 */
-	public static final String DefaultBipartiteWeightKey = &quot;_bipartite_partition&quot;;
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

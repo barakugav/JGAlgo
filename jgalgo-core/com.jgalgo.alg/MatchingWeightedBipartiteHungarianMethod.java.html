@@ -19,11 +19,9 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -43,29 +41,13 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  */
 class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
-<span class="fc" id="L46">	private String bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
-<span class="fc" id="L47">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
-<span class="fc" id="L48">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
+<span class="fc" id="L44">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
+<span class="fc" id="L45">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-<span class="fc" id="L53">	MatchingWeightedBipartiteHungarianMethod() {}</span>
-
-	/**
-	 * Set the key used to get the bipartiteness property of vertices.
-	 * &lt;p&gt;
-	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#getVerticesWeights(String)}. By default, the weights are searched using the key
-	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
-	 * different key.
-	 *
-	 * @param key an object key that will be used to get the bipartite vertices partition by
-	 *                {@code g.verticesWeight(key)}.
-	 */
-	public void setBipartiteVerticesWeightKey(String key) {
-<span class="nc" id="L67">		bipartiteVerticesWeightKey = key;</span>
-<span class="nc" id="L68">	}</span>
+<span class="fc" id="L50">	MatchingWeightedBipartiteHungarianMethod() {}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -73,23 +55,23 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
-<span class="nc" id="L76">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
-<span class="nc" id="L77">	}</span>
+<span class="nc" id="L58">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
+<span class="nc" id="L59">	}</span>
 
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
-	 *                                      {@link #setBipartiteVerticesWeightKey(String)}.
+	 *                                      {@link BipartiteGraphs#VertexBiPartitionWeightKey}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L88">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L89">		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
-<span class="fc" id="L90">		Objects.requireNonNull(partition,</span>
-				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
-<span class="fc" id="L92">		return new Worker(g, partition, w).computeMaxMatching(false);</span>
+<span class="fc" id="L70">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L71">		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L72">		Objects.requireNonNull(partition,</span>
+				&quot;Bipartiteness values weren't found with weight &quot; + BipartiteGraphs.VertexBiPartitionWeightKey);
+<span class="fc" id="L74">		return new Worker(g, partition, w).computeMaxMatching(false);</span>
 	}
 
 	/**
@@ -101,11 +83,11 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 */
 	@Override
 	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-<span class="fc" id="L104">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L105">		WeightsBool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
-<span class="fc" id="L106">		Objects.requireNonNull(partition,</span>
-				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
-<span class="fc" id="L108">		return new Worker(g, partition, w).computeMaxMatching(true);</span>
+<span class="fc" id="L86">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L87">		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L88">		Objects.requireNonNull(partition,</span>
+				&quot;Bipartiteness values weren't found with weight &quot; + BipartiteGraphs.VertexBiPartitionWeightKey);
+<span class="fc" id="L90">		return new Worker(g, partition, w).computeMaxMatching(true);</span>
 	}
 
 	private class Worker {
@@ -125,143 +107,143 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		private final double[] dualVal0;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L128">		Worker(IndexGraph g, WeightsBool partition, WeightFunction w) {</span>
-<span class="fc" id="L129">			Assertions.Graphs.onlyBipartite(g, partition);</span>
+<span class="fc" id="L110">		Worker(IndexGraph g, WeightsBool partition, WeightFunction w) {</span>
+<span class="fc" id="L111">			Assertions.Graphs.onlyBipartite(g, partition);</span>
 
-<span class="fc" id="L131">			this.g = g;</span>
-<span class="fc" id="L132">			this.partition = partition;</span>
-<span class="fc" id="L133">			this.w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L134">			int n = g.vertices().size();</span>
+<span class="fc" id="L113">			this.g = g;</span>
+<span class="fc" id="L114">			this.partition = partition;</span>
+<span class="fc" id="L115">			this.w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L116">			int n = g.vertices().size();</span>
 
-<span class="fc" id="L136">			inTree = new BitSet(n);</span>
+<span class="fc" id="L118">			inTree = new BitSet(n);</span>
 
-<span class="fc" id="L138">			edgeSlackComparator = (e1, e2) -&gt; Double.compare(edgeSlack(e1), edgeSlack(e2));</span>
-<span class="fc" id="L139">			nextTightEdge = heapBuilder.build(edgeSlackComparator);</span>
-<span class="fc" id="L140">			nextTightEdgePerOutV = new HeapReference[n];</span>
+<span class="fc" id="L120">			edgeSlackComparator = (e1, e2) -&gt; Double.compare(edgeSlack(e1), edgeSlack(e2));</span>
+<span class="fc" id="L121">			nextTightEdge = heapBuilder.build(edgeSlackComparator);</span>
+<span class="fc" id="L122">			nextTightEdgePerOutV = new HeapReference[n];</span>
 
-<span class="fc" id="L142">			dualValBase = new double[n];</span>
-<span class="fc" id="L143">			dualVal0 = new double[n];</span>
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L124">			dualValBase = new double[n];</span>
+<span class="fc" id="L125">			dualVal0 = new double[n];</span>
+<span class="fc" id="L126">		}</span>
 
 		Matching computeMaxMatching(boolean perfect) {
-<span class="fc" id="L147">			final int n = g.vertices().size();</span>
-<span class="fc" id="L148">			final int EdgeNone = -1;</span>
+<span class="fc" id="L129">			final int n = g.vertices().size();</span>
+<span class="fc" id="L130">			final int EdgeNone = -1;</span>
 
-<span class="fc" id="L150">			int[] parent = new int[n];</span>
-<span class="fc" id="L151">			int[] matched = new int[n];</span>
-<span class="fc" id="L152">			Arrays.fill(matched, EdgeNone);</span>
+<span class="fc" id="L132">			int[] parent = new int[n];</span>
+<span class="fc" id="L133">			int[] matched = new int[n];</span>
+<span class="fc" id="L134">			Arrays.fill(matched, EdgeNone);</span>
 
-<span class="fc" id="L154">			double maxWeight = Double.MIN_VALUE;</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L156">				maxWeight = Math.max(maxWeight, w.weight(e));</span>
-<span class="fc" id="L157">			final double delta1Threshold = maxWeight;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				if (partition.get(u))</span>
-<span class="fc" id="L160">					dualValBase[u] = delta1Threshold;</span>
+<span class="fc" id="L136">			double maxWeight = Double.MIN_VALUE;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L138">				maxWeight = Math.max(maxWeight, w.weight(e));</span>
+<span class="fc" id="L139">			final double delta1Threshold = maxWeight;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (partition.get(u))</span>
+<span class="fc" id="L142">					dualValBase[u] = delta1Threshold;</span>
 
 			mainLoop: for (;;) {
-<span class="fc" id="L163">				Arrays.fill(parent, EdgeNone);</span>
+<span class="fc" id="L145">				Arrays.fill(parent, EdgeNone);</span>
 
 				// Start growing tree from all unmatched vertices in S
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L167" title="All 4 branches covered.">					if (!partition.get(u) || matched[u] != EdgeNone)</span>
-<span class="fc" id="L168">						continue;</span>
-<span class="fc" id="L169">					vertexAddedToTree(u);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">					for (int e : g.outEdges(u))</span>
-<span class="fc" id="L171">						nextTightEdgeAdd(u, e);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L149" title="All 4 branches covered.">					if (!partition.get(u) || matched[u] != EdgeNone)</span>
+<span class="fc" id="L150">						continue;</span>
+<span class="fc" id="L151">					vertexAddedToTree(u);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">					for (int e : g.outEdges(u))</span>
+<span class="fc" id="L153">						nextTightEdgeAdd(u, e);</span>
 				}
 
 				currentTree: for (;;) {
-<span class="fc bfc" id="L175" title="All 2 branches covered.">					while (!nextTightEdge.isEmpty()) {</span>
-<span class="fc" id="L176">						HeapReference&lt;Integer, Void&gt; minRef = nextTightEdge.findMin();</span>
-<span class="fc" id="L177">						int e = minRef.key().intValue();</span>
-<span class="fc" id="L178">						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					while (!nextTightEdge.isEmpty()) {</span>
+<span class="fc" id="L158">						HeapReference&lt;Integer, Void&gt; minRef = nextTightEdge.findMin();</span>
+<span class="fc" id="L159">						int e = minRef.key().intValue();</span>
+<span class="fc" id="L160">						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
 
-<span class="pc bpc" id="L180" title="1 of 4 branches missed.">						if (inTree.get(u0) &amp;&amp; inTree.get(v0)) {</span>
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">						if (inTree.get(u0) &amp;&amp; inTree.get(v0)) {</span>
 							// Vertex already in tree, edge is irrelevant
-<span class="nc" id="L182">							nextTightEdge.remove(minRef);</span>
-<span class="nc" id="L183">							continue;</span>
+<span class="nc" id="L164">							nextTightEdge.remove(minRef);</span>
+<span class="nc" id="L165">							continue;</span>
 						}
-<span class="fc bfc" id="L185" title="All 2 branches covered.">						int v = inTree.get(u0) ? v0 : u0;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">						int v = inTree.get(u0) ? v0 : u0;</span>
 
 						// No more tight edges from the tree, go out and adjust dual values
-<span class="fc bfc" id="L188" title="All 2 branches covered.">						if (edgeSlack(e) &gt; 0)</span>
-<span class="fc" id="L189">							break;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">						if (edgeSlack(e) &gt; 0)</span>
+<span class="fc" id="L171">							break;</span>
 
 						// Edge is tight, add it to the tree
-<span class="fc" id="L192">						nextTightEdge.remove(minRef);</span>
-<span class="fc" id="L193">						parent[v] = e;</span>
-<span class="fc" id="L194">						vertexAddedToTree(v);</span>
+<span class="fc" id="L174">						nextTightEdge.remove(minRef);</span>
+<span class="fc" id="L175">						parent[v] = e;</span>
+<span class="fc" id="L176">						vertexAddedToTree(v);</span>
 
-<span class="fc" id="L196">						int matchedEdge = matched[v];</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">						if (matchedEdge == EdgeNone) {</span>
+<span class="fc" id="L178">						int matchedEdge = matched[v];</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">						if (matchedEdge == EdgeNone) {</span>
 							for (;;) {
 								// Augmenting path
-<span class="fc" id="L200">								e = parent[v];</span>
-<span class="fc" id="L201">								matched[v] = matched[v = g.edgeEndpoint(e, v)] = e;</span>
+<span class="fc" id="L182">								e = parent[v];</span>
+<span class="fc" id="L183">								matched[v] = matched[v = g.edgeEndpoint(e, v)] = e;</span>
 								// TODO don't set parent[odd vertex]
-<span class="fc" id="L203">								e = parent[v];</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">								if (e == EdgeNone)</span>
-<span class="fc" id="L205">									break currentTree;</span>
-<span class="fc" id="L206">								v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L185">								e = parent[v];</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">								if (e == EdgeNone)</span>
+<span class="fc" id="L187">									break currentTree;</span>
+<span class="fc" id="L188">								v = g.edgeEndpoint(e, v);</span>
 							}
 						}
 
 						// Added odd vertex, immediately add it's matched edge and even vertex
-<span class="fc" id="L211">						v = g.edgeEndpoint(matchedEdge, v);</span>
-<span class="fc" id="L212">						parent[v] = matchedEdge;</span>
-<span class="fc" id="L213">						vertexAddedToTree(v);</span>
+<span class="fc" id="L193">						v = g.edgeEndpoint(matchedEdge, v);</span>
+<span class="fc" id="L194">						parent[v] = matchedEdge;</span>
+<span class="fc" id="L195">						vertexAddedToTree(v);</span>
 
-<span class="fc bfc" id="L215" title="All 2 branches covered.">						for (int e1 : g.outEdges(v))</span>
-<span class="fc" id="L216">							nextTightEdgeAdd(v, e1);</span>
-<span class="fc" id="L217">					}</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">						for (int e1 : g.outEdges(v))</span>
+<span class="fc" id="L198">							nextTightEdgeAdd(v, e1);</span>
+<span class="fc" id="L199">					}</span>
 
 					// Adjust dual values
-<span class="fc" id="L220">					double delta1 = delta1Threshold - deltaTotal;</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key().intValue());</span>
-<span class="fc bfc" id="L222" title="All 6 branches covered.">					if ((!perfect &amp;&amp; delta1 &lt;= delta2) || delta2 == -1)</span>
-<span class="fc" id="L223">						break mainLoop;</span>
-<span class="fc" id="L224">					deltaTotal += delta2;</span>
-<span class="fc" id="L225">				}</span>
+<span class="fc" id="L202">					double delta1 = delta1Threshold - deltaTotal;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key().intValue());</span>
+<span class="fc bfc" id="L204" title="All 6 branches covered.">					if ((!perfect &amp;&amp; delta1 &lt;= delta2) || delta2 == -1)</span>
+<span class="fc" id="L205">						break mainLoop;</span>
+<span class="fc" id="L206">					deltaTotal += delta2;</span>
+<span class="fc" id="L207">				}</span>
 
 				// Update dual values base
-<span class="fc bfc" id="L228" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">					if (inTree.get(u))</span>
-<span class="fc" id="L230">						dualValBase[u] = dualVal(u);</span>
-<span class="fc" id="L231">				Arrays.fill(dualVal0, 0);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">					if (inTree.get(u))</span>
+<span class="fc" id="L212">						dualValBase[u] = dualVal(u);</span>
+<span class="fc" id="L213">				Arrays.fill(dualVal0, 0);</span>
 
 				// Reset tree
-<span class="fc" id="L234">				inTree.clear();</span>
+<span class="fc" id="L216">				inTree.clear();</span>
 
 				// Reset heap
-<span class="fc" id="L237">				nextTightEdge.clear();</span>
-<span class="fc" id="L238">				Arrays.fill(nextTightEdgePerOutV, null);</span>
+<span class="fc" id="L219">				nextTightEdge.clear();</span>
+<span class="fc" id="L220">				Arrays.fill(nextTightEdgePerOutV, null);</span>
 			}
 
-<span class="fc" id="L241">			return new Matchings.MatchingImpl(g, matched);</span>
+<span class="fc" id="L223">			return new Matchings.MatchingImpl(g, matched);</span>
 		}
 
 		private void nextTightEdgeAdd(int u, int e) {
-<span class="fc" id="L245">			int v = g.edgeEndpoint(e, u);</span>
-<span class="fc" id="L246">			HeapReference&lt;Integer, Void&gt; ref = nextTightEdgePerOutV[v];</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (ref == null)</span>
-<span class="fc" id="L248">				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">			else if (edgeSlackComparator.compare(e, ref.key().intValue()) &lt; 0)</span>
-<span class="fc" id="L250">				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));</span>
-<span class="fc" id="L251">		}</span>
+<span class="fc" id="L227">			int v = g.edgeEndpoint(e, u);</span>
+<span class="fc" id="L228">			HeapReference&lt;Integer, Void&gt; ref = nextTightEdgePerOutV[v];</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">			if (ref == null)</span>
+<span class="fc" id="L230">				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			else if (edgeSlackComparator.compare(e, ref.key().intValue()) &lt; 0)</span>
+<span class="fc" id="L232">				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));</span>
+<span class="fc" id="L233">		}</span>
 
 		private double dualVal(int v) {
-<span class="fc bfc" id="L254" title="All 4 branches covered.">			return inTree.get(v) ? dualVal0[v] + (partition.get(v) ? -deltaTotal : deltaTotal) : dualValBase[v];</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">			return inTree.get(v) ? dualVal0[v] + (partition.get(v) ? -deltaTotal : deltaTotal) : dualValBase[v];</span>
 		}
 
 		private double edgeSlack(int e) {
-<span class="fc" id="L258">			return dualVal(g.edgeSource(e)) + dualVal(g.edgeTarget(e)) - w.weight(e);</span>
+<span class="fc" id="L240">			return dualVal(g.edgeSource(e)) + dualVal(g.edgeTarget(e)) - w.weight(e);</span>
 		}
 
 		private void vertexAddedToTree(int v) {
-<span class="fc bfc" id="L262" title="All 2 branches covered.">			dualVal0[v] = dualValBase[v] + (partition.get(v) ? deltaTotal : -deltaTotal);</span>
-<span class="fc" id="L263">			inTree.set(v);</span>
-<span class="fc" id="L264">		}</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			dualVal0[v] = dualValBase[v] + (partition.get(v) ? deltaTotal : -deltaTotal);</span>
+<span class="fc" id="L245">			inTree.set(v);</span>
+<span class="fc" id="L246">		}</span>
 
 	}
 

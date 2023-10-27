@@ -48,12 +48,12 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L49">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L50">		Objects.requireNonNull(c);</span>
-<span class="fc" id="L51">		return new DS(c, n);</span>
+<span class="fc" id="L51">		return new PreProcessor(c, n).build();</span>
 	}
 
-	private class DS extends RMQStaticLinearAbstract.DS {
+	private class PreProcessor extends RMQStaticLinearAbstract.PreProcessor {
 
-<span class="fc" id="L56">		DS(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L56">		PreProcessor(RMQStaticComparator c, int n) {</span>
 <span class="fc" id="L57">			super(c, n);</span>
 <span class="fc" id="L58">			preProcessInnerBlocks();</span>
 <span class="fc" id="L59">		}</span>
@@ -94,11 +94,6 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 <span class="fc bfc" id="L94" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
 
 <span class="fc" id="L96">			return demoBlock;</span>
-		}
-
-		@Override
-		int calcRMQInnerBlock(int block, int i, int j) {
-<span class="fc" id="L101">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
 		}
 
 	}

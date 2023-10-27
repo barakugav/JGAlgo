@@ -78,6 +78,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L78">			return cover.get(vertex);</span>
 		}
 
+		@Override
+		public String toString() {
+<span class="nc" id="L83">			return vertices().toString();</span>
+		}
 	}
 
 	private static class ResultFromIndexResult implements VertexCover.Result {
@@ -85,21 +89,25 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final VertexCover.Result res;
 		private final IndexIdMap viMap;
 
-<span class="fc" id="L88">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
-<span class="fc" id="L89">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L90">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc" id="L92">		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {</span>
+<span class="fc" id="L93">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L94">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L95">		}</span>
 
 		@Override
 		public IntSet vertices() {
-<span class="fc" id="L95">			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);</span>
+<span class="fc" id="L99">			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="fc" id="L100">			return res.isInCover(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L104">			return res.isInCover(viMap.idToIndex(vertex));</span>
 		}
 
+		@Override
+		public String toString() {
+<span class="nc" id="L109">			return vertices().toString();</span>
+		}
 	}
 
 }

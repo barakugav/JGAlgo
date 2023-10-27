@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathST.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">ShortestPathST.java</span></div><h1>ShortestPathST.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+
+/**
+ * An algorithm for computing the shortest path between two vertices in a graph.
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one might ask what is the shortest path from
+ * a &lt;i&gt;source&lt;/i&gt; vertex to a &lt;i&gt;target&lt;/i&gt; vertex, where the 'shortest' is defined by comparing the sum of edges
+ * weights of each path. This interface computes such a path. It differ from the more known
+ * {@link ShortestPathSingleSource}, as it does not compute the paths from a source to all vertices, only to a specific
+ * target. This might be more efficient in some cases, as less than linear time and space can be used.
+ * &lt;p&gt;
+ * A variant with a heuristic distance function is also available, see {@link ShortestPathHeuristicST}.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    ShortestPathSingleSource
+ * @see    ShortestPathAllPairs
+ * @see    ShortestPathHeuristicST
+ * @author Barak Ugav
+ */
+public interface ShortestPathST {
+
+	/**
+	 * Compute the shortest path from a source vertex to a target vertex.
+	 *
+	 * @param  g      the graph
+	 * @param  w      an edge weight function
+	 * @param  source the source vertex
+	 * @param  target the target vertex
+	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
+	 */
+	Path computeShortestPath(Graph g, WeightFunction w, int source, int target);
+
+	/**
+	 * Create a new S-T shortest path algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link ShortestPathST} object. The
+	 * {@link ShortestPathST.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ShortestPathST}
+	 */
+	static ShortestPathST newInstance() {
+<span class="nc" id="L62">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new S-T shortest path algorithm builder.
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link ShortestPathST} objects
+	 */
+	static ShortestPathST.Builder newBuilder() {
+<span class="nc" id="L73">		return () -&gt; {</span>
+<span class="nc" id="L74">			return new ShortestPathST() {</span>
+<span class="nc" id="L75">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
+<span class="nc" id="L76">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
+
+				@Override
+				public Path computeShortestPath(Graph g, WeightFunction w, int source, int target) {
+<span class="nc bnc" id="L80" title="All 4 branches missed.">					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">					if (cardinality) {</span>
+<span class="nc" id="L82">						return cardinalityStSp.computeShortestPath(g, w, source, target);</span>
+					} else {
+<span class="nc" id="L84">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
+					}
+				}
+			};
+		};
+	}
+
+	/**
+	 * A builder for {@link ShortestPathST} objects.
+	 *
+	 * @see    ShortestPathST#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for S-T shortest path computation.
+		 *
+		 * @return a new S-T shortest path algorithm
+		 */
+		ShortestPathST build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default ShortestPathST.Builder setOption(String key, Object value) {
+<span class="nc" id="L120">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
