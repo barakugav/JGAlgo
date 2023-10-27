@@ -55,6 +55,7 @@ import com.jgalgo.graph.Graph;
  * }</pre>
  *
  * @see    LowestCommonAncestorDynamic
+ * @see    LowestCommonAncestorOffline
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorStatic {

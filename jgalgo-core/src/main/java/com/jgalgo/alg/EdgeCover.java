@@ -146,11 +146,14 @@ public interface EdgeCover {
 	 */
 	static EdgeCover.Builder newBuilder() {
 		return () -> {
-			return new EdgeCover() {
-				@Override
-				public Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
-					// TODO Auto-generated method stub
-					throw new UnsupportedOperationException("Unimplemented method 'computeMinimumEdgeCover'");
+			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();
+			EdgeCover weightedAlgo = new EdgeCoverWeighted();
+			return (g, w) -> {
+				boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
+				if (isCardinality) {
+					return cardinalityAlgo.computeMinimumEdgeCover(g, null);
+				} else {
+					return weightedAlgo.computeMinimumEdgeCover(g, w);
 				}
 			};
 		};

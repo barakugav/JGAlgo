@@ -41,6 +41,7 @@ package com.jgalgo.alg;
  * }</pre>
  *
  * @see    LowestCommonAncestorStatic
+ * @see    LowestCommonAncestorOffline
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorDynamic {

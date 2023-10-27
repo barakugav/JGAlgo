@@ -38,6 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
+ * @see    EdgeCover
  * @see    <a href= "https://en.wikipedia.org/wiki/Vertex_cover">Wikipedia</a>
  * @author Barak Ugav
  */
