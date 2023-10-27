@@ -178,8 +178,8 @@ public class IndexIdMaps {
 
 	private static class IndexToIdCollection extends AbstractIntCollection {
 
-		private final IntCollection indexC;
-		private final IndexIdMap map;
+		final IntCollection indexC;
+		final IndexIdMap map;
 
 		IndexToIdCollection(IntCollection indexC, IndexIdMap map) {
 			this.indexC = Objects.requireNonNull(indexC);
@@ -233,9 +233,10 @@ public class IndexIdMaps {
 			super(indexSet, map);
 		}
 
+		@Deprecated
 		@Override
 		public boolean remove(int k) {
-			return rem(k);
+			return indexC.rem(map.idToIndex(k));
 		}
 	}
 
