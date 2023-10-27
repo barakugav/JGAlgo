@@ -62,7 +62,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 			int uS = min.value();
 			Info uInfoS = infoS.get(uS);
 			uInfoS.heapPtr = null;
-			uInfoS.visited = true;
+			uInfoS.markVisited();
 			uInfoS.distance = uDistanceS;
 
 			min = heapT.extractMin();
@@ -70,20 +70,20 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 			int uT = min.value();
 			Info uInfoT = infoT.get(uT);
 			uInfoT.heapPtr = null;
-			uInfoT.visited = true;
+			uInfoT.markVisited();
 			uInfoT.distance = uDistanceT;
 
 			for (EdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				Info vInfoS = infoS.computeIfAbsent(v, k -> new Info());
-				if (vInfoS.visited)
+				if (vInfoS.isVisited())
 					continue;
 				double ew = w.weight(e);
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				double vDistance = uDistanceS + ew;
 				Info vInfoT = infoT.get(v);
-				if (vInfoT != null && vInfoT.visited) {
+				if (vInfoT != null && vInfoT.isVisited()) {
 					if (mu > vDistance + vInfoT.distance) {
 						mu = vDistance + vInfoT.distance;
 						middle = v;
@@ -104,13 +104,13 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 				int e = eit.nextInt();
 				int v = eit.source();
 				Info vInfoT = infoT.computeIfAbsent(v, k -> new Info());
-				if (vInfoT.visited)
+				if (vInfoT.isVisited())
 					continue;
 				double ew = w.weight(e);
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				double vDistance = uDistanceT + ew;
 				Info vInfoS = infoS.get(v);
-				if (vInfoS != null && vInfoS.visited) {
+				if (vInfoS != null && vInfoS.isVisited()) {
 					if (mu > vDistance + vInfoS.distance) {
 						mu = vDistance + vInfoS.distance;
 						middle = v;
@@ -160,7 +160,19 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 		int backtrack = -1;
 		double distance = Double.POSITIVE_INFINITY;
 		HeapReference<Double, Integer> heapPtr;
-		boolean visited;
+
+		void markVisited() {
+			assert heapPtr != VisitedMark : "already visited";
+			heapPtr = VisitedMark;
+		}
+
+		boolean isVisited() {
+			return heapPtr == VisitedMark;
+		}
+
+		@SuppressWarnings("boxing")
+		private static final HeapReference<Double, Integer> VisitedMark = HeapReferenceable.newBuilder()
+				.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build().insert(0.0, 0);
 	}
 
 }
