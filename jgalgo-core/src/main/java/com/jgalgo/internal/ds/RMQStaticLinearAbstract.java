@@ -40,21 +40,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-	RMQStaticLinearAbstract() {}
+	abstract class PreProcessor extends DsBase {
 
-	abstract class PreProcessor {
-
-		final RMQStaticComparator cmpOrig;
 		final RMQStaticComparator cmpPadded;
-		final int n;
-		final byte blockSize;
 		final int blockNum;
 
-		private final byte[][] blocksRightMinimum;
-		private final byte[][] blocksLeftMinimum;
-		private final RMQStatic.DataStructure xlogxTableDS;
-
-		final RMQStatic.DataStructure[] interBlocksDs;
 		private final RMQStatic outerRMQ;
 		private final RMQStatic innerRMQ;
 
@@ -64,8 +54,8 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			blockNum = (int) Math.ceil((double) n / blockSize);
 			this.cmpOrig = c;
 			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
-			blocksRightMinimum = new byte[blockNum][blockSize - 1];
-			blocksLeftMinimum = new byte[blockNum][blockSize - 1];
+			blocksRightMinimum = new byte[blockNum * (blockSize - 1)];
+			blocksLeftMinimum = new byte[blockNum * (blockSize - 1)];
 
 			outerRMQ = new RMQStaticPowerOf2Table();
 			// TODO probably better to use a simple lookup table, need to measure
@@ -79,20 +69,20 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 				for (byte i = 0; i < blockSize - 1; i++) {
 					if (c.compare(base + i + 1, base + min) < 0)
 						min = (byte) (i + 1);
-					blocksLeftMinimum[b][i] = min;
+					blockLeftMinimum(b, i, min);
 				}
 
 				min = (byte) (blockSize - 1);
 				for (byte i = (byte) (blockSize - 2); i >= 0; i--) {
 					if (c.compare(base + i, base + min) < 0)
 						min = i;
-					blocksRightMinimum[b][i] = min;
+					blockRightMinimum(b, i, min);
 				}
 			}
 
-			xlogxTableDS =
-					outerRMQ.preProcessSequence((i, j) -> cmpOrig.compare(i * blockSize + blocksRightMinimum[i][0],
-							j * blockSize + blocksRightMinimum[j][0]), blockNum);
+			xlogxTableDS = outerRMQ.preProcessSequence(
+					(i, j) -> cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),
+					blockNum);
 
 			interBlocksDs = new RMQStatic.DataStructure[blockNum];
 		}
@@ -154,15 +144,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	}
 
-	private static class DataStructure implements RMQStatic.DataStructure {
-
-		private final int n;
-		private final int blockSize;
-		private final byte[][] blocksRightMinimum;
-		private final byte[][] blocksLeftMinimum;
-		private final RMQStatic.DataStructure xlogxTableDS;
-		private final RMQStatic.DataStructure[] interBlocksDs;
-		private final RMQStaticComparator cmp;
+	private static class DataStructure extends DsBase implements RMQStatic.DataStructure {
 
 		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {
 			n = ds.n;
@@ -171,7 +153,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			blocksLeftMinimum = ds.blocksLeftMinimum;
 			xlogxTableDS = ds.xlogxTableDS;
 			interBlocksDs = ds.interBlocksDs;
-			cmp = ds.cmpOrig;
+			cmpOrig = ds.cmpOrig;
 		}
 
 		@Override
@@ -187,14 +169,14 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			int innerJ = j % blockSize;
 
 			if (blk0 != blk1) {
-				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blocksRightMinimum[blk0][innerI]);
-				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blocksLeftMinimum[blk1][innerJ - 1]);
-				int min = cmp.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
+				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blockRightMinimum(blk0, innerI));
+				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blockLeftMinimum(blk1, innerJ - 1));
+				int min = cmpOrig.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
 
 				if (blk0 + 1 != blk1) {
 					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);
-					int middleMin = middleBlk * blockSize + blocksRightMinimum[middleBlk][0];
-					min = cmp.compare(min, middleMin) < 0 ? min : middleMin;
+					int middleMin = middleBlk * blockSize + blockMinimum(middleBlk);
+					min = cmpOrig.compare(min, middleMin) < 0 ? min : middleMin;
 				}
 
 				return min;
@@ -210,12 +192,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		@Override
 		public long sizeInBytes() {
-			int len;
 			long s = 0;
 			s += 4; // n
 			s += 4; // blockSize
-			s += 8 + ((len = blocksRightMinimum.length) == 0 ? 0 : len * (8 + blocksRightMinimum[0].length));
-			s += 8 + ((len = blocksLeftMinimum.length) == 0 ? 0 : len * (8 + blocksLeftMinimum[0].length));
+			s += 8 + blocksRightMinimum.length;
+			s += 8 + blocksLeftMinimum.length;
 			s += 8 + xlogxTableDS.sizeInBytes();
 			s += 8 * interBlocksDs.length;
 			ReferenceSet<RMQStatic.DataStructure> inBlocks = new ReferenceOpenHashSet<>();
@@ -224,6 +205,42 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 					s += ds.sizeInBytes();
 			s += 8; // cmp
 			return s;
+		}
+
+	}
+
+	private static class DsBase {
+
+		int n;
+		int blockSize;
+		byte[] blocksRightMinimum;
+		byte[] blocksLeftMinimum;
+		RMQStatic.DataStructure xlogxTableDS;
+		RMQStatic.DataStructure[] interBlocksDs;
+		RMQStaticComparator cmpOrig;
+
+		int blockMinimum(int block) {
+			return blockRightMinimum(block, 0);
+		}
+
+		int blockMinimumIndex(int block, int i) {
+			return block * (blockSize - 1) + i;
+		}
+
+		int blockLeftMinimum(int block, int i) {
+			return blocksLeftMinimum[block * (blockSize - 1) + i];
+		}
+
+		int blockRightMinimum(int block, int i) {
+			return blocksRightMinimum[block * (blockSize - 1) + i];
+		}
+
+		void blockRightMinimum(int block, int i, byte val) {
+			blocksRightMinimum[block * (blockSize - 1) + i] = val;
+		}
+
+		void blockLeftMinimum(int block, int i, byte val) {
+			blocksLeftMinimum[block * (blockSize - 1) + i] = val;
 		}
 
 	}
