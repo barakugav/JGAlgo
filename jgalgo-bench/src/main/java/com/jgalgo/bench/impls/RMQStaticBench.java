@@ -27,6 +27,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
@@ -141,6 +142,14 @@ public class RMQStaticBench {
 
 	public static class Query {
 
+		int n;
+		RMQStatic.DataStructure rmq;
+		private long[] queriesAll;
+		private int queryIdx;
+		long[] queries = new long[OperationsPerInvocation];
+
+		private static final int OperationsPerInvocation = 427;
+
 		int[] randArray(int size, long seed) {
 			return TestUtils.randArray(size, seed);
 		}
@@ -153,7 +162,7 @@ public class RMQStaticBench {
 			RMQStatic rmq = builder.build();
 			RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), n);
 
-			int queriesNum = n;
+			int queriesNum = n * 53;
 			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());
 			for (int q = 0; q < queriesNum; q++) {
 				int i = queries[q * 2 + 0];
@@ -172,103 +181,104 @@ public class RMQStaticBench {
 			return Pair.of(rmqDS, queries0);
 		}
 
+		private void setupCreateArray(String args, RMQStatic.Builder builder) {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			n = Integer.parseInt(argsMap.get("N"));
+
+			Pair<RMQStatic.DataStructure, long[]> p = createArray(builder, n);
+			rmq = p.first();
+			queriesAll = p.second();
+			queryIdx = 0;
+		}
+
+		private void setupCreateQueries() {
+			for (int qIdx = 0; qIdx < OperationsPerInvocation; qIdx++) {
+				queries[qIdx] = queriesAll[queryIdx];
+				if (++queryIdx == queriesAll.length)
+					queryIdx = 0;
+			}
+		}
+
+		private void benchQuery(Blackhole blackhole) {
+			for (long q : queries) {
+				int queryI = JGAlgoUtils.long2low(q);
+				int queryJ = JGAlgoUtils.long2high(q);
+				int res = rmq.findMinimumInRange(queryI, queryJ);
+				blackhole.consume(res);
+			}
+		}
+
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class LookupTable extends Query {
 
 			@Param({ "N=128", "N=2500" })
 			public String args;
-			public int n;
-
-			private RMQStatic.DataStructure rmq;
-			private long[] queries;
-			private int queryIdx;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-				n = Integer.parseInt(argsMap.get("N"));
-
-				Pair<RMQStatic.DataStructure, long[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "simple-lookup-table"), n);
-				rmq = p.first();
-				queries = p.second();
-				queryIdx = 0;
+				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "simple-lookup-table"));
 			}
 
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+				super.setupCreateQueries();
+			}
+
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				long q = queries[queryIdx];
-				int queryI = JGAlgoUtils.long2low(q);
-				int queryJ = JGAlgoUtils.long2high(q);
-				if (++queryIdx == queries.length)
-					queryIdx = 0;
-
-				int res = rmq.findMinimumInRange(queryI, queryJ);
-				blackhole.consume(res);
+				super.benchQuery(blackhole);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class PowerOf2Table extends Query {
 
 			@Param({ "N=128", "N=2500", "N=15000" })
 			public String args;
-			public int n;
-
-			private RMQStatic.DataStructure rmq;
-			private long[] queries;
-			private int queryIdx;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-				n = Integer.parseInt(argsMap.get("N"));
-
-				Pair<RMQStatic.DataStructure, long[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "power-of-2-table"), n);
-				rmq = p.first();
-				queries = p.second();
-				queryIdx = 0;
+				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "power-of-2-table"));
 			}
 
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+				super.setupCreateQueries();
+			}
+
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				long q = queries[queryIdx];
-				int queryI = JGAlgoUtils.long2low(q);
-				int queryJ = JGAlgoUtils.long2high(q);
-				if (++queryIdx == queries.length)
-					queryIdx = 0;
-
-				int res = rmq.findMinimumInRange(queryI, queryJ);
-				blackhole.consume(res);
+				super.benchQuery(blackhole);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class PlusMinusOne extends Query {
 
 			@Param({ "N=128", "N=2500", "N=15000" })
 			public String args;
-			public int n;
 
-			private RMQStatic.DataStructure rmq;
-			private long[] queries;
-			private int queryIdx;
+			@Setup(Level.Iteration)
+			public void setupCreateArray() {
+				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "plus-minus-one"));
+			}
 
 			@Override
 			int[] randArray(int size, long seed) {
@@ -279,69 +289,43 @@ public class RMQStaticBench {
 				return arr;
 			}
 
-			@Setup(Level.Iteration)
-			public void setupCreateArray() {
-				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-				n = Integer.parseInt(argsMap.get("N"));
-
-				Pair<RMQStatic.DataStructure, long[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "plus-minus-one"), n);
-				rmq = p.first();
-				queries = p.second();
-				queryIdx = 0;
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+				super.setupCreateQueries();
 			}
 
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				long q = queries[queryIdx];
-				int queryI = JGAlgoUtils.long2low(q);
-				int queryJ = JGAlgoUtils.long2high(q);
-				if (++queryIdx == queries.length)
-					queryIdx = 0;
-
-				int res = rmq.findMinimumInRange(queryI, queryJ);
-				blackhole.consume(res);
+				super.benchQuery(blackhole);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
-		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
-		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
 		public static class CartesianTrees extends Query {
 
 			@Param({ "N=128", "N=2500", "N=15000" })
 			public String args;
-			public int n;
-
-			private RMQStatic.DataStructure rmq;
-			private long[] queries;
-			private int queryIdx;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-				n = Integer.parseInt(argsMap.get("N"));
-
-				Pair<RMQStatic.DataStructure, long[]> p =
-						createArray(RMQStatic.newBuilder().setOption("impl", "cartesian-trees"), n);
-				rmq = p.first();
-				queries = p.second();
-				queryIdx = 0;
+				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "cartesian-trees"));
 			}
 
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+				super.setupCreateQueries();
+			}
+
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				long q = queries[queryIdx];
-				int queryI = JGAlgoUtils.long2low(q);
-				int queryJ = JGAlgoUtils.long2high(q);
-				if (++queryIdx == queries.length)
-					queryIdx = 0;
-
-				int res = rmq.findMinimumInRange(queryI, queryJ);
-				blackhole.consume(res);
+				super.benchQuery(blackhole);
 			}
 		}
 
