@@ -16,14 +16,13 @@
 
 package com.jgalgo.internal.ds;
 
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ReferenceSet;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import java.util.BitSet;
+import it.unimi.dsi.fastutil.bytes.Byte2IntMap;
+import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2IntMap;
+import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 
 abstract class RMQStaticLinearAbstract implements RMQStatic {
 
@@ -46,7 +45,6 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		final int blockNum;
 
 		private final RMQStatic outerRMQ;
-		private final RMQStatic innerRMQ;
 
 		PreProcessor(RMQStaticComparator c, int n) {
 			this.n = n;
@@ -54,12 +52,9 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			blockNum = (int) Math.ceil((double) n / blockSize);
 			this.cmpOrig = c;
 			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
-			blocksRightMinimum = new byte[blockNum * (blockSize - 1)];
-			blocksLeftMinimum = new byte[blockNum * (blockSize - 1)];
+			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];
 
 			outerRMQ = new RMQStaticPowerOf2Table();
-			// TODO probably better to use a simple lookup table, need to measure
-			innerRMQ = new RMQStaticPowerOf2Table();
 
 			for (int b = 0; b < blockNum; b++) {
 				c = b < blockNum - 1 ? cmpOrig : cmpPadded;
@@ -84,49 +79,92 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 					(i, j) -> cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),
 					blockNum);
 
-			interBlocksDs = new RMQStatic.DataStructure[blockNum];
 		}
 
 		void preProcessInnerBlocks() {
 			int keySize = getBlockKeySize();
+			var innerBlocksIdx = new Object() {
+				int val = 0;
+			};
+			blockToInnerIdx = new int[blockNum];
+			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;
 			if (keySize < Byte.SIZE) {
-				Byte2ObjectMap<RMQStatic.DataStructure> tables = new Byte2ObjectOpenHashMap<>();
+				Byte2IntMap tables = new Byte2IntOpenHashMap();
 				for (int b = 0; b < blockNum; b++) {
 					byte key = (byte) calcBlockKey(b);
-
-					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-						byte[] demoBlock = calcDemoBlock(k & 0xff);
-						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
-								demoBlock.length);
-					});
+					blockToInnerIdx[b] = key;
+					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
+				}
+				final int innerBlockNum = tables.size();
+				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
+				for (int b = 0; b < blockNum; b++) {
+					byte key = (byte) blockToInnerIdx[b];
+					int innerIdx = tables.get(key);
+					blockToInnerIdx[b] = innerIdx;
+					if (!builtInnerBlocks.get(innerIdx)) {
+						byte[] demoBlock = calcDemoBlock(key & 0xff);
+						buildInnerBlock(innerIdx, demoBlock);
+						builtInnerBlocks.set(innerIdx);
+					}
 				}
 				tables.clear();
 
 			} else if (keySize < Short.SIZE) {
-				Short2ObjectMap<RMQStatic.DataStructure> tables = new Short2ObjectOpenHashMap<>();
+				Short2IntMap tables = new Short2IntOpenHashMap();
 				for (int b = 0; b < blockNum; b++) {
 					short key = (short) calcBlockKey(b);
-
-					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-						byte[] demoBlock = calcDemoBlock(k & 0xffff);
-						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
-								demoBlock.length);
-					});
+					blockToInnerIdx[b] = key;
+					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
+				}
+				final int innerBlockNum = tables.size();
+				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
+				for (int b = 0; b < blockNum; b++) {
+					short key = (short) blockToInnerIdx[b];
+					int innerIdx = tables.get(key);
+					blockToInnerIdx[b] = innerIdx;
+					if (!builtInnerBlocks.get(innerIdx)) {
+						byte[] demoBlock = calcDemoBlock(key & 0xffff);
+						buildInnerBlock(innerIdx, demoBlock);
+						builtInnerBlocks.set(innerIdx);
+					}
 				}
 				tables.clear();
 
 			} else {
-				Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
+				Int2IntMap tables = new Int2IntOpenHashMap();
 				for (int b = 0; b < blockNum; b++) {
 					int key = calcBlockKey(b);
-
-					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-						byte[] demoBlock = calcDemoBlock(k);
-						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
-								demoBlock.length);
-					});
+					blockToInnerIdx[b] = key;
+					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
+				}
+				final int innerBlockNum = tables.size();
+				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
+				for (int b = 0; b < blockNum; b++) {
+					int key = blockToInnerIdx[b];
+					int innerIdx = tables.get(key);
+					blockToInnerIdx[b] = innerIdx;
+					if (!builtInnerBlocks.get(innerIdx)) {
+						byte[] demoBlock = calcDemoBlock(key);
+						buildInnerBlock(innerIdx, demoBlock);
+						builtInnerBlocks.set(innerIdx);
+					}
 				}
 				tables.clear();
+			}
+		}
+
+		private void buildInnerBlock(int innerBlock, byte[] demoBlock) {
+			byte[] arr = innerBlocks;
+			for (byte i = 0; i < blockSize - 1; i++)
+				arr[innerBlockIndex(innerBlock, i, i + 1)] = demoBlock[i] < demoBlock[i + 1] ? i : (byte) (i + 1);
+			for (byte i = 0; i < blockSize - 2; i++) {
+				for (byte j = (byte) (i + 2); j < blockSize; j++) {
+					byte m = arr[innerBlockIndex(innerBlock, i, j - 1)];
+					arr[innerBlockIndex(innerBlock, i, j)] = demoBlock[m] < demoBlock[j] ? m : j;
+				}
 			}
 		}
 
@@ -149,10 +187,10 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {
 			n = ds.n;
 			blockSize = ds.blockSize;
-			blocksRightMinimum = ds.blocksRightMinimum;
-			blocksLeftMinimum = ds.blocksLeftMinimum;
+			blocksRightLeftMinimum = ds.blocksRightLeftMinimum;
 			xlogxTableDS = ds.xlogxTableDS;
-			interBlocksDs = ds.interBlocksDs;
+			blockToInnerIdx = ds.blockToInnerIdx;
+			innerBlocks = ds.innerBlocks;
 			cmpOrig = ds.cmpOrig;
 		}
 
@@ -187,7 +225,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		}
 
 		int calcRMQInnerBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
+			int r = block * blockSize;
+			if (i == j)
+				return r + i;
+			int innerBlock = blockToInnerIdx[block];
+			return r + innerBlocks[innerBlockIndex(innerBlock, i, j)];
 		}
 
 		@Override
@@ -195,14 +237,10 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			long s = 0;
 			s += 4; // n
 			s += 4; // blockSize
-			s += 8 + blocksRightMinimum.length;
-			s += 8 + blocksLeftMinimum.length;
+			s += 8 + blocksRightLeftMinimum.length;
 			s += 8 + xlogxTableDS.sizeInBytes();
-			s += 8 * interBlocksDs.length;
-			ReferenceSet<RMQStatic.DataStructure> inBlocks = new ReferenceOpenHashSet<>();
-			for (RMQStatic.DataStructure ds : interBlocksDs)
-				if (inBlocks.add(ds))
-					s += ds.sizeInBytes();
+			s += 8 + 4 * blockToInnerIdx.length;
+			s += 8 + innerBlocks.length;
 			s += 8; // cmp
 			return s;
 		}
@@ -213,34 +251,39 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		int n;
 		int blockSize;
-		byte[] blocksRightMinimum;
-		byte[] blocksLeftMinimum;
+		byte[] blocksRightLeftMinimum;
 		RMQStatic.DataStructure xlogxTableDS;
-		RMQStatic.DataStructure[] interBlocksDs;
+		int[] blockToInnerIdx;
+		byte[] innerBlocks;
 		RMQStaticComparator cmpOrig;
 
 		int blockMinimum(int block) {
 			return blockRightMinimum(block, 0);
 		}
 
-		int blockMinimumIndex(int block, int i) {
-			return block * (blockSize - 1) + i;
+		int blockRightMinimum(int block, int i) {
+			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0];
 		}
 
 		int blockLeftMinimum(int block, int i) {
-			return blocksLeftMinimum[block * (blockSize - 1) + i];
-		}
-
-		int blockRightMinimum(int block, int i) {
-			return blocksRightMinimum[block * (blockSize - 1) + i];
+			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1];
 		}
 
 		void blockRightMinimum(int block, int i, byte val) {
-			blocksRightMinimum[block * (blockSize - 1) + i] = val;
+			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0] = val;
 		}
 
 		void blockLeftMinimum(int block, int i, byte val) {
-			blocksLeftMinimum[block * (blockSize - 1) + i] = val;
+			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1] = val;
+		}
+
+		int innerBlockIndex(int innerBlock, int i, int j) {
+			int innerIdx = (2 * blockSize - i - 1) * i / 2 + j - i - 1;
+			return innerBlock * innerBlockAllocSize() + innerIdx;
+		}
+
+		int innerBlockAllocSize() {
+			return blockSize * (blockSize - 1) / 2;
 		}
 
 	}
