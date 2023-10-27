@@ -209,7 +209,7 @@ class ArraysUtils {
 			if (c.compare(a[i], pivot) == 0)
 				ObjectArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
-		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);
+		return JGAlgoUtils.longPack(lastSmaller, firstGreater);
 	}
 
 	private static long pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
@@ -223,7 +223,7 @@ class ArraysUtils {
 			if (c.compare(a[i], pivot) == 0)
 				IntArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
-		return JGAlgoUtils.longCompose(lastSmaller, firstGreater);
+		return JGAlgoUtils.longPack(lastSmaller, firstGreater);
 	}
 
 	private static <E> int calcPivot(E[] a, int from, int to, Comparator<? super E> c) {

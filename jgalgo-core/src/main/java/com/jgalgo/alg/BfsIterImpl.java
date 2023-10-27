@@ -50,7 +50,7 @@ class BfsIterImpl {
 			do {
 				int source = sources.nextInt();
 				visited.set(source);
-				queue.enqueue(JGAlgoUtils.longCompose(source, -1));
+				queue.enqueue(JGAlgoUtils.longPack(source, -1));
 				if (firstVInLayer == -1)
 					firstVInLayer = source;
 			} while (sources.hasNext());
@@ -112,7 +112,7 @@ class BfsIterImpl {
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				queue.enqueue(JGAlgoUtils.longCompose(v, e));
+				queue.enqueue(JGAlgoUtils.longPack(v, e));
 				if (firstVInLayer == -1)
 					firstVInLayer = v;
 			}
@@ -148,7 +148,7 @@ class BfsIterImpl {
 				if (visited.get(u))
 					continue;
 				visited.set(u);
-				queue.enqueue(JGAlgoUtils.longCompose(u, e));
+				queue.enqueue(JGAlgoUtils.longPack(u, e));
 				if (firstVInLayer == -1)
 					firstVInLayer = u;
 			}

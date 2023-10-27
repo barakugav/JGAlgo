@@ -62,7 +62,7 @@ class TreePathMaximaUtils {
 
 		@Override
 		public void addQuery(int u, int v) {
-			qs.add(JGAlgoUtils.longCompose(u, v));
+			qs.add(JGAlgoUtils.longPack(u, v));
 		}
 
 		@Override

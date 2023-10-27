@@ -31,7 +31,7 @@ class EdgeEndpointsContainer {
 	}
 
 	static long sourceTarget2Endpoints(int source, int target) {
-		return JGAlgoUtils.longCompose(source, target);
+		return JGAlgoUtils.longPack(source, target);
 	}
 
 	private static int endpoints2Source(long endpoints) {

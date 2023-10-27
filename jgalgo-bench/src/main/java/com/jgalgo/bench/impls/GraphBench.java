@@ -82,7 +82,7 @@ public class GraphBench {
 						u1 = v1;
 						v1 = tmp;
 					}
-					long key = JGAlgoUtils.longCompose(u1, v1);
+					long key = JGAlgoUtils.longPack(u1, v1);
 					if (!existingEdges.add(key))
 						continue;
 				}
@@ -111,7 +111,7 @@ public class GraphBench {
 						v = tmp;
 					}
 				}
-				queryUVertices0[q] = JGAlgoUtils.longCompose(u, v);
+				queryUVertices0[q] = JGAlgoUtils.longPack(u, v);
 			}
 			queryUVIter = circularIterator(LongImmutableList.of(queryUVertices0));
 		}
@@ -1203,7 +1203,7 @@ public class GraphBench {
 						u1 = v1;
 						v1 = tmp;
 					}
-					long key = JGAlgoUtils.longCompose(u1, v1);
+					long key = JGAlgoUtils.longPack(u1, v1);
 					if (!existingEdges.add(key))
 						continue;
 				}

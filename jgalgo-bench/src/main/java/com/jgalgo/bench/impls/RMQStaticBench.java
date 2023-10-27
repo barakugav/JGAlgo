@@ -168,7 +168,7 @@ public class RMQStaticBench {
 			}
 			long[] queries0 = new long[queriesNum];
 			for (int q = 0; q < queriesNum; q++)
-				queries0[q] = JGAlgoUtils.longCompose(queries[q * 2 + 0], queries[q * 2 + 1]);
+				queries0[q] = JGAlgoUtils.longPack(queries[q * 2 + 0], queries[q * 2 + 1]);
 			return Pair.of(rmqDS, queries0);
 		}
 

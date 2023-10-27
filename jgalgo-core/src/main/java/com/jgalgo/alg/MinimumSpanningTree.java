@@ -179,7 +179,7 @@ public interface MinimumSpanningTree {
 			if (root[r] != -1)
 				continue;
 			root[r] = r;
-			queue.enqueue(JGAlgoUtils.longCompose(r, -1));
+			queue.enqueue(JGAlgoUtils.longPack(r, -1));
 			while (!queue.isEmpty()) {
 				long l = queue.dequeueLong();
 				int u = JGAlgoUtils.long2low(l);
@@ -192,7 +192,7 @@ public interface MinimumSpanningTree {
 					if (root[v] == r)
 						return false; /* cycle */
 					root[v] = r;
-					queue.enqueue(JGAlgoUtils.longCompose(v, e));
+					queue.enqueue(JGAlgoUtils.longPack(v, e));
 				}
 			}
 		}

@@ -228,13 +228,13 @@ class VertexPartitions {
 				} else {
 					/* number of blocks is high, use hashtable */
 					Long2ObjectOpenHashMap<int[]> map = new Long2ObjectOpenHashMap<>();
-					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longCompose : (b1, b2) -> {
+					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longPack : (b1, b2) -> {
 						if (b1 < b2) {
 							int temp = b1;
 							b1 = b2;
 							b2 = temp;
 						}
-						return JGAlgoUtils.longCompose(b1, b2);
+						return JGAlgoUtils.longPack(b1, b2);
 					};
 					for (int e = 0; e < m; e++) {
 						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
