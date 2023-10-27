@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
-	private static int[][] randLCAQueries(Graph g, int root, int queriesNum, long seed) {
+	static int[][] randLcaQueries(Graph g, int root, int queriesNum, long seed) {
 		Random rand = new Random(seed);
 		int[][] queries = new int[queriesNum][3];
 
@@ -106,7 +106,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			int root = g.vertices().iterator().nextInt();
-			int[][] queries = randLCAQueries(g, root, m, seedGen.nextSeed());
+			int[][] queries = randLcaQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, LowestCommonAncestorStaticRMQ::new, queries);
 		});
 	}

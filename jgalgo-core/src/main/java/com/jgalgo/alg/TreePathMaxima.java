@@ -133,10 +133,10 @@ public interface TreePathMaxima {
 		 * <p>
 		 * This result object was obtained by calling
 		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
-		 * multiple queries using the {@link Queries} object. This method return the answer to a <b>single</b> queries
-		 * among them, by its index.
+		 * multiple queries using the {@link TreePathMaxima.Queries} object. This method return the answer to a
+		 * <b>single</b> queries among them, by its index.
 		 *
-		 * @param  queryIdx the index of the query \((u, v)\) in the {@link Queries} object passed to
+		 * @param  queryIdx the index of the query \((u, v)\) in the {@link TreePathMaxima.Queries} object passed to
 		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}
 		 * @return          the edge identifier of the heaviest on the path from \(u\) to \(v\) (the query vertices) in
 		 *                  the tree passed to the algorithm, or {@code -1} if no such path exists
@@ -146,8 +146,8 @@ public interface TreePathMaxima {
 		/**
 		 * Get the number queries results this result object hold.
 		 * <p>
-		 * This number always much the size of the {@link Queries} container passed to the {@link TreePathMaxima}
-		 * algorithm.
+		 * This number always much the size of the {@link TreePathMaxima.Queries} container passed to the
+		 * {@link TreePathMaxima} algorithm.
 		 *
 		 * @return the number queries results this result object hold
 		 */
