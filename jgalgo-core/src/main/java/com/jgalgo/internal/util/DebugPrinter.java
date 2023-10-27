@@ -145,9 +145,10 @@ public class DebugPrinter {
 		}
 	}
 
-	public void println(Object... args) {
+	public void println(Object arg1, Object... args) {
 		if (enable) {
 			StringBuilder builder = new StringBuilder();
+			builder.append(arg1);
 			for (Object arg : args)
 				builder.append(arg);
 			printStream.println(builder.toString());
