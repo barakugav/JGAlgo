@@ -47,14 +47,14 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
-		return new DS(c, n);
+		return new PreProcessor(c, n).build();
 	}
 
-	private class DS extends RMQStaticLinearAbstract.DS {
+	private class PreProcessor extends RMQStaticLinearAbstract.PreProcessor {
 
 		private final byte[] tempNodesArray;
 
-		DS(RMQStaticComparator c, int n) {
+		PreProcessor(RMQStaticComparator c, int n) {
 			super(c, n);
 			tempNodesArray = new byte[blockSize];
 			preProcessInnerBlocks();
@@ -117,11 +117,6 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 			}
 
 			return demoBlock;
-		}
-
-		@Override
-		int calcRMQInnerBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
 		}
 
 	}

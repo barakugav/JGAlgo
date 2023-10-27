@@ -48,12 +48,12 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
-		return new DS(c, n);
+		return new PreProcessor(c, n).build();
 	}
 
-	private class DS extends RMQStaticLinearAbstract.DS {
+	private class PreProcessor extends RMQStaticLinearAbstract.PreProcessor {
 
-		DS(RMQStaticComparator c, int n) {
+		PreProcessor(RMQStaticComparator c, int n) {
 			super(c, n);
 			preProcessInnerBlocks();
 		}
@@ -94,11 +94,6 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1));
 
 			return demoBlock;
-		}
-
-		@Override
-		int calcRMQInnerBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
 		}
 
 	}

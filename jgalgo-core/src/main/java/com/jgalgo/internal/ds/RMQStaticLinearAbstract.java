@@ -40,7 +40,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	RMQStaticLinearAbstract() {}
 
-	abstract class DS implements RMQStatic.DataStructure {
+	abstract class PreProcessor {
 
 		final RMQStaticComparator cmpOrig;
 		final RMQStaticComparator cmpPadded;
@@ -56,7 +56,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		private final RMQStatic outerRMQ;
 		private final RMQStatic innerRMQ;
 
-		DS(RMQStaticComparator c, int n) {
+		PreProcessor(RMQStaticComparator c, int n) {
 			this.n = n;
 			blockSize = getBlockSize(n);
 			blockNum = (int) Math.ceil((double) n / blockSize);
@@ -146,6 +146,32 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		abstract byte[] calcDemoBlock(int key);
 
+		RMQStatic.DataStructure build() {
+			return new DataStructure(this);
+		}
+
+	}
+
+	private static class DataStructure implements RMQStatic.DataStructure {
+
+		private final int n;
+		private final int blockSize;
+		private final byte[][] blocksRightMinimum;
+		private final byte[][] blocksLeftMinimum;
+		private final RMQStatic.DataStructure xlogxTableDS;
+		private final RMQStatic.DataStructure[] interBlocksDs;
+		private final RMQStaticComparator cmpOrig;
+
+		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {
+			n = ds.n;
+			blockSize = ds.blockSize;
+			blocksRightMinimum = ds.blocksRightMinimum;
+			blocksLeftMinimum = ds.blocksLeftMinimum;
+			xlogxTableDS = ds.xlogxTableDS;
+			interBlocksDs = ds.interBlocksDs;
+			cmpOrig = ds.cmpOrig;
+		}
+
 		@Override
 		public int findMinimumInRange(int i, int j) {
 			if (!(0 <= i && i <= j && j < n))
@@ -173,9 +199,13 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			} else {
 				return calcRMQInnerBlock(blk0, innerI, innerJ);
 			}
+
 		}
 
-		abstract int calcRMQInnerBlock(int block, int i, int j);
+		int calcRMQInnerBlock(int block, int i, int j) {
+			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
+		}
+
 	}
 
 	private static class PaddedComparator implements RMQStaticComparator {
