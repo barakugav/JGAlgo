@@ -99,8 +99,8 @@ public interface VertexCover {
 			ig = g.indexGraph();
 			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());
 		}
-		final int m = ig.edges().size();
 		final int n = ig.vertices().size();
+		final int m = ig.edges().size();
 		BitSet visited = new BitSet(n);
 		for (int v : vertices) {
 			if (!ig.vertices().contains(v))

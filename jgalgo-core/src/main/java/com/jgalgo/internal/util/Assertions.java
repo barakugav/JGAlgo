@@ -96,6 +96,11 @@ public class Assertions {
 				throw new IllegalArgumentException("only positive weights are supported: " + w);
 		}
 
+		public static void onlyCardinality(WeightFunction w) {
+			if (w != null && w != WeightFunction.CardinalityWeightFunction)
+				throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
+		}
+
 		public static void checkId(int idx, int length, boolean isEdge) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;

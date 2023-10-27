@@ -28,6 +28,9 @@ import com.jgalgo.graph.WeightFunction;
  * target. This might be more efficient in some cases, as less than linear time and space can be used.
  * <p>
  * A variant with a heuristic distance function is also available, see {@link ShortestPathHeuristicST}.
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
  * @see    ShortestPathAllPairs
@@ -67,24 +70,21 @@ public interface ShortestPathST {
 	 * @return a new builder that can build {@link ShortestPathST} objects
 	 */
 	static ShortestPathST.Builder newBuilder() {
-		return new ShortestPathST.Builder() {
-			@Override
-			public ShortestPathST build() {
-				return new ShortestPathST() {
-					ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();
-					ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();
+		return () -> {
+			return new ShortestPathST() {
+				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();
+				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();
 
-					@Override
-					public Path computeShortestPath(Graph g, WeightFunction w, int source, int target) {
-						boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
-						if (cardinality) {
-							return cardinalityStSp.computeShortestPath(g, w, source, target);
-						} else {
-							return weightedStSp.computeShortestPath(g, w, source, target);
-						}
+				@Override
+				public Path computeShortestPath(Graph g, WeightFunction w, int source, int target) {
+					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
+					if (cardinality) {
+						return cardinalityStSp.computeShortestPath(g, w, source, target);
+					} else {
+						return weightedStSp.computeShortestPath(g, w, source, target);
 					}
-				};
-			}
+				}
+			};
 		};
 	}
 

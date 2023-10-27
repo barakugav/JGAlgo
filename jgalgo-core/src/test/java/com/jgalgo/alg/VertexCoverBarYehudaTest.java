@@ -75,6 +75,8 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			IntSet cover = new IntOpenHashSet(n);
 			ToDoubleFunction<IntSet> coverWeight = c -> w.weightSum(c);
 			coverLoop: for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
+				cover.clear();
+				assert cover.isEmpty();
 				for (int i = 0; i < n; i++)
 					if ((bitmap & (1 << i)) != 0)
 						cover.add(vertices.getInt(i));
@@ -83,7 +85,6 @@ public class VertexCoverBarYehudaTest extends TestBase {
 						continue coverLoop; /* don't cover all edges */
 				if (bestCover == null || coverWeight.applyAsDouble(bestCover) > coverWeight.applyAsDouble(cover))
 					bestCover = new IntOpenHashSet(cover);
-				cover.clear();
 			}
 
 			assertNotNull(bestCover);

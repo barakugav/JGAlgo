@@ -26,32 +26,32 @@ import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class VertexCoverUtils {
+class EdgeCovers {
 
-	static abstract class AbstractImpl implements VertexCover {
+	static abstract class AbstractImpl implements EdgeCover {
 
 		@Override
-		public VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w) {
+		public EdgeCover.Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
 			if (g instanceof IndexGraph)
-				return computeMinimumVertexCover((IndexGraph) g, w);
+				return computeMinimumEdgeCover((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);
-			return new ResultFromIndexResult(indexResult, viMap);
+			EdgeCover.Result indexResult = computeMinimumEdgeCover(iGraph, iw);
+			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
-		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w);
+		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w);
 
 	}
 
-	static class ResultImpl implements VertexCover.Result {
+	static class ResultImpl implements EdgeCover.Result {
 
 		private final IndexGraph g;
 		private final BitSet cover;
-		private IntSet vertices;
+		private IntSet edges;
 
 		ResultImpl(IndexGraph g, BitSet cover) {
 			this.g = Objects.requireNonNull(g);
@@ -59,54 +59,53 @@ class VertexCoverUtils {
 		}
 
 		@Override
-		public IntSet vertices() {
-			if (vertices == null) {
-				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {
+		public IntSet edges() {
+			if (edges == null) {
+				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {
 					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < g.vertices().size() && cover.get(v);
+					public boolean contains(int e) {
+						return 0 <= e && e < g.edges().size() && cover.get(e);
 					}
 				};
 			}
-			return vertices;
+			return edges;
 		}
 
 		@Override
-		public boolean isInCover(int vertex) {
-			if (!g.vertices().contains(vertex))
-				throw new IndexOutOfBoundsException(vertex);
-			return cover.get(vertex);
+		public boolean isInCover(int edge) {
+			if (!g.edges().contains(edge))
+				throw new IndexOutOfBoundsException(edge);
+			return cover.get(edge);
 		}
 
 		@Override
 		public String toString() {
-			return vertices().toString();
+			return edges().toString();
 		}
 	}
+	private static class ResultFromIndexResult implements EdgeCover.Result {
 
-	private static class ResultFromIndexResult implements VertexCover.Result {
+		private final EdgeCover.Result res;
+		private final IndexIdMap eiMap;
 
-		private final VertexCover.Result res;
-		private final IndexIdMap viMap;
-
-		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {
+		ResultFromIndexResult(EdgeCover.Result res, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
-		public IntSet vertices() {
-			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);
+		public IntSet edges() {
+			return IndexIdMaps.indexToIdSet(res.edges(), eiMap);
 		}
 
 		@Override
-		public boolean isInCover(int vertex) {
-			return res.isInCover(viMap.idToIndex(vertex));
+		public boolean isInCover(int edge) {
+			return res.isInCover(eiMap.idToIndex(edge));
 		}
 
 		@Override
 		public String toString() {
-			return vertices().toString();
+			return edges().toString();
 		}
 	}
 

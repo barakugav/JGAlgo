@@ -22,6 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -294,31 +295,26 @@ class Matchings {
 
 		@Override
 		Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
-			onlyCardinality(w);
+			Assertions.Graphs.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
 
 		@Override
 		Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
-			onlyCardinality(w);
+			Assertions.Graphs.onlyCardinality(w);
 			return Matchings.MatchingImpl.emptyMatching(g);
 		}
 
 		@Override
 		Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-			onlyCardinality(w);
+			Assertions.Graphs.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
 
 		@Override
 		Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-			onlyCardinality(w);
+			Assertions.Graphs.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
-		}
-
-		private static void onlyCardinality(WeightFunction w) {
-			if (w != null && w != WeightFunction.CardinalityWeightFunction)
-				throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		}
 
 	}

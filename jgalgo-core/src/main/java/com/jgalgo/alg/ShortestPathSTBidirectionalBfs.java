@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
@@ -37,8 +38,7 @@ class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 			throw new IndexOutOfBoundsException(target);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
-		if (w != null && w != WeightFunction.CardinalityWeightFunction)
-			throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
+		Assertions.Graphs.onlyCardinality(w);
 
 		final long InfoNone = info(-2, -1);
 		Int2LongMap infoS = new Int2LongOpenHashMap();
