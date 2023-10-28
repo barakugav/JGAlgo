@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo.alg;
 
 import java.util.Objects;
@@ -27,53 +26,32 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
 
-class MinimumSpanningTreeUtils {
+class SteinerTrees {
 
-	static abstract class AbstractUndirected implements MinimumSpanningTree {
+	static abstract class AbstractImpl implements SteinerTreeAlgo {
 
 		@Override
-		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+		public SteinerTreeAlgo.Result computeSteinerTree(Graph g, WeightFunction w, IntCollection terminals) {
 			if (g instanceof IndexGraph)
-				return computeMinimumSpanningTree((IndexGraph) g, w);
+				return computeSteinerTree((IndexGraph) g, w, terminals);
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, eiMap);
 
-			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, iw);
+			SteinerTreeAlgo.Result indexResult = computeSteinerTree(iGraph, iw, iTerminals);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
-		abstract MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w);
+		abstract SteinerTreeAlgo.Result computeSteinerTree(IndexGraph g, WeightFunction w, IntCollection terminals);
 
 	}
 
-	static abstract class AbstractDirected implements MinimumDirectedSpanningTree {
-
-		@Override
-		public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root) {
-			if (g instanceof IndexGraph)
-				return computeMinimumDirectedSpanningTree((IndexGraph) g, w, root);
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			int iRoot = viMap.idToIndex(root);
-
-			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, w, iRoot);
-			return new ResultFromIndexResult(indexResult, eiMap);
-		}
-
-		abstract MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w,
-				int root);
-
-	}
-
-	static class ResultImpl implements MinimumSpanningTree.Result {
+	static class ResultImpl implements SteinerTreeAlgo.Result {
 
 		private final IntCollection edges;
-		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
+		static final SteinerTreeAlgo.Result Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
 
 		ResultImpl(IntCollection edges) {
 			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
@@ -95,12 +73,12 @@ class MinimumSpanningTreeUtils {
 
 	}
 
-	private static class ResultFromIndexResult implements MinimumSpanningTree.Result {
+	private static class ResultFromIndexResult implements SteinerTreeAlgo.Result {
 
-		private final MinimumSpanningTree.Result res;
+		private final SteinerTreeAlgo.Result res;
 		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {
+		ResultFromIndexResult(SteinerTreeAlgo.Result res, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}

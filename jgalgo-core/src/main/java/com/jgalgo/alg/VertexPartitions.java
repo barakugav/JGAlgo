@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
@@ -24,6 +25,7 @@ import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2ObjFunc;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -57,7 +59,8 @@ class VertexPartitions {
 
 		@Override
 		public String toString() {
-			return Arrays.toString(vertexToBlock);
+			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]"));
 		}
 
 		@Override
@@ -304,6 +307,11 @@ class VertexPartitions {
 			return IndexIdMaps.indexToIdSet(res.crossEdges(block1, block2), eiMap);
 		}
 
+		@Override
+		public String toString() {
+			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]"));
+		}
 	}
 
 }
