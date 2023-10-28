@@ -49,10 +49,10 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
 			edges = g0.edges.copy(vertices, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
-			for (int v = 0; v < n; v++) {
-				DataContainer.Int vEdges = edges.get(v).copy(vertices, JGAlgoUtils.consumerNoOp());
+			for (int u = 0; u < n; u++) {
+				DataContainer.Int vEdges = edges.get(u).copy(vertices, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
-				edges.set(v, vEdges);
+				edges.set(u, vEdges);
 			}
 
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(super.edges, newArr -> edgeEndpoints = newArr);
@@ -61,14 +61,18 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 			edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(edges);
-			for (int v = 0; v < n; v++) {
+			for (int u = 0; u < n; u++) {
 				DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
-				edges.set(v, vEdges);
+				edges.set(u, vEdges);
 
-				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					vEdges.set(eit.target(), e);
+					int v = eit.target();
+					int existingEdge = vEdges.get(v);
+					if (existingEdge != EdgeNone && existingEdge != e)
+						throw new IllegalArgumentException("parallel edges are not supported");
+					vEdges.set(v, e);
 				}
 			}
 

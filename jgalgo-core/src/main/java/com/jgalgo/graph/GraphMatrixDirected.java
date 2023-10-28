@@ -30,6 +30,10 @@ package com.jgalgo.graph;
  */
 class GraphMatrixDirected extends GraphMatrixAbstract {
 
+	private int[] edgesOutNum;
+	private int[] edgesInNum;
+	private final DataContainer.Int edgesOutNumContainer;
+	private final DataContainer.Int edgesInNumContainer;
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, false);
 
 	GraphMatrixDirected() {
@@ -44,10 +48,31 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	 */
 	GraphMatrixDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
 	}
 
 	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
 		super(Capabilities, g, copyWeights);
+		if (g instanceof GraphMatrixDirected) {
+			GraphMatrixDirected g0 = (GraphMatrixDirected) g;
+			edgesOutNumContainer = g0.edgesOutNumContainer.copy(vertices, newArr -> edgesOutNum = newArr);
+			edgesInNumContainer = g0.edgesInNumContainer.copy(vertices, newArr -> edgesInNum = newArr);
+			addInternalEdgesContainer(edgesOutNumContainer);
+			addInternalEdgesContainer(edgesInNumContainer);
+		} else {
+			edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+			edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
+			addInternalVerticesContainer(edgesOutNumContainer);
+			addInternalVerticesContainer(edgesInNumContainer);
+			assert g.isDirected();
+			for (int n = g.vertices().size(), u = 0; u < n; u++) {
+				edgesOutNum[u] = g.outEdges(u).size();
+				edgesInNum[u] = g.inEdges(u).size();
+			}
+		}
 	}
 
 	@Override
@@ -64,6 +89,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
 		edges.get(source).set(target, e);
+		edgesOutNum[source]++;
+		edgesInNum[target]++;
 		return e;
 	}
 
@@ -71,6 +98,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	void removeEdgeImpl(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
+		edgesOutNum[u]--;
+		edgesInNum[v]--;
 		super.removeEdgeImpl(edge);
 	}
 
@@ -90,6 +119,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 			int u = edgeSource(e), v = edgeTarget(e);
 			edges.get(u).set(v, EdgeNone);
 		}
+		edgesOutNumContainer.clear(edgesOutNum);
+		edgesInNumContainer.clear(edgesInNum);
 		super.clearEdges();
 	}
 
@@ -100,6 +131,10 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 			throw new IllegalArgumentException("parallel edges are not supported");
 		edges.get(u).set(v, EdgeNone);
 		edges.get(v).set(u, edge);
+		edgesOutNum[u]--;
+		edgesInNum[v]--;
+		edgesOutNum[v]++;
+		edgesInNum[u]++;
 		super.reverseEdge0(edge);
 	}
 
@@ -113,6 +148,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 			replaceEdgeTarget(e, v2);
 		for (int e : inEdges(v2))
 			replaceEdgeTarget(e, v1);
+		edgesOutNumContainer.swap(edgesOutNum, v1, v2);
+		edgesInNumContainer.swap(edgesInNum, v1, v2);
 		super.vertexSwap(v1, v2);
 	}
 
@@ -125,6 +162,11 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		public EdgeIter iterator() {
 			return new EdgeIterOut(source);
 		}
+
+		@Override
+		public int size() {
+			return edgesOutNum[source];
+		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
@@ -135,6 +177,11 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterInDirected(target);
+		}
+
+		@Override
+		public int size() {
+			return edgesInNum[target];
 		}
 	}
 

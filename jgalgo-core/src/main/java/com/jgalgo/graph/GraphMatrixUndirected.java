@@ -30,6 +30,8 @@ package com.jgalgo.graph;
  */
 class GraphMatrixUndirected extends GraphMatrixAbstract {
 
+	private int[] edgesNum;
+	private final DataContainer.Int edgesNumContainer;
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);
 
 	GraphMatrixUndirected() {
@@ -44,17 +46,34 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	 */
 	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+		addInternalVerticesContainer(edgesNumContainer);
 	}
 
 	GraphMatrixUndirected(IndexGraph g, boolean copyWeights) {
 		super(Capabilities, g, copyWeights);
+		if (g instanceof GraphMatrixUndirected) {
+			GraphMatrixUndirected g0 = (GraphMatrixUndirected) g;
+			edgesNumContainer = g0.edgesNumContainer.copy(vertices, newArr -> edgesNum = newArr);
+			addInternalEdgesContainer(edgesNumContainer);
+		} else {
+			edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+			addInternalVerticesContainer(edgesNumContainer);
+			assert !g.isDirected();
+			for (int n = g.vertices().size(), u = 0; u < n; u++)
+				edgesNum[u] = g.outEdges(u).size();
+		}
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
 		edges.get(source).set(target, e);
-		edges.get(target).set(source, e);
+		edgesNum[source]++;
+		if (source != target) {
+			edges.get(target).set(source, e);
+			edgesNum[target]++;
+		}
 		return e;
 	}
 
@@ -62,7 +81,11 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	void removeEdgeImpl(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
-		edges.get(v).set(u, EdgeNone);
+		edgesNum[u]--;
+		if (u != v) {
+			edges.get(v).set(u, EdgeNone);
+			edgesNum[v]--;
+		}
 		super.removeEdgeImpl(edge);
 	}
 
@@ -107,6 +130,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 			edges.get(u).set(v, EdgeNone);
 			edges.get(v).set(u, EdgeNone);
 		}
+		edgesNumContainer.clear(edgesNum);
 		super.clearEdges();
 	}
 
@@ -130,6 +154,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 			replaceEdgeEndpoint(e, v2, v1);
 		for (int e : outEdges(v1))
 			replaceEdgeEndpoint(e, tempV, v2);
+		edgesNumContainer.swap(edgesNum, v1, v2);
 		super.vertexSwap(v1, v2);
 	}
 
@@ -142,6 +167,11 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		public EdgeIter iterator() {
 			return new EdgeIterOut(source);
 		}
+
+		@Override
+		public int size() {
+			return edgesNum[source];
+		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
@@ -152,6 +182,11 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterInUndirected(target);
+		}
+
+		@Override
+		public int size() {
+			return edgesNum[target];
 		}
 	}
 

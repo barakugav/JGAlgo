@@ -29,7 +29,9 @@ package com.jgalgo.graph;
 class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	private Edge[] edges;
+	private int[] edgesNum;
 	private final DataContainer.Obj<Edge> edgesContainer;
+	private final DataContainer.Int edgesNumContainer;
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
@@ -44,14 +46,18 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
 		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
+
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyWeights) {
 		super(Capabilities, g, copyWeights);
-
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
 		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -92,6 +98,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 
 		edgesContainer.swap(edges, v1, v2);
+		edgesNumContainer.swap(edgesNum, v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -123,12 +130,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			next.prevSet(source, e);
 		}
 		edges[source] = e;
+		edgesNum[source]++;
 		if (source != target) {
 			if ((next = edges[target]) != null) {
 				e.nextSet(target, next);
 				next.prevSet(target, e);
 			}
 			edges[target] = e;
+			edgesNum[target]++;
 		}
 	}
 
@@ -163,6 +172,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			next.prevSet(w, prev);
 			e.nextSet(w, null);
 		}
+		edgesNum[w]--;
 	}
 
 	@Override
@@ -184,6 +194,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			super.removeEdgeImpl(p.id);
 		}
 		edges[source] = null;
+		edgesNum[source] = 0;
 	}
 
 	@Override
@@ -208,6 +219,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
 		edgesContainer.clear(edges);
+		edgesNumContainer.clear(edgesNum);
 		super.clearEdges();
 	}
 
@@ -271,6 +283,11 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		public EdgeIter iterator() {
 			return new EdgeIterOut(source, edges[source]);
 		}
+
+		@Override
+		public int size() {
+			return edgesNum[source];
+		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
@@ -281,6 +298,11 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterIn(target, edges[target]);
+		}
+
+		@Override
+		public int size() {
+			return edgesNum[target];
 		}
 	}
 

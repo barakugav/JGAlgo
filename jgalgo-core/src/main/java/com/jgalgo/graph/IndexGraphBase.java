@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntIterables;
 
 abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
@@ -102,6 +103,16 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 			int s = edgeSource(edge), t = edgeTarget(edge);
 			return (source == s && target == t) || (source == t && target == s);
 		}
+
+		@Override
+		public int size() {
+			return (int) IntIterables.size(this);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
+		}
 	}
 
 	private class EdgeSetSourceTargetDirected extends EdgeSetSourceTarget {
@@ -112,6 +123,16 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		@Override
 		public boolean contains(int edge) {
 			return source == edgeSource(edge) && target == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			return (int) IntIterables.size(this);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
 		}
 	}
 

@@ -28,10 +28,14 @@ package com.jgalgo.graph;
  */
 class GraphLinkedDirected extends GraphLinkedAbstract {
 
-	private Edge[] edgesIn;
 	private Edge[] edgesOut;
-	private final DataContainer.Obj<Edge> edgesInContainer;
+	private Edge[] edgesIn;
+	private int[] edgesOutNum;
+	private int[] edgesInNum;
 	private final DataContainer.Obj<Edge> edgesOutContainer;
+	private final DataContainer.Obj<Edge> edgesInContainer;
+	private final DataContainer.Int edgesOutNumContainer;
+	private final DataContainer.Int edgesInNumContainer;
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
@@ -48,8 +52,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesInContainer);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
 	}
 
 	GraphLinkedDirected(IndexGraph g, boolean copyWeights) {
@@ -57,8 +65,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 		addInternalVerticesContainer(edgesOutContainer);
 		addInternalVerticesContainer(edgesInContainer);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -85,6 +97,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		edgesOutContainer.swap(edgesOut, v1, v2);
 		edgesInContainer.swap(edgesIn, v1, v2);
+		edgesOutNumContainer.swap(edgesOutNum, v1, v2);
+		edgesInNumContainer.swap(edgesInNum, v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -123,6 +137,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			e.nextIn = next;
 		}
 		edgesIn[v] = e;
+		edgesOutNum[u]++;
+		edgesInNum[v]++;
 	}
 
 	@Override
@@ -154,6 +170,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			super.removeEdgeImpl(p.id);
 		}
 		edgesOut[source] = null;
+		edgesOutNum[source] = 0;
 	}
 
 	@Override
@@ -167,6 +184,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			super.removeEdgeImpl(p.id);
 		}
 		edgesIn[target] = null;
+		edgesInNum[target] = 0;
 	}
 
 	private void removeEdgeOutPointers(Edge e) {
@@ -181,6 +199,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next.prevOut = prev;
 			e.nextOut = null;
 		}
+		edgesOutNum[e.source]--;
 	}
 
 	private void removeEdgeInPointers(Edge e) {
@@ -195,6 +214,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next.prevIn = prev;
 			e.nextIn = null;
 		}
+		edgesInNum[e.target]--;
 	}
 
 	@Override
@@ -218,6 +238,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 		edgesOutContainer.clear(edgesOut);
 		edgesInContainer.clear(edgesIn);
+		edgesOutNumContainer.clear(edgesOutNum);
+		edgesInNumContainer.clear(edgesInNum);
 		super.clearEdges();
 	}
 
@@ -230,6 +252,11 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		public EdgeIter iterator() {
 			return new EdgeIterOut(edgesOut[source]);
 		}
+
+		@Override
+		public int size() {
+			return edgesOutNum[source];
+		}
 	}
 
 	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
@@ -240,6 +267,11 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		@Override
 		public EdgeIter iterator() {
 			return new EdgeIterIn(edgesIn[target]);
+		}
+
+		@Override
+		public int size() {
+			return edgesInNum[target];
 		}
 	}
 

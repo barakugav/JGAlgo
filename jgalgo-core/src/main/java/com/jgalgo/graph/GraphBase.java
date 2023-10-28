@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntIterables;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class GraphBase implements Graph {
@@ -159,16 +158,6 @@ abstract class GraphBase implements Graph {
 				return false;
 			removeEdge(edge);
 			return true;
-		}
-
-		@Override
-		public int size() {
-			return (int) IntIterables.size(this);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
 		}
 
 	}
