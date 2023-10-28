@@ -151,7 +151,8 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		IndexGraph g3 = g3Builder.build();
 		g3Builder.clear();
 		int[] g3EdgeRef = g3EdgeRef0.elements();
-		WeightFunction g3WeightFunc = g1WeightFunc; // we reuse the same weights array
+		double[] g3EdgeWeight = g3EdgeWeight0.elements();
+		WeightFunction g3WeightFunc = e -> g3EdgeWeight[e];
 
 		/* 4. Find the minimum spanning tree G4 of G3 */
 		IntCollection g4 = mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc).edges();
