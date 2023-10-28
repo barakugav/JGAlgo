@@ -26,10 +26,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -89,63 +85,58 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
+	@SuppressWarnings("boxing")
 	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
 
-		Int2ObjectMap<HeapReference<Double, Integer>> verticesPtrs = new Int2ObjectOpenHashMap<>();
+		Int2ObjectMap<Info> info = new Int2ObjectOpenHashMap<>();
+		Info sourceInfo = new Info();
+		sourceInfo.distance = 0;
+		info.put(source, sourceInfo);
+		heap.insert(.0, source);
 
-		Int2DoubleMap distances = new Int2DoubleOpenHashMap();
-		distances.defaultReturnValue(Double.POSITIVE_INFINITY);
-		distances.put(source, 0);
-
-		Int2IntMap backtrack = new Int2IntOpenHashMap();
-		backtrack.defaultReturnValue(-1);
-
-		for (int u = source;;) {
-			final double uDistance = distances.get(u);
-			assert uDistance != Double.POSITIVE_INFINITY;
+		for (; !heap.isEmpty();) {
+			HeapReference<Double, Integer> min = heap.extractMin();
+			int u = min.value();
+			if (u == target)
+				return computePath(g, source, target, info);
+			Info uInfo = info.get(u);
+			final double uDistance = uInfo.distance;
+			uInfo.heapPtr = null;
 
 			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
+				Info vInfo = info.computeIfAbsent(v, k -> new Info());
 
 				double ew = w.weight(e);
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
-				if (distance >= distances.get(v))
+				if (distance >= vInfo.distance)
 					continue;
-				distances.put(v, distance);
-				backtrack.put(v, e);
+				vInfo.distance = distance;
+				vInfo.backtrack = e;
 				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);
 
-				HeapReference<Double, Integer> vPtr = verticesPtrs.get(v);
-				if (vPtr == null) {
-					vPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
-					verticesPtrs.put(v, vPtr);
+				if (vInfo.heapPtr == null) {
+					vInfo.heapPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
 				} else {
-					if (distanceEstimate < vPtr.key().doubleValue())
-						heap.decreaseKey(vPtr, Double.valueOf(distanceEstimate));
+					assert distanceEstimate <= vInfo.heapPtr.key().doubleValue();
+					heap.decreaseKey(vInfo.heapPtr, Double.valueOf(distanceEstimate));
 				}
 			}
-
-			if (heap.isEmpty())
-				break;
-			HeapReference<Double, Integer> next = heap.extractMin();
-			verticesPtrs.remove(u = next.value().intValue());
-			if (u == target)
-				return computePath(g, source, target, backtrack);
 		}
 		return null;
 	}
 
-	private static Path computePath(IndexGraph g, int source, int target, Int2IntMap backtrack) {
+	private static Path computePath(IndexGraph g, int source, int target, Int2ObjectMap<Info> info) {
 		IntArrayList path = new IntArrayList();
 		if (g.isDirected()) {
 			for (int v = target;;) {
-				int e = backtrack.get(v);
+				int e = info.get(v).backtrack;
 				if (e == -1) {
 					assert v == source;
 					break;
@@ -155,7 +146,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			}
 		} else {
 			for (int v = target;;) {
-				int e = backtrack.get(v);
+				int e = info.get(v).backtrack;
 				if (e == -1) {
 					assert v == source;
 					break;
@@ -166,6 +157,12 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		}
 		IntArrays.reverse(path.elements(), 0, path.size());
 		return new PathImpl(g, source, target, path);
+	}
+
+	static class Info {
+		int backtrack = -1;
+		double distance = Double.POSITIVE_INFINITY;
+		HeapReference<Double, Integer> heapPtr;
 	}
 
 }

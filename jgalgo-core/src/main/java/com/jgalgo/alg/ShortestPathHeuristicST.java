@@ -73,7 +73,35 @@ public interface ShortestPathHeuristicST {
 	 * @return a new builder that can build {@link ShortestPathHeuristicST} objects
 	 */
 	static ShortestPathHeuristicST.Builder newBuilder() {
-		return ShortestPathAStar::new;
+		return new ShortestPathHeuristicST.Builder() {
+
+			private String impl;
+
+			@Override
+			public ShortestPathHeuristicST build() {
+				if (impl != null) {
+					switch (impl) {
+						case "a-star":
+							return new ShortestPathAStar();
+						default:
+							break;
+					}
+				}
+				return new ShortestPathAStar();
+			}
+
+			@Override
+			public ShortestPathHeuristicST.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
