@@ -21,6 +21,8 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -88,16 +90,18 @@ public class CoresAlgoTest extends TestBase {
 		}
 
 		final boolean directed = g.isDirected();
-		for (int k = 0;; k++) {
+		Int2IntMap vertex2core = new Int2IntOpenHashMap();
+		int maxCoreExpected = 0;
+		coreComputation: for (int k = 0;; k++) {
 			IntSet vs = new IntOpenHashSet(g.vertices());
 			for (;;) {
 				if (vs.isEmpty()) {
-					assertEquals(k - 1, res.maxCore());
-					return;
+					maxCoreExpected = k - 1;
+					break coreComputation;
 				}
 				boolean improve = false;
-				for (IntIterator it = vs.iterator(); it.hasNext();) {
-					int u = it.nextInt();
+				for (IntIterator vit = vs.iterator(); vit.hasNext();) {
+					int u = vit.nextInt();
 					int degree = 0;
 					if (!directed || degreeType == CoresAlgo.DegreeType.OutDegree) {
 						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -126,15 +130,33 @@ public class CoresAlgoTest extends TestBase {
 					}
 					if (degree < k) {
 						improve = true;
-						it.remove();
+						vit.remove();
 					}
 				}
 				if (!improve)
 					break;
 			}
-			IntSet resSet = new IntOpenHashSet(res.coreVertices(k));
-			assertEquals(resSet.size(), res.coreVertices(k).size());
-			assertEquals(vs, resSet);
+			for (int v : vs)
+				vertex2core.put(v, k);
+		}
+
+		assertEquals(maxCoreExpected, res.maxCore());
+		for (int v : g.vertices())
+			assertEquals(vertex2core.get(v), res.vertexCoreNum(v));
+		for (int k0 = 0; k0 <= maxCoreExpected; k0++) {
+			final int k = k0;
+			assertEquals(res.coreVertices(k).size(), res.coreVertices(k).intStream().distinct().count());
+			assertEquals(res.coreShell(k).size(), res.coreShell(k).intStream().distinct().count());
+			assertEquals(res.coreCrust(k).size(), res.coreCrust(k).intStream().distinct().count());
+			IntSet expectedCore = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() >= k)
+					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
+			IntSet expectedShell = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() == k)
+					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
+			IntSet expectedCrust = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() < k)
+					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
+			assertEquals(expectedCore, res.coreVertices(k));
+			assertEquals(expectedShell, res.coreShell(k));
+			assertEquals(expectedCrust, res.coreCrust(k));
 		}
 	}
 

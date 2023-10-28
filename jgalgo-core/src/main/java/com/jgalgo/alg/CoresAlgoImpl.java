@@ -150,7 +150,11 @@ class CoresAlgoImpl implements CoresAlgo {
 
 		private final int[] core;
 		private final int maxCore;
+		private int[] coreOffset;
+		private int[] sortedVertices;
 		private IntSet[] coreVertices;
+		private IntSet[] coreShells;
+		private IntSet[] coreCrusts;
 
 		public ResultImpl(int[] core) {
 			this.core = Objects.requireNonNull(core);
@@ -170,30 +174,37 @@ class CoresAlgoImpl implements CoresAlgo {
 			return maxCore;
 		}
 
+		private void computeSortedVertices() {
+			if (sortedVertices != null)
+				return;
+			final int n = this.core.length;
+			final int coreNum = maxCore + 1;
+			if (coreNum == 0)
+				return;
+
+			coreOffset = new int[coreNum + 1];
+			for (int v = 0; v < n; v++)
+				coreOffset[this.core[v]]++;
+			for (int s = 0, c = 0; c < coreNum; c++) {
+				int k = coreOffset[c];
+				coreOffset[c] = s;
+				s += k;
+			}
+			sortedVertices = new int[n];
+			for (int v = 0; v < n; v++)
+				sortedVertices[coreOffset[this.core[v]]++] = v;
+			assert coreOffset[coreNum - 1] == n;
+			for (int c = coreNum; c > 0; c--)
+				coreOffset[c] = coreOffset[c - 1];
+			coreOffset[0] = 0;
+		}
+
 		@Override
 		public IntSet coreVertices(int core) {
 			if (coreVertices == null) {
+				computeSortedVertices();
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
-				if (coreNum == 0)
-					throw new IndexOutOfBoundsException(core);
-
-				int[] coreOffset = new int[coreNum];
-				for (int v = 0; v < n; v++)
-					coreOffset[this.core[v]]++;
-				for (int s = 0, c = 0; c < coreNum; c++) {
-					int k = coreOffset[c];
-					coreOffset[c] = s;
-					s += k;
-				}
-				int[] sortedVertices = new int[n];
-				for (int v = 0; v < n; v++)
-					sortedVertices[coreOffset[this.core[v]]++] = v;
-				assert coreOffset[coreNum - 1] == n;
-				for (int c = coreNum - 1; c > 0; c--)
-					coreOffset[c] = coreOffset[c - 1];
-				coreOffset[0] = 0;
-
 				coreVertices = new IntSet[coreNum];
 				for (int c = 0; c < coreNum; c++) {
 					final int c0 = c;
@@ -208,6 +219,45 @@ class CoresAlgoImpl implements CoresAlgo {
 			return coreVertices[core];
 		}
 
+		@Override
+		public IntSet coreShell(int core) {
+			if (coreShells == null) {
+				computeSortedVertices();
+				final int n = this.core.length;
+				final int coreNum = maxCore + 1;
+				coreShells = new IntSet[coreNum];
+				for (int c = 0; c < coreNum; c++) {
+					final int c0 = c;
+					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {
+						@Override
+						public boolean contains(int v) {
+							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
+						}
+					};
+				}
+			}
+			return coreShells[core];
+		}
+
+		@Override
+		public IntSet coreCrust(int core) {
+			if (coreCrusts == null) {
+				computeSortedVertices();
+				final int n = this.core.length;
+				final int coreNum = maxCore + 1;
+				coreCrusts = new IntSet[coreNum];
+				for (int c = 0; c < coreNum; c++) {
+					final int c0 = c;
+					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {
+						@Override
+						public boolean contains(int v) {
+							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
+						}
+					};
+				}
+			}
+			return coreCrusts[core];
+		}
 	}
 
 	@Override
@@ -246,6 +296,15 @@ class CoresAlgoImpl implements CoresAlgo {
 			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);
 		}
 
+		@Override
+		public IntSet coreShell(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);
+		}
+
+		@Override
+		public IntSet coreCrust(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
+		}
 	}
 
 }

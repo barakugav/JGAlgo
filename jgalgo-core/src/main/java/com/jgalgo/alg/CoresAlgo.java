@@ -114,11 +114,35 @@ public interface CoresAlgo {
 
 		/**
 		 * The vertices of the given core.
+		 * <p>
+		 * A vertex is in the core if its core number is at least the given core number.
+		 *
+		 * @param  k the core number (order)
+		 * @return   the vertices of the core
+		 */
+		IntSet coreVertices(int k);
+
+		/**
+		 * The vertices in the shell of the given core.
+		 * <p>
+		 * A vertex is in the shell of the core if its core number is exactly the given core number. Namely it is in the
+		 * k core but not in the (k+1) core.
 		 *
 		 * @param  core the core number (order)
-		 * @return      the vertices of the core
+		 * @return      the vertices in the shell of the core
 		 */
-		IntSet coreVertices(int core);
+		IntSet coreShell(int core);
+
+		/**
+		 * The vertices in the crust of the given core.
+		 * <p>
+		 * A vertex is in the crust of the core if its core number is less than the given core. The crust is the
+		 * complement of the core vertices set.
+		 *
+		 * @param  core the core number (order)
+		 * @return      the vertices in the crust of the core
+		 */
+		IntSet coreCrust(int core);
 
 	}
 
