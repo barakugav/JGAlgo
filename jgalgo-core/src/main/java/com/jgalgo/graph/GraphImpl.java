@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import com.jgalgo.graph.GraphElementSet.IdAddRemoveListener;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
@@ -430,6 +433,77 @@ abstract class GraphImpl extends GraphBase {
 
 	private abstract static class IdIdxMapImpl implements IndexIdMap {
 
+		static interface Strategy {
+
+			IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges);
+
+			IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges);
+
+		}
+
+		static final Strategy strategy;
+		static {
+			Function<Supplier<ToIntFunction<IntSet>>, Strategy> customStrategy = nextIdFunc -> new Strategy() {
+				@Override
+				public IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
+					return new IdIdxMapCustom(elements, expectedSize, isEdges, nextIdFunc.get());
+				}
+
+				@Override
+				public IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+					return new IdIdxMapCustom(orig, elements, isEdges, nextIdFunc.get());
+				}
+			};
+			Object strat = JGAlgoConfigImpl.GraphIdStrategy;
+			if (strat == null)
+				strat = "counter"; // default
+			if (strat instanceof String) {
+				String strategyName = (String) strat;
+
+				switch (strategyName.toLowerCase()) {
+					case "counter":
+						strategy = new Strategy() {
+							@Override
+							public IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize,
+									boolean isEdges) {
+								return new IdIdxMapCounter(elements, expectedSize, isEdges);
+							}
+
+							@Override
+							public IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+								return new IdIdxMapCounter(orig, elements, isEdges);
+							}
+						};
+						break;
+					case "rand":
+					case "random":
+						strategy = customStrategy.apply(() -> {
+							final Random rand = new Random();
+							return (IntSet idSet) -> {
+								for (;;) {
+									int id = rand.nextInt();
+									if (id >= 1 && !idSet.contains(id))
+										// We prefer non zero IDs because fastutil handle zero (null) keys
+										// separately
+										return id;
+								}
+							};
+						});
+						break;
+
+					default:
+						throw new IllegalArgumentException("");
+				}
+
+			} else if (strat instanceof Supplier) {
+				@SuppressWarnings("unchecked")
+				Supplier<ToIntFunction<IntSet>> strategyFunc = (Supplier<ToIntFunction<IntSet>>) strat;
+				strategy = customStrategy.apply(strategyFunc);
+			} else {
+				throw new IllegalArgumentException("Unknown graph ID strategy: " + JGAlgoConfigImpl.GraphIdStrategy);
+			}
+		}
+
 		private final Int2IntOpenHashMap idToIndex;
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private final WeightsImplInt.IndexImpl indexToId;
@@ -477,13 +551,11 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		static IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
-			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(elements, expectedSize, isEdges)
-					: new GraphImpl.IdIdxMapCounter(elements, expectedSize, isEdges);
+			return strategy.newInstance(elements, expectedSize, isEdges);
 		}
 
 		static IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
-			return JGAlgoConfigImpl.GraphIdRandom ? new GraphImpl.IdIdxMapRand(orig, elements, isEdges)
-					: new GraphImpl.IdIdxMapCounter(orig, elements, isEdges);
+			return strategy.copyOf(orig, elements, isEdges);
 		}
 
 		private void initListeners(GraphElementSet elements) {
@@ -584,26 +656,23 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	private static class IdIdxMapRand extends IdIdxMapImpl {
+	private static class IdIdxMapCustom extends IdIdxMapImpl {
 
-		private final Random rand = new Random();
+		private final ToIntFunction<IntSet> nextId;
 
-		IdIdxMapRand(GraphElementSet elements, int expectedSize, boolean isEdges) {
+		IdIdxMapCustom(GraphElementSet elements, int expectedSize, boolean isEdges, ToIntFunction<IntSet> nextId) {
 			super(elements, expectedSize, isEdges);
+			this.nextId = Objects.requireNonNull(nextId);
 		}
 
-		IdIdxMapRand(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+		IdIdxMapCustom(IndexIdMap orig, GraphElementSet elements, boolean isEdges, ToIntFunction<IntSet> nextId) {
 			super(orig, elements, isEdges);
+			this.nextId = Objects.requireNonNull(nextId);
 		}
 
 		@Override
 		int nextID() {
-			for (;;) {
-				int id = rand.nextInt();
-				if (id >= 1 && !idSet().contains(id))
-					// We prefer non zero IDs because fastutil handle zero (null) keys separately
-					return id;
-			}
+			return nextId.applyAsInt(idSet());
 		}
 	}
 

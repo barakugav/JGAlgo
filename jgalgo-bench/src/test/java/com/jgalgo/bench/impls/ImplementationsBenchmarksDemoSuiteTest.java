@@ -23,7 +23,7 @@ public class ImplementationsBenchmarksDemoSuiteTest {
 
 	@Test
 	public void launchBenchmarksDemo() throws Exception {
-		JMHTester.testBenchmarksInPackage("com.jgalgo.bench.impls");
+		new JMHTester().includePackage("com.jgalgo.bench.impls").exclude(".*GraphIdsBench.*").run();
 	}
 
 }

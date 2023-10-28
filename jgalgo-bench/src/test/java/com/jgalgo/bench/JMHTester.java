@@ -29,7 +29,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Param;
@@ -42,25 +44,44 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class JMHTester {
 
-	public static void testBenchmarksInPackage(String packageName) {
-		for (Class<?> clazz : getPackageClasses(packageName)) {
-			List<Method> benchs = getBenchmarksMethods(clazz);
-			if (benchs.isEmpty() || Modifier.isAbstract(clazz.getModifiers()))
-				continue;
-			System.out.println("Testing benchmarks in class " + clazz.getName());
-			for (Method bench : benchs)
-				testBenchmark(bench);
-		}
+	private final List<String> includedPackages = new ArrayList<>();
+	private final List<String> excludes = new ArrayList<>();
+
+	public JMHTester includePackage(String packageName) {
+		includedPackages.add(packageName);
+		return this;
 	}
 
-	public static void testBenchmarksInClass(Class<?> clazz) {
-		for (Class<?> clazz2 : getClassSubClasses(clazz)) {
-			List<Method> benchs = getBenchmarksMethods(clazz2);
-			if (benchs.isEmpty() || Modifier.isAbstract(clazz2.getModifiers()))
-				continue;
-			System.out.println("Testing benchmarks in class " + clazz2.getName());
-			for (Method bench : benchs)
-				testBenchmark(bench);
+	public JMHTester exclude(String regexp) {
+		excludes.add(regexp);
+		return this;
+	}
+
+	public void run() {
+		Set<Class<?>> classes = new HashSet<>();
+
+		/* includes */
+		for (String packageName : includedPackages) {
+			for (Class<?> clazz : getPackageClasses(packageName)) {
+				List<Method> benchs = getBenchmarksMethods(clazz);
+				if (benchs.isEmpty() || Modifier.isAbstract(clazz.getModifiers()))
+					continue;
+				classes.add(clazz);
+			}
+		}
+
+		/* excludes */
+		classes.removeIf(c -> excludes.stream().anyMatch(regexp -> c.getName().matches(regexp)));
+
+		for (Class<?> clazz : classes) {
+			for (Class<?> clazz2 : getClassSubClasses(clazz)) {
+				List<Method> benchs = getBenchmarksMethods(clazz2);
+				if (benchs.isEmpty() || Modifier.isAbstract(clazz2.getModifiers()))
+					continue;
+				System.out.println("Testing benchmarks in class " + clazz2.getName());
+				for (Method bench : benchs)
+					testBenchmark(bench);
+			}
 		}
 	}
 
@@ -72,7 +93,7 @@ public class JMHTester {
 		return benchs;
 	}
 
-	public static void testBenchmark(Method bench) {
+	private static void testBenchmark(Method bench) {
 		// System.out.println("Testing benchmark " + bench.getDeclaringClass().getName() + "." + bench.getName());
 		try {
 			if (!bench.isAnnotationPresent(Benchmark.class))
