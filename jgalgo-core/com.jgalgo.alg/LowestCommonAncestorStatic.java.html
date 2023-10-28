@@ -55,6 +55,7 @@ import com.jgalgo.graph.Graph;
  * }&lt;/pre&gt;
  *
  * @see    LowestCommonAncestorDynamic
+ * @see    LowestCommonAncestorOffline
  * @author Barak Ugav
  */
 public interface LowestCommonAncestorStatic {
@@ -94,7 +95,7 @@ public interface LowestCommonAncestorStatic {
 	 * @return a default implementation of {@link LowestCommonAncestorStatic}
 	 */
 	static LowestCommonAncestorStatic newInstance() {
-<span class="nc" id="L97">		return newBuilder().build();</span>
+<span class="nc" id="L98">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -105,7 +106,7 @@ public interface LowestCommonAncestorStatic {
 	 * @return a new builder that can build {@link LowestCommonAncestorStatic} objects
 	 */
 	static LowestCommonAncestorStatic.Builder newBuilder() {
-<span class="nc" id="L108">		return LowestCommonAncestorStaticRMQ::new;</span>
+<span class="nc" id="L109">		return LowestCommonAncestorStaticRMQ::new;</span>
 	}
 
 	/**
@@ -137,7 +138,7 @@ public interface LowestCommonAncestorStatic {
 		 * @return       this builder
 		 */
 		default LowestCommonAncestorStatic.Builder setOption(String key, Object value) {
-<span class="nc" id="L140">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L141">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

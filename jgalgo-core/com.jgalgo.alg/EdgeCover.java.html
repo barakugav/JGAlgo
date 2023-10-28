@@ -146,11 +146,14 @@ public interface EdgeCover {
 	 */
 	static EdgeCover.Builder newBuilder() {
 <span class="nc" id="L148">		return () -&gt; {</span>
-<span class="nc" id="L149">			return new EdgeCover() {</span>
-				@Override
-				public Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
-					// TODO Auto-generated method stub
-<span class="nc" id="L153">					throw new UnsupportedOperationException(&quot;Unimplemented method 'computeMinimumEdgeCover'&quot;);</span>
+<span class="nc" id="L149">			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();</span>
+<span class="nc" id="L150">			EdgeCover weightedAlgo = new EdgeCoverWeighted();</span>
+<span class="nc" id="L151">			return (g, w) -&gt; {</span>
+<span class="nc bnc" id="L152" title="All 4 branches missed.">				boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">				if (isCardinality) {</span>
+<span class="nc" id="L154">					return cardinalityAlgo.computeMinimumEdgeCover(g, null);</span>
+				} else {
+<span class="nc" id="L156">					return weightedAlgo.computeMinimumEdgeCover(g, w);</span>
 				}
 			};
 		};
@@ -185,7 +188,7 @@ public interface EdgeCover {
 		 * @return       this builder
 		 */
 		default EdgeCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L188">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L191">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

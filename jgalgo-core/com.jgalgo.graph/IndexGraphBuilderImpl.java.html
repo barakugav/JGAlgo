@@ -163,15 +163,15 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 	@Override
 	public void clear() {
-<span class="nc" id="L166">		m = 0;</span>
-<span class="nc" id="L167">		vertices.clear();</span>
-<span class="nc" id="L168">		edges.clear();</span>
-<span class="nc" id="L169">		edgesSetView = null;</span>
-<span class="nc" id="L170">		userProvideEdgesIds = false;</span>
-<span class="nc" id="L171">		verticesUserWeights.clearContainers();</span>
-<span class="nc" id="L172">		edgesUserWeights.clearContainers();</span>
+<span class="fc" id="L166">		m = 0;</span>
+<span class="fc" id="L167">		vertices.clear();</span>
+<span class="fc" id="L168">		edges.clear();</span>
+<span class="fc" id="L169">		edgesSetView = null;</span>
+<span class="fc" id="L170">		userProvideEdgesIds = false;</span>
+<span class="fc" id="L171">		verticesUserWeights.clearContainers();</span>
+<span class="fc" id="L172">		edgesUserWeights.clearContainers();</span>
 
-<span class="nc" id="L174">	}</span>
+<span class="fc" id="L174">	}</span>
 
 	int edgeSource(int e) {
 <span class="fc" id="L177">		return endpoints[edgeSourceIndex(e)];</span>

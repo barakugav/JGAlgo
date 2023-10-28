@@ -51,7 +51,7 @@ public class Trees {
 	 */
 	public static boolean isTree(Graph g) {
 <span class="fc" id="L53">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());</span>
 	}
 
 	/**

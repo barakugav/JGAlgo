@@ -38,6 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
+ * @see    EdgeCover
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Vertex_cover&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
@@ -93,27 +94,27 @@ public interface VertexCover {
 	 */
 	static boolean isCover(Graph g, IntCollection vertices) {
 		IndexGraph ig;
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L97">			ig = (IndexGraph) g;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L98">			ig = (IndexGraph) g;</span>
 		} else {
-<span class="fc" id="L99">			ig = g.indexGraph();</span>
-<span class="fc" id="L100">			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L100">			ig = g.indexGraph();</span>
+<span class="fc" id="L101">			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L102">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L103">		final int m = ig.edges().size();</span>
-<span class="fc" id="L104">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int v : vertices) {</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
-<span class="nc" id="L107">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			if (visited.get(v))</span>
-<span class="nc" id="L109">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L103">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L104">		final int m = ig.edges().size();</span>
+<span class="fc" id="L105">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (int v : vertices) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
+<span class="nc" id="L108">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			if (visited.get(v))</span>
+<span class="nc" id="L110">				throw new IllegalArgumentException(</span>
 						&quot;vertex with index &quot; + v + &quot; is included more than once in the cover&quot;);
-<span class="fc" id="L111">			visited.set(v);</span>
-<span class="fc" id="L112">		}</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L114" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
-<span class="nc" id="L115">				return false;</span>
-<span class="fc" id="L116">		return true;</span>
+<span class="fc" id="L112">			visited.set(v);</span>
+<span class="fc" id="L113">		}</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
+<span class="nc" id="L116">				return false;</span>
+<span class="fc" id="L117">		return true;</span>
 	}
 
 	/**
@@ -125,7 +126,7 @@ public interface VertexCover {
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-<span class="nc" id="L128">		return newBuilder().build();</span>
+<span class="nc" id="L129">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -136,7 +137,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L139">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L140">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
@@ -168,7 +169,7 @@ public interface VertexCover {
 		 * @return       this builder
 		 */
 		default VertexCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L171">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L172">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

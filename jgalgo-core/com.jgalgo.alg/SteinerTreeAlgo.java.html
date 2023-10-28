@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SteinerTreeAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">SteinerTreeAlgo.java</span></div><h1>SteinerTreeAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.BitSet;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
+
+/**
+ * An algorithm for the Steiner tree problem.
+ * &lt;p&gt;
+ * The Steiner tree problem is a generalization of the minimum spanning tree problem. Given a graph \(G=(V,E)\) and a
+ * set of terminals vertices \(T \subseteq V\), the Steiner tree problem is to find a minimum weight tree that spans all
+ * the terminals. The tree may contain additional vertices that are not terminals, which are usually called Steiner
+ * vertices. The Steiner tree problem is NP-hard, therefore algorithms implementing this interface are heuristics, and
+ * do not guarantee to find the optimal solution, only a solution with bounded approximation factor.
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Steiner_tree_problem&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    MinimumSpanningTree
+ * @author Barak Ugav
+ */
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">public interface SteinerTreeAlgo {</span>
+
+	/**
+	 * Compute the minimum Steiner tree of a given graph.
+	 * &lt;p&gt;
+	 * The algorithm with search for the minimum Steiner tree that spans all the terminals with respect to the given
+	 * edge weight function. The tree may contain additional vertices that are not terminals.
+	 *
+	 * @param  g         a graph
+	 * @param  w         an edge weight function
+	 * @param  terminals a set of terminals vertices
+	 * @return           a result object containing all the edges of the computed tree
+	 */
+	SteinerTreeAlgo.Result computeSteinerTree(Graph g, WeightFunction w, IntCollection terminals);
+
+	/**
+	 * A result object for {@link SteinerTreeAlgo} computation.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * Get all the edges that form the Steiner tree.
+		 *
+		 * @return a collection of the Steiner tree edges.
+		 */
+		IntCollection edges();
+	}
+
+	/**
+	 * Check whether a given set of edges is a valid Steiner tree for a given graph and terminals.
+	 * &lt;p&gt;
+	 * A set of edges is a valid Steiner tree if it spans all the terminals, does not contain any cycles, form a single
+	 * connected components, and there are no non-terminal leaves in the tree.
+	 *
+	 * @param  g         a graph
+	 * @param  terminals a set of terminals vertices
+	 * @param  edges     a set of edges
+	 * @return           {@code true} if the given set of edges is a valid Steiner tree
+	 */
+	static boolean isSteinerTree(Graph g, IntCollection terminals, IntCollection edges) {
+<span class="fc" id="L88">		Assertions.Graphs.onlyUndirected(g);</span>
+		IndexGraph ig;
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L91">			ig = (IndexGraph) g;</span>
+		} else {
+<span class="fc" id="L93">			ig = g.indexGraph();</span>
+<span class="fc" id="L94">			terminals = IndexIdMaps.idToIndexCollection(terminals, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L95">			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L97">		final int m = ig.edges().size();</span>
+<span class="fc" id="L98">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L100" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc bnc" id="L101" title="All 4 branches missed.">			return terminals.isEmpty() &amp;&amp; edges.isEmpty();</span>
+		}
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">		if (terminals.isEmpty() || terminals.size() == 1)</span>
+<span class="nc" id="L104">			return edges.isEmpty();</span>
+
+<span class="fc" id="L106">		BitSet edgesBitmap = new BitSet(m);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L109">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L111">				throw new IllegalArgumentException(&quot;edge with index &quot; + e + &quot; is included more than once in the tree&quot;);</span>
+<span class="fc" id="L112">			edgesBitmap.set(e);</span>
+<span class="fc" id="L113">		}</span>
+
+<span class="fc" id="L115">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L116">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc" id="L117">		int root = terminals.iterator().nextInt();</span>
+<span class="fc" id="L118">		visited.set(root);</span>
+<span class="fc" id="L119">		queue.enqueue(JGAlgoUtils.longPack(root, -1));</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L121">			long l = queue.dequeueLong();</span>
+<span class="fc" id="L122">			int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L123">			int parentEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L125">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L126" title="All 4 branches covered.">				if (!edgesBitmap.get(e) || e == parentEdge)</span>
+<span class="fc" id="L127">					continue;</span>
+<span class="fc" id="L128">				int v = eit.target();</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">				if (visited.get(v))</span>
+<span class="nc" id="L130">					return false; /* cycle */</span>
+<span class="fc" id="L131">				visited.set(v);</span>
+<span class="fc" id="L132">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
+<span class="fc" id="L133">			}</span>
+<span class="fc" id="L134">		}</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		for (int t : terminals)</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">			if (!visited.get(t))</span>
+<span class="nc" id="L137">				return false; /* not all terminals are connected */</span>
+
+		/* check for non-terminal leaves */
+<span class="fc" id="L140">		BitSet isTerminal = visited;</span>
+<span class="fc" id="L141">		isTerminal.clear();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		for (int t : terminals) {</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">			if (isTerminal.get(t))</span>
+<span class="nc" id="L144">				throw new IllegalArgumentException(&quot;Duplicate terminal: &quot; + t);</span>
+<span class="fc" id="L145">			isTerminal.set(t);</span>
+<span class="fc" id="L146">		}</span>
+<span class="fc" id="L147">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L149">			degree[ig.edgeSource(e)]++;</span>
+<span class="fc" id="L150">			degree[ig.edgeTarget(e)]++;</span>
+<span class="fc" id="L151">		}</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">			if (degree[v] == 1 &amp;&amp; !isTerminal.get(v))</span>
+<span class="nc" id="L154">				return false; /* non-terminal leaf */</span>
+
+<span class="fc" id="L156">		return true;</span>
+	}
+
+	/**
+	 * Create a new Steiner tree algorithm object.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object. The
+	 * {@link SteinerTreeAlgo.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SteinerTreeAlgo}
+	 */
+	static SteinerTreeAlgo newInstance() {
+<span class="nc" id="L168">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new Steiner tree algorithm builder.
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link SteinerTreeAlgo} objects
+	 */
+	static SteinerTreeAlgo.Builder newBuilder() {
+<span class="nc" id="L179">		return SteinerTreeMehlhorn::new;</span>
+	}
+
+	/**
+	 * A builder for {@link SteinerTreeAlgo} objects.
+	 *
+	 * @see    SteinerTreeAlgo#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for Steiner tree computation.
+		 *
+		 * @return a new Steiner tree algorithm
+		 */
+		SteinerTreeAlgo build();
+
+		/**
+		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 * &lt;p&gt;
+		 * The builder might support different options to customize its implementation. These options never change the
+		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
+		 * because they are not part of the API and may change in the future.
+		 * &lt;p&gt;
+		 * These options are mainly for debug and benchmark purposes.
+		 *
+		 * @param  key   the option key
+		 * @param  value the option value
+		 * @return       this builder
+		 */
+		default SteinerTreeAlgo.Builder setOption(String key, Object value) {
+<span class="nc" id="L211">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
