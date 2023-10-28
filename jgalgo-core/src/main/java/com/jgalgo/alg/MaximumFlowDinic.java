@@ -17,17 +17,14 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
-import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Dinic's algorithm for maximum flow.
@@ -43,25 +40,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 
-	private GraphFactory layerGraphFactory = GraphFactory.newDirected().setOption("impl", "linked-list");
-
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
 	MaximumFlowDinic() {}
-
-	/**
-	 * Set the graph implementation used by this algorithm for the layers graph.
-	 * <p>
-	 * Multiple {@code remove} operations are performed on the layers graph, therefore its non trivial that an array
-	 * graph implementation should be used, as linked graph implementation perform {@code remove} operations more
-	 * efficiently.
-	 *
-	 * @param factory a factory that provide instances of graphs for the layers graph
-	 */
-	void setLayerGraphFactory(GraphFactory factory) {
-		layerGraphFactory = Objects.requireNonNull(factory);
-	}
 
 	@Override
 	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
@@ -95,17 +77,15 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 		}
 
 		double computeMaximumFlow() {
-			Graph L =
-					layerGraphFactory.setDirected(true).expectedVerticesNum(/* >= */ n).expectedEdgesNum(n).newGraph();
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				L.addVertex(v);
+			Assertions.Graphs.onlyDirected(g);
+			BitSet residual = new BitSet(g.edges().size());
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];
+			IntArrayList path = new IntArrayList();
+			EdgeIter[] edgeIters = new EdgeIter[n];
 
 			for (;;) {
-				L.clearEdges();
-
 				/* Calc the sub graph non saturated edges from source to sink using BFS */
 				final int unvisited = Integer.MAX_VALUE;
 				Arrays.fill(level, unvisited);
@@ -122,7 +102,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 						int v = eit.target();
 						if (flow[e] >= capacity[e] || level[v] <= lvl)
 							continue;
-						L.addEdge(u, v, e);
+						residual.set(e);
 						if (level[v] != unvisited)
 							continue;
 						level[v] = lvl + 1;
@@ -133,10 +113,16 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 					break; /* All paths to sink are saturated */
 
 				searchBlockingFlow: for (;;) {
-					IntStack path = new IntArrayList();
+					path.clear();
 					searchAugPath: for (;;) {
-						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());
-						EdgeIter eit = L.outEdges(u).iterator();
+						int u = path.isEmpty() ? source : g.edgeTarget(path.topInt());
+						EdgeIter eit = edgeIters[u];
+						if (eit == null)
+							eit = edgeIters[u] = g.outEdges(u).iterator();
+						for (; eit.hasNext(); eit.nextInt())
+							if (residual.get(eit.peekNext()))
+								break;
+
 						if (!eit.hasNext()) {
 							if (path.isEmpty()) {
 								// no path from source to sink
@@ -144,14 +130,14 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 							} else {
 								// retreat
 								int e = path.popInt();
-								L.removeEdge(e);
+								residual.clear(e);
 								continue searchAugPath;
 							}
 						}
 
-						int e = eit.nextInt();
+						int e = eit.peekNext();
 						path.push(e);
-						if (eit.target() == sink) {
+						if (g.edgeTarget(e) == sink) {
 							// augment
 							break searchAugPath;
 						} else {
@@ -160,16 +146,15 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 					}
 
 					// augment the path we found
-					IntList pathList = (IntList) path;
-					assert pathList.size() > 0;
+					assert path.size() > 0;
 
 					// find out what is the maximum flow we can pass
 					double f = Double.MAX_VALUE;
-					for (int e : pathList)
+					for (int e : path)
 						f = Math.min(f, capacity[e] - flow[e]);
 
 					// update flow of all edges on path
-					for (int e : pathList) {
+					for (int e : path) {
 						int t = twin[e];
 						double newFlow = flow[e] + f;
 						double cap = capacity[e];
@@ -178,11 +163,13 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 						} else {
 							/* saturated, remove edge */
 							flow[e] = cap;
-							L.removeEdge(e);
+							residual.clear(e);
 						}
 						flow[t] -= f;
 					}
 				}
+				residual.clear();
+				Arrays.fill(edgeIters, null);
 			}
 
 			return constructResult(flow);
