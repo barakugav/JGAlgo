@@ -194,8 +194,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (!(0 <= i && i <= j && j < n))
-				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
+			RMQStatics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 
