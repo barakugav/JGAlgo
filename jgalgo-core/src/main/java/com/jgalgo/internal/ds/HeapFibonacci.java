@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import com.jgalgo.internal.ds.Heaps.AbstractHeapReferenceable;
@@ -45,6 +46,11 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	private Node<K, V> begin;
 	private Node<K, V> end;
 	private int size;
+
+	@SuppressWarnings("unchecked")
+	private Node<K, V>[] tempNodesArr = EmptyNodesArr;
+	@SuppressWarnings("rawtypes")
+	private static final Node[] EmptyNodesArr = new Node[0];
 
 	/**
 	 * Constructs a new, empty Fibonacci heap, ordered according to the natural ordering of its keys.
@@ -99,8 +105,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 			Node<K, V> last = end;
 			last.next = n;
 			n.prev = last;
-			if (compare(minRoot.key, key) > 0)
-				minRoot = n;
+			compareToMinRoot(n);
 		} else {
 			begin = n;
 			minRoot = n;
@@ -194,13 +199,14 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	@Override
 	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
-		Node<K, V> parent, n = (Node<K, V>) ref;
+		Node<K, V> n = (Node<K, V>) ref;
 		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		n.key = newKey;
 
-		if ((parent = n.parent) == null)
+		Node<K, V> parent = n.parent;
+		if (parent == null) {
 			compareToMinRoot(n);
-		if (parent != null && compare(newKey, n.parent.key) < 0) {
+		} else if (compare(newKey, parent.key) < 0) {
 			cut(n);
 			addRoot(n);
 			compareToMinRoot(n);
@@ -259,8 +265,14 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		}
 
 		// union trees
-		@SuppressWarnings("unchecked")
-		Node<K, V>[] newRoots = new Node[getMaxDegree(size)];
+		Node<K, V>[] newRoots = tempNodesArr;
+		int maxDegree = getMaxDegree(size);
+		if (newRoots.length < maxDegree) {
+			@SuppressWarnings("unchecked")
+			Node<K, V>[] t = new Node[Math.max(maxDegree, newRoots.length * 2)];
+			newRoots = tempNodesArr = t;
+		}
+
 		if (c == null) {
 			for (Node<K, V> next, p = begin; p != null; p = next) {
 				next = p.next;
@@ -323,6 +335,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 			}
 			minRoot = min;
 		}
+		Arrays.fill(newRoots, 0, maxDegree, null);
 	}
 
 	private Node<K, V> unionDefaultCmp(Node<K, V> u, Node<K, V> v) {
@@ -332,15 +345,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 			v = temp;
 		}
 		assert JGAlgoUtils.cmpDefault(u.key, v.key) <= 0;
-
-		v.parent = u;
-		v.prev = null;
-		v.next = u.child;
-		if (u.child != null)
-			v.next.prev = v;
-		u.child = v;
-		u.degree++;
-
+		addChild(u, v);
 		return u;
 	}
 
@@ -351,33 +356,29 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 			v = temp;
 		}
 		assert c.compare(u.key, v.key) <= 0;
-
-		v.parent = u;
-		v.prev = null;
-		v.next = u.child;
-		if (u.child != null)
-			v.next.prev = v;
-		u.child = v;
-		u.degree++;
-
+		addChild(u, v);
 		return u;
+	}
+
+	private static <K, V> void addChild(Node<K, V> parent, Node<K, V> child) {
+		child.parent = parent;
+		child.prev = null;
+		child.next = parent.child;
+		if (parent.child != null)
+			child.next.prev = child;
+		parent.child = child;
+		parent.degree++;
 	}
 
 	private static class Node<K, V> extends Trees.TreeNodeImpl<Node<K, V>> implements HeapReference<K, V> {
 
 		K key;
 		V value;
-		int degree;
+		byte degree;
 		boolean marked;
 
 		Node(K key) {
-			parent = null;
-			next = null;
-			prev = null;
-			child = null;
 			this.key = key;
-			degree = 0;
-			marked = false;
 		}
 
 		@Override

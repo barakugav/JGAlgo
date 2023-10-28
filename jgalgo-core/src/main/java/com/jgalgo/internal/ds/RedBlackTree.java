@@ -76,7 +76,9 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	@Override
 	public HeapReference<K, V> insert(K key) {
-		return insertNode(newNode(key));
+		Node<K, V> node = newNode(key);
+		insertNode(node);
+		return node;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -209,7 +211,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		insertNode(n);
 	}
 
-	private Node<K, V> insertNode(Node<K, V> n) {
+	private void insertNode(Node<K, V> n) {
 		assert n.parent == null;
 		assert n.left == null;
 		assert n.right == null;
@@ -223,7 +225,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			fixAfterInsert(n);
 		}
 		size++;
-		return n;
 	}
 
 	private void fixAfterInsert(Node<K, V> n) {

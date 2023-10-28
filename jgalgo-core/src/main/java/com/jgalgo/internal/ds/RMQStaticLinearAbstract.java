@@ -39,12 +39,12 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
+	private final RMQStatic outerRMQ = new RMQStaticPowerOf2Table();
+
 	abstract class PreProcessor extends DsBase {
 
 		final RMQStaticComparator cmpPadded;
 		final int blockNum;
-
-		private final RMQStatic outerRMQ;
 
 		PreProcessor(RMQStaticComparator c, int n) {
 			this.n = n;
@@ -53,8 +53,6 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			this.cmpOrig = c;
 			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
 			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];
-
-			outerRMQ = new RMQStaticPowerOf2Table();
 
 			for (int b = 0; b < blockNum; b++) {
 				c = b < blockNum - 1 ? cmpOrig : cmpPadded;
