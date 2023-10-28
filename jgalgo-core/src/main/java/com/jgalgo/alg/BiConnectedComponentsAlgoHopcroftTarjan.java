@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -186,8 +188,9 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		private final int[][] biccsEdgesFromAlgo;
 		private IntSet[] biccsEdges;
 		private IntSet[] vertexBiCcs;
-		// private final BitSet separatingVerticesBitmap;
-		// private IntList separatingVertices;
+		private BitSet cutVerticesBitmap;
+		private IntSet cutVertices;
+		private Graph blockGraph;
 
 		Res(IndexGraph g, List<Pair<int[], int[]>> biccs) {
 			this.g = Objects.requireNonNull(g);
@@ -200,7 +203,6 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			biccsEdgesFromAlgo = new int[biccsNum][];
 			for (int biccIdx = 0; biccIdx < biccsNum; biccIdx++)
 				biccsEdgesFromAlgo[biccIdx] = biccs.get(biccIdx).second();
-			// this.separatingVerticesBitmap = Objects.requireNonNull(separatingVerticesBitmap);
 		}
 
 		@Override
@@ -370,24 +372,6 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			return biccsEdges[biccIdx];
 		}
 
-		// @Override
-		// public IntCollection separatingVertices() {
-		// if (separatingVertices == null) {
-		// separatingVertices = new IntArrayList(separatingVerticesBitmap.cardinality());
-		// for (int v : Utils.iterable(separatingVerticesBitmap))
-		// separatingVertices.add(v);
-		// separatingVertices = IntLists.unmodifiable(separatingVertices);
-		// }
-		// return separatingVertices;
-		// }
-
-		// @Override
-		// public boolean isSeparatingVertex(int vertex) {
-		// if (!g.vertices().contains(vertex))
-		// throw new IndexOutOfBoundsException(vertex);
-		// return separatingVerticesBitmap.get(vertex);
-		// }
-
 		@Override
 		public String toString() {
 			StringBuilder s = new StringBuilder().append('[');
@@ -398,6 +382,60 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 				s.append(getBiCcVertices(biccIdx).toString());
 			}
 			return s.append(']').toString();
+		}
+
+		@Override
+		public boolean isCutVertex(int vertex) {
+			final int n = g.vertices().size();
+			if (cutVerticesBitmap == null) {
+				cutVerticesBitmap = new BitSet(n);
+				for (int v = 0; v < n; v++)
+					if (getVertexBiCcs(v).size() > 1)
+						cutVerticesBitmap.set(v);
+			}
+			if (!(0 <= vertex && vertex <= n))
+				throw new IndexOutOfBoundsException("No vertex with index " + vertex);
+			return cutVerticesBitmap.get(vertex);
+		}
+
+		@Override
+		public IntSet getCutVertices() {
+			if (cutVertices == null) {
+				final int n = g.vertices().size();
+				int cutVerticesNum = 0;
+				for (int v = 0; v < n; v++)
+					if (getVertexBiCcs(v).size() > 1)
+						cutVerticesNum++;
+				int[] cutVertices0 = new int[cutVerticesNum];
+				for (int i = 0, v = 0; v < n; v++)
+					if (getVertexBiCcs(v).size() > 1)
+						cutVertices0[i++] = v;
+				cutVertices = new ImmutableIntArraySet(cutVertices0) {
+					@Override
+					public boolean contains(int v) {
+						return 0 <= v && v < n && isCutVertex(v);
+					}
+				};
+			}
+			return cutVertices;
+		}
+
+		@Override
+		public Graph getBlockGraph() {
+			if (blockGraph == null) {
+				final int blockNum = getNumberOfBiCcs();
+				GraphBuilder g = GraphBuilder.newUndirected();
+				g.expectedVerticesNum(blockNum);
+				for (int b = 0; b < blockNum; b++)
+					g.addVertex(b);
+				for (int cutVertex : getCutVertices())
+					for (int b1 : getVertexBiCcs(cutVertex))
+						for (int b2 : getVertexBiCcs(cutVertex))
+							if (b1 != b2)
+								g.addEdge(b1, b2);
+				blockGraph = g.build();
+			}
+			return blockGraph;
 		}
 
 	}

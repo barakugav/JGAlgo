@@ -20,17 +20,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
 public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 
@@ -50,6 +56,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
 	private static void testUGraph(BiConnectedComponentsAlgo algo, Graph g) {
 		BiConnectedComponentsAlgo.Result res = algo.findBiConnectedComponents(g);
 
@@ -146,6 +153,38 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 						"two biccs were connected after removing any vertex. Should be the same bicc");
 			}
 		}
+
+		/* find all cut vertices manually */
+		IntSet cutVertices = new IntOpenHashSet();
+		final int originalNumberOfCcs = ccAlgo.findWeaklyConnectedComponents(g).numberOfBlocks();
+		for (int v : g.vertices()) {
+			Graph gWithoutV = g.copy();
+			gWithoutV.removeVertex(v);
+			if (ccAlgo.findWeaklyConnectedComponents(gWithoutV).numberOfBlocks() > originalNumberOfCcs)
+				cutVertices.add(v);
+		}
+		for (int v : g.vertices())
+			assertEquals(cutVertices.contains(v), res.isCutVertex(v));
+		assertEquals(cutVertices, res.getCutVertices());
+
+		/* check block graph */
+		Graph blockGraph = res.getBlockGraph();
+		assertEquals(Range.of(res.getNumberOfBiCcs()), blockGraph.vertices());
+		BiFunction<IntSet, IntSet, IntSet> intersect = (s1, s2) -> {
+			IntSet inter = new IntOpenHashSet(s1);
+			inter.retainAll(s2);
+			return inter;
+		};
+		BiInt2LongFunc key = (b1, b2) -> JGAlgoUtils.longPack(Math.min(b1, b2), Math.max(b1, b2));
+		LongSet expectedBlockEdges = new LongOpenHashSet();
+		for (int b1 : Range.of(res.getNumberOfBiCcs()))
+			for (int b2 : Range.of(b1 + 1, res.getNumberOfBiCcs()))
+				if (!intersect.apply(res.getBiCcVertices(b1), res.getBiCcVertices(b2)).isEmpty())
+					expectedBlockEdges.add(key.apply(b1, b2));
+		LongSet actualBlockEdges = new LongOpenHashSet();
+		for (int e : blockGraph.edges())
+			actualBlockEdges.add(key.apply(blockGraph.edgeSource(e), blockGraph.edgeTarget(e)));
+		assertEquals(expectedBlockEdges, actualBlockEdges);
 	}
 
 }

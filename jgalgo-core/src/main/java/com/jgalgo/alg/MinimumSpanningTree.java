@@ -38,6 +38,9 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  * A spanning tree is an edge sub set of the graph edges which form a tree and connect (span) all the vertices of the
  * graph. A minimum spanning tree (MST) is a spanning tree with the minimum edge weights sum over all spanning trees.
  * <p>
+ * If a <b>maximum</b> spanning tree is needed, the edge weights can be negated and the MST algorithm can be used to
+ * compute the maximum spanning tree.
+ * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *

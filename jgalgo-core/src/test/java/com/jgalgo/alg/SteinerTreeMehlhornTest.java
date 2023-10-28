@@ -36,7 +36,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {
-		final long seed = 0;
+		final long seed = 0xf07196500e58eeaL;
 		final SteinerTreeAlgo algo = new SteinerTreeMehlhorn();
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());

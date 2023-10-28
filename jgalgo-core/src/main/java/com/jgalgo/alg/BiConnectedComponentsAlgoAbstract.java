@@ -71,6 +71,21 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);
 		}
 
+		@Override
+		public boolean isCutVertex(int vertex) {
+			return res.isCutVertex(viMap.idToIndex(vertex));
+		}
+
+		@Override
+		public IntSet getCutVertices() {
+			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);
+		}
+
+		@Override
+		public Graph getBlockGraph() {
+			return res.getBlockGraph();
+		}
+
 	}
 
 }

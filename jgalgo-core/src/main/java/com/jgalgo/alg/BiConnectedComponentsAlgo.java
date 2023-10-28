@@ -97,6 +97,39 @@ public interface BiConnectedComponentsAlgo {
 		 */
 		IntSet getBiCcEdges(int biccIdx);
 
+		/**
+		 * Check whether a vertex is a cut-vertex.
+		 * <p>
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @param  vertex a vertex in the graph
+		 * @return        {@code true} if {@code vertex} is a cut-vertex, {@code false} otherwise
+		 */
+		boolean isCutVertex(int vertex);
+
+		/**
+		 * Get all the cut vertices in the graph.
+		 * <p>
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @return all the cut vertices in the graph
+		 */
+		IntSet getCutVertices();
+
+		/**
+		 * Get the graph of the bi-connected components.
+		 * <p>
+		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
+		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 *
+		 * @return the graph of the bi-connected components
+		 */
+		Graph getBlockGraph();
+
 	}
 
 	/**
