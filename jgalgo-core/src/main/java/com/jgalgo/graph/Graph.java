@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 import java.util.Optional;
 import java.util.Set;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -789,6 +790,34 @@ public interface Graph {
 	 */
 	default Graph reverseView() {
 		return Graphs.reverseView(this);
+	}
+
+	/**
+	 * Create a new graph that is a subgraph of this graph.
+	 * <p>
+	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of this graph, namely an
+	 * induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' = \{\{u,v\}
+	 * \mid u,v \in V', \{u,v\} \in E\}\). {@code vertices} must not be {@code null} in this case.
+	 * <p>
+	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
+	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 * <p>
+	 * The created graph will have the same type (directed/undirected) as this graph. The vertices and edges of the
+	 * created graph will be a subset of the vertices and edges of this graph.
+	 * <p>
+	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
+	 * creation, see {@link Graphs#subGraph(Graph, IntCollection, IntCollection, boolean, boolean)}.
+	 *
+	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
+	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
+	 *                                  are either a source or a target of an edge in {@code edges}
+	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
+	 *                                  {@code null} and the sub graph will be an induced subgraph of this graph
+	 * @return                      a new graph that is a subgraph of this graph
+	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 */
+	default Graph subGraphCopy(IntCollection vertices, IntCollection edges) {
+		return Graphs.subGraph(this, vertices, edges);
 	}
 
 	/**

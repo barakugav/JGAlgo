@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -1362,6 +1364,210 @@ public class Graphs {
 				}
 			};
 		}
+	}
+
+	/**
+	 * Create a new graph that is an induced subgraph of the given graph.
+	 * <p>
+	 * An induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The created graph will have the same type (directed/undirected) as
+	 * the given graph. The vertices and edges of the created graph will be a subset of the vertices and edges of the
+	 * given graph.
+	 * <p>
+	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
+	 * creation, see {@link #subGraph(Graph, IntCollection, IntCollection, boolean, boolean)}.
+	 *
+	 * @param  g        the graph to create a sub graph from
+	 * @param  vertices the vertices of the sub graph
+	 * @return          a new graph that is an induced subgraph of the given graph
+	 */
+	public static Graph subGraph(Graph g, IntCollection vertices) {
+		return subGraph(g, Objects.requireNonNull(vertices), null);
+	}
+
+	/**
+	 * Create a new graph that is a subgraph of the given graph.
+	 * <p>
+	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
+	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, IntCollection)}.
+	 * {@code vertices} must not be {@code null} in this case.
+	 * <p>
+	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
+	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 * <p>
+	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
+	 * created graph will be a subset of the vertices and edges of the given graph.
+	 * <p>
+	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
+	 * creation, see {@link #subGraph(Graph, IntCollection, IntCollection, boolean, boolean)}.
+	 *
+	 * @param  g                    the graph to create a sub graph from
+	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
+	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
+	 *                                  are either a source or a target of an edge in {@code edges}
+	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
+	 *                                  {@code null} and the sub graph will be an induced subgraph of the given graph
+	 * @return                      a new graph that is a subgraph of the given graph
+	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 */
+	public static Graph subGraph(Graph g, IntCollection vertices, IntCollection edges) {
+		return subGraph(g, vertices, edges, false, false);
+	}
+
+	/**
+	 * Create a new graph that is a subgraph of the given graph, with option to copy weights.
+	 * <p>
+	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
+	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, IntCollection)}.
+	 * {@code vertices} must not be {@code null} in this case.
+	 * <p>
+	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
+	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 * <p>
+	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
+	 * created graph will be a subset of the vertices and edges of the given graph.
+	 * <p>
+	 * An additional parameter options for copying the weights of the vertices and edges of the given graph to the new
+	 * sub graph are provided. If {@code copyVerticesWeights} is {@code true}, then all the vertices weights of the
+	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
+	 * weights of the given graph will be copied to the new sub graph.
+	 *
+	 * @param  g                    the graph to create a sub graph from
+	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
+	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
+	 *                                  are either a source or a target of an edge in {@code edges}
+	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
+	 *                                  {@code null} and the sub graph will be an induced subgraph of the given graph
+	 * @param  copyVerticesWeights  if {@code true} then all the vertices weights of the given graph will be copied to
+	 *                                  the new sub graph
+	 * @param  copyEdgesWeights     if {@code true} then all the edges weights of the given graph will be copied to the
+	 *                                  new sub graph
+	 * @return                      a new graph that is a subgraph of the given graph
+	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
+	public static Graph subGraph(Graph g, IntCollection vertices, IntCollection edges, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		if (vertices == null && edges == null)
+			throw new NullPointerException();
+		GraphBuilder gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+
+		if (vertices == null) {
+			vertices = new IntOpenHashSet();
+			for (int e : edges) {
+				vertices.add(g.edgeSource(e));
+				vertices.add(g.edgeTarget(e));
+			}
+		}
+		gb.expectedVerticesNum(vertices.size());
+		for (int v : vertices)
+			gb.addVertex(v);
+
+		if (edges == null) {
+			for (int e : g.edges()) {
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
+				if (gb.vertices().contains(u) && gb.vertices().contains(v))
+					gb.addEdge(u, v, e);
+			}
+		} else {
+			for (int e : edges)
+				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+		}
+
+		if (copyVerticesWeights) {
+			for (String key : g.getVerticesWeightsKeys()) {
+				Weights wSrc = g.getVerticesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.vertices());
+			}
+		}
+		if (copyEdgesWeights) {
+			for (String key : g.getEdgesWeightsKeys()) {
+				Weights wSrc = g.getEdgesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.edges());
+			}
+		}
+
+		return gb.build();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static void copyWeights(Weights<?> src, Weights<?> dst, Class<?> type, IntCollection elements) {
+		if (type == byte.class) {
+			WeightsByte src0 = (WeightsByte) src;
+			WeightsByte dst0 = (WeightsByte) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == short.class) {
+			WeightsShort src0 = (WeightsShort) src;
+			WeightsShort dst0 = (WeightsShort) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == int.class) {
+			WeightsInt src0 = (WeightsInt) src;
+			WeightsInt dst0 = (WeightsInt) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == long.class) {
+			WeightsLong src0 = (WeightsLong) src;
+			WeightsLong dst0 = (WeightsLong) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == float.class) {
+			WeightsFloat src0 = (WeightsFloat) src;
+			WeightsFloat dst0 = (WeightsFloat) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == double.class) {
+			WeightsDouble src0 = (WeightsDouble) src;
+			WeightsDouble dst0 = (WeightsDouble) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == boolean.class) {
+			WeightsBool src0 = (WeightsBool) src;
+			WeightsBool dst0 = (WeightsBool) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == char.class) {
+			WeightsChar src0 = (WeightsChar) src;
+			WeightsChar dst0 = (WeightsChar) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == Object.class) {
+			WeightsObj src0 = (WeightsObj) src;
+			WeightsObj dst0 = (WeightsObj) dst;
+			for (int elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else {
+			throw new AssertionError();
+		}
+	}
+
+	private static Class<?> getWeightsType(Weights<?> w) {
+		if (w instanceof WeightsByte)
+			return byte.class;
+		if (w instanceof WeightsShort)
+			return short.class;
+		if (w instanceof WeightsInt)
+			return int.class;
+		if (w instanceof WeightsLong)
+			return long.class;
+		if (w instanceof WeightsFloat)
+			return float.class;
+		if (w instanceof WeightsDouble)
+			return double.class;
+		if (w instanceof WeightsBool)
+			return boolean.class;
+		if (w instanceof WeightsChar)
+			return char.class;
+		if (w instanceof WeightsObj)
+			return Object.class;
+		throw new AssertionError();
 	}
 
 }
