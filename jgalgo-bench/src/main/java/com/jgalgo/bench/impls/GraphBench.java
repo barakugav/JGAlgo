@@ -1283,6 +1283,7 @@ public class GraphBench {
 					setup(args, IndexGraphFactory.newDirected().setOption("impl", "array")::newGraph, true, true, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1312,6 +1313,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1341,6 +1343,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1370,6 +1373,7 @@ public class GraphBench {
 							true, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1399,6 +1403,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1428,6 +1433,7 @@ public class GraphBench {
 							false, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1457,6 +1463,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1486,6 +1493,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1541,6 +1549,7 @@ public class GraphBench {
 					setup(args, IndexGraphFactory.newDirected().setOption("impl", "array")::newGraph, true, true, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1570,6 +1579,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1600,6 +1610,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1630,6 +1641,7 @@ public class GraphBench {
 							true, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1660,6 +1672,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1690,6 +1703,7 @@ public class GraphBench {
 							false, true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1720,6 +1734,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
@@ -1750,6 +1765,7 @@ public class GraphBench {
 							true);
 				}
 
+				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
 					super.restoreGraph();
