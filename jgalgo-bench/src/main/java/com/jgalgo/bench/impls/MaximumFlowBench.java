@@ -76,7 +76,8 @@ public class MaximumFlowBench {
 	@State(Scope.Benchmark)
 	public static class Gnp extends MaximumFlowBench {
 
-		@Param({ "|V|=1000", "|V|=2000", "|V|=2500" })
+		@Param({ "|V|=1000 Weights=Off", "|V|=1000 Weights=ON", "|V|=2000 Weights=Off", "|V|=2000 Weights=ON",
+				"|V|=2500 Weights=Off", "|V|=2500 Weights=ON" })
 		public String args;
 
 		// @Param({ "directed", "undirected" })
@@ -92,6 +93,7 @@ public class MaximumFlowBench {
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
+			boolean weighted = argsMap.get("Weights").equals("ON");
 			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);
@@ -99,7 +101,7 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());
-				FlowNetworkInt flow = randNetworkInt(g, seedGen.nextSeed());
+				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
 				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
@@ -144,13 +146,14 @@ public class MaximumFlowBench {
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Warmup(iterations = 2, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+	@Measurement(iterations = 3, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
 	public static class BarabasiAlbert extends MaximumFlowBench {
 
-		@Param({ "|V|=3000", "|V|=4500", "|V|=6000" })
+		@Param({ "|V|=3000 Weights=Off", "|V|=3000 Weights=ON", "|V|=4500 Weights=Off", "|V|=4500 Weights=ON",
+				"|V|=6000 Weights=Off", "|V|=6000 Weights=ON" })
 		public String args;
 
 		// @Param({ "directed", "undirected" })
@@ -166,6 +169,7 @@ public class MaximumFlowBench {
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
+			boolean weighted = argsMap.get("Weights").equals("ON");
 			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);
@@ -173,7 +177,7 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());
-				FlowNetworkInt flow = randNetworkInt(g, seedGen.nextSeed());
+				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
 				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
@@ -220,21 +224,23 @@ public class MaximumFlowBench {
 			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
 		}
 
-		@Benchmark
-		public void PushRelabelDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
-		}
+		/* way too slow, isn't close to compete with the other implementations */
+		// @Benchmark
+		// public void PushRelabelDynamicTrees(Blackhole blackhole) {
+		// benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		// }
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
+	@Warmup(iterations = 2, time = 200, timeUnit = TimeUnit.MILLISECONDS)
+	@Measurement(iterations = 3, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
 	public static class RecursiveMatrix extends MaximumFlowBench {
 
-		@Param({ "|V|=1500 |E|=5000", "|V|=2500 |E|=8000", "|V|=4000 |E|=16000" })
+		@Param({ "|V|=1500 |E|=5000 Weights=Off", "|V|=1500 |E|=5000 Weights=ON", "|V|=2500 |E|=8000 Weights=Off",
+				"|V|=2500 |E|=8000 Weights=ON", "|V|=4000 |E|=16000 Weights=Off", "|V|=4000 |E|=16000 Weights=ON" })
 		public String args;
 
 		// @Param({ "directed", "undirected" })
@@ -251,6 +257,7 @@ public class MaximumFlowBench {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			int n = Integer.parseInt(argsMap.get("|V|"));
 			int m = Integer.parseInt(argsMap.get("|E|"));
+			boolean weighted = argsMap.get("Weights").equals("ON");
 			boolean directed = this.directed.equals("directed");
 
 			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);
@@ -258,7 +265,7 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
-				FlowNetworkInt flow = randNetworkInt(g, seedGen.nextSeed());
+				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
 				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
@@ -305,10 +312,11 @@ public class MaximumFlowBench {
 			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
 		}
 
-		@Benchmark
-		public void PushRelabelDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
-		}
+		/* way too slow, isn't close to compete with the other implementations */
+		// @Benchmark
+		// public void PushRelabelDynamicTrees(Blackhole blackhole) {
+		// benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		// }
 	}
 
 	private static class MaxFlowTask {
@@ -333,6 +341,12 @@ public class MaximumFlowBench {
 		for (int e : g.edges())
 			net.setCapacity(e, 5000 + rand.nextInt(16384));
 		return net;
+	}
+
+	private static FlowNetworkInt unweightedNetwork(Graph g) {
+		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class, Integer.valueOf(1));
+		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
+		return FlowNetworkInt.createFromEdgeWeights(capacities, flows);
 	}
 
 	private static IntIntPair chooseSourceSink(Graph g, Random rand) {

@@ -20,7 +20,6 @@ import java.util.BitSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -37,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
+class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -53,23 +52,10 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 		}
 	}
 
-	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-		if (net instanceof FlowNetworkInt) {
-			return new WorkerInt(g, (FlowNetworkInt) net, sources, sinks).computeMaxFlow();
-		} else {
-			return new WorkerDouble(g, net, sources, sinks).computeMaxFlow();
-		}
-	}
-
-	private abstract class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
+	private abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
 		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
-		}
-
-		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-			super(gOrig, net, sources, sinks);
 		}
 
 		void computeMaxFlow0() {
@@ -81,150 +67,360 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithResidualGraph {
 			// perform BFS and find a path of non saturated edges from source to sink
 			queue.enqueue(source);
 			visited.set(source);
-			bfs: for (;;) {
-				if (queue.isEmpty())
-					return; /* no path to sink, we are done */
-				int u = queue.dequeueInt();
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					if (isSaturated(e))
-						continue;
-					int v = eit.target();
-					if (visited.get(v))
-						continue;
-					backtrack[v] = e;
-					if (v == sink) {
-						/* found an augmenting path, push flow on it */
-						pushAlongPath(backtrack);
+			if (directed) {
+				bfs: for (;;) {
+					if (queue.isEmpty())
+						return; /* no path to sink, we are done */
+					int u = queue.dequeueInt();
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!isResidual(e))
+							continue;
+						int v = eit.target();
+						if (visited.get(v))
+							continue;
+						backtrack[v] = e;
+						if (v == sink) {
+							/* found an augmenting path, push flow on it */
+							pushAlongPathDirected(backtrack);
 
-						/* reset BFS */
-						queue.clear();
-						visited.clear();
-						visited.set(source);
-						queue.enqueue(source);
-						continue bfs;
+							/* reset BFS */
+							queue.clear();
+							visited.clear();
+							visited.set(source);
+							queue.enqueue(source);
+							continue bfs;
+						}
+						visited.set(v);
+						queue.enqueue(v);
 					}
-					visited.set(v);
-					queue.enqueue(v);
+					for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!hasFlow(e))
+							continue;
+						int v = eit.source();
+						if (visited.get(v))
+							continue;
+						backtrack[v] = e;
+						if (v == sink) {
+							/* found an augmenting path, push flow on it */
+							pushAlongPathDirected(backtrack);
+
+							/* reset BFS */
+							queue.clear();
+							visited.clear();
+							visited.set(source);
+							queue.enqueue(source);
+							continue bfs;
+						}
+						visited.set(v);
+						queue.enqueue(v);
+					}
+				}
+			} else {
+				bfs: for (;;) {
+					if (queue.isEmpty())
+						return; /* no path to sink, we are done */
+					int u = queue.dequeueInt();
+					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v;
+						if (u == g.edgeSource(e)) {
+							if (!isResidual(e))
+								continue;
+							v = g.edgeTarget(e);
+						} else {
+							assert u == g.edgeTarget(e);
+							if (!isTwinResidualUndirected(e))
+								continue;
+							v = g.edgeSource(e);
+						}
+						if (visited.get(v))
+							continue;
+						backtrack[v] = e;
+						if (v == sink) {
+							/* found an augmenting path, push flow on it */
+							pushAlongPathUndirected(backtrack);
+
+							/* reset BFS */
+							queue.clear();
+							visited.clear();
+							visited.set(source);
+							queue.enqueue(source);
+							continue bfs;
+						}
+						visited.set(v);
+						queue.enqueue(v);
+					}
 				}
 			}
 		}
 
-		abstract void pushAlongPath(int[] backtrack);
+		abstract void pushAlongPathDirected(int[] backtrack);
+
+		abstract void pushAlongPathUndirected(int[] backtrack);
+
+		abstract boolean hasFlow(int e);
 
 		abstract boolean isSaturated(int e);
+
+		abstract boolean isResidual(int e);
+
+		abstract boolean isTwinResidualUndirected(int e);
 
 	}
 
 	private class WorkerDouble extends Worker {
 
-		final double[] flow;
 		final double[] capacity;
+		final double[] residualCapacity;
 
 		private static final double EPS = 0.0001;
 
 		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
-
-			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
-		}
-
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-			super(gOrig, net, sources, sinks);
-
-			flow = new double[g.edges().size()];
-			capacity = new double[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 		}
 
 		double computeMaxFlow() {
 			computeMaxFlow0();
-			return constructResult(flow);
+			return constructResult(capacity, residualCapacity);
 		}
 
 		@Override
-		void pushAlongPath(int[] backtrack) {
+		void pushAlongPathDirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
 			double f = Double.MAX_VALUE;
 			for (int p = sink; p != source;) {
 				int e = backtrack[p];
-				f = Math.min(f, getResidualCapacity(e));
-				p = g.edgeSource(e);
+				double ec;
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					ec = getResidualCapacity(e);
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					ec = flow(e);
+					nextP = g.edgeTarget(e);
+				}
+				assert ec >= EPS;
+				f = Math.min(f, ec);
+				p = nextP;
 			}
+			assert f >= EPS;
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
-				int e = backtrack[p], t = twin[e];
-				flow[e] += f;
-				flow[t] -= f;
-				p = g.edgeSource(e);
+				int e = backtrack[p];
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					residualCapacity[e] -= f;
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					residualCapacity[e] += f;
+					nextP = g.edgeTarget(e);
+				}
+				p = nextP;
 			}
 		}
 
+		@Override
+		void pushAlongPathUndirected(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+			double f = Double.MAX_VALUE;
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				double ec;
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					ec = getResidualCapacity(e);
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					ec = getTwinResidualCapacity(e);
+					nextP = g.edgeTarget(e);
+				}
+				assert ec >= EPS;
+				f = Math.min(f, ec);
+				p = nextP;
+			}
+			assert f >= EPS;
+
+			// update flow of all edges on path
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					residualCapacity[e] -= f;
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					residualCapacity[e] += f;
+					nextP = g.edgeTarget(e);
+				}
+				p = nextP;
+			}
+		}
+
+		double flow(int e) {
+			return capacity[e] - residualCapacity[e];
+		}
+
+		@Override
+		boolean hasFlow(int e) {
+			return flow(e) > EPS;
+		}
+
 		double getResidualCapacity(int e) {
-			return capacity[e] - flow[e];
+			return residualCapacity[e];
 		}
 
 		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) <= EPS;
 		}
+
+		@Override
+		boolean isResidual(int e) {
+			return getResidualCapacity(e) > EPS;
+		}
+
+		@Override
+		boolean isTwinResidualUndirected(int e) {
+			return getTwinResidualCapacity(e) > EPS;
+		}
+
+		double getTwinResidualCapacity(int e) {
+			assert !directed;
+			return 2 * capacity[e] - residualCapacity[e];
+		}
 	}
 
 	private class WorkerInt extends Worker {
 
-		final int[] flow;
 		final int[] capacity;
+		final int[] residualCapacity;
 
 		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink) {
 			super(gOrig, net, source, sink);
-
-			flow = new int[g.edges().size()];
 			capacity = new int[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
-		}
-
-		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
-			super(gOrig, net, sources, sinks);
-
-			flow = new int[g.edges().size()];
-			capacity = new int[g.edges().size()];
-			initCapacitiesAndFlows(flow, capacity);
+			initCapacities(capacity);
+			residualCapacity = capacity.clone();
 		}
 
 		int computeMaxFlow() {
 			computeMaxFlow0();
-			return constructResult(flow);
+			return constructResult(capacity, residualCapacity);
 		}
 
 		@Override
-		void pushAlongPath(int[] backtrack) {
+		void pushAlongPathDirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
 			int f = Integer.MAX_VALUE;
 			for (int p = sink; p != source;) {
 				int e = backtrack[p];
-				f = Math.min(f, getResidualCapacity(e));
-				p = g.edgeSource(e);
+				int ec, nextP;
+				if (g.edgeTarget(e) == p) {
+					ec = getResidualCapacity(e);
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					ec = flow(e);
+					nextP = g.edgeTarget(e);
+				}
+				assert ec > 0;
+				f = Math.min(f, ec);
+				p = nextP;
 			}
+			assert f > 0;
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
-				int e = backtrack[p], t = twin[e];
-				flow[e] += f;
-				flow[t] -= f;
-				p = g.edgeSource(e);
+				int e = backtrack[p];
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					residualCapacity[e] -= f;
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					residualCapacity[e] += f;
+					nextP = g.edgeTarget(e);
+				}
+				p = nextP;
 			}
 		}
 
+		@Override
+		void pushAlongPathUndirected(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+			int f = Integer.MAX_VALUE;
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				int ec, nextP;
+				if (g.edgeTarget(e) == p) {
+					ec = getResidualCapacity(e);
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					ec = getTwinResidualCapacity(e);
+					nextP = g.edgeTarget(e);
+				}
+				assert ec > 0;
+				f = Math.min(f, ec);
+				p = nextP;
+			}
+			assert f > 0;
+
+			// update flow of all edges on path
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				int nextP;
+				if (g.edgeTarget(e) == p) {
+					residualCapacity[e] -= f;
+					nextP = g.edgeSource(e);
+				} else {
+					assert g.edgeSource(e) == p;
+					residualCapacity[e] += f;
+					nextP = g.edgeTarget(e);
+				}
+				p = nextP;
+			}
+		}
+
+		int flow(int e) {
+			return capacity[e] - residualCapacity[e];
+		}
+
+		@Override
+		boolean hasFlow(int e) {
+			return flow(e) > 0;
+		}
+
 		int getResidualCapacity(int e) {
-			return capacity[e] - flow[e];
+			return residualCapacity[e];
 		}
 
 		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) <= 0;
+		}
+
+		@Override
+		boolean isResidual(int e) {
+			return getResidualCapacity(e) > 0;
+		}
+
+		@Override
+		boolean isTwinResidualUndirected(int e) {
+			return getTwinResidualCapacity(e) > 0;
+		}
+
+		int getTwinResidualCapacity(int e) {
+			assert !directed;
+			return 2 * capacity[e] - residualCapacity[e];
 		}
 	}
 
