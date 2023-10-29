@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
 
 class ConnectedComponentsUtils {
 
@@ -32,11 +31,8 @@ class ConnectedComponentsUtils {
 				return findStronglyConnectedComponents((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-
 			VertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
 		}
 
 		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
@@ -66,11 +62,8 @@ class ConnectedComponentsUtils {
 				return findWeaklyConnectedComponents((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-
 			VertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
 		}
 
 		@Override

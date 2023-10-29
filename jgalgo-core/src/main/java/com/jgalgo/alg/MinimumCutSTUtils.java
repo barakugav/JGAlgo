@@ -49,7 +49,7 @@ class MinimumCutSTUtils {
 			int iSink = viMap.idToIndex(sink);
 
 			VertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);
+			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, indexCut);
 		}
 
 		@Override
@@ -67,7 +67,7 @@ class MinimumCutSTUtils {
 			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 
 			VertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);
+			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, indexCut);
 		}
 
 		abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int sources, int sinks);

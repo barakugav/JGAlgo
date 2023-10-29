@@ -114,6 +114,8 @@ public class VertexPartitionTest extends TestBase {
 					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
+					Graph blocksGraph = partition.blocksGraph(true, true);
+
 					for (int b1 = 0; b1 < k; b1++) {
 						for (int b2 = 0; b2 < k; b2++) {
 							final int b10 = b1;
@@ -136,6 +138,8 @@ public class VertexPartitionTest extends TestBase {
 							}
 							IntSet actual = partition.crossEdges(b1, b2);
 							assertEquals(expected, actual);
+
+							assertEquals(expected, blocksGraph.getEdges(b1, b2));
 						}
 					}
 				}

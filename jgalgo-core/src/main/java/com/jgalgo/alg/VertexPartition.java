@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -86,6 +87,83 @@ public interface VertexPartition {
 	IntSet crossEdges(int block1, int block2);
 
 	/**
+	 * Get the graph that the partition is defined on.
+	 *
+	 * @return the graph that the partition is defined on
+	 */
+	Graph graph();
+
+	/**
+	 * Create a new graph that contains only the vertices and edges that are contained in a block.
+	 * <p>
+	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
+	 * block and edges between them.
+	 * <p>
+	 * The vertex and edge weights are not copied to the new sub graph. For more coping options see
+	 * {@link #blockSubGraph(int, boolean, boolean)}.
+	 *
+	 * @param  block index of a block
+	 * @return       a new graph that contains only the vertices and edges that are contained in the block
+	 */
+	default Graph blockSubGraph(int block) {
+		return blockSubGraph(block, false, false);
+	}
+
+	/**
+	 * Create a new graph that contains only the vertices and edges that are contained in a block with option to copy
+	 * weights.
+	 * <p>
+	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
+	 * block and edges between them.
+	 *
+	 * @param  block               index of a block
+	 * @param  copyVerticesWeights if {@code true} the vertices weights are copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true} the edges weights are copied to the new graph
+	 * @return                     a new graph that contains only the vertices and edges that are contained in the block
+	 */
+	default Graph blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return Graphs.subGraph(graph(), blockVertices(block), blockEdges(block), copyVerticesWeights, copyEdgesWeights);
+	}
+
+	/**
+	 * Create a new graph representing the edges between the blocks.
+	 * <p>
+	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
+	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
+	 * \(0\) to \(B-1\), where \(B\) is the number of blocks in the partition. The edges of the new graph will have the
+	 * identifiers of the original edges.
+	 * <p>
+	 * If there are multiple edges between two blocks, multiple parallel edges will be created in the new graph.
+	 * Original edges between vertices in the same block will be ignored, instead of copied as self edges in the new
+	 * graph. For more options regarding self and parallel edges see {@link #blocksGraph(boolean, boolean)}.
+	 *
+	 * @return a new graph where each vertex is a block, and there is an edge between two blocks if there is an edge
+	 *         between two original vertices, each in a different block
+	 */
+	default Graph blocksGraph() {
+		return blocksGraph(true, false);
+	}
+
+	/**
+	 * Create a new graph representing the edges between the blocks.
+	 * <p>
+	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
+	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
+	 * \(0\) to \(B-1\), where \(B\) is the number of blocks in the partition. The edges of the new graph will have the
+	 * identifiers of the original edges.
+	 *
+	 * @param  parallelEdges if {@code true} multiple parallel edges will be created between two blocks if there are
+	 *                           multiple edges between them, if {@code false} only a single edge will be created, with
+	 *                           identifier of one arbitrary original edge between the blocks. This is also relevant for
+	 *                           self edges, if {@code selfEdges} is {@code true}.
+	 * @param  selfEdges     if {@code true} for each original edge between two vertices in the same block, a self edge
+	 *                           will be created in the new graph, if {@code false} such edges will be ignored
+	 * @return               a new graph where each vertex is a block, and there is an edge between two blocks if there
+	 *                       is an edge between two original vertices, each in a different block
+	 */
+	Graph blocksGraph(boolean parallelEdges, boolean selfEdges);
+
+	/**
 	 * Create a new vertex partition from a vertex-blockIndex map.
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
@@ -118,18 +196,16 @@ public interface VertexPartition {
 				vertexToBlock[v] = mapping.applyAsInt(v);
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
-			return new VertexPartitions.ImplIndex((IndexGraph) g, maxBlock + 1, vertexToBlock);
+			return new VertexPartitions.Impl((IndexGraph) g, maxBlock + 1, vertexToBlock);
 		} else {
 			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			int maxBlock = -1;
 			for (int v = 0; v < n; v++) {
 				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
-			VertexPartition indexPartition =
-					new VertexPartitions.ImplIndex(g.indexGraph(), maxBlock + 1, vertexToBlock);
-			return new VertexPartitions.PartitionFromIndexPartition(indexPartition, viMap, eiMap);
+			VertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);
+			return new VertexPartitions.PartitionFromIndexPartition(g, indexPartition);
 		}
 	}
 

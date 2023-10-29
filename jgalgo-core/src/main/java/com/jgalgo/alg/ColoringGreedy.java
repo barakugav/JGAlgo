@@ -86,7 +86,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 			colors[u] = color;
 			colorsNum = Math.max(colorsNum, color + 1);
 		}
-		return new VertexPartitions.ImplIndex(g, colorsNum, colors);
+		return new VertexPartitions.Impl(g, colorsNum, colors);
 	}
 
 }

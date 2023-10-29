@@ -17,8 +17,8 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -194,6 +194,15 @@ class VertexBiPartitions {
 			throw new IndexOutOfBoundsException(block1 + "," + block2);
 		}
 
+		@Override
+		public Graph graph() {
+			return g;
+		}
+
+		@Override
+		public Graph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);
+		}
 	}
 
 	static class FromBitSet extends Impl {
@@ -209,7 +218,6 @@ class VertexBiPartitions {
 		boolean isLeft(int vertex) {
 			return bitSet.get(vertex);
 		}
-
 	}
 
 	static class FromWeights extends Impl {
@@ -225,14 +233,13 @@ class VertexBiPartitions {
 		boolean isLeft(int vertex) {
 			return weights.get(vertex);
 		}
-
 	}
 
 	static class BiPartitionFromIndexBiPartition extends VertexPartitions.PartitionFromIndexPartition
 			implements VertexBiPartition {
 
-		BiPartitionFromIndexBiPartition(VertexBiPartition res, IndexIdMap viMap, IndexIdMap eiMap) {
-			super(res, viMap, eiMap);
+		BiPartitionFromIndexBiPartition(Graph g, VertexBiPartition res) {
+			super(g, res);
 		}
 
 	}

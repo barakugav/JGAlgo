@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
 
 class ColoringUtils {
 
@@ -29,11 +28,8 @@ class ColoringUtils {
 				return computeColoring((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-
 			VertexPartition indexResult = computeColoring(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(indexResult, viMap, eiMap);
+			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
 		}
 
 		abstract VertexPartition computeColoring(IndexGraph g);

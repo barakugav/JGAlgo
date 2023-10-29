@@ -84,7 +84,7 @@ class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.Abs
 					break;
 			}
 		}
-		return new VertexPartitions.ImplIndex(g, compNum, comp);
+		return new VertexPartitions.Impl(g, compNum, comp);
 	}
 
 	@Override

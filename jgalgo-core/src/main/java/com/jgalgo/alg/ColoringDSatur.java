@@ -135,7 +135,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 				}
 			}
 		}
-		return new VertexPartitions.ImplIndex(g, colorsNum, colors);
+		return new VertexPartitions.Impl(g, colorsNum, colors);
 	}
 
 }

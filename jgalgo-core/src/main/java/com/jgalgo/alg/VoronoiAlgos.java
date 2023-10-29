@@ -41,14 +41,14 @@ class VoronoiAlgos {
 			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			VoronoiAlgo.Result indexResult = computeVoronoiCells(iGraph, iSites, iw);
-			return new ResultFromIndexResult(indexResult, viMap, eiMap);
+			return new ResultFromIndexResult(g, indexResult);
 		}
 
 		abstract VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, WeightFunction w);
 
 	}
 
-	static class ResultImpl extends VertexPartitions.ImplIndex implements VoronoiAlgo.Result {
+	static class ResultImpl extends VertexPartitions.Impl implements VoronoiAlgo.Result {
 
 		private final double[] distance;
 		private final int[] backtrack;
@@ -113,8 +113,8 @@ class VoronoiAlgos {
 	static class ResultFromIndexResult extends VertexPartitions.PartitionFromIndexPartition
 			implements VoronoiAlgo.Result {
 
-		ResultFromIndexResult(VoronoiAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
-			super(res, viMap, eiMap);
+		ResultFromIndexResult(Graph g, VoronoiAlgo.Result res) {
+			super(g, res);
 		}
 
 		VoronoiAlgo.Result res() {

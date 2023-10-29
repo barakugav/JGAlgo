@@ -20,7 +20,6 @@ import java.util.Optional;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -99,11 +98,8 @@ public class BipartiteGraphs {
 			partition.set(v, partition0.get(v));
 
 		VertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
-		if (!(g instanceof IndexGraph)) {
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(partitionRes, viMap, eiMap);
-		}
+		if (!(g instanceof IndexGraph))
+			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, partitionRes);
 		return Optional.of(partitionRes);
 	}
 
@@ -192,11 +188,8 @@ public class BipartiteGraphs {
 		WeightsBool partition = (WeightsBool) existingPartition;
 
 		VertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
-		if (!(g instanceof IndexGraph)) {
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(partitionRes, viMap, eiMap);
-		}
+		if (!(g instanceof IndexGraph))
+			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, partitionRes);
 		return Optional.of(partitionRes);
 	}
 

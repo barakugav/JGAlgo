@@ -29,12 +29,11 @@ abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
 			return computeMinimumCut((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
 		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 		VertexBiPartition indexCut = computeMinimumCut(iGraph, w);
-		return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);
+		return new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, indexCut);
 	}
 
 	abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w);
