@@ -105,9 +105,9 @@ class TSPMetricUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-			Path indexPath = computeShortestTour(iGraph, w);
+			Path indexPath = computeShortestTour(iGraph, iw);
 			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 		}
 

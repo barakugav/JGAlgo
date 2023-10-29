@@ -54,14 +54,14 @@ abstract class IntGraphBase implements IntGraph {
 		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))
 			return false;
 		for (String key : getVerticesWeightsKeys()) {
-			IWeights<?> w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);
+			IWeights<?> w1 = getVerticesIWeights(key), w2 = o.getVerticesIWeights(key);
 			if (!WeightsImpl.isEqual(vertices(), w1, w2))
 				return false;
 		}
 		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))
 			return false;
 		for (String key : getEdgesWeightsKeys()) {
-			IWeights<?> w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);
+			IWeights<?> w1 = getEdgesIWeights(key), w2 = o.getEdgesIWeights(key);
 			if (!WeightsImpl.isEqual(edges(), w1, w2))
 				return false;
 		}
@@ -82,9 +82,9 @@ abstract class IntGraphBase implements IntGraph {
 				h += edgeSource(e) + edgeTarget(e);
 		}
 		for (String key : getVerticesWeightsKeys())
-			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));
+			h += WeightsImpl.hashCode(vertices(), getVerticesIWeights(key));
 		for (String key : getEdgesWeightsKeys())
-			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));
+			h += WeightsImpl.hashCode(edges(), getEdgesIWeights(key));
 		return h;
 	}
 
@@ -96,12 +96,12 @@ abstract class IntGraphBase implements IntGraph {
 		Set<String> verticesWeightsKeys = getVerticesWeightsKeys();
 		Collection<IWeights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (String key : verticesWeightsKeys)
-			verticesWeights.add(getVerticesWeights(key));
+			verticesWeights.add(getVerticesIWeights(key));
 
 		Set<String> edgesWeightsKeys = getEdgesWeightsKeys();
 		Collection<IWeights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (String key : edgesWeightsKeys)
-			edgesWeights.add(getEdgesWeights(key));
+			edgesWeights.add(getEdgesIWeights(key));
 
 		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, key) -> {
 			s.append('[');

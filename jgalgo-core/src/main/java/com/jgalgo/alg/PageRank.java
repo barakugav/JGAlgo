@@ -36,9 +36,9 @@ class PageRank {
 		IndexGraph iGraph = g.indexGraph();
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-		VertexScoring indexResult = computeScores(iGraph, w);
+		VertexScoring indexResult = computeScores(iGraph, iw);
 		return new VertexScoringImpl.ResultFromIndexResult(indexResult, viMap);
 	}
 

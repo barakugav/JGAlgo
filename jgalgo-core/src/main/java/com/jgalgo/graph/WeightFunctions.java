@@ -16,7 +16,7 @@
 package com.jgalgo.graph;
 
 /**
- * Static methods class for {@linkplain IWeightFunction weight functions}.
+ * Static methods class for {@linkplain WeightFunction weight functions}.
  *
  * @author Barak Ugav
  */

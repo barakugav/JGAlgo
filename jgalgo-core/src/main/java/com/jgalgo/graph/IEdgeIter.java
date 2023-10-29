@@ -20,18 +20,20 @@ import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Iterator used to iterate over edges of a vertex.
+ * Iterator used to iterate over int graph edges.
+ * <p>
+ * This interface is a specific version of {@link EdgeIter} for {@link IntGraph}.
  * <p>
  * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
  * of the last iterated edge are available by {@link #sourceInt()} and {@link #targetInt()}.
  *
  * <pre> {@code
- * Graph g = ...;
+ * IntGraph g = ...;
  * int vertex = ...;
- * for (EdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
+ * for (IEdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
  * 	int e = eit.nextInt();
- * 	int u = eit.source();
- * 	int v = eit.target();
+ * 	int u = eit.sourceInt();
+ * 	int v = eit.targetInt();
  * 	assert vertex == u;
  * 	System.out.println("Out edge of " + vertex + ": " + e + "(" + u + ", " + v + ")");
  * }
@@ -40,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    IEdgeSet
  * @author Barak Ugav
  */
-public interface IEdgeIter extends IntIterator {
+public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 
 	/**
 	 * Peek at the next edge of the iterator without advancing it.
@@ -52,23 +54,41 @@ public interface IEdgeIter extends IntIterator {
 	 */
 	int peekNextInt();
 
+	@Deprecated
+	@Override
+	default Integer peekNext() {
+		return Integer.valueOf(peekNextInt());
+	}
+
 	/**
 	 * Get the source vertex of the last returned edge.
 	 * <p>
-	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *
 	 * @return the source vertex of the last returned edge
 	 */
 	int sourceInt();
 
+	@Deprecated
+	@Override
+	default Integer source() {
+		return Integer.valueOf(sourceInt());
+	}
+
 	/**
 	 * Get the target vertex of the last returned edge.
 	 * <p>
-	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *
 	 * @return the target vertex of the last returned edge
 	 */
 	int targetInt();
+
+	@Deprecated
+	@Override
+	default Integer target() {
+		return Integer.valueOf(targetInt());
+	}
 
 	/**
 	 * Get an empty edge iterator.
@@ -78,5 +98,4 @@ public interface IEdgeIter extends IntIterator {
 	static IEdgeIter emptyIterator() {
 		return Edges.EmptyEdgeIter.Instance;
 	}
-
 }

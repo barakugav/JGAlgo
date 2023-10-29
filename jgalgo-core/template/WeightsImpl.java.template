@@ -21,7 +21,7 @@ import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 
 class WEIGHTS_IMPL {
 
-	static abstract class IndexImpl KEY_GENERIC extends WeightsImpl.IndexAbstract<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
+	static abstract class IndexImpl TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
 
 		PRIMITIVE_TYPE_REAL[] weights;
 		final PRIMITIVE_TYPE defaultWeight;
@@ -33,13 +33,13 @@ class WEIGHTS_IMPL {
 			defaultWeight = defVal;
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements) {
+		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements) {
 			this(elements, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(orig.weights, elements.size());
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			this(elements, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(weights, elements.size());
@@ -61,13 +61,13 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class IndexImmutable KEY_GENERIC extends WEIGHTS_IMPL.IndexImpl KEY_GENERIC implements WeightsImpl.IndexImmutable<KEY_GENERIC_CLASS> {
+	static class IndexImmutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexImmutable<TYPE_GENERIC_CLASS> {
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet.FixedSize elements) {
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet.FixedSize elements) {
 			super(orig, elements);
 		}
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet.FixedSize elements,
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet.FixedSize elements,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			super(orig, elements, reIndexMap);
 		}
@@ -78,13 +78,13 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class IndexMutable KEY_GENERIC extends WEIGHTS_IMPL.IndexImpl KEY_GENERIC implements WeightsImpl.IndexMutable<KEY_GENERIC_CLASS> {
+	static class IndexMutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexMutable<TYPE_GENERIC_CLASS> {
 
 		IndexMutable(GraphElementSet elements, PRIMITIVE_TYPE defVal) {
 			super(elements, defVal);
 		}
 
-		IndexMutable(WEIGHTS_IMPL.IndexImpl KEY_GENERIC orig, GraphElementSet elements) {
+		IndexMutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements) {
 			super(orig, elements);
 		}
 
@@ -125,14 +125,14 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class IntMapped KEY_GENERIC extends WeightsImpl.IntMapped<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
-		IntMapped(WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights, IndexIntIdMap indexMap) {
+	static class IntMapped TYPE_GENERIC extends WeightsImpl.IntMapped<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
+		IntMapped(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights, IndexIntIdMap indexMap) {
 			super(weights, indexMap);
 		}
 
 		@Override
-		public WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights() {
-			return (WEIGHTS_IMPL.IndexImpl KEY_GENERIC) super.weights();
+		public WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights() {
+			return (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) super.weights();
 		}
 
 		@Override
@@ -151,14 +151,40 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class IntImmutableView KEY_GENERIC extends WeightsImpl.IntImmutableView<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
-		IntImmutableView(IWEIGHTS KEY_GENERIC w) {
+	static class ObjMapped<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends WeightsImpl.ObjMapped<K, TYPE_GENERIC_CLASS> implements WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> {
+		ObjMapped(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights, IndexIdMap<K> indexMap) {
+			super(weights, indexMap);
+		}
+
+		@Override
+		public WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights() {
+			return (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) super.weights();
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(K id) {
+			return weights().get(indexMap.idToIndex(id));
+		}
+
+		@Override
+		public void set(K id, PRIMITIVE_TYPE weight) {
+			weights().set(indexMap.idToIndex(id), weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return weights().defaultWeight();
+		}
+	}
+
+	static class IntImmutableView TYPE_GENERIC extends WeightsImpl.IntImmutableView<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
+		IntImmutableView(IWEIGHTS TYPE_GENERIC w) {
 			super(w);
 		}
 
 		@Override
-		IWEIGHTS KEY_GENERIC weights() {
-			return (IWEIGHTS KEY_GENERIC) super.weights();
+		IWEIGHTS TYPE_GENERIC weights() {
+			return (IWEIGHTS TYPE_GENERIC) super.weights();
 		}
 
 		@Override
@@ -168,6 +194,32 @@ class WEIGHTS_IMPL {
 
 		@Override
 		public void set(int id, PRIMITIVE_TYPE weight) {
+			throw new UnsupportedOperationException("immutable weights");
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return weights().defaultWeight();
+		}
+	}
+
+	static class ObjImmutableView<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends WeightsImpl.ObjImmutableView<K, TYPE_GENERIC_CLASS> implements WEIGHTS <K TYPE_GENERIC_IN_TEMPLATE_LIST> {
+		ObjImmutableView(WEIGHTS <K TYPE_GENERIC_IN_TEMPLATE_LIST> w) {
+			super(w);
+		}
+
+		@Override
+		WEIGHTS <K TYPE_GENERIC_IN_TEMPLATE_LIST> weights() {
+			return (WEIGHTS <K TYPE_GENERIC_IN_TEMPLATE_LIST>) super.weights();
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(K id) {
+			return weights().get(id);
+		}
+
+		@Override
+		public void set(K id, PRIMITIVE_TYPE weight) {
 			throw new UnsupportedOperationException("immutable weights");
 		}
 

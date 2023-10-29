@@ -254,9 +254,9 @@ public interface TreePathMaxima {
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);
 		IndexGraph iGraph = g.indexGraph();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
-		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);
+		return TreePathMaximaUtils.verifyMST(iGraph, iw, mstEdges, tpmAlgo);
 	}
 
 }

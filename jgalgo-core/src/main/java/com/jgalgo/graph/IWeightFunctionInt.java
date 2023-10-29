@@ -18,14 +18,16 @@ package com.jgalgo.graph;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
- * Weight function that maps graph edges (or vertices) to integer weights.
+ * Weight function that maps graph edges or vertices of {@link IntGraph} to integer weights.
+ * <p>
+ * This interface is a specific version of {@link IWeightFunction} for {@link IntGraph}.
  * <p>
  * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is the
  * API for these algorithms for the edges (or vertices) integer weights.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newDirected();
+ * IntGraph g = IntGraph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -38,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * weights.set(e1, 1);
  * weights.set(e2, 3);
  * weights.set(e3, 15);
- * EdgeWeightFunc.Int weightFunc = weights;
+ * IWeightFunctionInt weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().setIntWeights(true).build();
@@ -46,10 +48,10 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
+ * assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
  * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
  * System.out.println("The shortest path from v1 to v3 is:");
- * for (int e : ssspRes.getPath(v3)) {
+ * for (int e : ssspRes.getPath(v3).edges()) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
@@ -58,13 +60,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface IWeightFunctionInt extends IWeightFunction {
-
-	@Deprecated
-	@Override
-	default double weight(int element) {
-		return weightInt(element);
-	}
+public interface IWeightFunctionInt extends WeightFunctionInt<Integer>, IWeightFunction {
 
 	/**
 	 * Get the integer weight of an element.
@@ -75,16 +71,45 @@ public interface IWeightFunctionInt extends IWeightFunction {
 	 */
 	public int weightInt(int element);
 
+	@Deprecated
+	@Override
+	default int weightInt(Integer element) {
+		return weightInt(element.intValue());
+	}
+
+	@Deprecated
+	@Override
+	default double weight(int element) {
+		return weightInt(element);
+	}
+
+	@Deprecated
+	@Override
+	default double weight(Integer element) {
+		return weightInt(element.intValue());
+	}
+
 	@Override
 	default int compare(int e1, int e2) {
 		return Integer.compare(weightInt(e1), weightInt(e2));
 	}
 
+	@Deprecated
 	@Override
-	default double weightSum(IntIterable elements) {
+	default int compare(Integer e1, Integer e2) {
+		return compare(e1.intValue(), e2.intValue());
+	}
+
+	@Override
+	default double weightSum(Iterable<Integer> elements) {
 		long sum = 0;
-		for (int e : elements)
-			sum += weightInt(e);
+		if (elements instanceof IntIterable) {
+			for (int e : (IntIterable) elements)
+				sum += weightInt(e);
+		} else {
+			for (Integer e : elements)
+				sum += weightInt(e.intValue());
+		}
 		return sum;
 	}
 

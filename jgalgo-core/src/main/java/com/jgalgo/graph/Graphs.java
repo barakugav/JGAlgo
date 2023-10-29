@@ -15,13 +15,18 @@
  */
 package com.jgalgo.graph;
 
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 /**
  * Static methods class for graphs.
@@ -581,7 +586,7 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
+		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 			return verticesWeights.getWeights(key);
 		}
 
@@ -596,12 +601,12 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
+		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
 			return edgesWeights.getWeights(key);
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 				T defVal) {
 			WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 			verticesWeights.addWeights(key, weights);
@@ -611,7 +616,8 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+				T defVal) {
 			WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
@@ -675,11 +681,165 @@ public class Graphs {
 	static interface ImmutableGraph {
 	}
 
-	private static class ImmutableGraphView extends IntGraphBase implements ImmutableGraph {
+	private static class ImmutableGraphView<V, E> implements Graph<V, E>, ImmutableGraph {
+
+		private final Graph<V, E> graph;
+
+		ImmutableGraphView(Graph<V, E> g) {
+			this.graph = Objects.requireNonNull(g);
+		}
+
+		@Override
+		public Set<V> vertices() {
+			return graph.vertices();
+		}
+
+		@Override
+		public Set<E> edges() {
+			return graph.edges();
+		}
+
+		@Override
+		public void addVertex(V vertex) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
+		}
+
+		@Override
+		public void removeVertex(V vertex) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
+		}
+
+		@Override
+		public EdgeSet<V, E> outEdges(V source) {
+			return new ImmutableEdgeSet<>(graph.outEdges(source));
+		}
+
+		@Override
+		public EdgeSet<V, E> inEdges(V target) {
+			return new ImmutableEdgeSet<>(graph.inEdges(target));
+		}
+
+		@Override
+		public EdgeSet<V, E> getEdges(V source, V target) {
+			return new ImmutableEdgeSet<>(graph.getEdges(source, target));
+		}
+
+		@Override
+		public void addEdge(V source, V target, E edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
+		}
+
+		@Override
+		public void removeEdge(E edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void reverseEdge(E edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot reverse edges");
+		}
+
+		@Override
+		public V edgeSource(E edge) {
+			return graph.edgeSource(edge);
+		}
+
+		@Override
+		public V edgeTarget(E edge) {
+			return graph.edgeTarget(edge);
+		}
+
+		@Override
+		public void clear() {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices and edges");
+		}
+
+		@Override
+		public void clearEdges() {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
+			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getVerticesWeights(key));
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+				T defVal) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices weights");
+		}
+
+		@Override
+		public void removeVerticesWeights(String key) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices weights");
+		}
+
+		@Override
+		public Set<String> getVerticesWeightsKeys() {
+			return graph.getVerticesWeightsKeys();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
+			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getEdgesWeights(key));
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+				T defVal) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges weights");
+		}
+
+		@Override
+		public void removeEdgesWeights(String key) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges weights");
+		}
+
+		@Override
+		public Set<String> getEdgesWeightsKeys() {
+			return graph.getEdgesWeightsKeys();
+		}
+
+		@Override
+		public boolean isDirected() {
+			return graph.isDirected();
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+			return graph.isAllowSelfEdges();
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return graph.isAllowParallelEdges();
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());
+		}
+
+		@Override
+		public IndexIdMap<V> indexGraphVerticesMap() {
+			return graph.indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexIdMap<E> indexGraphEdgesMap() {
+			return graph.indexGraphEdgesMap();
+		}
+
+	}
+
+	private static class ImmutableIntGraphView extends IntGraphBase implements ImmutableGraph {
 
 		private final IntGraph graph;
 
-		ImmutableGraphView(IntGraph g) {
+		ImmutableIntGraphView(IntGraph g) {
 			this.graph = Objects.requireNonNull(g);
 		}
 
@@ -710,17 +870,17 @@ public class Graphs {
 
 		@Override
 		public IEdgeSet outEdges(int source) {
-			return new ImmutableEdgeSet(graph.outEdges(source));
+			return new ImmutableIEdgeSet(graph.outEdges(source));
 		}
 
 		@Override
 		public IEdgeSet inEdges(int target) {
-			return new ImmutableEdgeSet(graph.inEdges(target));
+			return new ImmutableIEdgeSet(graph.inEdges(target));
 		}
 
 		@Override
 		public IEdgeSet getEdges(int source, int target) {
-			return new ImmutableEdgeSet(graph.getEdges(source, target));
+			return new ImmutableIEdgeSet(graph.getEdges(source, target));
 		}
 
 		@Override
@@ -740,7 +900,7 @@ public class Graphs {
 
 		@Override
 		public void reverseEdge(int edge) {
-			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+			throw new UnsupportedOperationException("graph is immutable, cannot reverse edges");
 		}
 
 		@Override
@@ -765,12 +925,12 @@ public class Graphs {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
-			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesWeights(key));
+		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
+			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesIWeights(key));
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 				T defVal) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add vertices weights");
 		}
@@ -787,12 +947,13 @@ public class Graphs {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
-			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesWeights(key));
+		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
+			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesIWeights(key));
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+				T defVal) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add edges weights");
 		}
 
@@ -846,7 +1007,7 @@ public class Graphs {
 		}
 	}
 
-	private static class ImmutableIndexGraphView extends ImmutableGraphView implements IndexGraphImpl {
+	private static class ImmutableIndexGraphView extends ImmutableIntGraphView implements IndexGraphImpl {
 
 		ImmutableIndexGraphView(IndexGraph g) {
 			super(g);
@@ -888,11 +1049,35 @@ public class Graphs {
 
 	}
 
-	private static class ImmutableEdgeSet extends AbstractIntSet implements IEdgeSet {
+	private static class ImmutableEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
+
+		private final EdgeSet<V, E> set;
+
+		ImmutableEdgeSet(EdgeSet<V, E> set) {
+			this.set = Objects.requireNonNull(set);
+		}
+
+		@Override
+		public boolean contains(Object edge) {
+			return set.contains(edge);
+		}
+
+		@Override
+		public int size() {
+			return set.size();
+		}
+
+		@Override
+		public EdgeIter<V, E> iterator() {
+			return new ImmutableEdgeIter<>(set.iterator());
+		}
+	}
+
+	private static class ImmutableIEdgeSet extends AbstractIntSet implements IEdgeSet {
 
 		private final IEdgeSet set;
 
-		ImmutableEdgeSet(IEdgeSet set) {
+		ImmutableIEdgeSet(IEdgeSet set) {
 			this.set = Objects.requireNonNull(set);
 		}
 
@@ -908,15 +1093,47 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new ImmutableEdgeIter(set.iterator());
+			return new ImmutableIEdgeIter(set.iterator());
 		}
-
 	}
 
-	private static class ImmutableEdgeIter implements IEdgeIter {
+	private static class ImmutableEdgeIter<V, E> implements EdgeIter<V, E> {
+		private final EdgeIter<V, E> it;
+
+		ImmutableEdgeIter(EdgeIter<V, E> it) {
+			this.it = Objects.requireNonNull(it);
+		}
+
+		@Override
+		public V source() {
+			return it.source();
+		}
+
+		@Override
+		public V target() {
+			return it.target();
+		}
+
+		@Override
+		public E next() {
+			return it.next();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public E peekNext() {
+			return it.peekNext();
+		}
+	}
+
+	private static class ImmutableIEdgeIter implements IEdgeIter {
 		private final IEdgeIter it;
 
-		ImmutableEdgeIter(IEdgeIter it) {
+		ImmutableIEdgeIter(IEdgeIter it) {
 			this.it = Objects.requireNonNull(it);
 		}
 
@@ -946,24 +1163,182 @@ public class Graphs {
 		}
 	}
 
-	static IntGraph immutableView(IntGraph g) {
-		if (g instanceof IndexGraph)
-			return immutableView((IndexGraph) g);
-		if (g instanceof IntGraphImpl)
-			if (((IntGraphImpl) g).indexGraph instanceof ImmutableGraph)
-				return g;
-		return g instanceof ImmutableGraph ? g : new ImmutableGraphView(g);
-	}
-
 	static IndexGraph immutableView(IndexGraph g) {
 		return g instanceof ImmutableGraph ? g : new ImmutableIndexGraphView(g);
 	}
 
-	private static class ReverseGraph extends IntGraphBase {
+	static IntGraph immutableView(IntGraph g) {
+		if (g instanceof IndexGraph)
+			return immutableView((IndexGraph) g);
+		return g instanceof ImmutableGraph ? g : new ImmutableIntGraphView(g);
+	}
+
+	@SuppressWarnings("unchecked")
+	static <V, E> Graph<V, E> immutableView(Graph<V, E> g) {
+		if (g instanceof IndexGraph)
+			return (Graph<V, E>) immutableView((IndexGraph) g);
+		if (g instanceof IntGraph)
+			return (Graph<V, E>) immutableView((IntGraph) g);
+		return g instanceof ImmutableGraph ? g : new ImmutableGraphView<>(g);
+	}
+
+	private static class ReverseGraph<V, E> implements Graph<V, E> {
+
+		private final Graph<V, E> graph;
+
+		ReverseGraph(Graph<V, E> g) {
+			this.graph = Objects.requireNonNull(g);
+		}
+
+		@Override
+		public Set<V> vertices() {
+			return graph.vertices();
+		}
+
+		@Override
+		public Set<E> edges() {
+			return graph.edges();
+		}
+
+		@Override
+		public void addVertex(V vertex) {
+			graph.addVertex(vertex);
+		}
+
+		@Override
+		public void removeVertex(V vertex) {
+			graph.removeVertex(vertex);
+		}
+
+		@Override
+		public EdgeSet<V, E> outEdges(V source) {
+			return new ReversedEdgeSet<>(graph.inEdges(source));
+		}
+
+		@Override
+		public EdgeSet<V, E> inEdges(V target) {
+			return new ReversedEdgeSet<>(graph.outEdges(target));
+		}
+
+		@Override
+		public EdgeSet<V, E> getEdges(V source, V target) {
+			return new ReversedEdgeSet<>(graph.getEdges(target, source));
+		}
+
+		@Override
+		public void addEdge(V source, V target, E edge) {
+			graph.addEdge(target, source, edge);
+		}
+
+		@Override
+		public void removeEdge(E edge) {
+			graph.removeEdge(edge);
+		}
+
+		@Override
+		public void reverseEdge(E edge) {
+			graph.reverseEdge(edge);
+		}
+
+		@Override
+		public V edgeSource(E edge) {
+			return graph.edgeTarget(edge);
+		}
+
+		@Override
+		public V edgeTarget(E edge) {
+			return graph.edgeSource(edge);
+		}
+
+		@Override
+		public void clear() {
+			graph.clear();
+		}
+
+		@Override
+		public void clearEdges() {
+			graph.clearEdges();
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
+			return graph.getVerticesWeights(key);
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+				T defVal) {
+			return graph.addVerticesWeights(key, type, defVal);
+		}
+
+		@Override
+		public void removeVerticesWeights(String key) {
+			graph.removeVerticesWeights(key);
+		}
+
+		@Override
+		public Set<String> getVerticesWeightsKeys() {
+			return graph.getVerticesWeightsKeys();
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
+			return graph.getEdgesWeights(key);
+		}
+
+		@Override
+		public <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+				T defVal) {
+			return graph.addEdgesWeights(key, type, defVal);
+		}
+
+		@Override
+		public void removeEdgesWeights(String key) {
+			graph.removeEdgesWeights(key);
+		}
+
+		@Override
+		public Set<String> getEdgesWeightsKeys() {
+			return graph.getEdgesWeightsKeys();
+		}
+
+		@Override
+		public boolean isDirected() {
+			return graph.isDirected();
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+			return graph.isAllowSelfEdges();
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			return graph.isAllowParallelEdges();
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());
+		}
+
+		@Override
+		public IndexIdMap<V> indexGraphVerticesMap() {
+			return graph.indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexIdMap<E> indexGraphEdgesMap() {
+			return graph.indexGraphEdgesMap();
+		}
+
+	}
+
+	private static class ReverseIntGraph extends IntGraphBase {
 
 		private final IntGraph graph;
 
-		ReverseGraph(IntGraph g) {
+		ReverseIntGraph(IntGraph g) {
 			this.graph = Objects.requireNonNull(g);
 		}
 
@@ -998,17 +1373,17 @@ public class Graphs {
 
 		@Override
 		public IEdgeSet outEdges(int source) {
-			return new ReversedEdgeSet(graph.inEdges(source));
+			return new ReversedIEdgeSet(graph.inEdges(source));
 		}
 
 		@Override
 		public IEdgeSet inEdges(int target) {
-			return new ReversedEdgeSet(graph.outEdges(target));
+			return new ReversedIEdgeSet(graph.outEdges(target));
 		}
 
 		@Override
 		public IEdgeSet getEdges(int source, int target) {
-			return new ReversedEdgeSet(graph.getEdges(target, source));
+			return new ReversedIEdgeSet(graph.getEdges(target, source));
 		}
 
 		@Override
@@ -1018,7 +1393,7 @@ public class Graphs {
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-			graph.addEdge(source, target, edge);
+			graph.addEdge(target, source, edge);
 		}
 
 		@Override
@@ -1047,7 +1422,7 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
+		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 			return graph.getVerticesWeights(key);
 		}
 
@@ -1062,7 +1437,7 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
+		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
 			return graph.getEdgesWeights(key);
 		}
 
@@ -1097,13 +1472,14 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 				T defVal) {
 			return graph.addVerticesWeights(key, type, defVal);
 		}
 
 		@Override
-		public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+				T defVal) {
 			return graph.addEdgesWeights(key, type, defVal);
 		}
 
@@ -1124,7 +1500,7 @@ public class Graphs {
 
 	}
 
-	private static class ReverseIndexGraph extends ReverseGraph implements IndexGraphImpl {
+	private static class ReverseIndexGraph extends ReverseIntGraph implements IndexGraphImpl {
 
 		ReverseIndexGraph(IndexGraph g) {
 			super(g);
@@ -1161,11 +1537,45 @@ public class Graphs {
 
 	}
 
-	private static class ReversedEdgeSet extends AbstractIntSet implements IEdgeSet {
+	private static class ReversedEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
+
+		private final EdgeSet<V, E> set;
+
+		ReversedEdgeSet(EdgeSet<V, E> set) {
+			this.set = Objects.requireNonNull(set);
+		}
+
+		@Override
+		public boolean contains(Object edge) {
+			return set.contains(edge);
+		}
+
+		@Override
+		public int size() {
+			return set.size();
+		}
+
+		@Override
+		public boolean remove(Object edge) {
+			return set.remove(edge);
+		}
+
+		@Override
+		public void clear() {
+			set.clear();
+		}
+
+		@Override
+		public EdgeIter<V, E> iterator() {
+			return new ReversedEdgeIter<>(set.iterator());
+		}
+	}
+
+	private static class ReversedIEdgeSet extends AbstractIntSet implements IEdgeSet {
 
 		private final IEdgeSet set;
 
-		ReversedEdgeSet(IEdgeSet set) {
+		ReversedIEdgeSet(IEdgeSet set) {
 			this.set = Objects.requireNonNull(set);
 		}
 
@@ -1191,15 +1601,52 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new ReversedEdgeIter(set.iterator());
+			return new ReversedIEdgeIter(set.iterator());
 		}
-
 	}
 
-	private static class ReversedEdgeIter implements IEdgeIter {
+	private static class ReversedEdgeIter<V, E> implements EdgeIter<V, E> {
+		final EdgeIter<V, E> it;
+
+		ReversedEdgeIter(EdgeIter<V, E> it) {
+			this.it = it;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public E next() {
+			return it.next();
+		}
+
+		@Override
+		public E peekNext() {
+			return it.peekNext();
+		}
+
+		@Override
+		public V source() {
+			return it.target();
+		}
+
+		@Override
+		public V target() {
+			return it.source();
+		}
+
+		@Override
+		public void remove() {
+			it.remove();
+		}
+	}
+
+	private static class ReversedIEdgeIter implements IEdgeIter {
 		final IEdgeIter it;
 
-		ReversedEdgeIter(IEdgeIter it) {
+		ReversedIEdgeIter(IEdgeIter it) {
 			this.it = it;
 		}
 
@@ -1234,14 +1681,23 @@ public class Graphs {
 		}
 	}
 
+	static IndexGraph reverseView(IndexGraph g) {
+		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);
+	}
+
 	static IntGraph reverseView(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return reverseView((IndexGraph) g);
-		return g instanceof ReverseGraph ? ((ReverseGraph) g).graph : new ReverseGraph(g);
+		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph : new ReverseIntGraph(g);
 	}
 
-	static IndexGraph reverseView(IndexGraph g) {
-		return g instanceof ReverseGraph ? ((ReverseGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);
+	@SuppressWarnings("unchecked")
+	static <V, E> Graph<V, E> reverseView(Graph<V, E> g) {
+		if (g instanceof IndexGraph)
+			return (Graph<V, E>) reverseView((IndexGraph) g);
+		if (g instanceof IntGraph)
+			return (Graph<V, E>) reverseView((IntGraph) g);
+		return g instanceof ReverseGraph ? ((ReverseGraph<V, E>) g).graph : new ReverseGraph<>(g);
 	}
 
 	static String getIndexGraphImpl(IndexGraph g) {
@@ -1375,13 +1831,15 @@ public class Graphs {
 	 * given graph.
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link #subGraph(IntGraph, IntCollection, IntCollection, boolean, boolean)}.
+	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
 	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
 	 * @param  g        the graph to create a sub graph from
 	 * @param  vertices the vertices of the sub graph
 	 * @return          a new graph that is an induced subgraph of the given graph
 	 */
-	public static IntGraph subGraph(IntGraph g, IntCollection vertices) {
+	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices) {
 		return subGraph(g, Objects.requireNonNull(vertices), null);
 	}
 
@@ -1390,8 +1848,8 @@ public class Graphs {
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
-	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to
-	 * {@link #subGraph(IntGraph, IntCollection)}. {@code vertices} must not be {@code null} in this case.
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
+	 * {@code vertices} must not be {@code null} in this case.
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
@@ -1400,8 +1858,10 @@ public class Graphs {
 	 * created graph will be a subset of the vertices and edges of the given graph.
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link #subGraph(IntGraph, IntCollection, IntCollection, boolean, boolean)}.
+	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
 	 *
+	 * @param  <V>                  the vertices type
+	 * @param  <E>                  the edges type
 	 * @param  g                    the graph to create a sub graph from
 	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
 	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
@@ -1411,7 +1871,7 @@ public class Graphs {
 	 * @return                      a new graph that is a subgraph of the given graph
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
-	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges) {
+	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices, Collection<E> edges) {
 		return subGraph(g, vertices, edges, false, false);
 	}
 
@@ -1420,8 +1880,8 @@ public class Graphs {
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
-	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to
-	 * {@link #subGraph(IntGraph, IntCollection)}. {@code vertices} must not be {@code null} in this case.
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
+	 * {@code vertices} must not be {@code null} in this case.
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
@@ -1434,6 +1894,8 @@ public class Graphs {
 	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
 	 * weights of the given graph will be copied to the new sub graph.
 	 *
+	 * @param  <V>                  the vertices type
+	 * @param  <E>                  the edges type
 	 * @param  g                    the graph to create a sub graph from
 	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
 	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
@@ -1447,6 +1909,65 @@ public class Graphs {
 	 * @return                      a new graph that is a subgraph of the given graph
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
+	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices, Collection<E> edges,
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		if (g instanceof IntGraph) {
+			IntCollection vs = vertices == null ? null
+					: (vertices instanceof IntCollection ? (IntCollection) vertices
+							: new IntArrayList((List<Integer>) vertices));
+			IntCollection es = edges == null ? null
+					: (edges instanceof IntCollection ? (IntCollection) edges
+							: new IntArrayList((List<Integer>) edges));
+			return (Graph<V, E>) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
+		}
+
+		if (vertices == null && edges == null)
+			throw new NullPointerException();
+		GraphBuilder<V, E> gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+
+		if (vertices == null) {
+			vertices = new ObjectOpenHashSet();
+			for (E e : edges) {
+				vertices.add(g.edgeSource(e));
+				vertices.add(g.edgeTarget(e));
+			}
+		}
+		gb.expectedVerticesNum(vertices.size());
+		for (V v : vertices)
+			gb.addVertex(v);
+
+		if (edges == null) {
+			for (E e : g.edges()) {
+				V u = g.edgeSource(e), v = g.edgeTarget(e);
+				if (gb.vertices().contains(u) && gb.vertices().contains(v))
+					gb.addEdge(u, v, e);
+			}
+		} else {
+			for (E e : edges)
+				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+		}
+
+		if (copyVerticesWeights) {
+			for (String key : g.getVerticesWeightsKeys()) {
+				IWeights wSrc = g.getVerticesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.vertices());
+			}
+		}
+		if (copyEdgesWeights) {
+			for (String key : g.getEdgesWeightsKeys()) {
+				IWeights wSrc = g.getEdgesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.edges());
+			}
+		}
+
+		return gb.build();
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
 	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -1480,7 +2001,7 @@ public class Graphs {
 			for (String key : g.getVerticesWeightsKeys()) {
 				IWeights wSrc = g.getVerticesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
-				IWeights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.vertices());
 			}
 		}
@@ -1488,12 +2009,64 @@ public class Graphs {
 			for (String key : g.getEdgesWeightsKeys()) {
 				IWeights wSrc = g.getEdgesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
-				IWeights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.edges());
 			}
 		}
 
 		return gb.build();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <K> void copyWeights(Weights<K, ?> src, Weights<K, ?> dst, Class<?> type, Collection<K> elements) {
+		if (type == byte.class) {
+			WeightsByte<K> src0 = (WeightsByte<K>) src;
+			WeightsByte<K> dst0 = (WeightsByte<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == short.class) {
+			WeightsShort<K> src0 = (WeightsShort<K>) src;
+			WeightsShort<K> dst0 = (WeightsShort<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == int.class) {
+			WeightsInt<K> src0 = (WeightsInt<K>) src;
+			WeightsInt<K> dst0 = (WeightsInt<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == long.class) {
+			WeightsLong<K> src0 = (WeightsLong<K>) src;
+			WeightsLong<K> dst0 = (WeightsLong<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == float.class) {
+			WeightsFloat<K> src0 = (WeightsFloat<K>) src;
+			WeightsFloat<K> dst0 = (WeightsFloat<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == double.class) {
+			WeightsDouble<K> src0 = (WeightsDouble<K>) src;
+			WeightsDouble<K> dst0 = (WeightsDouble<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == boolean.class) {
+			WeightsBool<K> src0 = (WeightsBool<K>) src;
+			WeightsBool<K> dst0 = (WeightsBool<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == char.class) {
+			WeightsChar<K> src0 = (WeightsChar<K>) src;
+			WeightsChar<K> dst0 = (WeightsChar<K>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else if (type == Object.class) {
+			WeightsObj<K, Object> src0 = (WeightsObj<K, Object>) src;
+			WeightsObj<K, Object> dst0 = (WeightsObj<K, Object>) dst;
+			for (K elm : elements)
+				dst0.set(elm, src0.get(elm));
+		} else {
+			throw new AssertionError();
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1548,24 +2121,24 @@ public class Graphs {
 		}
 	}
 
-	private static Class<?> getWeightsType(IWeights<?> w) {
-		if (w instanceof IWeightsByte)
+	private static Class<?> getWeightsType(Weights<?, ?> w) {
+		if (w instanceof WeightsByte)
 			return byte.class;
-		if (w instanceof IWeightsShort)
+		if (w instanceof WeightsShort)
 			return short.class;
-		if (w instanceof IWeightsInt)
+		if (w instanceof WeightsInt)
 			return int.class;
-		if (w instanceof IWeightsLong)
+		if (w instanceof WeightsLong)
 			return long.class;
-		if (w instanceof IWeightsFloat)
+		if (w instanceof WeightsFloat)
 			return float.class;
-		if (w instanceof IWeightsDouble)
+		if (w instanceof WeightsDouble)
 			return double.class;
-		if (w instanceof IWeightsBool)
+		if (w instanceof WeightsBool)
 			return boolean.class;
-		if (w instanceof IWeightsChar)
+		if (w instanceof WeightsChar)
 			return char.class;
-		if (w instanceof IWeightsObj)
+		if (w instanceof WeightsObj)
 			return Object.class;
 		throw new AssertionError();
 	}

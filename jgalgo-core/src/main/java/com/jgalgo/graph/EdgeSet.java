@@ -15,44 +15,34 @@
  */
 package com.jgalgo.graph;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.Set;
 
 /**
- * Set of int graph edges.
- * <p>
- * This interface is a specific version of {@link EdgeSet} for {@link IntGraph}.
- * <p>
- * A set of integers, each represent an edge ID in a graph
+ * Set of graph edges.
  *
  * <pre> {@code
- * IntGraph g = ...;
- * int vertex = ...;
- * for (IEdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
- * 	int e = eit.nextInt();
- * 	int u = eit.sourceInt();
- * 	int v = eit.targetInt();
- * 	assert vertex == u;
+ * Graph<String, Integer> g = ...;
+ * String vertex = ...;
+ * for (EdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
+ * 	Integer e = eit.next();
+ * 	String u = eit.source();
+ * 	String v = eit.target();
+ * 	assert vertex.equals(u);
  * 	System.out.println("Out edge of " + vertex + ": " + e + "(" + u + ", " + v + ")");
  * }
  * }</pre>
  *
- * @see    IEdgeIter
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @see        EdgeIter
+ * @author     Barak Ugav
  */
-public interface IEdgeSet extends EdgeSet<Integer, Integer>, IntSet {
+public interface EdgeSet<V, E> extends Set<E> {
 
 	/**
 	 * Return an edge iterator that iterate over the edges in this set.
 	 */
 	@Override
-	IEdgeIter iterator();
-
-	/**
-	 * Return an edge iterator that iterate over the edges in this set.
-	 */
-	@Override
-	default IEdgeIter intIterator() {
-		return iterator();
-	}
+	EdgeIter<V, E> iterator();
 
 }

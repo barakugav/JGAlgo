@@ -58,9 +58,9 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		if (copyWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices));
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));
 			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));
 		}
 
 		/* internal data containers should be copied manually */
@@ -187,7 +187,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
@@ -203,7 +203,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
 		return (WeightsT) edgesUserWeights.getWeights(key);
 	}
 
@@ -226,7 +226,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
@@ -235,7 +236,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")

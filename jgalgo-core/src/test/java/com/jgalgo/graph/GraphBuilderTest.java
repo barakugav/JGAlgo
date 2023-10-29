@@ -70,11 +70,11 @@ public class GraphBuilderTest extends TestBase {
 							IWeights wG, wB;
 							IntSet elements;
 							if (!edgesWeights) {
-								wG = g.addVerticesWeights(key, type, defVal);
+								wG = (IWeights) g.addVerticesWeights(key, type, defVal);
 								wB = b.addVerticesWeights(key, type, defVal);
 								elements = g.vertices();
 							} else {
-								wG = g.addEdgesWeights(key, type, defVal);
+								wG = (IWeights) g.addEdgesWeights(key, type, defVal);
 								wB = b.addEdgesWeights(key, type, defVal);
 								elements = g.edges();
 							}
@@ -149,12 +149,12 @@ public class GraphBuilderTest extends TestBase {
 							IWeights wG, wB;
 							IntSet elements;
 							if (!edgesWeights) {
-								wG = g.addVerticesWeights(key, type, defVal);
-								wB = b.addVerticesWeights(key, type, defVal);
+								wG = (IWeights) g.addVerticesWeights(key, type, defVal);
+								wB = (IWeights) b.addVerticesWeights(key, type, defVal);
 								elements = g.vertices();
 							} else {
-								wG = g.addEdgesWeights(key, type, defVal);
-								wB = b.addEdgesWeights(key, type, defVal);
+								wG = (IWeights) g.addEdgesWeights(key, type, defVal);
+								wB = (IWeights) b.addEdgesWeights(key, type, defVal);
 								elements = g.edges();
 							}
 							for (int elm : elements) {

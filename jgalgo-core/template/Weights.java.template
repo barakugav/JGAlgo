@@ -17,62 +17,54 @@
 package com.jgalgo.graph;
 
 /**
- * Specific weights of {@code PRIMITIVE_TYPE_REAL} for {@linkplain IntGraph int graphs}.
+ * Specific weights of {@code PRIMITIVE_TYPE_REAL}.
  *
  * @author Barak Ugav
  */
-public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEIGHTS<Integer TYPE_GENERIC_IN_TEMPLATE_LIST> WEIGHT_FUNC_IMPLEMENT {
+public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYPE_GENERIC_CLASS> WEIGHT_FUNC_IMPLEMENT {
 
 	/**
 	 * Get the weight associated with the given element.
 	 *
-	 * @param  element an element (edge/vertex.)
+	 * @param  element an element (edge/vertex).
 	 * @return    the weight associated with the given element.
 	 */
-	public PRIMITIVE_TYPE get(int element);
+	public PRIMITIVE_TYPE get(K element);
 
 	@Deprecated
 	@Override
-	default PRIMITIVE_TYPE get(Integer element) {
-		return get(element.intValue());
-	}
-
-	@Deprecated
-	@Override
-	default TYPE_GENERIC_CLASS getAsObj(int element) {
+	default TYPE_GENERIC_CLASS getAsObj(K element) {
 		return PRIMITIVE_TO_BOXED(get(element));
 	}
 
 	/**
 	 * Set the weight associated with the given element.
 	 *
-	 * @param element     an element (edge/vertex)
+	 * @param  element an element (edge/vertex).
 	 * @param weight new weight that will be associated with the given element
 	 */
-	public void set(int element, PRIMITIVE_TYPE weight);
+	public void set(K element, PRIMITIVE_TYPE weight);
 
 	@Deprecated
 	@Override
-	default void set(Integer element, PRIMITIVE_TYPE weight) {
-		set(element.intValue(), weight);
-	}
-
-	@Deprecated
-	@Override
-	default void setAsObj(int element, TYPE_GENERIC_CLASS weight) {
+	default void setAsObj(K element, TYPE_GENERIC_CLASS weight) {
 		set(element, BOXED_TO_PRIMITIVE(weight));
 	}
 
-	@Deprecated
-	@Override
-	default TYPE_GENERIC_CLASS getAsObj(Integer element) {
-		return PRIMITIVE_TO_BOXED(get(element.intValue()));
-	}
+	/**
+	 * Get the default weight of this weights container.
+	 * <p>
+	 * The default weight is the weight associated with all elements that were not explicitly set using
+	 * {@link #set(Object, PRIMITIVE_TYPE_REAL)}.
+	 *
+	 * @return the default weight of this weights container.
+	 */
+	public PRIMITIVE_TYPE defaultWeight();
 
 	@Deprecated
 	@Override
-	default void setAsObj(Integer element, TYPE_GENERIC_CLASS weight) {
-		set(element.intValue(), BOXED_TO_PRIMITIVE(weight));
+	default TYPE_GENERIC_CLASS defaultWeightAsObj() {
+		return PRIMITIVE_TO_BOXED(defaultWeight());
 	}
 
 	WEIGHT_FUNC_IMPLEMENTATION

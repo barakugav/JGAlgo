@@ -77,12 +77,12 @@ class FormatGML implements GraphFormat {
 				List<Pair<String, WeightsStringer>> vWeights = new ArrayList<>();
 				List<Pair<String, WeightsStringer>> eWeights = new ArrayList<>();
 				for (String key : graph.getVerticesWeightsKeys()) {
-					IWeights<?> w = graph.getVerticesWeights(key);
+					IWeights<?> w = graph.getVerticesIWeights(key);
 					checkValidWeightsKey(key);
 					vWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}
 				for (String key : graph.getEdgesWeightsKeys()) {
-					IWeights<?> w = graph.getEdgesWeights(key);
+					IWeights<?> w = graph.getEdgesIWeights(key);
 					checkValidWeightsKey(key);
 					eWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}

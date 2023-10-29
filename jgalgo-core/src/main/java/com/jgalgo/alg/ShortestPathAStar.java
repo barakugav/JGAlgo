@@ -76,13 +76,13 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 
 		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
 
-		Path indexPath = computeShortestPath(iGraph, w, iSource, iTarget, indexVHeuristic);
+		Path indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 

@@ -22,9 +22,9 @@ import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-interface WeightsImpl<T> extends IWeights<T> {
+interface WeightsImpl {
 
-	static interface Index<T> extends WeightsImpl<T> {
+	static interface Index<T> extends IWeights<T>, WeightsImpl {
 
 	}
 
@@ -102,7 +102,7 @@ interface WeightsImpl<T> extends IWeights<T> {
 
 		static WeightsImpl.IndexMutable<?> copyOf(IWeights<?> weights, GraphElementSet elements) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
-				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -189,11 +189,11 @@ interface WeightsImpl<T> extends IWeights<T> {
 
 	}
 
-	static interface IndexImmutable<T> extends WeightsImpl<T> {
+	static interface IndexImmutable<T> extends IWeights<T>, WeightsImpl {
 
 		static WeightsImpl.IndexImmutable<?> copyOf(IWeights<?> weights, GraphElementSet.FixedSize elements) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
-				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -220,7 +220,7 @@ interface WeightsImpl<T> extends IWeights<T> {
 		static WeightsImpl.IndexImmutable<?> copyOfReindexed(IWeights<?> weights, GraphElementSet.FixedSize elements,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
-				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, reIndexMap);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -276,7 +276,7 @@ interface WeightsImpl<T> extends IWeights<T> {
 
 	}
 
-	static abstract class IntMapped<T> implements WeightsImpl<T> {
+	static abstract class IntMapped<T> implements IWeights<T>, WeightsImpl {
 
 		final WeightsImpl.IndexAbstract<T> weights;
 		final IndexIntIdMap indexMap;
@@ -315,25 +315,33 @@ interface WeightsImpl<T> extends IWeights<T> {
 
 	}
 
-	static interface Immutable<T> extends WeightsImpl<T> {
+	static class ImmutableView<K, T> implements WeightsImpl {
 
-	}
+		private final Weights<K, T> weights;
 
-	static abstract class IntImmutableView<T> implements Immutable<T> {
-
-		final IWeights<T> weights;
-
-		IntImmutableView(IWeights<T> weights) {
+		ImmutableView(Weights<K, T> weights) {
 			this.weights = Objects.requireNonNull(weights);
 		}
 
-		IWeights<T> weights() {
+		Weights<K, T> weights() {
 			return weights;
+		}
+	}
+
+	static abstract class IntImmutableView<T> extends ImmutableView<Integer, T> implements IWeights<T> {
+
+		IntImmutableView(IWeights<T> weights) {
+			super(weights);
+		}
+
+		@Override
+		IWeights<T> weights() {
+			return (IWeights<T>) super.weights();
 		}
 
 		@SuppressWarnings("unchecked")
 		static <T> IWeights<T> newInstance(IWeights<T> weights) {
-			if (weights instanceof Immutable<?>)
+			if (weights instanceof WeightsImpl.ImmutableView)
 				return weights;
 			if (weights instanceof IWeightsByte)
 				return (IWeights<T>) new WeightsImplByte.IntImmutableView((IWeightsByte) weights);
@@ -452,6 +460,77 @@ interface WeightsImpl<T> extends IWeights<T> {
 			throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
 		}
 		return h;
+	}
+
+	static abstract class ObjMapped<K, T> implements Weights<K, T>, WeightsImpl {
+
+		final WeightsImpl.IndexAbstract<T> weights;
+		final IndexIdMap<K> indexMap;
+
+		ObjMapped(WeightsImpl.Index<T> weights, IndexIdMap<K> indexMap) {
+			this.weights = (WeightsImpl.IndexAbstract<T>) Objects.requireNonNull(weights);
+			this.indexMap = indexMap;
+		}
+
+		WeightsImpl.IndexAbstract<T> weights() {
+			return weights;
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		static <K> WeightsImpl.ObjMapped<K, ?> newInstance(WeightsImpl.Index<?> weights, IndexIdMap<K> indexMap) {
+			if (weights instanceof WeightsImplByte.IndexImpl) {
+				return new WeightsImplByte.ObjMapped((WeightsImplByte.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplShort.IndexImpl) {
+				return new WeightsImplShort.ObjMapped((WeightsImplShort.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplInt.IndexImpl) {
+				return new WeightsImplInt.ObjMapped((WeightsImplInt.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplLong.IndexImpl) {
+				return new WeightsImplLong.ObjMapped((WeightsImplLong.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplFloat.IndexImpl) {
+				return new WeightsImplFloat.ObjMapped((WeightsImplFloat.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplDouble.IndexImpl) {
+				return new WeightsImplDouble.ObjMapped((WeightsImplDouble.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplBool.IndexImpl) {
+				return new WeightsImplBool.ObjMapped((WeightsImplBool.IndexImpl) weights, indexMap);
+			} else if (weights instanceof WeightsImplChar.IndexImpl) {
+				return new WeightsImplChar.ObjMapped((WeightsImplChar.IndexImpl) weights, indexMap);
+			} else {
+				return new WeightsImplObj.ObjMapped<>((WeightsImplObj.IndexImpl) weights, indexMap);
+			}
+		}
+
+	}
+
+	static abstract class ObjImmutableView<K, T> extends ImmutableView<K, T> implements Weights<K, T> {
+
+		ObjImmutableView(Weights<K, T> weights) {
+			super(weights);
+		}
+
+		@SuppressWarnings("unchecked")
+		static <K, T> Weights<K, T> newInstance(Weights<K, T> weights) {
+			if (weights instanceof ImmutableView)
+				return weights;
+			if (weights instanceof WeightsByte)
+				return (Weights<K, T>) new WeightsImplByte.ObjImmutableView<>((WeightsByte<K>) weights);
+			if (weights instanceof WeightsShort)
+				return (Weights<K, T>) new WeightsImplShort.ObjImmutableView<>((WeightsShort<K>) weights);
+			if (weights instanceof WeightsInt)
+				return (Weights<K, T>) new WeightsImplInt.ObjImmutableView<>((WeightsInt<K>) weights);
+			if (weights instanceof WeightsLong)
+				return (Weights<K, T>) new WeightsImplLong.ObjImmutableView<>((WeightsLong<K>) weights);
+			if (weights instanceof WeightsFloat)
+				return (Weights<K, T>) new WeightsImplFloat.ObjImmutableView<>((WeightsFloat<K>) weights);
+			if (weights instanceof WeightsDouble)
+				return (Weights<K, T>) new WeightsImplDouble.ObjImmutableView<>((WeightsDouble<K>) weights);
+			if (weights instanceof WeightsBool)
+				return (Weights<K, T>) new WeightsImplBool.ObjImmutableView<>((WeightsBool<K>) weights);
+			if (weights instanceof WeightsChar)
+				return (Weights<K, T>) new WeightsImplChar.ObjImmutableView<>((WeightsChar<K>) weights);
+			if (weights instanceof WeightsObj)
+				return new WeightsImplObj.ObjImmutableView<>((WeightsObj<K, T>) weights);
+			throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
+		}
 	}
 
 }

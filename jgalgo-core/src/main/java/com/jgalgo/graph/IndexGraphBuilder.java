@@ -134,7 +134,7 @@ public interface IndexGraphBuilder {
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
@@ -152,7 +152,7 @@ public interface IndexGraphBuilder {
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */

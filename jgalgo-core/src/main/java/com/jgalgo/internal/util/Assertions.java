@@ -23,11 +23,12 @@ import java.util.Objects;
 import com.jgalgo.alg.FlowNetwork;
 import com.jgalgo.alg.FlowNetworkInt;
 import com.jgalgo.alg.GraphsUtils;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -41,12 +42,12 @@ public class Assertions {
 
 	public static class Graphs {
 
-		public static void onlyDirected(IntGraph g) {
+		public static void onlyDirected(Graph<?, ?> g) {
 			if (!g.isDirected())
 				throw new IllegalArgumentException("only directed graphs are supported");
 		}
 
-		public static void onlyUndirected(IntGraph g) {
+		public static void onlyUndirected(Graph<?, ?> g) {
 			if (g.isDirected())
 				throw new IllegalArgumentException("only undirected graphs are supported");
 		}

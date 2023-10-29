@@ -40,10 +40,10 @@ class ShortestPathSingleSourceUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 
-			ShortestPathSingleSource.Result indexResult = computeShortestPaths(iGraph, w, iSource);
+			ShortestPathSingleSource.Result indexResult = computeShortestPaths(iGraph, iw, iSource);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 

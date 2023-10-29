@@ -65,9 +65,9 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		if (copyWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices));
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));
 			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));
 		}
 	}
 

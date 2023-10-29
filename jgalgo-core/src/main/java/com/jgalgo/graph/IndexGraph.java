@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A graph whose vertices and edges identifiers are indices.
  * <p>
- * The {@link IntGraph} interface provide addition, removal and querying of vertices and edges, all using {@code int}
+ * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using some hashable
  * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
  * graph lifetime. On the other hand, an <i>Index</i> graph is a {@link IntGraph} object in which the vertices and edges
  * identifiers of the graph are <b>always</b> {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
@@ -30,23 +30,23 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * may need to rename existing vertices or edges during the graph lifetime. These renames can be subscribed-to using
  * {@link #addVertexSwapListener(IndexSwapListener)} and {@link #addEdgeSwapListener(IndexSwapListener)}.
  * <p>
- * An index graph may be obtained as a view from a regular {@link IntGraph} using {@link IntGraph#indexGraph()}, or it
- * can be created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is
- * required, and there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a
- * regular {@link IntGraph}, as it will expose an identical functionality while providing better performance.
+ * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
+ * created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is required, and
+ * there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a regular
+ * {@link IntGraph}, as it will expose an identical functionality while providing better performance.
  * <p>
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
- * {@link IntGraph} is provided to an algorithm, the Index graph should be retrieved using
- * {@link IntGraph#indexGraph()}, the algorithm expensive logic should operate on the returned Index graph and finally
- * the result should be transformed back to the regular graph IDs. The mapping from a regular graph IDs to indices and
- * vice versa is exposed using {@link IndexIntIdMap}, which can be accessed using {@link IntGraph#indexGraphVerticesMap()}
- * and {@link IntGraph#indexGraphEdgesMap()}.
+ * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
+ * algorithm expensive logic should operate on the returned Index graph and finally the result should be transformed
+ * back to the regular graph IDs. The mapping from a regular graph IDs to indices and vice versa is exposed using
+ * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
+ * {@link Graph#indexGraphEdgesMap()}.
  * <p>
  * To create a new empty index graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will
  * use the default implementation. For more control over the graph details, see {@link IndexGraphFactory}. To construct
  * an immutable index graph, use {@link IndexGraphBuilder}.
  *
- * @see    IndexIntIdMap
+ * @see    IndexIdMap
  * @author Barak Ugav
  */
 public interface IndexGraph extends IntGraph {

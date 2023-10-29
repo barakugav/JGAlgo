@@ -63,10 +63,10 @@ import com.jgalgo.graph.IWeightFunction;
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
+ * assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
  * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
  * System.out.println("The shortest path from v1 to v3 is:");
- * for (int e : ssspRes.getPath(v3)) {
+ * for (int e : ssspRes.getPath(v3).edges()) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }

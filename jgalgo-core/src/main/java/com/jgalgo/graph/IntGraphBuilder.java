@@ -15,16 +15,17 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * A builder for {@linkplain IntGraph graphs}.
+ * A builder for {@linkplain IntGraph int graphs}.
  * <p>
- * The builder is used to construct <b>non-empty</b> graphs. Differing from {@link IntGraphFactory} which create new
+ * The builder is used to construct <b>non-empty</b> int graphs. Differing from {@link IntGraphFactory} which create new
  * empty graphs, the builder is used to add vertices and edges before actually creating the graph. This capability is
  * required to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost
  * compared to creating an empty graph and adding the same vertices and edges.
+ * <p>
+ * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
  * @see    IntGraphBuilder#newUndirected()
  * @see    IntGraphBuilder#newDirected()
@@ -32,20 +33,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IntGraphFactory
  * @author Barak Ugav
  */
-public interface IntGraphBuilder {
+public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
-	/**
-	 * Get the set of vertices that were added to the graph.
-	 *
-	 * @return the graph vertices
-	 */
+	@Override
 	IntSet vertices();
 
-	/**
-	 * Get the set of edges that were added to the graph.
-	 *
-	 * @return the graph edges
-	 */
+	@Override
 	IntSet edges();
 
 	/**
@@ -69,6 +62,12 @@ public interface IntGraphBuilder {
 	 * @param vertex the new vertex identifier
 	 */
 	void addVertex(int vertex);
+
+	@Deprecated
+	@Override
+	default void addVertex(Integer vertex) {
+		addVertex(vertex.intValue());
+	}
 
 	/**
 	 * Add a new edge to the graph.
@@ -96,23 +95,11 @@ public interface IntGraphBuilder {
 	 */
 	void addEdge(int source, int target, int edge);
 
-	/**
-	 * Hint about the number of vertices expected to be added to the builder.
-	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
-	 *
-	 * @param verticesNum the expected number of vertices to be added to the builder
-	 */
-	void expectedVerticesNum(int verticesNum);
-
-	/**
-	 * Hint about the number of edges expected to be added to the builder.
-	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
-	 *
-	 * @param edgesNum the expected number of edges to be added to the builder
-	 */
-	void expectedEdgesNum(int edgesNum);
+	@Deprecated
+	@Override
+	default void addEdge(Integer source, Integer target, Integer edge) {
+		addEdge(source.intValue(), target.intValue(), edge.intValue());
+	}
 
 	/**
 	 * Get the vertices weights of some key.
@@ -125,49 +112,12 @@ public interface IntGraphBuilder {
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key);
 
-	/**
-	 * Add a new weights container associated with the vertices of the built graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
-		return addVerticesWeights(key, type, null);
+	@Override
+	default <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+		return getVerticesIWeights(key);
 	}
-
-	/**
-	 * Add a new weights container associated with the vertices of built graph with default value.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
-
-	/**
-	 * Get the keys of all the associated vertices weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated vertices weights
-	 */
-	Set<String> getVerticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
@@ -180,67 +130,17 @@ public interface IntGraphBuilder {
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key);
 
-	/**
-	 * Add a new weights container associated with the edges of the built graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
-		return addEdgesWeights(key, type, null);
+	@Override
+	default <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		return getEdgesIWeights(key);
 	}
 
-	/**
-	 * Add a new weights container associated with the edges of the built graph with default value.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
-
-	/**
-	 * Get the keys of all the associated edges weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated edges weights
-	 */
-	Set<String> getEdgesWeightsKeys();
-
-	/**
-	 * Clear the builder by removing all vertices and edges added to it.
-	 */
-	void clear();
-
-	/**
-	 * Build a new immutable graph with the builder vertices and edges.
-	 *
-	 * @return a new immutable graph with the vertices and edges that were added to the builder.
-	 */
+	@Override
 	IntGraph build();
 
-	/**
-	 * Build a new mutable graph with the builder vertices and edges.
-	 *
-	 * @return a new mutable graph with the vertices and edges that were added to the builder.
-	 */
+	@Override
 	IntGraph buildMutable();
 
 	/**
@@ -253,7 +153,7 @@ public interface IntGraphBuilder {
 	}
 
 	/**
-	 * Create a new builder that builds directed graphs.
+	 * Create a new builder that builds directed int graphs.
 	 *
 	 * @return a new empty builder for directed graphs
 	 */

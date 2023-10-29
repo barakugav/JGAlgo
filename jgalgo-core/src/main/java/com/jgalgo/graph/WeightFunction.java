@@ -17,17 +17,14 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
+import java.util.Comparator;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.alg.VertexCover;
-import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
- * Weight function that maps graph edges or vertices of {@link IntGraph} to weights.
- * <p>
- * This interface is a specific version of {@link WeightFunction} for {@link IntGraph}.
+ * Weight function that maps graph edges or vertices to weights.
  * <p>
  * This interface is usually used as weight function of edges, for example in algorithms such as
  * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo}, in which the algorithm try to
@@ -38,42 +35,40 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as <i>elements</i>.
  *
  * <pre> {@code
- * // Create a directed graph with three vertices and edges between them
- * IntGraph g = IntGraph.newDirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int e1 = g.addEdge(v1, v2);
- * int e2 = g.addEdge(v2, v3);
- * int e3 = g.addEdge(v1, v3);
+ * // Create an undirected graph with three vertices and edges between them
+ * Graph<String, Integer> g = Graph.newUndirected();
+ * g.addVertex("Berlin");
+ * g.addVertex("Leipzig");
+ * g.addVertex("Dresden");
+ * g.addEdge("Berlin", "Leipzig", 9);
+ * g.addEdge("Berlin", "Dresden", 13);
+ * g.addEdge("Dresden", "Leipzig", 14);
  *
  * // Assign some weights to the edges
- * IWeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
- * weights.set(e1, 1.2);
- * weights.set(e2, 3.1);
- * weights.set(e3, 15.1);
- * IWeightFunction weightFunc = weights;
+ * WeightsDouble<Integer> w = g.addEdgesWeights("distance-km", double.class);
+ * w.set(9, 191.1);
+ * w.set(13, 193.3);
+ * w.set(14, 121.3);
  *
- * // Calculate the shortest paths from v1 to all other vertices
+ * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, "Berlin");
  *
- * // Print the shortest path from v1 to v3
- * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
- * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
- * System.out.println("The shortest path from v1 to v3 is:");
- * for (int e : ssspRes.getPath(v3).edges()) {
+ * // Print the shortest path from Berlin to Leipzig
+ * System.out.println("Distance from Berlin to Leipzig is: " + ssspRes.distance("Leipzig"));
+ * System.out.println("The shortest path from Berlin to Leipzig is:");
+ * for (int e : ssspRes.getPath("Leipzig")) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
  * }</pre>
  *
- * @see    IWeightFunctionInt
- * @author Barak Ugav
+ * @param  <K> the elements (vertices/edges) type
+ * @see        WeightFunctionInt
+ * @author     Barak Ugav
  */
 @FunctionalInterface
-public interface IWeightFunction extends WeightFunction<Integer>, IntComparator {
+public interface WeightFunction<K> extends Comparator<K> {
 
 	/**
 	 * Get the weight of an element.
@@ -82,38 +77,26 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 * @return                           the weight of the element
 	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
 	 */
-	double weight(int element);
-
-	@Deprecated
-	@Override
-	default double weight(Integer element) {
-		return weight(element.intValue());
-	}
+	double weight(K element);
 
 	/**
 	 * Compare two elements by their weights.
 	 */
 	@Override
-	default int compare(int e1, int e2) {
+	default int compare(K e1, K e2) {
 		return Double.compare(weight(e1), weight(e2));
 	}
 
-	@Deprecated
-	@Override
-	default int compare(Integer e1, Integer e2) {
-		return Double.compare(weight(e1), weight(e2));
-	}
-
-	@Override
-	default double weightSum(Iterable<Integer> elements) {
+	/**
+	 * Get the sum of the weights of multiple elements.
+	 *
+	 * @param  elements a collection of elements
+	 * @return          the sum of the weights of the elements
+	 */
+	default double weightSum(Iterable<K> elements) {
 		double sum = 0;
-		if (elements instanceof IntIterable) {
-			for (int e : (IntIterable) elements)
-				sum += weight(e);
-		} else {
-			for (Integer e : elements)
-				sum += weight(e.intValue());
-		}
+		for (K e : elements)
+			sum += weight(e);
 		return sum;
 	}
 
@@ -123,18 +106,20 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 * This method is equivalent to {@link #weightSum(Iterable)}, but it also support {@code null} weight function,
 	 * which is treated is cardinality weight function.
 	 *
+	 * @param  <K>        the elements (vertices/edges) type
 	 * @param  weightFunc the weight function to use, or {@code null} to use cardinality weight function
 	 * @param  elements   a collection of elements
 	 * @return            the sum of the weights of the elements
 	 */
-	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
-		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {
+	static <K> double weightSum(WeightFunction<K> weightFunc, Iterable<K> elements) {
+		if (weightFunc == null || weightFunc == CardinalityWeightFunction
+				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
 			if (elements instanceof Collection) {
 				return ((Collection<?>) elements).size();
 			} else {
 				int s = 0;
 				for (@SuppressWarnings("unused")
-				int elm : elements)
+				K elm : elements)
 					s++;
 				return s;
 			}
@@ -146,6 +131,21 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-	public static IWeightFunctionInt CardinalityWeightFunction = e -> 1;
+	public static WeightFunctionInt<?> CardinalityWeightFunction = e -> 1;
+
+	/**
+	 * Get the cardinality weight function.
+	 * <p>
+	 * The cardinality weight function assign a weight of {@code 1} to any element. The function always return the same
+	 * object, which can be accessed directed via {@link #CardinalityWeightFunction}. This is method is exposed only to
+	 * avoid unchecked casts with generics.
+	 *
+	 * @param  <K> the type of the elements
+	 * @return     the cardinality weight function
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K> WeightFunctionInt<K> CardinalityWeightFunction() {
+		return (WeightFunctionInt<K>) CardinalityWeightFunction;
+	}
 
 }

@@ -58,10 +58,10 @@ class MinimumSpanningTreeUtils {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iRoot = viMap.idToIndex(root);
 
-			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, w, iRoot);
+			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 

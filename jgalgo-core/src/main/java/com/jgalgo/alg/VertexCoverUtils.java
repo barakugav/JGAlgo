@@ -37,9 +37,9 @@ class VertexCoverUtils {
 
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 
-			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);
+			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, iw);
 			return new ResultFromIndexResult(indexResult, viMap);
 		}
 

@@ -68,9 +68,9 @@ def get_constants_and_functions(type):
     constants = {
         "Obj": {
             "TYPE_NAME": "Obj",
-            "PRIMITIVE_TYPE": "E",
+            "PRIMITIVE_TYPE": "T",
             "PRIMITIVE_TYPE_REAL": "Object",
-            "KEY_GENERIC_CLASS": "E",
+            "TYPE_GENERIC_CLASS": "T",
             "FASTUTIL_TYPE": "Object",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.objects",
         },
@@ -78,7 +78,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Byte",
             "PRIMITIVE_TYPE": "byte",
             "PRIMITIVE_TYPE_REAL": "byte",
-            "KEY_GENERIC_CLASS": "Byte",
+            "TYPE_GENERIC_CLASS": "Byte",
             "FASTUTIL_TYPE": "Byte",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.bytes",
         },
@@ -86,7 +86,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Short",
             "PRIMITIVE_TYPE": "short",
             "PRIMITIVE_TYPE_REAL": "short",
-            "KEY_GENERIC_CLASS": "Short",
+            "TYPE_GENERIC_CLASS": "Short",
             "FASTUTIL_TYPE": "Short",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.shorts",
         },
@@ -94,7 +94,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Int",
             "PRIMITIVE_TYPE": "int",
             "PRIMITIVE_TYPE_REAL": "int",
-            "KEY_GENERIC_CLASS": "Integer",
+            "TYPE_GENERIC_CLASS": "Integer",
             "FASTUTIL_TYPE": "Int",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.ints",
         },
@@ -102,7 +102,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Long",
             "PRIMITIVE_TYPE": "long",
             "PRIMITIVE_TYPE_REAL": "long",
-            "KEY_GENERIC_CLASS": "Long",
+            "TYPE_GENERIC_CLASS": "Long",
             "FASTUTIL_TYPE": "Long",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.longs",
         },
@@ -110,7 +110,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Float",
             "PRIMITIVE_TYPE": "float",
             "PRIMITIVE_TYPE_REAL": "float",
-            "KEY_GENERIC_CLASS": "Float",
+            "TYPE_GENERIC_CLASS": "Float",
             "FASTUTIL_TYPE": "Float",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.floats",
         },
@@ -118,7 +118,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Double",
             "PRIMITIVE_TYPE": "double",
             "PRIMITIVE_TYPE_REAL": "double",
-            "KEY_GENERIC_CLASS": "Double",
+            "TYPE_GENERIC_CLASS": "Double",
             "FASTUTIL_TYPE": "Double",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.doubles",
         },
@@ -126,7 +126,7 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Bool",
             "PRIMITIVE_TYPE": "boolean",
             "PRIMITIVE_TYPE_REAL": "boolean",
-            "KEY_GENERIC_CLASS": "Boolean",
+            "TYPE_GENERIC_CLASS": "Boolean",
             "FASTUTIL_TYPE": "Boolean",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.booleans",
         },
@@ -134,18 +134,20 @@ def get_constants_and_functions(type):
             "TYPE_NAME": "Char",
             "PRIMITIVE_TYPE": "char",
             "PRIMITIVE_TYPE_REAL": "char",
-            "KEY_GENERIC_CLASS": "Character",
+            "TYPE_GENERIC_CLASS": "Character",
             "FASTUTIL_TYPE": "Char",
             "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.chars",
         },
     }[type]
 
     if type == "Obj":
-        constants["KEY_GENERIC"] = "<E>"
-        constants["CAST_TO_GENERIC"] = "(E)"
+        constants["TYPE_GENERIC"] = "<T>"
+        constants["TYPE_GENERIC_IN_TEMPLATE_LIST"] = ", T"
+        constants["CAST_TO_GENERIC"] = "(T)"
         constants["SUPPRESS_WARNINGS_UNCHECKED"] = '@SuppressWarnings("unchecked")'
     else:
-        constants["KEY_GENERIC"] = ""
+        constants["TYPE_GENERIC"] = ""
+        constants["TYPE_GENERIC_IN_TEMPLATE_LIST"] = ""
         constants["CAST_TO_GENERIC"] = ""
         constants["SUPPRESS_WARNINGS_UNCHECKED"] = ""
 
@@ -192,6 +194,10 @@ def get_constants_and_functions(type):
 
 
 def weights_filename(type):
+    return os.path.join(PACKAGE_DIR, "graph", "Weights" + type + ".java")
+
+
+def iweights_filename(type):
     return os.path.join(PACKAGE_DIR, "graph", "IWeights" + type + ".java")
 
 
@@ -202,6 +208,54 @@ def weights_impl_filename(type):
 def generate_weights(type):
     constants, functions = get_constants_and_functions(type)
     constants["IWEIGHTS"] = "IWeights" + type
+    constants["WEIGHTS"] = "Weights" + type
+
+    if type in ["Byte", "Short", "Int"]:
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunctionInt<K>"
+        constants[
+            "WEIGHT_FUNC_IMPLEMENTATION"
+        ] = """
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Override
+	default int weightInt(K element) {
+		return get(element);
+	}
+"""
+    elif type in ["Long", "Float", "Double"]:
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunction<K>"
+        constants[
+            "WEIGHT_FUNC_IMPLEMENTATION"
+        ] = """
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Implement the {@link WeightFunction} interface by using the weights of the container.
+	 */
+	@Override
+	default double weight(K element) {
+		return get(element);
+	}
+"""
+    else:
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ""
+        constants["WEIGHT_FUNC_IMPLEMENTATION"] = ""
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "Weights.java.template"),
+        weights_filename(type),
+        constants,
+        functions,
+    )
+
+
+def generate_iweights(type):
+    constants, functions = get_constants_and_functions(type)
+    constants["IWEIGHTS"] = "IWeights" + type
+    constants["WEIGHTS"] = "Weights" + type
 
     if type in ["Byte", "Short", "Int"]:
         constants["WEIGHT_FUNC_IMPLEMENT"] = ", IWeightFunctionInt"
@@ -214,8 +268,23 @@ def generate_weights(type):
 	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
-	default int weightInt(int id) {
-		return get(id);
+	default int weightInt(int element) {
+		return get(element);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Override
+	default int weightInt(Integer element) {
+		return get(element.intValue());
+	}
+
+	@Override
+	default int compare(Integer e1, Integer e2) {
+		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());
 	}
 """
     elif type in ["Long", "Float", "Double"]:
@@ -229,8 +298,23 @@ def generate_weights(type):
 	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
 	 */
 	@Override
-	default double weight(int id) {
-		return get(id);
+	default double weight(int element) {
+		return get(element);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Override
+	default double weight(Integer element) {
+		return get(element.intValue());
+	}
+
+	@Override
+	default int compare(Integer e1, Integer e2) {
+		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());
 	}
 """
     else:
@@ -239,7 +323,7 @@ def generate_weights(type):
 
     generate_sourcefile(
         os.path.join(TEMPLATE_DIR, "IWeights.java.template"),
-        weights_filename(type),
+        iweights_filename(type),
         constants,
         functions,
     )
@@ -249,6 +333,7 @@ def generate_weights_impl(type):
     constants, functions = get_constants_and_functions(type)
     constants["WEIGHTS_IMPL"] = "WeightsImpl" + type
     constants["IWEIGHTS"] = "IWeights" + type
+    constants["WEIGHTS"] = "Weights" + type
 
     generate_sourcefile(
         os.path.join(TEMPLATE_DIR, "WeightsImpl.java.template"),
@@ -262,6 +347,8 @@ def generate_all():
     for type in TYPE_ALL:
         generate_weights(type)
     for type in TYPE_ALL:
+        generate_iweights(type)
+    for type in TYPE_ALL:
         generate_weights_impl(type)
 
 
@@ -273,6 +360,8 @@ def clean():
 
     for type in TYPE_ALL:
         remove_if_exists(weights_filename(type))
+    for type in TYPE_ALL:
+        remove_if_exists(iweights_filename(type))
     for type in TYPE_ALL:
         remove_if_exists(weights_impl_filename(type))
 

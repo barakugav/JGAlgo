@@ -16,9 +16,8 @@
 
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -104,10 +103,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
+ * assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
  * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
  * System.out.println("The shortest path from v1 to v3 is:");
- * for (int e : ssspRes.getPath(v3)) {
+ * for (int e : ssspRes.getPath(v3).edges()) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
@@ -118,32 +117,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IndexGraph
  * @author Barak Ugav
  */
-public interface IntGraph {
+public interface IntGraph extends Graph<Integer, Integer> {
 
-	/**
-	 * Get the set of all vertices of the graph.
-	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative integer ID and the returned set is a set of all
-	 * these identifiers.
-	 * <p>
-	 * The Graph object does not expose an explicit method to get the number of vertices, but it can accessed using this
-	 * method by {@code g.vertices().size()}.
-	 *
-	 * @return a set containing all IDs of the graph vertices
-	 */
+	@Override
 	IntSet vertices();
 
-	/**
-	 * Get the set of all edges of the graph.
-	 * <p>
-	 * Each edge in the graph is identified by a unique non negative integer ID, and the returned set is a set of all
-	 * these identifiers.
-	 * <p>
-	 * The Graph object does not expose an explicit method to get the number of edges, but it can accessed using this
-	 * method by {@code g.edges().size()}.
-	 *
-	 * @return a set containing all IDs of the graph edges
-	 */
+	@Override
 	IntSet edges();
 
 	/**
@@ -171,6 +150,12 @@ public interface IntGraph {
 	 */
 	void addVertex(int vertex);
 
+	@Deprecated
+	@Override
+	default void addVertex(Integer vertex) {
+		addVertex(vertex.intValue());
+	}
+
 	/**
 	 * Remove a vertex and all its edges from the graph.
 	 *
@@ -179,12 +164,18 @@ public interface IntGraph {
 	 */
 	void removeVertex(int vertex);
 
+	@Deprecated
+	@Override
+	default void removeVertex(Integer vertex) {
+		removeVertex(vertex.intValue());
+	}
+
 	/**
 	 * Get the edges whose source is {@code source}.
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code source} is one of their end points.
 	 * <p>
-	 * The Graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
+	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
 	 *
 	 * @param  source                    a source vertex
@@ -193,12 +184,18 @@ public interface IntGraph {
 	 */
 	IEdgeSet outEdges(int source);
 
+	@Deprecated
+	@Override
+	default EdgeSet<Integer, Integer> outEdges(Integer source) {
+		return outEdges(source.intValue());
+	}
+
 	/**
 	 * Get the edges whose target is {@code target}.
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
 	 * <p>
-	 * The Graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
+	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
 	 *
 	 * @param  target                    a target vertex
@@ -206,6 +203,12 @@ public interface IntGraph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	IEdgeSet inEdges(int target);
+
+	@Deprecated
+	@Override
+	default EdgeSet<Integer, Integer> inEdges(Integer target) {
+		return inEdges(target.intValue());
+	}
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
@@ -230,6 +233,13 @@ public interface IntGraph {
 		return -1;
 	}
 
+	@Deprecated
+	@Override
+	default Integer getEdge(Integer source, Integer target) {
+		int e = getEdge(source.intValue(), target.intValue());
+		return e == -1 ? null : Integer.valueOf(e);
+	}
+
 	/**
 	 * Get the edges whose source is {@code source} and target is {@code target}.
 	 *
@@ -239,6 +249,12 @@ public interface IntGraph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	IEdgeSet getEdges(int source, int target);
+
+	@Deprecated
+	@Override
+	default EdgeSet<Integer, Integer> getEdges(Integer source, Integer target) {
+		return getEdges(source.intValue(), target.intValue());
+	}
 
 	/**
 	 * Add a new edge to the graph.
@@ -268,6 +284,12 @@ public interface IntGraph {
 	 */
 	void addEdge(int source, int target, int edge);
 
+	@Deprecated
+	@Override
+	default void addEdge(Integer source, Integer target, Integer edge) {
+		addEdge(source.intValue(), target.intValue(), edge.intValue());
+	}
+
 	/**
 	 * Remove an edge from the graph.
 	 *
@@ -275,6 +297,12 @@ public interface IntGraph {
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	void removeEdge(int edge);
+
+	@Deprecated
+	@Override
+	default void removeEdge(Integer edge) {
+		removeEdge(edge.intValue());
+	}
 
 	/**
 	 * Remove all the edges of a vertex.
@@ -285,6 +313,12 @@ public interface IntGraph {
 	default void removeEdgesOf(int vertex) {
 		removeOutEdgesOf(vertex);
 		removeInEdgesOf(vertex);
+	}
+
+	@Deprecated
+	@Override
+	default void removeEdgesOf(Integer vertex) {
+		removeEdgesOf(vertex.intValue());
 	}
 
 	/**
@@ -300,6 +334,12 @@ public interface IntGraph {
 		}
 	}
 
+	@Deprecated
+	@Override
+	default void removeOutEdgesOf(Integer vertex) {
+		removeOutEdgesOf(vertex.intValue());
+	}
+
 	/**
 	 * Remove all edges whose target is {@code target}.
 	 *
@@ -313,6 +353,12 @@ public interface IntGraph {
 		}
 	}
 
+	@Deprecated
+	@Override
+	default void removeInEdgesOf(Integer vertex) {
+		removeInEdgesOf(vertex.intValue());
+	}
+
 	/**
 	 * Reverse an edge by switching its source and target.
 	 * <p>
@@ -322,6 +368,12 @@ public interface IntGraph {
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	void reverseEdge(int edge);
+
+	@Deprecated
+	@Override
+	default void reverseEdge(Integer edge) {
+		reverseEdge(edge.intValue());
+	}
 
 	/**
 	 * Get the source vertex of an edge.
@@ -335,6 +387,12 @@ public interface IntGraph {
 	 */
 	int edgeSource(int edge);
 
+	@Deprecated
+	@Override
+	default Integer edgeSource(Integer edge) {
+		return Integer.valueOf(edgeSource(edge.intValue()));
+	}
+
 	/**
 	 * Get the target vertex of an edge.
 	 * <p>
@@ -346,6 +404,12 @@ public interface IntGraph {
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	int edgeTarget(int edge);
+
+	@Deprecated
+	@Override
+	default Integer edgeTarget(Integer edge) {
+		return Integer.valueOf(edgeTarget(edge.intValue()));
+	}
 
 	/**
 	 * Get the other end-point of an edge.
@@ -373,379 +437,50 @@ public interface IntGraph {
 		}
 	}
 
-	/**
-	 * Clear the graph completely by removing all vertices and edges.
-	 * <p>
-	 * This function might be used to reuse an already allocated graph object.
-	 * <p>
-	 * Note that this function also clears any weights associated with the vertices or edges.
-	 */
-	void clear();
-
-	/**
-	 * Remove all the edges from the graph.
-	 * <p>
-	 * Note that this function also clears any weights associated with the edges.
-	 */
-	void clearEdges();
-
-	/**
-	 * Get the vertices weights of some key.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key        key of the weights
-	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <T>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key);
-
-	/**
-	 * Add a new weights container associated with the vertices of this graph.
-	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when the graph is updated (when vertices
-	 * are added or removed). To create an external weights container, for example in cases the graph is a user input
-	 * and we are not allowed to modify it, use {@link IWeights#createExternalVerticesWeights(IntGraph, Class)}.
-	 *
-	 * <pre> {@code
-	 * Graph g = ...;
-	 * int v1 = g.newVertex();
-	 * int v2 = g.newVertex();
-	 *
-	 * Weights<String> names = g.addVerticesWeights("name", String.class);
-	 * names.set(v1, "Alice");
-	 * names.set(v2, "Bob");
-	 *
-	 * IWeightsInt ages = g.addVerticesWeights("age", int.class);
-	 * ages.set(v1, 42);
-	 * ages.set(v2, 35);
-	 * }</pre>
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
-		return addVerticesWeights(key, type, null);
+	@Deprecated
+	@Override
+	default Integer edgeEndpoint(Integer edge, Integer endpoint) {
+		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));
 	}
 
-	/**
-	 * Add a new weights container associated with the vertices of this graph with default value.
-	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
-	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
-	 * {@link IWeights#createExternalVerticesWeights(IntGraph, Class, Object)}.
-	 *
-	 * <pre> {@code
-	 * Graph g = ...;
-	 * int v1 = g.newVertex();
-	 * int v2 = g.newVertex();
-	 * int v3 = g.newVertex();
-	 *
-	 * Weights<String> names = g.addVerticesWeights("name", String.class, "Unknown");
-	 * names.set(v1, "Alice");
-	 * names.set(v2, "Bob");
-	 *
-	 * assert "Alice".equals(names.get(v1))
-	 * assert "Bob".equals(names.get(v2))
-	 * assert "Unknown".equals(names.get(v3))
-	 * }</pre>
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <V>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
+	// TODO
+	<T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key);
 
-	/**
-	 * Remove a weight type associated with the vertices of the graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param key the key of the weights
-	 */
-	void removeVerticesWeights(String key);
-
-	/**
-	 * Get the keys of all the associated vertices weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated vertices weights
-	 */
-	Set<String> getVerticesWeightsKeys();
-
-	/**
-	 * Get the edges weights of some key.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key        key of the weights
-	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <T>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key);
-
-	/**
-	 * Add a new weights container associated with the edges of this graph.
-	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
-	 * external weights container, for example in cases the graph is a user input you are not allowed to modify it, use
-	 * {@link IWeights#createExternalEdgesWeights(IntGraph, Class)}.
-	 *
-	 * <pre> {@code
-	 * Graph g = ...;
-	 * int v1 = g.addVertex();
-	 * int v2 = g.addVertex();
-	 * int v3 = g.addVertex();
-	 * int e1 = g.addEdge(v1, v2);
-	 * int e2 = g.addEdge(v2, v3);
-	 *
-	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class);
-	 * roadTypes.set(e1, "Asphalt");
-	 * roadTypes.set(e2, "Gravel");
-	 *
-	 * IWeightsDouble roadLengths = g.addEdgesWeights("roadLength", double.class);
-	 * roadLengths.set(e1, 42);
-	 * roadLengths.set(e2, 35);
-	 * }</pre>
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
-		return addEdgesWeights(key, type, null);
+	@Override
+	default <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+		return getVerticesIWeights(key);
 	}
 
-	/**
-	 * Add a new weights container associated with the edges of this graph with default value.
-	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
-	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
-	 * {@link IWeights#createExternalEdgesWeights(IntGraph, Class, Object)}.
-	 *
-	 * <pre> {@code
-	 * Graph g = ...;
-	 * int v1 = g.addVertex();
-	 * int v2 = g.addVertex();
-	 * int v3 = g.addVertex();
-	 * int e1 = g.addEdge(v1, v2);
-	 * int e2 = g.addEdge(v2, v3);
-	 * int e3 = g.addEdge(v1, v3);
-	 *
-	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class, "Unknown");
-	 * roadTypes.set(e1, "Asphalt");
-	 * roadTypes.set(e2, "Gravel");
-	 *
-	 * assert "Asphalt".equals(names.get(e1))
-	 * assert "Gravel".equals(names.get(e2))
-	 * assert "Unknown".equals(names.get(e3))
-	 * }</pre>
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
+	// TODO
+	<T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key);
 
-	/**
-	 * Remove a weight type associated with the edges of the graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param key the key of the weights
-	 */
-	void removeEdgesWeights(String key);
+	@Override
+	default <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		return getEdgesIWeights(key);
+	}
 
-	/**
-	 * Get the keys of all the associated edges weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated edges weights
-	 */
-	Set<String> getEdgesWeightsKeys();
-
-	/**
-	 * Checks whether the graph is directed.
-	 *
-	 * @return {@code true} if the graph is directed, else {@code false}.
-	 */
-	boolean isDirected();
-
-	/**
-	 * Checks whether self edges are supported.
-	 * <p>
-	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
-	 *
-	 * @return {@code true} if the graph support self edges, else {@code false}.
-	 */
-	boolean isAllowSelfEdges();
-
-	/**
-	 * Checks whether parallel edges are supported.
-	 * <p>
-	 * Parallel edges are multiple edges with identical source and target.
-	 *
-	 * @return {@code true} if the graph support parallel edges, else {@code false}.
-	 */
-	boolean isAllowParallelEdges();
-
-	/**
-	 * Get an Index graph view of this graph.
-	 * <p>
-	 * The returned {@link IndexGraph} is a graph in which the identifiers of the vertices are always
-	 * {@code (0,1,2, ...,verticesNum-1)}, and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}.
-	 * To maintain this, the index graph implementation may rename existing vertices or edges along the graph lifetime.
-	 * This rename behavior is less user friendly, but allow for high performance boost as no hash tables are needed, a
-	 * simple array or bitmap can be used to map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for
-	 * more information. The {@link IndexGraph} should not be used in scenarios where performance does not matter.
-	 * <p>
-	 * The returned graph is a view, namely a graph that will contain the same vertices and edges (with different
-	 * {@code int} identifiers), and the same associated weights, that is automatically updated when the original graph
-	 * is updated and vice versa.
-	 * <p>
-	 * If this graph is an Index graph, this method returns this graph.
-	 *
-	 * @return an {@link IndexGraph} view of this graph
-	 */
-	IndexGraph indexGraph();
-
-	/**
-	 * Get the index-id vertices mapping of this graph.
-	 * <p>
-	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
-	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
-	 * are accessed with <b>indices</b> rather than fixed IDs. This method expose the mapping between the indices and
-	 * the fixed IDs of the graph vertices.
-	 * <p>
-	 * Note that the mapping may change during the graph lifetime, as vertices are added and removed from the graph, and
-	 * a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}. The
-	 * returned mapping object will be updated automatically in such cases.
-	 *
-	 * @return a mapping that map vertices IDs to vertices indices
-	 */
+	@Override
 	IndexIntIdMap indexGraphVerticesMap();
 
-	/**
-	 * Get the index-id edges mapping of this graph.
-	 * <p>
-	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
-	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
-	 * are accessed with <b>indices</b> rather than fixed IDs. This method expose the mapping between the indices and
-	 * the fixed IDs of the graph edges.
-	 * <p>
-	 * Note that the mapping may change during the graph lifetime, as edges are added and removed from the graph, and a
-	 * regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,edgesNum-1)}. The returned
-	 * mapping object will be updated automatically in such cases.
-	 *
-	 * @return a mapping that map edges IDs to edges indices
-	 */
+	@Override
 	IndexIntIdMap indexGraphEdgesMap();
 
-	/**
-	 * Create a copy of this graph, with the same vertices and edges, without copying weights.
-	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive), without
-	 * copying the vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the
-	 * original graph.
-	 *
-	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
-	 */
+	@Override
 	default IntGraph copy() {
-		return copy(false);
+		return (IntGraph) Graph.super.copy();
 	}
 
-	/**
-	 * Create a copy of this graph, with the same vertices and edges, with/without copying weights.
-	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive),
-	 * with/without copying the vertices/edges weights. The returned Graph will always be modifiable, with no side
-	 * affects on the original graph.
-	 * <p>
-	 * Note that although {@code g.equals(g.copy())} is always {@code true} if {@code copyWeights} is {@code true},
-	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
-	 * copied, new indices may be assigned to the vertices and edges.
-	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
-	 *                     graph weights
-	 */
+	@Override
 	default IntGraph copy(boolean copyWeights) {
 		return IntGraphFactory.newFrom(this).newCopyOf(this, copyWeights);
 	}
 
-	/**
-	 * Create an immutable copy of this graph, with the same vertices and edges, without copying weights.
-	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices and edges, without copying the
-	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
-	 * removed from it.
-	 * <p>
-	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
-	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
-	 * instead of using the original graph.
-	 * <p>
-	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true}, there is no guarantee that
-	 * {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely, when the graph is copied, new indices may
-	 * be assigned to the vertices and edges.
-	 *
-	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
-	 */
+	@Override
 	default IntGraph immutableCopy() {
 		return IntGraphBuilder.newFrom(this).build();
 	}
 
-	/**
-	 * Create an immutable copy of this graph, with the same vertices and edges, with/without copying weights.
-	 * <p>
-	 * An identical copy of this graph will be created, with the same vertices and edges, with/without copying the
-	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
-	 * removed from it.
-	 * <p>
-	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
-	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
-	 * instead of using the original graph.
-	 * <p>
-	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true} if {@code copyWeights} is
-	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
-	 * when the graph is copied, new indices may be assigned to the vertices and edges.
-	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
-	 *                     weights
-	 */
+	@Override
 	default IntGraph immutableCopy(boolean copyWeights) {
 		IndexIntIdMap viMap = indexGraphVerticesMap();
 		IndexIntIdMap eiMap = indexGraphEdgesMap();
@@ -766,64 +501,28 @@ public interface IntGraph {
 		}
 	}
 
-	/**
-	 * Get an immutable view of this graph.
-	 * <p>
-	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
-	 * is automatically updated when the original graph is updated. The view is immutable, namely all operations that
-	 * modify the graph will throw {@link UnsupportedOperationException}.
-	 *
-	 * @return an immutable view of this graph
-	 */
+	@Override
 	default IntGraph immutableView() {
-		return Graphs.immutableView(this);
+		return (IntGraph) Graph.super.immutableView();
 	}
 
-	/**
-	 * Get a reversed view of this graph.
-	 * <p>
-	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
-	 * is automatically updated when the original graph is updated and vice versa. The view is reversed, namely each
-	 * source and target vertices of each edge are swapped.
-	 * <p>
-	 * Note that modifying the returned view will change the original graph.
-	 *
-	 * @return a reversed view of this graph
-	 */
+	@Override
 	default IntGraph reverseView() {
-		return Graphs.reverseView(this);
+		return (IntGraph) Graph.super.reverseView();
 	}
 
 	/**
-	 * Create a new graph that is a subgraph of this graph.
+	 * {@inheritDoc}
 	 * <p>
-	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of this graph, namely an
-	 * induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' = \{\{u,v\}
-	 * \mid u,v \in V', \{u,v\} \in E\}\). {@code vertices} must not be {@code null} in this case.
-	 * <p>
-	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
-	 * all the vertices which are either a source or a target of an edge in {@code edges}.
-	 * <p>
-	 * The created graph will have the same type (directed/undirected) as this graph. The vertices and edges of the
-	 * created graph will be a subset of the vertices and edges of this graph.
-	 * <p>
-	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link Graphs#subGraph(IntGraph, IntCollection, IntCollection, boolean, boolean)}.
-	 *
-	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
-	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
-	 *                                  are either a source or a target of an edge in {@code edges}
-	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
-	 *                                  {@code null} and the sub graph will be an induced subgraph of this graph
-	 * @return                      a new graph that is a subgraph of this graph
-	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 * Prefer to pass a IntCollection instead of Collection&lt;Integer&gt; as collections of vertices and edges.
 	 */
-	default IntGraph subGraphCopy(IntCollection vertices, IntCollection edges) {
-		return Graphs.subGraph(this, vertices, edges);
+	@Override
+	default IntGraph subGraphCopy(Collection<Integer> vertices, Collection<Integer> edges) {
+		return (IntGraph) Graphs.subGraph(this, vertices, edges);
 	}
 
 	/**
-	 * Create a new undirected empty graph.
+	 * Create a new undirected empty int graph.
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IntGraphFactory}.
@@ -835,7 +534,7 @@ public interface IntGraph {
 	}
 
 	/**
-	 * Create a new directed empty graph.
+	 * Create a new directed empty int graph.
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IntGraphFactory}.
