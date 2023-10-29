@@ -73,7 +73,35 @@ public interface ShortestPathHeuristicST {
 	 * @return a new builder that can build {@link ShortestPathHeuristicST} objects
 	 */
 	static ShortestPathHeuristicST.Builder newBuilder() {
-<span class="nc" id="L76">		return ShortestPathAStar::new;</span>
+<span class="nc" id="L76">		return new ShortestPathHeuristicST.Builder() {</span>
+
+			private String impl;
+
+			@Override
+			public ShortestPathHeuristicST build() {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">					switch (impl) {</span>
+						case &quot;a-star&quot;:
+<span class="nc" id="L85">							return new ShortestPathAStar();</span>
+						default:
+							break;
+					}
+				}
+<span class="nc" id="L90">				return new ShortestPathAStar();</span>
+			}
+
+			@Override
+			public ShortestPathHeuristicST.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L97">						impl = (String) value;</span>
+<span class="nc" id="L98">						break;</span>
+					default:
+<span class="nc" id="L100">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L102">				return this;</span>
+			}
+		};
 	}
 
 	/**
@@ -105,7 +133,7 @@ public interface ShortestPathHeuristicST {
 		 * @return       this builder
 		 */
 		default ShortestPathHeuristicST.Builder setOption(String key, Object value) {
-<span class="nc" id="L108">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L136">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

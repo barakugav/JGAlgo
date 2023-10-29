@@ -114,11 +114,35 @@ public interface CoresAlgo {
 
 		/**
 		 * The vertices of the given core.
+		 * &lt;p&gt;
+		 * A vertex is in the core if its core number is at least the given core number.
+		 *
+		 * @param  k the core number (order)
+		 * @return   the vertices of the core
+		 */
+		IntSet coreVertices(int k);
+
+		/**
+		 * The vertices in the shell of the given core.
+		 * &lt;p&gt;
+		 * A vertex is in the shell of the core if its core number is exactly the given core number. Namely it is in the
+		 * k core but not in the (k+1) core.
 		 *
 		 * @param  core the core number (order)
-		 * @return      the vertices of the core
+		 * @return      the vertices in the shell of the core
 		 */
-		IntSet coreVertices(int core);
+		IntSet coreShell(int core);
+
+		/**
+		 * The vertices in the crust of the given core.
+		 * &lt;p&gt;
+		 * A vertex is in the crust of the core if its core number is less than the given core. The crust is the
+		 * complement of the core vertices set.
+		 *
+		 * @param  core the core number (order)
+		 * @return      the vertices in the crust of the core
+		 */
+		IntSet coreCrust(int core);
 
 	}
 
@@ -131,7 +155,7 @@ public interface CoresAlgo {
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-<span class="nc" id="L134">		return newBuilder().build();</span>
+<span class="nc" id="L158">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -142,7 +166,7 @@ public interface CoresAlgo {
 	 * @return a new builder for core algorithms
 	 */
 	static CoresAlgo.Builder newBuilder() {
-<span class="nc" id="L145">		return CoresAlgoImpl::new;</span>
+<span class="nc" id="L169">		return CoresAlgoImpl::new;</span>
 	}
 
 	/**
@@ -174,7 +198,7 @@ public interface CoresAlgo {
 		 * @return       this builder
 		 */
 		default CoresAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L177">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L201">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

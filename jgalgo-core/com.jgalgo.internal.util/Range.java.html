@@ -34,17 +34,17 @@ public class Range extends AbstractIntSet {
 	}
 
 	public static Range of(int from, int to) {
-<span class="nc" id="L37">		return new Range(from, to);</span>
+<span class="fc" id="L37">		return new Range(from, to);</span>
 	}
 
 	@Override
 	public int size() {
-<span class="nc" id="L42">		return to - from;</span>
+<span class="fc" id="L42">		return to - from;</span>
 	}
 
 	@Override
 	public boolean contains(int key) {
-<span class="nc bnc" id="L47" title="All 4 branches missed.">		return from &lt;= key &amp;&amp; key &lt; to;</span>
+<span class="pc bpc" id="L47" title="2 of 4 branches missed.">		return from &lt;= key &amp;&amp; key &lt; to;</span>
 	}
 
 	@Override

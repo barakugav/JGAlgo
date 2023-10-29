@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 <span class="nc" id="L20">public class JGAlgoConfigNonFrozen {</span>
 
 <span class="fc" id="L22">	static boolean parallelByDefault = true;</span>
-<span class="fc" id="L23">	static boolean graphIdRandom = false;</span>
+<span class="fc" id="L23">	static Object graphIdStrategy = null;</span>
 <span class="fc" id="L24">	static boolean assertionsGraphsBipartitePartition = true;</span>
 <span class="fc" id="L25">	static boolean assertionsGraphsPositiveWeights = true;</span>
 <span class="fc" id="L26">	static boolean assertionsGraphIdCheck = true;</span>
@@ -37,8 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 			case &quot;ParallelByDefault&quot;:
 <span class="nc" id="L38">				parallelByDefault = ((Boolean) value).booleanValue();</span>
 <span class="nc" id="L39">				break;</span>
-			case &quot;GraphIdRandom&quot;:
-<span class="nc" id="L41">				graphIdRandom = ((Boolean) value).booleanValue();</span>
+			case &quot;GraphIdStrategy&quot;:
+<span class="nc" id="L41">				graphIdStrategy = value;</span>
 <span class="nc" id="L42">				break;</span>
 			case &quot;AssertionsGraphsBipartitePartition&quot;:
 <span class="nc" id="L44">				assertionsGraphsBipartitePartition = ((Boolean) value).booleanValue();</span>

@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntIterables;
 
 abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
@@ -23,21 +24,21 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 	private final boolean isAllowSelfEdges;
 	private final boolean isAllowParallelEdges;
 
-<span class="fc" id="L26">	IndexGraphBase(IndexGraphBase.Capabilities capabilities) {</span>
-<span class="fc" id="L27">		this.isDirected = capabilities.isDirected;</span>
-<span class="fc" id="L28">		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;</span>
-<span class="fc" id="L29">		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;</span>
-<span class="fc" id="L30">	}</span>
+<span class="fc" id="L27">	IndexGraphBase(IndexGraphBase.Capabilities capabilities) {</span>
+<span class="fc" id="L28">		this.isDirected = capabilities.isDirected;</span>
+<span class="fc" id="L29">		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;</span>
+<span class="fc" id="L30">		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;</span>
+<span class="fc" id="L31">	}</span>
 
 	static class Capabilities {
-<span class="fc" id="L33">		private Capabilities(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {</span>
-<span class="fc" id="L34">			this.isDirected = isDirected;</span>
-<span class="fc" id="L35">			this.isAllowSelfEdges = isAllowSelfEdges;</span>
-<span class="fc" id="L36">			this.isAllowParallelEdges = isAllowParallelEdges;</span>
-<span class="fc" id="L37">		}</span>
+<span class="fc" id="L34">		private Capabilities(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {</span>
+<span class="fc" id="L35">			this.isDirected = isDirected;</span>
+<span class="fc" id="L36">			this.isAllowSelfEdges = isAllowSelfEdges;</span>
+<span class="fc" id="L37">			this.isAllowParallelEdges = isAllowParallelEdges;</span>
+<span class="fc" id="L38">		}</span>
 
 		static Capabilities of(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
-<span class="fc" id="L40">			return new Capabilities(isDirected, isAllowSelfEdges, isAllowParallelEdges);</span>
+<span class="fc" id="L41">			return new Capabilities(isDirected, isAllowSelfEdges, isAllowParallelEdges);</span>
 		}
 
 		private final boolean isDirected;
@@ -48,70 +49,90 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
 	@Override
 	public boolean isDirected() {
-<span class="fc" id="L51">		return isDirected;</span>
+<span class="fc" id="L52">		return isDirected;</span>
 	}
 
 	@Override
 	public boolean isAllowSelfEdges() {
-<span class="fc" id="L56">		return isAllowSelfEdges;</span>
+<span class="fc" id="L57">		return isAllowSelfEdges;</span>
 	}
 
 	@Override
 	public boolean isAllowParallelEdges() {
-<span class="fc" id="L61">		return isAllowParallelEdges;</span>
+<span class="fc" id="L62">		return isAllowParallelEdges;</span>
 	}
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
-<span class="fc" id="L66">		Assertions.Graphs.checkVertex(source, vertices().size());</span>
-<span class="fc" id="L67">		Assertions.Graphs.checkVertex(target, vertices().size());</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)</span>
-<span class="fc" id="L69">				: new EdgeSetSourceTargetUndirected(source, target);</span>
+<span class="fc" id="L67">		Assertions.Graphs.checkVertex(source, vertices().size());</span>
+<span class="fc" id="L68">		Assertions.Graphs.checkVertex(target, vertices().size());</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)</span>
+<span class="fc" id="L70">				: new EdgeSetSourceTargetUndirected(source, target);</span>
 	}
 
 	private abstract class EdgeSetSourceTarget extends EdgeSetAbstract {
 
 		final int source, target;
 
-<span class="fc" id="L76">		EdgeSetSourceTarget(int source, int target) {</span>
-<span class="fc" id="L77">			this.source = source;</span>
-<span class="fc" id="L78">			this.target = target;</span>
-<span class="fc" id="L79">		}</span>
+<span class="fc" id="L77">		EdgeSetSourceTarget(int source, int target) {</span>
+<span class="fc" id="L78">			this.source = source;</span>
+<span class="fc" id="L79">			this.target = target;</span>
+<span class="fc" id="L80">		}</span>
 
 		@Override
 		public void clear() {
-<span class="nc bnc" id="L83" title="All 2 branches missed.">			for (EdgeIter it = iterator(); it.hasNext();) {</span>
-<span class="nc" id="L84">				it.nextInt();</span>
-<span class="nc" id="L85">				it.remove();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">			for (EdgeIter it = iterator(); it.hasNext();) {</span>
+<span class="nc" id="L85">				it.nextInt();</span>
+<span class="nc" id="L86">				it.remove();</span>
 			}
-<span class="nc" id="L87">		}</span>
+<span class="nc" id="L88">		}</span>
 
 		@Override
 		public EdgeIter iterator() {
-<span class="fc" id="L91">			return new EdgeIterSourceTarget(source, target);</span>
+<span class="fc" id="L92">			return new EdgeIterSourceTarget(source, target);</span>
 		}
 	}
 
 	private class EdgeSetSourceTargetUndirected extends EdgeSetSourceTarget {
-<span class="fc" id="L96">		EdgeSetSourceTargetUndirected(int source, int target) {</span>
-<span class="fc" id="L97">			super(source, target);</span>
-<span class="fc" id="L98">		}</span>
+<span class="fc" id="L97">		EdgeSetSourceTargetUndirected(int source, int target) {</span>
+<span class="fc" id="L98">			super(source, target);</span>
+<span class="fc" id="L99">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="fc" id="L102">			int s = edgeSource(edge), t = edgeTarget(edge);</span>
-<span class="pc bpc" id="L103" title="3 of 8 branches missed.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
+<span class="fc" id="L103">			int s = edgeSource(edge), t = edgeTarget(edge);</span>
+<span class="pc bpc" id="L104" title="3 of 8 branches missed.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L109">			return (int) IntIterables.size(this);</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			return !iterator().hasNext();</span>
 		}
 	}
 
 	private class EdgeSetSourceTargetDirected extends EdgeSetSourceTarget {
-<span class="fc" id="L108">		EdgeSetSourceTargetDirected(int source, int target) {</span>
-<span class="fc" id="L109">			super(source, target);</span>
-<span class="fc" id="L110">		}</span>
+<span class="fc" id="L119">		EdgeSetSourceTargetDirected(int source, int target) {</span>
+<span class="fc" id="L120">			super(source, target);</span>
+<span class="fc" id="L121">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L114" title="2 of 4 branches missed.">			return source == edgeSource(edge) &amp;&amp; target == edgeTarget(edge);</span>
+<span class="pc bpc" id="L125" title="2 of 4 branches missed.">			return source == edgeSource(edge) &amp;&amp; target == edgeTarget(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L130">			return (int) IntIterables.size(this);</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			return !iterator().hasNext();</span>
 		}
 	}
 
@@ -119,53 +140,53 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
 		private final int source, target;
 		private final EdgeIter it;
-<span class="fc" id="L122">		private int nextEdge = -1;</span>
+<span class="fc" id="L143">		private int nextEdge = -1;</span>
 
-<span class="fc" id="L124">		EdgeIterSourceTarget(int source, int target) {</span>
-<span class="fc" id="L125">			this.source = source;</span>
-<span class="fc" id="L126">			this.target = target;</span>
-<span class="fc" id="L127">			it = outEdges(source).iterator();</span>
-<span class="fc" id="L128">			advance();</span>
-<span class="fc" id="L129">		}</span>
+<span class="fc" id="L145">		EdgeIterSourceTarget(int source, int target) {</span>
+<span class="fc" id="L146">			this.source = source;</span>
+<span class="fc" id="L147">			this.target = target;</span>
+<span class="fc" id="L148">			it = outEdges(source).iterator();</span>
+<span class="fc" id="L149">			advance();</span>
+<span class="fc" id="L150">		}</span>
 
 		private void advance() {
-<span class="fc bfc" id="L132" title="All 2 branches covered.">			while (it.hasNext()) {</span>
-<span class="fc" id="L133">				int e = it.nextInt();</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">				if (it.target() == target) {</span>
-<span class="fc" id="L135">					nextEdge = e;</span>
-<span class="fc" id="L136">					return;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			while (it.hasNext()) {</span>
+<span class="fc" id="L154">				int e = it.nextInt();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (it.target() == target) {</span>
+<span class="fc" id="L156">					nextEdge = e;</span>
+<span class="fc" id="L157">					return;</span>
 				}
-<span class="fc" id="L138">			}</span>
-<span class="fc" id="L139">			nextEdge = -1;</span>
-<span class="fc" id="L140">		}</span>
+<span class="fc" id="L159">			}</span>
+<span class="fc" id="L160">			nextEdge = -1;</span>
+<span class="fc" id="L161">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			return nextEdge != -1;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			return nextEdge != -1;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L149">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L150">			int ret = nextEdge;</span>
-<span class="fc" id="L151">			advance();</span>
-<span class="fc" id="L152">			return ret;</span>
+<span class="fc" id="L170">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L171">			int ret = nextEdge;</span>
+<span class="fc" id="L172">			advance();</span>
+<span class="fc" id="L173">			return ret;</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="fc" id="L157">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L158">			return nextEdge;</span>
+<span class="fc" id="L178">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L179">			return nextEdge;</span>
 		}
 
 		@Override
 		public int source() {
-<span class="fc" id="L163">			return source;</span>
+<span class="fc" id="L184">			return source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L168">			return target;</span>
+<span class="fc" id="L189">			return target;</span>
 		}
 	}
 

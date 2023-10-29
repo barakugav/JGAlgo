@@ -71,6 +71,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L71">			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);</span>
 		}
 
+		@Override
+		public boolean isCutVertex(int vertex) {
+<span class="fc" id="L76">			return res.isCutVertex(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public IntSet getCutVertices() {
+<span class="fc" id="L81">			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);</span>
+		}
+
+		@Override
+		public Graph getBlockGraph() {
+<span class="fc" id="L86">			return res.getBlockGraph();</span>
+		}
+
 	}
 
 }

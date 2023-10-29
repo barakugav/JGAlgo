@@ -97,6 +97,39 @@ public interface BiConnectedComponentsAlgo {
 		 */
 		IntSet getBiCcEdges(int biccIdx);
 
+		/**
+		 * Check whether a vertex is a cut-vertex.
+		 * &lt;p&gt;
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @param  vertex a vertex in the graph
+		 * @return        {@code true} if {@code vertex} is a cut-vertex, {@code false} otherwise
+		 */
+		boolean isCutVertex(int vertex);
+
+		/**
+		 * Get all the cut vertices in the graph.
+		 * &lt;p&gt;
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @return all the cut vertices in the graph
+		 */
+		IntSet getCutVertices();
+
+		/**
+		 * Get the graph of the bi-connected components.
+		 * &lt;p&gt;
+		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
+		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 *
+		 * @return the graph of the bi-connected components
+		 */
+		Graph getBlockGraph();
+
 	}
 
 	/**
@@ -108,7 +141,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
 	 */
 	static BiConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L111">		return newBuilder().build();</span>
+<span class="fc" id="L144">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -119,7 +152,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
 	 */
 	static BiConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L122">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
+<span class="fc" id="L155">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
 	}
 
 	/**
@@ -151,7 +184,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default BiConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L154">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L187">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 
 	}
