@@ -16,19 +16,19 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
 class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 	@Override
-	void computeCirculation(IndexGraph g, FlowNetwork net, WeightFunction supply) {
-		if (net instanceof FlowNetworkInt && supply instanceof WeightFunctionInt) {
-			new WorkerInt(g, (FlowNetworkInt) net, (WeightFunctionInt) supply).computeCirculation();
+	void computeCirculation(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
+		if (net instanceof FlowNetworkInt && supply instanceof IWeightFunctionInt) {
+			new WorkerInt(g, (FlowNetworkInt) net, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
 			new WorkerDouble(g, net, supply).computeCirculation();
 		}
@@ -44,7 +44,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-		Worker(IndexGraph g, FlowNetwork net, WeightFunction supply) {
+		Worker(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
 			Assertions.Graphs.onlyDirected(g);
 			this.g = g;
 			this.net = net;
@@ -89,7 +89,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 		private static final double eps = 1e-9;
 
-		WorkerDouble(IndexGraph g, FlowNetwork net, WeightFunction supply) {
+		WorkerDouble(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
 			super(g, net, supply);
 
 			final int n = g.vertices().size();
@@ -144,9 +144,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				assert exc > eps;
 				int actLevel = maxLayerActive;
 				int minLayer = n;
-				for (EdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					double fc = capacity[e] - flow[e];
 					if (fc <= eps)
 						continue;
@@ -174,9 +174,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 							activate(v);
 					}
 				}
-				for (EdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.source();
+					int v = eit.sourceInt();
 					double fc = flow[e] - lowerBound;
 					if (fc <= eps)
 						continue;
@@ -227,7 +227,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final int[] flow;
 		final int[] excess;
 
-		WorkerInt(IndexGraph g, FlowNetworkInt net, WeightFunctionInt supply) {
+		WorkerInt(IndexGraph g, FlowNetworkInt net, IWeightFunctionInt supply) {
 			super(g, net, supply);
 
 			final int n = g.vertices().size();
@@ -282,9 +282,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				assert exc > 0;
 				int actLevel = maxLayerActive;
 				int minLayer = n;
-				for (EdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					int fc = capacity[e] - flow[e];
 					if (fc <= 0)
 						continue;
@@ -312,9 +312,9 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 							activate(v);
 					}
 				}
-				for (EdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.source();
+					int v = eit.sourceInt();
 					int fc = flow[e] - lowerBound;
 					if (fc <= 0)
 						continue;

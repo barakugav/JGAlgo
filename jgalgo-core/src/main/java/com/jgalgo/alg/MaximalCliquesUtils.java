@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -27,12 +27,12 @@ class MaximalCliquesUtils {
 	static abstract class AbstractImpl implements MaximalCliques {
 
 		@Override
-		public Iterator<IntSet> iterateMaximalCliques(Graph g) {
+		public Iterator<IntSet> iterateMaximalCliques(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return iterateMaximalCliques((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
 			return new ResultFromIndexResult(indexResult, viMap);
 		}
@@ -44,9 +44,9 @@ class MaximalCliquesUtils {
 	private static class ResultFromIndexResult implements Iterator<IntSet> {
 
 		private final Iterator<IntSet> indexResult;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(Iterator<IntSet> indexResult, IndexIdMap viMap) {
+		ResultFromIndexResult(Iterator<IntSet> indexResult, IndexIntIdMap viMap) {
 			this.indexResult = indexResult;
 			this.viMap = viMap;
 		}

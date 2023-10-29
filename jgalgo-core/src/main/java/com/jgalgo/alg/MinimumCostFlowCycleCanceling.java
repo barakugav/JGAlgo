@@ -17,9 +17,9 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -44,7 +44,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 	private static final double EPS = 0.0001;
 
 	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
+	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, IWeightFunction cost, int source, int sink) {
 		Assertions.Graphs.onlyDirected(gOrig);
 		Assertions.Flows.sourceSinkNotTheSame(source, sink);
 
@@ -100,7 +100,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 	}
 
 	private void eliminateAllNegativeCycles(IndexGraph gOrig, FlowNetworks.ResidualGraph resGraph, double[] capacity,
-			double[] flow, WeightFunction cost) {
+			double[] flow, IWeightFunction cost) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;
 		int[] twin = resGraph.twin;
@@ -117,7 +117,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* cost(e) for original edges */
 		/* -cost(e) for backward (twin) original edges */
 		/* saturatedCost for 'removed' (saturated) edges */
-		WeightsDouble cost0 = Weights.createExternalEdgesWeights(g, double.class);
+		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			boolean isSaturated = capacity[e] - flow[e] < EPS;
 			if (isSaturated) {

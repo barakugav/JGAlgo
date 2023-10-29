@@ -17,12 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -45,19 +45,19 @@ class TSPMetricUtils {
 		IntList cycle = new IntArrayList(n);
 		int firstVertex = -1, lastVertex = -1;
 		BitSet visited = new BitSet(n);
-		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
+		for (IEdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e0 = it.nextInt();
 			int e = edgeRef[e0];
-			final int u = it.source();
+			final int u = it.sourceInt();
 			if (firstVertex == -1)
 				firstVertex = u;
 			visited.set(u);
-			while (visited.get(it.target()) && it.hasNext()) {
+			while (visited.get(it.targetInt()) && it.hasNext()) {
 				it.nextInt();
-				e = g.getEdge(u, it.target());
+				e = g.getEdge(u, it.targetInt());
 			}
 			cycle.add(e);
-			lastVertex = it.target();
+			lastVertex = it.targetInt();
 		}
 
 		assert firstVertex == lastVertex;
@@ -68,15 +68,15 @@ class TSPMetricUtils {
 	}
 
 	private static boolean isValidCycle(IndexGraph g, Path path) {
-		EdgeIter it = path.edgeIter();
+		IEdgeIter it = path.edgeIter();
 		it.nextInt();
-		final int begin = it.source();
+		final int begin = it.sourceInt();
 		for (;;) {
 			if (!it.hasNext())
-				return it.target() == begin;
-			int lastV = it.target();
+				return it.targetInt() == begin;
+			int lastV = it.targetInt();
 			it.nextInt();
-			if (lastV != it.source())
+			if (lastV != it.sourceInt())
 				return false;
 		}
 	}
@@ -98,20 +98,20 @@ class TSPMetricUtils {
 	static abstract class AbstractImpl implements TSPMetric {
 
 		@Override
-		public Path computeShortestTour(Graph g, WeightFunction w) {
+		public Path computeShortestTour(IntGraph g, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeShortestTour((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			Path indexPath = computeShortestTour(iGraph, w);
 			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 		}
 
-		abstract Path computeShortestTour(IndexGraph g, WeightFunction w);
+		abstract Path computeShortestTour(IndexGraph g, IWeightFunction w);
 
 	}
 

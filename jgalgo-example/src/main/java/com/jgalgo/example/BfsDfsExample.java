@@ -17,14 +17,14 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.BfsIter;
 import com.jgalgo.alg.DfsIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class BfsDfsExample {
 
 	public static void BFSExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-		Graph g = createGraph();
+		IntGraph g = createGraph();
 		int source = g.vertices().iterator().nextInt();
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
@@ -42,7 +42,7 @@ public class BfsDfsExample {
 
 	public static void DFSExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-		Graph g = createGraph();
+		IntGraph g = createGraph();
 		int source = g.vertices().iterator().nextInt();
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
@@ -55,8 +55,8 @@ public class BfsDfsExample {
 		}
 	}
 
-	public static Graph createGraph() {
-		Graph g = Graph.newUndirected();
+	public static IntGraph createGraph() {
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

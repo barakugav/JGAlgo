@@ -37,7 +37,7 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -68,7 +68,7 @@ public class UnionFindBench {
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			IndexGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed()).indexGraph();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			/*
 			 * sort the edges in setup instead of using standard Kruskal MST implementation during benchmark to isolate

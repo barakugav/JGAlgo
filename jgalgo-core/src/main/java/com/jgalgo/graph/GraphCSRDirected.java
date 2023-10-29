@@ -48,16 +48,16 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -78,12 +78,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edgesOut, begin, end);
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 
@@ -104,7 +104,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);
 		}
 	}
@@ -118,12 +118,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return source;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return edgeTarget(lastEdge);
 		}
 	}
@@ -137,12 +137,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return edgeSource(lastEdge);
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 	}

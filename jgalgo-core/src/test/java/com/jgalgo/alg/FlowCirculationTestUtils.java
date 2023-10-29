@@ -17,12 +17,12 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
@@ -49,17 +49,17 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetworkInt net = randNetworkInt(g, rand);
-			WeightFunctionInt supply = randSupplyInt(g, net, rand);
+			IWeightFunctionInt supply = randSupplyInt(g, net, rand);
 
 			testRandCirculationInt(g, net, supply, algo);
 		});
 	}
 
-	private static void testRandCirculationInt(Graph g, FlowNetworkInt net, WeightFunctionInt supply,
+	private static void testRandCirculationInt(IntGraph g, FlowNetworkInt net, IWeightFunctionInt supply,
 			FlowCirculation algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
@@ -80,17 +80,17 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
-			WeightFunction supply = randSupply(g, net, rand);
+			IWeightFunction supply = randSupply(g, net, rand);
 
 			testRandCirculation(g, net, supply, algo);
 		});
 	}
 
-	private static void testRandCirculation(Graph g, FlowNetwork net, WeightFunction supply, FlowCirculation algo) {
+	private static void testRandCirculation(IntGraph g, FlowNetwork net, IWeightFunction supply, FlowCirculation algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeCirculation(g, net, supply);
@@ -100,21 +100,21 @@ class FlowCirculationTestUtils extends TestUtils {
 		assertSupplySatisfied(g, net, supply);
 	}
 
-	private static FlowNetworkInt randNetworkInt(Graph g, Random rand) {
+	private static FlowNetworkInt randNetworkInt(IntGraph g, Random rand) {
 		FlowNetworkInt net = FlowNetworkInt.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextInt(1024));
 		return net;
 	}
 
-	private static FlowNetwork randNetwork(Graph g, Random rand) {
+	private static FlowNetwork randNetwork(IntGraph g, Random rand) {
 		FlowNetwork net = FlowNetwork.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextDouble() * 1024);
 		return net;
 	}
 
-	static WeightFunctionInt randSupplyInt(Graph g, FlowNetworkInt net, Random rand) {
+	static IWeightFunctionInt randSupplyInt(IntGraph g, FlowNetworkInt net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();
@@ -142,7 +142,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		WeightsInt supply = Weights.createExternalVerticesWeights(g, int.class);
+		IWeightsInt supply = IWeights.createExternalVerticesWeights(g, int.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {
@@ -212,7 +212,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	private static WeightFunction randSupply(Graph g, FlowNetwork net, Random rand) {
+	private static IWeightFunction randSupply(IntGraph g, FlowNetwork net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();
@@ -240,7 +240,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		WeightsDouble supply = Weights.createExternalVerticesWeights(g, double.class);
+		IWeightsDouble supply = IWeights.createExternalVerticesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {
@@ -310,7 +310,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	static void assertSupplySatisfied(Graph g, FlowNetwork net, WeightFunction supply) {
+	static void assertSupplySatisfied(IntGraph g, FlowNetwork net, IWeightFunction supply) {
 		for (int v : g.vertices()) {
 			double supplySum = 0;
 			for (int e : g.outEdges(v))
@@ -321,7 +321,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	static IntSet verticesWithPositiveSupply(IntCollection vertices, WeightFunction supply) {
+	static IntSet verticesWithPositiveSupply(IntCollection vertices, IWeightFunction supply) {
 		IntSet sources = new IntOpenHashSet();
 		for (int v : vertices)
 			if (supply.weight(v) > 0)
@@ -329,7 +329,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		return sources;
 	}
 
-	static IntSet verticesWithNegativeSupply(IntCollection vertices, WeightFunction supply) {
+	static IntSet verticesWithNegativeSupply(IntCollection vertices, IWeightFunction supply) {
 		IntSet sources = new IntOpenHashSet();
 		for (int v : vertices)
 			if (supply.weight(v) < 0)

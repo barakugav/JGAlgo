@@ -22,13 +22,13 @@ import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-interface WeightsImpl<E> extends Weights<E> {
+interface WeightsImpl<T> extends IWeights<T> {
 
-	static interface Index<E> extends WeightsImpl<E> {
+	static interface Index<T> extends WeightsImpl<T> {
 
 	}
 
-	static abstract class IndexAbstract<E> implements WeightsImpl.Index<E> {
+	static abstract class IndexAbstract<T> implements WeightsImpl.Index<T> {
 
 		final GraphElementSet elements;
 
@@ -46,7 +46,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	}
 
-	static interface IndexMutable<E> extends WeightsImpl.Index<E> {
+	static interface IndexMutable<T> extends WeightsImpl.Index<T> {
 
 		int capacity();
 
@@ -59,7 +59,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		void swap(int idx1, int idx2);
 
 		static <D> WeightsImpl.IndexMutable<D> newInstance(GraphElementSet elements, Class<? super D> type, D defVal) {
-			Weights<?> container;
+			IWeights<?> container;
 			if (type == byte.class) {
 				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
 				container = new WeightsImplByte.IndexMutable(elements, defVal0);
@@ -100,9 +100,9 @@ interface WeightsImpl<E> extends Weights<E> {
 			return container0;
 		}
 
-		static WeightsImpl.IndexMutable<?> copyOf(Weights<?> weights, GraphElementSet elements) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+		static WeightsImpl.IndexMutable<?> copyOf(IWeights<?> weights, GraphElementSet elements) {
+			if (weights instanceof WeightsImpl.IntImmutableView<?>)
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -154,7 +154,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@SuppressWarnings("unchecked")
-			<E, WeightsT extends Weights<E>> WeightsT getWeights(String key) {
+			<T, WeightsT extends IWeights<T>> WeightsT getWeights(String key) {
 				return (WeightsT) weights.get(key);
 			}
 
@@ -189,11 +189,11 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	}
 
-	static interface IndexImmutable<E> extends WeightsImpl<E> {
+	static interface IndexImmutable<T> extends WeightsImpl<T> {
 
-		static WeightsImpl.IndexImmutable<?> copyOf(Weights<?> weights, GraphElementSet.FixedSize elements) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+		static WeightsImpl.IndexImmutable<?> copyOf(IWeights<?> weights, GraphElementSet.FixedSize elements) {
+			if (weights instanceof WeightsImpl.IntImmutableView<?>)
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -217,10 +217,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 		}
 
-		static WeightsImpl.IndexImmutable<?> copyOfReindexed(Weights<?> weights, GraphElementSet.FixedSize elements,
+		static WeightsImpl.IndexImmutable<?> copyOfReindexed(IWeights<?> weights, GraphElementSet.FixedSize elements,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-			if (weights instanceof WeightsImpl.ImmutableView<?>)
-				weights = ((WeightsImpl.ImmutableView<?>) weights).weights;
+			if (weights instanceof WeightsImpl.IntImmutableView<?>)
+				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights;
 			if (weights instanceof WeightsImplByte.IndexImpl) {
 				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, reIndexMap);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
@@ -255,13 +255,13 @@ interface WeightsImpl<E> extends Weights<E> {
 				weights = new Object2ObjectOpenHashMap<>();
 			}
 
-			void copyAndAddWeights(String key, Weights<?> weights) {
+			void copyAndAddWeights(String key, IWeights<?> weights) {
 				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements));
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}
 
-			void copyAndAddWeightsReindexed(String key, Weights<?> weights,
+			void copyAndAddWeightsReindexed(String key, IWeights<?> weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				Object oldWeights = this.weights.put(key,
 						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, reIndexMap));
@@ -276,83 +276,83 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	}
 
-	static abstract class Mapped<E> implements WeightsImpl<E> {
+	static abstract class IntMapped<T> implements WeightsImpl<T> {
 
-		final WeightsImpl.IndexAbstract<E> weights;
-		final IndexIdMap indexMap;
+		final WeightsImpl.IndexAbstract<T> weights;
+		final IndexIntIdMap indexMap;
 
-		Mapped(WeightsImpl.Index<E> weights, IndexIdMap indexMap) {
-			this.weights = (WeightsImpl.IndexAbstract<E>) Objects.requireNonNull(weights);
+		IntMapped(WeightsImpl.Index<T> weights, IndexIntIdMap indexMap) {
+			this.weights = (WeightsImpl.IndexAbstract<T>) Objects.requireNonNull(weights);
 			this.indexMap = indexMap;
 		}
 
-		WeightsImpl.IndexAbstract<E> weights() {
+		WeightsImpl.IndexAbstract<T> weights() {
 			return weights;
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		static WeightsImpl.Mapped<?> newInstance(WeightsImpl.Index<?> weights, IndexIdMap indexMap) {
+		static WeightsImpl.IntMapped<?> newInstance(WeightsImpl.Index<?> weights, IndexIntIdMap indexMap) {
 			if (weights instanceof WeightsImplByte.IndexImpl) {
-				return new WeightsImplByte.Mapped((WeightsImplByte.IndexImpl) weights, indexMap);
+				return new WeightsImplByte.IntMapped((WeightsImplByte.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
-				return new WeightsImplShort.Mapped((WeightsImplShort.IndexImpl) weights, indexMap);
+				return new WeightsImplShort.IntMapped((WeightsImplShort.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplInt.IndexImpl) {
-				return new WeightsImplInt.Mapped((WeightsImplInt.IndexImpl) weights, indexMap);
+				return new WeightsImplInt.IntMapped((WeightsImplInt.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplLong.IndexImpl) {
-				return new WeightsImplLong.Mapped((WeightsImplLong.IndexImpl) weights, indexMap);
+				return new WeightsImplLong.IntMapped((WeightsImplLong.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplFloat.IndexImpl) {
-				return new WeightsImplFloat.Mapped((WeightsImplFloat.IndexImpl) weights, indexMap);
+				return new WeightsImplFloat.IntMapped((WeightsImplFloat.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplDouble.IndexImpl) {
-				return new WeightsImplDouble.Mapped((WeightsImplDouble.IndexImpl) weights, indexMap);
+				return new WeightsImplDouble.IntMapped((WeightsImplDouble.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplBool.IndexImpl) {
-				return new WeightsImplBool.Mapped((WeightsImplBool.IndexImpl) weights, indexMap);
+				return new WeightsImplBool.IntMapped((WeightsImplBool.IndexImpl) weights, indexMap);
 			} else if (weights instanceof WeightsImplChar.IndexImpl) {
-				return new WeightsImplChar.Mapped((WeightsImplChar.IndexImpl) weights, indexMap);
+				return new WeightsImplChar.IntMapped((WeightsImplChar.IndexImpl) weights, indexMap);
 			} else {
-				return new WeightsImplObj.Mapped<>((WeightsImplObj.IndexImpl) weights, indexMap);
+				return new WeightsImplObj.IntMapped<>((WeightsImplObj.IndexImpl) weights, indexMap);
 			}
 		}
 
 	}
 
-	static interface Immutable<E> extends WeightsImpl<E> {
+	static interface Immutable<T> extends WeightsImpl<T> {
 
 	}
 
-	static abstract class ImmutableView<E> implements Immutable<E> {
+	static abstract class IntImmutableView<T> implements Immutable<T> {
 
-		final Weights<E> weights;
+		final IWeights<T> weights;
 
-		ImmutableView(Weights<E> weights) {
+		IntImmutableView(IWeights<T> weights) {
 			this.weights = Objects.requireNonNull(weights);
 		}
 
-		Weights<E> weights() {
+		IWeights<T> weights() {
 			return weights;
 		}
 
 		@SuppressWarnings("unchecked")
-		static <E> Weights<E> newInstance(Weights<E> weights) {
+		static <T> IWeights<T> newInstance(IWeights<T> weights) {
 			if (weights instanceof Immutable<?>)
 				return weights;
-			if (weights instanceof WeightsByte)
-				return (Weights<E>) new WeightsImplByte.ImmutableView((WeightsByte) weights);
-			if (weights instanceof WeightsShort)
-				return (Weights<E>) new WeightsImplShort.ImmutableView((WeightsShort) weights);
-			if (weights instanceof WeightsInt)
-				return (Weights<E>) new WeightsImplInt.ImmutableView((WeightsInt) weights);
-			if (weights instanceof WeightsLong)
-				return (Weights<E>) new WeightsImplLong.ImmutableView((WeightsLong) weights);
-			if (weights instanceof WeightsFloat)
-				return (Weights<E>) new WeightsImplFloat.ImmutableView((WeightsFloat) weights);
-			if (weights instanceof WeightsDouble)
-				return (Weights<E>) new WeightsImplDouble.ImmutableView((WeightsDouble) weights);
-			if (weights instanceof WeightsBool)
-				return (Weights<E>) new WeightsImplBool.ImmutableView((WeightsBool) weights);
-			if (weights instanceof WeightsChar)
-				return (Weights<E>) new WeightsImplChar.ImmutableView((WeightsChar) weights);
-			if (weights instanceof WeightsObj)
-				return new WeightsImplObj.ImmutableView<>((WeightsObj<E>) weights);
+			if (weights instanceof IWeightsByte)
+				return (IWeights<T>) new WeightsImplByte.IntImmutableView((IWeightsByte) weights);
+			if (weights instanceof IWeightsShort)
+				return (IWeights<T>) new WeightsImplShort.IntImmutableView((IWeightsShort) weights);
+			if (weights instanceof IWeightsInt)
+				return (IWeights<T>) new WeightsImplInt.IntImmutableView((IWeightsInt) weights);
+			if (weights instanceof IWeightsLong)
+				return (IWeights<T>) new WeightsImplLong.IntImmutableView((IWeightsLong) weights);
+			if (weights instanceof IWeightsFloat)
+				return (IWeights<T>) new WeightsImplFloat.IntImmutableView((IWeightsFloat) weights);
+			if (weights instanceof IWeightsDouble)
+				return (IWeights<T>) new WeightsImplDouble.IntImmutableView((IWeightsDouble) weights);
+			if (weights instanceof IWeightsBool)
+				return (IWeights<T>) new WeightsImplBool.IntImmutableView((IWeightsBool) weights);
+			if (weights instanceof IWeightsChar)
+				return (IWeights<T>) new WeightsImplChar.IntImmutableView((IWeightsChar) weights);
+			if (weights instanceof IWeightsObj)
+				return new WeightsImplObj.IntImmutableView<>((IWeightsObj<T>) weights);
 			throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
 		}
 	}
@@ -362,52 +362,52 @@ interface WeightsImpl<E> extends Weights<E> {
 			throw new IllegalArgumentException("Elements sets size mismatch: " + i1.size() + " != " + i2.size());
 	}
 
-	static boolean isEqual(IntSet elementsSet, Weights<?> w1, Weights<?> w2) {
+	static boolean isEqual(IntSet elementsSet, IWeights<?> w1, IWeights<?> w2) {
 		if (w1 == w2)
 			return true;
-		if (w1 instanceof WeightsObj<?> && w2 instanceof WeightsObj<?>) {
+		if (w1 instanceof IWeightsObj<?> && w2 instanceof IWeightsObj<?>) {
 			for (int elm : elementsSet)
-				if (!Objects.equals(((WeightsObj<?>) w1).get(elm), ((WeightsObj<?>) w2).get(elm)))
+				if (!Objects.equals(((IWeightsObj<?>) w1).get(elm), ((IWeightsObj<?>) w2).get(elm)))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsByte && w2 instanceof WeightsByte) {
+		} else if (w1 instanceof IWeightsByte && w2 instanceof IWeightsByte) {
 			for (int elm : elementsSet)
-				if (((WeightsByte) w1).get(elm) != ((WeightsByte) w2).get(elm))
+				if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsShort && w2 instanceof WeightsShort) {
+		} else if (w1 instanceof IWeightsShort && w2 instanceof IWeightsShort) {
 			for (int elm : elementsSet)
-				if (((WeightsShort) w1).get(elm) != ((WeightsShort) w2).get(elm))
+				if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsInt && w2 instanceof WeightsInt) {
+		} else if (w1 instanceof IWeightsInt && w2 instanceof IWeightsInt) {
 			for (int elm : elementsSet)
-				if (((WeightsInt) w1).get(elm) != ((WeightsInt) w2).get(elm))
+				if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsLong && w2 instanceof WeightsLong) {
+		} else if (w1 instanceof IWeightsLong && w2 instanceof IWeightsLong) {
 			for (int elm : elementsSet)
-				if (((WeightsLong) w1).get(elm) != ((WeightsLong) w2).get(elm))
+				if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsFloat && w2 instanceof WeightsFloat) {
+		} else if (w1 instanceof IWeightsFloat && w2 instanceof IWeightsFloat) {
 			for (int elm : elementsSet)
-				if (((WeightsFloat) w1).get(elm) != ((WeightsFloat) w2).get(elm))
+				if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsDouble && w2 instanceof WeightsDouble) {
+		} else if (w1 instanceof IWeightsDouble && w2 instanceof IWeightsDouble) {
 			for (int elm : elementsSet)
-				if (((WeightsDouble) w1).get(elm) != ((WeightsDouble) w2).get(elm))
+				if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsBool && w2 instanceof WeightsBool) {
+		} else if (w1 instanceof IWeightsBool && w2 instanceof IWeightsBool) {
 			for (int elm : elementsSet)
-				if (((WeightsBool) w1).get(elm) != ((WeightsBool) w2).get(elm))
+				if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))
 					return false;
 			return true;
-		} else if (w1 instanceof WeightsChar && w2 instanceof WeightsChar) {
+		} else if (w1 instanceof IWeightsChar && w2 instanceof IWeightsChar) {
 			for (int elm : elementsSet)
-				if (((WeightsChar) w1).get(elm) != ((WeightsChar) w2).get(elm))
+				if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))
 					return false;
 			return true;
 		} else {
@@ -415,39 +415,39 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	static int hashCode(IntSet elementsSet, Weights<?> w) {
+	static int hashCode(IntSet elementsSet, IWeights<?> w) {
 		int h = 0;
-		if (w instanceof WeightsObj<?>) {
+		if (w instanceof IWeightsObj<?>) {
 			for (int elm : elementsSet)
-				h += Objects.hashCode(((WeightsObj<?>) w).get(elm));
-		} else if (w instanceof WeightsByte) {
+				h += Objects.hashCode(((IWeightsObj<?>) w).get(elm));
+		} else if (w instanceof IWeightsByte) {
 			for (int elm : elementsSet)
-				h += ((WeightsByte) w).get(elm);
-		} else if (w instanceof WeightsShort) {
+				h += ((IWeightsByte) w).get(elm);
+		} else if (w instanceof IWeightsShort) {
 			for (int elm : elementsSet)
-				h += ((WeightsShort) w).get(elm);
-		} else if (w instanceof WeightsInt) {
+				h += ((IWeightsShort) w).get(elm);
+		} else if (w instanceof IWeightsInt) {
 			for (int elm : elementsSet)
-				h += ((WeightsInt) w).get(elm);
-		} else if (w instanceof WeightsLong) {
+				h += ((IWeightsInt) w).get(elm);
+		} else if (w instanceof IWeightsLong) {
 			for (int elm : elementsSet) {
-				long x = ((WeightsLong) w).get(elm);
+				long x = ((IWeightsLong) w).get(elm);
 				h += (int) (x ^ (x >>> 32));
 			}
-		} else if (w instanceof WeightsFloat) {
+		} else if (w instanceof IWeightsFloat) {
 			for (int elm : elementsSet)
-				h += java.lang.Float.floatToRawIntBits(((WeightsFloat) w).get(elm));
-		} else if (w instanceof WeightsDouble) {
+				h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));
+		} else if (w instanceof IWeightsDouble) {
 			for (int elm : elementsSet) {
-				long x = java.lang.Double.doubleToRawLongBits(((WeightsDouble) w).get(elm));
+				long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));
 				h += (int) (x ^ (x >>> 32));
 			}
-		} else if (w instanceof WeightsBool) {
+		} else if (w instanceof IWeightsBool) {
 			for (int elm : elementsSet)
-				h += ((WeightsBool) w).get(elm) ? 1231 : 1237;
-		} else if (w instanceof WeightsChar) {
+				h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;
+		} else if (w instanceof IWeightsChar) {
 			for (int elm : elementsSet)
-				h += ((WeightsChar) w).get(elm);
+				h += ((IWeightsChar) w).get(elm);
 		} else {
 			throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
 		}

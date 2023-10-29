@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -59,7 +59,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
+	Path computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
@@ -156,7 +156,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 				queue.enqueue(bestCycleVertex);
 				while (!queue.isEmpty()) {
 					int v = queue.dequeueInt();
-					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int u = g.edgeSource(e);
 						if (policy[u] != e || visited.test(u))

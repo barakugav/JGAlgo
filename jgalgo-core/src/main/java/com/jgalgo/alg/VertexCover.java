@@ -16,10 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -54,7 +54,7 @@ public interface VertexCover {
 	 * @param  w a vertex weight function
 	 * @return   a minimum vertex cover
 	 */
-	VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w);
+	VertexCover.Result computeMinimumVertexCover(IntGraph g, IWeightFunction w);
 
 	/**
 	 * A result object of {@link VertexCover} computation.
@@ -92,7 +92,7 @@ public interface VertexCover {
 	 * @param  vertices a collection of vertices that should cover all the edges in the graph
 	 * @return          {@code true} if {@code vertices} is a vertex cover of {@code g}
 	 */
-	static boolean isCover(Graph g, IntCollection vertices) {
+	static boolean isCover(IntGraph g, IntCollection vertices) {
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;

@@ -23,7 +23,7 @@ package com.jgalgo.graph;
  *
  * @see    IndexGraphFactory#newDirected()
  * @see    IndexGraphFactory#newUndirected()
- * @see    GraphFactory
+ * @see    IntGraphFactory
  * @see    IndexGraphBuilder
  * @author Barak Ugav
  */
@@ -123,7 +123,7 @@ public interface IndexGraphFactory {
 	 * @param  hint the hint to add
 	 * @return      this factory
 	 */
-	IndexGraphFactory addHint(GraphFactory.Hint hint);
+	IndexGraphFactory addHint(IntGraphFactory.Hint hint);
 
 	/**
 	 * Remove a hint from this factory.
@@ -133,7 +133,7 @@ public interface IndexGraphFactory {
 	 * @param  hint the hint to remove
 	 * @return      this factory
 	 */
-	IndexGraphFactory removeHint(GraphFactory.Hint hint);
+	IndexGraphFactory removeHint(IntGraphFactory.Hint hint);
 
 	/**
 	 * Create an undirected index graph factory.

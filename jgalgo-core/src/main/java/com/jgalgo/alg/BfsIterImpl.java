@@ -17,9 +17,9 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -106,9 +106,9 @@ class BfsIterImpl {
 				firstVInLayer = -1;
 			}
 
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (visited.get(v))
 					continue;
 				visited.set(v);
@@ -142,9 +142,9 @@ class BfsIterImpl {
 				firstVInLayer = -1;
 			}
 
-			for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int u = eit.source();
+				int u = eit.sourceInt();
 				if (visited.get(u))
 					continue;
 				visited.set(u);
@@ -160,10 +160,10 @@ class BfsIterImpl {
 	static class BFSFromIndexBFS implements BfsIter {
 
 		private final BfsIter it;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		BFSFromIndexBFS(BfsIter it, IndexIdMap viMap, IndexIdMap eiMap) {
+		BFSFromIndexBFS(BfsIter it, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -176,13 +176,13 @@ class BfsIterImpl {
 
 		@Override
 		public int nextInt() {
-			return viMap.indexToId(it.nextInt());
+			return viMap.indexToIdInt(it.nextInt());
 		}
 
 		@Override
 		public int lastEdge() {
 			int e = it.lastEdge();
-			return e == -1 ? -1 : eiMap.indexToId(e);
+			return e == -1 ? -1 : eiMap.indexToIdInt(e);
 		}
 
 		@Override

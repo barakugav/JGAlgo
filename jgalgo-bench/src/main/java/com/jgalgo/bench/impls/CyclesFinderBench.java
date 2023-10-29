@@ -38,7 +38,7 @@ import com.jgalgo.alg.Path;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -52,7 +52,7 @@ public class CyclesFinderBench {
 	@Param({ "|V|=32 |E|=64", "|V|=64 |E|=140" })
 	public String args;
 
-	private List<Graph> graphs;
+	private List<IntGraph> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -65,14 +65,14 @@ public class CyclesFinderBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).build();
 			graphs.add(g);
 		}
 	}
 
 	private void benchMST(CyclesFinder.Builder builder, Blackhole blackhole) {
-		Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		CyclesFinder algo = builder.build();
 		List<Path> cycles = new ObjectArrayList<>(algo.findAllCycles(g));
 		blackhole.consume(cycles);

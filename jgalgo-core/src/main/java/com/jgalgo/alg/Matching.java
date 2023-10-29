@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -114,7 +114,7 @@ public interface Matching {
 	 * @param  edges a collection of edges
 	 * @return       {@code true} if {@code edges} form a valid matching in {@code g}, else {@code false}
 	 */
-	static boolean isMatching(Graph g, IntCollection edges) {
+	static boolean isMatching(IntGraph g, IntCollection edges) {
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;

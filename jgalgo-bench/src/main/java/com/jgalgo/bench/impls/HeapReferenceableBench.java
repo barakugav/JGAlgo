@@ -41,8 +41,8 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -72,9 +72,9 @@ public class HeapReferenceableBench {
 		Random rand = new Random(seedGen.nextSeed());
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
 			graphs.add(new GraphArgs(g, w, source));
@@ -161,11 +161,11 @@ public class HeapReferenceableBench {
 	}
 
 	private static class GraphArgs {
-		final Graph g;
-		final WeightFunctionInt w;
+		final IntGraph g;
+		final IWeightFunctionInt w;
 		final int source;
 
-		GraphArgs(Graph g, WeightFunctionInt w, int source) {
+		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {
 			this.g = g;
 			this.w = w;
 			this.source = source;

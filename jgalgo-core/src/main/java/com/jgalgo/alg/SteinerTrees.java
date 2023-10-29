@@ -16,11 +16,11 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -31,20 +31,20 @@ class SteinerTrees {
 	static abstract class AbstractImpl implements SteinerTreeAlgo {
 
 		@Override
-		public SteinerTreeAlgo.Result computeSteinerTree(Graph g, WeightFunction w, IntCollection terminals) {
+		public SteinerTreeAlgo.Result computeSteinerTree(IntGraph g, IWeightFunction w, IntCollection terminals) {
 			if (g instanceof IndexGraph)
 				return computeSteinerTree((IndexGraph) g, w, terminals);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, eiMap);
 
 			SteinerTreeAlgo.Result indexResult = computeSteinerTree(iGraph, iw, iTerminals);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
-		abstract SteinerTreeAlgo.Result computeSteinerTree(IndexGraph g, WeightFunction w, IntCollection terminals);
+		abstract SteinerTreeAlgo.Result computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals);
 
 	}
 
@@ -76,9 +76,9 @@ class SteinerTrees {
 	private static class ResultFromIndexResult implements SteinerTreeAlgo.Result {
 
 		private final SteinerTreeAlgo.Result res;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(SteinerTreeAlgo.Result res, IndexIdMap eiMap) {
+		ResultFromIndexResult(SteinerTreeAlgo.Result res, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}

@@ -89,16 +89,16 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -119,12 +119,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, begin, end);
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 
@@ -145,12 +145,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edgesIn, begin, end);
 		}
 	}
 
-	private static abstract class EdgeIterOutAbstract implements EdgeIter {
+	private static abstract class EdgeIterOutAbstract implements IEdgeIter {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
@@ -173,13 +173,13 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return nextEdge;
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return source;
 		}
 	}
@@ -190,7 +190,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called
 			return edgeTarget(lastEdge);
 		}
@@ -205,12 +205,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return edgeSource(lastEdge);
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 	}

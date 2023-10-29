@@ -16,9 +16,9 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -54,10 +54,10 @@ public interface BfsIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a BFS iterator that iterate over the vertices of the graph
 	 */
-	public static BfsIter newInstance(Graph g, int source) {
+	public static BfsIter newInstance(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
 			return new BfsIterImpl.Forward((IndexGraph) g, source);
-		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
 		BfsIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
 		return new BfsIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}
@@ -72,10 +72,10 @@ public interface BfsIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
 	 */
-	public static BfsIter newInstanceBackward(Graph g, int source) {
+	public static BfsIter newInstanceBackward(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
 			return new BfsIterImpl.Backward((IndexGraph) g, source);
-		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
 		BfsIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
 		return new BfsIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}

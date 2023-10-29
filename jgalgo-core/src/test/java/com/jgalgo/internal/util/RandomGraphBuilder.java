@@ -18,12 +18,12 @@ package com.jgalgo.internal.util;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -49,7 +49,7 @@ public class RandomGraphBuilder {
 	private boolean selfEdges;
 	private boolean cycles;
 	private boolean connected;
-	private Boolean2ObjectFunction<Graph> impl = GraphsTestUtils.defaultGraphImpl();
+	private Boolean2ObjectFunction<IntGraph> impl = GraphsTestUtils.defaultGraphImpl();
 
 	public RandomGraphBuilder(long seed) {
 		seedGen = new SeedGenerator(seed);
@@ -111,15 +111,15 @@ public class RandomGraphBuilder {
 		return this;
 	}
 
-	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<Graph> impl) {
+	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<IntGraph> impl) {
 		this.impl = impl;
 		return this;
 	}
 
-	public Graph build() {
+	public IntGraph build() {
 		IntList vertices = new IntArrayList();
-		final Graph g;
-		WeightsBool partition = null;
+		final IntGraph g;
+		IWeightsBool partition = null;
 		if (!bipartite) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
@@ -161,14 +161,14 @@ public class RandomGraphBuilder {
 
 		Set<IntList> existingEdges = new ObjectOpenHashSet<>();
 		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
-		WeightsInt vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
+		IWeightsInt vertexToUf = IWeights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
 		for (int v : g.vertices()) {
 			int ufIdx = uf.make();
 			vertexToUf.set(v, ufIdx);
 		}
 		int componentsNum = n;
 		Random rand = new Random(seedGen.nextSeed());
-		WeightsBool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
+		IWeightsBool reachableFromRoot = IWeights.createExternalVerticesWeights(g, boolean.class);
 		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
 		int reachableFromRootCount = 1;
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
@@ -254,9 +254,9 @@ public class RandomGraphBuilder {
 						while (!queue.isEmpty()) {
 							int p = queue.dequeueInt();
 
-							for (EdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {
 								eit.nextInt();
-								int pv = eit.target();
+								int pv = eit.targetInt();
 								if (reachableFromRoot.get(pv))
 									continue;
 								reachableFromRoot.set(pv, true);

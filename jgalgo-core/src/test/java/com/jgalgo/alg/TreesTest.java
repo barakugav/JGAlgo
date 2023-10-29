@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
@@ -36,7 +36,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 
 			assertTrue(Trees.isTree(g));
@@ -54,7 +54,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] edges = g.edges().toIntArray();
 			int e = edges[rand.nextInt(edges.length)];
@@ -75,7 +75,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
 			int[] vs = g.vertices().toIntArray();
@@ -100,7 +100,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int root = vs[rand.nextInt(n)];
@@ -120,7 +120,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int root = vs[rand.nextInt(n)];
@@ -143,7 +143,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int root = vs[rand.nextInt(n)];
@@ -169,7 +169,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++) {
@@ -192,7 +192,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++) {

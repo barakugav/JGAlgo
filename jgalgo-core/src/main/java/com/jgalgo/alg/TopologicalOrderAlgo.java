@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -43,7 +43,7 @@ public interface TopologicalOrderAlgo {
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g);
+	TopologicalOrderAlgo.Result computeTopologicalSorting(IntGraph g);
 
 	/**
 	 * A result object of a {@link TopologicalOrderAlgo} algorithm.

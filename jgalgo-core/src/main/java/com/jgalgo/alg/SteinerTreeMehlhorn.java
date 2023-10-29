@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.function.IntConsumer;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -51,7 +51,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 
 	@Override
-	Result computeSteinerTree(IndexGraph g, WeightFunction w, IntCollection terminals) {
+	Result computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (terminals.isEmpty())
@@ -86,9 +86,9 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 			assert neighbors.isEmpty() && Arrays.stream(neighborsBestEdge).allMatch(e -> e == -1);
 			for (int u : cells.blockVertices(t)) {
 				double uDistance = cells.distance(u);
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					int vT = cells.vertexBlock(v);
 					if (vT <= t)
 						continue;
@@ -115,7 +115,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		g1Builder.clear();
 		int[] g1EdgeRef = g1EdgeRef0.elements();
 		double[] g1EdgeWeight = g1EdgeWeight0.elements();
-		WeightFunction g1WeightFunc = e -> g1EdgeWeight[e];
+		IWeightFunction g1WeightFunc = e -> g1EdgeWeight[e];
 
 		/* 2. Find a minimum spanning tree G2 of G1 */
 		IntCollection g2 = mstAlgo.computeMinimumSpanningTree(g1, g1WeightFunc).edges();
@@ -152,7 +152,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		g3Builder.clear();
 		int[] g3EdgeRef = g3EdgeRef0.elements();
 		double[] g3EdgeWeight = g3EdgeWeight0.elements();
-		WeightFunction g3WeightFunc = e -> g3EdgeWeight[e];
+		IWeightFunction g3WeightFunc = e -> g3EdgeWeight[e];
 
 		/* 4. Find the minimum spanning tree G4 of G3 */
 		IntCollection g4 = mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc).edges();

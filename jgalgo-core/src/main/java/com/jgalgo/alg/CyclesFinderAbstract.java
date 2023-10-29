@@ -16,20 +16,20 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 
 abstract class CyclesFinderAbstract implements CyclesFinder {
 
 	@Override
-	public Iterator<Path> findAllCycles(Graph g) {
+	public Iterator<Path> findAllCycles(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return findAllCycles((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		Iterator<Path> indexResult = findAllCycles(iGraph);
 		return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);

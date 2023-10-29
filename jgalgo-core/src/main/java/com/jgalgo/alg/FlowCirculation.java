@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 interface FlowCirculation {
 
-	void computeCirculation(Graph g, FlowNetwork net, WeightFunction supply);
+	void computeCirculation(IntGraph g, FlowNetwork net, IWeightFunction supply);
 
 	// void computeCirculation(Graph g, FlowNetwork net, WeightFunction lowerBound, WeightFunction supply);
 

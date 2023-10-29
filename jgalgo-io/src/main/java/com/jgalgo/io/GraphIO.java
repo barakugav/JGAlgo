@@ -19,7 +19,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -28,13 +28,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class GraphIO {
 
 	// TODO make this method public
-	static Graph readGraph(String path) {
+	static IntGraph readGraph(String path) {
 		GraphReader reader = getFormat(path).newReader();
 		return reader.readGraph(new File(path));
 	}
 
 	// TODO make this method public
-	static void writeGraph(Graph graph, String path) {
+	static void writeGraph(IntGraph graph, String path) {
 		GraphWriter writer = getFormat(path).newWriter();
 		writer.writeGraph(graph, new File(path));
 	}

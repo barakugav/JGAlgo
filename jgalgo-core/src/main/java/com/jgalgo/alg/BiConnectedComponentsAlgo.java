@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -44,7 +44,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the bi-connected components of the graph
 	 */
-	BiConnectedComponentsAlgo.Result findBiConnectedComponents(Graph g);
+	BiConnectedComponentsAlgo.Result findBiConnectedComponents(IntGraph g);
 
 	/**
 	 * A result object of a {@link BiConnectedComponentsAlgo} computation.
@@ -128,7 +128,7 @@ public interface BiConnectedComponentsAlgo {
 		 *
 		 * @return the graph of the bi-connected components
 		 */
-		Graph getBlockGraph();
+		IntGraph getBlockGraph();
 
 	}
 

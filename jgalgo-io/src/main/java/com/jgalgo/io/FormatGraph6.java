@@ -18,8 +18,8 @@ package com.jgalgo.io;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 
 class FormatGraph6 implements GraphFormat {
 
@@ -47,7 +47,7 @@ class FormatGraph6 implements GraphFormat {
 	private static class WriterImpl implements GraphWriter {
 
 		@Override
-		public void writeGraph(Graph graph, Writer writer) {
+		public void writeGraph(IntGraph graph, Writer writer) {
 			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Unimplemented method 'writeGraph'");
 		}
@@ -57,7 +57,7 @@ class FormatGraph6 implements GraphFormat {
 	private static class ReaderImpl implements GraphReader {
 
 		@Override
-		public GraphBuilder readIntoBuilder(Reader reader) {
+		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Unimplemented method 'readIntoBuilder'");
 		}

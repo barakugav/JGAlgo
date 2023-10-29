@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -88,9 +88,9 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				S.set(u);
 
 				// update info
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (colors[v] != -1)
 						continue;
 					isAdjacentToS.set(v);
@@ -102,9 +102,9 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 					if (colors[v] != -1 || S.get(v) || isAdjacentToS.get(v))
 						continue;
 					int numOfNeighborsAdjacentToS = 0;
-					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						int w = eit.target();
+						int w = eit.targetInt();
 						if (isAdjacentToS.get(w))
 							numOfNeighborsAdjacentToS++;
 					}
@@ -122,9 +122,9 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				colors[u] = color;
 
 				// update degree to include only vertices without color
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					degree[eit.target()]--;
+					degree[eit.targetInt()]--;
 				}
 			}
 		}

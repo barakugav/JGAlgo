@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -63,7 +63,7 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
+			IntGraph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
 			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
@@ -76,15 +76,15 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
+			IntGraph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
 			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
 
-	private static void validateEulerianTour(Graph g, Path tour) {
+	private static void validateEulerianTour(IntGraph g, Path tour) {
 		IntSet usedEdges = new IntOpenHashSet(g.edges().size());
-		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
+		for (IEdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e = it.nextInt();
 			boolean alreadyUsed = !usedEdges.add(e);
 			assertFalse(alreadyUsed, "edge appear twice in tour: " + e);
@@ -94,11 +94,11 @@ public class EulerianTourTest extends TestBase {
 			assertTrue(usedEdges.contains(e), "edge was not used: " + e);
 	}
 
-	private static Graph randUGraph(int n, int m, boolean allEvenVertices, long seed) {
+	private static IntGraph randUGraph(int n, int m, boolean allEvenVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+		IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 
 		IntList oddVertices = new IntArrayList();
@@ -150,11 +150,11 @@ public class EulerianTourTest extends TestBase {
 		return g;
 	}
 
-	private static Graph randDiGraph(int n, int m, boolean allEqualInOutDegree, long seed) {
+	private static IntGraph randDiGraph(int n, int m, boolean allEqualInOutDegree, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+		IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 		addEdgesUntilStronglyConnected(g);
 
@@ -233,11 +233,11 @@ public class EulerianTourTest extends TestBase {
 		return g;
 	}
 
-	private static int degreeWithoutSelfLoops(Graph g, int u) {
+	private static int degreeWithoutSelfLoops(IntGraph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 			eit.nextInt();
-			if (eit.target() != u)
+			if (eit.targetInt() != u)
 				d++;
 		}
 		return d;
@@ -248,7 +248,7 @@ public class EulerianTourTest extends TestBase {
 		list.removeInt(list.size() - 1);
 	}
 
-	private static void addEdgesUntilStronglyConnected(Graph g) {
+	private static void addEdgesUntilStronglyConnected(IntGraph g) {
 		VertexPartition connectivityRes =
 				StronglyConnectedComponentsAlgo.newInstance().findStronglyConnectedComponents(g);
 		int N = connectivityRes.numberOfBlocks();

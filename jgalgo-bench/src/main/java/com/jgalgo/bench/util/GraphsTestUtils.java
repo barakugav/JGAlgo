@@ -18,87 +18,87 @@ package com.jgalgo.bench.util;
 
 import java.util.BitSet;
 import java.util.Random;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	public static Boolean2ObjectFunction<Graph> defaultGraphImpl() {
-		return direct -> GraphFactory.newUndirected().setDirected(direct).newGraph();
+	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
+		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
 	}
 
-	public static Graph randTree(int n, long seed) {
+	public static IntGraph randTree(int n, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
 				.build();
 	}
 
-	public static Graph randForest(int n, int m, long seed) {
+	public static IntGraph randForest(int n, int m, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
 				.build();
 	}
 
-	public static WeightsDouble assignRandWeights(Graph g, long seed) {
+	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {
 		return assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	public static WeightsDouble assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
+	public static IWeightsDouble assignRandWeights(IntGraph g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(seed);
-		WeightsDouble weight = g.addEdgesWeights("weight", double.class);
+		IWeightsDouble weight = g.addEdgesWeights("weight", double.class);
 		for (int e : g.edges())
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 		return weight;
 	}
 
-	public static WeightsInt assignRandWeightsIntPos(Graph g, long seed) {
+	public static IWeightsInt assignRandWeightsIntPos(IntGraph g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	public static WeightsInt assignRandWeightsIntNeg(Graph g, long seed) {
+	public static IWeightsInt assignRandWeightsIntNeg(IntGraph g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	public static WeightsInt assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
+	public static IWeightsInt assignRandWeightsInt(IntGraph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(seed);
-		WeightsInt weight = Weights.createExternalEdgesWeights(g, int.class);
+		IWeightsInt weight = IWeights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
 			weight.set(e, rand.nextInt(maxWeight - minWeight) + minWeight);
 		return weight;
 	}
 
-	public static Graph randGraph(int n, int m, long seed) {
+	public static IntGraph randGraph(int n, int m, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false).cycles(true)
 				.connected(false).build();
 	}
 
-	public static Graph randGraphBipartite(int sn, int tn, int m, long seed) {
+	public static IntGraph randGraphBipartite(int sn, int tn, int m, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 	}
 
-	public static Graph randomGraphGnp(int n, boolean directed, long seed) {
+	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {
 		final double p = 0.1;
 		return randomGraphGnp(n, p, directed, seed);
 	}
 
-	public static Graph randomGraphGnp(int n, double p, boolean directed, long seed) {
+	public static IntGraph randomGraphGnp(int n, double p, boolean directed, long seed) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		if (!(0 <= p && p <= 1))
@@ -126,13 +126,13 @@ public class GraphsTestUtils extends TestUtils {
 		return builder.reIndexAndBuild(true, true).graph();
 	}
 
-	public static Graph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
+	public static IntGraph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
 		final int nInit = 20;
 		final int m = 10;
 		return randomGraphBarabasiAlbert(n, nInit, m, directed, seed);
 	}
 
-	public static Graph randomGraphBarabasiAlbert(int n, int nInit, int m, boolean directed, long seed) {
+	public static IntGraph randomGraphBarabasiAlbert(int n, int nInit, int m, boolean directed, long seed) {
 		if (nInit <= 0 || nInit > n)
 			throw new IllegalArgumentException();
 		if (m > nInit)
@@ -181,7 +181,7 @@ public class GraphsTestUtils extends TestUtils {
 		return builder.reIndexAndBuild(true, true).graph();
 	}
 
-	public static Graph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
+	public static IntGraph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
 		if (directed) {
 			final double a = 0.57;
 			final double b = 0.21;
@@ -197,7 +197,7 @@ public class GraphsTestUtils extends TestUtils {
 		}
 	}
 
-	public static Graph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d,
+	public static IntGraph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d,
 			boolean directed, long seed) {
 		if (n <= 0 || m < 0)
 			throw new IllegalArgumentException();

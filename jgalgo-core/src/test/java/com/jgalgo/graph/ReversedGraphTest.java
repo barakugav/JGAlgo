@@ -33,11 +33,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ReversedGraphTest extends TestBase {
 
-	private static Graph createGraph(boolean directed) {
+	private static IntGraph createGraph(boolean directed) {
 		final long seed = 0x97dc96ffefd7165bL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		Graph g = GraphFactory.newUndirected().setDirected(directed).newGraph();
+		IntGraph g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
 
 		IntList vertices = new IntArrayList(n);
 		for (int i = 0; i < n; i++)
@@ -54,11 +54,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testVertices() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				assertEquals(gOrig.vertices().size(), gRev.vertices().size());
 				assertEquals(gOrig.vertices(), gRev.vertices());
@@ -69,11 +69,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testEdges() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				assertEquals(gOrig.edges().size(), gRev.edges().size());
 				assertEquals(gOrig.edges(), gRev.edges());
 			}
@@ -83,11 +83,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testAddRemoveVertex() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				int newVertex = gRev.addVertex();
 				assertTrue(gOrig.vertices().contains(newVertex));
@@ -124,11 +124,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testAddRemoveEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				IntIterator vit = gRev.vertices().iterator();
 				int u = vit.nextInt();
@@ -169,27 +169,27 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testEdgesOutIn() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				for (int u : gRev.vertices()) {
-					EdgeSet edges = gRev.outEdges(u);
+					IEdgeSet edges = gRev.outEdges(u);
 					assertEquals(gOrig.inEdges(u).size(), edges.size());
 					assertEquals(gOrig.inEdges(u), edges);
 
 					IntSet iteratedEdges = new IntOpenHashSet();
-					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNext();
+					for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
+						int peekNext = eit.peekNextInt();
 						int e = eit.nextInt();
 						assertEquals(e, peekNext);
 
-						assertEquals(u, eit.source());
-						assertEquals(gOrig.edgeEndpoint(e, u), eit.target());
-						assertEquals(gRev.edgeEndpoint(e, u), eit.target());
-						assertEquals(u, gRev.edgeEndpoint(e, eit.target()));
+						assertEquals(u, eit.sourceInt());
+						assertEquals(gOrig.edgeEndpoint(e, u), eit.targetInt());
+						assertEquals(gRev.edgeEndpoint(e, u), eit.targetInt());
+						assertEquals(u, gRev.edgeEndpoint(e, eit.targetInt()));
 
 						iteratedEdges.add(e);
 					}
@@ -204,20 +204,20 @@ public class ReversedGraphTest extends TestBase {
 					}
 				}
 				for (int v : gRev.vertices()) {
-					EdgeSet edges = gRev.inEdges(v);
+					IEdgeSet edges = gRev.inEdges(v);
 					assertEquals(gOrig.outEdges(v).size(), edges.size());
 					assertEquals(gOrig.outEdges(v), edges);
 
 					IntSet iteratedEdges = new IntOpenHashSet();
-					for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNext();
+					for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
+						int peekNext = eit.peekNextInt();
 						int e = eit.nextInt();
 						assertEquals(e, peekNext);
 
-						assertEquals(v, eit.target());
-						assertEquals(gOrig.edgeEndpoint(e, v), eit.source());
-						assertEquals(gRev.edgeEndpoint(e, v), eit.source());
-						assertEquals(v, gRev.edgeEndpoint(e, eit.source()));
+						assertEquals(v, eit.targetInt());
+						assertEquals(gOrig.edgeEndpoint(e, v), eit.sourceInt());
+						assertEquals(gRev.edgeEndpoint(e, v), eit.sourceInt());
+						assertEquals(v, gRev.edgeEndpoint(e, eit.sourceInt()));
 
 						iteratedEdges.add(e);
 					}
@@ -238,15 +238,15 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testEdgesSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				for (int u : gRev.vertices()) {
 					for (int v : gRev.vertices()) {
-						EdgeSet edges = gRev.getEdges(u, v);
+						IEdgeSet edges = gRev.getEdges(u, v);
 						assertEquals(gOrig.getEdges(v, u).size(), edges.size());
 						assertEquals(gOrig.getEdges(v, u), edges);
 
@@ -258,13 +258,13 @@ public class ReversedGraphTest extends TestBase {
 							assertTrue(edges.contains(e));
 						}
 
-						for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-							int peekNext = eit.peekNext();
+						for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
+							int peekNext = eit.peekNextInt();
 							int e = eit.nextInt();
 							assertEquals(e, peekNext);
 
-							assertEquals(u, eit.source());
-							assertEquals(v, eit.target());
+							assertEquals(u, eit.sourceInt());
+							assertEquals(v, eit.targetInt());
 							assertEquals(gOrig.edgeEndpoint(e, u), v);
 							assertEquals(gOrig.edgeEndpoint(e, v), u);
 							assertEquals(u, gRev.edgeEndpoint(e, v));
@@ -279,11 +279,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testRemoveEdgesOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				int v = gRev.vertices().iterator().nextInt();
 
 				gRev.removeEdgesOf(v);
@@ -298,11 +298,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testRemoveEdgesInOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				int v = gRev.vertices().iterator().nextInt();
 
 				gRev.removeInEdgesOf(v);
@@ -315,11 +315,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testRemoveEdgesOutOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				int v = gRev.vertices().iterator().nextInt();
 
 				gRev.removeOutEdgesOf(v);
@@ -331,10 +331,10 @@ public class ReversedGraphTest extends TestBase {
 
 	@Test
 	public void testReverseEdge() {
-		Graph gOrig0 = createGraph(true);
-		Graph gRev0 = gOrig0.reverseView();
+		IntGraph gOrig0 = createGraph(true);
+		IntGraph gRev0 = gOrig0.reverseView();
 		for (boolean index : BooleanList.of(false, true)) {
-			Graph gRev = index ? gRev0.indexGraph() : gRev0;
+			IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 			int e = gRev.edges().iterator().nextInt();
 			int s = gRev.edgeSource(e), t = gRev.edgeTarget(e);
@@ -348,11 +348,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testEdgeGetSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				for (int e : gRev.edges()) {
 					assertEquals(gOrig.edgeSource(e), gRev.edgeTarget(e));
 					assertEquals(gOrig.edgeTarget(e), gRev.edgeSource(e));
@@ -364,11 +364,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testClear() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				gRev.clear();
 				assertTrue(gRev.vertices().isEmpty());
 				assertTrue(gRev.edges().isEmpty());
@@ -381,11 +381,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testClearEdges() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				gRev.clearEdges();
 				assertTrue(gRev.edges().isEmpty());
 				assertTrue(gOrig.edges().isEmpty());
@@ -399,26 +399,26 @@ public class ReversedGraphTest extends TestBase {
 		Random rand = new Random(seed);
 		int keyCounter = 0;
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				String key1 = "key" + keyCounter++, key2 = "key" + keyCounter++;
 				{
-					WeightsInt vWeights1 = gOrig.addVerticesWeights(key1, int.class);
+					IWeightsInt vWeights1 = gOrig.addVerticesWeights(key1, int.class);
 					for (int v : gOrig.vertices())
 						vWeights1.set(v, rand.nextInt(10000));
-					WeightsInt vWeights2 = gRev.addVerticesWeights(key2, int.class);
+					IWeightsInt vWeights2 = gRev.addVerticesWeights(key2, int.class);
 					for (int v : gRev.vertices())
 						vWeights2.set(v, rand.nextInt(10000));
 				}
 
 				assertEquals(gOrig.getVerticesWeightsKeys(), gRev.getVerticesWeightsKeys());
 				for (String key : List.of(key1, key2)) {
-					WeightsInt wOrig = gOrig.getVerticesWeights(key);
-					WeightsInt wRev = gRev.getVerticesWeights(key);
+					IWeightsInt wOrig = gOrig.getVerticesWeights(key);
+					IWeightsInt wRev = gRev.getVerticesWeights(key);
 
 					for (int v : gRev.vertices())
 						assertEquals(wOrig.get(v), wRev.get(v));
@@ -437,26 +437,26 @@ public class ReversedGraphTest extends TestBase {
 		Random rand = new Random(seed);
 		int keyCounter = 0;
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 
 				String key1 = "key" + keyCounter++, key2 = "key" + keyCounter++;
 				{
-					WeightsInt eWeights1 = gOrig.addEdgesWeights(key1, int.class);
+					IWeightsInt eWeights1 = gOrig.addEdgesWeights(key1, int.class);
 					for (int e : gOrig.edges())
 						eWeights1.set(e, rand.nextInt(10000));
-					WeightsInt eWeights2 = gRev.addEdgesWeights(key2, int.class);
+					IWeightsInt eWeights2 = gRev.addEdgesWeights(key2, int.class);
 					for (int e : gRev.edges())
 						eWeights2.set(e, rand.nextInt(10000));
 				}
 
 				assertEquals(gOrig.getEdgesWeightsKeys(), gRev.getEdgesWeightsKeys());
 				for (String key : List.of(key1, key2)) {
-					WeightsInt wOrig = gOrig.getEdgesWeights(key);
-					WeightsInt wRev = gRev.getEdgesWeights(key);
+					IWeightsInt wOrig = gOrig.getEdgesWeights(key);
+					IWeightsInt wRev = gRev.getEdgesWeights(key);
 
 					for (int e : gRev.edges())
 						assertEquals(wOrig.get(e), wRev.get(e));
@@ -473,11 +473,11 @@ public class ReversedGraphTest extends TestBase {
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			Graph gOrig0 = createGraph(directed);
-			Graph gRev0 = gOrig0.reverseView();
+			IntGraph gOrig0 = createGraph(directed);
+			IntGraph gRev0 = gOrig0.reverseView();
 			for (boolean index : BooleanList.of(false, true)) {
-				Graph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				Graph gRev = index ? gRev0.indexGraph() : gRev0;
+				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
+				IntGraph gRev = index ? gRev0.indexGraph() : gRev0;
 				assertEquals(gOrig.isAllowParallelEdges(), gRev.isAllowParallelEdges());
 				assertEquals(gOrig.isAllowSelfEdges(), gRev.isAllowSelfEdges());
 				assertEquals(gOrig.isDirected(), gRev.isDirected());

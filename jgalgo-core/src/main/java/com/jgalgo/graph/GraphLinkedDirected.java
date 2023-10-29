@@ -104,13 +104,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -243,13 +243,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		super.clearEdges();
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(edgesOut[source]);
 		}
 
@@ -259,13 +259,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(edgesIn[target]);
 		}
 
@@ -281,12 +281,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return last.source;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return last.target;
 		}
 	}

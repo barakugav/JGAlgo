@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -39,7 +39,7 @@ public class DfsIterTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];

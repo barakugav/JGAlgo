@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigNonFrozen;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -45,7 +45,7 @@ public class GraphIdsBench {
 	public static class Query {
 
 		private Random rand;
-		private Graph g;
+		private IntGraph g;
 
 		void setupCreateGraph(String args) {
 			final long seed = 0x7a1521bf6435883cL;
@@ -54,7 +54,7 @@ public class GraphIdsBench {
 			final int n = Integer.parseInt(argsMap.get("|V|"));
 			final int m = Integer.parseInt(argsMap.get("|E|"));
 
-			g = Graph.newDirected();
+			g = IntGraph.newDirected();
 			for (int i = 0; i < n; i++)
 				g.addVertex();
 			int[] vertices = g.vertices().toIntArray();
@@ -103,11 +103,13 @@ public class GraphIdsBench {
 				super.setupCreateGraph(args);
 			}
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
 				super.setupCreateQueries();
 			}
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
@@ -132,11 +134,13 @@ public class GraphIdsBench {
 				super.setupCreateGraph(args);
 			}
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
 				super.setupCreateQueries();
 			}
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
@@ -176,11 +180,13 @@ public class GraphIdsBench {
 				super.setupCreateGraph(args);
 			}
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
 				super.setupCreateQueries();
 			}
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
@@ -220,11 +226,13 @@ public class GraphIdsBench {
 				super.setupCreateGraph(args);
 			}
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
 				super.setupCreateQueries();
 			}
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
@@ -264,11 +272,13 @@ public class GraphIdsBench {
 				super.setupCreateGraph(args);
 			}
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
 				super.setupCreateQueries();
 			}
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {

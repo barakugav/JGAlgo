@@ -15,9 +15,9 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -31,7 +31,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 
 	@SuppressWarnings("boxing") // TODO
 	@Override
-	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target) {
+	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw new IndexOutOfBoundsException(source);
 		if (!g.vertices().contains(target))
@@ -39,7 +39,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
+			w = IWeightFunction.CardinalityWeightFunction;
 
 		HeapReferenceable.Builder<Double, Integer> heapBuilder =
 				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
@@ -73,9 +73,9 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 			uInfoT.markVisited();
 			uInfoT.distance = uDistanceT;
 
-			for (EdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				Info vInfoS = infoS.computeIfAbsent(v, k -> new Info());
 				if (vInfoS.isVisited())
 					continue;
@@ -100,9 +100,9 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 				}
 			}
 
-			for (EdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.source();
+				int v = eit.sourceInt();
 				Info vInfoT = infoT.computeIfAbsent(v, k -> new Info());
 				if (vInfoT.isVisited())
 					continue;

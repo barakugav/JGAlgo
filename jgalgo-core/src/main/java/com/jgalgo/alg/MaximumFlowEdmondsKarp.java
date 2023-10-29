@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -72,11 +72,11 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 					if (queue.isEmpty())
 						return; /* no path to sink, we are done */
 					int u = queue.dequeueInt();
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!isResidual(e))
 							continue;
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (visited.get(v))
 							continue;
 						backtrack[v] = e;
@@ -94,11 +94,11 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 						visited.set(v);
 						queue.enqueue(v);
 					}
-					for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!hasFlow(e))
 							continue;
-						int v = eit.source();
+						int v = eit.sourceInt();
 						if (visited.get(v))
 							continue;
 						backtrack[v] = e;
@@ -122,7 +122,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 					if (queue.isEmpty())
 						return; /* no path to sink, we are done */
 					int u = queue.dequeueInt();
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v;
 						if (u == g.edgeSource(e)) {

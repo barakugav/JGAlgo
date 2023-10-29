@@ -21,9 +21,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class FormatLedaTest {
@@ -57,8 +57,8 @@ public class FormatLedaTest {
 
 		GraphReader rd_leda1 = GraphReader.newInstance("leda");
 		StringReader sr = new StringReader(leda_definition);
-		GraphBuilder gb = rd_leda1.readIntoBuilder(sr);
-		Graph graph1 = gb.build();
+		IntGraphBuilder gb = rd_leda1.readIntoBuilder(sr);
+		IntGraph graph1 = gb.build();
 
 		GraphWriter wr_leda1 = GraphWriter.newInstance("leda");
 		StringWriter sw = new StringWriter();
@@ -96,8 +96,8 @@ public class FormatLedaTest {
 
 		GraphReader rd_leda1 = GraphReader.newInstance("leda");
 		StringReader sr = new StringReader(leda_definition);
-		GraphBuilder gb = rd_leda1.readIntoBuilder(sr);
-		Graph graph1 = gb.build();
+		IntGraphBuilder gb = rd_leda1.readIntoBuilder(sr);
+		IntGraph graph1 = gb.build();
 
 		GraphWriter wr_leda1 = GraphWriter.newInstance("leda");
 		StringWriter sw = new StringWriter();
@@ -114,7 +114,7 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
+				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -132,9 +132,9 @@ public class FormatLedaTest {
 				GraphWriter.newInstance("leda").writeGraph(g, writer);
 				String data = writer.toString();
 
-				GraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
-				Graph gImmutable = gb.build();
-				Graph gMutable = gb.buildMutable();
+				IntGraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
+				IntGraph gImmutable = gb.build();
+				IntGraph gMutable = gb.buildMutable();
 				assertEquals(g, gImmutable);
 				assertEquals(g, gMutable);
 			}
@@ -149,7 +149,7 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
+				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -163,7 +163,7 @@ public class FormatLedaTest {
 					g.addEdge(source, target, e);
 				}
 
-				WeightsInt we1 = g.addEdgesWeights("weightsKey", int.class);
+				IWeightsInt we1 = g.addEdgesWeights("weightsKey", int.class);
 				for (int e : g.edges())
 					we1.set(e, n + rand.nextInt(m * 3));
 
@@ -171,9 +171,9 @@ public class FormatLedaTest {
 				GraphWriter.newInstance("leda").writeGraph(g, writer);
 				String data = writer.toString();
 
-				GraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
-				Graph gImmutable = gb.build();
-				Graph gMutable = gb.buildMutable();
+				IntGraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
+				IntGraph gImmutable = gb.build();
+				IntGraph gMutable = gb.buildMutable();
 				assertEquals(g, gImmutable);
 				assertEquals(g, gMutable);
 			}

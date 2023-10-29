@@ -34,22 +34,22 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see    EdgeIter
+ * @see    IEdgeIter
  * @author Barak Ugav
  */
-public interface EdgeSet extends IntSet {
+public interface IEdgeSet extends IntSet {
 
 	/**
 	 * Return an edge iterator that iterate over the edges in this set
 	 */
 	@Override
-	EdgeIter iterator();
+	IEdgeIter iterator();
 
 	/**
 	 * Return an edge iterator that iterate over the edges in this set
 	 */
 	@Override
-	default EdgeIter intIterator() {
+	default IEdgeIter intIterator() {
 		return iterator();
 	}
 

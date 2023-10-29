@@ -16,17 +16,17 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Calculate the maximum flow in a flow network.
  * <p>
  * A maximum flow is firstly a valid flow, namely for each vertex except the source and sink the sum of flow units going
- * along {@link Graph#inEdges(int)} must be equal to the sum of flow units going along {@link Graph#outEdges(int)}. In
- * addition, a maximum flow maximize the number of flow units originated at the source and reaching the sink, which is
- * equivalent to the sum of flows going out(in) of the source(sink) subtracted by the sum of flows going in(out) to the
- * source(sink).
+ * along {@link IntGraph#inEdges(int)} must be equal to the sum of flow units going along
+ * {@link IntGraph#outEdges(int)}. In addition, a maximum flow maximize the number of flow units originated at the
+ * source and reaching the sink, which is equivalent to the sum of flows going out(in) of the source(sink) subtracted by
+ * the sum of flows going in(out) to the source(sink).
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -68,7 +68,7 @@ public interface MaximumFlow {
 	 * @return                          the maximum flow in the network from the source to the sink
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
+	double computeMaximumFlow(IntGraph g, FlowNetwork net, int source, int sink);
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
@@ -83,7 +83,7 @@ public interface MaximumFlow {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
+	double computeMaximumFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new maximum flow algorithm object.

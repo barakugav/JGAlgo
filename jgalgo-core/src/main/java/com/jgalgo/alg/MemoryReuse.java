@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.ds.HeapReference;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -88,10 +88,10 @@ class MemoryReuse {
 		return Math.max(a.length * 2, len);
 	}
 
-	static final EdgeIter[] EmptyEdgeIterArr = new EdgeIter[0];
+	static final IEdgeIter[] EmptyEdgeIterArr = new IEdgeIter[0];
 	static final IntList[] EmptyIntListArr = new IntList[0];
 	static final IndexGraph[] EmptyGraphArr = new IndexGraph[0];
-	static final WeightsDouble[] EmptyWeightsDoubleArr = new WeightsDouble[0];
+	static final IWeightsDouble[] EmptyWeightsDoubleArr = new IWeightsDouble[0];
 	@SuppressWarnings("rawtypes")
 	static final HeapReference[] EmptyHeapReferenceArr = new HeapReference[0];
 	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];

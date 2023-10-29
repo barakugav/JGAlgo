@@ -187,7 +187,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
@@ -203,7 +203,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
 		return (WeightsT) edgesUserWeights.getWeights(key);
 	}
 
@@ -226,8 +226,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal) {
-		WeightsImpl.IndexMutable<V> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
+	public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal) {
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
@@ -235,8 +235,8 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
-		WeightsImpl.IndexMutable<E> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
+	public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;

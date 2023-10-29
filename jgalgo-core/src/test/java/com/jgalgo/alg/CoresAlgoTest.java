@@ -17,8 +17,8 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -73,7 +73,7 @@ public class CoresAlgoTest extends TestBase {
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			CoresAlgo algo = new CoresAlgoImpl();
@@ -81,7 +81,7 @@ public class CoresAlgoTest extends TestBase {
 		});
 	}
 
-	private static void testCoresAlgo(Graph g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
+	private static void testCoresAlgo(IntGraph g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
 		CoresAlgo.Result res;
 		if (degreeType == CoresAlgo.DegreeType.OutAndInDegree) {
 			res = algo.computeCores(g);
@@ -104,27 +104,27 @@ public class CoresAlgoTest extends TestBase {
 					int u = vit.nextInt();
 					int degree = 0;
 					if (!directed || degreeType == CoresAlgo.DegreeType.OutDegree) {
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							if (vs.contains(eit.target()))
+							if (vs.contains(eit.targetInt()))
 								degree++;
 						}
 					} else if (degreeType == CoresAlgo.DegreeType.InDegree) {
-						for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							if (vs.contains(eit.source()))
+							if (vs.contains(eit.sourceInt()))
 								degree++;
 						}
 					} else {
 						assert degreeType == CoresAlgo.DegreeType.OutAndInDegree;
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							if (vs.contains(eit.target()))
+							if (vs.contains(eit.targetInt()))
 								degree++;
 						}
-						for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							if (vs.contains(eit.source()))
+							if (vs.contains(eit.sourceInt()))
 								degree++;
 						}
 					}

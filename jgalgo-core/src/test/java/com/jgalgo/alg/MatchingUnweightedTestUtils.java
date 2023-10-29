@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -47,19 +47,19 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256, 512).repeat(4);
 		tester.addPhase().withArgs(1000, 2500).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);
 		});
 	}
 
-	private static void testAlgo(MatchingAlgo algo, Graph g, int expectedMatchSize) {
+	private static void testAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
 		Matching match = algo.computeMaximumCardinalityMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	static void validateMatching(Graph g, Matching matching) {
+	static void validateMatching(IntGraph g, Matching matching) {
 		IntSet matched = new IntOpenHashSet();
 		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
@@ -72,16 +72,16 @@ class MatchingUnweightedTestUtils extends TestUtils {
 
 	/* implementation of general graphs maximum matching from the Internet */
 
-	private static int calcExpectedMaxMatching(Graph g) {
+	private static int calcExpectedMaxMatching(IntGraph g) {
 		int n = g.vertices().size();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
-		IndexIdMap vToIdx = g.indexGraphVerticesMap();
+		IndexIntIdMap vToIdx = g.indexGraphVerticesMap();
 		for (int u : g.vertices()) {
 			graph[vToIdx.idToIndex(u)] = new ObjectArrayList<>();
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				graph[vToIdx.idToIndex(u)].add(Integer.valueOf(vToIdx.idToIndex(v)));
 			}
 		}

@@ -16,11 +16,11 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -35,8 +35,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
  * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
  * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
- * going along {@link Graph#inEdges(int)} must be equal to the sum of flow units going along
- * {@link Graph#outEdges(int)}.
+ * going along {@link IntGraph#inEdges(int)} must be equal to the sum of flow units going along
+ * {@link IntGraph#outEdges(int)}.
  * <p>
  * A flow is most intuitively defined on directed graphs, as the flow on an edge is transferred from one vertex to
  * another in some direction, but we can define and solve flow problem on undirected graphs as well. Technically, the
@@ -122,7 +122,7 @@ public interface FlowNetwork {
 	 * @param  source a source vertex
 	 * @return        the sum of flow units going out of {@code source}
 	 */
-	default double getFlowSum(Graph g, int source) {
+	default double getFlowSum(IntGraph g, int source) {
 		return getFlowSum(g, IntList.of(source));
 	}
 
@@ -133,7 +133,7 @@ public interface FlowNetwork {
 	 * @param  sources a set of source vertices
 	 * @return         the sum of flow units going out of {@code sources}
 	 */
-	default double getFlowSum(Graph g, IntIterable sources) {
+	default double getFlowSum(IntGraph g, IntIterable sources) {
 		double sum = 0;
 		if (g.isDirected()) {
 			for (int source : sources) {
@@ -166,10 +166,10 @@ public interface FlowNetwork {
 	 * @param  cost  a edge weight cost function
 	 * @return       the sum of the cost of the flow along the edges
 	 */
-	default double getCostSum(IntIterable edges, WeightFunction cost) {
+	default double getCostSum(IntIterable edges, IWeightFunction cost) {
 		double sum = 0;
-		if (cost instanceof WeightFunctionInt) {
-			WeightFunctionInt costInt = (WeightFunctionInt) cost;
+		if (cost instanceof IWeightFunctionInt) {
+			IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 			for (int e : edges)
 				sum += getFlow(e) * costInt.weightInt(e);
 		} else {
@@ -180,30 +180,30 @@ public interface FlowNetwork {
 	}
 
 	/**
-	 * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+	 * Create a flow network by adding edge weights using {@link IntGraph#addEdgesWeights}.
 	 * <p>
 	 * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
 	 * edge will be zero.
 	 * <p>
-	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
-	 * graph is modified, as they are added to the graph. This is a key difference between this function and
-	 * {@link #createFromEdgeWeights(WeightsDouble, WeightsDouble)}, which if provided with weights containers created
-	 * with {@link Weights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
+	 * By using {@link IntGraph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
+	 * the graph is modified, as they are added to the graph. This is a key difference between this function and
+	 * {@link #createFromEdgeWeights(IWeightsDouble, IWeightsDouble)}, which if provided with weights containers created
+	 * with {@link IWeights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
 	 * scenarios in which we are not allowed to add weights to the graph.
 	 *
 	 * @param  g a graph
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
-	static FlowNetwork createFromEdgeWeights(Graph g) {
-		WeightsDouble capacities = g.addEdgesWeights("_capacity", double.class);
-		WeightsDouble flows = g.addEdgesWeights("_flow", double.class);
+	static FlowNetwork createFromEdgeWeights(IntGraph g) {
+		IWeightsDouble capacities = g.addEdgesWeights("_capacity", double.class);
+		IWeightsDouble flows = g.addEdgesWeights("_flow", double.class);
 		return createFromEdgeWeights(capacities, flows);
 	}
 
 	/**
 	 * Create a flow network by using existing edge weights.
 	 * <p>
-	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
+	 * This method can be used together with {@link IWeights#createExternalEdgesWeights}, creating a flow network for a
 	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
 	 * the graph.
 	 *
@@ -211,7 +211,7 @@ public interface FlowNetwork {
 	 * @param  flows      a weight container that will contain the flow values of the edges
 	 * @return            a flow network implemented as external edge weights containers
 	 */
-	static FlowNetwork createFromEdgeWeights(WeightsDouble capacities, WeightsDouble flows) {
+	static FlowNetwork createFromEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
 		return new FlowNetworks.NetImplEdgeWeights(capacities, flows);
 	}
 

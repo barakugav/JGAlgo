@@ -16,12 +16,12 @@
 package com.jgalgo.alg;
 
 import java.util.function.DoubleSupplier;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 class PageRank {
 
@@ -29,20 +29,20 @@ class PageRank {
 	private double tolerance = 0.0001;
 	private double dampingFactor = 0.85;
 
-	VertexScoring computeScores(Graph g, WeightFunction w) {
+	VertexScoring computeScores(IntGraph g, IWeightFunction w) {
 		if (g instanceof IndexGraph)
 			return computeScores((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 		VertexScoring indexResult = computeScores(iGraph, w);
 		return new VertexScoringImpl.ResultFromIndexResult(indexResult, viMap);
 	}
 
-	VertexScoring computeScores(IndexGraph g, WeightFunction w) {
+	VertexScoring computeScores(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 
 		int[] outDegree = new int[n];
@@ -62,7 +62,7 @@ class PageRank {
 			return rFactor / n;
 		};
 
-		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
@@ -117,7 +117,7 @@ class PageRank {
 		private final int[] neighborsBegin;
 		private final double[] weights;
 
-		Predecessors(IndexGraph g, WeightFunction w) {
+		Predecessors(IndexGraph g, IWeightFunction w) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			neighborsBegin = new int[n + 1];
@@ -131,22 +131,22 @@ class PageRank {
 				neighbors = new int[outDegreeSum];
 			}
 
-			if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 				weights = null;
 				for (int eIdx = 0, u = 0; u < n; u++) {
 					neighborsBegin[u] = eIdx;
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						neighbors[eIdx++] = eit.target();
+						neighbors[eIdx++] = eit.targetInt();
 					}
 				}
 			} else {
 				weights = new double[neighbors.length];
 				for (int eIdx = 0, u = 0; u < n; u++) {
 					neighborsBegin[u] = eIdx;
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						neighbors[eIdx] = eit.target();
+						neighbors[eIdx] = eit.targetInt();
 						weights[eIdx] = w.weight(e);
 						eIdx++;
 					}

@@ -15,33 +15,33 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 class FlowCirculations {
 
 	static abstract class AbstractImpl implements FlowCirculation {
 
 		@Override
-		public void computeCirculation(Graph g, FlowNetwork net, WeightFunction supply) {
+		public void computeCirculation(IntGraph g, FlowNetwork net, IWeightFunction supply) {
 			if (g instanceof IndexGraph) {
 				computeCirculation((IndexGraph) g, net, supply);
 				return;
 			}
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			WeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
+			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
 
 			computeCirculation(iGraph, iNet, iSupply);
 		}
 
-		abstract void computeCirculation(IndexGraph g, FlowNetwork net, WeightFunction supply);
+		abstract void computeCirculation(IndexGraph g, FlowNetwork net, IWeightFunction supply);
 
 	}
 

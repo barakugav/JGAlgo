@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
@@ -57,7 +57,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
@@ -81,7 +81,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	@Override
-	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w, int root) {
+	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
@@ -153,9 +153,9 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 
 		ccLoop: for (int V = 0; V < N; V++) {
 			int vNext = V < N - 1 ? V + 1 : 0;
-			for (EdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				if (connectivityRes.vertexBlock(eit.target()) == vNext)
+				if (connectivityRes.vertexBlock(eit.targetInt()) == vNext)
 					continue ccLoop; /* V already connected to vNext */
 			}
 			int e = g.addEdge(V2v[V], V2v[vNext]);
@@ -163,7 +163,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		}
 	}
 
-	private ContractedGraph contract(IndexGraph g, WeightFunction wOrig, int artificialEdgesThreshold) {
+	private ContractedGraph contract(IndexGraph g, IWeightFunction wOrig, int artificialEdgesThreshold) {
 		assert sccAlg.isStronglyConnected(g);
 
 		int n = g.vertices().size();
@@ -174,7 +174,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		for (int v = 0; v < n; v++)
 			ufIdxToV[uf.make()] = v;
 
-		WeightFunction w =
+		IWeightFunction w =
 				e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		@SuppressWarnings("unchecked")
 		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];

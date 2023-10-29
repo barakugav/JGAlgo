@@ -16,12 +16,12 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -36,15 +36,15 @@ class MinimumCutSTUtils {
 	static abstract class AbstractImpl implements MinimumCutST {
 
 		@Override
-		public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+		public VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, int source, int sink) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, source, sink);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
 
@@ -53,16 +53,16 @@ class MinimumCutSTUtils {
 		}
 
 		@Override
-		public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, IntCollection sources,
+		public VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, IntCollection sources,
 				IntCollection sinks) {
 			if (g instanceof IndexGraph)
 				return computeMinimumCut((IndexGraph) g, w, sources, sinks);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 
@@ -70,14 +70,14 @@ class MinimumCutSTUtils {
 			return new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, indexCut);
 		}
 
-		abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int sources, int sinks);
+		abstract VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int sources, int sinks);
 
-		abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources,
+		abstract VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 				IntCollection sinks);
 
 	}
 
-	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, int source, int sink,
+	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, int source, int sink,
 			MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
 		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
@@ -88,7 +88,7 @@ class MinimumCutSTUtils {
 		return minCutFromMaxFlow(g, IntLists.singleton(source), net);
 	}
 
-	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, WeightFunction w, IntCollection sources,
+	static VertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, IntCollection sources,
 			IntCollection sinks, MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
 		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
@@ -115,9 +115,9 @@ class MinimumCutSTUtils {
 			while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
 
-				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
 					int e = it.nextInt();
-					int v = it.target();
+					int v = it.targetInt();
 					if (visited.get(v))
 						continue;
 					if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
@@ -130,9 +130,9 @@ class MinimumCutSTUtils {
 				 * in-edges and search for edges with non zero flow which imply an existent of an out edge in the
 				 * residual network
 				 */
-				for (EdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {
+				for (IEdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {
 					int e = it.nextInt();
-					int v = it.source();
+					int v = it.sourceInt();
 					if (visited.get(v))
 						continue;
 					if (net.getFlow(e) < eps)
@@ -145,9 +145,9 @@ class MinimumCutSTUtils {
 			while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
 
-				for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
 					int e = it.nextInt();
-					int v = it.target();
+					int v = it.targetInt();
 					if (visited.get(v))
 						continue;
 					double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
@@ -166,12 +166,12 @@ class MinimumCutSTUtils {
 		return new AbstractImpl() {
 
 			@Override
-			public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+			public VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
 				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);
 			}
 
 			@Override
-			public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources,
+			public VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 					IntCollection sinks) {
 				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);
 			}
@@ -179,7 +179,7 @@ class MinimumCutSTUtils {
 		};
 	}
 
-	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, WeightFunction w) {
+	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
 		double[] flow = new double[g.edges().size()];
 		FlowNetwork net = new FlowNetwork() {
@@ -209,7 +209,7 @@ class MinimumCutSTUtils {
 	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
 		return new MinimumCutGlobalAbstract() {
 			@Override
-			VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w) {
+			VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");

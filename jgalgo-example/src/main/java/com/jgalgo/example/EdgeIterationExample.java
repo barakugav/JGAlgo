@@ -15,15 +15,15 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class EdgeIterationExample {
 
 	public static void edgeIterationExample() {
-		Graph g = Graph.newUndirected();
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -53,11 +53,11 @@ public class EdgeIterationExample {
 
 		/* Print the out-edges of v5 */
 		System.out.println("The edges of v5:");
-		for (EdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
-			int u = eit.source();
-			int v = eit.target();
+			int u = eit.sourceInt();
+			int v = eit.targetInt();
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */

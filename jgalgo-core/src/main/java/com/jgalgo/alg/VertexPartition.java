@@ -17,10 +17,10 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.function.IntUnaryOperator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -91,7 +91,7 @@ public interface VertexPartition {
 	 *
 	 * @return the graph that the partition is defined on
 	 */
-	Graph graph();
+	IntGraph graph();
 
 	/**
 	 * Create a new graph that contains only the vertices and edges that are contained in a block.
@@ -105,7 +105,7 @@ public interface VertexPartition {
 	 * @param  block index of a block
 	 * @return       a new graph that contains only the vertices and edges that are contained in the block
 	 */
-	default Graph blockSubGraph(int block) {
+	default IntGraph blockSubGraph(int block) {
 		return blockSubGraph(block, false, false);
 	}
 
@@ -121,7 +121,7 @@ public interface VertexPartition {
 	 * @param  copyEdgesWeights    if {@code true} the edges weights are copied to the new graph
 	 * @return                     a new graph that contains only the vertices and edges that are contained in the block
 	 */
-	default Graph blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	default IntGraph blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		return Graphs.subGraph(graph(), blockVertices(block), blockEdges(block), copyVerticesWeights, copyEdgesWeights);
 	}
 
@@ -140,7 +140,7 @@ public interface VertexPartition {
 	 * @return a new graph where each vertex is a block, and there is an edge between two blocks if there is an edge
 	 *         between two original vertices, each in a different block
 	 */
-	default Graph blocksGraph() {
+	default IntGraph blocksGraph() {
 		return blocksGraph(true, false);
 	}
 
@@ -161,7 +161,7 @@ public interface VertexPartition {
 	 * @return               a new graph where each vertex is a block, and there is an edge between two blocks if there
 	 *                       is an edge between two original vertices, each in a different block
 	 */
-	Graph blocksGraph(boolean parallelEdges, boolean selfEdges);
+	IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges);
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex map.
@@ -173,7 +173,7 @@ public interface VertexPartition {
 	 * @param  map a map from vertex to block index
 	 * @return     a new vertex partition
 	 */
-	static VertexPartition fromMap(Graph g, Int2IntMap map) {
+	static VertexPartition fromMap(IntGraph g, Int2IntMap map) {
 		return fromMapping(g, map::get);
 	}
 
@@ -187,7 +187,7 @@ public interface VertexPartition {
 	 * @param  mapping a mapping function that maps from a vertex to block index
 	 * @return         a new vertex partition
 	 */
-	static VertexPartition fromMapping(Graph g, IntUnaryOperator mapping) {
+	static VertexPartition fromMapping(IntGraph g, IntUnaryOperator mapping) {
 		final int n = g.vertices().size();
 		int[] vertexToBlock = new int[n];
 		if (g instanceof IndexGraph) {
@@ -198,10 +198,10 @@ public interface VertexPartition {
 			}
 			return new VertexPartitions.Impl((IndexGraph) g, maxBlock + 1, vertexToBlock);
 		} else {
-			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			int maxBlock = -1;
 			for (int v = 0; v < n; v++) {
-				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
+				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 			VertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);
@@ -220,7 +220,7 @@ public interface VertexPartition {
 	 * @return         {@code true} if the mapping is a valid partition of the vertices of the graph, {@code false}
 	 *                 otherwise
 	 */
-	static boolean isPartition(Graph g, IntUnaryOperator mapping) {
+	static boolean isPartition(IntGraph g, IntUnaryOperator mapping) {
 		final int n = g.vertices().size();
 		int[] vertexToBlock = new int[n];
 		int maxBlock = -1;
@@ -230,9 +230,9 @@ public interface VertexPartition {
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 		} else {
-			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			for (int v = 0; v < n; v++) {
-				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
+				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 		}

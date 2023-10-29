@@ -17,7 +17,7 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.Matching;
 import com.jgalgo.alg.MatchingAlgo;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -25,7 +25,7 @@ public class MaximumMatchingExample {
 
 	public static void maximumMatchingExample() {
 		/* Create a graph with few vertices and edges */
-		Graph g = createGraph();
+		IntGraph g = createGraph();
 
 		/* Compute a maximum (cardinality) matching */
 		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
@@ -46,8 +46,8 @@ public class MaximumMatchingExample {
 		System.out.println("The maximum matching is: " + matching.edges());
 	}
 
-	public static Graph createGraph() {
-		Graph g = Graph.newUndirected();
+	public static IntGraph createGraph() {
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

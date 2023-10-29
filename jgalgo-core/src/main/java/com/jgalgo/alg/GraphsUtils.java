@@ -16,13 +16,13 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
- * Static methods class for {@linkplain Graph graphs}.
+ * Static methods class for {@linkplain IntGraph graphs}.
  *
  * @author Barak Ugav
  */
@@ -47,14 +47,14 @@ public class GraphsUtils {
 	 * @param  g a graph
 	 * @return   {@code true} if the graph contain at least one self edge, else {@code false}
 	 */
-	public static boolean containsSelfEdges(Graph g) {
+	public static boolean containsSelfEdges(IntGraph g) {
 		if (!g.isAllowSelfEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
 		for (int n = ig.vertices().size(), u = 0; u < n; u++) {
-			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				if (u == eit.target())
+				if (u == eit.targetInt())
 					return true;
 			}
 		}
@@ -69,7 +69,7 @@ public class GraphsUtils {
 	 * @param  g a graph
 	 * @return   {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
 	 */
-	public static boolean containsParallelEdges(Graph g) {
+	public static boolean containsParallelEdges(IntGraph g) {
 		if (!g.isAllowParallelEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
@@ -77,9 +77,9 @@ public class GraphsUtils {
 		int[] lastVisit = new int[n];
 		for (int u = 0; u < n; u++) {
 			final int visitIdx = u + 1;
-			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (lastVisit[v] == visitIdx)
 					return true;
 				lastVisit[v] = visitIdx;

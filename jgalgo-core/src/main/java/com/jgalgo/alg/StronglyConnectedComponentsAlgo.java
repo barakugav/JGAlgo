@@ -16,7 +16,7 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Strongly Connected components algorithm.
@@ -44,7 +44,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into strongly connected components
 	 */
-	VertexPartition findStronglyConnectedComponents(Graph g);
+	VertexPartition findStronglyConnectedComponents(IntGraph g);
 
 	/**
 	 * Check whether a graph is strongly connected.
@@ -55,7 +55,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   {@code true} if the graph is strongly connected, {@code false} otherwise
 	 */
-	boolean isStronglyConnected(Graph g);
+	boolean isStronglyConnected(IntGraph g);
 
 	/**
 	 * Create a new strongly connected components algorithm object.

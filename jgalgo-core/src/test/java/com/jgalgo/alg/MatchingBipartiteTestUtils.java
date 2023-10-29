@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -32,7 +32,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	static IntGraph randGraphBipartite(int sn, int tn, int m, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
@@ -41,7 +41,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 4, 4).repeat(128);
@@ -50,14 +50,14 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 512).repeat(8);
 		tester.addPhase().withArgs(300, 300, 1100).repeat(1);
 		tester.run((sn, tn, m) -> {
-			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			IntGraph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			int expected = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expected);
 		});
 	}
 
-	private static void testBipartiteAlgo(MatchingAlgo algo, Graph g, int expectedMatchSize) {
+	private static void testBipartiteAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
 		Matching match = algo.computeMaximumCardinalityMatching(g);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
@@ -70,8 +70,8 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	private static int calcExpectedMaxMatching(Graph g) {
-		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+	private static int calcExpectedMaxMatching(IntGraph g) {
+		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight" + BipartiteGraphs.VertexBiPartitionWeightKey);
 
@@ -87,9 +87,9 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 
 		boolean[][] m = new boolean[S.size()][T.size()];
 		for (int u : S.keySet()) {
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				m[S.get(u)][T.get(v)] = true;
 			}
 		}

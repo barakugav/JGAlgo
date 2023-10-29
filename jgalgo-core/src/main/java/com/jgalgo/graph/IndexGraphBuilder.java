@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @see    IndexGraphBuilder#newUndirected()
  * @see    IndexGraphBuilder#newDirected()
- * @see    GraphBuilder
+ * @see    IntGraphBuilder
  * @see    IndexGraphFactory
  * @author Barak Ugav
  */
@@ -115,20 +115,20 @@ public interface IndexGraphBuilder {
 	/**
 	 * Get the vertices weights of some key.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <V>        The weight data type
+	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of the built graph.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
@@ -136,16 +136,16 @@ public interface IndexGraphBuilder {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	default <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type) {
+	default <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
 		return addVerticesWeights(key, type, null);
 	}
 
 	/**
 	 * Add a new weights container associated with the vertices of built graph with default value.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
@@ -154,14 +154,14 @@ public interface IndexGraphBuilder {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal);
+	<T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
@@ -170,53 +170,53 @@ public interface IndexGraphBuilder {
 	/**
 	 * Get the edges weights of some key.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <E>        The weight data type
+	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <E>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	default <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type) {
+	default <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
 		return addEdgesWeights(key, type, null);
 	}
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph with default value.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <E>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal);
+	<T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Get the keys of all the associated edges weights.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @return the keys of all the associated edges weights
 	 */

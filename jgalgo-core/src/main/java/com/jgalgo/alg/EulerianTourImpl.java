@@ -17,10 +17,10 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -61,7 +61,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			end = 0;
 
 		BitSet usedEdges = new BitSet(m);
-		EdgeIter[] iters = new EdgeIter[n];
+		IEdgeIter[] iters = new IEdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();
 
@@ -71,12 +71,12 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		for (int u = end;;) {
 			findCycle: for (;;) {
 				int e, v;
-				for (EdgeIter iter = iters[u];;) {
+				for (IEdgeIter iter = iters[u];;) {
 					if (!iter.hasNext())
 						break findCycle;
 					e = iter.nextInt();
 					if (!usedEdges.get(e)) {
-						v = iter.target();
+						v = iter.targetInt();
 						break;
 					}
 				}
@@ -101,9 +101,9 @@ class EulerianTourImpl implements EulerianTourAlgo {
 
 	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 			eit.nextInt();
-			if (eit.target() != u)
+			if (eit.targetInt() != u)
 				d++;
 		}
 		return d;
@@ -147,7 +147,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			end = 0;
 
 		BitSet usedEdges = new BitSet(m);
-		EdgeIter[] iters = new EdgeIter[n];
+		IEdgeIter[] iters = new IEdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();
 
@@ -157,12 +157,12 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		for (int u = start;;) {
 			findCycle: for (;;) {
 				int e, v;
-				for (EdgeIter iter = iters[u];;) {
+				for (IEdgeIter iter = iters[u];;) {
 					if (!iter.hasNext())
 						break findCycle;
 					e = iter.nextInt();
 					if (!usedEdges.get(e)) {
-						v = iter.target();
+						v = iter.targetInt();
 						break;
 					}
 				}
@@ -188,13 +188,13 @@ class EulerianTourImpl implements EulerianTourAlgo {
 	}
 
 	@Override
-	public Path computeEulerianTour(Graph g) {
+	public Path computeEulerianTour(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return computeEulerianTour((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		Path indexPath = computeEulerianTour(iGraph);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);

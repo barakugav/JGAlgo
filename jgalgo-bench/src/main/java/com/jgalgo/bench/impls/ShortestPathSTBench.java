@@ -41,11 +41,11 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class ShortestPathSTBench {
@@ -56,8 +56,8 @@ public class ShortestPathSTBench {
 
 	void benchStShortestPath(Object algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		Graph g = args.g;
-		WeightFunction w = args.w;
+		IntGraph g = args.g;
+		IWeightFunction w = args.w;
 		int source = args.source;
 		int target = args.target;
 		IntToDoubleFunction heuristic = args.heuristic;
@@ -95,8 +95,8 @@ public class ShortestPathSTBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				int target = vs[rand.nextInt(vs.length)];
@@ -138,8 +138,8 @@ public class ShortestPathSTBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				int target = vs[rand.nextInt(vs.length)];
@@ -182,8 +182,8 @@ public class ShortestPathSTBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				int target = vs[rand.nextInt(vs.length)];
@@ -204,13 +204,13 @@ public class ShortestPathSTBench {
 	}
 
 	private static class GraphArgs {
-		final Graph g;
-		final WeightFunctionInt w;
+		final IntGraph g;
+		final IWeightFunctionInt w;
 		final int source;
 		final int target;
 		final IntToDoubleFunction heuristic;
 
-		GraphArgs(Graph g, WeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {
+		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {
 			this.g = g;
 			this.w = w;
 			this.source = source;
@@ -219,12 +219,12 @@ public class ShortestPathSTBench {
 		}
 	}
 
-	private static IntToDoubleFunction randAdmissibleHeuristic(Graph g, WeightFunction w, int target, long seed) {
+	private static IntToDoubleFunction randAdmissibleHeuristic(IntGraph g, IWeightFunction w, int target, long seed) {
 		Random rand = new Random(seed);
 		if (g.isDirected())
 			g = g.reverseView();
 
-		WeightsDouble w0 = Weights.createExternalEdgesWeights(g, double.class);
+		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);
 		for (int e : g.edges())
 			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));
 

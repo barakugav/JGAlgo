@@ -16,19 +16,19 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 
 abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {
 
 	@Override
-	public LowestCommonAncestorStatic.DataStructure preProcessTree(Graph tree, int root) {
+	public LowestCommonAncestorStatic.DataStructure preProcessTree(IntGraph tree, int root) {
 		if (tree instanceof IndexGraph)
 			return preProcessTree((IndexGraph) tree, root);
 
 		IndexGraph iGraph = tree.indexGraph();
-		IndexIdMap viMap = tree.indexGraphVerticesMap();
+		IndexIntIdMap viMap = tree.indexGraphVerticesMap();
 
 		int iRoot = viMap.idToIndex(root);
 		LowestCommonAncestorStatic.DataStructure indexResult = preProcessTree(iGraph, iRoot);
@@ -40,16 +40,16 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 	private static class DSFromIndexDS implements LowestCommonAncestorStatic.DataStructure {
 
 		private final LowestCommonAncestorStatic.DataStructure ds;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIdMap viMap) {
+		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIntIdMap viMap) {
 			this.ds = Objects.requireNonNull(ds);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public int findLowestCommonAncestor(int u, int v) {
-			return viMap.indexToId(ds.findLowestCommonAncestor(viMap.idToIndex(u), viMap.idToIndex(v)));
+			return viMap.indexToIdInt(ds.findLowestCommonAncestor(viMap.idToIndex(u), viMap.idToIndex(v)));
 		}
 
 	}

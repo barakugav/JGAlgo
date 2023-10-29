@@ -40,10 +40,10 @@ import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsBool;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -63,7 +63,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Graph> graphs;
+		private List<IntGraph> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -76,13 +76,13 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x2c942284cf26134dL);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Matching matching = algo.computeMaximumCardinalityMatching(g);
 			blackhole.consume(matching);
 		}
@@ -105,7 +105,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Graph> graphs;
+		private List<IntGraph> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -118,13 +118,13 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xacff2ce7f7ee4fc9L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			Matching matching = algo.computeMaximumCardinalityMatching(g);
 			blackhole.consume(matching);
 		}
@@ -152,7 +152,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Pair<Graph, WeightFunction>> graphs;
+		private List<Pair<IntGraph, IWeightFunction>> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -165,16 +165,16 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xd857250c5ffe0823L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			Graph g = gw.first();
-			WeightFunction w = gw.second();
+			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = gw.first();
+			IWeightFunction w = gw.second();
 			Matching matching = algo.computeMaximumWeightedMatching(g, w);
 			blackhole.consume(matching);
 		}
@@ -207,7 +207,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Pair<Graph, WeightFunction>> graphs;
+		private List<Pair<IntGraph, IWeightFunction>> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -220,16 +220,16 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x39a998645277eca3L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			Graph g = gw.first();
-			WeightFunction w = gw.second();
+			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = gw.first();
+			IWeightFunction w = gw.second();
 			Matching matching = algo.computeMaximumWeightedMatching(g, w);
 			blackhole.consume(matching);
 		}
@@ -262,7 +262,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Pair<Graph, WeightFunction>> graphs;
+		private List<Pair<IntGraph, IWeightFunction>> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -275,7 +275,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xd15309f552f84f10L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 				if (g.vertices().size() % 2 != 0)
 					throw new IllegalArgumentException("there is no perfect matching");
@@ -292,15 +292,15 @@ public class MatchingBench {
 				}
 				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
 
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			Graph g = gw.first();
-			WeightFunction w = gw.second();
+			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = gw.first();
+			IWeightFunction w = gw.second();
 			Matching matching = algo.computeMinimumWeightedPerfectMatching(g, w);
 			blackhole.consume(matching);
 		}
@@ -333,7 +333,7 @@ public class MatchingBench {
 		@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 		public String args;
 
-		private List<Pair<Graph, WeightFunction>> graphs;
+		private List<Pair<IntGraph, IWeightFunction>> graphs;
 		private final int graphsNum = 31;
 		private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -346,8 +346,8 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x6afda59c8a3dee81L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
-				WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
+				IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 				MatchingAlgo cardinalityAlgo =
 						MatchingAlgo.newBuilder().setCardinality(true).setBipartite(true).build();
@@ -366,15 +366,15 @@ public class MatchingBench {
 				}
 				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
 
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
 		}
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
-			Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			Graph g = gw.first();
-			WeightFunction w = gw.second();
+			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+			IntGraph g = gw.first();
+			IWeightFunction w = gw.second();
 			Matching matching = algo.computeMinimumWeightedPerfectMatching(g, w);
 			blackhole.consume(matching);
 		}

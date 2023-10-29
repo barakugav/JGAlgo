@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * WeightsInt weights = g.addEdgesWeights("weightsKey", int.class);
+ * IWeightsInt weights = g.addEdgesWeights("weightsKey", int.class);
  * weights.set(e1, 1);
  * weights.set(e2, 3);
  * weights.set(e3, 15);
@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface WeightFunctionInt extends WeightFunction {
+public interface IWeightFunctionInt extends IWeightFunction {
 
 	@Deprecated
 	@Override

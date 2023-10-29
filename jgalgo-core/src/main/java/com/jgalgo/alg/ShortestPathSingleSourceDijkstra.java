@@ -17,10 +17,10 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -68,17 +68,17 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
-		if (w instanceof WeightFunctionInt) {
-			return computeSsspInts(g, (WeightFunctionInt) w, source);
+			w = IWeightFunction.CardinalityWeightFunction;
+		if (w instanceof IWeightFunctionInt) {
+			return computeSsspInts(g, (IWeightFunctionInt) w, source);
 		} else {
 			return computeSsspDoubles(g, w, source);
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, WeightFunction w, int source) {
+	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -90,9 +90,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 		for (int u = source;;) {
 			final double uDistance = res.distances[u];
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
@@ -118,7 +118,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		return res;
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunctionInt w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
@@ -130,9 +130,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 		for (int u = source;;) {
 			final int uDistance = res.distances[u];
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
 				int ew = w.weightInt(e);

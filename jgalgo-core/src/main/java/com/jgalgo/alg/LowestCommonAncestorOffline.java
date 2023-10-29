@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm for computing the lowest common ancestor (LCA) of two vertices in a tree, offline.
@@ -43,14 +43,14 @@ public interface LowestCommonAncestorOffline {
 	 * @param  queries the queries
 	 * @return         the lowest common ancestors of the given queries
 	 */
-	LowestCommonAncestorOffline.Result findLCAs(Graph tree, int root, LowestCommonAncestorOffline.Queries queries);
+	LowestCommonAncestorOffline.Result findLCAs(IntGraph tree, int root, LowestCommonAncestorOffline.Queries queries);
 
 	/**
 	 * Queries container for {@link LowestCommonAncestorOffline} computations.
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a
 	 * {@link LowestCommonAncestorOffline} algorithm using
-	 * {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)}.
+	 * {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -120,9 +120,10 @@ public interface LowestCommonAncestorOffline {
 		/**
 		 * Get the lowest common ancestor of the given query.
 		 * <p>
-		 * This result object was obtained by calling {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)},
-		 * which accept a set of multiple queries using the {@link LowestCommonAncestorOffline.Queries} object. This
-		 * method return the answer to a <b>single</b> queries among them, by its index.
+		 * This result object was obtained by calling
+		 * {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}, which accept a set of multiple queries
+		 * using the {@link LowestCommonAncestorOffline.Queries} object. This method return the answer to a
+		 * <b>single</b> queries among them, by its index.
 		 *
 		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
 		 * @return          the lowest common ancestor of the given query
@@ -133,7 +134,7 @@ public interface LowestCommonAncestorOffline {
 		 * Get the number of queries in this result.
 		 * <p>
 		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.Queries} object
-		 * passed to {@link LowestCommonAncestorOffline#findLCAs(Graph, int, Queries)}.
+		 * passed to {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}.
 		 *
 		 * @return the number of queries in this result
 		 */

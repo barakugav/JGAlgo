@@ -23,8 +23,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.Heaps;
@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	@Override
-	Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -97,10 +97,10 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/* Compute a perfect matching in the new graph */
-		WeightFunction wDup;
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
-			WeightFunctionInt wDupInt = e -> e < dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;
+		IWeightFunction wDup;
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
+			IWeightFunctionInt wDupInt = e -> e < dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;
 			wDup = wDupInt;
 		} else {
 			wDup = e -> e < dummyEdgesThreshold ? w.weight(e / 2) : 0;
@@ -121,7 +121,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 	}
 
 	@Override
-	Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return new Worker(g, w).solve();
 	}
@@ -146,7 +146,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		private static final boolean OptimizationGrowSubTree = Boolean.parseBoolean("true");
 
-		Worker(IndexGraph g, WeightFunction w) {
+		Worker(IndexGraph g, IWeightFunction w) {
 			Debug.reset();
 
 			this.g = g;

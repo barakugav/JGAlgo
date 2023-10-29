@@ -18,8 +18,8 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -47,7 +47,7 @@ public class TopologicalOrderTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 
 			IntIterator topolSort =
@@ -56,9 +56,9 @@ public class TopologicalOrderTest extends TestBase {
 			IntSet seenVertices = new IntOpenHashSet(n);
 			while (topolSort.hasNext()) {
 				int u = topolSort.nextInt();
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					assertFalse(seenVertices.contains(v));
 				}
 				seenVertices.add(u);

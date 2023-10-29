@@ -79,7 +79,7 @@ class ContractableGraph {
 		return new ContractableGraph.EdgeIter() {
 
 			final IntIterator vit = superVertexVertices(U);
-			com.jgalgo.graph.EdgeIter eit;
+			com.jgalgo.graph.IEdgeIter eit;
 			int nextEdge = -1;
 			int nextSourceOrig = -1, nextTargetOrig = -1;
 			int sourceOrig = -1, targetOrig = -1;
@@ -139,12 +139,12 @@ class ContractableGraph {
 			}
 
 			@Override
-			public int source() {
+			public int sourceInt() {
 				return U;
 			}
 
 			@Override
-			public int target() {
+			public int targetInt() {
 				return target;
 			}
 
@@ -192,8 +192,8 @@ class ContractableGraph {
 					s.append(", ");
 				}
 				s.append(e).append('(');
-				s.append(eit.sourceOriginal()).append("(").append(eit.source()).append("), ");
-				s.append(eit.targetOriginal()).append("(").append(eit.target()).append("))");
+				s.append(eit.sourceOriginal()).append("(").append(eit.sourceInt()).append("), ");
+				s.append(eit.targetOriginal()).append("(").append(eit.targetInt()).append("))");
 			}
 			s.append(']');
 		}
@@ -205,13 +205,13 @@ class ContractableGraph {
 		Assertions.Graphs.checkVertex(U, numV);
 	}
 
-	static interface EdgeIter extends com.jgalgo.graph.EdgeIter {
+	static interface EdgeIter extends com.jgalgo.graph.IEdgeIter {
 		int sourceOriginal();
 
 		int targetOriginal();
 
 		@Override
-		default int peekNext() {
+		default int peekNextInt() {
 			throw new UnsupportedOperationException();
 		}
 	}

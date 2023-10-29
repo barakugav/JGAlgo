@@ -15,9 +15,9 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 
 	@Override
-	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target) {
+	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw new IndexOutOfBoundsException(source);
 		if (!g.vertices().contains(target))
@@ -61,9 +61,9 @@ class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 			int uDistanceS = distance(infoS.get(uS));
 			int uDistanceT = distance(infoT.get(uT));
 
-			for (EdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (infoS.containsKey(v))
 					continue;
 				int vDistanceS = uDistanceS + 1;
@@ -77,9 +77,9 @@ class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 				infoS.put(v, info(e, vDistanceS));
 				queueS.enqueue(v);
 			}
-			for (EdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.source();
+				int v = eit.sourceInt();
 				if (infoT.containsKey(v))
 					continue;
 				int vDistanceT = uDistanceT + 1;

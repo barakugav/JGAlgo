@@ -38,7 +38,7 @@ import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -52,7 +52,7 @@ public class ColoringBench {
 	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000" })
 	public String args;
 
-	private List<Graph> graphs;
+	private List<IntGraph> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -65,13 +65,13 @@ public class ColoringBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			graphs.add(g);
 		}
 	}
 
 	private void benchColoring(ColoringAlgo.Builder builder, Blackhole blackhole) {
-		Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ColoringAlgo algo = builder.build();
 		VertexPartition res = algo.computeColoring(g);
 		blackhole.consume(res);

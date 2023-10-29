@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.List;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Range;
 
 class FormatDIMACS implements GraphFormat {
@@ -52,7 +52,7 @@ class FormatDIMACS implements GraphFormat {
 	private static class WriterImpl implements GraphWriter {
 
 		@Override
-		public void writeGraph(Graph graph, Writer writer) {
+		public void writeGraph(IntGraph graph, Writer writer) {
 			if (graph.isDirected())
 				throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
 			final int numVertices = graph.vertices().size();
@@ -64,7 +64,7 @@ class FormatDIMACS implements GraphFormat {
 
 			try {
 				writer.append("c DIMACS written graph by JGAlgo").append(System.lineSeparator());
-				final WeightsInt w = graph.getEdgesWeights("weightsEdges");
+				final IWeightsInt w = graph.getEdgesWeights("weightsEdges");
 				final boolean hasWeights = w != null;
 
 				if (hasWeights) {
@@ -127,11 +127,11 @@ class FormatDIMACS implements GraphFormat {
 		 * </pre>
 		 */
 		@Override
-		public GraphBuilder readIntoBuilder(Reader reader) {
+		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			try (BufferedReader br =
 					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
-				GraphBuilder gb = GraphBuilder.newUndirected();
-				WeightsInt w = null;
+				IntGraphBuilder gb = IntGraphBuilder.newUndirected();
+				IWeightsInt w = null;
 				int num_vertices = -1;
 				int num_edges = -1;
 				boolean hasWeights = false;

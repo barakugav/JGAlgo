@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.function.ToDoubleFunction;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils.PhasedTester;
@@ -51,11 +51,11 @@ class EdgeCoverTestUtils {
 		tester.addPhase().withArgs(64, 256).repeat(16);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 
 			RandomIntUnique rand = new RandomIntUnique(0, m * 16, seedGen.nextSeed());
-			WeightsInt weights;
+			IWeightsInt weights;
 			if (weighted) {
 				weights = g.addEdgesWeights("weight", int.class);
 				for (int e : g.edges())
@@ -68,7 +68,7 @@ class EdgeCoverTestUtils {
 		});
 	}
 
-	static void testEdgeCover(Graph g, WeightFunctionInt w, EdgeCover algo) {
+	static void testEdgeCover(IntGraph g, IWeightFunctionInt w, EdgeCover algo) {
 		EdgeCover.Result ec = algo.computeMinimumEdgeCover(g, w);
 
 		for (int v : g.vertices()) {
@@ -87,7 +87,7 @@ class EdgeCoverTestUtils {
 			IntSet bestCover = null;
 			IntList edges = new IntArrayList(g.edges());
 			IntSet cover = new IntOpenHashSet(m);
-			ToDoubleFunction<IntSet> coverWeight = c -> WeightFunction.weightSum(w, c);
+			ToDoubleFunction<IntSet> coverWeight = c -> IWeightFunction.weightSum(w, c);
 			coverLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 				cover.clear();
 				assert cover.isEmpty();
@@ -103,7 +103,7 @@ class EdgeCoverTestUtils {
 			}
 
 			assertNotNull(bestCover);
-			assertEquals(coverWeight.applyAsDouble(bestCover), WeightFunction.weightSum(w, ec.edges()));
+			assertEquals(coverWeight.applyAsDouble(bestCover), IWeightFunction.weightSum(w, ec.edges()));
 		}
 	}
 

@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
@@ -104,9 +104,9 @@ public interface FlowNetworkInt extends FlowNetwork {
 	}
 
 	@Override
-	default double getCostSum(IntIterable edges, WeightFunction cost) {
-		if (cost instanceof WeightFunctionInt) {
-			WeightFunctionInt costInt = (WeightFunctionInt) cost;
+	default double getCostSum(IntIterable edges, IWeightFunction cost) {
+		if (cost instanceof IWeightFunctionInt) {
+			IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 			int sum = 0;
 			for (int e : edges)
 				sum += getFlowInt(e) * costInt.weightInt(e);
@@ -120,30 +120,30 @@ public interface FlowNetworkInt extends FlowNetwork {
 	}
 
 	/**
-	 * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+	 * Create an integer flow network by adding edge weights using {@link IntGraph#addEdgesWeights}.
 	 * <p>
 	 * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each edge
 	 * will be zero.
 	 * <p>
-	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
-	 * graph is modified, as they are added to the graph. This is a key difference between this function and
-	 * {@link #createFromEdgeWeights(WeightsDouble, WeightsDouble)}, which if provided with weights containers created
-	 * with {@link Weights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
+	 * By using {@link IntGraph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
+	 * the graph is modified, as they are added to the graph. This is a key difference between this function and
+	 * {@link #createFromEdgeWeights(IWeightsDouble, IWeightsDouble)}, which if provided with weights containers created
+	 * with {@link IWeights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
 	 * scenarios in which we are not allowed to add weights to the graph.
 	 *
 	 * @param  g a graph
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
-	static FlowNetworkInt createFromEdgeWeights(Graph g) {
-		WeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
-		WeightsInt flows = g.addEdgesWeights("_flow", int.class);
+	static FlowNetworkInt createFromEdgeWeights(IntGraph g) {
+		IWeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
+		IWeightsInt flows = g.addEdgesWeights("_flow", int.class);
 		return createFromEdgeWeights(capacities, flows);
 	}
 
 	/**
 	 * Create a flow network by using existing edge weights.
 	 * <p>
-	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
+	 * This method can be used together with {@link IWeights#createExternalEdgesWeights}, creating a flow network for a
 	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
 	 * the graph.
 	 *
@@ -151,7 +151,7 @@ public interface FlowNetworkInt extends FlowNetwork {
 	 * @param  flows      a weight container that will contain the flow values of the edges
 	 * @return            a flow network implemented as external edge weights containers
 	 */
-	static FlowNetworkInt createFromEdgeWeights(WeightsInt capacities, WeightsInt flows) {
+	static FlowNetworkInt createFromEdgeWeights(IWeightsInt capacities, IWeightsInt flows) {
 		return new FlowNetworks.NetImplEdgeWeightsInt(capacities, flows);
 	}
 

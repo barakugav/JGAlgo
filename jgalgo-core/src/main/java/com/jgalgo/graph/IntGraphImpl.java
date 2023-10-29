@@ -33,15 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
-abstract class GraphImpl extends GraphBase {
+abstract class IntGraphImpl extends IntGraphBase {
 
 	final IndexGraphImpl indexGraph;
 	final IdIdxMapImpl viMap;
 	final IdIdxMapImpl eiMap;
-	private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights = new IdentityHashMap<>();
-	private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights = new IdentityHashMap<>();
+	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
+	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 
-	GraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
+	IntGraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
 		assert g.vertices().isEmpty();
 		assert g.edges().isEmpty();
 
@@ -50,14 +50,14 @@ abstract class GraphImpl extends GraphBase {
 		eiMap = IdIdxMapImpl.newInstance(indexGraph.edges(), expectedEdgesNum, true);
 	}
 
-	GraphImpl(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+	IntGraphImpl(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
 		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.vertices(), false);
 		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.edges(), true);
 	}
 
 	/* copy constructor */
-	GraphImpl(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+	IntGraphImpl(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
 		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
 				orig.indexGraphEdgesMap());
 	}
@@ -68,12 +68,12 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public IndexIdMap indexGraphVerticesMap() {
+	public IndexIntIdMap indexGraphVerticesMap() {
 		return viMap;
 	}
 
 	@Override
-	public IndexIdMap indexGraphEdgesMap() {
+	public IndexIntIdMap indexGraphEdgesMap() {
 		return eiMap;
 	}
 
@@ -90,7 +90,7 @@ abstract class GraphImpl extends GraphBase {
 	@Override
 	public int addVertex() {
 		int uIdx = indexGraph.addVertex();
-		return viMap.indexToId(uIdx);
+		return viMap.indexToIdInt(uIdx);
 	}
 
 	@Override
@@ -111,12 +111,12 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		return new EdgeSetMapped(indexGraph.outEdges(viMap.idToIndex(source)));
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		return new EdgeSetMapped(indexGraph.inEdges(viMap.idToIndex(target)));
 	}
 
@@ -125,14 +125,14 @@ abstract class GraphImpl extends GraphBase {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.getEdge(uIdx, vIdx);
-		return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);
+		return eIdx == -1 ? -1 : eiMap.indexToIdInt(eIdx);
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		EdgeSet s = indexGraph.getEdges(uIdx, vIdx);
+		IEdgeSet s = indexGraph.getEdges(uIdx, vIdx);
 		return new EdgeSetMapped(s);
 	}
 
@@ -141,7 +141,7 @@ abstract class GraphImpl extends GraphBase {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.addEdge(uIdx, vIdx);
-		return eiMap.indexToId(eIdx);
+		return eiMap.indexToIdInt(eIdx);
 	}
 
 	@Override
@@ -183,14 +183,14 @@ abstract class GraphImpl extends GraphBase {
 	public int edgeSource(int edge) {
 		int eIdx = eiMap.idToIndex(edge);
 		int uIdx = indexGraph.edgeSource(eIdx);
-		return viMap.indexToId(uIdx);
+		return viMap.indexToIdInt(uIdx);
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
 		int eIdx = eiMap.idToIndex(edge);
 		int vIdx = indexGraph.edgeTarget(eIdx);
-		return viMap.indexToId(vIdx);
+		return viMap.indexToIdInt(vIdx);
 	}
 
 	@Override
@@ -198,7 +198,7 @@ abstract class GraphImpl extends GraphBase {
 		int eIdx = eiMap.idToIndex(edge);
 		int endpointIdx = viMap.idToIndex(endpoint);
 		int resIdx = indexGraph.edgeEndpoint(eIdx, endpointIdx);
-		return viMap.indexToId(resIdx);
+		return viMap.indexToIdInt(resIdx);
 	}
 
 	@Override
@@ -213,13 +213,13 @@ abstract class GraphImpl extends GraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
 		proneRemovedVerticesWeights();
-		WeightsImpl.Index<V> indexWeights = indexGraph.getVerticesWeights(key);
+		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.Mapped.newInstance(iw, indexGraphVerticesMap()));
+				iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphVerticesMap()));
 	}
 
 	@Override
@@ -235,7 +235,7 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	private void proneRemovedVerticesWeights() {
-		List<Weights<?>> indexWeights = new ReferenceArrayList<>();
+		List<IWeights<?>> indexWeights = new ReferenceArrayList<>();
 		for (String key : indexGraph.getVerticesWeightsKeys())
 			indexWeights.add(indexGraph.getVerticesWeights(key));
 		verticesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
@@ -243,24 +243,24 @@ abstract class GraphImpl extends GraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
 		proneRemovedEdgesWeights();
-		WeightsImpl.Index<E> indexWeights = indexGraph.getEdgesWeights(key);
+		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.Mapped.newInstance(iw, indexGraphEdgesMap()));
+				iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphEdgesMap()));
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal) {
+	public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal) {
 		proneRemovedVerticesWeights();
 		indexGraph.addVerticesWeights(key, type, defVal);
 		return getVerticesWeights(key);
 	}
 
 	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
+	public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
 		proneRemovedEdgesWeights();
 		indexGraph.addEdgesWeights(key, type, defVal);
 		return getEdgesWeights(key);
@@ -279,17 +279,17 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	private void proneRemovedEdgesWeights() {
-		List<Weights<?>> indexWeights = new ReferenceArrayList<>();
+		List<IWeights<?>> indexWeights = new ReferenceArrayList<>();
 		for (String key : indexGraph.getEdgesWeightsKeys())
 			indexWeights.add(indexGraph.getEdgesWeights(key));
 		edgesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
 	}
 
-	class EdgeSetMapped extends AbstractIntSet implements EdgeSet {
+	class EdgeSetMapped extends AbstractIntSet implements IEdgeSet {
 
-		private final EdgeSet set;
+		private final IEdgeSet set;
 
-		EdgeSetMapped(EdgeSet set) {
+		EdgeSetMapped(IEdgeSet set) {
 			this.set = Objects.requireNonNull(set);
 		}
 
@@ -316,16 +316,16 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterMapped(set.iterator());
 		}
 	}
 
-	class EdgeIterMapped implements EdgeIter {
+	class EdgeIterMapped implements IEdgeIter {
 
-		private final EdgeIter it;
+		private final IEdgeIter it;
 
-		EdgeIterMapped(EdgeIter it) {
+		EdgeIterMapped(IEdgeIter it) {
 			this.it = it;
 		}
 
@@ -337,13 +337,13 @@ abstract class GraphImpl extends GraphBase {
 		@Override
 		public int nextInt() {
 			int eIdx = it.nextInt();
-			return eiMap.indexToId(eIdx);
+			return eiMap.indexToIdInt(eIdx);
 		}
 
 		@Override
-		public int peekNext() {
-			int eIdx = it.peekNext();
-			return eiMap.indexToId(eIdx);
+		public int peekNextInt() {
+			int eIdx = it.peekNextInt();
+			return eiMap.indexToIdInt(eIdx);
 		}
 
 		@Override
@@ -352,15 +352,15 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		public int target() {
-			int vIdx = it.target();
-			return viMap.indexToId(vIdx);
+		public int targetInt() {
+			int vIdx = it.targetInt();
+			return viMap.indexToIdInt(vIdx);
 		}
 
 		@Override
-		public int source() {
-			int uIdx = it.source();
-			return viMap.indexToId(uIdx);
+		public int sourceInt() {
+			int uIdx = it.sourceInt();
+			return viMap.indexToIdInt(uIdx);
 		}
 	}
 
@@ -379,20 +379,20 @@ abstract class GraphImpl extends GraphBase {
 		return indexGraph.isAllowParallelEdges();
 	}
 
-	static class Directed extends GraphImpl {
+	static class Directed extends IntGraphImpl {
 
 		Directed(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
 			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
-		Directed(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+		Directed(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
 		/* copy constructor */
-		Directed(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+		Directed(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
 			super(orig, indexGraphFactory, copyWeights);
 			Assertions.Graphs.onlyDirected(orig);
 			Assertions.Graphs.onlyDirected(indexGraph);
@@ -405,9 +405,9 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	static class Undirected extends GraphImpl {
+	static class Undirected extends IntGraphImpl {
 
-		Undirected(IndexGraph indexGraph, IndexIdMap viMap, IndexIdMap eiMap) {
+		Undirected(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			super(indexGraph, viMap, eiMap);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
@@ -418,7 +418,7 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		/* copy constructor */
-		Undirected(Graph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
+		Undirected(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
 			super(orig, indexGraphFactory, copyWeights);
 			Assertions.Graphs.onlyUndirected(orig);
 			Assertions.Graphs.onlyUndirected(indexGraph);
@@ -431,13 +431,13 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	private abstract static class IdIdxMapImpl implements IndexIdMap {
+	private abstract static class IdIdxMapImpl implements IndexIntIdMap {
 
 		static interface Strategy {
 
 			IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges);
 
-			IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges);
+			IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges);
 
 		}
 
@@ -450,7 +450,7 @@ abstract class GraphImpl extends GraphBase {
 				}
 
 				@Override
-				public IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+				public IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
 					return new IdIdxMapCustom(orig, elements, isEdges, nextIdFunc.get());
 				}
 			};
@@ -470,7 +470,7 @@ abstract class GraphImpl extends GraphBase {
 							}
 
 							@Override
-							public IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+							public IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
 								return new IdIdxMapCounter(orig, elements, isEdges);
 							}
 						};
@@ -519,7 +519,7 @@ abstract class GraphImpl extends GraphBase {
 			initListeners(elements);
 		}
 
-		IdIdxMapImpl(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+		IdIdxMapImpl(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
 			if (orig instanceof IdIdxMapImpl) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
@@ -532,7 +532,7 @@ abstract class GraphImpl extends GraphBase {
 				if (elements.size() > 0) {
 					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
 					for (int idx : elements) {
-						int id = orig.indexToId(idx);
+						int id = orig.indexToIdInt(idx);
 						if (indexToId.get(idx) != -1)
 							throw new IllegalArgumentException("duplicate index: " + idx);
 						if (id < 0)
@@ -554,7 +554,7 @@ abstract class GraphImpl extends GraphBase {
 			return strategy.newInstance(elements, expectedSize, isEdges);
 		}
 
-		static IdIdxMapImpl copyOf(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+		static IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
 			return strategy.copyOf(orig, elements, isEdges);
 		}
 
@@ -609,7 +609,7 @@ abstract class GraphImpl extends GraphBase {
 		abstract int nextID();
 
 		@Override
-		public int indexToId(int index) {
+		public int indexToIdInt(int index) {
 			return indexToId.get(index);
 		}
 
@@ -637,7 +637,7 @@ abstract class GraphImpl extends GraphBase {
 			counter = 1;
 		}
 
-		IdIdxMapCounter(IndexIdMap orig, GraphElementSet elements, boolean isEdges) {
+		IdIdxMapCounter(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
 			super(orig, elements, isEdges);
 			if (orig instanceof IdIdxMapCounter) {
 				counter = ((IdIdxMapCounter) orig).counter;
@@ -665,7 +665,7 @@ abstract class GraphImpl extends GraphBase {
 			this.nextId = Objects.requireNonNull(nextId);
 		}
 
-		IdIdxMapCustom(IndexIdMap orig, GraphElementSet elements, boolean isEdges, ToIntFunction<IntSet> nextId) {
+		IdIdxMapCustom(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges, ToIntFunction<IntSet> nextId) {
 			super(orig, elements, isEdges);
 			this.nextId = Objects.requireNonNull(nextId);
 		}
@@ -676,80 +676,80 @@ abstract class GraphImpl extends GraphBase {
 		}
 	}
 
-	static class Factory implements GraphFactory {
+	static class Factory implements IntGraphFactory {
 		private final IndexGraphFactoryImpl factory;
 
 		Factory(boolean directed) {
 			this.factory = new IndexGraphFactoryImpl(directed);
 		}
 
-		Factory(Graph g) {
+		Factory(IntGraph g) {
 			this.factory = new IndexGraphFactoryImpl(g.indexGraph());
 		}
 
 		@Override
-		public Graph newGraph() {
+		public IntGraph newGraph() {
 			IndexGraph indexGraph = factory.newGraph();
 			if (indexGraph.isDirected()) {
-				return new GraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
+				return new IntGraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			} else {
-				return new GraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
+				return new IntGraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			}
 		}
 
 		@Override
-		public Graph newCopyOf(Graph g, boolean copyWeights) {
+		public IntGraph newCopyOf(IntGraph g, boolean copyWeights) {
 			if (g.isDirected()) {
-				return new GraphImpl.Directed(g, factory, copyWeights);
+				return new IntGraphImpl.Directed(g, factory, copyWeights);
 			} else {
-				return new GraphImpl.Undirected(g, factory, copyWeights);
+				return new IntGraphImpl.Undirected(g, factory, copyWeights);
 			}
 		}
 
 		@Override
-		public GraphFactory setDirected(boolean directed) {
+		public IntGraphFactory setDirected(boolean directed) {
 			factory.setDirected(directed);
 			return this;
 		}
 
 		@Override
-		public GraphFactory allowSelfEdges(boolean selfEdges) {
+		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
 			factory.allowSelfEdges(selfEdges);
 			return this;
 		}
 
 		@Override
-		public GraphFactory allowParallelEdges(boolean parallelEdges) {
+		public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
 			factory.allowParallelEdges(parallelEdges);
 			return this;
 		}
 
 		@Override
-		public GraphFactory expectedVerticesNum(int expectedVerticesNum) {
+		public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
 			factory.expectedVerticesNum(expectedVerticesNum);
 			return this;
 		}
 
 		@Override
-		public GraphFactory expectedEdgesNum(int expectedEdgesNum) {
+		public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
 			factory.expectedEdgesNum(expectedEdgesNum);
 			return this;
 		}
 
 		@Override
-		public GraphFactory addHint(GraphFactory.Hint hint) {
+		public IntGraphFactory addHint(IntGraphFactory.Hint hint) {
 			factory.addHint(hint);
 			return this;
 		}
 
 		@Override
-		public GraphFactory removeHint(GraphFactory.Hint hint) {
+		public IntGraphFactory removeHint(IntGraphFactory.Hint hint) {
 			factory.removeHint(hint);
 			return this;
 		}
 
 		@Override
-		public GraphFactory setOption(String key, Object value) {
+		public IntGraphFactory setOption(String key, Object value) {
 			factory.setOption(key, value);
 			return this;
 		}

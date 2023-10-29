@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -49,11 +49,11 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 
 	@SuppressWarnings("boxing") // TODO
 	@Override
-	List<Path> computeKShortestPaths(IndexGraph g, WeightFunction w, int source, int target, int k) {
+	List<Path> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		if (source == target)
 			return List.of(new PathImpl(g, source, target, IntList.of()));
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
+			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 		HeapReferenceable<Double, ObjectIntPair<Path>> heap = HeapReferenceable.newBuilder()
@@ -116,7 +116,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 	private static class ShortestPathSubroutine {
 
 		private final IndexGraph g;
-		private final WeightFunction w;
+		private final IWeightFunction w;
 		private final int target;
 		private final BitSet verticesMask;
 		private final BitSet edgesMask;
@@ -145,7 +145,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		private final IntList toClearT = new IntArrayList();
 
 		@SuppressWarnings("unchecked")
-		ShortestPathSubroutine(IndexGraph g, WeightFunction w, int target, BitSet verticesMask, BitSet edgesMask) {
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, BitSet verticesMask, BitSet edgesMask) {
 			this.g = g;
 			this.w = w;
 			this.target = target;
@@ -238,11 +238,11 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 				visitedT.set(uT);
 				distanceT[uT] = uDistanceT;
 
-				for (EdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (edgesMask.get(e))
 						continue;
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (verticesMask.get(v))
 						continue;
 					if (visitedS.get(v))
@@ -268,11 +268,11 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 					}
 				}
 
-				for (EdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (edgesMask.get(e))
 						continue;
-					int v = eit.source();
+					int v = eit.sourceInt();
 					if (verticesMask.get(v))
 						continue;
 					if (visitedT.get(v))

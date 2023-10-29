@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -101,9 +101,9 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 			colors[u] = color;
 			colorsNum = Math.max(colorsNum, color + 1);
 
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (colors[v] == -1) { /* v is uncolored */
 					HeapReference<Integer, Integer> ref = refs[v];
 					int key = ref.key().intValue();

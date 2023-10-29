@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -43,7 +43,7 @@ public class PathTest extends TestBase {
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
@@ -67,7 +67,7 @@ public class PathTest extends TestBase {
 
 	@Test
 	public void testIsPathUndirected() {
-		Graph g = Graph.newUndirected();
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -97,7 +97,7 @@ public class PathTest extends TestBase {
 
 	@Test
 	public void testIsPathDirected() {
-		Graph g = Graph.newDirected();
+		IntGraph g = IntGraph.newDirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -127,7 +127,7 @@ public class PathTest extends TestBase {
 
 	@Test
 	public void testIsSimple() {
-		Graph g = Graph.newUndirected();
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

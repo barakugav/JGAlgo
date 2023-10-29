@@ -20,9 +20,9 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -54,7 +54,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		int[] depths = new int[n];
 		int[] edgePath = new int[n];
 		int[] lowpoint = new int[n];
-		EdgeIter[] edgeIters = new EdgeIter[n];
+		IEdgeIter[] edgeIters = new IEdgeIter[n];
 		// TODO DFS stack class
 
 		IntArrayList edgeStack = new IntArrayList();
@@ -112,10 +112,10 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			dfs: for (int u = root;;) {
 				final int parent = depth == 0 ? -1 : g.edgeEndpoint(edgePath[depth - 1], u);
 
-				for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {
+				for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {
 					int e = eit.nextInt();
 
-					int v = eit.target();
+					int v = eit.targetInt();
 					final int vDepth = depths[v];
 					if (vDepth == -1) { /* unvisited */
 						edgeStack.push(e);
@@ -190,7 +190,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		private IntSet[] vertexBiCcs;
 		private BitSet cutVerticesBitmap;
 		private IntSet cutVertices;
-		private Graph blockGraph;
+		private IntGraph blockGraph;
 
 		Res(IndexGraph g, List<Pair<int[], int[]>> biccs) {
 			this.g = Objects.requireNonNull(g);
@@ -286,18 +286,18 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 						extraEdgesBiccs = new int[m];
 						Arrays.fill(extraEdgesBiccs, -1);
 						for (int u = 0; u < n; u++) {
-							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								int e = eit.nextInt();
-								int v = eit.target();
+								int v = eit.targetInt();
 								if (u == v)
 									continue;
 								int b = edge2bicc[e];
 								if (b != -1)
 									target2bicc[v] = b;
 							}
-							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								int e = eit.nextInt();
-								int v = eit.target();
+								int v = eit.targetInt();
 								if (u == v)
 									continue;
 								int b = edge2bicc[e];
@@ -309,9 +309,9 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 									biccExtraEdgesCount[b]++;
 								}
 							}
-							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								eit.nextInt();
-								target2bicc[eit.target()] = -1;
+								target2bicc[eit.targetInt()] = -1;
 							}
 						}
 					}
@@ -321,9 +321,9 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 						assert g.edges().intStream().filter(e -> g.edgeSource(e) == g.edgeTarget(e))
 								.allMatch(e -> edge2bicc[e] == -1);
 						for (int u = 0; u < n; u++) {
-							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								eit.nextInt();
-								int v = eit.target();
+								int v = eit.targetInt();
 								if (u != v)
 									continue;
 								for (int b : getVertexBiCcs(u))
@@ -352,9 +352,9 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 					/* add self edges */
 					if (g.isAllowSelfEdges()) {
 						for (int u = 0; u < n; u++) {
-							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								int e = eit.nextInt();
-								int v = eit.target();
+								int v = eit.targetInt();
 								if (u != v)
 									continue;
 								for (int b : getVertexBiCcs(u))
@@ -421,10 +421,10 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		}
 
 		@Override
-		public Graph getBlockGraph() {
+		public IntGraph getBlockGraph() {
 			if (blockGraph == null) {
 				final int blockNum = getNumberOfBiCcs();
-				GraphBuilder g = GraphBuilder.newUndirected();
+				IntGraphBuilder g = IntGraphBuilder.newUndirected();
 				g.expectedVerticesNum(blockNum);
 				for (int b = 0; b < blockNum; b++)
 					g.addVertex(b);

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -73,7 +73,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	}
 
 	@Override
-	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
 			TreePathMaxima.Queries queries) {
 		Assertions.Graphs.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
@@ -84,7 +84,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	private static class Worker {
 
 		private final IndexGraph tOrig;
-		private final WeightFunction w;
+		private final IWeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
 		private final IndexGraph tree;
@@ -101,7 +101,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 		private final BiInt2IntFunc getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {
+		Worker(IndexGraph tOrig, IWeightFunction w, boolean useBitsLookupTables) {
 			this.tOrig = tOrig;
 			this.w = WeightFunctions.localEdgeWeightFunction(tOrig, w);
 

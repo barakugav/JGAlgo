@@ -19,10 +19,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -122,9 +122,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	@Override
-	public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+	public VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
 		FlowNetwork net = flowNetFromEdgeWeights(w);
-		if (w instanceof WeightFunctionInt) {
+		if (w instanceof IWeightFunctionInt) {
 			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMinimumCut();
 		} else {
@@ -132,9 +132,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 	}
 
-	private static FlowNetwork flowNetFromEdgeWeights(WeightFunction w) {
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
+	private static FlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			FlowNetworkInt net = new FlowNetworkInt() {
 
 				@Override
@@ -190,8 +190,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	static abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
 		final int[] label;
-		final EdgeIter[] outEdgeIters;
-		final EdgeIter[] inEdgeIters;
+		final IEdgeIter[] outEdgeIters;
+		final IEdgeIter[] inEdgeIters;
 
 		private final BitSet relabelVisited;
 		private final IntPriorityQueue relabelQueue;
@@ -215,8 +215,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			super(gOrig, net, source, sink);
 
 			label = new int[n];
-			outEdgeIters = new EdgeIter[n];
-			inEdgeIters = directed ? new EdgeIter[n] : null;
+			outEdgeIters = new IEdgeIter[n];
+			inEdgeIters = directed ? new IEdgeIter[n] : null;
 
 			relabelVisited = new BitSet(n);
 			relabelQueue = new FIFOQueueIntNoReduce();
@@ -284,11 +284,11 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				while (!queue.isEmpty()) {
 					int v = queue.dequeueInt();
 					int vLabel = label[v];
-					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!isResidual(e))
 							continue;
-						int u = eit.source();
+						int u = eit.sourceInt();
 						if (visited.get(u))
 							continue;
 						label[u] = vLabel + 1;
@@ -298,11 +298,11 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 						visited.set(u);
 						queue.enqueue(u);
 					}
-					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!hasFlow(e))
 							continue;
-						int u = eit.target();
+						int u = eit.targetInt();
 						if (visited.get(u))
 							continue;
 						label[u] = vLabel + 1;
@@ -515,8 +515,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeTarget(e);
 							int eAccess = worker().getResidualCapacity(e);
 							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
@@ -535,8 +535,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								}
 							}
 						}
-						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeSource(e);
 							int eAccess = worker().flow(e);
 							if (eAccess > 0 && worker.label[u] == worker.label[v] + 1) {
@@ -567,8 +567,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeUndirected(int u) {
-					for (EdgeIter it = worker.outEdgeIters[u];;) {
-						int e = it.peekNext();
+					for (IEdgeIter it = worker.outEdgeIters[u];;) {
+						int e = it.peekNextInt();
 						if (u == worker.g.edgeSource(e)) {
 							int v = worker.g.edgeTarget(e);
 							int eAccess = worker().getResidualCapacity(e);
@@ -636,8 +636,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeTarget(e);
 							double eAccess = worker().getResidualCapacity(e);
 							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
@@ -659,8 +659,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								}
 							}
 						}
-						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeSource(e);
 							double eAccess = worker().flow(e);
 							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
@@ -694,8 +694,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeUndirected(int u) {
-					for (EdgeIter it = worker.outEdgeIters[u];;) {
-						int e = it.peekNext();
+					for (IEdgeIter it = worker.outEdgeIters[u];;) {
+						int e = it.peekNextInt();
 						if (u == worker.g.edgeSource(e)) {
 							int v = worker.g.edgeTarget(e);
 							double eAccess = worker().getResidualCapacity(e);
@@ -770,8 +770,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					dfs: for (int u = searchSource;;) {
 						int uLabel = worker.label[u];
 
-						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeTarget(e);
 							boolean isAdmissible = worker.isResidual(e) && uLabel == worker.label[v] + 1;
 							if (isAdmissible) {
@@ -808,8 +808,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								continue dfs;
 							}
 						}
-						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {
+							int e = it.peekNextInt();
 							int v = worker.g.edgeSource(e);
 							boolean isAdmissible = worker.hasFlow(e) && uLabel == worker.label[v] + 1;
 							if (isAdmissible) {
@@ -896,8 +896,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 					dfs: for (int u = searchSource;;) {
 						int uLabel = worker.label[u];
-						for (EdgeIter it = worker.outEdgeIters[u];;) {
-							int e = it.peekNext();
+						for (IEdgeIter it = worker.outEdgeIters[u];;) {
+							int e = it.peekNextInt();
 							int v;
 							boolean isAdmissible;
 							if (u == worker.g.edgeSource(e)) {
@@ -1477,7 +1477,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					vState[root] = OnPath;
 					dfs: for (int u = root;;) {
 						edgeIteration: for (; inEdgeIters[u].hasNext(); inEdgeIters[u].nextInt()) {
-							int e = inEdgeIters[u].peekNext();
+							int e = inEdgeIters[u].peekNextInt();
 							if (!hasFlow(e))
 								continue;
 							int v = g.edgeSource(e);
@@ -1495,7 +1495,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								// back out the DFS up to the first saturated edge
 								int backOutTo = u;
 								for (int vw, w; v != u; v = w) {
-									vw = inEdgeIters[v].peekNext();
+									vw = inEdgeIters[v].peekNextInt();
 									w = g.edgeSource(vw);
 									if (vState[v] != Unvisited && hasFlow(vw))
 										continue;
@@ -1542,7 +1542,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 					vState[root] = OnPath;
 					dfs: for (int u = root;;) {
 						edgeIteration: for (; outEdgeIters[u].hasNext(); outEdgeIters[u].nextInt()) {
-							int e = outEdgeIters[u].peekNext();
+							int e = outEdgeIters[u].peekNextInt();
 							int v;
 							if (u == g.edgeSource(e)) {
 								if (!hasNegativeFlow(e))
@@ -1568,7 +1568,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								// back out the DFS up to the first saturated edge
 								int backOutTo = u;
 								for (int vw, w; v != u; v = w) {
-									vw = outEdgeIters[v].peekNext();
+									vw = outEdgeIters[v].peekNextInt();
 									if (v == g.edgeSource(vw)) {
 										w = g.edgeTarget(vw);
 										if (vState[v] != Unvisited && hasNegativeFlow(vw))
@@ -1654,21 +1654,21 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			if (directed) {
 				while (!queue.isEmpty()) {
 					int v = queue.dequeueInt();
-					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!isResidual(e))
 							continue;
-						int u = eit.source();
+						int u = eit.sourceInt();
 						if (visited.get(u))
 							continue;
 						visited.set(u);
 						queue.enqueue(u);
 					}
-					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (!hasFlow(e))
 							continue;
-						int u = eit.target();
+						int u = eit.targetInt();
 						if (visited.get(u))
 							continue;
 						visited.set(u);
@@ -1742,10 +1742,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		@Override
 		void pushAsMuchFromSource() {
 			if (directed) {
-				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 					int e = eit.nextInt(), v;
 					double f = getResidualCapacity(e);
-					if (f > 0 && label[source] > label[v = eit.target()]) {
+					if (f > 0 && label[source] > label[v = eit.targetInt()]) {
 						if (v != sink && !hasExcess(v))
 							activate(v);
 						push(e, f);
@@ -1791,7 +1791,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			assert hasFlow(e);
 			double f = flow(e);
 			for (;;) {
-				e = inEdgeIters[v].peekNext();
+				e = inEdgeIters[v].peekNextInt();
 				assert hasFlow(e);
 				f = Math.min(f, flow(e));
 				if (v == u)
@@ -1802,7 +1802,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = inEdgeIters[v].peekNext();
+				e = inEdgeIters[v].peekNextInt();
 				residualCapacity[e] += f;
 				v = g.edgeSource(e);
 				if (v == u)
@@ -1826,7 +1826,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				f = flow(e);
 			}
 			for (int w;;) {
-				e = outEdgeIters[v].peekNext();
+				e = outEdgeIters[v].peekNextInt();
 				double ef = flow(e);
 				if (v == g.edgeSource(e)) {
 					assert ef < 0;
@@ -1846,7 +1846,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = outEdgeIters[v].peekNext();
+				e = outEdgeIters[v].peekNextInt();
 				if (v == g.edgeSource(e)) {
 					residualCapacity[e] -= f;
 					v = g.edgeTarget(e);
@@ -1966,10 +1966,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		@Override
 		void pushAsMuchFromSource() {
 			if (directed) {
-				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 					int e = eit.nextInt(), v;
 					int f = getResidualCapacity(e);
-					if (f > 0 && label[source] > label[v = eit.target()]) {
+					if (f > 0 && label[source] > label[v = eit.targetInt()]) {
 						if (v != sink && !hasExcess(v))
 							activate(v);
 						push(e, f);
@@ -2015,7 +2015,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			assert hasFlow(e);
 			int f = flow(e);
 			for (;;) {
-				e = inEdgeIters[v].peekNext();
+				e = inEdgeIters[v].peekNextInt();
 				assert hasFlow(e);
 				f = Math.min(f, flow(e));
 				if (v == u)
@@ -2026,7 +2026,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = inEdgeIters[v].peekNext();
+				e = inEdgeIters[v].peekNextInt();
 				residualCapacity[e] += f;
 				v = g.edgeSource(e);
 				if (v == u)
@@ -2050,7 +2050,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				f = flow(e);
 			}
 			for (int w;;) {
-				e = outEdgeIters[v].peekNext();
+				e = outEdgeIters[v].peekNextInt();
 				int ef = flow(e);
 				if (v == g.edgeSource(e)) {
 					assert ef < 0;
@@ -2070,7 +2070,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = outEdgeIters[v].peekNext();
+				e = outEdgeIters[v].peekNextInt();
 				if (v == g.edgeSource(e)) {
 					residualCapacity[e] -= f;
 					v = g.edgeTarget(e);

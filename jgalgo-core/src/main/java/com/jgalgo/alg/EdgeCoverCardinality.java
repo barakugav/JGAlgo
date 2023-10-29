@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 
 class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
@@ -26,7 +26,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
 
 	@Override
-	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w) {
+	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		final int m = g.edges().size();
 
@@ -36,7 +36,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 		/* add more edges greedily to complete the cover */
 		if (g.isDirected()) {
 			for (int v : matching.unmatchedVertices()) {
-				EdgeSet edges;
+				IEdgeSet edges;
 				if ((edges = g.outEdges(v)).isEmpty() && (edges = g.inEdges(v)).isEmpty())
 					throw new IllegalArgumentException(
 							"no edge cover exists, vertex with index " + v + " has no edges");
@@ -45,7 +45,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 
 		} else {
 			for (int v : matching.unmatchedVertices()) {
-				EdgeSet edges;
+				IEdgeSet edges;
 				if ((edges = g.outEdges(v)).isEmpty())
 					throw new IllegalArgumentException(
 							"no edge cover exists, vertex with index " + v + " has no edges");

@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -48,7 +48,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 23).repeat(8);
 		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 			/* choose random terminals */
 			int[] vs = g.vertices().toIntArray();
@@ -74,17 +74,17 @@ public class SteinerTreeMehlhornTest extends TestBase {
 				break;
 			}
 
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			double appxFactor = 2 * (1 - 1.0 / k);
 			testSteinerTree(g, w, terminals, algo, appxFactor);
 		});
 	}
 
-	private static void testSteinerTree(Graph g, WeightFunctionInt w, IntCollection terminals, SteinerTreeAlgo algo,
+	private static void testSteinerTree(IntGraph g, IWeightFunctionInt w, IntCollection terminals, SteinerTreeAlgo algo,
 			double appxFactor) {
 		SteinerTreeAlgo.Result steinerEdges = algo.computeSteinerTree(g, w, terminals);
-		Graph treeRes = g.subGraphCopy(null, steinerEdges.edges());
+		IntGraph treeRes = g.subGraphCopy(null, steinerEdges.edges());
 
 		assertTrue(treeRes.vertices().containsAll(terminals));
 		assertTrue(Trees.isTree(treeRes));
@@ -99,14 +99,14 @@ public class SteinerTreeMehlhornTest extends TestBase {
 			IntSet bestTree = null;
 			IntList edges = new IntArrayList(g.edges());
 			IntSet tree = new IntOpenHashSet(m);
-			ToDoubleFunction<IntSet> treeWeight = t -> WeightFunction.weightSum(w, t);
+			ToDoubleFunction<IntSet> treeWeight = t -> IWeightFunction.weightSum(w, t);
 			treeLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 				tree.clear();
 				assert tree.isEmpty();
 				for (int i = 0; i < m; i++)
 					if ((bitmap & (1 << i)) != 0)
 						tree.add(edges.getInt(i));
-				Graph treeGraph = g.subGraphCopy(null, tree);
+				IntGraph treeGraph = g.subGraphCopy(null, tree);
 				if (!Trees.isTree(treeGraph))
 					continue treeLoop; /* not a tree */
 				if (!treeGraph.vertices().containsAll(terminals))
@@ -116,7 +116,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 			}
 
 			assertNotNull(bestTree);
-			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= WeightFunction.weightSum(w,
+			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= IWeightFunction.weightSum(w,
 					steinerEdges.edges()));
 
 		}

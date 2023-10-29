@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Objects;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
@@ -69,7 +69,7 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

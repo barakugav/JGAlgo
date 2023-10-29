@@ -15,8 +15,8 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -26,7 +26,7 @@ class ShortestPathSTTestUtils {
 		return new ShortestPathSingleSource() {
 
 			@Override
-			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+			public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
 				Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
 				for (int v : g.vertices())
 					paths.put(v, spst.computeShortestPath(g, w, source, v));
@@ -35,7 +35,7 @@ class ShortestPathSTTestUtils {
 					@Override
 					public double distance(int target) {
 						Path path = getPath(target);
-						return path == null ? Double.POSITIVE_INFINITY : WeightFunction.weightSum(w, path.edges());
+						return path == null ? Double.POSITIVE_INFINITY : IWeightFunction.weightSum(w, path.edges());
 					}
 
 					@Override

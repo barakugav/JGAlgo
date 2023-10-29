@@ -27,14 +27,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-class GraphBuilderImpl {
+class IntGraphBuilderImpl {
 
-	static GraphBuilder newFrom(Graph g, boolean copyWeights) {
-		return g.isDirected() ? new GraphBuilderImpl.Directed(g, copyWeights)
-				: new GraphBuilderImpl.Undirected(g, copyWeights);
+	static IntGraphBuilder newFrom(IntGraph g, boolean copyWeights) {
+		return g.isDirected() ? new IntGraphBuilderImpl.Directed(g, copyWeights)
+				: new IntGraphBuilderImpl.Undirected(g, copyWeights);
 	}
 
-	private static abstract class Abstract implements GraphBuilder {
+	private static abstract class Abstract implements IntGraphBuilder {
 
 		final IndexGraphBuilder ibuilder;
 		private final Int2IntOpenHashMap vIdToIndex;
@@ -47,8 +47,8 @@ class GraphBuilderImpl {
 		private boolean userProvideEdgesIds;
 		final IndexIdMapImpl viMap;
 		final IndexIdMapImpl eiMap;
-		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights = new IdentityHashMap<>();
-		private final Map<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights = new IdentityHashMap<>();
+		private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
+		private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 
 		Abstract(IndexGraphBuilder ibuilder) {
 			this.ibuilder = ibuilder;
@@ -64,7 +64,7 @@ class GraphBuilderImpl {
 			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
 		}
 
-		Abstract(Graph g, boolean copyWeights) {
+		Abstract(IntGraph g, boolean copyWeights) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);
@@ -79,15 +79,15 @@ class GraphBuilderImpl {
 			viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId, false);
 			eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
 
-			IndexIdMap gViMap = g.indexGraphVerticesMap();
-			IndexIdMap gEiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap gViMap = g.indexGraphVerticesMap();
+			IndexIntIdMap gEiMap = g.indexGraphEdgesMap();
 			for (int vIdx = 0; vIdx < n; vIdx++) {
-				int v = gViMap.indexToId(vIdx);
+				int v = gViMap.indexToIdInt(vIdx);
 				vIndexToId.add(v);
 				vIdToIndex.put(v, vIdx);
 			}
 			for (int eIdx = 0; eIdx < m; eIdx++) {
-				int e = gEiMap.indexToId(eIdx);
+				int e = gEiMap.indexToIdInt(eIdx);
 				eIndexToId.add(e);
 				eIdToIndex.put(e, eIdx);
 			}
@@ -207,17 +207,17 @@ class GraphBuilderImpl {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
-			WeightsImpl.Index<V> indexWeights = ibuilder.getVerticesWeights(key);
+		public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
+			WeightsImpl.Index<T> indexWeights = ibuilder.getVerticesWeights(key);
 			if (indexWeights == null)
 				return null;
 			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-					iw -> WeightsImpl.Mapped.newInstance(iw, viMap));
+					iw -> WeightsImpl.IntMapped.newInstance(iw, viMap));
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type,
-				V defVal) {
+		public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+				T defVal) {
 			ibuilder.addVerticesWeights(key, type, defVal);
 			return getVerticesWeights(key);
 		}
@@ -229,16 +229,16 @@ class GraphBuilderImpl {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
-			WeightsImpl.Index<E> indexWeights = ibuilder.getEdgesWeights(key);
+		public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
+			WeightsImpl.Index<T> indexWeights = ibuilder.getEdgesWeights(key);
 			if (indexWeights == null)
 				return null;
 			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-					iw -> WeightsImpl.Mapped.newInstance(iw, eiMap));
+					iw -> WeightsImpl.IntMapped.newInstance(iw, eiMap));
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
+		public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
 			ibuilder.addEdgesWeights(key, type, defVal);
 			return getEdgesWeights(key);
 		}
@@ -259,7 +259,7 @@ class GraphBuilderImpl {
 			userProvideEdgesIds = false;
 		}
 
-		private static class IndexIdMapImpl implements IndexIdMap {
+		private static class IndexIdMapImpl implements IndexIntIdMap {
 			private final Int2IntMap idToIndex;
 			private final IntList indexToId;
 			private final boolean isEdges;
@@ -271,7 +271,7 @@ class GraphBuilderImpl {
 			}
 
 			@Override
-			public int indexToId(int index) {
+			public int indexToIdInt(int index) {
 				return indexToId.getInt(index);
 			}
 
@@ -284,12 +284,12 @@ class GraphBuilderImpl {
 			}
 		}
 
-		static IndexIdMap reIndexedIdMap(IndexIdMap iMapOrig, IndexGraphBuilder.ReIndexingMap indexingMap) {
-			return new IndexIdMap() {
+		static IndexIntIdMap reIndexedIdMap(IndexIntIdMap iMapOrig, IndexGraphBuilder.ReIndexingMap indexingMap) {
+			return new IndexIntIdMap() {
 
 				@Override
-				public int indexToId(int index) {
-					return iMapOrig.indexToId(indexingMap.reIndexedToOrig(index));
+				public int indexToIdInt(int index) {
+					return iMapOrig.indexToIdInt(indexingMap.reIndexedToOrig(index));
 				}
 
 				@Override
@@ -300,71 +300,71 @@ class GraphBuilderImpl {
 		}
 	}
 
-	static class Undirected extends GraphBuilderImpl.Abstract {
+	static class Undirected extends IntGraphBuilderImpl.Abstract {
 
 		Undirected() {
 			super(IndexGraphBuilder.newUndirected());
 		}
 
-		Undirected(Graph g, boolean copyWeights) {
+		Undirected(IntGraph g, boolean copyWeights) {
 			super(g, copyWeights);
 			Assertions.Graphs.onlyUndirected(g);
 		}
 
 		@Override
-		public Graph build() {
+		public IntGraph build() {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new GraphImpl.Undirected(iGraph, viMap, eiMap);
+			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
+			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
 		}
 
 		@Override
-		public Graph buildMutable() {
+		public IntGraph buildMutable() {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new GraphImpl.Undirected(iGraph, viMap, eiMap);
+			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
+			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
 		}
 	}
 
-	static class Directed extends GraphBuilderImpl.Abstract {
+	static class Directed extends IntGraphBuilderImpl.Abstract {
 
 		Directed() {
 			super(IndexGraphBuilder.newDirected());
 		}
 
-		Directed(Graph g, boolean copyWeights) {
+		Directed(IntGraph g, boolean copyWeights) {
 			super(g, copyWeights);
 			Assertions.Graphs.onlyDirected(g);
 		}
 
 		@Override
-		public Graph build() {
+		public IntGraph build() {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new GraphImpl.Directed(iGraph, viMap, eiMap);
+			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
+			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
+			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
 		}
 
 		@Override
-		public Graph buildMutable() {
+		public IntGraph buildMutable() {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new GraphImpl.Directed(iGraph, viMap, eiMap);
+			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
+			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
+			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
 		}
 	}
 

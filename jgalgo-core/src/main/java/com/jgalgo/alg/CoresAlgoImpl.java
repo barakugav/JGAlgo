@@ -17,10 +17,10 @@ package com.jgalgo.alg;
 
 import java.util.Objects;
 import java.util.function.IntConsumer;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -112,30 +112,30 @@ class CoresAlgoImpl implements CoresAlgo {
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
 			if (!directed || degreeType == DegreeType.InDegree) {
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (degree[v] > uDegree)
 						decreaseDegree.accept(v);
 				}
 			} else if (degreeType == DegreeType.OutDegree) {
-				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.source();
+					int v = eit.sourceInt();
 					if (degree[v] > uDegree)
 						decreaseDegree.accept(v);
 				}
 			} else {
 				assert degreeType == DegreeType.OutAndInDegree;
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (degree[v] > uDegree)
 						decreaseDegree.accept(v);
 				}
-				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.source();
+					int v = eit.sourceInt();
 					if (degree[v] > uDegree)
 						decreaseDegree.accept(v);
 				}
@@ -261,12 +261,12 @@ class CoresAlgoImpl implements CoresAlgo {
 	}
 
 	@Override
-	public CoresAlgo.Result computeCores(Graph g, DegreeType degreeType) {
+	public CoresAlgo.Result computeCores(IntGraph g, DegreeType degreeType) {
 		if (g instanceof IndexGraph)
 			return computeCores((IndexGraph) g, degreeType);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		CoresAlgo.Result iResult = computeCores(iGraph, degreeType);
 		return new ResultFromIndexResult(iResult, viMap);
 	}
@@ -274,9 +274,9 @@ class CoresAlgoImpl implements CoresAlgo {
 	private static class ResultFromIndexResult implements CoresAlgo.Result {
 
 		private final CoresAlgo.Result iResult;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		public ResultFromIndexResult(CoresAlgo.Result iResult, IndexIdMap viMap) {
+		public ResultFromIndexResult(CoresAlgo.Result iResult, IndexIntIdMap viMap) {
 			this.iResult = Objects.requireNonNull(iResult);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

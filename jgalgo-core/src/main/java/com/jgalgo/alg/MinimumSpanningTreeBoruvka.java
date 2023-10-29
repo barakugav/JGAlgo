@@ -19,7 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -54,7 +54,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 
@@ -70,7 +70,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		}
 	}
 
-	RunBoruvkaResult runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds) {
+	RunBoruvkaResult runBoruvka(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException("number of rounds must be positive");
 		Res mstRes = computeMST(g, w, numberOfRounds);
@@ -96,7 +96,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		return new RunBoruvkaResult(contractedG, mstRes.mst, edgeRef);
 	}
 
-	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {
+	private static Res computeMST(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 

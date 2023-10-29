@@ -91,7 +91,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	public void removeEdgesOf(int source) {
-		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -113,12 +113,12 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
@@ -158,13 +158,13 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		super.vertexSwap(v1, v2);
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source);
 		}
 
@@ -174,13 +174,13 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterInUndirected(target);
 		}
 

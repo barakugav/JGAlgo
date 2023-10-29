@@ -16,16 +16,16 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.MinimumSpanningTree;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class MinimumSpanningTreeExample {
 
 	public static void MSTExample() {
 		/* Create a graph with 7 vertices */
-		Graph g = Graph.newUndirected();
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -49,7 +49,7 @@ public class MinimumSpanningTreeExample {
 		int e12 = g.addEdge(v3, v6);
 
 		/* Assign a weight to each edge */
-		WeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
+		IWeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
 		weights.set(e1, 4.6);
 		weights.set(e2, 5.2);
 		weights.set(e3, 6.1);
@@ -64,7 +64,7 @@ public class MinimumSpanningTreeExample {
 		weights.set(e12, 5.5);
 
 		/* Compute the minimum spanning tree of the graph */
-		WeightFunction w = weights;
+		IWeightFunction w = weights;
 		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);
 

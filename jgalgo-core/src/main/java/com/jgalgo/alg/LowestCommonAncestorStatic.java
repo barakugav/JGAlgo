@@ -16,7 +16,7 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.
@@ -67,7 +67,7 @@ public interface LowestCommonAncestorStatic {
 	 * @param  root root of the tree
 	 * @return      a data structure built from the preprocessing, that can answer LCA queries efficiently
 	 */
-	public LowestCommonAncestorStatic.DataStructure preProcessTree(Graph tree, int root);
+	public LowestCommonAncestorStatic.DataStructure preProcessTree(IntGraph tree, int root);
 
 	/**
 	 * Data structure result created from a static LCA pre-processing.

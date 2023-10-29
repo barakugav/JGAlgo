@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * WeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
+ * IWeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
  * weights.set(e1, 1.2);
  * weights.set(e2, 3.1);
  * weights.set(e3, 15.1);
@@ -66,11 +66,11 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * }
  * }</pre>
  *
- * @see    WeightFunctionInt
+ * @see    IWeightFunctionInt
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface WeightFunction extends IntComparator {
+public interface IWeightFunction extends IntComparator {
 
 	/**
 	 * Get the weight of an element.
@@ -112,7 +112,7 @@ public interface WeightFunction extends IntComparator {
 	 * @param  elements   a collection of elements
 	 * @return            the sum of the weights of the elements
 	 */
-	static double weightSum(WeightFunction weightFunc, IntIterable elements) {
+	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
 		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {
 			if (elements instanceof Collection) {
 				return ((Collection<?>) elements).size();
@@ -131,6 +131,6 @@ public interface WeightFunction extends IntComparator {
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-	public static WeightFunctionInt CardinalityWeightFunction = e -> 1;
+	public static IWeightFunctionInt CardinalityWeightFunction = e -> 1;
 
 }

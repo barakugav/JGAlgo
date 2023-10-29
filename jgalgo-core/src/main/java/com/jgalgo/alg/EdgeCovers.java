@@ -17,11 +17,11 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -31,19 +31,19 @@ class EdgeCovers {
 	static abstract class AbstractImpl implements EdgeCover {
 
 		@Override
-		public EdgeCover.Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
+		public EdgeCover.Result computeMinimumEdgeCover(IntGraph g, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeMinimumEdgeCover((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			EdgeCover.Result indexResult = computeMinimumEdgeCover(iGraph, iw);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
-		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w);
+		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
 
 	}
 
@@ -86,9 +86,9 @@ class EdgeCovers {
 	private static class ResultFromIndexResult implements EdgeCover.Result {
 
 		private final EdgeCover.Result res;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(EdgeCover.Result res, IndexIdMap eiMap) {
+		ResultFromIndexResult(EdgeCover.Result res, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}

@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.function.IntFunction;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Stack;
@@ -88,7 +88,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 
 		IntStack stack = new IntArrayList();
 		IntStack parentEdgeStack = new IntArrayList();
-		Stack<EdgeIter> edgeIterStack = new ObjectArrayList<>();
+		Stack<IEdgeIter> edgeIterStack = new ObjectArrayList<>();
 
 		stack.push(root);
 		parentEdgeStack.push(-1);
@@ -97,10 +97,10 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 		dfs: for (;;) {
 			int u = stack.topInt();
 			int parentEdge = parentEdgeStack.topInt();
-			for (EdgeIter eit = edgeIterStack.top(); eit.hasNext();) {
+			for (IEdgeIter eit = edgeIterStack.top(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (e != parentEdge) {
-					int v = eit.target();
+					int v = eit.targetInt();
 					stack.push(v);
 					parentEdgeStack.push(e);
 					edgeIterStack.push(tree.outEdges(v).iterator());

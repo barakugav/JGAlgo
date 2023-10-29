@@ -19,9 +19,9 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -45,7 +45,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 	public TSPMetricMatchingAppx() {}
 
 	@Override
-	Path computeShortestTour(IndexGraph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
@@ -68,7 +68,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
 		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
-		WeightsDouble mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);
+		IWeightsDouble mGWeightsNeg = IWeights.createExternalEdgesWeights(mG, double.class);
 		for (int m = mG.edges().size(), e = 0; e < m; e++) {
 			int u = mVtoV[mG.edgeSource(e)];
 			int v = mVtoV[mG.edgeTarget(e)];

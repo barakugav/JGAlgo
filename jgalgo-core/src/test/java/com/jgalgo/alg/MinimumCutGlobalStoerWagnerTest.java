@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -50,10 +50,10 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(200, 800).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsInt w = g.addEdgesWeights("weight", int.class);
+			IWeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 
@@ -62,7 +62,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
 	}
 
-	private static void testMinCut(Graph g, WeightFunctionInt w, MinimumCutGlobal alg) {
+	private static void testMinCut(IntGraph g, IWeightFunctionInt w, MinimumCutGlobal alg) {
 		VertexBiPartition minCut = alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) w.weightSum(minCut.crossEdges());
 
@@ -83,9 +83,9 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 				if (cut.size() != n) {
 					int cutWeight = 0;
 					for (int u : cut) {
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
-							int v = eit.target();
+							int v = eit.targetInt();
 							if (!cut.contains(v))
 								cutWeight += w.weightInt(e);
 						}

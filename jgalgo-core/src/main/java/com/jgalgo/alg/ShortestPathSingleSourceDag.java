@@ -16,10 +16,10 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -47,15 +47,15 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
-		return w instanceof WeightFunctionInt ? computeSsspInt(g, (WeightFunctionInt) w, source)
+			w = IWeightFunction.CardinalityWeightFunction;
+		return w instanceof IWeightFunctionInt ? computeSsspInt(g, (IWeightFunctionInt) w, source)
 				: computeSsspDouble(g, w, source);
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, WeightFunction w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
@@ -66,9 +66,9 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 			double uDistance = res.distances[u];
 			if (uDistance == Double.POSITIVE_INFINITY)
 				continue;
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				double d = uDistance + w.weight(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;
@@ -79,7 +79,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		return res;
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunctionInt w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
@@ -90,9 +90,9 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 			int uDistance = res.distances[u];
 			if (uDistance == Integer.MAX_VALUE)
 				continue;
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				int d = uDistance + w.weightInt(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;

@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -31,7 +31,7 @@ import com.jgalgo.graph.WeightFunction;
 class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 
 	@Override
-	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w) {
+	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
 		for (int v = 0; v < n; v++)

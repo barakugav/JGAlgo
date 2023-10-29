@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -41,10 +41,10 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
@@ -56,7 +56,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, null, algo, new ShortestPathSingleSourceDijkstra());
@@ -70,15 +70,15 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		tester.addPhase().withArgs(16, 32).repeat(64);
 		tester.addPhase().withArgs(64, 256).repeat(10);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IntCollection verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, w, algo, new ShortestPathSingleSourceGoldberg());
 		});
 	}
 
-	private static IntCollection verticesSubset(Graph g, boolean allVertices, long seed) {
+	private static IntCollection verticesSubset(IntGraph g, boolean allVertices, long seed) {
 		int n = g.vertices().size();
 		if (allVertices || n <= 3)
 			return g.vertices();
@@ -89,7 +89,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		return subset;
 	}
 
-	static void testAPSP(Graph g, IntCollection verticesSubset, WeightFunction w, ShortestPathAllPairs algo,
+	static void testAPSP(IntGraph g, IntCollection verticesSubset, IWeightFunction w, ShortestPathAllPairs algo,
 			ShortestPathSingleSource validationAlgo) {
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(g, w);
 
@@ -121,7 +121,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
 				Path path = result.getPath(source, target);
 				if (path != null) {
-					double pathWeight = WeightFunction.weightSum(w, path.edges());
+					double pathWeight = IWeightFunction.weightSum(w, path.edges());
 					assertEquals(pathWeight, actualDistance, "Path to vertex " + target + " doesn't match distance ("
 							+ actualDistance + " != " + pathWeight + "): " + path);
 				} else {

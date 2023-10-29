@@ -21,7 +21,7 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WEIGHTS KEY_GENERIC extends Weights<KEY_GENERIC_CLASS> WEIGHT_FUNC_IMPLEMENT {
+public interface IWEIGHTS KEY_GENERIC extends IWeights<KEY_GENERIC_CLASS> WEIGHT_FUNC_IMPLEMENT {
 
 	/**
 	 * Get the weight associated with the given id.

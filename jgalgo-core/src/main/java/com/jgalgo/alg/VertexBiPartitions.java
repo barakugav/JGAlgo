@@ -17,9 +17,9 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -195,12 +195,12 @@ class VertexBiPartitions {
 		}
 
 		@Override
-		public Graph graph() {
+		public IntGraph graph() {
 			return g;
 		}
 
 		@Override
-		public Graph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
 			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);
 		}
 	}
@@ -222,9 +222,9 @@ class VertexBiPartitions {
 
 	static class FromWeights extends Impl {
 
-		private final WeightsBool weights;
+		private final IWeightsBool weights;
 
-		FromWeights(IndexGraph g, WeightsBool weights) {
+		FromWeights(IndexGraph g, IWeightsBool weights) {
 			super(g);
 			this.weights = Objects.requireNonNull(weights);
 		}
@@ -238,7 +238,7 @@ class VertexBiPartitions {
 	static class BiPartitionFromIndexBiPartition extends VertexPartitions.PartitionFromIndexPartition
 			implements VertexBiPartition {
 
-		BiPartitionFromIndexBiPartition(Graph g, VertexBiPartition res) {
+		BiPartitionFromIndexBiPartition(IntGraph g, VertexBiPartition res) {
 			super(g, res);
 		}
 

@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Algorithm that find the cycle with the minimum mean weight.
@@ -41,7 +41,7 @@ public interface MinimumMeanCycle {
 	 * @param  w an edge weight function
 	 * @return   the cycle with the minimum mean weight in the graph, or {@code null} if no cycles were found
 	 */
-	Path computeMinimumMeanCycle(Graph g, WeightFunction w);
+	Path computeMinimumMeanCycle(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new min mean cycle algorithm object.

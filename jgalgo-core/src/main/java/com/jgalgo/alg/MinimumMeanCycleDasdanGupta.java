@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -55,7 +55,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
+	Path computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
@@ -87,7 +87,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		return cycle;
 	}
 
-	private Path computeMinimumMeanCycle0(IndexGraph g, WeightFunction w) {
+	private Path computeMinimumMeanCycle0(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 
 		/* find all SCC */
@@ -131,9 +131,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					if (!visit[u])
 						continue;
 					visit[u] = false;
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (cc.vertexBlock(v) != ccIdx)
 							continue;
 						double newDistance = d[k][u] + w.weight(e);
@@ -220,9 +220,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				l = new int[n];
 				for (int u = 0; u < n; u++) {
 					final int uCc = cc.vertexBlock(u);
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (uCc == cc.vertexBlock(v))
 							interCcDegree[u]++;
 					}
@@ -244,9 +244,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					for (int u : cc.blockVertices(ccIdx)) {
 						final int uCc = cc.vertexBlock(u);
 						l[u] = interCcDegree[u];
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							int v = eit.target();
+							int v = eit.targetInt();
 							if (uCc == cc.vertexBlock(v))
 								l[u] += f[v];
 						}

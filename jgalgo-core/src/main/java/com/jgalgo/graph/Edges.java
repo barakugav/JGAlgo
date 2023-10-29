@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 class Edges {
 
-	static class EmptyEdgeIter implements EdgeIter {
+	static class EmptyEdgeIter implements IEdgeIter {
 
 		static final EmptyEdgeIter Instance = new EmptyEdgeIter();
 
@@ -37,24 +37,24 @@ class Edges {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			throw new IllegalStateException();
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			throw new IllegalStateException();
 		}
 	};
 
-	static final EdgeSet EmptyEdgeSet = new EmptyEdgeSet();
+	static final IEdgeSet EmptyEdgeSet = new EmptyEdgeSet();
 
-	static class EmptyEdgeSet extends AbstractIntSet implements EdgeSet {
+	static class EmptyEdgeSet extends AbstractIntSet implements IEdgeSet {
 
 		private EmptyEdgeSet() {}
 
@@ -69,7 +69,7 @@ class Edges {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return EmptyEdgeIter.Instance;
 		}
 

@@ -67,7 +67,7 @@ public class GraphBuilderTest extends TestBase {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
 							String key = "weight" + weightIdx.getAndIncrement();
 							Object defVal = valSupplier.get();
-							Weights wG, wB;
+							IWeights wG, wB;
 							IntSet elements;
 							if (!edgesWeights) {
 								wG = g.addVerticesWeights(key, type, defVal);
@@ -96,7 +96,7 @@ public class GraphBuilderTest extends TestBase {
 				addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
 				addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
-				Graph gActual = buildMut ? b.buildMutable() : b.build();
+				IntGraph gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
 
 				for (String key : g.getVerticesWeightsKeys())
@@ -116,8 +116,8 @@ public class GraphBuilderTest extends TestBase {
 		final Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
-				GraphBuilder b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
-				Graph g = directed ? Graph.newDirected() : Graph.newUndirected();
+				IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 
 				/* Add vertices and edges */
 				final int n = 12 + rand.nextInt(12);
@@ -146,7 +146,7 @@ public class GraphBuilderTest extends TestBase {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
 							String key = "weight" + weightIdx.getAndIncrement();
 							Object defVal = valSupplier.get();
-							Weights wG, wB;
+							IWeights wG, wB;
 							IntSet elements;
 							if (!edgesWeights) {
 								wG = g.addVerticesWeights(key, type, defVal);
@@ -175,7 +175,7 @@ public class GraphBuilderTest extends TestBase {
 				addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
 				addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
-				Graph gActual = buildMut ? b.buildMutable() : b.build();
+				IntGraph gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
 
 				for (String key : g.getVerticesWeightsKeys())
@@ -190,14 +190,14 @@ public class GraphBuilderTest extends TestBase {
 					int[] es = gActual.edges().toIntArray();
 					for (String key : gActual.getVerticesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
-						Weights w = gActual.getVerticesWeights(key);
+						IWeights w = gActual.getVerticesWeights(key);
 						int v = vs[rand.nextInt(vs.length)];
 						Object data = w.getAsObj(vs[rand.nextInt(vs.length)]);
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(v, data));
 					}
 					for (String key : gActual.getEdgesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
-						Weights w = gActual.getEdgesWeights(key);
+						IWeights w = gActual.getEdgesWeights(key);
 						int e = es[rand.nextInt(es.length)];
 						Object data = w.getAsObj(es[rand.nextInt(es.length)]);
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(e, data));

@@ -17,8 +17,8 @@
 package com.jgalgo.alg;
 
 import java.util.function.Supplier;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Maximum/minimum matching algorithm.
@@ -45,7 +45,7 @@ public interface MatchingAlgo {
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumCardinalityMatching(Graph g);
+	Matching computeMaximumCardinalityMatching(IntGraph g);
 
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
@@ -55,7 +55,7 @@ public interface MatchingAlgo {
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedMatching(Graph g, WeightFunction w);
+	Matching computeMaximumWeightedMatching(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Compute the minimum weighted matching of a weighted undirected graph.
@@ -65,7 +65,7 @@ public interface MatchingAlgo {
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedMatching(Graph g, WeightFunction w);
+	Matching computeMinimumWeightedMatching(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
@@ -78,7 +78,7 @@ public interface MatchingAlgo {
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w);
+	Matching computeMaximumWeightedPerfectMatching(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Compute the minimum perfect matching of a weighted undirected graph.
@@ -91,7 +91,7 @@ public interface MatchingAlgo {
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w);
+	Matching computeMinimumWeightedPerfectMatching(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new matching algorithm object.

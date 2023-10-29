@@ -21,7 +21,7 @@ import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 
 class WEIGHTS_IMPL {
 
-	static abstract class IndexImpl KEY_GENERIC extends WeightsImpl.IndexAbstract<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
+	static abstract class IndexImpl KEY_GENERIC extends WeightsImpl.IndexAbstract<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
 
 		PRIMITIVE_TYPE_REAL[] weights;
 		final PRIMITIVE_TYPE defaultWeight;
@@ -125,8 +125,8 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class Mapped KEY_GENERIC extends WeightsImpl.Mapped<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
-		Mapped(WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights, IndexIdMap indexMap) {
+	static class IntMapped KEY_GENERIC extends WeightsImpl.IntMapped<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
+		IntMapped(WEIGHTS_IMPL.IndexImpl KEY_GENERIC weights, IndexIntIdMap indexMap) {
 			super(weights, indexMap);
 		}
 
@@ -151,14 +151,14 @@ class WEIGHTS_IMPL {
 		}
 	}
 
-	static class ImmutableView KEY_GENERIC extends WeightsImpl.ImmutableView<KEY_GENERIC_CLASS> implements WEIGHTS KEY_GENERIC {
-		ImmutableView(WEIGHTS KEY_GENERIC w) {
+	static class IntImmutableView KEY_GENERIC extends WeightsImpl.IntImmutableView<KEY_GENERIC_CLASS> implements IWEIGHTS KEY_GENERIC {
+		IntImmutableView(IWEIGHTS KEY_GENERIC w) {
 			super(w);
 		}
 
 		@Override
-		WEIGHTS KEY_GENERIC weights() {
-			return (WEIGHTS KEY_GENERIC) super.weights();
+		IWEIGHTS KEY_GENERIC weights() {
+			return (IWEIGHTS KEY_GENERIC) super.weights();
 		}
 
 		@Override

@@ -15,14 +15,14 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -43,7 +43,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		return nonSelfEdgesCount;
 	}
 
-	Path computeShortestEdgeVisitorCircle(IndexGraph g, WeightFunction w) {
+	Path computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
 		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
@@ -64,7 +64,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 				shortestPathAllPairsAlgo.computeSubsetShortestPaths(g, oddVertices, w);
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
 		IndexGraph oddGraph = Graphs.newCompleteGraphUndirected(oddVertices.size());
-		WeightFunction oddW = e -> {
+		IWeightFunction oddW = e -> {
 			int u = oddVertices.getInt(oddGraph.edgeSource(e));
 			int v = oddVertices.getInt(oddGraph.edgeTarget(e));
 			return allPairsRes.distance(u, v);
@@ -95,14 +95,14 @@ class ChinesePostmanImpl implements ChinesePostman {
 		Path eulerianTour = eulerianTourAlgo.computeEulerianTour(eulerianGraph);
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
 		IntList path = new IntArrayList(eulerianTour.edges().size());
-		for (EdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {
+		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {
 			int e = eit.nextInt();
 			if (e < originalEdgesThreshold) {
 				/* an original edge */
 				path.add(e);
 			} else {
 				/* artificial edge connecting two odd vertices */
-				path.addAll(allPairsRes.getPath(eit.source(), eit.target()).edges());
+				path.addAll(allPairsRes.getPath(eit.sourceInt(), eit.targetInt()).edges());
 			}
 		}
 
@@ -111,13 +111,13 @@ class ChinesePostmanImpl implements ChinesePostman {
 	}
 
 	@Override
-	public Path computeShortestEdgeVisitorCircle(Graph g, WeightFunction w) {
+	public Path computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w) {
 		if (g instanceof IndexGraph)
 			return computeShortestEdgeVisitorCircle((IndexGraph) g, w);
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		Path indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
 		return PathImpl.pathFromIndexPath(indexResult, viMap, eiMap);
 	}

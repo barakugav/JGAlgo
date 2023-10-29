@@ -39,7 +39,7 @@ import com.jgalgo.alg.MaximalCliques;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -48,12 +48,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class MaximalCliquesBench {
 
-	List<Graph> graphs;
+	List<IntGraph> graphs;
 	final int graphsNum = 31;
 	final AtomicInteger graphIdx = new AtomicInteger();
 
 	void benchMaximalCliques(MaximalCliques.Builder builder, Blackhole blackhole) {
-		Graph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		MaximalCliques algo = builder.build();
 		for (Iterator<IntSet> cliqueIter = algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
 			blackhole.consume(cliqueIter.next());
@@ -78,7 +78,7 @@ public class MaximalCliquesBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphGnp(n, false, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphGnp(n, false, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
@@ -113,7 +113,7 @@ public class MaximalCliquesBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
@@ -149,7 +149,7 @@ public class MaximalCliquesBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, false, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, false, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
@@ -165,7 +165,7 @@ public class MaximalCliquesBench {
 		}
 	}
 
-	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
+	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(IntGraph g, Random rand) {
 		final int n = g.vertices().size();
 		final int sourcesNum;
 		final int sinksNum;

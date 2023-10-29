@@ -16,11 +16,11 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -30,21 +30,21 @@ class VoronoiAlgos {
 	static abstract class AbstractImpl implements VoronoiAlgo {
 
 		@Override
-		public VoronoiAlgo.Result computeVoronoiCells(Graph g, IntCollection sites, WeightFunction w) {
+		public VoronoiAlgo.Result computeVoronoiCells(IntGraph g, IntCollection sites, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeVoronoiCells((IndexGraph) g, sites, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			VoronoiAlgo.Result indexResult = computeVoronoiCells(iGraph, iSites, iw);
 			return new ResultFromIndexResult(g, indexResult);
 		}
 
-		abstract VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, WeightFunction w);
+		abstract VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
 
 	}
 
@@ -113,7 +113,7 @@ class VoronoiAlgos {
 	static class ResultFromIndexResult extends VertexPartitions.PartitionFromIndexPartition
 			implements VoronoiAlgo.Result {
 
-		ResultFromIndexResult(Graph g, VoronoiAlgo.Result res) {
+		ResultFromIndexResult(IntGraph g, VoronoiAlgo.Result res) {
 			super(g, res);
 		}
 
@@ -135,13 +135,13 @@ class VoronoiAlgos {
 		@Override
 		public int blockSite(int block) {
 			int site = res().blockSite(block);
-			return site != -1 ? viMap.indexToId(site) : -1;
+			return site != -1 ? viMap.indexToIdInt(site) : -1;
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
 			int site = res().vertexSite(viMap.idToIndex(vertex));
-			return site != -1 ? viMap.indexToId(site) : -1;
+			return site != -1 ? viMap.indexToIdInt(site) : -1;
 		}
 
 	}

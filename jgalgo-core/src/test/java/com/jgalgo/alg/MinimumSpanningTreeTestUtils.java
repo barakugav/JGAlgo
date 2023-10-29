@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
@@ -36,7 +36,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void testRandGraph(MinimumSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
+	public static void testRandGraph(MinimumSpanningTree algo, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -45,8 +45,8 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
@@ -55,10 +55,10 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	private static class MSTEdgeComparator implements IntComparator {
 
-		private final Graph g;
-		private final WeightFunction w;
+		private final IntGraph g;
+		private final IWeightFunction w;
 
-		MSTEdgeComparator(Graph g, WeightFunction w) {
+		MSTEdgeComparator(IntGraph g, IWeightFunction w) {
 			this.g = g;
 			this.w = w;
 		}
@@ -86,7 +86,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(Graph g, WeightFunction w, MinimumSpanningTree.Result mst) {
+	private static void verifyMST(IntGraph g, IWeightFunction w, MinimumSpanningTree.Result mst) {
 		assertTrue(MinimumSpanningTree.isSpanningForest(g, mst.edges()));
 		if (WeaklyConnectedComponentsAlgo.newInstance().isWeaklyConnected(g))
 			assertTrue(MinimumSpanningTree.isSpanningTree(g, mst.edges()));

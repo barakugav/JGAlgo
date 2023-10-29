@@ -36,8 +36,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
@@ -132,75 +132,75 @@ public class GraphBench {
 
 		private void benchOutEdges(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
+			IEdgeSet edgeSet = g.outEdges(v);
 			blackhole.consume(edgeSet);
 		}
 
 		private void benchOutEdgesSize(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
+			IEdgeSet edgeSet = g.outEdges(v);
 			blackhole.consume(edgeSet.size());
 		}
 
 		private void benchOutEdgesIteration(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();)
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)
 				blackhole.consume(eit.nextInt());
 		}
 
 		private void benchOutEdgesSource(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
 				eit.nextInt();
-				blackhole.consume(eit.source());
+				blackhole.consume(eit.sourceInt());
 			}
 		}
 
 		private void benchOutEdgesTarget(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
 				eit.nextInt();
-				blackhole.consume(eit.target());
+				blackhole.consume(eit.targetInt());
 			}
 		}
 
 		private void benchInEdges(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
+			IEdgeSet edgeSet = g.outEdges(v);
 			blackhole.consume(edgeSet);
 		}
 
 		private void benchInEdgesSize(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
+			IEdgeSet edgeSet = g.outEdges(v);
 			blackhole.consume(edgeSet.size());
 		}
 
 		private void benchInEdgesIteration(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();)
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)
 				blackhole.consume(eit.nextInt());
 		}
 
 		private void benchInEdgesSource(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
 				eit.nextInt();
-				blackhole.consume(eit.source());
+				blackhole.consume(eit.sourceInt());
 			}
 		}
 
 		private void benchInEdgesTarget(Blackhole blackhole) {
 			int v = queryVIter.nextInt();
-			EdgeSet edgeSet = g.outEdges(v);
-			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
+			IEdgeSet edgeSet = g.outEdges(v);
+			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {
 				eit.nextInt();
-				blackhole.consume(eit.target());
+				blackhole.consume(eit.targetInt());
 			}
 		}
 
@@ -222,7 +222,7 @@ public class GraphBench {
 			long l = queryUVIter.nextLong();
 			int u = JGAlgoUtils.long2low(l);
 			int v = JGAlgoUtils.long2high(l);
-			for (EdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)
+			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)
 				blackhole.consume(eit.nextInt());
 		}
 

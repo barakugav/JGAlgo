@@ -19,13 +19,13 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -79,20 +79,20 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed or the edge weights function is not of type
-	 *                                      {@link WeightFunctionInt}
+	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
-		if (!(w instanceof WeightFunctionInt))
+			w = IWeightFunction.CardinalityWeightFunction;
+		if (!(w instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("Only integer weights are supported");
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		return computeShortestPaths0(g, (WeightFunctionInt) w, source);
+		return computeShortestPaths0(g, (IWeightFunctionInt) w, source);
 	}
 
-	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunctionInt w, int source) {
+	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, IWeightFunctionInt w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 
 		for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -108,14 +108,14 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		WeightFunctionInt pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunctionInt pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private Pair<int[], Path> calcPotential(IndexGraph g, WeightFunctionInt w0, int minWeight) {
+	private Pair<int[], Path> calcPotential(IndexGraph g, IWeightFunctionInt w0, int minWeight) {
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -136,7 +136,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
 		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
-		WeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
+		IWeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
 		/**
@@ -185,9 +185,9 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					G.addVertex();
 				for (int u = 0; u < n; u++) {
 					int U = connectivityRes.vertexBlock(u);
-					for (EdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						int V = connectivityRes.vertexBlock(v);
 						int weight = w[gNegEdgeRefs[e]];
 						if (U != V) {
@@ -249,11 +249,11 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					int fakeS2 = G.addVertex();
 					connected.clear();
 					int assignedWeight = layerNum - 2;
-					for (EdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {
+					for (IEdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {
 						int e = it.nextInt();
 						int ew = GWeights.weightInt(e);
 						if (ew < 0) {
-							int V = it.target();
+							int V = it.targetInt();
 							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);
 							connected.set(V);
 						}
@@ -287,7 +287,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		return Pair.of(potential, null);
 	}
 
-	private static int calcWeightWithPotential(IndexGraph g, int e, WeightFunctionInt w, int[] potential,
+	private static int calcWeightWithPotential(IndexGraph g, int e, IWeightFunctionInt w, int[] potential,
 			int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)

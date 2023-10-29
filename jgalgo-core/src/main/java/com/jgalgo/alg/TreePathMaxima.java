@@ -16,11 +16,11 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -54,13 +54,14 @@ public interface TreePathMaxima {
 	 *                     tree.
 	 * @return         a result object, with a corresponding result edge for each query
 	 */
-	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w, TreePathMaxima.Queries queries);
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IntGraph tree, IWeightFunction w,
+			TreePathMaxima.Queries queries);
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a {@link TreePathMaxima}
-	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}.
+	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(IntGraph, IWeightFunction, Queries)}.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -132,12 +133,12 @@ public interface TreePathMaxima {
 		 * Get the heaviest edge found for a single query.
 		 * <p>
 		 * This result object was obtained by calling
-		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
-		 * multiple queries using the {@link TreePathMaxima.Queries} object. This method return the answer to a
+		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(IntGraph, IWeightFunction, Queries)}, which accept a set
+		 * of multiple queries using the {@link TreePathMaxima.Queries} object. This method return the answer to a
 		 * <b>single</b> queries among them, by its index.
 		 *
 		 * @param  queryIdx the index of the query \((u, v)\) in the {@link TreePathMaxima.Queries} object passed to
-		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}
+		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(IntGraph, IWeightFunction, Queries)}
 		 * @return          the edge identifier of the heaviest on the path from \(u\) to \(v\) (the query vertices) in
 		 *                  the tree passed to the algorithm, or {@code -1} if no such path exists
 		 */
@@ -248,11 +249,11 @@ public interface TreePathMaxima {
 	 *                                  {@code false}
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+	public static boolean verifyMST(IntGraph g, IWeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		if (g instanceof IndexGraph)
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		mstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
 		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);

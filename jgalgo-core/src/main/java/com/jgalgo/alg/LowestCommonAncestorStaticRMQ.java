@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.RMQStatic;
 import com.jgalgo.internal.ds.RMQStaticComparator;
@@ -54,7 +54,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 		int[] depths = new int[n * 2];
 		int[] vs = new int[n * 2];
 		int[] parent = new int[n];
-		EdgeIter[] edgeIters = new EdgeIter[n];
+		IEdgeIter[] edgeIters = new IEdgeIter[n];
 		// TODO DFS stack class
 
 		parent[0] = -1;
@@ -66,9 +66,9 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 			vs[sequenceLength] = u;
 			sequenceLength++;
 
-			for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {
+			for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (v == parent[depth])
 					continue;
 				depth++;

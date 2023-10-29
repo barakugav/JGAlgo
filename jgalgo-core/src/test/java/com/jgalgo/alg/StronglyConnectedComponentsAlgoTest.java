@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
@@ -33,7 +33,7 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			VertexPartition actual = new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
@@ -52,7 +52,7 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			VertexPartition actual = new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);

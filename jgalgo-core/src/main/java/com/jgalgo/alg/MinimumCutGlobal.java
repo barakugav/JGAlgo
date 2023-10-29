@@ -15,8 +15,8 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.
@@ -50,7 +50,7 @@ public interface MinimumCutGlobal {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w);
+	VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new minimum global cut algorithm object.

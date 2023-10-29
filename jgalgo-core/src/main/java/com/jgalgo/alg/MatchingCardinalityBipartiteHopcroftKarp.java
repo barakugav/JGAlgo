@@ -19,9 +19,9 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -55,7 +55,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 
-		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		Assertions.Graphs.onlyBipartite(g, partition);
@@ -66,7 +66,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 
 		/* DFS */
 		BitSet visited = new BitSet(n);
-		EdgeIter[] edges = new EdgeIter[n / 2 + 1];
+		IEdgeIter[] edges = new IEdgeIter[n / 2 + 1];
 		int[] dfsPath = new int[(n - 1) / 2 + 1];
 
 		int[] matched = new int[n];
@@ -92,9 +92,9 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 				if (depth >= unmatchedTDepth)
 					continue;
 
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (depths[v] < depth)
 						continue;
 					es.set(e);
@@ -128,12 +128,12 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 				visited.set(u);
 
 				for (int depth = 0; depth >= 0;) {
-					EdgeIter eit = edges[depth];
+					IEdgeIter eit = edges[depth];
 					if (eit.hasNext()) {
 						int e = eit.nextInt();
 						if (!es.get(e))
 							continue;
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (visited.get(v) || depth >= depths[v])
 							continue;
 						visited.set(v);

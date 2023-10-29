@@ -17,14 +17,14 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.ColoringAlgo;
 import com.jgalgo.alg.VertexPartition;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 
 public class ColoringExample {
 
 	public static void coloringExample() {
 		/* Create a graph with few vertices and edges */
-		Graph g = createGraph();
+		IntGraph g = createGraph();
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
 		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();
@@ -35,17 +35,17 @@ public class ColoringExample {
 			System.out.println("The color of " + u + " is " + uColor);
 
 			/* For each edge (u,v), the endpoints u and v have different colors */
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				int vColor = colors.vertexBlock(v);
 				assert uColor != vColor;
 			}
 		}
 	}
 
-	public static Graph createGraph() {
-		Graph g = Graph.newUndirected();
+	public static IntGraph createGraph() {
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

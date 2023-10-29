@@ -16,10 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -47,7 +47,7 @@ public interface EdgeCover {
 	 * @param  w an edge weight function
 	 * @return   a minimum edge cover
 	 */
-	EdgeCover.Result computeMinimumEdgeCover(Graph g, WeightFunction w);
+	EdgeCover.Result computeMinimumEdgeCover(IntGraph g, IWeightFunction w);
 
 	/**
 	 * A result object of {@link EdgeCover} computation.
@@ -85,7 +85,7 @@ public interface EdgeCover {
 	 * @param  edges a collection of edges that should cover all the vertices in the graph
 	 * @return       {@code true} if {@code edges} is an edge cover of {@code g}
 	 */
-	static boolean isCover(Graph g, IntCollection edges) {
+	static boolean isCover(IntGraph g, IntCollection edges) {
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
@@ -149,7 +149,7 @@ public interface EdgeCover {
 			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();
 			EdgeCover weightedAlgo = new EdgeCoverWeighted();
 			return (g, w) -> {
-				boolean isCardinality = w == null || w == WeightFunction.CardinalityWeightFunction;
+				boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
 				if (isCardinality) {
 					return cardinalityAlgo.computeMinimumEdgeCover(g, null);
 				} else {

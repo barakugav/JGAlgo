@@ -20,8 +20,8 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
@@ -86,8 +86,8 @@ public class ShortestPathAStarTest extends TestBase {
 
 	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic() {
 		return AStarAsSSSP(params -> {
-			Graph g = params.g;
-			WeightFunction w = params.w;
+			IntGraph g = params.g;
+			IWeightFunction w = params.w;
 			if (params.g.isDirected())
 				g = g.reverseView();
 			ShortestPathSingleSource.Result ssspRes =
@@ -99,8 +99,8 @@ public class ShortestPathAStarTest extends TestBase {
 	private static ShortestPathSingleSource AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
 		Random rand = new Random(seed);
 		return AStarAsSSSP(params -> {
-			Graph g = params.g;
-			WeightFunction w = params.w;
+			IntGraph g = params.g;
+			IWeightFunction w = params.w;
 			if (params.g.isDirected())
 				g = g.reverseView();
 
@@ -115,12 +115,12 @@ public class ShortestPathAStarTest extends TestBase {
 	}
 
 	private static class HeuristicParams {
-		final Graph g;
-		final WeightFunction w;
+		final IntGraph g;
+		final IWeightFunction w;
 		@SuppressWarnings("unused")
 		final int source, target;
 
-		HeuristicParams(Graph g, WeightFunction w, int source, int target) {
+		HeuristicParams(IntGraph g, IWeightFunction w, int source, int target) {
 			this.g = g;
 			this.w = w;
 			this.source = source;
@@ -132,7 +132,7 @@ public class ShortestPathAStarTest extends TestBase {
 			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
 		return new ShortestPathSingleSource() {
 			@Override
-			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+			public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
 				final int n = g.vertices().size();
 				Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>(n);
 				Int2DoubleMap distances = new Int2DoubleOpenHashMap(n);

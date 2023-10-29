@@ -17,7 +17,7 @@
 /**
  * Algorithms for solving graph problems.
  * <p>
- * Most algorithms accept a {@link com.jgalgo.graph.Graph} object as input, and perform some computation on it.
+ * Most algorithms accept a {@link com.jgalgo.graph.IntGraph} object as input, and perform some computation on it.
  * Algorithms in this package follow a common pattern: an interface is defined for the functionality only (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via

@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Static methods class for {@linkplain IndexIdMap index-id maps}.
+ * Static methods class for {@linkplain IndexIntIdMap index-id maps}.
  *
  * @author Barak Ugav
  */
@@ -40,7 +40,7 @@ public class IndexIdMaps {
 	 * @return           an iterator that iterate over the IDs matching the indices iterated by the original
 	 *                   index-iterator
 	 */
-	public static IntIterator indexToIdIterator(IntIterator indexIter, IndexIdMap map) {
+	public static IntIterator indexToIdIterator(IntIterator indexIter, IndexIntIdMap map) {
 		return new IndexToIdIterator(indexIter, map);
 	}
 
@@ -51,16 +51,16 @@ public class IndexIdMaps {
 	 * @param  map    index-id mapping
 	 * @return        an iterator that iterate over the indices matching the IDs iterated by the original ID-iterator
 	 */
-	public static IntIterator idToIndexIterator(IntIterator idIter, IndexIdMap map) {
+	public static IntIterator idToIndexIterator(IntIterator idIter, IndexIntIdMap map) {
 		return new IdToIndexIterator(idIter, map);
 	}
 
 	private static class IndexToIdIterator implements IntIterator {
 
 		private final IntIterator indexIt;
-		private final IndexIdMap map;
+		private final IndexIntIdMap map;
 
-		IndexToIdIterator(IntIterator idxIt, IndexIdMap map) {
+		IndexToIdIterator(IntIterator idxIt, IndexIntIdMap map) {
 			this.indexIt = Objects.requireNonNull(idxIt);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -69,7 +69,7 @@ public class IndexIdMaps {
 			return indexIt;
 		}
 
-		IndexIdMap map() {
+		IndexIntIdMap map() {
 			return map;
 		}
 
@@ -80,7 +80,7 @@ public class IndexIdMaps {
 
 		@Override
 		public int nextInt() {
-			return map.indexToId(indexIt.nextInt());
+			return map.indexToIdInt(indexIt.nextInt());
 		}
 
 		@Override
@@ -91,58 +91,58 @@ public class IndexIdMaps {
 	}
 
 	/**
-	 * Create an {@link EdgeIter} that return IDs of vertices and edges from an {@link EdgeIter} that return indices of
-	 * vertices and edges.
+	 * Create an {@link IEdgeIter} that return IDs of vertices and edges from an {@link IEdgeIter} that return indices
+	 * of vertices and edges.
 	 *
-	 * @param  indexIter   an {@link EdgeIter} that return indices of vertices and edges
+	 * @param  indexIter   an {@link IEdgeIter} that return indices of vertices and edges
 	 * @param  verticesMap vertices index-id mapping
 	 * @param  edgesMap    edges index-id mapping
-	 * @return             {@link EdgeIter} that return IDs of vertices and edges matching the indices of vertices and
+	 * @return             {@link IEdgeIter} that return IDs of vertices and edges matching the indices of vertices and
 	 *                     edges returned by the original index-iterator
 	 */
-	public static EdgeIter indexToIdEdgeIter(EdgeIter indexIter, IndexIdMap verticesMap, IndexIdMap edgesMap) {
+	public static IEdgeIter indexToIdEdgeIter(IEdgeIter indexIter, IndexIntIdMap verticesMap, IndexIntIdMap edgesMap) {
 		return new IndexToIdEdgeIter(indexIter, verticesMap, edgesMap);
 	}
 
-	private static class IndexToIdEdgeIter extends IndexToIdIterator implements EdgeIter {
-		private final IndexIdMap viMap;
+	private static class IndexToIdEdgeIter extends IndexToIdIterator implements IEdgeIter {
+		private final IndexIntIdMap viMap;
 
-		IndexToIdEdgeIter(EdgeIter indexIt, IndexIdMap viMap, IndexIdMap eiMap) {
+		IndexToIdEdgeIter(IEdgeIter indexIt, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			super(indexIt, eiMap);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
-		EdgeIter indexIt() {
-			return (EdgeIter) super.indexIt();
+		IEdgeIter indexIt() {
+			return (IEdgeIter) super.indexIt();
 		}
 
-		IndexIdMap eiMap() {
+		IndexIntIdMap eiMap() {
 			return super.map();
 		}
 
 		@Override
-		public int peekNext() {
-			return eiMap().indexToId(indexIt().peekNext());
+		public int peekNextInt() {
+			return eiMap().indexToIdInt(indexIt().peekNextInt());
 		}
 
 		@Override
-		public int source() {
-			return viMap.indexToId(indexIt().source());
+		public int sourceInt() {
+			return viMap.indexToIdInt(indexIt().sourceInt());
 		}
 
 		@Override
-		public int target() {
-			return viMap.indexToId(indexIt().target());
+		public int targetInt() {
+			return viMap.indexToIdInt(indexIt().targetInt());
 		}
 	}
 
 	private static class IdToIndexIterator implements IntIterator {
 
 		private final IntIterator idIt;
-		private final IndexIdMap map;
+		private final IndexIntIdMap map;
 
-		IdToIndexIterator(IntIterator idIt, IndexIdMap map) {
+		IdToIndexIterator(IntIterator idIt, IndexIntIdMap map) {
 			this.idIt = Objects.requireNonNull(idIt);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -172,16 +172,16 @@ public class IndexIdMaps {
 	 * @return                 a collection that contain IDs matching the indices contained in the original
 	 *                         index-collection
 	 */
-	public static IntCollection indexToIdCollection(IntCollection indexCollection, IndexIdMap map) {
+	public static IntCollection indexToIdCollection(IntCollection indexCollection, IndexIntIdMap map) {
 		return new IndexToIdCollection(indexCollection, map);
 	}
 
 	private static class IndexToIdCollection extends AbstractIntCollection {
 
 		final IntCollection indexC;
-		final IndexIdMap map;
+		final IndexIntIdMap map;
 
-		IndexToIdCollection(IntCollection indexC, IndexIdMap map) {
+		IndexToIdCollection(IntCollection indexC, IndexIntIdMap map) {
 			this.indexC = Objects.requireNonNull(indexC);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -224,12 +224,12 @@ public class IndexIdMaps {
 	 * @param  map      index-id mapping
 	 * @return          a set that contain IDs matching the indices contained in the original index-set
 	 */
-	public static IntSet indexToIdSet(IntSet indexSet, IndexIdMap map) {
+	public static IntSet indexToIdSet(IntSet indexSet, IndexIntIdMap map) {
 		return new IndexToIdSet(indexSet, map);
 	}
 
 	private static class IndexToIdSet extends IndexToIdCollection implements IntSet {
-		IndexToIdSet(IntSet indexSet, IndexIdMap map) {
+		IndexToIdSet(IntSet indexSet, IndexIntIdMap map) {
 			super(indexSet, map);
 		}
 
@@ -247,16 +247,16 @@ public class IndexIdMaps {
 	 * @param  map          index-id mapping
 	 * @return              a collection that contain indices matching the IDs contained in the original ID-collection
 	 */
-	public static IntCollection idToIndexCollection(IntCollection idCollection, IndexIdMap map) {
+	public static IntCollection idToIndexCollection(IntCollection idCollection, IndexIntIdMap map) {
 		return new IdToIndexCollection(idCollection, map);
 	}
 
 	private static class IdToIndexCollection extends AbstractIntCollection {
 
 		private final IntCollection idC;
-		private final IndexIdMap map;
+		private final IndexIntIdMap map;
 
-		IdToIndexCollection(IntCollection idC, IndexIdMap map) {
+		IdToIndexCollection(IntCollection idC, IndexIntIdMap map) {
 			this.idC = Objects.requireNonNull(idC);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -283,12 +283,12 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return idC.contains(map.indexToId(key));
+			return idC.contains(map.indexToIdInt(key));
 		}
 
 		@Override
 		public boolean rem(int key) {
-			return idC.rem(map.indexToId(key));
+			return idC.rem(map.indexToIdInt(key));
 		}
 	}
 
@@ -299,16 +299,16 @@ public class IndexIdMaps {
 	 * @param  map       index-id mapping
 	 * @return           a list that contain IDs matching the indices contained in the original index-list
 	 */
-	public static IntList indexToIdList(IntList indexList, IndexIdMap map) {
+	public static IntList indexToIdList(IntList indexList, IndexIntIdMap map) {
 		return new IndexToIdList(indexList, map);
 	}
 
 	private static class IndexToIdList extends AbstractIntList {
 
 		private final IntList indexList;
-		private final IndexIdMap map;
+		private final IndexIntIdMap map;
 
-		IndexToIdList(IntList indexList, IndexIdMap map) {
+		IndexToIdList(IntList indexList, IndexIntIdMap map) {
 			this.indexList = Objects.requireNonNull(indexList);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -340,7 +340,7 @@ public class IndexIdMaps {
 
 		@Override
 		public int getInt(int index) {
-			return map.indexToId(indexList.getInt(index));
+			return map.indexToIdInt(indexList.getInt(index));
 		}
 
 		@Override
@@ -355,27 +355,27 @@ public class IndexIdMaps {
 
 		@Override
 		public int removeInt(int index) {
-			return map.indexToId(indexList.removeInt(index));
+			return map.indexToIdInt(indexList.removeInt(index));
 		}
 
 	}
 
-	private static abstract class IdToIndexWeights<W> implements Weights<W> {
-		private final IndexIdMap map;
+	private static abstract class IdToIndexWeights<W> implements IWeights<W> {
+		private final IndexIntIdMap map;
 
-		IdToIndexWeights(IndexIdMap map) {
+		IdToIndexWeights(IndexIntIdMap map) {
 			this.map = Objects.requireNonNull(map);
 		}
 
 		int id(int index) {
-			return map.indexToId(index);
+			return map.indexToIdInt(index);
 		}
 
-		static class Obj<W> extends IdToIndexWeights<W> implements WeightsObj<W> {
+		static class Obj<W> extends IdToIndexWeights<W> implements IWeightsObj<W> {
 
-			private final WeightsObj<W> weights;
+			private final IWeightsObj<W> weights;
 
-			Obj(WeightsObj<W> weights, IndexIdMap map) {
+			Obj(IWeightsObj<W> weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -396,11 +396,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Byte extends IdToIndexWeights<java.lang.Byte> implements WeightsByte {
+		static class Byte extends IdToIndexWeights<java.lang.Byte> implements IWeightsByte {
 
-			private final WeightsByte weights;
+			private final IWeightsByte weights;
 
-			Byte(WeightsByte weights, IndexIdMap map) {
+			Byte(IWeightsByte weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -421,11 +421,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Short extends IdToIndexWeights<java.lang.Short> implements WeightsShort {
+		static class Short extends IdToIndexWeights<java.lang.Short> implements IWeightsShort {
 
-			private final WeightsShort weights;
+			private final IWeightsShort weights;
 
-			Short(WeightsShort weights, IndexIdMap map) {
+			Short(IWeightsShort weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -446,11 +446,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Int extends IdToIndexWeights<Integer> implements WeightsInt {
+		static class Int extends IdToIndexWeights<Integer> implements IWeightsInt {
 
-			private final WeightsInt weights;
+			private final IWeightsInt weights;
 
-			Int(WeightsInt weights, IndexIdMap map) {
+			Int(IWeightsInt weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -471,11 +471,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Long extends IdToIndexWeights<java.lang.Long> implements WeightsLong {
+		static class Long extends IdToIndexWeights<java.lang.Long> implements IWeightsLong {
 
-			private final WeightsLong weights;
+			private final IWeightsLong weights;
 
-			Long(WeightsLong weights, IndexIdMap map) {
+			Long(IWeightsLong weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -496,11 +496,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Float extends IdToIndexWeights<java.lang.Float> implements WeightsFloat {
+		static class Float extends IdToIndexWeights<java.lang.Float> implements IWeightsFloat {
 
-			private final WeightsFloat weights;
+			private final IWeightsFloat weights;
 
-			Float(WeightsFloat weights, IndexIdMap map) {
+			Float(IWeightsFloat weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -521,11 +521,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Double extends IdToIndexWeights<java.lang.Double> implements WeightsDouble {
+		static class Double extends IdToIndexWeights<java.lang.Double> implements IWeightsDouble {
 
-			private final WeightsDouble weights;
+			private final IWeightsDouble weights;
 
-			Double(WeightsDouble weights, IndexIdMap map) {
+			Double(IWeightsDouble weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -546,11 +546,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Bool extends IdToIndexWeights<Boolean> implements WeightsBool {
+		static class Bool extends IdToIndexWeights<Boolean> implements IWeightsBool {
 
-			private final WeightsBool weights;
+			private final IWeightsBool weights;
 
-			Bool(WeightsBool weights, IndexIdMap map) {
+			Bool(IWeightsBool weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -571,11 +571,11 @@ public class IndexIdMaps {
 			}
 		}
 
-		static class Char extends IdToIndexWeights<Character> implements WeightsChar {
+		static class Char extends IdToIndexWeights<Character> implements IWeightsChar {
 
-			private final WeightsChar weights;
+			private final IWeightsChar weights;
 
-			Char(WeightsChar weights, IndexIdMap map) {
+			Char(IWeightsChar weights, IndexIntIdMap map) {
 				super(map);
 				this.weights = Objects.requireNonNull(weights);
 			}
@@ -598,15 +598,16 @@ public class IndexIdMaps {
 
 	}
 
-	private static <V, WeightsT extends Weights<V>> WeightsT idToIndexWeights0(WeightsImpl<?> weights, IndexIdMap map) {
-		WeightsUnwrapper unwrapper = new WeightsUnwrapper();
-		Weights<?> weights0 = unwrapper.unwrap(weights);
+	private static <T, WeightsT extends IWeights<T>> WeightsT idToIndexWeights0(WeightsImpl<?> weights,
+			IndexIntIdMap map) {
+		IWeightsUnwrapper unwrapper = new IWeightsUnwrapper();
+		IWeights<?> weights0 = unwrapper.unwrap(weights);
 
-		if (!(weights0 instanceof WeightsImpl.Mapped<?>))
+		if (!(weights0 instanceof WeightsImpl.IntMapped<?>))
 			throw new IllegalArgumentException("weights of index graph used with non index graph");
-		if (map != ((WeightsImpl.Mapped<?>) weights0).indexMap)
+		if (map != ((WeightsImpl.IntMapped<?>) weights0).indexMap)
 			throw new IllegalArgumentException("wrong index-id map is used with weights container");
-		WeightsImpl.IndexAbstract<?> weights00 = ((WeightsImpl.Mapped<?>) weights0).weights;
+		WeightsImpl.IndexAbstract<?> weights00 = ((WeightsImpl.IntMapped<?>) weights0).weights;
 
 		return unwrapper.rewrap(weights00);
 	}
@@ -623,7 +624,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static <W> WeightsObj<W> idToIndexWeights(WeightsObj<W> weights, IndexIdMap map) {
+	public static <W> IWeightsObj<W> idToIndexWeights(IWeightsObj<W> weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -646,7 +647,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsByte idToIndexWeights(WeightsByte weights, IndexIdMap map) {
+	public static IWeightsByte idToIndexWeights(IWeightsByte weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -669,7 +670,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsShort idToIndexWeights(WeightsShort weights, IndexIdMap map) {
+	public static IWeightsShort idToIndexWeights(IWeightsShort weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -692,7 +693,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsInt idToIndexWeights(WeightsInt weights, IndexIdMap map) {
+	public static IWeightsInt idToIndexWeights(IWeightsInt weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -715,7 +716,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsLong idToIndexWeights(WeightsLong weights, IndexIdMap map) {
+	public static IWeightsLong idToIndexWeights(IWeightsLong weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -738,7 +739,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsFloat idToIndexWeights(WeightsFloat weights, IndexIdMap map) {
+	public static IWeightsFloat idToIndexWeights(IWeightsFloat weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -761,7 +762,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsDouble idToIndexWeights(WeightsDouble weights, IndexIdMap map) {
+	public static IWeightsDouble idToIndexWeights(IWeightsDouble weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -784,7 +785,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsBool indexWeightsFromWeights(WeightsBool weights, IndexIdMap map) {
+	public static IWeightsBool indexWeightsFromWeights(IWeightsBool weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -807,7 +808,7 @@ public class IndexIdMaps {
 	 * @param  map     index-id map
 	 * @return         a weights-view that is accessed by the elements indices
 	 */
-	public static WeightsChar idToIndexWeights(WeightsChar weights, IndexIdMap map) {
+	public static IWeightsChar idToIndexWeights(IWeightsChar weights, IndexIntIdMap map) {
 		if (weights instanceof WeightsImpl<?>) {
 			/* The weights container is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weights container, return the underlying index weights container */
@@ -826,23 +827,23 @@ public class IndexIdMaps {
 	 * @param  map index-id map
 	 * @return     a weight function that accept elements indices
 	 */
-	public static WeightFunction idToIndexWeightFunc(WeightFunction w, IndexIdMap map) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+	public static IWeightFunction idToIndexWeightFunc(IWeightFunction w, IndexIntIdMap map) {
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 			return w;
 
 		} else if (w instanceof WeightsImpl<?>) {
 			/* The weight function is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-			return (WeightFunction) idToIndexWeights0((WeightsImpl<?>) w, map);
+			return (IWeightFunction) idToIndexWeights0((WeightsImpl<?>) w, map);
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-			if (w instanceof WeightFunctionInt) {
-				WeightFunctionInt wInt = (WeightFunctionInt) w;
-				WeightFunctionInt wIntMapped = idx -> wInt.weightInt(map.indexToId(idx));
+			if (w instanceof IWeightFunctionInt) {
+				IWeightFunctionInt wInt = (IWeightFunctionInt) w;
+				IWeightFunctionInt wIntMapped = idx -> wInt.weightInt(map.indexToIdInt(idx));
 				return wIntMapped;
 			} else {
-				return idx -> w.weight(map.indexToId(idx));
+				return idx -> w.weight(map.indexToIdInt(idx));
 			}
 		}
 	}
@@ -854,37 +855,37 @@ public class IndexIdMaps {
 	 * @param  map index-id map
 	 * @return     a weight function that accept elements indices
 	 */
-	public static WeightFunctionInt idToIndexWeightFunc(WeightFunctionInt w, IndexIdMap map) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+	public static IWeightFunctionInt idToIndexWeightFunc(IWeightFunctionInt w, IndexIntIdMap map) {
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 			return w;
 
 		} else if (w instanceof WeightsImpl<?>) {
 			/* The weight function is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-			return (WeightFunctionInt) idToIndexWeights0((WeightsImpl<?>) w, map);
+			return (IWeightFunctionInt) idToIndexWeights0((WeightsImpl<?>) w, map);
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-			return idx -> w.weightInt(map.indexToId(idx));
+			return idx -> w.weightInt(map.indexToIdInt(idx));
 		}
 	}
 
-	private static class WeightsUnwrapper {
+	private static class IWeightsUnwrapper {
 		private boolean immutableView;
 
 		@SuppressWarnings("unchecked")
-		<V, WeightsT extends Weights<V>> WeightsT unwrap(WeightsImpl<?> weights) {
-			Weights<?> weights0 = weights;
-			immutableView = weights0 instanceof WeightsImpl.ImmutableView<?>;
+		<T, WeightsT extends IWeights<T>> WeightsT unwrap(WeightsImpl<?> weights) {
+			IWeights<?> weights0 = weights;
+			immutableView = weights0 instanceof WeightsImpl.IntImmutableView<?>;
 			if (immutableView)
-				weights0 = ((WeightsImpl.ImmutableView<?>) weights0).weights;
+				weights0 = ((WeightsImpl.IntImmutableView<?>) weights0).weights;
 			return (WeightsT) weights0;
 		}
 
 		@SuppressWarnings("unchecked")
-		<V, WeightsT extends Weights<V>> WeightsT rewrap(Weights<?> weights) {
+		<T, WeightsT extends IWeights<T>> WeightsT rewrap(IWeights<?> weights) {
 			if (immutableView)
-				weights = WeightsImpl.ImmutableView.newInstance(weights);
+				weights = WeightsImpl.IntImmutableView.newInstance(weights);
 			return (WeightsT) weights;
 		}
 

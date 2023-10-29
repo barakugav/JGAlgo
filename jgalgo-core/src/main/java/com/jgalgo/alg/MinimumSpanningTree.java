@@ -18,11 +18,11 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -58,7 +58,7 @@ public interface MinimumSpanningTree {
 	 * @return   a result object containing all the edges of the computed spanning tree, which there are \(n-1\) of them
 	 *           (or less, forming a forest if the graph is not connected)
 	 */
-	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w);
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IntGraph g, IWeightFunction w);
 
 	/**
 	 * A result object for {@link MinimumSpanningTree} computation.
@@ -87,7 +87,7 @@ public interface MinimumSpanningTree {
 	 * @return       {@code true} if the given set of edges is a spanning tree of the given graph, {@code false}
 	 *               otherwise
 	 */
-	static boolean isSpanningTree(Graph g, IntCollection edges) {
+	static boolean isSpanningTree(IntGraph g, IntCollection edges) {
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
@@ -121,11 +121,11 @@ public interface MinimumSpanningTree {
 		queue.enqueue(0);
 		while (!queue.isEmpty()) {
 			int u = queue.dequeueInt();
-			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (!edgesBitmap.get(e))
 					continue;
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (visited.get(v))
 					continue;
 				visited.set(v);
@@ -150,7 +150,7 @@ public interface MinimumSpanningTree {
 	 * @return       {@code true} if the given set of edges is a spanning forest of the given graph, {@code false}
 	 *               otherwise
 	 */
-	static boolean isSpanningForest(Graph g, IntCollection edges) {
+	static boolean isSpanningForest(IntGraph g, IntCollection edges) {
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
@@ -187,11 +187,11 @@ public interface MinimumSpanningTree {
 				long l = queue.dequeueLong();
 				int u = JGAlgoUtils.long2low(l);
 				int parentEdge = JGAlgoUtils.long2high(l);
-				for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!edgesBitmap.get(e) || e == parentEdge)
 						continue;
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (root[v] == r)
 						return false; /* cycle */
 					root[v] = r;

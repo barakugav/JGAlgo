@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.Random;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
@@ -75,12 +75,12 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w));
 	}
 
-	private IntCollection computeMST(IndexGraph g, WeightFunction w) {
+	private IntCollection computeMST(IndexGraph g, IWeightFunction w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 
@@ -94,7 +94,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		Pair<IndexGraph, int[]> g1Res = randSubgraph(g0, g0Ref);
 		IndexGraph g1 = g1Res.first();
 		int[] g1Ref = g1Res.second();
-		WeightsDouble g1W = assignWeightsFromEdgeRef(g1, w, g1Ref);
+		IWeightsDouble g1W = assignWeightsFromEdgeRef(g1, w, g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
 		IntCollection f1Edges = computeMST(g1, g1W);
@@ -107,7 +107,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		Pair<IndexGraph, int[]> g2Res = subGraph(g0, e2, g0Ref);
 		IndexGraph g2 = g2Res.first();
 		int[] g2Ref = g2Res.second();
-		WeightsDouble g2W = assignWeightsFromEdgeRef(g2, w, g2Ref);
+		IWeightsDouble g2W = assignWeightsFromEdgeRef(g2, w, g2Ref);
 
 		/* The result is F0 and F2 */
 		IntCollection f2 = computeMST(g2, g2W);
@@ -135,8 +135,8 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		return Pair.of(subG, edgeRefSub);
 	}
 
-	static WeightsDouble assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, int[] edgeRef) {
-		WeightsDouble w2 = Weights.createExternalEdgesWeights(g, double.class);
+	static IWeightsDouble assignWeightsFromEdgeRef(IndexGraph g, IWeightFunction w, int[] edgeRef) {
+		IWeightsDouble w2 = IWeights.createExternalEdgesWeights(g, double.class);
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			w2.set(e, w.weight(edgeRef[e]));
 		return w2;
@@ -162,7 +162,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		allocatedMem.allocateForLightEdges(n, treeCount);
 
 		IndexGraph[] trees = allocatedMem.trees;
-		WeightsDouble[] treeData = allocatedMem.treeData;
+		IWeightsDouble[] treeData = allocatedMem.treeData;
 		for (int t = 0; t < treeCount; t++)
 			treeData[t] = trees[t].getEdgesWeights("weight");
 
@@ -218,7 +218,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
-		WeightsDouble[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
+		IWeightsDouble[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
 
 		TreePathMaxima.Queries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;
 		TreePathMaxima.Result[] tpmResults = MemoryReuse.EmptyTpmResultArr;

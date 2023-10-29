@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -66,9 +66,9 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(false);
@@ -82,9 +82,9 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(true);
@@ -93,8 +93,8 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	private class Worker {
 
 		private final IndexGraph g;
-		private final WeightsBool partition;
-		private final WeightFunction w;
+		private final IWeightsBool partition;
+		private final IWeightFunction w;
 
 		private final BitSet inTree;
 
@@ -107,7 +107,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(IndexGraph g, WeightsBool partition, WeightFunction w) {
+		Worker(IndexGraph g, IWeightsBool partition, IWeightFunction w) {
 			Assertions.Graphs.onlyBipartite(g, partition);
 
 			this.g = g;

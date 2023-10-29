@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
@@ -95,9 +95,9 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 				final int u = queue.dequeueInt();
 				int uRoot = root[u];
 
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					final int e = eit.nextInt();
-					final int v = eit.target();
+					final int v = eit.targetInt();
 					int vRoot = root[v];
 
 					if (vRoot == -1) {

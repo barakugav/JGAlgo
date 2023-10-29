@@ -19,7 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -75,9 +75,9 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 		BitSet usedColors = new BitSet();
 		for (int u : order) {
 			usedColors.clear();
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				int c = colors[v];
 				if (c != -1)
 					usedColors.set(c);

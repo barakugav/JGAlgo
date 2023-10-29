@@ -17,25 +17,25 @@ package com.jgalgo.alg;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 class KShortestPathsSTs {
 
 	static abstract class AbstractImpl implements KShortestPathsST {
 
 		@Override
-		public List<Path> computeKShortestPaths(Graph g, WeightFunction w, int source, int target, int k) {
+		public List<Path> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k) {
 			if (g instanceof IndexGraph)
 				return computeKShortestPaths((IndexGraph) g, w, source, target, k);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 			List<Path> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
@@ -45,7 +45,7 @@ class KShortestPathsSTs {
 			return result;
 		}
 
-		abstract List<Path> computeKShortestPaths(IndexGraph g, WeightFunction w, int source, int target, int k);
+		abstract List<Path> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k);
 
 	}
 

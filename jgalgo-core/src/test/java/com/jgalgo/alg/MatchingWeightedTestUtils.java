@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -36,7 +36,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void randGraphsBipartiteWeighted(MatchingAlgo algo, Boolean2ObjectFunction<Graph> graphImpl,
+	public static void randGraphsBipartiteWeighted(MatchingAlgo algo, Boolean2ObjectFunction<IntGraph> graphImpl,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -45,8 +45,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 128).repeat(12);
 		tester.addPhase().withArgs(256, 256, 1200).repeat(2);
 		tester.run((sn, tn, m) -> {
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			IntGraph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo =
 					algo instanceof MatchingWeightedBipartiteSSSP ? new MatchingWeightedBipartiteHungarianMethod()
@@ -64,9 +64,9 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 512).repeat(4);
 		tester.addPhase().withArgs(1024, 1024, 1024).repeat(1);
 		tester.run((sn, tn, m) -> {
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphsTestUtils.defaultGraphImpl(),
+			IntGraph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphsTestUtils.defaultGraphImpl(),
 					seedGen.nextSeed());
-			WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+			IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
 			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
@@ -84,7 +84,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			}
 			assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			WeightFunctionInt w =
+			IWeightFunctionInt w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
@@ -104,8 +104,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 512).repeat(6);
 		tester.addPhase().withArgs(1024, 2300).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo = algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
 					: new MatchingWeightedGabow1990();
@@ -114,7 +114,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeighted(MatchingAlgo algo, Graph g, WeightFunctionInt w,
+	private static void testGraphWeighted(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationAlgo) {
 		Matching actual = algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -140,7 +140,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 512).repeat(8);
 		tester.addPhase().withArgs(1024, 1024).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			if (g.vertices().size() % 2 != 0)
 				throw new IllegalArgumentException("there is no perfect matching");
 
@@ -157,7 +157,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
 
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			WeightFunctionInt w =
+			IWeightFunctionInt w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityGabow1976();
@@ -168,7 +168,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGraphWeightedPerfect(MatchingAlgo algo, Graph g, WeightFunctionInt w,
+	static void testGraphWeightedPerfect(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
 		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);

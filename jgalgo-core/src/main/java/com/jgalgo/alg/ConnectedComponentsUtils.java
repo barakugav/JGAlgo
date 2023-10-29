@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 
 class ConnectedComponentsUtils {
@@ -26,7 +26,7 @@ class ConnectedComponentsUtils {
 				WeaklyConnectedComponentsAlgo.newInstance();
 
 		@Override
-		public VertexPartition findStronglyConnectedComponents(Graph g) {
+		public VertexPartition findStronglyConnectedComponents(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return findStronglyConnectedComponents((IndexGraph) g);
 
@@ -44,7 +44,7 @@ class ConnectedComponentsUtils {
 		}
 
 		@Override
-		public boolean isStronglyConnected(Graph g) {
+		public boolean isStronglyConnected(IntGraph g) {
 			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());
 		}
 
@@ -57,7 +57,7 @@ class ConnectedComponentsUtils {
 	static abstract class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {
 
 		@Override
-		public VertexPartition findWeaklyConnectedComponents(Graph g) {
+		public VertexPartition findWeaklyConnectedComponents(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return findWeaklyConnectedComponents((IndexGraph) g);
 
@@ -67,7 +67,7 @@ class ConnectedComponentsUtils {
 		}
 
 		@Override
-		public boolean isWeaklyConnected(Graph g) {
+		public boolean isWeaklyConnected(IntGraph g) {
 			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());
 		}
 

@@ -38,8 +38,8 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SSSPPositiveWeightsBench {
@@ -77,8 +77,8 @@ public class SSSPPositiveWeightsBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				graphs.add(new GraphArgs(g, w, source));
@@ -118,8 +118,8 @@ public class SSSPPositiveWeightsBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				graphs.add(new GraphArgs(g, w, source));
@@ -160,8 +160,8 @@ public class SSSPPositiveWeightsBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
-				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
+				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
 				int[] vs = g.vertices().toIntArray();
 				int source = vs[rand.nextInt(vs.length)];
 				graphs.add(new GraphArgs(g, w, source));
@@ -180,11 +180,11 @@ public class SSSPPositiveWeightsBench {
 	}
 
 	private static class GraphArgs {
-		final Graph g;
-		final WeightFunctionInt w;
+		final IntGraph g;
+		final IWeightFunctionInt w;
 		final int source;
 
-		GraphArgs(Graph g, WeightFunctionInt w, int source) {
+		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {
 			this.g = g;
 			this.w = w;
 			this.source = source;

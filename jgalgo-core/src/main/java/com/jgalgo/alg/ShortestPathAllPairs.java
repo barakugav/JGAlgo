@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -43,7 +43,7 @@ public interface ShortestPathAllPairs {
 	 * @param  w an edge weight function
 	 * @return   a result object containing information on the shortest path between each pair of vertices
 	 */
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w);
+	public ShortestPathAllPairs.Result computeAllShortestPaths(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
@@ -55,8 +55,8 @@ public interface ShortestPathAllPairs {
 	 * @return                a result object containing information on the shortest path between each pair of vertices
 	 *                        in the subset
 	 */
-	public ShortestPathAllPairs.Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset,
-			WeightFunction w);
+	public ShortestPathAllPairs.Result computeSubsetShortestPaths(IntGraph g, IntCollection verticesSubset,
+			IWeightFunction w);
 
 	/**
 	 * Compute the cardinality shortest path between each pair of vertices in a graph.
@@ -67,8 +67,8 @@ public interface ShortestPathAllPairs {
 	 * @param  g a graph
 	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
 	 */
-	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
-		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);
+	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IntGraph g) {
+		return computeAllShortestPaths(g, IWeightFunction.CardinalityWeightFunction);
 	}
 
 	/**
@@ -84,8 +84,9 @@ public interface ShortestPathAllPairs {
 	 * @return                a result object containing information on the cardinality shortest path between each pair
 	 *                        of vertices in the subset
 	 */
-	default ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(Graph g, IntCollection verticesSubset) {
-		return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.CardinalityWeightFunction);
+	default ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IntGraph g,
+			IntCollection verticesSubset) {
+		return computeSubsetShortestPaths(g, verticesSubset, IWeightFunction.CardinalityWeightFunction);
 	}
 
 	/**
@@ -181,8 +182,8 @@ public interface ShortestPathAllPairs {
 					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();
 
 					@Override
-					public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
-						if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+					public ShortestPathAllPairs.Result computeAllShortestPaths(IntGraph g, IWeightFunction w) {
+						if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);
 						} else {
 							return weightedAlgo.computeAllShortestPaths(g, w);
@@ -190,8 +191,9 @@ public interface ShortestPathAllPairs {
 					}
 
 					@Override
-					public Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset, WeightFunction w) {
-						if (w == null || w == WeightFunction.CardinalityWeightFunction) {
+					public Result computeSubsetShortestPaths(IntGraph g, IntCollection verticesSubset,
+							IWeightFunction w) {
+						if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 							return cardinalityAlgo.computeSubsetCardinalityShortestPaths(g, verticesSubset);
 						} else {
 							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);

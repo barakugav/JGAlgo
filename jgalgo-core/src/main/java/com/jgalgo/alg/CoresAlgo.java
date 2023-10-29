@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -42,7 +42,7 @@ public interface CoresAlgo {
 	 * @param  g a graph
 	 * @return   the cores of the graph
 	 */
-	default CoresAlgo.Result computeCores(Graph g) {
+	default CoresAlgo.Result computeCores(IntGraph g) {
 		return computeCores(g, DegreeType.OutAndInDegree);
 	}
 
@@ -58,7 +58,7 @@ public interface CoresAlgo {
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	CoresAlgo.Result computeCores(Graph g, DegreeType degreeType);
+	CoresAlgo.Result computeCores(IntGraph g, DegreeType degreeType);
 
 	/**
 	 * The degree type the cores are defined with respect to.
@@ -68,7 +68,7 @@ public interface CoresAlgo {
 	 * type has no effect.
 	 *
 	 * @see    CoresAlgo
-	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
+	 * @see    CoresAlgo#computeCores(IntGraph, DegreeType)
 	 * @author Barak Ugav
 	 */
 	static enum DegreeType {

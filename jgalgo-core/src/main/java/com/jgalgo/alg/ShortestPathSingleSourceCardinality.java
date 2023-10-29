@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Single Source Shortest Path for cardinality weight function.
@@ -51,11 +51,11 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
-		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeCardinalityShortestPaths(g, source);
 	}

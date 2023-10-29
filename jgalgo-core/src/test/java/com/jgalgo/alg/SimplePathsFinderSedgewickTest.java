@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -50,7 +50,7 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		tester.addPhase().withArgs(23, 40).repeat(128);
 		tester.addPhase().withArgs(23, 55).repeat(128);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
@@ -60,7 +60,7 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		});
 	}
 
-	private static void testSimplePaths(Graph g, int source, int target, SimplePathsFinder algo) {
+	private static void testSimplePaths(IntGraph g, int source, int target, SimplePathsFinder algo) {
 		final int limit = 20;
 		Set<IntList> paths = new HashSet<>();
 

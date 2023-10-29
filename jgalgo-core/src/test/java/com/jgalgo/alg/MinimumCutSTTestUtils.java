@@ -19,11 +19,11 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -45,10 +45,10 @@ class MinimumCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsDouble w = g.addEdgesWeights("weight", double.class);
+			IWeightsDouble w = g.addEdgesWeights("weight", double.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextDouble() * 5642);
 
@@ -66,10 +66,10 @@ class MinimumCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsInt w = g.addEdgesWeights("weight", int.class);
+			IWeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 
@@ -78,7 +78,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	static IntIntPair chooseSourceSink(Graph g, Random rand) {
+	static IntIntPair chooseSourceSink(IntGraph g, Random rand) {
 		int source, sink;
 		for (int[] vs = g.vertices().toIntArray();;) {
 			source = vs[rand.nextInt(vs.length)];
@@ -97,10 +97,10 @@ class MinimumCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsDouble w = g.addEdgesWeights("weight", double.class);
+			IWeightsDouble w = g.addEdgesWeights("weight", double.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextDouble() * 5642);
 
@@ -118,10 +118,10 @@ class MinimumCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsInt w = g.addEdgesWeights("weight", int.class);
+			IWeightsInt w = g.addEdgesWeights("weight", int.class);
 			for (int e : g.edges())
 				w.set(e, rand.nextInt(16384));
 
@@ -130,7 +130,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
+	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(IntGraph g, Random rand) {
 		final int n = g.vertices().size();
 		final int sourcesNum;
 		final int sinksNum;
@@ -164,7 +164,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		return Pair.of(sources, sinks);
 	}
 
-	private static void testMinCut(Graph g, WeightFunction w, int source, int sink, MinimumCutST alg) {
+	private static void testMinCut(IntGraph g, IWeightFunction w, int source, int sink, MinimumCutST alg) {
 		VertexBiPartition minCut = alg.computeMinimumCut(g, w, source, sink);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
@@ -188,9 +188,9 @@ class MinimumCutSTTestUtils extends TestUtils {
 						cut.add(vertices.getInt(i));
 				double cutWeight = 0;
 				for (int u : cut) {
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (!cut.contains(v))
 							cutWeight += w.weight(e);
 					}
@@ -210,7 +210,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		}
 	}
 
-	private static void testMinCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks,
+	private static void testMinCut(IntGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks,
 			MinimumCutST alg) {
 		VertexBiPartition minCut = alg.computeMinimumCut(g, w, sources, sinks);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
@@ -236,9 +236,9 @@ class MinimumCutSTTestUtils extends TestUtils {
 						cut.add(vertices.getInt(i));
 				double cutWeight = 0;
 				for (int u : cut) {
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (!cut.contains(v))
 							cutWeight += w.weight(e);
 					}

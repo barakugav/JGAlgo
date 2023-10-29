@@ -38,8 +38,8 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -54,7 +54,7 @@ public class APSPBench {
 	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
 	public String args;
 
-	private List<Pair<Graph, WeightFunctionInt>> graphs;
+	private List<Pair<IntGraph, IWeightFunctionInt>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -67,15 +67,15 @@ public class APSPBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchAPSPPositiveWeights(ShortestPathAllPairs.Builder builder, Blackhole blackhole) {
-		Pair<Graph, WeightFunctionInt> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<IntGraph, IWeightFunctionInt> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathAllPairs algo = builder.build();
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
 		blackhole.consume(result);

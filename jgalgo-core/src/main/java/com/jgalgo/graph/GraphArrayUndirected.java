@@ -78,7 +78,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 			addInternalVerticesContainer(edgesNumContainer);
 
 			for (int v = 0; v < n; v++) {
-				EdgeSet edgeSet = g.outEdges(v);
+				IEdgeSet edgeSet = g.outEdges(v);
 				int edgeSetSize = edgesNum[v] = edgeSet.size();
 				if (edgeSetSize != 0) {
 					int[] edgesArr = edges[v] = new int[edgeSetSize];
@@ -140,13 +140,13 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -231,7 +231,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		// edges.clear();
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -247,12 +247,12 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edges[source], edgesNum[source]);
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
@@ -268,7 +268,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edges[target], edgesNum[target]);
 		}
 	}
@@ -280,7 +280,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return edgeEndpoint(lastEdge, source);
 		}
 	}
@@ -292,7 +292,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return edgeEndpoint(lastEdge, target);
 		}
 	}

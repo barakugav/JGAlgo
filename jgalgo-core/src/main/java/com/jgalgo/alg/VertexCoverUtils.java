@@ -17,11 +17,11 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -31,19 +31,19 @@ class VertexCoverUtils {
 	static abstract class AbstractImpl implements VertexCover {
 
 		@Override
-		public VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w) {
+		public VertexCover.Result computeMinimumVertexCover(IntGraph g, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeMinimumVertexCover((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			w = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 
 			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);
 			return new ResultFromIndexResult(indexResult, viMap);
 		}
 
-		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w);
+		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, IWeightFunction w);
 
 	}
 
@@ -87,9 +87,9 @@ class VertexCoverUtils {
 	private static class ResultFromIndexResult implements VertexCover.Result {
 
 		private final VertexCover.Result res;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {
+		ResultFromIndexResult(VertexCover.Result res, IndexIntIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

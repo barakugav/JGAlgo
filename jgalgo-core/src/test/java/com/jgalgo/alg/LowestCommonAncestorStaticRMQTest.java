@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
-	static int[][] randLcaQueries(Graph g, int root, int queriesNum, long seed) {
+	static int[][] randLcaQueries(IntGraph g, int root, int queriesNum, long seed) {
 		Random rand = new Random(seed);
 		int[][] queries = new int[queriesNum][3];
 
@@ -80,7 +80,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		return queries;
 	}
 
-	private static void testLCA(Graph g, Supplier<? extends LowestCommonAncestorStatic> builder, int[][] queries) {
+	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorStatic> builder, int[][] queries) {
 		LowestCommonAncestorStatic lca = builder.get();
 		LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(g, g.vertices().iterator().nextInt());
 
@@ -104,7 +104,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		tester.addPhase().withArgs(4096, 4096).repeat(4);
 		tester.addPhase().withArgs(16384, 16384).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			int root = g.vertices().iterator().nextInt();
 			int[][] queries = randLcaQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, LowestCommonAncestorStaticRMQ::new, queries);

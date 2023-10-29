@@ -19,11 +19,11 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.alg.ShortestPathSingleSource.Result;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -34,72 +34,72 @@ class ShortestPathAllPairsUtils {
 	static abstract class AbstractImpl implements ShortestPathAllPairs {
 
 		@Override
-		public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
+		public ShortestPathAllPairs.Result computeAllShortestPaths(IntGraph g, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeAllShortestPaths((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			ShortestPathAllPairs.Result indexResult = computeAllShortestPaths(iGraph, iw);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
 		@Override
-		public ShortestPathAllPairs.Result computeSubsetShortestPaths(Graph g, IntCollection verticesSubset,
-				WeightFunction w) {
+		public ShortestPathAllPairs.Result computeSubsetShortestPaths(IntGraph g, IntCollection verticesSubset,
+				IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeSubsetShortestPaths((IndexGraph) g, verticesSubset, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 			ShortestPathAllPairs.Result indexResult = computeSubsetShortestPaths(iGraph, verticesSubset, iw);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
 		@Override
-		public ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
+		public ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return computeAllCardinalityShortestPaths((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 			ShortestPathAllPairs.Result indexResult = computeAllCardinalityShortestPaths(iGraph);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
 		@Override
-		public ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(Graph g,
+		public ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IntGraph g,
 				IntCollection verticesSubset) {
 			if (g instanceof IndexGraph)
 				return computeSubsetCardinalityShortestPaths((IndexGraph) g, verticesSubset);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 			ShortestPathAllPairs.Result indexResult = computeSubsetCardinalityShortestPaths(iGraph, verticesSubset);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
-		abstract ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w);
+		abstract ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w);
 
 		abstract ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-				WeightFunction w);
+				IWeightFunction w);
 
 		ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
-			return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);
+			return computeAllShortestPaths(g, IWeightFunction.CardinalityWeightFunction);
 		}
 
 		ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
-			return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.CardinalityWeightFunction);
+			return computeSubsetShortestPaths(g, verticesSubset, IWeightFunction.CardinalityWeightFunction);
 		}
 
 	}
@@ -330,10 +330,10 @@ class ShortestPathAllPairsUtils {
 	private static class ResultFromIndexResult implements ShortestPathAllPairs.Result {
 
 		private final ShortestPathAllPairs.Result res;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(ShortestPathAllPairs.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
+		ResultFromIndexResult(ShortestPathAllPairs.Result res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 			this.viMap = Objects.requireNonNull(viMap);

@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -55,11 +55,11 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
-			WeightFunction cost = randCost(g, rand);
+			IWeightFunction cost = randCost(g, rand);
 			IntIntPair sourceSink = MinimumCutSTTestUtils.chooseSourceSink(g, rand);
 
 			testMinCostMaxFlowWithSourceSink(g, net, cost, sourceSink.firstInt(), sourceSink.secondInt(), algo);
@@ -76,15 +76,15 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
 			IntIntPair sourceSink = MinimumCutSTTestUtils.chooseSourceSink(g, rand);
 			int source = sourceSink.firstInt();
 			int sink = sourceSink.secondInt();
-			WeightFunction cost = randCost(g, rand);
-			WeightFunction lowerBound = randLowerBound(g, net, source, sink, rand);
+			IWeightFunction cost = randCost(g, rand);
+			IWeightFunction lowerBound = randLowerBound(g, net, source, sink, rand);
 
 			testMinCostMaxFlowWithSourceSinkLowerBound(g, net, cost, lowerBound, source, sink, algo);
 		});
@@ -100,11 +100,11 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
-			WeightFunction cost = randCost(g, rand);
+			IWeightFunction cost = randCost(g, rand);
 			Pair<IntCollection, IntCollection> sourcesSinks = MinimumCutSTTestUtils.chooseMultiSourceMultiSink(g, rand);
 
 			testMinCostMaxFlowWithSourcesSinks(g, net, cost, sourcesSinks.first(), sourcesSinks.second(), algo);
@@ -121,15 +121,15 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
 			Pair<IntCollection, IntCollection> sourcesSinks = MinimumCutSTTestUtils.chooseMultiSourceMultiSink(g, rand);
 			IntCollection sources = sourcesSinks.first();
 			IntCollection sinks = sourcesSinks.second();
-			WeightFunction cost = randCost(g, rand);
-			WeightFunction lowerBound = randLowerBound(g, net, sources, sinks, rand);
+			IWeightFunction cost = randCost(g, rand);
+			IWeightFunction lowerBound = randLowerBound(g, net, sources, sinks, rand);
 
 			testMinCostMaxFlowWithSourcesSinksLowerBound(g, net, cost, lowerBound, sources, sinks, algo);
 		});
@@ -145,12 +145,12 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
-			WeightFunction cost = randCost(g, rand);
-			WeightFunction supply = randSupply(g, net, rand);
+			IWeightFunction cost = randCost(g, rand);
+			IWeightFunction supply = randSupply(g, net, rand);
 
 			testMinCostFlowWithSupply(g, net, cost, supply, algo);
 		});
@@ -166,47 +166,47 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 
 			FlowNetwork net = randNetwork(g, rand);
-			WeightFunction supply = randSupply(g, net, rand);
+			IWeightFunction supply = randSupply(g, net, rand);
 
 			/* build a 'random' lower bound by solving min-cost flow with a different cost function and use the flows */
-			WeightFunction cost1 = randCost(g, rand);
+			IWeightFunction cost1 = randCost(g, rand);
 			MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
-			WeightsDouble lowerBound = Weights.createExternalEdgesWeights(g, double.class);
+			IWeightsDouble lowerBound = IWeights.createExternalEdgesWeights(g, double.class);
 			for (int e : g.edges()) {
 				lowerBound.set(e, (int) (net.getFlow(e) * 0.4 * rand.nextDouble()));
 				net.setFlow(e, 0);
 			}
 
-			WeightFunction cost = randCost(g, rand);
+			IWeightFunction cost = randCost(g, rand);
 
 			testMinCostFlowWithSupplyLowerBound(g, net, cost, lowerBound, supply, algo);
 		});
 	}
 
-	private static FlowNetwork randNetwork(Graph g, Random rand) {
+	private static FlowNetwork randNetwork(IntGraph g, Random rand) {
 		FlowNetwork net = FlowNetwork.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextDouble() * 1024);
 		return net;
 	}
 
-	private static WeightFunction randCost(Graph g, Random rand) {
-		WeightsDouble cost = Weights.createExternalEdgesWeights(g, double.class);
+	private static IWeightFunction randCost(IntGraph g, Random rand) {
+		IWeightsDouble cost = IWeights.createExternalEdgesWeights(g, double.class);
 		for (int e : g.edges())
 			cost.set(e, rand.nextDouble() * 2424 - 600);
 		return cost;
 	}
 
-	private static WeightFunction randLowerBound(Graph g, FlowNetwork net, int source, int sink, Random rand) {
+	private static IWeightFunction randLowerBound(IntGraph g, FlowNetwork net, int source, int sink, Random rand) {
 		return randLowerBound(g, net, IntSets.singleton(source), IntSets.singleton(sink), rand);
 	}
 
-	private static WeightFunction randLowerBound(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks,
-			Random rand) {
+	private static IWeightFunction randLowerBound(IntGraph g, FlowNetwork net, IntCollection sources,
+			IntCollection sinks, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		Int2DoubleMap capacity = new Int2DoubleOpenHashMap();
@@ -216,7 +216,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		IntSet sinksSet = new IntOpenHashSet(sinks);
 		IntList sourcesList = new IntArrayList(sources);
 
-		WeightsDouble lowerBound = Weights.createExternalEdgesWeights(g, double.class);
+		IWeightsDouble lowerBound = IWeights.createExternalEdgesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		sourcesLoop: for (;;) {
@@ -292,7 +292,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		return lowerBound;
 	}
 
-	private static WeightFunction randSupply(Graph g, FlowNetwork net, Random rand) {
+	private static IWeightFunction randSupply(IntGraph g, FlowNetwork net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();
@@ -320,7 +320,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
 
-		WeightsDouble supply = Weights.createExternalVerticesWeights(g, double.class);
+		IWeightsDouble supply = IWeights.createExternalVerticesWeights(g, double.class);
 		IntArrayList path = new IntArrayList();
 		IntSet visited = new IntOpenHashSet();
 		suppliersLoop: for (;;) {
@@ -390,7 +390,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		}
 	}
 
-	private static void testMinCostMaxFlowWithSourceSink(Graph g, FlowNetwork net, WeightFunction cost, int source,
+	private static void testMinCostMaxFlowWithSourceSink(IntGraph g, FlowNetwork net, IWeightFunction cost, int source,
 			int sink, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
@@ -402,8 +402,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, null);
 	}
 
-	private static void testMinCostMaxFlowWithSourceSinkLowerBound(Graph g, FlowNetwork net, WeightFunction cost,
-			WeightFunction lowerBound, int source, int sink, MinimumCostFlow algo) {
+	private static void testMinCostMaxFlowWithSourceSinkLowerBound(IntGraph g, FlowNetwork net, IWeightFunction cost,
+			IWeightFunction lowerBound, int source, int sink, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);
@@ -415,7 +415,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, lowerBound);
 	}
 
-	private static void testMinCostMaxFlowWithSourcesSinks(Graph g, FlowNetwork net, WeightFunction cost,
+	private static void testMinCostMaxFlowWithSourcesSinks(IntGraph g, FlowNetwork net, IWeightFunction cost,
 			IntCollection sources, IntCollection sinks, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
@@ -427,8 +427,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, null);
 	}
 
-	private static void testMinCostMaxFlowWithSourcesSinksLowerBound(Graph g, FlowNetwork net, WeightFunction cost,
-			WeightFunction lowerBound, IntCollection sources, IntCollection sinks, MinimumCostFlow algo) {
+	private static void testMinCostMaxFlowWithSourcesSinksLowerBound(IntGraph g, FlowNetwork net, IWeightFunction cost,
+			IWeightFunction lowerBound, IntCollection sources, IntCollection sinks, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);
@@ -440,8 +440,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, lowerBound);
 	}
 
-	private static void testMinCostFlowWithSupply(Graph g, FlowNetwork net, WeightFunction cost, WeightFunction supply,
-			MinimumCostFlow algo) {
+	private static void testMinCostFlowWithSupply(IntGraph g, FlowNetwork net, IWeightFunction cost,
+			IWeightFunction supply, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostFlow(g, net, cost, supply);
@@ -452,8 +452,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, null);
 	}
 
-	private static void testMinCostFlowWithSupplyLowerBound(Graph g, FlowNetwork net, WeightFunction cost,
-			WeightFunction lowerBound, WeightFunction supply, MinimumCostFlow algo) {
+	private static void testMinCostFlowWithSupplyLowerBound(IntGraph g, FlowNetwork net, IWeightFunction cost,
+			IWeightFunction lowerBound, IWeightFunction supply, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeMinCostFlow(g, net, cost, lowerBound, supply);
@@ -465,12 +465,12 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assertOptimalCirculation(g, net, cost, lowerBound);
 	}
 
-	private static void assertLowerBound(Graph g, FlowNetwork net, WeightFunction lowerBound) {
+	private static void assertLowerBound(IntGraph g, FlowNetwork net, IWeightFunction lowerBound) {
 		for (int e : g.edges())
 			assertTrue(net.getFlow(e) >= lowerBound.weight(e));
 	}
 
-	private static IntSet verticesWithPositiveSupply(IntCollection vertices, WeightFunction supply) {
+	private static IntSet verticesWithPositiveSupply(IntCollection vertices, IWeightFunction supply) {
 		IntSet sources = new IntOpenHashSet();
 		for (int v : vertices)
 			if (supply.weight(v) > 0)
@@ -478,7 +478,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		return sources;
 	}
 
-	private static IntSet verticesWithNegativeSupply(IntCollection vertices, WeightFunction supply) {
+	private static IntSet verticesWithNegativeSupply(IntCollection vertices, IWeightFunction supply) {
 		IntSet sources = new IntOpenHashSet();
 		for (int v : vertices)
 			if (supply.weight(v) < 0)
@@ -486,7 +486,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		return sources;
 	}
 
-	private static void assertSupplySatisfied(Graph g, FlowNetwork net, WeightFunction supply) {
+	private static void assertSupplySatisfied(IntGraph g, FlowNetwork net, IWeightFunction supply) {
 		for (int v : g.vertices()) {
 			double supplySum = 0;
 			for (int e : g.outEdges(v))
@@ -497,8 +497,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		}
 	}
 
-	private static void assertMaximumFlow(Graph g, FlowNetwork net, WeightFunction lowerBound, IntCollection sources,
-			IntCollection sinks) {
+	private static void assertMaximumFlow(IntGraph g, FlowNetwork net, IWeightFunction lowerBound,
+			IntCollection sources, IntCollection sinks) {
 		Assertions.Graphs.onlyDirected(g);
 
 		/*
@@ -533,11 +533,11 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 			if (queue.isEmpty())
 				return; /* no path to sink, flow is maximum */
 			int u = queue.dequeueInt();
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (flow.get(e) >= capacity.get(e) - 1e-9)
 					continue; /* saturated */
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (visited.contains(v))
 					continue;
 
@@ -547,11 +547,11 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 				visited.add(v);
 				queue.enqueue(v);
 			}
-			for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (flow.get(e) <= 1e-9)
 					continue; /* saturated */
-				int v = eit.source();
+				int v = eit.sourceInt();
 				if (visited.contains(v))
 					continue;
 
@@ -564,8 +564,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		}
 	}
 
-	private static void assertOptimalCirculation(Graph g, FlowNetwork net, WeightFunction cost,
-			WeightFunction lowerBound) {
+	private static void assertOptimalCirculation(IntGraph g, FlowNetwork net, IWeightFunction cost,
+			IWeightFunction lowerBound) {
 		Assertions.Graphs.onlyDirected(g);
 
 		/*
@@ -589,10 +589,10 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		}
 
 		/* build the residual graph */
-		GraphBuilder b = GraphBuilder.newDirected();
+		IntGraphBuilder b = IntGraphBuilder.newDirected();
 		for (int v : g.vertices())
 			b.addVertex(v);
-		WeightsDouble residualWeights = b.addEdgesWeights("cost", double.class);
+		IWeightsDouble residualWeights = b.addEdgesWeights("cost", double.class);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -610,7 +610,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 				residualWeights.set(residualE, -c);
 			}
 		}
-		Graph residualGraph = b.build();
+		IntGraph residualGraph = b.build();
 		residualWeights = residualGraph.getEdgesWeights("cost");
 
 		/* the circulation is optimal if no circle with negative mean cost exists */

@@ -15,25 +15,25 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 class ShortestPathSTs {
 
 	static abstract class AbstractImpl implements ShortestPathST {
 
 		@Override
-		public Path computeShortestPath(Graph g, WeightFunction w, int source, int target) {
+		public Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
 			if (g instanceof IndexGraph)
 				return computeShortestPath((IndexGraph) g, w, source, target);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 
@@ -41,7 +41,7 @@ class ShortestPathSTs {
 			return PathImpl.pathFromIndexPath(indexResult, viMap, eiMap);
 		}
 
-		abstract Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target);
+		abstract Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target);
 	}
 
 }

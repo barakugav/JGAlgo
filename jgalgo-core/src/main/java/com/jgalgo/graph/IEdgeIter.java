@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * Iterator used to iterate over edges of a vertex.
  * <p>
  * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
- * of the last iterated edge are available by {@link #source()} and {@link #target()}.
+ * of the last iterated edge are available by {@link #sourceInt()} and {@link #targetInt()}.
  *
  * <pre> {@code
  * Graph g = ...;
@@ -37,10 +37,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see    EdgeSet
+ * @see    IEdgeSet
  * @author Barak Ugav
  */
-public interface EdgeIter extends IntIterator {
+public interface IEdgeIter extends IntIterator {
 
 	/**
 	 * Peek at the next edge of the iterator without advancing it.
@@ -50,7 +50,7 @@ public interface EdgeIter extends IntIterator {
 	 * @return                        the next edge of the iterator
 	 * @throws NoSuchElementException if there is no 'next' element
 	 */
-	int peekNext();
+	int peekNextInt();
 
 	/**
 	 * Get the source vertex of the last returned edge.
@@ -59,7 +59,7 @@ public interface EdgeIter extends IntIterator {
 	 *
 	 * @return the source vertex of the last returned edge
 	 */
-	int source();
+	int sourceInt();
 
 	/**
 	 * Get the target vertex of the last returned edge.
@@ -68,14 +68,14 @@ public interface EdgeIter extends IntIterator {
 	 *
 	 * @return the target vertex of the last returned edge
 	 */
-	int target();
+	int targetInt();
 
 	/**
 	 * Get an empty edge iterator.
 	 *
 	 * @return an empty edge iterator
 	 */
-	static EdgeIter emptyIterator() {
+	static IEdgeIter emptyIterator() {
 		return Edges.EmptyEdgeIter.Instance;
 	}
 

@@ -16,14 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -31,11 +31,11 @@ class FlowNetworks {
 
 	static class NetImplEdgeWeights implements FlowNetwork {
 
-		final WeightsDouble capacities;
-		final WeightsDouble flows;
+		final IWeightsDouble capacities;
+		final IWeightsDouble flows;
 		static final double EPS = 0.0001;
 
-		NetImplEdgeWeights(WeightsDouble capacities, WeightsDouble flows) {
+		NetImplEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
 			this.capacities = Objects.requireNonNull(capacities);
 			this.flows = Objects.requireNonNull(flows);
 		}
@@ -69,23 +69,23 @@ class FlowNetworks {
 
 	static class NetImplEdgeWeightsInt implements FlowNetworkInt {
 
-		final WeightsInt capacities;
-		final WeightsInt flows;
+		final IWeightsInt capacities;
+		final IWeightsInt flows;
 
-		NetImplEdgeWeightsInt(WeightsInt capacities, WeightsInt flows) {
+		NetImplEdgeWeightsInt(IWeightsInt capacities, IWeightsInt flows) {
 			this.capacities = Objects.requireNonNull(capacities);
 			this.flows = Objects.requireNonNull(flows);
 		}
 
-		static FlowNetworkInt addWeightsAndCreateNet(Graph g) {
-			WeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
-			WeightsInt flows = g.addEdgesWeights("_flow", int.class);
+		static FlowNetworkInt addWeightsAndCreateNet(IntGraph g) {
+			IWeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
+			IWeightsInt flows = g.addEdgesWeights("_flow", int.class);
 			return new NetImplEdgeWeightsInt(capacities, flows);
 		}
 
-		static FlowNetworkInt createExternalWeightsAndCreateNet(Graph g) {
-			WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);
-			WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
+		static FlowNetworkInt createExternalWeightsAndCreateNet(IntGraph g) {
+			IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
+			IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
 			return new NetImplEdgeWeightsInt(capacities, flows);
 		}
 
@@ -212,9 +212,9 @@ class FlowNetworks {
 	private static class IndexNetFromNet implements FlowNetwork {
 
 		private final FlowNetwork idNet;
-		final IndexIdMap eiMap;
+		final IndexIntIdMap eiMap;
 
-		IndexNetFromNet(FlowNetwork idNet, IndexIdMap eiMap) {
+		IndexNetFromNet(FlowNetwork idNet, IndexIntIdMap eiMap) {
 			if (idNet instanceof NetImplEdgeWeights || idNet instanceof NetImplEdgeWeightsInt)
 				throw new IllegalArgumentException("net is already an index flow network");
 			this.idNet = Objects.requireNonNull(idNet);
@@ -227,29 +227,29 @@ class FlowNetworks {
 
 		@Override
 		public double getCapacity(int edge) {
-			return idNet.getCapacity(eiMap.indexToId(edge));
+			return idNet.getCapacity(eiMap.indexToIdInt(edge));
 		}
 
 		@Override
 		public void setCapacity(int edge, double capacity) {
-			idNet.setCapacity(eiMap.indexToId(edge), capacity);
+			idNet.setCapacity(eiMap.indexToIdInt(edge), capacity);
 		}
 
 		@Override
 		public double getFlow(int edge) {
-			return idNet.getFlow(eiMap.indexToId(edge));
+			return idNet.getFlow(eiMap.indexToIdInt(edge));
 		}
 
 		@Override
 		public void setFlow(int edge, double flow) {
-			idNet.setFlow(eiMap.indexToId(edge), flow);
+			idNet.setFlow(eiMap.indexToIdInt(edge), flow);
 		}
 
 	}
 
 	private static class IndexNetFromNetInt extends IndexNetFromNet implements FlowNetworkInt {
 
-		IndexNetFromNetInt(FlowNetworkInt idNet, IndexIdMap eiMap) {
+		IndexNetFromNetInt(FlowNetworkInt idNet, IndexIntIdMap eiMap) {
 			super(idNet, eiMap);
 		}
 
@@ -260,22 +260,22 @@ class FlowNetworks {
 
 		@Override
 		public int getCapacityInt(int edge) {
-			return idNet().getCapacityInt(eiMap.indexToId(edge));
+			return idNet().getCapacityInt(eiMap.indexToIdInt(edge));
 		}
 
 		@Override
 		public void setCapacity(int edge, int capacity) {
-			idNet().setCapacity(eiMap.indexToId(edge), capacity);
+			idNet().setCapacity(eiMap.indexToIdInt(edge), capacity);
 		}
 
 		@Override
 		public int getFlowInt(int edge) {
-			return idNet().getFlowInt(eiMap.indexToId(edge));
+			return idNet().getFlowInt(eiMap.indexToIdInt(edge));
 		}
 
 		@Override
 		public void setFlow(int edge, int flow) {
-			idNet().setFlow(eiMap.indexToId(edge), flow);
+			idNet().setFlow(eiMap.indexToIdInt(edge), flow);
 		}
 
 		@Deprecated
@@ -303,13 +303,13 @@ class FlowNetworks {
 		}
 	}
 
-	static FlowNetworkInt indexNetFromNet(FlowNetworkInt net, IndexIdMap eiMap) {
+	static FlowNetworkInt indexNetFromNet(FlowNetworkInt net, IndexIntIdMap eiMap) {
 		if (net instanceof NetImplEdgeWeightsInt) {
 			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;
 
 			/* Create a network from the underlying index weights containers */
-			WeightsInt capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
-			WeightsInt flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
+			IWeightsInt capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
+			IWeightsInt flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
 			return new NetImplEdgeWeightsInt(capacityWeights, flowWeights);
 		} else {
 
@@ -318,15 +318,15 @@ class FlowNetworks {
 		}
 	}
 
-	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIdMap eiMap) {
+	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIntIdMap eiMap) {
 		if (net instanceof FlowNetworkInt)
 			return indexNetFromNet((FlowNetworkInt) net, eiMap);
 		if (net instanceof NetImplEdgeWeights) {
 			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;
 
 			/* Create a network from the underlying index weights containers */
-			WeightsDouble capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
-			WeightsDouble flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
+			IWeightsDouble capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
+			IWeightsDouble flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
 			return new NetImplEdgeWeights(capacityWeights, flowWeights);
 
 		} else {

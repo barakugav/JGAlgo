@@ -125,37 +125,37 @@
   <Match>
     <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
     <Or>
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Char" />
     </Or>
     <Bug pattern="HE_EQUALS_NO_HASHCODE" />
   </Match>
   <Match>
     <!-- the returned view is unmodifiable, its ok to expose it -->
     <Or>
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Obj" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Byte" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Short" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Int" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Long" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Float" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Double" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Bool" />
-      <Class name="com.jgalgo.graph.WeightsImpl$Index$Char" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Obj" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Byte" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Short" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Int" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Long" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Float" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Double" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Bool" />
+      <Class name="com.jgalgo.graph.IWeightsImpl$Index$Char" />
     </Or>
     <Method name="values" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- this is internal API, its ok to expose it -->
-    <Class name="com.jgalgo.graph.WeightsImpl$Abstract" />
+    <Class name="com.jgalgo.graph.IWeightsImpl$Abstract" />
     <Method name="container" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>

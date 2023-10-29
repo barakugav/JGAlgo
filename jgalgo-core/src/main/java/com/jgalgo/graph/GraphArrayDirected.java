@@ -102,7 +102,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 			addInternalVerticesContainer(edgesInNumContainer);
 
 			for (int v = 0; v < n; v++) {
-				EdgeSet outEdges = g.outEdges(v);
+				IEdgeSet outEdges = g.outEdges(v);
 				int outEdgesSize = edgesOutNum[v] = outEdges.size();
 				if (outEdgesSize != 0) {
 					int[] edges = edgesOut[v] = new int[outEdgesSize];
@@ -110,7 +110,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 					for (int e : outEdges)
 						edges[i++] = e;
 				}
-				EdgeSet inEdges = g.inEdges(v);
+				IEdgeSet inEdges = g.inEdges(v);
 				int inEdgesSize = edgesInNum[v] = inEdges.size();
 				if (inEdgesSize != 0) {
 					int[] edges = edgesIn[v] = new int[inEdgesSize];
@@ -184,13 +184,13 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
@@ -270,7 +270,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		// edgesIn.clear();
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -286,12 +286,12 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edgesOut[source], edgesOutNum[source]);
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
@@ -307,7 +307,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edgesIn[target], edgesInNum[target]);
 		}
 	}
@@ -319,7 +319,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return edgeTarget(lastEdge);
 		}
 	}
@@ -331,7 +331,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return edgeSource(lastEdge);
 		}
 	}

@@ -22,11 +22,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IWeightsObj;
 
 public class FormatGMLTest {
 
@@ -73,7 +73,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = Graph.newUndirected();
+			IntGraph g = IntGraph.newUndirected();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -93,9 +93,9 @@ public class FormatGMLTest {
 			GraphWriter.newInstance("gml").writeGraph(g, writer);
 			String data = writer.toString();
 
-			GraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
-			Graph gImmutable = gb.build();
-			Graph gMutable = gb.buildMutable();
+			IntGraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
+			IntGraph gImmutable = gb.build();
+			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -108,7 +108,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = Graph.newUndirected();
+			IntGraph g = IntGraph.newUndirected();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -124,18 +124,18 @@ public class FormatGMLTest {
 					g.addEdge(source, target, e);
 			}
 
-			WeightsInt wv1 = g.addVerticesWeights("v1", int.class);
-			WeightsDouble wv2 = g.addVerticesWeights("v2", double.class);
-			WeightsObj<String> wv3 = g.addVerticesWeights("v3", String.class);
+			IWeightsInt wv1 = g.addVerticesWeights("v1", int.class);
+			IWeightsDouble wv2 = g.addVerticesWeights("v2", double.class);
+			IWeightsObj<String> wv3 = g.addVerticesWeights("v3", String.class);
 			for (int v : g.vertices()) {
 				wv1.set(v, n + rand.nextInt(n * 3));
 				wv2.set(v, n + rand.nextDouble());
 				wv3.set(v, Character.toString('a' + rand.nextInt('z' - 'a' + 1)));
 			}
 
-			WeightsInt we1 = g.addEdgesWeights("e1", int.class);
-			WeightsDouble we2 = g.addEdgesWeights("e2", double.class);
-			WeightsObj<String> we3 = g.addEdgesWeights("e3", String.class);
+			IWeightsInt we1 = g.addEdgesWeights("e1", int.class);
+			IWeightsDouble we2 = g.addEdgesWeights("e2", double.class);
+			IWeightsObj<String> we3 = g.addEdgesWeights("e3", String.class);
 			for (int e : g.edges()) {
 				we1.set(e, n + rand.nextInt(m * 3));
 				we2.set(e, n + rand.nextDouble());
@@ -146,9 +146,9 @@ public class FormatGMLTest {
 			GraphWriter.newInstance("gml").writeGraph(g, writer);
 			String data = writer.toString();
 
-			GraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
-			Graph gImmutable = gb.build();
-			Graph gMutable = gb.buildMutable();
+			IntGraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
+			IntGraph gImmutable = gb.build();
+			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -156,7 +156,7 @@ public class FormatGMLTest {
 
 	@Test
 	public void writeDirectedGraphUnsupported() {
-		Graph g = Graph.newDirected();
+		IntGraph g = IntGraph.newDirected();
 		g.addVertex(1);
 		g.addVertex(6);
 		g.addVertex(78);

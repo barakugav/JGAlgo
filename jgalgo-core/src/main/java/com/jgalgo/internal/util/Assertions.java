@@ -23,11 +23,11 @@ import java.util.Objects;
 import com.jgalgo.alg.FlowNetwork;
 import com.jgalgo.alg.FlowNetworkInt;
 import com.jgalgo.alg.GraphsUtils;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -41,17 +41,17 @@ public class Assertions {
 
 	public static class Graphs {
 
-		public static void onlyDirected(Graph g) {
+		public static void onlyDirected(IntGraph g) {
 			if (!g.isDirected())
 				throw new IllegalArgumentException("only directed graphs are supported");
 		}
 
-		public static void onlyUndirected(Graph g) {
+		public static void onlyUndirected(IntGraph g) {
 			if (g.isDirected())
 				throw new IllegalArgumentException("only undirected graphs are supported");
 		}
 
-		public static void onlyBipartite(IndexGraph g, WeightsBool partition) {
+		public static void onlyBipartite(IndexGraph g, IWeightsBool partition) {
 			if (!JGAlgoConfigImpl.AssertionsGraphsBipartitePartition)
 				return;
 			for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -59,21 +59,21 @@ public class Assertions {
 					throw new IllegalArgumentException("the graph is not bipartite");
 		}
 
-		public static void noSelfEdges(Graph g, String msg) {
+		public static void noSelfEdges(IntGraph g, String msg) {
 			if (GraphsUtils.containsSelfEdges(g))
 				throw new IllegalArgumentException(msg);
 		}
 
-		public static void noParallelEdges(Graph g, String msg) {
+		public static void noParallelEdges(IntGraph g, String msg) {
 			if (GraphsUtils.containsParallelEdges(g))
 				throw new IllegalArgumentException(msg);
 		}
 
-		public static void onlyPositiveEdgesWeights(IndexGraph g, WeightFunction w) {
+		public static void onlyPositiveEdgesWeights(IndexGraph g, IWeightFunction w) {
 			if (!JGAlgoConfigImpl.AssertionsGraphsPositiveWeights)
 				return;
-			if (w instanceof WeightFunctionInt) {
-				WeightFunctionInt wInt = (WeightFunctionInt) w;
+			if (w instanceof IWeightFunctionInt) {
+				IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					onlyPositiveWeight(wInt.weightInt(e));
 			} else {
@@ -96,8 +96,8 @@ public class Assertions {
 				throw new IllegalArgumentException("only positive weights are supported: " + w);
 		}
 
-		public static void onlyCardinality(WeightFunction w) {
-			if (w != null && w != WeightFunction.CardinalityWeightFunction)
+		public static void onlyCardinality(IWeightFunction w) {
+			if (w != null && w != IWeightFunction.CardinalityWeightFunction)
 				throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
 		}
 
@@ -175,10 +175,10 @@ public class Assertions {
 			}
 		}
 
-		public static void checkLowerBound(IndexGraph g, FlowNetwork net, WeightFunction lowerBound) {
-			if (net instanceof FlowNetworkInt && lowerBound instanceof WeightFunctionInt) {
+		public static void checkLowerBound(IndexGraph g, FlowNetwork net, IWeightFunction lowerBound) {
+			if (net instanceof FlowNetworkInt && lowerBound instanceof IWeightFunctionInt) {
 				FlowNetworkInt netInt = (FlowNetworkInt) net;
-				WeightFunctionInt lowerBoundInt = (WeightFunctionInt) lowerBound;
+				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int l = lowerBoundInt.weightInt(e);
 					int cap = netInt.getCapacityInt(e);
@@ -197,7 +197,7 @@ public class Assertions {
 			}
 		}
 
-		public static void checkSupply(IndexGraph g, WeightFunction supply) {
+		public static void checkSupply(IndexGraph g, IWeightFunction supply) {
 			double sum = 0;
 			for (int n = g.vertices().size(), v = 0; v < n; v++) {
 				double d = supply.weight(v);

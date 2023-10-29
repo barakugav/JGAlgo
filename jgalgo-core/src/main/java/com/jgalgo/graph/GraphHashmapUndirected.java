@@ -150,13 +150,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source, edges);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target, edges);
 	}
@@ -252,7 +252,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		// edges.clear();
 	}
 
-	class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 		private final Int2IntMap edges;
 
 		EdgeSetOut(int source, Int2IntMap[] edges) {
@@ -271,12 +271,12 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edges);
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 		private final Int2IntMap edges;
 
 		EdgeSetIn(int target, Int2IntMap[] edges) {
@@ -295,7 +295,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edges);
 		}
 	}

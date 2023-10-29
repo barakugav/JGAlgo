@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.TestBase;
 
 public class TSPMetricTest extends TestBase {
@@ -55,7 +55,7 @@ public class TSPMetricTest extends TestBase {
 		}
 
 		IndexGraph g = Graphs.newCompleteGraphUndirected(n);
-		WeightFunction distances = e -> {
+		IWeightFunction distances = e -> {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double xd = locations[u][x] - locations[v][x];

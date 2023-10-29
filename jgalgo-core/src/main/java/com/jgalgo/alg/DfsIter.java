@@ -16,9 +16,9 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -54,13 +54,13 @@ public interface DfsIter extends IntIterator {
 	 * @param  source a vertex in the graph from which the search will start from
 	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
-	static DfsIter newInstance(Graph g, int source) {
+	static DfsIter newInstance(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
 			return new DfsIterImpl((IndexGraph) g, source);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		int iSource = viMap.idToIndex(source);
 		DfsIter indexIter = new DfsIterImpl(iGraph, iSource);

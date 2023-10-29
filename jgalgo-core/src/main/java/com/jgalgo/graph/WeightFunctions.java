@@ -16,7 +16,7 @@
 package com.jgalgo.graph;
 
 /**
- * Static methods class for {@linkplain WeightFunction weight functions}.
+ * Static methods class for {@linkplain IWeightFunction weight functions}.
  *
  * @author Barak Ugav
  */
@@ -27,7 +27,7 @@ public class WeightFunctions {
 	/**
 	 * Get a 'local' version of a given weight function.
 	 * <p>
-	 * A {@link WeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
+	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result <i>locally</i>, to
 	 * ensure the potentially heavy computations occur few as possible.
@@ -44,19 +44,19 @@ public class WeightFunctions {
 	 * @param  w a weight function
 	 * @return   a local version of the weight function
 	 */
-	public static WeightFunction localEdgeWeightFunction(IndexGraph g, WeightFunction w) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction)
+	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction)
 			return w;
 		if (w instanceof WeightsImpl.Index)
 			return w;
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
-			WeightsInt wLocal = Weights.createExternalEdgesWeights(g, int.class);
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
+			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				wLocal.set(e, wInt.weightInt(e));
 			return wLocal;
 		} else {
-			WeightsDouble wLocal = Weights.createExternalEdgesWeights(g, double.class);
+			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				wLocal.set(e, w.weight(e));
 			return wLocal;
@@ -66,7 +66,7 @@ public class WeightFunctions {
 	/**
 	 * Get a 'local' version of a given weight function.
 	 * <p>
-	 * A {@link WeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
+	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result <i>locally</i>, to
 	 * ensure the potentially heavy computations occur few as possible.
@@ -83,12 +83,12 @@ public class WeightFunctions {
 	 * @param  w a weight function
 	 * @return   a local version of the weight function
 	 */
-	public static WeightFunctionInt localEdgeWeightFunction(IndexGraph g, WeightFunctionInt w) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction)
+	public static IWeightFunctionInt localEdgeWeightFunction(IndexGraph g, IWeightFunctionInt w) {
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction)
 			return w;
 		if (w instanceof WeightsImpl.Index)
 			return w;
-		WeightsInt wLocal = Weights.createExternalEdgesWeights(g, int.class);
+		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			wLocal.set(e, w.weightInt(e));
 		return wLocal;

@@ -22,8 +22,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -63,20 +63,20 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, g.vertices(), w, true);
 	}
 
 	@Override
 	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			WeightFunction w) {
+			IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, verticesSubset, w, false);
 	}
 
 	private ShortestPathAllPairs.Result computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
-			WeightFunction w, boolean allVertices) {
+			IWeightFunction w, boolean allVertices) {
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
+			w = IWeightFunction.CardinalityWeightFunction;
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		final int n = g.vertices().size();
 
@@ -100,13 +100,13 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		WeightFunction wPotential = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunction wPotential = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 		SuccessRes res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);
 		res.potential = potential;
 		return res;
 	}
 
-	private SuccessRes computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, WeightFunction w,
+	private SuccessRes computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, IWeightFunction w,
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
@@ -142,7 +142,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 	}
 
-	private Pair<double[], Path> calcPotential(IndexGraph g, WeightFunction w) {
+	private Pair<double[], Path> calcPotential(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -163,10 +163,10 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 		IndexGraph refG = refgBuilder.build();
 
-		WeightFunction refW;
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
-			WeightFunctionInt refWInt = e -> e < fakeEdgesThreshold ? wInt.weightInt(e) : 0;
+		IWeightFunction refW;
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
+			IWeightFunctionInt refWInt = e -> e < fakeEdgesThreshold ? wInt.weightInt(e) : 0;
 			refW = refWInt;
 		} else {
 			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;

@@ -15,8 +15,8 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * An algorithm for the chinese postman problem.
@@ -41,7 +41,7 @@ public interface ChinesePostman {
 	 * @return   a closed path that visits all edges in the graph, with minimum weight sum with respect to the given
 	 *           edge weight function
 	 */
-	Path computeShortestEdgeVisitorCircle(Graph g, WeightFunction w);
+	Path computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new algorithm object for chinese postman problem.

@@ -25,12 +25,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.jgalgo.alg.MatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SplitFindMin;
@@ -52,20 +52,20 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 	static final double EPS = 0.00001;
 
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
-	abstract Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrinter debugPrint);
+	abstract Worker newWorker(IndexGraph gOrig, IWeightFunction w,
+			HeapReferenceable.Builder<Object, Object> heapBuilder, DebugPrinter debugPrint);
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -377,10 +377,10 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		/* the graph */
 		final IndexGraph g;
 
-		final WeightsObj<EdgeVal> edgeVal;
+		final IWeightsObj<EdgeVal> edgeVal;
 
 		/* the weight function */
-		final WeightFunction w;
+		final IWeightFunction w;
 
 		/* vertex -> matched edge */
 		final int[] matched;
@@ -454,7 +454,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			}
 		}
 
-		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrinter debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
@@ -462,7 +462,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);
-			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
+			IWeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
 			this.w = e -> wLocal.weight(edgeVal.get(e).e);
 
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
@@ -987,9 +987,9 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 		void insertGrowEventsFromVertex(int u) {
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (isEven(v))
 					continue;
 				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);
@@ -1014,9 +1014,9 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			assert isEven(u);
 			Blossom U = evens.findBlossom(u);
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				final int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (!isEven(v))
 					continue;
 				Blossom V = evens.findBlossom(v);

@@ -18,14 +18,14 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestUtils.PhasedTester;
 import com.jgalgo.internal.util.TestUtils.SeedGenerator;
 
 public class LowestCommonAncestorOfflineUnionFindTest {
 
-	private static void testLCA(Graph g, Supplier<? extends LowestCommonAncestorOffline> builder, int[][] queries) {
+	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorOffline> builder, int[][] queries) {
 		LowestCommonAncestorOffline lca = builder.get();
 		LowestCommonAncestorOffline.Queries qs = LowestCommonAncestorOffline.Queries.newInstance();
 		for (int q = 0; q < queries.length; q++)
@@ -50,7 +50,7 @@ public class LowestCommonAncestorOfflineUnionFindTest {
 		tester.addPhase().withArgs(4096, 4096).repeat(4);
 		tester.addPhase().withArgs(16384, 16384).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			int root = g.vertices().iterator().nextInt();
 			int[][] queries = LowestCommonAncestorStaticRMQTest.randLcaQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, LowestCommonAncestorOfflineUnionFind::new, queries);

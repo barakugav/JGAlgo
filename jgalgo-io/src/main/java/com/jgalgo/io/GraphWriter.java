@@ -20,7 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * A writer that writes Graphs to files/IO-writer.
@@ -36,7 +36,7 @@ public interface GraphWriter {
 	 * @param graph  a graph
 	 * @param writer an I/O writer to which the graph description will be written to
 	 */
-	void writeGraph(Graph graph, Writer writer);
+	void writeGraph(IntGraph graph, Writer writer);
 
 	/**
 	 * Write a graph to a file.
@@ -44,7 +44,7 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param file  a file descriptor to which the graph will be written to
 	 */
-	default void writeGraph(Graph graph, File file) {
+	default void writeGraph(IntGraph graph, File file) {
 		try (Writer writer = new FileWriter(file, GraphIO.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
@@ -58,7 +58,7 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param path  a path to a file to which the graph will be written to
 	 */
-	default void writeGraph(Graph graph, String path) {
+	default void writeGraph(IntGraph graph, String path) {
 		try (Writer writer = new FileWriter(path, GraphIO.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {

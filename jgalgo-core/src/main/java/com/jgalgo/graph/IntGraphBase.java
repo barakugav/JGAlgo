@@ -22,15 +22,15 @@ import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-abstract class GraphBase implements Graph {
+abstract class IntGraphBase implements IntGraph {
 
 	@Override
 	public boolean equals(Object other) {
 		if (other == this)
 			return true;
-		if (!(other instanceof Graph))
+		if (!(other instanceof IntGraph))
 			return false;
-		Graph o = (Graph) other;
+		IntGraph o = (IntGraph) other;
 
 		if (isDirected() != o.isDirected())
 			return false;
@@ -54,14 +54,14 @@ abstract class GraphBase implements Graph {
 		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))
 			return false;
 		for (String key : getVerticesWeightsKeys()) {
-			Weights<?> w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);
+			IWeights<?> w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);
 			if (!WeightsImpl.isEqual(vertices(), w1, w2))
 				return false;
 		}
 		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))
 			return false;
 		for (String key : getEdgesWeightsKeys()) {
-			Weights<?> w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);
+			IWeights<?> w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);
 			if (!WeightsImpl.isEqual(edges(), w1, w2))
 				return false;
 		}
@@ -94,19 +94,19 @@ abstract class GraphBase implements Graph {
 		s.append('{');
 
 		Set<String> verticesWeightsKeys = getVerticesWeightsKeys();
-		Collection<Weights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
+		Collection<IWeights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (String key : verticesWeightsKeys)
 			verticesWeights.add(getVerticesWeights(key));
 
 		Set<String> edgesWeightsKeys = getEdgesWeightsKeys();
-		Collection<Weights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
+		Collection<IWeights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (String key : edgesWeightsKeys)
 			edgesWeights.add(getEdgesWeights(key));
 
-		ObjIntConsumer<Collection<Weights<?>>> appendWeights = (weights, key) -> {
+		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, key) -> {
 			s.append('[');
 			boolean firstData = true;
-			for (Weights<?> weight : weights) {
+			for (IWeights<?> weight : weights) {
 				if (firstData) {
 					firstData = false;
 				} else {
@@ -130,9 +130,9 @@ abstract class GraphBase implements Graph {
 
 			s.append(": [");
 			boolean firstEdge = true;
-			for (EdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (firstEdge)
 					firstEdge = false;
 				else
@@ -150,7 +150,7 @@ abstract class GraphBase implements Graph {
 		return s.toString();
 	}
 
-	abstract class EdgeSetAbstract extends AbstractIntSet implements EdgeSet {
+	abstract class EdgeSetAbstract extends AbstractIntSet implements IEdgeSet {
 
 		@Override
 		public boolean remove(int edge) {

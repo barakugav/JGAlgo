@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -49,7 +49,7 @@ public class Trees {
 	 * @return                          {@code true} if the graph is a tree, else {@code false}
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean isTree(Graph g) {
+	public static boolean isTree(IntGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());
 	}
@@ -67,7 +67,7 @@ public class Trees {
 	 * @param  root a root vertex
 	 * @return      {@code true} if the graph is a tree rooted at {@code root}, else {@code false}.
 	 */
-	public static boolean isTree(Graph g, int root) {
+	public static boolean isTree(IntGraph g, int root) {
 		return isForest(g, IntIterators.singleton(root));
 	}
 
@@ -81,7 +81,7 @@ public class Trees {
 	 * @param  g a graph
 	 * @return   {@code true} if the graph is a forest, else {@code false}
 	 */
-	public static boolean isForest(Graph g) {
+	public static boolean isForest(IntGraph g) {
 		return isForest(g, g.vertices().iterator(), true);
 	}
 
@@ -98,15 +98,15 @@ public class Trees {
 	 * @param  roots a set of roots
 	 * @return       true if the graph is a forest rooted at the given roots.
 	 */
-	private static boolean isForest(Graph g, IntIterator roots) {
+	private static boolean isForest(IntGraph g, IntIterator roots) {
 		return isForest(g, roots, false);
 	}
 
-	private static boolean isForest(Graph g, IntIterator roots, boolean allowVisitedRoot) {
+	private static boolean isForest(IntGraph g, IntIterator roots, boolean allowVisitedRoot) {
 		if (g instanceof IndexGraph)
 			return isForest((IndexGraph) g, roots, allowVisitedRoot);
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		roots = IndexIdMaps.idToIndexIterator(roots, viMap);
 		return isForest(iGraph, roots, allowVisitedRoot);
 	}
@@ -139,9 +139,9 @@ public class Trees {
 				int u = stack.popInt();
 				visitedCount++;
 
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (!directed && v == parent[u])
 						continue;
 					if (visited.get(v))

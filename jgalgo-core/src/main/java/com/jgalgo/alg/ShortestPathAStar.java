@@ -17,12 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.function.IntToDoubleFunction;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -67,26 +67,27 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 	}
 
 	@Override
-	public Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+	public Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
+			IntToDoubleFunction vHeuristic) {
 		if (g instanceof IndexGraph)
 			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 
-		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToId(vIdx));
+		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
 
 		Path indexPath = computeShortestPath(iGraph, w, iSource, iTarget, indexVHeuristic);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 	@SuppressWarnings("boxing")
-	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
@@ -106,9 +107,9 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			final double uDistance = uInfo.distance;
 			uInfo.heapPtr = null;
 
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				Info vInfo = info.computeIfAbsent(v, k -> new Info());
 
 				double ew = w.weight(e);

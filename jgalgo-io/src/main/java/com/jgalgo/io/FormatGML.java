@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IWeightsObj;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
@@ -69,7 +69,7 @@ class FormatGML implements GraphFormat {
 	private static class WriterImpl implements GraphWriter {
 
 		@Override
-		public void writeGraph(Graph graph, Writer writer) {
+		public void writeGraph(IntGraph graph, Writer writer) {
 			if (graph.isDirected())
 				throw new IllegalArgumentException("GML format support undirected graphs only");
 
@@ -77,12 +77,12 @@ class FormatGML implements GraphFormat {
 				List<Pair<String, WeightsStringer>> vWeights = new ArrayList<>();
 				List<Pair<String, WeightsStringer>> eWeights = new ArrayList<>();
 				for (String key : graph.getVerticesWeightsKeys()) {
-					Weights<?> w = graph.getVerticesWeights(key);
+					IWeights<?> w = graph.getVerticesWeights(key);
 					checkValidWeightsKey(key);
 					vWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}
 				for (String key : graph.getEdgesWeightsKeys()) {
-					Weights<?> w = graph.getEdgesWeights(key);
+					IWeights<?> w = graph.getEdgesWeights(key);
 					checkValidWeightsKey(key);
 					eWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
 				}
@@ -128,7 +128,7 @@ class FormatGML implements GraphFormat {
 	private static class ReaderImpl implements GraphReader {
 
 		@Override
-		public GraphBuilder readIntoBuilder(Reader reader) {
+		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			try (BufferedReader r0 =
 					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
 
@@ -140,12 +140,12 @@ class FormatGML implements GraphFormat {
 			}
 		}
 
-		private static GraphBuilder readIntoBuilder(List<Node> roots) {
+		private static IntGraphBuilder readIntoBuilder(List<Node> roots) {
 			Node root;
 			if (roots.size() != 1 || !(root = roots.get(0)).key.equals("graph"))
 				throw new IllegalArgumentException("expected a single root list 'graph'");
 
-			GraphBuilder b = GraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newUndirected();
 			Map<String, List<IntObjectPair<Object>>> vWeights = new Object2ObjectOpenHashMap<>();
 			Map<String, List<IntObjectPair<Object>>> eWeights = new Object2ObjectOpenHashMap<>();
 			for (Node n : root.children()) {
@@ -221,22 +221,22 @@ class FormatGML implements GraphFormat {
 				String key = entry.getKey();
 				Class<?> weightType = chooseWeightType(entry.getValue());
 				if (weightType == int.class) {
-					WeightsInt w = b.addVerticesWeights(key, int.class);
+					IWeightsInt w = b.addVerticesWeights(key, int.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
 
 				} else if (weightType == double.class) {
-					WeightsDouble w = b.addVerticesWeights(key, double.class);
+					IWeightsDouble w = b.addVerticesWeights(key, double.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					WeightsObj<String> w = b.addVerticesWeights(key, String.class);
+					IWeightsObj<String> w = b.addVerticesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					WeightsObj<Object> w = b.addVerticesWeights(key, Object.class);
+					IWeightsObj<Object> w = b.addVerticesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}
@@ -245,22 +245,22 @@ class FormatGML implements GraphFormat {
 				String key = entry.getKey();
 				Class<?> weightType = chooseWeightType(entry.getValue());
 				if (weightType == int.class) {
-					WeightsInt w = b.addEdgesWeights(key, int.class);
+					IWeightsInt w = b.addEdgesWeights(key, int.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
 
 				} else if (weightType == double.class) {
-					WeightsDouble w = b.addEdgesWeights(key, double.class);
+					IWeightsDouble w = b.addEdgesWeights(key, double.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
 
 				} else if (weightType == String.class) {
-					WeightsObj<String> w = b.addEdgesWeights(key, String.class);
+					IWeightsObj<String> w = b.addEdgesWeights(key, String.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), (String) pair.second());
 
 				} else {
-					WeightsObj<Object> w = b.addEdgesWeights(key, Object.class);
+					IWeightsObj<Object> w = b.addEdgesWeights(key, Object.class);
 					for (var pair : entry.getValue())
 						w.set(pair.firstInt(), pair.second());
 				}

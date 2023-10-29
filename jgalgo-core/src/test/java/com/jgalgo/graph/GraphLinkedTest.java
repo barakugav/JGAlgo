@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphLinkedTest extends TestBase {
 
-	private static Boolean2ObjectFunction<Graph> graphImpl() {
+	private static Boolean2ObjectFunction<IntGraph> graphImpl() {
 		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "linked-list").setDirected(directed)
 				.newGraph();
 	}

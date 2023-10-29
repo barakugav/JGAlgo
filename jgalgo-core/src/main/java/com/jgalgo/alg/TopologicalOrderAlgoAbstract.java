@@ -16,21 +16,21 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 
 	@Override
-	public TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g) {
+	public TopologicalOrderAlgo.Result computeTopologicalSorting(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return computeTopologicalSorting((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 
 		TopologicalOrderAlgo.Result indexResult = computeTopologicalSorting(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap);
@@ -41,9 +41,9 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 	private static class ResultFromIndexResult implements TopologicalOrderAlgo.Result {
 
 		private final TopologicalOrderAlgo.Result res;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIdMap viMap) {
+		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIntIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

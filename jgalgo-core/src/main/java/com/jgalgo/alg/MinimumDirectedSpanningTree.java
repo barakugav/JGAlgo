@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Minimum spanning tree algorithm for directed graphs.
@@ -41,7 +41,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return                          all edges composing the spanning tree
 	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root);
+	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IntGraph g, IWeightFunction w, int root);
 
 	/**
 	 * Create a new directed-MST algorithm object.

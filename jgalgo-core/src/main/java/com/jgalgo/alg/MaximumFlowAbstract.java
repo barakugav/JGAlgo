@@ -16,12 +16,12 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -29,13 +29,13 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implements MaximumFlow {
 
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	public double computeMaximumFlow(IntGraph g, FlowNetwork net, int source, int sink) {
 		if (g instanceof IndexGraph)
 			return computeMaximumFlow((IndexGraph) g, net, source, sink);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 		int iSource = viMap.idToIndex(source);
@@ -44,13 +44,13 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 	}
 
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	public double computeMaximumFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
 		if (g instanceof IndexGraph)
 			return computeMaximumFlow((IndexGraph) g, net, sources, sinks);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 		IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
@@ -63,12 +63,12 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	@Override
-	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
 		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
 	}
 
 	@Override
-	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, IntCollection sources, IntCollection sinks) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks) {
 		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
 	}
 

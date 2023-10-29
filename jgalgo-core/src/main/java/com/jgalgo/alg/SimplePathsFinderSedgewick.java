@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -43,7 +43,7 @@ class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
 
 			final int n = g.vertices().size();
 			BitSet visited = new BitSet(n);
-			EdgeIter[] edgeIter = new EdgeIter[n];
+			IEdgeIter[] edgeIter = new IEdgeIter[n];
 			IntArrayList path = new IntArrayList();
 			int depth = 0;
 			{
@@ -54,10 +54,10 @@ class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
 
 			private void advance(int u) {
 				dfs: for (;;) {
-					for (EdgeIter eit = edgeIter[depth]; eit.hasNext();) {
+					for (IEdgeIter eit = edgeIter[depth]; eit.hasNext();) {
 						int e = eit.nextInt();
-						assert u == eit.source();
-						int v = eit.target();
+						assert u == eit.sourceInt();
+						int v = eit.targetInt();
 						if (visited.get(v))
 							continue;
 						path.add(e);

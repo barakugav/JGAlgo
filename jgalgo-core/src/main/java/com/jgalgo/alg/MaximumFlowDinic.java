@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -83,7 +83,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];
 			IntArrayList path = new IntArrayList();
-			EdgeIter[] edgeIters = new EdgeIter[n];
+			IEdgeIter[] edgeIters = new IEdgeIter[n];
 
 			for (;;) {
 				/* Calc the sub graph non saturated edges from source to sink using BFS */
@@ -97,9 +97,9 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 					if (u == sink)
 						break bfs;
 					int lvl = level[u];
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (flow[e] >= capacity[e] || level[v] <= lvl)
 							continue;
 						residual.set(e);
@@ -116,11 +116,11 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 					path.clear();
 					searchAugPath: for (;;) {
 						int u = path.isEmpty() ? source : g.edgeTarget(path.topInt());
-						EdgeIter eit = edgeIters[u];
+						IEdgeIter eit = edgeIters[u];
 						if (eit == null)
 							eit = edgeIters[u] = g.outEdges(u).iterator();
 						for (; eit.hasNext(); eit.nextInt())
-							if (residual.get(eit.peekNext()))
+							if (residual.get(eit.peekNextInt()))
 								break;
 
 						if (!eit.hasNext()) {
@@ -135,7 +135,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 							}
 						}
 
-						int e = eit.peekNext();
+						int e = eit.peekNextInt();
 						path.push(e);
 						if (g.edgeTarget(e) == sink) {
 							// augment

@@ -25,7 +25,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	private boolean parallelEdges;
 	int expectedVerticesNum;
 	int expectedEdgesNum;
-	private final EnumSet<GraphFactory.Hint> hints = EnumSet.noneOf(GraphFactory.Hint.class);
+	private final EnumSet<IntGraphFactory.Hint> hints = EnumSet.noneOf(IntGraphFactory.Hint.class);
 	private String impl;
 
 	IndexGraphFactoryImpl(boolean directed) {
@@ -166,14 +166,14 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 			}
 		} else {
-			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
+			if (hints.contains(IntGraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
 				return hashtableImpl;
 
-			if (hints.containsAll(List.of(GraphFactory.Hint.FastEdgeLookup, GraphFactory.Hint.DenseGraph)) && !selfEdges
+			if (hints.containsAll(List.of(IntGraphFactory.Hint.FastEdgeLookup, IntGraphFactory.Hint.DenseGraph)) && !selfEdges
 					&& !parallelEdges)
 				return matrixImpl;
 
-			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
+			if (hints.contains(IntGraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
 				return linkedImpl;
 
 			return arrayImpl;
@@ -215,13 +215,13 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
-	public IndexGraphFactory addHint(GraphFactory.Hint hint) {
+	public IndexGraphFactory addHint(IntGraphFactory.Hint hint) {
 		hints.add(hint);
 		return this;
 	}
 
 	@Override
-	public IndexGraphFactory removeHint(GraphFactory.Hint hint) {
+	public IndexGraphFactory removeHint(IntGraphFactory.Hint hint) {
 		hints.remove(hint);
 		return this;
 	}

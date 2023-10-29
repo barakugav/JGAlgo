@@ -40,9 +40,9 @@ import com.jgalgo.alg.Path;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
@@ -100,7 +100,7 @@ public class MaximumFlowBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());
 				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -176,7 +176,7 @@ public class MaximumFlowBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());
 				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -264,7 +264,7 @@ public class MaximumFlowBench {
 			Random rand = new Random(seedGen.nextSeed());
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
 				FlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
@@ -320,12 +320,12 @@ public class MaximumFlowBench {
 	}
 
 	private static class MaxFlowTask {
-		final Graph g;
+		final IntGraph g;
 		final FlowNetworkInt flow;
 		final int source;
 		final int sink;
 
-		MaxFlowTask(Graph g, FlowNetworkInt flow, int source, int sink) {
+		MaxFlowTask(IntGraph g, FlowNetworkInt flow, int source, int sink) {
 			this.g = g;
 			this.flow = flow;
 			this.source = source;
@@ -333,23 +333,23 @@ public class MaximumFlowBench {
 		}
 	}
 
-	private static FlowNetworkInt randNetworkInt(Graph g, long seed) {
+	private static FlowNetworkInt randNetworkInt(IntGraph g, long seed) {
 		Random rand = new Random(seed);
-		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);
-		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
+		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
+		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
 		FlowNetworkInt net = FlowNetworkInt.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
 			net.setCapacity(e, 5000 + rand.nextInt(16384));
 		return net;
 	}
 
-	private static FlowNetworkInt unweightedNetwork(Graph g) {
-		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class, Integer.valueOf(1));
-		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);
+	private static FlowNetworkInt unweightedNetwork(IntGraph g) {
+		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class, Integer.valueOf(1));
+		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
 		return FlowNetworkInt.createFromEdgeWeights(capacities, flows);
 	}
 
-	private static IntIntPair chooseSourceSink(Graph g, Random rand) {
+	private static IntIntPair chooseSourceSink(IntGraph g, Random rand) {
 		int source, sink;
 		for (int[] vs = g.vertices().toIntArray();;) {
 			source = vs[rand.nextInt(vs.length)];
@@ -359,7 +359,7 @@ public class MaximumFlowBench {
 		}
 	}
 
-	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(Graph g, Random rand) {
+	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(IntGraph g, Random rand) {
 		final int n = g.vertices().size();
 		final int sourcesNum;
 		final int sinksNum;

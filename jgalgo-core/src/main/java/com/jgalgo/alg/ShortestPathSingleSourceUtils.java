@@ -17,12 +17,12 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -33,13 +33,13 @@ class ShortestPathSingleSourceUtils {
 	static abstract class AbstractImpl implements ShortestPathSingleSource {
 
 		@Override
-		public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+		public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
 			if (g instanceof IndexGraph)
 				return computeShortestPaths((IndexGraph) g, w, source);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 
@@ -48,23 +48,23 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
+		public ShortestPathSingleSource.Result computeCardinalityShortestPaths(IntGraph g, int source) {
 			if (g instanceof IndexGraph)
 				return computeCardinalityShortestPaths((IndexGraph) g, source);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			int iSource = viMap.idToIndex(source);
 
 			ShortestPathSingleSource.Result indexResult = computeCardinalityShortestPaths(iGraph, iSource);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
 		}
 
-		abstract ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source);
+		abstract ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
 
 		ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
-			return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);
+			return computeShortestPaths(g, IWeightFunction.CardinalityWeightFunction, source);
 		}
 
 	}
@@ -72,10 +72,10 @@ class ShortestPathSingleSourceUtils {
 	private static class ResultFromIndexResult implements ShortestPathSingleSource.Result {
 
 		private final ShortestPathSingleSource.Result result;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(ShortestPathSingleSource.Result result, IndexIdMap viMap, IndexIdMap eiMap) {
+		ResultFromIndexResult(ShortestPathSingleSource.Result result, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.result = Objects.requireNonNull(result);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -155,13 +155,13 @@ class ShortestPathSingleSourceUtils {
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
 						@Override
-						ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w,
+						ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w,
 								int source) {
 							final int n = g.vertices().size(), m = g.edges().size();
 							int dialWork = n + m + maxDistance;
 							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
 							if (dialWork < dijkstraWork) {
-								return ssspDial.computeShortestPaths(g, (WeightFunctionInt) w, source, maxDistance);
+								return ssspDial.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance);
 							} else {
 								return ssspDijkstra.computeShortestPaths(g, w, source);
 							}

@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -30,7 +30,7 @@ class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.Abs
 		IntStack p = new IntArrayList();
 		int[] dfsPath = new int[n];
 		int[] c = new int[n];
-		EdgeIter[] edges = new EdgeIter[n];
+		IEdgeIter[] edges = new IEdgeIter[n];
 		// TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
@@ -53,9 +53,9 @@ class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.Abs
 			p.push(root);
 
 			dfs: for (int depth = 0;;) {
-				for (EdgeIter eit = edges[depth]; eit.hasNext();) {
+				for (IEdgeIter eit = edges[depth]; eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (c[v] == 0) {
 						c[v] = cNext++;
 						s.push(v);

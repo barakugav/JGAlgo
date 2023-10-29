@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -52,7 +52,7 @@ import com.jgalgo.graph.WeightFunction;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * WeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
+ * IWeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
  * w.set(e1, 1.2);
  * w.set(e2, 3.1);
  * w.set(e3, 15.1);
@@ -89,7 +89,7 @@ public interface ShortestPathSingleSource {
 	 * @param  source a source vertex
 	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
 	 */
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source);
+	public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source);
 
 	/**
 	 * Compute the cardinality shortest paths from a source to any other vertex in a graph.
@@ -102,8 +102,8 @@ public interface ShortestPathSingleSource {
 	 * @return        a result object containing the distances and cardinality shortest paths from the source to any
 	 *                other vertex
 	 */
-	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
-		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);
+	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(IntGraph g, int source) {
+		return computeShortestPaths(g, IWeightFunction.CardinalityWeightFunction, source);
 	}
 
 	/**

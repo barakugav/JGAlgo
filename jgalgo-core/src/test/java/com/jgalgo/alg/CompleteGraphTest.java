@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.EdgeSet;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -43,7 +43,7 @@ public class CompleteGraphTest extends TestBase {
 			for (int v = 0; v < n; v++)
 				expectedVertices.add(v);
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				assertEquals(expectedVertices, g.vertices());
 			}
 		}
@@ -53,7 +53,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testEdges() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 
 				int m = n * (n - 1) / (directed ? 1 : 2);
 				IntSet expectedEdges = new IntOpenHashSet(m);
@@ -69,7 +69,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testAddRemoveVertex() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				assertThrows(UnsupportedOperationException.class, () -> g.addVertex());
 				if (n > 0)
 					assertThrows(UnsupportedOperationException.class,
@@ -82,7 +82,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testAddRemoveEdge() {
 		for (int n : IntList.of(2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				assertThrows(UnsupportedOperationException.class, () -> g.addEdge(0, 1));
 				assertThrows(UnsupportedOperationException.class, () -> g.removeEdge(g.edges().iterator().nextInt()));
 			}
@@ -93,10 +93,10 @@ public class CompleteGraphTest extends TestBase {
 	public void testEdgesOutIn() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 
 				for (int u : g.vertices()) {
-					EdgeSet outEdges = g.outEdges(u);
+					IEdgeSet outEdges = g.outEdges(u);
 					assertEquals(n - 1, outEdges.size());
 
 					IntSet expectedEdges = new IntOpenHashSet(n - 1);
@@ -107,13 +107,13 @@ public class CompleteGraphTest extends TestBase {
 					assertEquals(expectedEdges, outEdges);
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
-					for (EdgeIter eit = outEdges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNext();
+					for (IEdgeIter eit = outEdges.iterator(); eit.hasNext();) {
+						int peekNext = eit.peekNextInt();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
 
-						assertEquals(u, eit.source());
-						assertEquals(g.edgeEndpoint(e, u), eit.target());
+						assertEquals(u, eit.sourceInt());
+						assertEquals(g.edgeEndpoint(e, u), eit.targetInt());
 
 						iteratedEdges.add(e);
 					}
@@ -121,7 +121,7 @@ public class CompleteGraphTest extends TestBase {
 					assertEquals(outEdges.size(), iteratedEdges.size());
 				}
 				for (int v : g.vertices()) {
-					EdgeSet inEdges = g.inEdges(v);
+					IEdgeSet inEdges = g.inEdges(v);
 					assertEquals(n - 1, inEdges.size());
 
 					IntSet expectedEdges = new IntOpenHashSet(n - 1);
@@ -132,13 +132,13 @@ public class CompleteGraphTest extends TestBase {
 					assertEquals(expectedEdges, inEdges);
 
 					IntSet iteratedEdges = new IntOpenHashSet(n - 1);
-					for (EdgeIter eit = inEdges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNext();
+					for (IEdgeIter eit = inEdges.iterator(); eit.hasNext();) {
+						int peekNext = eit.peekNextInt();
 						int e = eit.nextInt();
 						assertEquals(peekNext, e);
 
-						assertEquals(g.edgeEndpoint(e, v), eit.source());
-						assertEquals(v, eit.target());
+						assertEquals(g.edgeEndpoint(e, v), eit.sourceInt());
+						assertEquals(v, eit.targetInt());
 
 						iteratedEdges.add(e);
 					}
@@ -153,7 +153,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testGetEdge() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				for (int u : g.vertices()) {
 					for (int v : g.vertices()) {
 						int e = g.getEdge(u, v);
@@ -172,21 +172,21 @@ public class CompleteGraphTest extends TestBase {
 	public void testGetEdges() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				for (int u : g.vertices()) {
 					for (int v : g.vertices()) {
-						EdgeSet edges = g.getEdges(u, v);
+						IEdgeSet edges = g.getEdges(u, v);
 						IntSet expectedEdges = u == v ? IntSets.emptySet() : IntSet.of(g.getEdge(u, v));
 						assertEquals(expectedEdges, edges);
 
 						IntSet iteratedEdges = new IntOpenHashSet(1);
-						for (EdgeIter eit = edges.iterator(); eit.hasNext();) {
-							int peekNext = eit.peekNext();
+						for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
+							int peekNext = eit.peekNextInt();
 							int e = eit.nextInt();
 							assertEquals(peekNext, e);
 
-							assertEquals(u, eit.source());
-							assertEquals(v, eit.target());
+							assertEquals(u, eit.sourceInt());
+							assertEquals(v, eit.targetInt());
 
 							iteratedEdges.add(e);
 						}
@@ -201,7 +201,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testRemoveEdges() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				for (int v : g.vertices()) {
 					assertThrows(UnsupportedOperationException.class, () -> g.removeEdgesOf(v));
 					assertThrows(UnsupportedOperationException.class, () -> g.removeOutEdgesOf(v));
@@ -215,7 +215,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testClear() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				assertThrows(UnsupportedOperationException.class, () -> g.clear());
 				assertThrows(UnsupportedOperationException.class, () -> g.clearEdges());
 			}
@@ -225,7 +225,7 @@ public class CompleteGraphTest extends TestBase {
 	@Test
 	public void testReverseEdge() {
 		for (int n : IntList.of(2, 5, 13, 19, 50, 1237)) {
-			Graph g = Graphs.newCompleteGraphDirected(n);
+			IntGraph g = Graphs.newCompleteGraphDirected(n);
 			int m = g.edges().size();
 			int eIdx = 0x98154656 % m;
 			int e = g.edges().toIntArray()[Math.abs(eIdx)];
@@ -237,7 +237,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testAllEdgesExistsUniquely() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				ObjectSet<IntCollection> seenEdges = new ObjectOpenHashSet<>(g.edges().size());
 				for (int e : g.edges()) {
 					int u = g.edgeSource(e);
@@ -262,7 +262,7 @@ public class CompleteGraphTest extends TestBase {
 	public void testCapabilities() {
 		for (int n : IntList.of(0, 1, 2, 5, 13, 19, 50, 1237)) {
 			for (boolean directed : BooleanList.of(false, true)) {
-				Graph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
+				IntGraph g = directed ? Graphs.newCompleteGraphDirected(n) : Graphs.newCompleteGraphUndirected(n);
 				assertFalse(g.isAllowSelfEdges());
 				assertFalse(g.isAllowParallelEdges());
 				assertEquals(directed, g.isDirected());

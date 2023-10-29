@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -69,7 +69,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
@@ -129,9 +129,9 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 					// decrease edges keys if a better one is found
 					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
-							int v = V[eit.target()];
+							int v = V[eit.targetInt()];
 
 							// edge from current tree to itself
 							if (vTree[v] == r)

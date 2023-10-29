@@ -16,7 +16,7 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Eulerian tour calculation algorithm.
@@ -47,7 +47,7 @@ public interface EulerianTourAlgo {
 	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
-	public Path computeEulerianTour(Graph g);
+	public Path computeEulerianTour(IntGraph g);
 
 	/**
 	 * Create a new Eulerian tour computation algorithm.

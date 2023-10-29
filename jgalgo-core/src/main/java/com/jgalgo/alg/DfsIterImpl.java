@@ -17,9 +17,9 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
@@ -32,7 +32,7 @@ class DfsIterImpl implements DfsIter {
 
 	private final IndexGraph g;
 	private final BitSet visited;
-	private final Stack<EdgeIter> edgeIters;
+	private final Stack<IEdgeIter> edgeIters;
 	private final IntArrayList nextEdgePath;
 	private final IntArrayList edgePath;
 	private final IntList edgePathView;
@@ -80,9 +80,9 @@ class DfsIterImpl implements DfsIter {
 			nextV = -1;
 		} else {
 			advance: for (;;) {
-				for (EdgeIter eit = edgeIters.top(); eit.hasNext();) {
+				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (visited.get(v))
 						continue;
 					visited.set(v);
@@ -114,10 +114,10 @@ class DfsIterImpl implements DfsIter {
 	static class DFSFromIndexDFS implements DfsIter {
 
 		private final DfsIter it;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		DFSFromIndexDFS(DfsIter it, IndexIdMap viMap, IndexIdMap eiMap) {
+		DFSFromIndexDFS(DfsIter it, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -130,7 +130,7 @@ class DfsIterImpl implements DfsIter {
 
 		@Override
 		public int nextInt() {
-			return viMap.indexToId(it.nextInt());
+			return viMap.indexToIdInt(it.nextInt());
 		}
 
 		@Override

@@ -120,7 +120,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		super.clearEdges();
 	}
 
-	private abstract class EdgeIterBase implements EdgeIter {
+	private abstract class EdgeIterBase implements IEdgeIter {
 
 		private final int[] edges;
 		private int count;
@@ -144,7 +144,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return edges[idx];
 		}
@@ -174,7 +174,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return source;
 		}
 	}
@@ -189,7 +189,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 	}

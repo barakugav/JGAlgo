@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -49,9 +49,9 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		while (!queue.isEmpty()) {
 			int u = queue.dequeueInt();
 			topolSort[topolSortSize++] = u;
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (--inDegree[v] == 0)
 					queue.enqueue(v);
 			}

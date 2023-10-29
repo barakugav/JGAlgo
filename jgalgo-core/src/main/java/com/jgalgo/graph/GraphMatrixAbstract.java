@@ -66,9 +66,9 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 				addInternalVerticesContainer(vEdges);
 				edges.set(u, vEdges);
 
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					int existingEdge = vEdges.get(v);
 					if (existingEdge != EdgeNone && existingEdge != e)
 						throw new IllegalArgumentException("parallel edges are not supported");
@@ -125,7 +125,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 		int edge = edges.get(source).get(target);
 		if (edge == EdgeNone) {
 			return Edges.EmptyEdgeSet;
@@ -181,7 +181,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		super.clearEdges();
 	}
 
-	class EdgeIterOut implements EdgeIter {
+	class EdgeIterOut implements IEdgeIter {
 
 		private final int source;
 		private int target;
@@ -210,7 +210,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return sourceEdges.get(target);
 		}
@@ -227,22 +227,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return source;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return lastTarget;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(sourceEdges.get(target()));
+			removeEdge(sourceEdges.get(targetInt()));
 		}
 	}
 
-	class EdgeIterInUndirected implements EdgeIter {
+	class EdgeIterInUndirected implements IEdgeIter {
 
 		private int source;
 		private final int target;
@@ -271,7 +271,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return targetEdges.get(source);
 		}
@@ -288,22 +288,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return lastSource;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(targetEdges.get(source()));
+			removeEdge(targetEdges.get(sourceInt()));
 		}
 	}
 
-	class EdgeIterInDirected implements EdgeIter {
+	class EdgeIterInDirected implements IEdgeIter {
 
 		private int source;
 		private final int target;
@@ -330,7 +330,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return edges.get(source).get(target);
 		}
@@ -347,18 +347,18 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return lastSource;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(edges.get(source()).get(target()));
+			removeEdge(edges.get(sourceInt()).get(targetInt()));
 		}
 	}
 

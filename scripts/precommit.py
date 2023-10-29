@@ -14,19 +14,19 @@ def main(args):
     print("\n\n ============ Clean and Build ============\n")
     if not args.skip_rebuild:
         run_cmd("mvn clean")
-        run_cmd("mvn --batch-mode --update-snapshots package -Dmaven.test.skip")
+        run_cmd("mvn package -Dmaven.test.skip")
     else:
         print("skipping...")
 
     print("\n\n ============ Tests ============\n")
     if not args.skip_tests:
-        run_cmd("mvn --batch-mode test -DfailIfNoTests=false")
+        run_cmd("mvn test -DfailIfNoTests=false")
     else:
         print("skipping...")
 
     print("\n\n ============ SpotBugs ============\n")
     if not args.skip_static:
-        run_cmd("mvn --batch-mode compile spotbugs:check -pl -jgalgo-bench")
+        run_cmd("mvn compile spotbugs:check -pl -jgalgo-bench")
     else:
         print("skipping...")
 

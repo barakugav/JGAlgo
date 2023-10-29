@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -40,12 +40,12 @@ class MaximalCliquesTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 256).repeat(12);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			testAlgo(g, algo);
 		});
 	}
 
-	private static void testAlgo(Graph g, MaximalCliques algo) {
+	private static void testAlgo(IntGraph g, MaximalCliques algo) {
 		final int n = g.vertices().size();
 		Collection<IntSet> cliques = algo.findAllMaximalCliques(g);
 
@@ -95,7 +95,7 @@ class MaximalCliquesTestUtils extends TestUtils {
 		return true;
 	};
 
-	private static boolean isMaximalClique(Graph g, IntList clique, Set<IntIntPair> edges) {
+	private static boolean isMaximalClique(IntGraph g, IntList clique, Set<IntIntPair> edges) {
 		if (!isClique(clique, edges))
 			return false;
 		IntSet cliqueSet = new IntOpenHashSet(clique);

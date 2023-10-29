@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
@@ -91,8 +91,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 				capacitySum += net.getCapacity(e);
 			capacitySum *= 16;
 
-			GraphFactory factory = GraphFactory.newDirected().setOption("impl", "linked-list");
-			Graph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
+			IntGraphFactory factory = IntGraphFactory.newDirected().setOption("impl", "linked-list");
+			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
 			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				L.addVertex(v);
 
@@ -120,9 +120,9 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 					if (u == sink)
 						break bfs;
 					int lvl = level[u];
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (flow[e] >= capacity[e] || level[v] <= lvl)
 							continue;
 						L.addEdge(u, v, e);
@@ -176,7 +176,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 						debug.println("Retreat");
 						if (v == source)
 							break calcBlockFlow;
-						for (EdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
 							int u = g.edgeSource(e);
 							if (edgeToParent[u] != e)
@@ -195,7 +195,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 					} else {
 						/* Advance */
 						debug.println("Advance");
-						EdgeIter eit = L.outEdges(v).iterator();
+						IEdgeIter eit = L.outEdges(v).iterator();
 						int e = eit.nextInt();
 						int eSource = g.edgeSource(e);
 						int eTarget = g.edgeTarget(e);

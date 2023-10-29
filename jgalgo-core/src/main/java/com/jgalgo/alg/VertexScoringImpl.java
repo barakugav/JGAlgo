@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 
 class VertexScoringImpl {
 
@@ -38,9 +38,9 @@ class VertexScoringImpl {
 	static class ResultFromIndexResult implements VertexScoring {
 
 		private final VertexScoring res;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(VertexScoring res, IndexIdMap viMap) {
+		ResultFromIndexResult(VertexScoring res, IndexIntIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

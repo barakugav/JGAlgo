@@ -16,12 +16,12 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -33,22 +33,22 @@ class TreePathMaximaUtils {
 	static abstract class AbstractImpl implements TreePathMaxima {
 
 		@Override
-		public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
+		public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IntGraph tree, IWeightFunction w,
 				TreePathMaxima.Queries queries) {
 			if (tree instanceof IndexGraph)
 				return computeHeaviestEdgeInTreePaths((IndexGraph) tree, w, queries);
 
 			IndexGraph iGraph = tree.indexGraph();
-			IndexIdMap viMap = tree.indexGraphVerticesMap();
-			IndexIdMap eiMap = tree.indexGraphEdgesMap();
-			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IndexIntIdMap viMap = tree.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = tree.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			TreePathMaxima.Queries iQueries = new IndexQueriesFromQueries(queries, viMap);
 
 			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
 			return new ResultFromIndexResult(indexResult, eiMap);
 		}
 
-		abstract TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
+		abstract TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
 				TreePathMaxima.Queries queries);
 
 	}
@@ -108,16 +108,16 @@ class TreePathMaximaUtils {
 
 	static class IndexQueriesFromQueries implements TreePathMaxima.Queries {
 		private final TreePathMaxima.Queries qs;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexIdMap viMap) {
+		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexIntIdMap viMap) {
 			this.qs = Objects.requireNonNull(qs);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public void addQuery(int u, int v) {
-			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));
+			qs.addQuery(viMap.indexToIdInt(u), viMap.indexToIdInt(v));
 		}
 
 		@Override
@@ -144,9 +144,9 @@ class TreePathMaximaUtils {
 	private static class ResultFromIndexResult implements TreePathMaxima.Result {
 
 		private final TreePathMaxima.Result res;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(TreePathMaxima.Result res, IndexIdMap eiMap) {
+		ResultFromIndexResult(TreePathMaxima.Result res, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
@@ -154,7 +154,7 @@ class TreePathMaximaUtils {
 		@Override
 		public int getHeaviestEdge(int queryIdx) {
 			int eIdx = res.getHeaviestEdge(queryIdx);
-			return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);
+			return eIdx == -1 ? -1 : eiMap.indexToIdInt(eIdx);
 		}
 
 		@Override
@@ -163,7 +163,7 @@ class TreePathMaximaUtils {
 		}
 	}
 
-	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+	static boolean verifyMST(IndexGraph g, IWeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		IndexGraphBuilder mstBuilder = IndexGraphBuilder.newUndirected();

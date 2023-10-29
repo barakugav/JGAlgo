@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -43,9 +43,9 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 			while (!stack.isEmpty()) {
 				int u = stack.popInt();
 
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (comp[v] != -1) {
 						assert comp[v] == compIdx;
 						continue;
@@ -55,9 +55,9 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 				}
 
 				if (directed) {
-					for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						int v = eit.source();
+						int v = eit.sourceInt();
 						if (comp[v] != -1) {
 							assert comp[v] == compIdx;
 							continue;
@@ -85,9 +85,9 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 		while (!stack.isEmpty()) {
 			int u = stack.popInt();
 
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (visited.get(v))
 					continue;
 				visited.set(v);
@@ -96,9 +96,9 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 			}
 
 			if (directed) {
-				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.source();
+					int v = eit.sourceInt();
 					if (visited.get(v))
 						continue;
 					visited.set(v);

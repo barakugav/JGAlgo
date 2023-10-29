@@ -192,7 +192,7 @@ def get_constants_and_functions(type):
 
 
 def weights_filename(type):
-    return os.path.join(PACKAGE_DIR, "graph", "Weights" + type + ".java")
+    return os.path.join(PACKAGE_DIR, "graph", "IWeights" + type + ".java")
 
 
 def weights_impl_filename(type):
@@ -201,17 +201,17 @@ def weights_impl_filename(type):
 
 def generate_weights(type):
     constants, functions = get_constants_and_functions(type)
-    constants["WEIGHTS"] = "Weights" + type
+    constants["IWEIGHTS"] = "IWeights" + type
 
     if type in ["Byte", "Short", "Int"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunctionInt"
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ", IWeightFunctionInt"
         constants[
             "WEIGHT_FUNC_IMPLEMENTATION"
         ] = """
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
 	default int weightInt(int id) {
@@ -219,14 +219,14 @@ def generate_weights(type):
 	}
 """
     elif type in ["Long", "Float", "Double"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunction"
+        constants["WEIGHT_FUNC_IMPLEMENT"] = ", IWeightFunction"
         constants[
             "WEIGHT_FUNC_IMPLEMENTATION"
         ] = """
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * Implement the {@link WeightFunction} interface by using the weights of the container.
+	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
 	 */
 	@Override
 	default double weight(int id) {
@@ -238,7 +238,7 @@ def generate_weights(type):
         constants["WEIGHT_FUNC_IMPLEMENTATION"] = ""
 
     generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "Weights.java.template"),
+        os.path.join(TEMPLATE_DIR, "IWeights.java.template"),
         weights_filename(type),
         constants,
         functions,
@@ -248,7 +248,7 @@ def generate_weights(type):
 def generate_weights_impl(type):
     constants, functions = get_constants_and_functions(type)
     constants["WEIGHTS_IMPL"] = "WeightsImpl" + type
-    constants["WEIGHTS"] = "Weights" + type
+    constants["IWEIGHTS"] = "IWeights" + type
 
     generate_sourcefile(
         os.path.join(TEMPLATE_DIR, "WeightsImpl.java.template"),

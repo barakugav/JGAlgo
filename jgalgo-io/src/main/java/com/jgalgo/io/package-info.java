@@ -15,6 +15,6 @@
  */
 
 /**
- * The I/O classes provide varies ways to read/write {@linkplain com.jgalgo.graph.Graph graphs} from/to files.
+ * The I/O classes provide varies ways to read/write {@linkplain com.jgalgo.graph.IntGraph graphs} from/to files.
  */
 package com.jgalgo.io;

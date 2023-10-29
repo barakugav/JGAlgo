@@ -16,11 +16,11 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -56,7 +56,7 @@ public interface SteinerTreeAlgo {
 	 * @param  terminals a set of terminals vertices
 	 * @return           a result object containing all the edges of the computed tree
 	 */
-	SteinerTreeAlgo.Result computeSteinerTree(Graph g, WeightFunction w, IntCollection terminals);
+	SteinerTreeAlgo.Result computeSteinerTree(IntGraph g, IWeightFunction w, IntCollection terminals);
 
 	/**
 	 * A result object for {@link SteinerTreeAlgo} computation.
@@ -84,7 +84,7 @@ public interface SteinerTreeAlgo {
 	 * @param  edges     a set of edges
 	 * @return           {@code true} if the given set of edges is a valid Steiner tree
 	 */
-	static boolean isSteinerTree(Graph g, IntCollection terminals, IntCollection edges) {
+	static boolean isSteinerTree(IntGraph g, IntCollection terminals, IntCollection edges) {
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraph ig;
 		if (g instanceof IndexGraph) {
@@ -121,11 +121,11 @@ public interface SteinerTreeAlgo {
 			long l = queue.dequeueLong();
 			int u = JGAlgoUtils.long2low(l);
 			int parentEdge = JGAlgoUtils.long2high(l);
-			for (EdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (!edgesBitmap.get(e) || e == parentEdge)
 					continue;
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (visited.get(v))
 					return false; /* cycle */
 				visited.set(v);

@@ -19,17 +19,17 @@ import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 
 class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	@Override
-	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w) {
+	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
+			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -50,11 +50,11 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 			gb.addEdge(v * 2 + 0, v * 2 + 1);
 		IndexGraph g2 = gb.build();
 
-		WeightFunction w2;
+		IWeightFunction w2;
 		int[] minAdjacentEdge = new int[n];
 		Arrays.fill(minAdjacentEdge, -1);
-		if (w instanceof WeightFunctionInt) {
-			WeightFunctionInt wInt = (WeightFunctionInt) w;
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			int[] minAdjacentWeight = new int[n];
 			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);
 			for (int e = 0; e < m; e++) {
@@ -73,7 +73,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 				if (minAdjacentEdge[v] == -1)
 					throw new IllegalArgumentException(
 							"no edge cover exists, vertex with index " + v + " has no edges");
-			WeightFunctionInt w2Int =
+			IWeightFunctionInt w2Int =
 					e -> e < vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 			w2 = w2Int;
 
@@ -96,7 +96,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 				if (minAdjacentEdge[v] == -1)
 					throw new IllegalArgumentException(
 							"no edge cover exists, vertex with index " + v + " has no edges");
-			WeightFunction w0 = w;
+			IWeightFunction w0 = w;
 			w2 = e -> e < vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 		}
 

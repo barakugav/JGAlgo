@@ -15,8 +15,8 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * each vertex is assigned to exactly one site.
  * <p>
  * The distances and paths are directed from the sites to the vertices. If the other direction is needed, consider
- * passing a reversed view of the original graph by using {@link Graph#reverseView()}.
+ * passing a reversed view of the original graph by using {@link IntGraph#reverseView()}.
  * <p>
  * If there are some vertices that are unreachable from any sites, the partition will contain an addition block with
  * index {@code siteNumber+1} that contains all these vertices.
@@ -49,7 +49,7 @@ public interface VoronoiAlgo {
 	 * @param  w     an edge weight function
 	 * @return       the Voronoi cells of the sites
 	 */
-	VoronoiAlgo.Result computeVoronoiCells(Graph g, IntCollection sites, WeightFunction w);
+	VoronoiAlgo.Result computeVoronoiCells(IntGraph g, IntCollection sites, IWeightFunction w);
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation.
@@ -62,7 +62,7 @@ public interface VoronoiAlgo {
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
 	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
 	 * a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
-	 * reversed view of the original graph by using {@link Graph#reverseView()}.
+	 * reversed view of the original graph by using {@link IntGraph#reverseView()}.
 	 *
 	 * @see    Path
 	 * @author Barak Ugav

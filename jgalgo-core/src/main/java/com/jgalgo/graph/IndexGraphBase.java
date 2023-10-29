@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 
-abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
+abstract class IndexGraphBase extends IntGraphBase implements IndexGraphImpl {
 
 	private final boolean isDirected;
 	private final boolean isAllowSelfEdges;
@@ -63,7 +63,7 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 		Assertions.Graphs.checkVertex(source, vertices().size());
 		Assertions.Graphs.checkVertex(target, vertices().size());
 		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)
@@ -81,14 +81,14 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
 		@Override
 		public void clear() {
-			for (EdgeIter it = iterator(); it.hasNext();) {
+			for (IEdgeIter it = iterator(); it.hasNext();) {
 				it.nextInt();
 				it.remove();
 			}
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterSourceTarget(source, target);
 		}
 	}
@@ -136,10 +136,10 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		}
 	}
 
-	private class EdgeIterSourceTarget implements EdgeIter {
+	private class EdgeIterSourceTarget implements IEdgeIter {
 
 		private final int source, target;
-		private final EdgeIter it;
+		private final IEdgeIter it;
 		private int nextEdge = -1;
 
 		EdgeIterSourceTarget(int source, int target) {
@@ -152,7 +152,7 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		private void advance() {
 			while (it.hasNext()) {
 				int e = it.nextInt();
-				if (it.target() == target) {
+				if (it.targetInt() == target) {
 					nextEdge = e;
 					return;
 				}
@@ -174,18 +174,18 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return nextEdge;
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return source;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return target;
 		}
 	}

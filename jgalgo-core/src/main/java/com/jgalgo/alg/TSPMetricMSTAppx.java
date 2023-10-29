@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -49,7 +49,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 	public TSPMetricMSTAppx() {}
 
 	@Override
-	Path computeShortestTour(IndexGraph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;

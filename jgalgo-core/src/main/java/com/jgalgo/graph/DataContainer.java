@@ -46,13 +46,13 @@ abstract class DataContainer {
 
 	abstract int capacity();
 
-	static class Obj<E> extends DataContainer {
+	static class Obj<T> extends DataContainer {
 
-		private E[] weights;
-		private final E defaultWeight;
-		private final Consumer<E[]> onArrayAlloc;
+		private T[] weights;
+		private final T defaultWeight;
+		private final Consumer<T[]> onArrayAlloc;
 
-		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+		Obj(GraphElementSet elements, T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
 			super(elements);
 
 			defaultWeight = defVal;
@@ -62,12 +62,12 @@ abstract class DataContainer {
 			onArrayAlloc.accept(weights);
 		}
 
-		public E get(int idx) {
+		public T get(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
 
-		public void set(int idx, E weight) {
+		public void set(int idx, T weight) {
 			checkIdx(idx);
 			weights[idx] = weight;
 		}
@@ -92,7 +92,7 @@ abstract class DataContainer {
 			ObjectArrays.swap(weights, idx1, idx2);
 		}
 
-		void swap(E[] weights, int idx1, int idx2) {
+		void swap(T[] weights, int idx1, int idx2) {
 			ObjectArrays.swap(weights, idx1, idx2);
 		}
 
@@ -100,7 +100,7 @@ abstract class DataContainer {
 			weights[idx] = defaultWeight;
 		}
 
-		void clear(E[] weights, int idx) {
+		void clear(T[] weights, int idx) {
 			weights[idx] = defaultWeight;
 		}
 
@@ -108,14 +108,14 @@ abstract class DataContainer {
 			Arrays.fill(weights, 0, size(), defaultWeight);
 		}
 
-		public void clear(E[] weights) {
+		public void clear(T[] weights) {
 			Arrays.fill(weights, 0, size(), defaultWeight);
 		}
 
-		public DataContainer.Obj<E> copy(GraphElementSet elements, E[] emptyArr, Consumer<E[]> onArrayAlloc) {
+		public DataContainer.Obj<T> copy(GraphElementSet elements, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
-			DataContainer.Obj<E> copy = new DataContainer.Obj<>(elements, defaultWeight, emptyArr, onArrayAlloc);
+			DataContainer.Obj<T> copy = new DataContainer.Obj<>(elements, defaultWeight, emptyArr, onArrayAlloc);
 			copy.weights = Arrays.copyOf(weights, elements.size());
 			onArrayAlloc.accept(copy.weights);
 			return copy;

@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -68,9 +68,9 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
 		Assertions.Graphs.onlyBipartite(g, partition);
@@ -79,14 +79,14 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		return new Matchings.MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, WeightsBool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, IWeightFunction wOrig, IWeightsBool partition) {
 		final int n = gOrig.vertices().size();
 		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2)
 				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
 		for (int v = 0; v < n; v++)
 			g.addVertex();
 		final int s = g.addVertex(), t = g.addVertex();
-		WeightsDouble w = g.addEdgesWeights("weight", double.class);
+		IWeightsDouble w = g.addEdgesWeights("weight", double.class);
 
 		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
@@ -136,7 +136,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		}
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunction spWeightFunc = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
@@ -191,7 +191,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 */
 	@Deprecated
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 

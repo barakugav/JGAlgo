@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Metric Traveling Salesman Problem (TSP) algorithm.
@@ -44,6 +44,6 @@ public interface TSPMetric {
 	 *               w((v,w)) \leq w((u,w))$
 	 * @return   a result object containing the list of the \(n\) vertices ordered by the calculated path
 	 */
-	Path computeShortestTour(Graph g, WeightFunction w);
+	Path computeShortestTour(IntGraph g, IWeightFunction w);
 
 }

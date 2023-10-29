@@ -19,9 +19,9 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.IntUnaryOperator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -73,7 +73,7 @@ public interface ColoringAlgo {
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	VertexPartition computeColoring(Graph g);
+	VertexPartition computeColoring(IntGraph g);
 
 	/**
 	 * Check whether a given mapping is a valid coloring of a graph.
@@ -85,7 +85,7 @@ public interface ColoringAlgo {
 	 * @param  mapping a mapping from the vertices of {@code g} to colors in range \([0, \textit{colorsNum})\)
 	 * @return         {@code true} if {@code mapping} is a valid coloring of {@code g}, {@code false} otherwise
 	 */
-	static boolean isColoring(Graph g, IntUnaryOperator mapping) {
+	static boolean isColoring(IntGraph g, IntUnaryOperator mapping) {
 		final int n = g.vertices().size();
 		IndexGraph ig;
 		int[] vertexToColor = new int[n];
@@ -98,9 +98,9 @@ public interface ColoringAlgo {
 			}
 		} else {
 			ig = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			for (int v = 0; v < n; v++) {
-				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));
+				vertexToColor[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
 		}

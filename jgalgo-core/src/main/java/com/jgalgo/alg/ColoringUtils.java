@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 
 class ColoringUtils {
@@ -23,7 +23,7 @@ class ColoringUtils {
 	static abstract class AbstractImpl implements ColoringAlgo {
 
 		@Override
-		public VertexPartition computeColoring(Graph g) {
+		public VertexPartition computeColoring(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return computeColoring((IndexGraph) g);
 

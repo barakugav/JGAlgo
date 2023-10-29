@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 
 	@Override
-	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w) {
+	VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)
@@ -69,8 +69,8 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 				double weightsSum = 0;
 				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 					int e = eit.nextInt();
-					assert eit.source() == U;
-					int V = eit.target();
+					assert eit.sourceInt() == U;
+					int V = eit.targetInt();
 					if (cut.get(V))
 						weightsSum += w.weight(e);
 				}
@@ -95,8 +95,8 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
-						assert eit.source() == U;
-						int V = eit.target();
+						assert eit.sourceInt() == U;
+						int V = eit.targetInt();
 						if (!cut.get(V)) {
 							HeapReference<Double, Integer> vRef = vRefs[V];
 							double weightsSum = -vRef.key().doubleValue();
@@ -109,8 +109,8 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 					/* Find the cut-of-the-phase and its weight */
 					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
-						assert eit.source() == U;
-						assert cut.get(eit.target());
+						assert eit.sourceInt() == U;
+						assert cut.get(eit.targetInt());
 						cutOfThePhaseWeight += w.weight(e);
 					}
 					break minimumCutPhase;

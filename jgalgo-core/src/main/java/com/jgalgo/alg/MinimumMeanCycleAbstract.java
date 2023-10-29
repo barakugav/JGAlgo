@@ -16,28 +16,28 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 
 abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
 
 	@Override
-	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
+	public Path computeMinimumMeanCycle(IntGraph g, IWeightFunction w) {
 		if (g instanceof IndexGraph)
 			return computeMinimumMeanCycle((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
-		WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 		Path indexPath = computeMinimumMeanCycle(iGraph, iw);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
-	abstract Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w);
+	abstract Path computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
 
 }

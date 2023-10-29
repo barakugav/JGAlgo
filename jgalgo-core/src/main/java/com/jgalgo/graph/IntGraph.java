@@ -59,9 +59,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
  * the vertices and/or edges, each is identified by some key. When a new weights type is added to a graph, it is added
  * to <i>all</i> the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in case
- * the weight type is primitive). The weights are accessed via the {@link Weights} container, which can be used to get
- * or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
- * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link Weights} for the
+ * the weight type is primitive). The weights are accessed via the {@link IWeights} container, which can be used to get
+ * or set a vertex/edge weight, and can be passed to algorithms as a {@link IWeightFunction} for example. See
+ * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link IWeights} for the
  * full weights documentation.
  * <p>
  * Each graph expose an <i>Index</i> view on itself via the {@link #indexGraph()} method. The returned
@@ -79,8 +79,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
  * <p>
  * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
- * default implementation. For more control over the graph details, see {@link GraphFactory}. To construct an immutable
- * graph, use {@link GraphBuilder}.
+ * default implementation. For more control over the graph details, see {@link IntGraphFactory}. To construct an
+ * immutable graph, use {@link IntGraphBuilder}.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -93,7 +93,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * WeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
+ * IWeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
  * w.set(e1, 1.2);
  * w.set(e2, 3.1);
  * w.set(e3, 15.1);
@@ -113,12 +113,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see    GraphFactory
- * @see    GraphBuilder
+ * @see    IntGraphFactory
+ * @see    IntGraphBuilder
  * @see    IndexGraph
  * @author Barak Ugav
  */
-public interface Graph {
+public interface IntGraph {
 
 	/**
 	 * Get the set of all vertices of the graph.
@@ -191,7 +191,7 @@ public interface Graph {
 	 * @return                           all the edges whose source is {@code source}
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
-	EdgeSet outEdges(int source);
+	IEdgeSet outEdges(int source);
 
 	/**
 	 * Get the edges whose target is {@code target}.
@@ -205,7 +205,7 @@ public interface Graph {
 	 * @return                           all the edges whose target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
-	EdgeSet inEdges(int target);
+	IEdgeSet inEdges(int target);
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
@@ -222,9 +222,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {
+		for (IEdgeIter it = outEdges(source).iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			if (it.target() == target)
+			if (it.targetInt() == target)
 				return e;
 		}
 		return -1;
@@ -238,7 +238,7 @@ public interface Graph {
 	 * @return                           all the edges whose source is {@code source} and target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	EdgeSet getEdges(int source, int target);
+	IEdgeSet getEdges(int source, int target);
 
 	/**
 	 * Add a new edge to the graph.
@@ -294,7 +294,7 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
-		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -307,7 +307,7 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
-		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -392,22 +392,22 @@ public interface Graph {
 	/**
 	 * Get the vertices weights of some key.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <V>        The weight data type
+	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated (when vertices
 	 * are added or removed). To create an external weights container, for example in cases the graph is a user input
-	 * and we are not allowed to modify it, use {@link Weights#createExternalVerticesWeights(Graph, Class)}.
+	 * and we are not allowed to modify it, use {@link IWeights#createExternalVerticesWeights(IntGraph, Class)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -418,12 +418,12 @@ public interface Graph {
 	 * names.set(v1, "Alice");
 	 * names.set(v2, "Bob");
 	 *
-	 * WeightsInt ages = g.addVerticesWeights("age", int.class);
+	 * IWeightsInt ages = g.addVerticesWeights("age", int.class);
 	 * ages.set(v1, 42);
 	 * ages.set(v2, 35);
 	 * }</pre>
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
@@ -431,9 +431,9 @@ public interface Graph {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	default <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type) {
+	default <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
 		return addVerticesWeights(key, type, null);
 	}
 
@@ -442,7 +442,7 @@ public interface Graph {
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
-	 * {@link Weights#createExternalVerticesWeights(Graph, Class, Object)}.
+	 * {@link IWeights#createExternalVerticesWeights(IntGraph, Class, Object)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -459,7 +459,7 @@ public interface Graph {
 	 * assert "Unknown".equals(names.get(v3))
 	 * }</pre>
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
@@ -468,14 +468,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 * @param  <V>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal);
+	<T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param key the key of the weights
 	 */
@@ -484,7 +484,7 @@ public interface Graph {
 	/**
 	 * Get the keys of all the associated vertices weights.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
@@ -493,22 +493,22 @@ public interface Graph {
 	/**
 	 * Get the edges weights of some key.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <E>        The weight data type
+	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key);
+	<T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input you are not allowed to modify it, use
-	 * {@link Weights#createExternalEdgesWeights(Graph, Class)}.
+	 * {@link IWeights#createExternalEdgesWeights(IntGraph, Class)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -522,22 +522,22 @@ public interface Graph {
 	 * roadTypes.set(e1, "Asphalt");
 	 * roadTypes.set(e2, "Gravel");
 	 *
-	 * WeightsDouble roadLengths = g.addEdgesWeights("roadLength", double.class);
+	 * IWeightsDouble roadLengths = g.addEdgesWeights("roadLength", double.class);
 	 * roadLengths.set(e1, 42);
 	 * roadLengths.set(e2, 35);
 	 * }</pre>
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <E>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	default <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type) {
+	default <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
 		return addEdgesWeights(key, type, null);
 	}
 
@@ -546,7 +546,7 @@ public interface Graph {
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
-	 * {@link Weights#createExternalEdgesWeights(Graph, Class, Object)}.
+	 * {@link IWeights#createExternalEdgesWeights(IntGraph, Class, Object)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -566,23 +566,23 @@ public interface Graph {
 	 * assert "Unknown".equals(names.get(e3))
 	 * }</pre>
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <E>                      The weight data type
+	 * @param  <T>                      The weight data type
 	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal);
+	<T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @param key the key of the weights
 	 */
@@ -591,7 +591,7 @@ public interface Graph {
 	/**
 	 * Get the keys of all the associated edges weights.
 	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
+	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
@@ -656,7 +656,7 @@ public interface Graph {
 	 *
 	 * @return a mapping that map vertices IDs to vertices indices
 	 */
-	IndexIdMap indexGraphVerticesMap();
+	IndexIntIdMap indexGraphVerticesMap();
 
 	/**
 	 * Get the index-id edges mapping of this graph.
@@ -672,7 +672,7 @@ public interface Graph {
 	 *
 	 * @return a mapping that map edges IDs to edges indices
 	 */
-	IndexIdMap indexGraphEdgesMap();
+	IndexIntIdMap indexGraphEdgesMap();
 
 	/**
 	 * Create a copy of this graph, with the same vertices and edges, without copying weights.
@@ -683,7 +683,7 @@ public interface Graph {
 	 *
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
-	default Graph copy() {
+	default IntGraph copy() {
 		return copy(false);
 	}
 
@@ -702,8 +702,8 @@ public interface Graph {
 	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
 	 *                     graph weights
 	 */
-	default Graph copy(boolean copyWeights) {
-		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	default IntGraph copy(boolean copyWeights) {
+		return IntGraphFactory.newFrom(this).newCopyOf(this, copyWeights);
 	}
 
 	/**
@@ -723,8 +723,8 @@ public interface Graph {
 	 *
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
-	default Graph immutableCopy() {
-		return GraphBuilder.newFrom(this).build();
+	default IntGraph immutableCopy() {
+		return IntGraphBuilder.newFrom(this).build();
 	}
 
 	/**
@@ -746,21 +746,23 @@ public interface Graph {
 	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
 	 *                     weights
 	 */
-	default Graph immutableCopy(boolean copyWeights) {
-		IndexIdMap viMap = indexGraphVerticesMap();
-		IndexIdMap eiMap = indexGraphEdgesMap();
+	default IntGraph immutableCopy(boolean copyWeights) {
+		IndexIntIdMap viMap = indexGraphVerticesMap();
+		IndexIntIdMap eiMap = indexGraphEdgesMap();
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
 					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());
-			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());
-			return new GraphImpl.Directed(iGraph, viMap, eiMap);
+			viMap = vReIndexing.isEmpty() ? viMap
+					: IntGraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());
+			eiMap = eReIndexing.isEmpty() ? eiMap
+					: IntGraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());
+			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
 		} else {
 			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
-			return new GraphImpl.Undirected(iGraph, viMap, eiMap);
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
 		}
 	}
 
@@ -773,7 +775,7 @@ public interface Graph {
 	 *
 	 * @return an immutable view of this graph
 	 */
-	default Graph immutableView() {
+	default IntGraph immutableView() {
 		return Graphs.immutableView(this);
 	}
 
@@ -788,7 +790,7 @@ public interface Graph {
 	 *
 	 * @return a reversed view of this graph
 	 */
-	default Graph reverseView() {
+	default IntGraph reverseView() {
 		return Graphs.reverseView(this);
 	}
 
@@ -806,7 +808,7 @@ public interface Graph {
 	 * created graph will be a subset of the vertices and edges of this graph.
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link Graphs#subGraph(Graph, IntCollection, IntCollection, boolean, boolean)}.
+	 * creation, see {@link Graphs#subGraph(IntGraph, IntCollection, IntCollection, boolean, boolean)}.
 	 *
 	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
 	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
@@ -816,7 +818,7 @@ public interface Graph {
 	 * @return                      a new graph that is a subgraph of this graph
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
-	default Graph subGraphCopy(IntCollection vertices, IntCollection edges) {
+	default IntGraph subGraphCopy(IntCollection vertices, IntCollection edges) {
 		return Graphs.subGraph(this, vertices, edges);
 	}
 
@@ -824,24 +826,24 @@ public interface Graph {
 	 * Create a new undirected empty graph.
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
-	 * see {@link GraphFactory}.
+	 * see {@link IntGraphFactory}.
 	 *
 	 * @return a new undirected empty graph
 	 */
-	static Graph newUndirected() {
-		return GraphFactory.newUndirected().newGraph();
+	static IntGraph newUndirected() {
+		return IntGraphFactory.newUndirected().newGraph();
 	}
 
 	/**
 	 * Create a new directed empty graph.
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
-	 * see {@link GraphFactory}.
+	 * see {@link IntGraphFactory}.
 	 *
 	 * @return a new directed empty graph
 	 */
-	static Graph newDirected() {
-		return GraphFactory.newDirected().newGraph();
+	static IntGraph newDirected() {
+		return IntGraphFactory.newDirected().newGraph();
 	}
 
 }

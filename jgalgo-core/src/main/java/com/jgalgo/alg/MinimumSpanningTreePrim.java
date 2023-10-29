@@ -19,10 +19,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -69,19 +69,19 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		if (w instanceof WeightFunctionInt) {
-			return computeMSTInt(g, (WeightFunctionInt) w);
+		if (w instanceof IWeightFunctionInt) {
+			return computeMSTInt(g, (IWeightFunctionInt) w);
 		} else {
 			return computeMSTDouble(g, w);
 		}
 	}
 
-	private MinimumSpanningTree.Result computeMSTDouble(IndexGraph g, WeightFunction w) {
+	private MinimumSpanningTree.Result computeMSTDouble(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -99,9 +99,9 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (visited.get(v))
 						continue;
 
@@ -138,7 +138,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, WeightFunctionInt w) {
+	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
@@ -156,9 +156,9 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					if (visited.get(v))
 						continue;
 

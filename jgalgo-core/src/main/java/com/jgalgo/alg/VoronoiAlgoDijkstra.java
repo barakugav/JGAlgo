@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -28,7 +28,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 
 	@SuppressWarnings("boxing")
 	@Override
-	VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, WeightFunction w) {
+	VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
 		final int n = g.vertices().size();
@@ -61,9 +61,9 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 			int uCell = cell[u];
 			heapVPtrs[u] = null;
 
-			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.target();
+				int v = eit.targetInt();
 				if (distance[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);

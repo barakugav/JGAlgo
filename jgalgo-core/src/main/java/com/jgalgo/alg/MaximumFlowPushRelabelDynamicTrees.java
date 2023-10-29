@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
@@ -137,11 +137,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
 				int vLabel = vertexData[v].label;
-				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
-					int u = eit.source();
+					int u = eit.sourceInt();
 					if (visited.get(u))
 						continue;
 					vertexData[u].label = vLabel + 1;
@@ -164,11 +164,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 				Vertex U = active.pop();
 				assert U.v != source && U.v != sink;
 				assert U.dtVertex.getParent() == null;
-				EdgeIter it = U.edgeIter;
+				IEdgeIter it = U.edgeIter;
 				int uSize = dtTreeSize.getTreeSize(U.dtVertex);
 
 				while (U.hasExcess() && it.hasNext()) {
-					int e = it.peekNext();
+					int e = it.peekNextInt();
 					Vertex V = vertexData(g.edgeTarget(e));
 
 					if (!(isResidual(e) && U.label == V.label + 1)) {
@@ -299,7 +299,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			final int v;
 			boolean isActive;
 			int label;
-			EdgeIter edgeIter;
+			IEdgeIter edgeIter;
 
 			final DynamicTree.Vertex dtVertex;
 			int firstDtChild;
@@ -360,12 +360,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				double f = capacity[e] - flow[e];
 				if (f > 0) {
 					pushFlow(e, f);
-					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
+					Vertex U = vertexData(eit.sourceInt()), V = vertexData(eit.targetInt());
 					U.excess -= f;
 					V.excess += f;
 					if (!V.isActive) {
@@ -489,12 +489,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
+			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int f = capacity[e] - flow[e];
 				if (f > 0) {
 					pushFlow(e, f);
-					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
+					Vertex U = vertexData(eit.sourceInt()), V = vertexData(eit.targetInt());
 					U.excess -= f;
 					V.excess += f;
 					if (!V.isActive) {

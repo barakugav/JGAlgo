@@ -16,20 +16,20 @@
 package com.jgalgo.graph;
 
 /**
- * A factory for {@link Graph} objects.
+ * A factory for {@link IntGraph} objects.
  *
- * @see    GraphFactory#newDirected()
- * @see    GraphFactory#newUndirected()
+ * @see    IntGraphFactory#newDirected()
+ * @see    IntGraphFactory#newUndirected()
  * @author Barak Ugav
  */
-public interface GraphFactory {
+public interface IntGraphFactory {
 
 	/**
 	 * Create a new empty graph.
 	 *
 	 * @return a new graph with the factory options
 	 */
-	Graph newGraph();
+	IntGraph newGraph();
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, without copying weights.
@@ -37,7 +37,7 @@ public interface GraphFactory {
 	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
 	 * <p>
-	 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the factory
+	 * Differing from {@link IntGraph#copy()}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
 	 * implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not called
 	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
@@ -47,7 +47,7 @@ public interface GraphFactory {
 	 * @return   an identical copy of the given graph, with the same vertices and edges, without the original graph
 	 *           weights
 	 */
-	default Graph newCopyOf(Graph g) {
+	default IntGraph newCopyOf(IntGraph g) {
 		return newCopyOf(g, false);
 	}
 
@@ -57,7 +57,7 @@ public interface GraphFactory {
 	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
 	 * <p>
-	 * Differing from {@link Graph#copy(boolean)}, the capabilities of the new graph are determined by the factory
+	 * Differing from {@link IntGraph#copy(boolean)}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
 	 * implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not called
 	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
@@ -68,7 +68,7 @@ public interface GraphFactory {
 	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without the
 	 *                     original graph weights
 	 */
-	Graph newCopyOf(Graph g, boolean copyWeights);
+	IntGraph newCopyOf(IntGraph g, boolean copyWeights);
 
 	/**
 	 * Determine if graphs built by this factory should be directed or not.
@@ -76,7 +76,7 @@ public interface GraphFactory {
 	 * @param  directed if {@code true}, graphs built by this factory will be directed
 	 * @return          this factory
 	 */
-	GraphFactory setDirected(boolean directed);
+	IntGraphFactory setDirected(boolean directed);
 
 	/**
 	 * Determine if graphs built by this factory should be support self edges.
@@ -84,7 +84,7 @@ public interface GraphFactory {
 	 * @param  selfEdges if {@code true}, graphs built by this factory will support self edges
 	 * @return           this factory
 	 */
-	GraphFactory allowSelfEdges(boolean selfEdges);
+	IntGraphFactory allowSelfEdges(boolean selfEdges);
 
 	/**
 	 * Determine if graphs built by this factory should be support parallel edges.
@@ -92,7 +92,7 @@ public interface GraphFactory {
 	 * @param  parallelEdges if {@code true}, graphs built by this factory will support parallel edges
 	 * @return               this factory
 	 */
-	GraphFactory allowParallelEdges(boolean parallelEdges);
+	IntGraphFactory allowParallelEdges(boolean parallelEdges);
 
 	/**
 	 * Set the expected number of vertices that will exist in the graph.
@@ -100,7 +100,7 @@ public interface GraphFactory {
 	 * @param  expectedVerticesNum the expected number of vertices in the graph
 	 * @return                     this factory
 	 */
-	GraphFactory expectedVerticesNum(int expectedVerticesNum);
+	IntGraphFactory expectedVerticesNum(int expectedVerticesNum);
 
 	/**
 	 * Set the expected number of edges that will exist in the graph.
@@ -108,7 +108,7 @@ public interface GraphFactory {
 	 * @param  expectedEdgesNum the expected number of edges in the graph
 	 * @return                  this factory
 	 */
-	GraphFactory expectedEdgesNum(int expectedEdgesNum);
+	IntGraphFactory expectedEdgesNum(int expectedEdgesNum);
 
 	/**
 	 * Add a hint to this factory.
@@ -118,7 +118,7 @@ public interface GraphFactory {
 	 * @param  hint the hint to add
 	 * @return      this factory
 	 */
-	GraphFactory addHint(GraphFactory.Hint hint);
+	IntGraphFactory addHint(IntGraphFactory.Hint hint);
 
 	/**
 	 * Remove a hint from this factory.
@@ -128,7 +128,7 @@ public interface GraphFactory {
 	 * @param  hint the hint to remove
 	 * @return      this factory
 	 */
-	GraphFactory removeHint(GraphFactory.Hint hint);
+	IntGraphFactory removeHint(IntGraphFactory.Hint hint);
 
 	/**
 	 * Hints for a graph factory.
@@ -138,9 +138,9 @@ public interface GraphFactory {
 	 * @author Barak Ugav
 	 */
 	static enum Hint {
-		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
+		/** The graph should support fast edge removal via {@link IntGraph#removeEdge(int)} */
 		FastEdgeRemoval,
-		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
+		/** The graph should support fast edge lookup via {@link IntGraph#getEdge(int, int)} */
 		FastEdgeLookup,
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
 		DenseGraph,
@@ -153,8 +153,8 @@ public interface GraphFactory {
 	 *
 	 * @return a new factory that can build undirected graphs
 	 */
-	public static GraphFactory newUndirected() {
-		return new GraphImpl.Factory(false);
+	public static IntGraphFactory newUndirected() {
+		return new IntGraphImpl.Factory(false);
 	}
 
 	/**
@@ -164,8 +164,8 @@ public interface GraphFactory {
 	 *
 	 * @return a new factory that can build directed graphs
 	 */
-	public static GraphFactory newDirected() {
-		return new GraphImpl.Factory(true);
+	public static IntGraphFactory newDirected() {
+		return new IntGraphImpl.Factory(true);
 	}
 
 	/**
@@ -173,13 +173,13 @@ public interface GraphFactory {
 	 * <p>
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link Graph#copy()} or {@link GraphFactory#newCopyOf(Graph)}.
+	 * such use case see {@link IntGraph#copy()} or {@link IntGraphFactory#newCopyOf(IntGraph)}.
 	 *
 	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
-	public static GraphFactory newFrom(Graph g) {
-		return new GraphImpl.Factory(g);
+	public static IntGraphFactory newFrom(IntGraph g) {
+		return new IntGraphImpl.Factory(g);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public interface GraphFactory {
 	 * @param  value the option value
 	 * @return       this builder
 	 */
-	default GraphFactory setOption(String key, Object value) {
+	default IntGraphFactory setOption(String key, Object value) {
 		throw new IllegalArgumentException("unknown option key: " + key);
 	}
 }

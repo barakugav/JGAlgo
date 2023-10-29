@@ -38,9 +38,9 @@ import com.jgalgo.alg.TreePathMaxima;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -68,8 +68,8 @@ public class TreePathMaximaBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
+			IntGraph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
 			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(tree, w, queries));
 		}
@@ -93,18 +93,18 @@ public class TreePathMaximaBench {
 	}
 
 	private static class TPMArgs {
-		final Graph tree;
-		final WeightFunction w;
+		final IntGraph tree;
+		final IWeightFunction w;
 		final TreePathMaxima.Queries queries;
 
-		TPMArgs(Graph tree, WeightFunction w, TreePathMaxima.Queries queries) {
+		TPMArgs(IntGraph tree, IWeightFunction w, TreePathMaxima.Queries queries) {
 			this.tree = tree;
 			this.w = w;
 			this.queries = queries;
 		}
 	}
 
-	private static TreePathMaxima.Queries generateRandQueries(Graph tree, int m, long seed) {
+	private static TreePathMaxima.Queries generateRandQueries(IntGraph tree, int m, long seed) {
 		Random rand = new Random(seed);
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		int[] vs = tree.vertices().toIntArray();

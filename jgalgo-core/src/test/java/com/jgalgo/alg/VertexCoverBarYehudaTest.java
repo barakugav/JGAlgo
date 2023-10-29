@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -45,10 +45,10 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		tester.addPhase().withArgs(1024, 2048).repeat(16);
 		tester.addPhase().withArgs(8096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 			RandomIntUnique rand = new RandomIntUnique(0, 163454, seedGen.nextSeed());
-			WeightsInt weight = g.addVerticesWeights("weight", int.class);
+			IWeightsInt weight = g.addVerticesWeights("weight", int.class);
 			for (int e : g.vertices())
 				weight.set(e, rand.next());
 
@@ -56,7 +56,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		});
 	}
 
-	private static void testVC(Graph g, WeightFunctionInt w, VertexCover algo, double appxFactor) {
+	private static void testVC(IntGraph g, IWeightFunctionInt w, VertexCover algo, double appxFactor) {
 		VertexCover.Result vc = algo.computeMinimumVertexCover(g, w);
 
 		for (int e : g.edges()) {

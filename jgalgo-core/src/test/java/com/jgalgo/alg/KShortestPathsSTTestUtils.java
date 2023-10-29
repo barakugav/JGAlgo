@@ -24,9 +24,9 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
@@ -45,9 +45,9 @@ class KShortestPathsSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 4096, 21).repeat(8);
 		tester.addPhase().withArgs(4096, 16384, 23).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int[] vs = g.vertices().toIntArray();
 			int source = vs[rand.nextInt(vs.length)];
 			int target = vs[rand.nextInt(vs.length)];
@@ -56,7 +56,7 @@ class KShortestPathsSTTestUtils extends TestUtils {
 		});
 	}
 
-	private static void validateKShortestPath(Graph g, WeightFunctionInt w, int source, int target, int k,
+	private static void validateKShortestPath(IntGraph g, IWeightFunctionInt w, int source, int target, int k,
 			KShortestPathsST algo) {
 		List<Path> pathsActual = algo.computeKShortestPaths(g, w, source, target, k);
 		for (Path p : pathsActual) {
@@ -67,7 +67,7 @@ class KShortestPathsSTTestUtils extends TestUtils {
 			assertTrue(p.vertices().intStream().distinct().count() == p.vertices().size());
 		}
 
-		if ((g.isDirected() && g.edges().size() < 55)||(!g.isDirected() && g.edges().size() < 40)) {
+		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
 			Iterator<Path> simplePathsIter = SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
 			List<Path> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)

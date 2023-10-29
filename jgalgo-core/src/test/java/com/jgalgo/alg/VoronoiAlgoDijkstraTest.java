@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -57,9 +57,9 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 23).repeat(8);
 		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			WeightFunction w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
+			IWeightFunction w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
 
 			int[] vs = g.vertices().toIntArray();
 			IntSet sites = new IntOpenHashSet();
@@ -70,7 +70,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 		});
 	}
 
-	private static void testAlgo(Graph g, WeightFunction w, IntCollection sites, VoronoiAlgo algo) {
+	private static void testAlgo(IntGraph g, IWeightFunction w, IntCollection sites, VoronoiAlgo algo) {
 		VoronoiAlgo.Result cells = algo.computeVoronoiCells(g, sites, w);
 
 		assertTrue(VertexPartition.isPartition(g, cells::vertexBlock));

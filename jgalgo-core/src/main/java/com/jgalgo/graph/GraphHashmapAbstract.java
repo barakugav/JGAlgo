@@ -55,7 +55,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 		int edge = getEdge(source, target);
 		if (edge == -1) {
 			return Edges.EmptyEdgeSet;
@@ -98,7 +98,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		super.clearEdges();
 	}
 
-	private abstract class EdgeIterBase implements EdgeIter {
+	private abstract class EdgeIterBase implements IEdgeIter {
 
 		// either the source or target of the iterator
 		final int vertex;
@@ -141,7 +141,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return nextEdge;
 		}
@@ -207,12 +207,12 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return vertex;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return prevEndpoint;
 		}
 	}
@@ -224,12 +224,12 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return prevEndpoint;
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return vertex;
 		}
 	}

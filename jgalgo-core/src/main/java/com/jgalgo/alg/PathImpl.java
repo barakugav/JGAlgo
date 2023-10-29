@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -70,7 +70,7 @@ class PathImpl implements Path {
 	}
 
 	@Override
-	public EdgeIter edgeIter() {
+	public IEdgeIter edgeIter() {
 		return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
 	}
 
@@ -87,12 +87,12 @@ class PathImpl implements Path {
 			} else {
 				int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
 				int resIdx = 0;
-				for (EdgeIter it = edgeIter();;) {
+				for (IEdgeIter it = edgeIter();;) {
 					it.nextInt();
-					res[resIdx++] = it.source();
+					res[resIdx++] = it.sourceInt();
 					if (!it.hasNext()) {
 						if (!isCycle()) {
-							assert it.target() == target();
+							assert it.targetInt() == target();
 							res[resIdx++] = target();
 						}
 						break;
@@ -147,7 +147,7 @@ class PathImpl implements Path {
 		return isSimple;
 	}
 
-	private static class IterUndirected implements EdgeIter {
+	private static class IterUndirected implements IEdgeIter {
 
 		private final IndexGraph g;
 		private final IntListIterator it;
@@ -174,25 +174,25 @@ class PathImpl implements Path {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			int peek = it.nextInt();
 			it.previousInt(); /* go back */
 			return peek;
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return g.edgeEndpoint(e, v);
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return v;
 		}
 
 	}
 
-	private static class IterDirected implements EdgeIter {
+	private static class IterDirected implements IEdgeIter {
 
 		private final IndexGraph g;
 		private final IntListIterator it;
@@ -218,19 +218,19 @@ class PathImpl implements Path {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			int peek = it.nextInt();
 			it.previousInt(); /* go back */
 			return peek;
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 			return g.edgeSource(e);
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 			return g.edgeTarget(e);
 		}
 
@@ -241,7 +241,7 @@ class PathImpl implements Path {
 		return edges().toString();
 	}
 
-	static Path pathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
+	static Path pathFromIndexPath(Path path, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
 	}
 
@@ -275,10 +275,10 @@ class PathImpl implements Path {
 	private static class PathFromIndexPath implements Path {
 
 		private final Path path;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		PathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
+		PathFromIndexPath(Path path, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.path = Objects.requireNonNull(path);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -286,16 +286,16 @@ class PathImpl implements Path {
 
 		@Override
 		public int source() {
-			return viMap.indexToId(path.source());
+			return viMap.indexToIdInt(path.source());
 		}
 
 		@Override
 		public int target() {
-			return viMap.indexToId(path.target());
+			return viMap.indexToIdInt(path.target());
 		}
 
 		@Override
-		public EdgeIter edgeIter() {
+		public IEdgeIter edgeIter() {
 			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);
 		}
 
@@ -323,10 +323,10 @@ class PathImpl implements Path {
 	static class IterFromIndexIter implements Iterator<Path> {
 
 		private final Iterator<Path> res;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		IterFromIndexIter(Iterator<Path> res, IndexIdMap viMap, IndexIdMap eiMap) {
+		IterFromIndexIter(Iterator<Path> res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

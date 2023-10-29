@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -98,11 +98,11 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
-		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeAllCardinalityShortestPaths(g);
 	}
@@ -111,12 +111,12 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
 	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			WeightFunction w) {
-		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
+			IWeightFunction w) {
+		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset);
 	}

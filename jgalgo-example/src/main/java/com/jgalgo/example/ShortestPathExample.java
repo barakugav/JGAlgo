@@ -17,15 +17,15 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.ShortestPathSingleSource;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ShortestPathExample {
 
 	public static void shortestPathExample() {
 		/* Create a directed graph with three vertices and edges between them */
-		Graph g = Graph.newDirected();
+		IntGraph g = IntGraph.newDirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -34,7 +34,7 @@ public class ShortestPathExample {
 		int e3 = g.addEdge(v1, v3);
 
 		/* Assign some weights to the edges */
-		WeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
+		IWeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
 		w.set(e1, 1.2);
 		w.set(e2, 3.1);
 		w.set(e3, 15.1);

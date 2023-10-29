@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -49,7 +49,7 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
@@ -80,7 +80,7 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
@@ -111,10 +111,10 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
-					Graph blocksGraph = partition.blocksGraph(true, true);
+					IntGraph blocksGraph = partition.blocksGraph(true, true);
 
 					for (int b1 = 0; b1 < k; b1++) {
 						for (int b2 = 0; b2 < k; b2++) {
@@ -164,7 +164,7 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					Graph g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					int[] vs = g.vertices().toIntArray();
 
 					Int2IntMap partition1 = randPartitionMap(g, k, seedGen.nextSeed());
@@ -183,11 +183,11 @@ public class VertexPartitionTest extends TestBase {
 		});
 	}
 
-	private static VertexPartition randPartition(Graph g, int k, long seed) {
+	private static VertexPartition randPartition(IntGraph g, int k, long seed) {
 		return VertexPartition.fromMap(g, randPartitionMap(g, k, seed));
 	}
 
-	private static Int2IntMap randPartitionMap(Graph g, int k, long seed) {
+	private static Int2IntMap randPartitionMap(IntGraph g, int k, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		final int n = g.vertices().size();
@@ -205,8 +205,8 @@ public class VertexPartitionTest extends TestBase {
 		return partition;
 	}
 
-	private static Graph randGraph(int n, int m, boolean directed, boolean index, long seed) {
-		Graph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
+	private static IntGraph randGraph(int n, int m, boolean directed, boolean index, long seed) {
+		IntGraph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
 				.cycles(true).connected(false).build();
 		return index ? g.indexGraph() : g;
 	}

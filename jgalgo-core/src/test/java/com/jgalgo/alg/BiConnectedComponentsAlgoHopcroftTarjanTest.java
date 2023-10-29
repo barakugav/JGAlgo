@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -50,14 +50,14 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(32);
 		tester.addPhase().withArgs(165, 666).repeat(1);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			testUGraph(BiConnectedComponentsAlgo.newInstance(), g);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testUGraph(BiConnectedComponentsAlgo algo, Graph g) {
+	private static void testUGraph(BiConnectedComponentsAlgo algo, IntGraph g) {
 		BiConnectedComponentsAlgo.Result res = algo.findBiConnectedComponents(g);
 
 		/* Check that each vertex is contained in some BiCc */
@@ -69,7 +69,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		/* Check that each edge is contained in exactly one BiCc (unless its a self loop) */
-		WeightsObj<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
+		IWeightsObj<IntSet> edgeToBiccs = IWeights.createExternalEdgesWeights(g, IntSet.class, null);
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
 			IntCollection biccEdges = res.getBiCcEdges(bccIdx);
 			for (int e : biccEdges) {
@@ -111,7 +111,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 			assertTrue(ccIdxs.size() == 1, "BiConnected component vertices are not in a the connected component");
 
 			for (final int vToRemove : vertices) {
-				Graph gWithoutV = g.copy();
+				IntGraph gWithoutV = g.copy();
 				gWithoutV.removeEdgesOf(vToRemove);
 
 				VertexPartition ccsWithoutV = ccAlgo.findWeaklyConnectedComponents(gWithoutV);
@@ -136,7 +136,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 				boolean sameCcForAllV = true;
 				for (IntIterator vit = IntIterators.concat(vs1.iterator(), vs2.iterator()); vit.hasNext();) {
 					final int vToRemove = vit.nextInt();
-					Graph gWithoutV = g.copy();
+					IntGraph gWithoutV = g.copy();
 					gWithoutV.removeEdgesOf(vToRemove);
 
 					VertexPartition ccsWithoutV = ccAlgo.findWeaklyConnectedComponents(gWithoutV);
@@ -158,7 +158,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		IntSet cutVertices = new IntOpenHashSet();
 		final int originalNumberOfCcs = ccAlgo.findWeaklyConnectedComponents(g).numberOfBlocks();
 		for (int v : g.vertices()) {
-			Graph gWithoutV = g.copy();
+			IntGraph gWithoutV = g.copy();
 			gWithoutV.removeVertex(v);
 			if (ccAlgo.findWeaklyConnectedComponents(gWithoutV).numberOfBlocks() > originalNumberOfCcs)
 				cutVertices.add(v);
@@ -168,7 +168,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		assertEquals(cutVertices, res.getCutVertices());
 
 		/* check block graph */
-		Graph blockGraph = res.getBlockGraph();
+		IntGraph blockGraph = res.getBlockGraph();
 		assertEquals(Range.of(res.getNumberOfBiCcs()), blockGraph.vertices());
 		BiFunction<IntSet, IntSet, IntSet> intersect = (s1, s2) -> {
 			IntSet inter = new IntOpenHashSet(s1);

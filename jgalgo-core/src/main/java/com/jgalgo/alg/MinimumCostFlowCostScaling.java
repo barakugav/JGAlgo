@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.alg.FlowNetworks.ResidualGraph;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -45,12 +45,12 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 	private static final int alpha = 16;
 
 	@Override
-	void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
-		if (!(net instanceof FlowNetworkInt && supply instanceof WeightFunctionInt))
+	void computeMinCostFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
+		if (!(net instanceof FlowNetworkInt && supply instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
-		if (!(cost instanceof WeightFunctionInt))
+		if (!(cost instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer costs are supported");
-		new Worker(g, (FlowNetworkInt) net, (WeightFunctionInt) cost, (WeightFunctionInt) supply).solve();
+		new Worker(g, (FlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();
 	}
 
 	private static class Worker {
@@ -60,7 +60,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
 		private final FlowNetworkInt net;
-		private final WeightFunctionInt costOrig;
+		private final IWeightFunctionInt costOrig;
 
 		/* per-edge information */
 		private final int[] residualCapacity;
@@ -80,7 +80,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* Bitmap of the vertices on the path, for fast cycle detection */
 		private final BitSet onPath;
 		/* Per vertex iterator, corresponding to 'current edge' in the paper */
-		private final EdgeIter[] edgeIter;
+		private final IEdgeIter[] edgeIter;
 
 		/* The maximum length of an augmentation path, similar to {@link MaximumFlowPushRelabelPartialAugment} */
 		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
@@ -98,7 +98,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-		Worker(IndexGraph gOrig, FlowNetworkInt net, WeightFunctionInt costOrig, WeightFunctionInt supply) {
+		Worker(IndexGraph gOrig, FlowNetworkInt net, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 			this.gOrig = gOrig;
@@ -148,7 +148,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			activeQueue = new FIFOQueueIntNoReduce(n);
 			path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);
 			onPath = new BitSet(n);
-			edgeIter = new EdgeIter[n];
+			edgeIter = new IEdgeIter[n];
 
 			globalUpdateThreshold = n;
 
@@ -194,11 +194,11 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 				/* Saturate all edges with negative cost */
 				for (int n = g.vertices().size(), u = 0; u < n; u++) {
 					long uPotential = potential[u];
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int delta = residualCapacity[e];
 						if (delta > 0) {
-							int v = eit.target();
+							int v = eit.targetInt();
 							if (cost[e] + uPotential - potential[v] < 0) {
 								/* we found a negative cost edge, saturate it */
 								excess[u] -= delta;
@@ -260,10 +260,10 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 				long uPotential = potential[u];
 				long minReducedCost = Long.MAX_VALUE;
 				assert edgeIter[u].hasNext();
-				final int firstEdge = edgeIter[u].peekNext();
-				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
+				final int firstEdge = edgeIter[u].peekNextInt();
+				for (IEdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {
 					assert eit.hasNext();
-					int e = eit.peekNext();
+					int e = eit.peekNextInt();
 					if (isResidual(e)) {
 						int v = g.edgeTarget(e);
 						long reducedCost = cost[e] + uPotential - potential[v];
@@ -301,7 +301,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];
 							minReducedCost = Math.min(minReducedCost, reducedCost);
 						}
-						for (EdgeIter eit2 = g.outEdges(u).iterator();;) {
+						for (IEdgeIter eit2 = g.outEdges(u).iterator();;) {
 							assert eit2.hasNext();
 							int e2 = eit2.nextInt();
 							if (e2 == firstEdge)
@@ -390,7 +390,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 					bucketsHeads[r] = buckets.next(u);
 
 					long uPotential = potential[u];
-					for (EdgeIter it = edgeIter[u];;) {
+					for (IEdgeIter it = edgeIter[u];;) {
 						if (!it.hasNext()) {
 							edgeIter[u] = g.outEdges(u).iterator();
 							break;
@@ -559,7 +559,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 				dfs: for (int u = root;;) {
 					visited.set(u);
 					long uPotential = potential[u];
-					for (EdgeIter it = edgeIter[u];; it.nextInt()) {
+					for (IEdgeIter it = edgeIter[u];; it.nextInt()) {
 						if (!it.hasNext()) {
 							/* No admissible edge from u, go up once in the DFS path */
 							assert !processed.get(u);
@@ -577,7 +577,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 						}
 
 						/* Use only admissible edges */
-						int e = it.peekNext();
+						int e = it.peekNextInt();
 						if (!isResidual(e))
 							continue;
 						int v = g.edgeTarget(e);
@@ -599,7 +599,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 							int delta = residualCapacity[e];
 							for (int w = u; w != v;) {
 								w = backtrack[w];
-								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNext()]);
+								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNextInt()]);
 							}
 
 							/* Augment along the cycle */
@@ -607,7 +607,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 							residualCapacity[twin[e]] += delta;
 							for (int w = u; w != v;) {
 								w = backtrack[w];
-								int ca = edgeIter[w].peekNext();
+								int ca = edgeIter[w].peekNextInt();
 								residualCapacity[ca] -= delta;
 								residualCapacity[twin[ca]] += delta;
 							}

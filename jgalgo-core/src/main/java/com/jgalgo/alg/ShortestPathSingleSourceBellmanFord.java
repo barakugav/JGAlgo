@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -48,12 +48,12 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		if (w == null)
-			w = WeightFunction.CardinalityWeightFunction;
+			w = IWeightFunction.CardinalityWeightFunction;
 
 		/*
 		 * The implementation is based on the classical Bellman-Ford algorithm, with an additional heuristic. When we
@@ -124,9 +124,9 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 					/* (not the classical implementation) */
 					for (int k = modified.size(); k-- > 0;) {
 						int u = modified.dequeueInt();
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
-							int v = eit.target();
+							int v = eit.targetInt();
 							double d = res.distances[u] + w.weight(e);
 							if (d < res.distances[v]) {
 								res.distances[v] = d;
@@ -139,9 +139,9 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 					/* (not the classical implementation) */
 					for (int k = modified.size(); k-- > 0;) {
 						int u = modified.dequeueInt();
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
-							int v = eit.target();
+							int v = eit.targetInt();
 							double d = res.distances[u] + w.weight(e);
 							if (d < res.distances[v]) {
 								res.distances[v] = d;

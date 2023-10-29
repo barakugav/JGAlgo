@@ -17,13 +17,13 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -44,11 +44,11 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		}
 
 		@Override
-		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+		public MinimumSpanningTree.Result computeMinimumSpanningTree(IntGraph g, IWeightFunction w) {
 			if (g.isDirected())
 				return algo.computeMinimumDirectedSpanningTree(g, w, 0);
 			int n = g.vertices().size();
-			Graph dg = GraphFactory.newDirected().expectedVerticesNum(n).newGraph();
+			IntGraph dg = IntGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 
@@ -56,11 +56,11 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			for (IntIterator it1 = g.vertices().iterator(), it2 = dg.vertices().iterator(); it1.hasNext();)
 				gToDg.put(it1.nextInt(), it2.nextInt());
 
-			WeightsInt edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
+			IWeightsInt edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int u : g.vertices()) {
-				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.target();
+					int v = eit.targetInt();
 					edgeRef.set(dg.addEdge(gToDg.get(u), gToDg.get(v)), e);
 					edgeRef.set(dg.addEdge(gToDg.get(v), gToDg.get(u)), e);
 				}
@@ -88,7 +88,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void testRandGraph(MinimumDirectedSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl,
+	public static void testRandGraph(MinimumDirectedSpanningTree algo, Boolean2ObjectFunction<IntGraph> graphImpl,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -99,15 +99,15 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			testRandGraph(algo, g, w);
 		});
 	}
 
-	private static void testRandGraph(MinimumDirectedSpanningTree algo, Graph g, WeightFunction w) {
+	private static void testRandGraph(MinimumDirectedSpanningTree algo, IntGraph g, IWeightFunction w) {
 		int root = g.vertices().iterator().nextInt();
 		@SuppressWarnings("unused")
 		MinimumSpanningTree.Result mst = algo.computeMinimumDirectedSpanningTree(g, w, root);

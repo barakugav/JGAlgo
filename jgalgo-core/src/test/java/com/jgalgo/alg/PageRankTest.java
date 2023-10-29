@@ -17,10 +17,10 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
 
 class PageRankTest extends TestBase {
@@ -36,13 +36,13 @@ class PageRankTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testPageRank(g, w);
 		});
 	}
 
-	private static void testPageRank(Graph g, WeightFunction w) {
+	private static void testPageRank(IntGraph g, IWeightFunction w) {
 		VertexScoring ranks = new PageRank().computeScores(g, w);
 		double sum = 0;
 		for (int v : g.vertices())

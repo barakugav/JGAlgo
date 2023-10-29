@@ -19,11 +19,11 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -275,21 +275,21 @@ class VertexPartitions {
 		}
 
 		@Override
-		public Graph graph() {
+		public IntGraph graph() {
 			return g;
 		}
 
 		@Override
-		public Graph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
 			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);
 		}
 	}
 
-	static Graph blocksGraph(IndexGraph g, VertexPartition partition, boolean parallelEdges, boolean selfEdges) {
+	static IntGraph blocksGraph(IndexGraph g, VertexPartition partition, boolean parallelEdges, boolean selfEdges) {
 		assert g == partition.graph();
 		final int numberOfBlocks = partition.numberOfBlocks();
 		final boolean directed = g.isDirected();
-		GraphBuilder gb = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+		IntGraphBuilder gb = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
 		gb.expectedVerticesNum(numberOfBlocks);
 		for (int b = 0; b < numberOfBlocks; b++)
 			gb.addVertex(b);
@@ -310,9 +310,9 @@ class VertexPartitions {
 			IntList seenList = new IntArrayList();
 			for (int b1 = 0; b1 < numberOfBlocks; b1++) {
 				for (int u : partition.blockVertices(b1)) {
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						int b2 = partition.vertexBlock(eit.target());
+						int b2 = partition.vertexBlock(eit.targetInt());
 						if ((!selfEdges && b1 == b2) || (!directed && b1 > b2))
 							continue;
 						if (seen.get(b2))
@@ -332,12 +332,12 @@ class VertexPartitions {
 
 	static class PartitionFromIndexPartition implements VertexPartition {
 
-		private final Graph g;
+		private final IntGraph g;
 		final VertexPartition res;
-		final IndexIdMap viMap;
-		final IndexIdMap eiMap;
+		final IndexIntIdMap viMap;
+		final IndexIntIdMap eiMap;
 
-		PartitionFromIndexPartition(Graph g, VertexPartition res) {
+		PartitionFromIndexPartition(IntGraph g, VertexPartition res) {
 			this.g = Objects.requireNonNull(g);
 			assert g.indexGraph() == res.graph();
 			this.res = Objects.requireNonNull(res);
@@ -371,21 +371,21 @@ class VertexPartitions {
 		}
 
 		@Override
-		public Graph graph() {
+		public IntGraph graph() {
 			return g;
 		}
 
 		@Override
-		public Graph blocksGraph(boolean parallelEdges, boolean selfEdges) {
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
-			Graph ig = VertexPartitions.blocksGraph(g.indexGraph(), res, parallelEdges, selfEdges);
-			GraphBuilder gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), res, parallelEdges, selfEdges);
+			IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
 			gb.expectedVerticesNum(ig.vertices().size());
 			gb.expectedEdgesNum(ig.edges().size());
 			for (int b : ig.vertices())
 				gb.addVertex(b);
 			for (int e : ig.edges())
-				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToId(e));
+				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToIdInt(e));
 			return gb.build();
 		}
 

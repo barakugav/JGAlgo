@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
@@ -45,9 +45,9 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
-			WeightFunction w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunction w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = g.vertices().iterator().nextInt();
 
 			ShortestPathSingleSourceTestUtils.testAlgo(g, w, source, ssspAlgo, new ShortestPathSingleSourceDijkstra());
@@ -74,7 +74,7 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 			int source = g.vertices().iterator().nextInt();
 

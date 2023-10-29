@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntSupplier;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -62,13 +62,13 @@ class CyclesFinderTestUtils extends TestUtils {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(64, 64).repeat(64);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(true).cycles(true).connected(false).build();
 			testGraph(g, cyclesFinder);
 		});
 	}
 
-	private static void testGraph(Graph g, CyclesFinder cyclesFinder) {
+	private static void testGraph(IntGraph g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
 		Iterator<Path> actual = cyclesFinder.findAllCycles(g);

@@ -16,22 +16,22 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 
 class SimplePathsFinders {
 
 	static abstract class AbstractImpl implements SimplePathsFinder {
 
 		@Override
-		public Iterator<Path> findAllSimplePaths(Graph g, int source, int target) {
+		public Iterator<Path> findAllSimplePaths(IntGraph g, int source, int target) {
 			if (g instanceof IndexGraph)
 				return findAllSimplePaths((IndexGraph) g, source, target);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 

@@ -160,7 +160,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
 		return (WeightsT) verticesUserWeights.get(key);
 	}
 
@@ -176,7 +176,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
 		return (WeightsT) edgesUserWeights.get(key);
 	}
 
@@ -191,12 +191,12 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(String key, Class<? super V> type, V defVal) {
+	public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal) {
 		throw new UnsupportedOperationException("graph is immutable, can't add vertices weights");
 	}
 
 	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(String key, Class<? super E> type, E defVal) {
+	public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
 		throw new UnsupportedOperationException("graph is immutable, can't add edges weights");
 	}
 
@@ -205,7 +205,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		return this;
 	}
 
-	static abstract class EdgeIterAbstract implements EdgeIter {
+	static abstract class EdgeIterAbstract implements IEdgeIter {
 
 		private final int[] edges;
 		private int idx;
@@ -230,7 +230,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
 			return edges[idx];
 		}

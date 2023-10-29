@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
@@ -62,7 +62,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			final IntSet[] blockingSet;
 			final IntStack unblockStack = new IntArrayList();
 			final IntArrayList path = new IntArrayList();
-			final Stack<EdgeIter> edgeIterStack = new ObjectArrayList<>();
+			final Stack<IEdgeIter> edgeIterStack = new ObjectArrayList<>();
 			/**
 			 * In the paper, there is a boolean flag in each recursive call of the backtrack function. The flag is set
 			 * to true if a cycle was found in the current function call or its successors calls. This invariant allow
@@ -97,9 +97,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				for (;;) {
 					currentStartVLoop: while (!edgeIterStack.isEmpty()) {
-						for (EdgeIter it = edgeIterStack.top(); it.hasNext();) {
+						for (IEdgeIter it = edgeIterStack.top(); it.hasNext();) {
 							int e = it.nextInt();
-							int v = it.target();
+							int v = it.targetInt();
 							if (!scc.contains(v))
 								continue;
 							if (v == startV) {
@@ -125,9 +125,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 							unblock(u);
 							cycleFoundDepth--;
 						} else {
-							for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
+							for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {
 								it.nextInt();
-								int v = it.target();
+								int v = it.targetInt();
 								if (!scc.contains(v))
 									continue;
 								blockingSet[v].add(u);
@@ -188,9 +188,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				for (int uSub = 0; uSub < nSub; uSub++) {
 					int uFull = uSub + subToFull;
-					for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
+					for (IEdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
 						it.nextInt();
-						int vSub = it.target() - subToFull;
+						int vSub = it.targetInt() - subToFull;
 						if (vSub >= 0)
 							gSubBuilder.addEdge(uSub, vSub);
 					}

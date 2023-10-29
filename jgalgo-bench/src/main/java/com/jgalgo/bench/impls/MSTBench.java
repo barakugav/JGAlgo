@@ -37,8 +37,8 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -53,7 +53,7 @@ public class MSTBench {
 	@Param({ "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
 
-	private List<Pair<Graph, WeightFunctionInt>> graphs;
+	private List<Pair<IntGraph, IWeightFunctionInt>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -66,16 +66,16 @@ public class MSTBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x4453dff0c083fe6cL);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchMST(MinimumSpanningTree.Builder builder, Blackhole blackhole) {
-		Pair<Graph, WeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		Graph g = gw.first();
-		WeightFunctionInt w = gw.second();
+		Pair<IntGraph, IWeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		IntGraph g = gw.first();
+		IWeightFunctionInt w = gw.second();
 		MinimumSpanningTree algo = builder.build();
 		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);

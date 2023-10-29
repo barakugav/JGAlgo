@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
@@ -52,7 +52,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			final IntArrayList path = new IntArrayList();
 			final IntArrayList markedStack = new IntArrayList();
 			final BitSet isMarked = new BitSet(n);
-			final Stack<EdgeIter> edgeIterStack = new ObjectArrayList<>();
+			final Stack<IEdgeIter> edgeIterStack = new ObjectArrayList<>();
 			/**
 			 * In the paper, there is a boolean flag 'f' in each recursive call of the backtrack function. The flag is
 			 * set to true if a cycle was found in the current function call or its successors calls. This invariant
@@ -78,9 +78,9 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 				}
 				for (;;) {
 					currentStartVLoop: while (!edgeIterStack.isEmpty()) {
-						for (EdgeIter it = edgeIterStack.top(); it.hasNext();) {
+						for (IEdgeIter it = edgeIterStack.top(); it.hasNext();) {
 							int e = it.nextInt();
-							int v = it.target();
+							int v = it.targetInt();
 							if (v < startV)
 								continue;
 							if (v == startV) {

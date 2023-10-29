@@ -17,8 +17,8 @@ package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.TestBase;
 
 public class MatchingWeightedBlossomVTest extends TestBase {
@@ -36,7 +36,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		g.addEdge(v3, v0);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, WeightFunction.CardinalityWeightFunction);
+		Matching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}
@@ -52,7 +52,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v3);
 		int e3 = g.addEdge(v3, v0);
-		WeightsInt w = g.addEdgesWeights("weights", int.class);
+		IWeightsInt w = g.addEdgesWeights("weights", int.class);
 		w.set(e0, 22);
 		w.set(e1, 36);
 		w.set(e2, 68);
@@ -92,7 +92,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		g.addEdge(v04, v14);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, WeightFunction.CardinalityWeightFunction);
+		Matching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}
@@ -124,7 +124,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 
 		int e20 = g.addEdge(v04, v14);
 
-		WeightsInt w = g.addEdgesWeights("weights", int.class);
+		IWeightsInt w = g.addEdgesWeights("weights", int.class);
 		w.set(e00, 10);
 		w.set(e01, 10);
 		w.set(e02, 2);

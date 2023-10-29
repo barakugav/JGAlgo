@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -38,7 +38,7 @@ class ColoringTestUtils extends TestUtils {
 		tester.addPhase().withArgs(200, 1000).repeat(32);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
 			VertexPartition coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
@@ -46,7 +46,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testWithSelfLoops(ColoringAlgo algo) {
-		Graph g = Graph.newUndirected();
+		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -58,7 +58,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testDirectedGraph(ColoringAlgo algo) {
-		Graph g = Graph.newDirected();
+		IntGraph g = IntGraph.newDirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -68,7 +68,7 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void validateColoring(Graph g, VertexPartition coloring) {
+	static void validateColoring(IntGraph g, VertexPartition coloring) {
 		assertTrue(ColoringAlgo.isColoring(g, coloring::vertexBlock));
 
 		int n = g.vertices().size();

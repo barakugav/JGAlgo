@@ -76,18 +76,18 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			addInternalVerticesContainer(edgesInContainer);
 
 			for (int v = 0; v < n; v++) {
-				for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.target(), e);
+					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);
 					if (oldVal != -1)
-						throw new IllegalStateException("Parallel edge (idx=" + v + ",idx=" + eit.target()
+						throw new IllegalStateException("Parallel edge (idx=" + v + ",idx=" + eit.targetInt()
 								+ ") already exists. Parallel edges are not allowed.");
 				}
-				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
-					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.source(), e);
+					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.sourceInt(), e);
 					if (oldVal != -1)
-						throw new IllegalStateException("Parallel edge (idx=" + eit.source() + ",idx=" + v
+						throw new IllegalStateException("Parallel edge (idx=" + eit.sourceInt() + ",idx=" + v
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 			}
@@ -218,13 +218,13 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source, edgesOut);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
 		return new EdgeSetIn(target, edgesIn);
 	}
@@ -328,7 +328,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		// edgesIn.clear();
 	}
 
-	class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 		private final Int2IntMap edges;
 
 		EdgeSetOut(int source, Int2IntMap[] edges) {
@@ -347,12 +347,12 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edges);
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 		private final Int2IntMap edges;
 
 		EdgeSetIn(int target, Int2IntMap[] edges) {
@@ -371,7 +371,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edges);
 		}
 	}

@@ -76,12 +76,12 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 		return new EdgeSetIn(target);
 	}
 
@@ -153,13 +153,13 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		super.vertexSwap(v1, v2);
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterOut(source);
 		}
 
@@ -169,13 +169,13 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 			return new EdgeIterInDirected(target);
 		}
 

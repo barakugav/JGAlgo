@@ -17,13 +17,13 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 public class LowestCommonAncestorExample {
 
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-		Graph tree = Graph.newUndirected();
+		IntGraph tree = IntGraph.newUndirected();
 		int rt = tree.addVertex();
 		int v1 = tree.addVertex();
 		int v2 = tree.addVertex();

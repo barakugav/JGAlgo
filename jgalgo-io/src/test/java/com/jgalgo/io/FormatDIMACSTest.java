@@ -22,9 +22,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightsInt;
 
 public class FormatDIMACSTest {
 
@@ -38,7 +38,7 @@ public class FormatDIMACSTest {
 		data += "e 2 4\n";
 		data += "e 3 4\n";
 		data += "e 4 5\n";
-		final Graph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
+		final IntGraph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
 
 		final StringWriter writer = new StringWriter();
 		GraphWriter.newInstance("dimacs").writeGraph(g, writer);
@@ -81,7 +81,7 @@ public class FormatDIMACSTest {
 		data += "e 2 4 15\n";
 		data += "e 3 4 2\n";
 		data += "e 4 5 7\n";
-		final Graph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
+		final IntGraph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
 
 		final StringWriter writer = new StringWriter();
 		GraphWriter.newInstance("dimacs").writeGraph(g, writer);
@@ -121,7 +121,7 @@ public class FormatDIMACSTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = Graph.newUndirected();
+			IntGraph g = IntGraph.newUndirected();
 
 			/* DIMACS format support vertices with labels 1..n only */
 			for (int v = 1; v <= n; v++)
@@ -139,9 +139,9 @@ public class FormatDIMACSTest {
 			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
 			String data = writer.toString();
 
-			GraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
-			Graph gImmutable = gb.build();
-			Graph gMutable = gb.buildMutable();
+			IntGraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			IntGraph gImmutable = gb.build();
+			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -154,7 +154,7 @@ public class FormatDIMACSTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			Graph g = Graph.newUndirected();
+			IntGraph g = IntGraph.newUndirected();
 
 			/* DIMACS format support vertices with labels 1..n only */
 			for (int v = 1; v <= n; v++)
@@ -168,7 +168,7 @@ public class FormatDIMACSTest {
 				g.addEdge(source, target, e);
 			}
 
-			WeightsInt we1 = g.addEdgesWeights("weightsEdges", int.class);
+			IWeightsInt we1 = g.addEdgesWeights("weightsEdges", int.class);
 			for (int e : g.edges())
 				we1.set(e, n + rand.nextInt(m * 3));
 
@@ -176,9 +176,9 @@ public class FormatDIMACSTest {
 			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
 			String data = writer.toString();
 
-			GraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
-			Graph gImmutable = gb.build();
-			Graph gMutable = gb.buildMutable();
+			IntGraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			IntGraph gImmutable = gb.build();
+			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -186,7 +186,7 @@ public class FormatDIMACSTest {
 
 	@Test
 	public void writeDirectedGraphUnsupported() {
-		Graph g = Graph.newDirected();
+		IntGraph g = IntGraph.newDirected();
 		g.addVertex(1);
 		g.addVertex(6);
 		g.addVertex(78);

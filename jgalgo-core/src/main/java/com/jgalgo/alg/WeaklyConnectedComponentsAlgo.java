@@ -16,7 +16,7 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Weakly Connected components algorithm.
@@ -44,7 +44,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into weakly connected components
 	 */
-	VertexPartition findWeaklyConnectedComponents(Graph g);
+	VertexPartition findWeaklyConnectedComponents(IntGraph g);
 
 	/**
 	 * Check whether a graph is weakly connected.
@@ -55,7 +55,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   {@code true} if the graph is weakly connected, {@code false} otherwise
 	 */
-	boolean isWeaklyConnected(Graph g);
+	boolean isWeaklyConnected(IntGraph g);
 
 	/**
 	 * Create a new weakly connected components algorithm object.

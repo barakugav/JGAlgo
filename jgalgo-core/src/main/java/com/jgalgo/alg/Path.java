@@ -16,10 +16,10 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -94,11 +94,11 @@ public interface Path {
 	boolean isSimple();
 
 	/**
-	 * Get an {@link EdgeIter} that iterate over the edges of the path.
+	 * Get an {@link IEdgeIter} that iterate over the edges of the path.
 	 *
-	 * @return an {@link EdgeIter} that iterate over the edges of the path.
+	 * @return an {@link IEdgeIter} that iterate over the edges of the path.
 	 */
-	EdgeIter edgeIter();
+	IEdgeIter edgeIter();
 
 	/**
 	 * Get the edges forming this path.
@@ -126,7 +126,7 @@ public interface Path {
 	 * Create a new path from an edge list, a source and a target vertices.
 	 * <p>
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
-	 * for validity, use {@link #isPath(Graph, int, int, IntList)}.
+	 * for validity, use {@link #isPath(IntGraph, int, int, IntList)}.
 	 *
 	 * @param  g      the graph
 	 * @param  source a source vertex
@@ -134,13 +134,13 @@ public interface Path {
 	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
 	 * @return        a new path
 	 */
-	static Path newInstance(Graph g, int source, int target, IntList edges) {
+	static Path newInstance(IntGraph g, int source, int target, IntList edges) {
 		if (g instanceof IndexGraph)
 			return new PathImpl((IndexGraph) g, source, target, edges);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
@@ -164,7 +164,7 @@ public interface Path {
 	 *                    graph.
 	 * @return        {@code true} if the given edge list is a valid path in the given graph, else {@code false}
 	 */
-	static boolean isPath(Graph g, int source, int target, IntList edges) {
+	static boolean isPath(IntGraph g, int source, int target, IntList edges) {
 		IndexGraph ig;
 		IntIterator eit;
 		if (g instanceof IndexGraph) {
@@ -172,8 +172,8 @@ public interface Path {
 			eit = edges.iterator();
 		} else {
 			ig = g.indexGraph();
-			IndexIdMap viMap = g.indexGraphVerticesMap();
-			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			source = viMap.idToIndex(source);
 			target = viMap.idToIndex(target);
 			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
@@ -222,13 +222,13 @@ public interface Path {
 	 * @param  target target vertex
 	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	static Path findPath(Graph g, int source, int target) {
+	static Path findPath(IntGraph g, int source, int target) {
 		if (g instanceof IndexGraph)
 			return PathImpl.findPath((IndexGraph) g, source, target);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 

@@ -18,12 +18,12 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -52,14 +52,14 @@ public class ChinesePostmanTest extends TestBase {
 		tester.addPhase().withArgs(8, 32).repeat(16);
 		tester.addPhase().withArgs(16, 32).repeat(16);
 		tester.run((n, m) -> {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(selfEdges).cycles(true).connected(true).build();
-			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testGraph(g, w, algo);
 		});
 	}
 
-	private static void testGraph(Graph g, WeightFunctionInt w, ChinesePostman algo) {
+	private static void testGraph(IntGraph g, IWeightFunctionInt w, ChinesePostman algo) {
 		Path chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
 
 		/* Asserts all edges are traversed by the tour */
@@ -76,8 +76,8 @@ public class ChinesePostmanTest extends TestBase {
 		double bestWeight = Double.POSITIVE_INFINITY;
 		int[] es = g.edges().toIntArray();
 		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
-			GraphBuilder b = GraphBuilder.newFrom(g);
-			WeightsInt bWeights = b.addEdgesWeights("weights", int.class);
+			IntGraphBuilder b = IntGraphBuilder.newFrom(g);
+			IWeightsInt bWeights = b.addEdgesWeights("weights", int.class);
 			for (int e : g.edges())
 				bWeights.set(e, w.weightInt(e));
 
@@ -90,7 +90,7 @@ public class ChinesePostmanTest extends TestBase {
 				int duplicatedEdge = b.addEdge(v, u);
 				bWeights.set(duplicatedEdge, bWeights.weightInt(origEdge));
 			}
-			Graph eulerianGraph = b.build();
+			IntGraph eulerianGraph = b.build();
 			if (eulerianGraph.vertices().intStream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
 				continue;
 
@@ -104,11 +104,11 @@ public class ChinesePostmanTest extends TestBase {
 		assertEquals(bestWeight, chinesePostmanTourWeight, 1e-6);
 	}
 
-	private static int nonSelfEdgesDegree(Graph g, int v) {
+	private static int nonSelfEdgesDegree(IntGraph g, int v) {
 		int nonSelfEdgesCount = 0;
-		for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+		for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 			eit.nextInt();
-			if (eit.target() != v)
+			if (eit.targetInt() != v)
 				nonSelfEdgesCount++;
 		}
 		return nonSelfEdgesCount;

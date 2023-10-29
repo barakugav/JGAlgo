@@ -16,22 +16,22 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {
 
 	@Override
-	public BiConnectedComponentsAlgo.Result findBiConnectedComponents(Graph g) {
+	public BiConnectedComponentsAlgo.Result findBiConnectedComponents(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return findBiConnectedComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
 		BiConnectedComponentsAlgo.Result indexResult = findBiConnectedComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
@@ -42,10 +42,10 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 	private static class ResultFromIndexResult implements BiConnectedComponentsAlgo.Result {
 
 		private final BiConnectedComponentsAlgo.Result res;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
+		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -82,7 +82,7 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 		}
 
 		@Override
-		public Graph getBlockGraph() {
+		public IntGraph getBlockGraph() {
 			return res.getBlockGraph();
 		}
 
