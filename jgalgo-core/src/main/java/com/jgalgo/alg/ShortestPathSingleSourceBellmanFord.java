@@ -67,6 +67,8 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 * in the next time the optimization is performed, we avoid it for 2 rounds, than 4 rounds, 8, ect. The speedup
 		 * in some cases can be up to 100x (for example RecursiveMatrix(0.57, 0.19, 0.19, 0.05)), and the slowdown in
 		 * the worst case is negligible.
+		 *
+		 * TODO Yen's improvement: https://en.wikipedia.org/wiki/Yen%27s_algorithm
 		 */
 
 		final int n = g.vertices().size();
