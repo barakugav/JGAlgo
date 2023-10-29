@@ -20,21 +20,27 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 
-abstract class CyclesFinderAbstract implements CyclesFinder {
+class SimplePathsFinders {
 
-	@Override
-	public Iterator<Path> findAllCycles(Graph g) {
-		if (g instanceof IndexGraph)
-			return findAllCycles((IndexGraph) g);
+	static abstract class AbstractImpl implements SimplePathsFinder {
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap viMap = g.indexGraphVerticesMap();
-		IndexIdMap eiMap = g.indexGraphEdgesMap();
+		@Override
+		public Iterator<Path> findAllSimplePaths(Graph g, int source, int target) {
+			if (g instanceof IndexGraph)
+				return findAllSimplePaths((IndexGraph) g, source, target);
 
-		Iterator<Path> indexResult = findAllCycles(iGraph);
-		return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
+
+			Iterator<Path> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
+			return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
+		}
+
+		abstract Iterator<Path> findAllSimplePaths(IndexGraph g, int source, int target);
+
 	}
-
-	abstract Iterator<Path> findAllCycles(IndexGraph g);
 
 }

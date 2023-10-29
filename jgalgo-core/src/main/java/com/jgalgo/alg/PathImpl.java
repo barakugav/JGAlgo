@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -317,6 +318,30 @@ class PathImpl implements Path {
 		public String toString() {
 			return edges().toString();
 		}
+	}
+
+	static class IterFromIndexIter implements Iterator<Path> {
+
+		private final Iterator<Path> res;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
+
+		IterFromIndexIter(Iterator<Path> res, IndexIdMap viMap, IndexIdMap eiMap) {
+			this.res = Objects.requireNonNull(res);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return res.hasNext();
+		}
+
+		@Override
+		public Path next() {
+			return pathFromIndexPath(res.next(), viMap, eiMap);
+		}
+
 	}
 
 }
