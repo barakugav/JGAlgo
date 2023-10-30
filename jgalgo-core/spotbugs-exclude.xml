@@ -18,14 +18,6 @@
     <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
   </Match>
   <Match>
-    <!-- BFS iterator indeed store a mutable reference to the graph and the user should not modify
-    the graph while the BFS iterator is in use -->
-    <Class name="com.jgalgo.alg.BfsIter" />
-    <Constructor />
-    <Local name="g" />
-    <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
     <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
     the graph while the DFS iterator is in use -->
     <Class name="com.jgalgo.alg.DfsIter" />

@@ -19,6 +19,7 @@ import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
@@ -29,7 +30,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 class BfsIterImpl {
 
-	private static abstract class Abstract implements BfsIter {
+	private static abstract class Abstract implements Bfs.IntIter {
 
 		final IndexGraph g;
 		final BitSet visited;
@@ -62,7 +63,7 @@ class BfsIterImpl {
 		}
 
 		@Override
-		public int lastEdge() {
+		public int lastEdgeInt() {
 			return inEdge;
 		}
 
@@ -157,38 +158,72 @@ class BfsIterImpl {
 		}
 	}
 
-	static class BFSFromIndexBFS implements BfsIter {
+	static class IntBFSFromIndexBFS implements Bfs.IntIter {
 
-		private final BfsIter it;
+		private final Bfs.IntIter indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		BFSFromIndexBFS(BfsIter it, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.it = Objects.requireNonNull(it);
+		IntBFSFromIndexBFS(Bfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public boolean hasNext() {
-			return it.hasNext();
+			return indexIter.hasNext();
 		}
 
 		@Override
 		public int nextInt() {
-			return viMap.indexToIdInt(it.nextInt());
+			return viMap.indexToIdInt(indexIter.nextInt());
 		}
 
 		@Override
-		public int lastEdge() {
-			int e = it.lastEdge();
+		public int lastEdgeInt() {
+			int e = indexIter.lastEdgeInt();
 			return e == -1 ? -1 : eiMap.indexToIdInt(e);
 		}
 
 		@Override
 		public int layer() {
-			return it.layer();
+			return indexIter.layer();
+		}
+	}
+
+	static class ObjBFSFromIndexBFS<V, E> implements Bfs.Iter<V, E> {
+
+		private final Bfs.IntIter indexIter;
+		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+
+		ObjBFSFromIndexBFS(Bfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
+		@Override
+		public boolean hasNext() {
+			return indexIter.hasNext();
+		}
+
+		@Override
+		public V next() {
+			return viMap.indexToId(indexIter.nextInt());
+		}
+
+		@Override
+		public E lastEdge() {
+			int e = indexIter.lastEdgeInt();
+			return e == -1 ? null : eiMap.indexToId(e);
+		}
+
+		@Override
+		public int layer() {
+			return indexIter.layer();
+		}
 	}
+
 }

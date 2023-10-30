@@ -253,9 +253,9 @@ class PathImpl implements Path {
 		Arrays.fill(backtrack, -1);
 
 		IntArrayList path = new IntArrayList();
-		for (BfsIter it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {
+		for (Bfs.IntIter it = Bfs.newInstanceBackward(g, target); it.hasNext();) {
 			int p = it.nextInt();
-			backtrack[p] = it.lastEdge();
+			backtrack[p] = it.lastEdgeInt();
 			if (p == source)
 				break;
 		}

@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * }
  * }</pre>
  *
- * @see    BfsIter
+ * @see    Bfs
  * @see    <a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */

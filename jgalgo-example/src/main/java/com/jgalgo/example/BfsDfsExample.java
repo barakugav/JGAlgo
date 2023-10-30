@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.BfsIter;
 import com.jgalgo.alg.DfsIter;
+import com.jgalgo.alg.Bfs;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -28,12 +28,12 @@ public class BfsDfsExample {
 		int source = g.vertices().iterator().nextInt();
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-		for (BfsIter iter = BfsIter.newInstance(g, source); iter.hasNext();) {
+		for (Bfs.IntIter iter = Bfs.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
 			int v = iter.nextInt();
 			/* e is the edge used to reach v */
 			/* In a directed graph, v is the 'target' of e */
-			int e = iter.lastEdge();
+			int e = iter.lastEdgeInt();
 			/* the layer is the distance of v from the source vertex */
 			int layer = iter.layer();
 			System.out.println("BFS reached vertex " + v + " at layer " + layer + " using edge " + e);

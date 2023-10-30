@@ -36,9 +36,9 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		Int2IntMap parent = new Int2IntOpenHashMap(n);
 		Int2IntMap depth = new Int2IntOpenHashMap(n);
 
-		for (BfsIter it = BfsIter.newInstance(g, root); it.hasNext();) {
+		for (Bfs.IntIter it = Bfs.newInstance(g, root); it.hasNext();) {
 			int v = it.nextInt();
-			int e = it.lastEdge();
+			int e = it.lastEdgeInt();
 			if (e == -1) {
 				parent.put(v, -1);
 				depth.put(v, 0);

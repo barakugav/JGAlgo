@@ -46,9 +46,9 @@ public class BfsIterTest extends TestBase {
 			int source = vs[rand.nextInt(vs.length)];
 
 			IntSet visited = new IntOpenHashSet(n);
-			for (BfsIter it = BfsIter.newInstance(g, source); it.hasNext();) {
+			for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
-				int e = it.lastEdge();
+				int e = it.lastEdgeInt();
 				assertFalse(visited.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
@@ -60,10 +60,10 @@ public class BfsIterTest extends TestBase {
 
 			/* run BFS again without calling .hasNext() */
 			IntSet visited2 = new IntOpenHashSet();
-			BfsIter it = BfsIter.newInstance(g, source);
+			Bfs.IntIter it = Bfs.newInstance(g, source);
 			for (int s = visited.size(); s-- > 0;) {
 				int v = it.nextInt();
-				int e = it.lastEdge();
+				int e = it.lastEdgeInt();
 				assertFalse(visited2.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
