@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -40,11 +42,15 @@ public interface BiConnectedComponentsAlgo {
 
 	/**
 	 * Compute all maximal bi-connected components of a graph.
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument {@link BiConnectedComponentsAlgo.IResult} is returned.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing the bi-connected components of the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the bi-connected components of the graph
 	 */
-	BiConnectedComponentsAlgo.Result findBiConnectedComponents(IntGraph g);
+	<V, E> BiConnectedComponentsAlgo.Result<V, E> findBiConnectedComponents(Graph<V, E> g);
 
 	/**
 	 * A result object of a {@link BiConnectedComponentsAlgo} computation.
@@ -54,9 +60,11 @@ public interface BiConnectedComponentsAlgo {
 	 * Note that the bi-connected components are not disjoint, namely a single vertex can be included in multiple
 	 * bi-connected components, differing from the regular connected components of a graph.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * Get the bi-connected components a vertex is contained in.
@@ -65,7 +73,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           the labels of the bi-connected components containing the vertex
 		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
-		IntSet getVertexBiCcs(int vertex);
+		IntSet getVertexBiCcs(V vertex);
 
 		/**
 		 * Get the number of bi-connected components computed in the graph.
@@ -83,7 +91,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           all the vertices that are contained in the bi-connected component
 		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
 		 */
-		IntSet getBiCcVertices(int biccIdx);
+		Set<V> getBiCcVertices(int biccIdx);
 
 		/**
 		 * Get the edges contained in a single bi-connected component.
@@ -95,6 +103,69 @@ public interface BiConnectedComponentsAlgo {
 		 * @return                           all the edges that are contained in the bi-connected component
 		 * @throws IndexOutOfBoundsException if {@code biccIdx} is not in range {@code [0, getNumberOfBiCcs())}
 		 */
+		Set<E> getBiCcEdges(int biccIdx);
+
+		/**
+		 * Check whether a vertex is a cut-vertex.
+		 * <p>
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @param  vertex a vertex in the graph
+		 * @return        {@code true} if {@code vertex} is a cut-vertex, {@code false} otherwise
+		 */
+		boolean isCutVertex(V vertex);
+
+		/**
+		 * Get all the cut vertices in the graph.
+		 * <p>
+		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
+		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
+		 * called articulation points, or separating vertices.
+		 *
+		 * @return all the cut vertices in the graph
+		 */
+		Set<V> getCutVertices();
+
+		/**
+		 * Get the graph of the bi-connected components.
+		 * <p>
+		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
+		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 *
+		 * @return the graph of the bi-connected components
+		 */
+		IntGraph getBlockGraph();
+
+	}
+
+	/**
+	 * A result object of a {@link BiConnectedComponentsAlgo} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends Result<Integer, Integer> {
+
+		/**
+		 * Get the bi-connected components a vertex is contained in.
+		 *
+		 * @param  vertex                    a vertex in the graph
+		 * @return                           the labels of the bi-connected components containing the vertex
+		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 */
+		IntSet getVertexBiCcs(int vertex);
+
+		@Deprecated
+		@Override
+		default IntSet getVertexBiCcs(Integer vertex) {
+			return getVertexBiCcs((vertex).intValue());
+		}
+
+		@Override
+		IntSet getBiCcVertices(int biccIdx);
+
+		@Override
 		IntSet getBiCcEdges(int biccIdx);
 
 		/**
@@ -109,26 +180,14 @@ public interface BiConnectedComponentsAlgo {
 		 */
 		boolean isCutVertex(int vertex);
 
-		/**
-		 * Get all the cut vertices in the graph.
-		 * <p>
-		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
-		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
-		 * called articulation points, or separating vertices.
-		 *
-		 * @return all the cut vertices in the graph
-		 */
-		IntSet getCutVertices();
+		@Deprecated
+		@Override
+		default boolean isCutVertex(Integer vertex) {
+			return isCutVertex((vertex).intValue());
+		}
 
-		/**
-		 * Get the graph of the bi-connected components.
-		 * <p>
-		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
-		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
-		 *
-		 * @return the graph of the bi-connected components
-		 */
-		IntGraph getBlockGraph();
+		@Override
+		IntSet getCutVertices();
 
 	}
 

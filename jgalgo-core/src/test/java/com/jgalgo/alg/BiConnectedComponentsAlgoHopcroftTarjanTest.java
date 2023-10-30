@@ -58,7 +58,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 
 	@SuppressWarnings("boxing")
 	private static void testUGraph(BiConnectedComponentsAlgo algo, IntGraph g) {
-		BiConnectedComponentsAlgo.Result res = algo.findBiConnectedComponents(g);
+		BiConnectedComponentsAlgo.IResult res = (BiConnectedComponentsAlgo.IResult) algo.findBiConnectedComponents(g);
 
 		/* Check that each vertex is contained in some BiCc */
 		for (int v : g.vertices()) {
