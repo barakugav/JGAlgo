@@ -15,19 +15,25 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -38,117 +44,203 @@ class MinimumCostFlows {
 
 	private static abstract class AbstractImplBase implements MinimumCostFlow {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
-			if (g instanceof IndexGraph) {
-				computeMinCostMaxFlow((IndexGraph) g, net, cost, source, sink);
-				return;
+		public <V, E> void computeMinCostMaxFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost, V source,
+				V sink) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
+				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, source0, sink0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				int iSink = viMap.idToIndex(((Integer) sink).intValue());
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iSource, iSink);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				int iSource = viMap.idToIndex(source);
+				int iSink = viMap.idToIndex(sink);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iSource, iSink);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			int iSource = viMap.idToIndex(source);
-			int iSink = viMap.idToIndex(sink);
-
-			computeMinCostMaxFlow(iGraph, iNet, iCost, iSource, iSink);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
-				IWeightFunction lowerBound, int source, int sink) {
-			if (g instanceof IndexGraph) {
-				computeMinCostMaxFlow((IndexGraph) g, net, cost, lowerBound, source, sink);
-				return;
+		public <V, E> void computeMinCostMaxFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost,
+				WeightFunction<E> lowerBound, V source, V sink) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				IWeightFunction lowerBound0 =
+						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) lowerBound);
+				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
+				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, source0, sink0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				IWeightFunction iLowerBound =
+						IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) lowerBound, eiMap);
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				int iSink = viMap.idToIndex(((Integer) sink).intValue());
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSource, iSink);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
+				int iSource = viMap.idToIndex(source);
+				int iSink = viMap.idToIndex(sink);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSource, iSink);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
-			int iSource = viMap.idToIndex(source);
-			int iSink = viMap.idToIndex(sink);
-
-			computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSource, iSink);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IntCollection sources,
-				IntCollection sinks) {
-			if (g instanceof IndexGraph) {
-				computeMinCostMaxFlow((IndexGraph) g, net, cost, sources, sinks);
-				return;
+		public <V, E> void computeMinCostMaxFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost,
+				Collection<V> sources, Collection<V> sinks) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, sources0, sinks0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection((Collection<Integer>) sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection((Collection<Integer>) sinks, viMap);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iSources, iSinks);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iSources, iSinks);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
-			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
-
-			computeMinCostMaxFlow(iGraph, iNet, iCost, iSources, iSinks);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
-				IWeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
-			if (g instanceof IndexGraph) {
-				computeMinCostMaxFlow((IndexGraph) g, net, cost, lowerBound, sources, sinks);
-				return;
+		public <V, E> void computeMinCostMaxFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost,
+				WeightFunction<E> lowerBound, Collection<V> sources, Collection<V> sinks) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				IWeightFunction lowerBound0 =
+						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) lowerBound);
+				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, sources0, sinks0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				IWeightFunction iLowerBound =
+						IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) lowerBound, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection((Collection<Integer>) sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection((Collection<Integer>) sinks, viMap);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSources, iSinks);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
+				computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSources, iSinks);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
-			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
-			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
-
-			computeMinCostMaxFlow(iGraph, iNet, iCost, iLowerBound, iSources, iSinks);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
-			if (g instanceof IndexGraph) {
-				computeMinCostFlow((IndexGraph) g, net, cost, supply);
-				return;
+		public <V, E> void computeMinCostFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost,
+				WeightFunction<V> supply) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) supply);
+				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, supply0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) supply, viMap);
+				computeMinCostFlow(iGraph, iNet, iCost, iSupply);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
+				computeMinCostFlow(iGraph, iNet, iCost, iSupply);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
-
-			computeMinCostFlow(iGraph, iNet, iCost, iSupply);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
-				IWeightFunction supply) {
-			if (g instanceof IndexGraph) {
-				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, supply);
-				return;
+		public <V, E> void computeMinCostFlow(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<E> cost,
+				WeightFunction<E> lowerBound, WeightFunction<V> supply) {
+			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
+				IWeightFunction lowerBound0 =
+						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) lowerBound);
+				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) supply);
+				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, supply0);
+
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) cost, eiMap);
+				IWeightFunction iLowerBound =
+						IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) lowerBound, eiMap);
+				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) supply, viMap);
+				computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
+				IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
+				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
+				computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);
 			}
-
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
-			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
-			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
-			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
-
-			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);
 		}
 
 		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
