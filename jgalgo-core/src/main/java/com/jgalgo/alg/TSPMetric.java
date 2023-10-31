@@ -16,8 +16,10 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Metric Traveling Salesman Problem (TSP) algorithm.
@@ -37,13 +39,16 @@ public interface TSPMetric {
 	 * Compute the shortest tour that visit all vertices.
 	 * <p>
 	 * Note that this problem is NP-hard and therefore the result is only the best approximation the implementation
-	 * could find.
+	 * could find. If {@code g} is an {@link IntGraph}, a {@link IPath} object is returned. In that case, its better to
+	 * pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  g a graph containing all the vertices the tour must visit, using its edges
-	 * @param  w an edge weight function. In the metric world every three vertices \(u,v,w\) should satisfy \(w((u,v)) +
-	 *               w((v,w)) \leq w((u,w))$
-	 * @return   a result object containing the list of the \(n\) vertices ordered by the calculated path
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph containing all the vertices the tour must visit, using its edges
+	 * @param  w   an edge weight function. In the metric world every three vertices \(u,v,w\) should satisfy \(w((u,v))
+	 *                 + w((v,w)) \leq w((u,w))$
+	 * @return     a result object containing the list of the \(n\) vertices ordered by the calculated path
 	 */
-	IPath computeShortestTour(IntGraph g, IWeightFunction w);
+	<V, E> Path<V, E> computeShortestTour(Graph<V, E> g, WeightFunction<E> w);
 
 }
