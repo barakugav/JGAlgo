@@ -15,12 +15,18 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -29,26 +35,40 @@ class VoronoiAlgos {
 
 	static abstract class AbstractImpl implements VoronoiAlgo {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public VoronoiAlgo.Result computeVoronoiCells(IntGraph g, IntCollection sites, IWeightFunction w) {
-			if (g instanceof IndexGraph)
-				return computeVoronoiCells((IndexGraph) g, sites, w);
+		public <V, E> VoronoiAlgo.Result<V, E> computeVoronoiCells(Graph<V, E> g, Collection<V> sites,
+				WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IntCollection sites0 = IntContainers.toIntCollection((Collection<Integer>) sites);
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (VoronoiAlgo.Result<V, E>) computeVoronoiCells((IndexGraph) g, sites0, w0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IntCollection iSites = IndexIdMaps.idToIndexCollection((Collection<Integer>) sites, viMap);
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
+				return (VoronoiAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
 
-			VoronoiAlgo.Result indexResult = computeVoronoiCells(iGraph, iSites, iw);
-			return new ResultFromIndexResult(g, indexResult);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
+				return new ObjResultFromIndexResult<>(g, indexResult);
+			}
 		}
 
-		abstract VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
+		abstract VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
 
 	}
 
-	static class ResultImpl extends VertexPartitions.Impl implements VoronoiAlgo.Result {
+	static class ResultImpl extends VertexPartitions.Impl implements VoronoiAlgo.IResult {
 
 		private final double[] distance;
 		private final int[] backtrack;
@@ -98,7 +118,7 @@ class VoronoiAlgos {
 		}
 
 		@Override
-		public int blockSite(int block) {
+		public int blockSiteInt(int block) {
 			return block < sites.length ? sites[block] : -1;
 		}
 
@@ -110,40 +130,74 @@ class VoronoiAlgos {
 
 	}
 
-	static class ResultFromIndexResult extends VertexPartitions.IntPartitionFromIndexPartition
-			implements VoronoiAlgo.Result {
+	static class ObjResultFromIndexResult<V, E> extends VertexPartitions.ObjPartitionFromIndexPartition<V, E>
+			implements VoronoiAlgo.Result<V, E> {
 
-		ResultFromIndexResult(IntGraph g, VoronoiAlgo.Result res) {
-			super(g, res);
+		ObjResultFromIndexResult(Graph<V, E> g, VoronoiAlgo.IResult indexRes) {
+			super(g, indexRes);
 		}
 
-		VoronoiAlgo.Result res() {
-			return (VoronoiAlgo.Result) super.indexPartition;
+		VoronoiAlgo.IResult indexRes() {
+			return (VoronoiAlgo.IResult) super.indexPartition;
+		}
+
+		@Override
+		public double distance(V vertex) {
+			return indexRes().distance(viMap.idToIndex(vertex));
+		}
+
+		@Override
+		public Path<V, E> getPath(V target) {
+			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
+			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+		}
+
+		@Override
+		public V blockSite(int block) {
+			int site = indexRes().blockSiteInt(block);
+			return site != -1 ? viMap.indexToId(site) : null;
+		}
+
+		@Override
+		public V vertexSite(V vertex) {
+			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
+			return site != -1 ? viMap.indexToId(site) : null;
+		}
+	}
+
+	static class IntResultFromIndexResult extends VertexPartitions.IntPartitionFromIndexPartition
+			implements VoronoiAlgo.IResult {
+
+		IntResultFromIndexResult(IntGraph g, VoronoiAlgo.IResult indexRes) {
+			super(g, indexRes);
+		}
+
+		VoronoiAlgo.IResult indexRes() {
+			return (VoronoiAlgo.IResult) super.indexPartition;
 		}
 
 		@Override
 		public double distance(int vertex) {
-			return res().distance(viMap.idToIndex(vertex));
+			return indexRes().distance(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public IPath getPath(int target) {
-			IPath indexPath = res().getPath(viMap.idToIndex(target));
+			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
 			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 		}
 
 		@Override
-		public int blockSite(int block) {
-			int site = res().blockSite(block);
+		public int blockSiteInt(int block) {
+			int site = indexRes().blockSiteInt(block);
 			return site != -1 ? viMap.indexToIdInt(site) : -1;
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
-			int site = res().vertexSite(viMap.idToIndex(vertex));
+			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
 			return site != -1 ? viMap.indexToIdInt(site) : -1;
 		}
-
 	}
 
 }

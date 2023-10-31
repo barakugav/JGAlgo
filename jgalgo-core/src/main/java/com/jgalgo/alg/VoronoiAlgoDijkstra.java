@@ -28,7 +28,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 
 	@SuppressWarnings("boxing")
 	@Override
-	VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
+	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
 		final int n = g.vertices().size();

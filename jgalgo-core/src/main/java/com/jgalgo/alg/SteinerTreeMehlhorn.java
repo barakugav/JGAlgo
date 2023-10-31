@@ -65,7 +65,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		}
 
 		/* 1.1. Compute the Voronoi cells of the terminals */
-		VoronoiAlgo.Result cells = voronoiAlgo.computeVoronoiCells(g, terminals, w);
+		VoronoiAlgo.IResult cells = (VoronoiAlgo.IResult) voronoiAlgo.computeVoronoiCells(g, terminals, w);
 
 		/*
 		 * 1.2. Build the subgraph G'1 where each vertex is a terminal node and the edge connecting each pair of

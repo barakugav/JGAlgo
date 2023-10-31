@@ -71,7 +71,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 	}
 
 	private static void testAlgo(IntGraph g, IWeightFunction w, IntCollection sites, VoronoiAlgo algo) {
-		VoronoiAlgo.Result cells = algo.computeVoronoiCells(g, sites, w);
+		VoronoiAlgo.IResult cells = (VoronoiAlgo.IResult) algo.computeVoronoiCells(g, sites, w);
 
 		assertTrue(IVertexPartition.isPartition(g, cells::vertexBlock));
 
@@ -94,13 +94,13 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 				IPath path = cells.getPath(v);
 				assertNotNull(path);
 				assertTrue(cells.vertexBlock(v) < sites.size());
-				assertEquals(cells.blockSite(cells.vertexBlock(v)), cells.vertexSite(v));
+				assertEquals(cells.blockSiteInt(cells.vertexBlock(v)), cells.vertexSite(v));
 			}
 		}
 
 		int unreachableCell = cells.numberOfBlocks() > sites.size() ? cells.numberOfBlocks() - 1 : -1;
 		if (unreachableCell >= 0)
-			assertEquals(-1, cells.blockSite(unreachableCell));
+			assertEquals(-1, cells.blockSiteInt(unreachableCell));
 		IntCollection unreachableVertices = unreachableCell >= 0 ? cells.blockVertices(unreachableCell) : IntList.of();
 		for (int unreachable : unreachableVertices) {
 			assertEquals(Double.POSITIVE_INFINITY, cells.distance(unreachable));
