@@ -16,9 +16,10 @@
 
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
@@ -44,10 +45,12 @@ public class GraphsUtils {
 	 * <p>
 	 * A self edge is an edge whose source and target is the same vertex.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph contain at least one self edge, else {@code false}
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph contain at least one self edge, else {@code false}
 	 */
-	public static boolean containsSelfEdges(IntGraph g) {
+	public static <V, E> boolean containsSelfEdges(Graph<V, E> g) {
 		if (!g.isAllowSelfEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
@@ -66,10 +69,12 @@ public class GraphsUtils {
 	 * <p>
 	 * Two parallel edges are edges that have the same source and target vertices.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
 	 */
-	public static boolean containsParallelEdges(IntGraph g) {
+	public static <V, E> boolean containsParallelEdges(Graph<V, E> g) {
 		if (!g.isAllowParallelEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
