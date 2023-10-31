@@ -50,7 +50,7 @@ public class VertexPartitionTest extends TestBase {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
 					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
 						final int b0 = b;
@@ -81,7 +81,7 @@ public class VertexPartitionTest extends TestBase {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
 					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
 						final int b0 = b;
@@ -112,7 +112,7 @@ public class VertexPartitionTest extends TestBase {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
 					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
 
 					IntGraph blocksGraph = partition.blocksGraph(true, true);
 
@@ -168,23 +168,23 @@ public class VertexPartitionTest extends TestBase {
 					int[] vs = g.vertices().toIntArray();
 
 					Int2IntMap partition1 = randPartitionMap(g, k, seedGen.nextSeed());
-					assertTrue(VertexPartition.isPartition(g, partition1::get));
+					assertTrue(IVertexPartition.isPartition(g, partition1::get));
 
 					Int2IntMap partition2 = new Int2IntOpenHashMap(partition1);
 					partition2.put(vs[rand.nextInt(n)], -1 - rand.nextInt(5));
-					assertFalse(VertexPartition.isPartition(g, partition2::get));
+					assertFalse(IVertexPartition.isPartition(g, partition2::get));
 
 					Int2IntMap partition3 = new Int2IntOpenHashMap(partition1);
 					int block = rand.nextInt(k);
 					partition3.replaceAll((v, b) -> b != block ? b : k);
-					assertFalse(VertexPartition.isPartition(g, partition3::get));
+					assertFalse(IVertexPartition.isPartition(g, partition3::get));
 				}
 			}
 		});
 	}
 
-	private static VertexPartition randPartition(IntGraph g, int k, long seed) {
-		return VertexPartition.fromMap(g, randPartitionMap(g, k, seed));
+	private static IVertexPartition randPartition(IntGraph g, int k, long seed) {
+		return IVertexPartition.fromMap(g, randPartitionMap(g, k, seed));
 	}
 
 	private static Int2IntMap randPartitionMap(IntGraph g, int k, long seed) {

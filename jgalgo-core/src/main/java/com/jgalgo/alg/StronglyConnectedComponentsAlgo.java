@@ -44,7 +44,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into strongly connected components
 	 */
-	VertexPartition findStronglyConnectedComponents(IntGraph g);
+	IVertexPartition findStronglyConnectedComponents(IntGraph g);
 
 	/**
 	 * Check whether a graph is strongly connected.

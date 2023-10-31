@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 
 	@Override
-	VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
+	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)

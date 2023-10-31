@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightFunction;
 abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
 
 	@Override
-	public VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w) {
+	public IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w) {
 		if (g instanceof IndexGraph)
 			return computeMinimumCut((IndexGraph) g, w);
 
@@ -32,10 +32,10 @@ abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-		VertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
-		return new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, indexCut);
+		IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
+		return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexCut);
 	}
 
-	abstract VertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
+	abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
 
 }

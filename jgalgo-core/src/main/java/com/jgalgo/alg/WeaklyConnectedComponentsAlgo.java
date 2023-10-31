@@ -44,7 +44,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into weakly connected components
 	 */
-	VertexPartition findWeaklyConnectedComponents(IntGraph g);
+	IVertexPartition findWeaklyConnectedComponents(IntGraph g);
 
 	/**
 	 * Check whether a graph is weakly connected.

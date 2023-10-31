@@ -91,7 +91,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int n = g.vertices().size();
 
 		/* find all SCC */
-		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 		SourceChooser sourceChooser = new SourceChooser(g, cc);
 
@@ -204,12 +204,12 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	private static class SourceChooser {
 
 		final IndexGraph g;
-		final VertexPartition cc;
+		final IVertexPartition cc;
 		final int[] interCcDegree;
 		final int[] f;
 		final int[] l;
 
-		SourceChooser(IndexGraph g, VertexPartition cc) {
+		SourceChooser(IndexGraph g, IVertexPartition cc) {
 			this.g = g;
 			this.cc = cc;
 

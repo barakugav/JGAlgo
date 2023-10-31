@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.AbstractWeaklyConnectedComponentsAlgo {
 
 	@Override
-	VertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+	IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
 		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		int[] comp = new int[n];

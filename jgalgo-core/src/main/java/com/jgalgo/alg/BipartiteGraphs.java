@@ -70,7 +70,7 @@ public class BipartiteGraphs {
 	 * @param  g the graph
 	 * @return   the bipartite partition of the graph if one exists
 	 */
-	public static Optional<VertexBiPartition> findPartition(IntGraph g) {
+	public static Optional<IVertexBiPartition> findPartition(IntGraph g) {
 		return findPartition(g, false);
 	}
 
@@ -87,7 +87,7 @@ public class BipartiteGraphs {
 	 * @throws IllegalArgumentException if {@code addPartitionWeight} is {@code true} and the graph already has a non
 	 *                                      boolean vertex weights with key {@link #VertexBiPartitionWeightKey}
 	 */
-	public static Optional<VertexBiPartition> findPartition(IntGraph g, boolean addPartitionWeight) {
+	public static Optional<IVertexBiPartition> findPartition(IntGraph g, boolean addPartitionWeight) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
 
 		BitSet partition0 = findBipartitePartition0(ig);
@@ -98,9 +98,9 @@ public class BipartiteGraphs {
 		for (int n = ig.vertices().size(), v = 0; v < n; v++)
 			partition.set(v, partition0.get(v));
 
-		VertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
+		IVertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
 		if (!(g instanceof IndexGraph))
-			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, partitionRes);
+			partitionRes = new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, partitionRes);
 		return Optional.of(partitionRes);
 	}
 
@@ -178,7 +178,7 @@ public class BipartiteGraphs {
 	 * @throws IllegalArgumentException if the graph has a non boolean vertex weights with key
 	 *                                      {@link #VertexBiPartitionWeightKey}
 	 */
-	public static Optional<VertexBiPartition> getExistingPartition(IntGraph g) {
+	public static Optional<IVertexBiPartition> getExistingPartition(IntGraph g) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
 		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
@@ -188,9 +188,9 @@ public class BipartiteGraphs {
 					+ "' but it is not a boolean weights");
 		IWeightsBool partition = (IWeightsBool) existingPartition;
 
-		VertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
+		IVertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
 		if (!(g instanceof IndexGraph))
-			partitionRes = new VertexBiPartitions.BiPartitionFromIndexBiPartition(g, partitionRes);
+			partitionRes = new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, partitionRes);
 		return Optional.of(partitionRes);
 	}
 

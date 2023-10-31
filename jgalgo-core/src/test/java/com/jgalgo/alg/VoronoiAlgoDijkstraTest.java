@@ -73,7 +73,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 	private static void testAlgo(IntGraph g, IWeightFunction w, IntCollection sites, VoronoiAlgo algo) {
 		VoronoiAlgo.Result cells = algo.computeVoronoiCells(g, sites, w);
 
-		assertTrue(VertexPartition.isPartition(g, cells::vertexBlock));
+		assertTrue(IVertexPartition.isPartition(g, cells::vertexBlock));
 
 		ShortestPathSingleSource sssp = new ShortestPathSingleSourceDijkstra();
 		Int2ObjectMap<ShortestPathSingleSource.Result> ssspResults = new Int2ObjectOpenHashMap<>();

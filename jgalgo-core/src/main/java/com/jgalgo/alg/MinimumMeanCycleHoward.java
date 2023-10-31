@@ -65,7 +65,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
-		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 
 		/* init distances and policy */

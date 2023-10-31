@@ -40,7 +40,7 @@ class ColoringTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
-			VertexPartition coloring = algo.computeColoring(g);
+			IVertexPartition coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}
@@ -68,7 +68,7 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void validateColoring(IntGraph g, VertexPartition coloring) {
+	static void validateColoring(IntGraph g, IVertexPartition coloring) {
 		assertTrue(ColoringAlgo.isColoring(g, coloring::vertexBlock));
 
 		int n = g.vertices().size();

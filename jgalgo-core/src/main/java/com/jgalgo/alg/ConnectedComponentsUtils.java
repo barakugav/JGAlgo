@@ -26,16 +26,16 @@ class ConnectedComponentsUtils {
 				WeaklyConnectedComponentsAlgo.newInstance();
 
 		@Override
-		public VertexPartition findStronglyConnectedComponents(IntGraph g) {
+		public IVertexPartition findStronglyConnectedComponents(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return findStronglyConnectedComponents((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			VertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
+			IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
+			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexResult);
 		}
 
-		VertexPartition findStronglyConnectedComponents(IndexGraph g) {
+		IVertexPartition findStronglyConnectedComponents(IndexGraph g) {
 			if (g.isDirected()) {
 				return findStronglyConnectedComponentsDirected(g);
 			} else {
@@ -48,7 +48,7 @@ class ConnectedComponentsUtils {
 			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());
 		}
 
-		abstract VertexPartition findStronglyConnectedComponentsDirected(IndexGraph g);
+		abstract IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g);
 
 		abstract boolean isStronglyConnected(IndexGraph g);
 
@@ -57,13 +57,13 @@ class ConnectedComponentsUtils {
 	static abstract class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {
 
 		@Override
-		public VertexPartition findWeaklyConnectedComponents(IntGraph g) {
+		public IVertexPartition findWeaklyConnectedComponents(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return findWeaklyConnectedComponents((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			VertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
+			IVertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
+			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexResult);
 		}
 
 		@Override
@@ -71,7 +71,7 @@ class ConnectedComponentsUtils {
 			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());
 		}
 
-		abstract VertexPartition findWeaklyConnectedComponents(IndexGraph g);
+		abstract IVertexPartition findWeaklyConnectedComponents(IndexGraph g);
 
 		abstract boolean isWeaklyConnected(IndexGraph g);
 

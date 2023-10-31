@@ -50,7 +50,7 @@ public interface MinimumCutGlobal {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w);
+	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new minimum global cut algorithm object.

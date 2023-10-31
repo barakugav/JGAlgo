@@ -249,7 +249,7 @@ public class EulerianTourTest extends TestBase {
 	}
 
 	private static void addEdgesUntilStronglyConnected(IntGraph g) {
-		VertexPartition connectivityRes =
+		IVertexPartition connectivityRes =
 				StronglyConnectedComponentsAlgo.newInstance().findStronglyConnectedComponents(g);
 		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)

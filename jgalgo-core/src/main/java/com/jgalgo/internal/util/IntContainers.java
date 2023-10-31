@@ -17,6 +17,8 @@ package com.jgalgo.internal.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.IntUnaryOperator;
+import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -130,6 +132,14 @@ public class IntContainers {
 				return c.retainAll(c2);
 			}
 		};
+	}
+
+	public static IntUnaryOperator toIntUnaryOperator(ToIntFunction<Integer> op) {
+		if (op instanceof IntUnaryOperator) {
+			return (IntUnaryOperator) op;
+		} else {
+			return v -> op.applyAsInt(Integer.valueOf(v));
+		}
 	}
 
 }

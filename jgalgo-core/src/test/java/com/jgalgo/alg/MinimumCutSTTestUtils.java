@@ -165,7 +165,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 	}
 
 	private static void testMinCut(IntGraph g, IWeightFunction w, int source, int sink, MinimumCutST alg) {
-		VertexBiPartition minCut = alg.computeMinimumCut(g, w, source, sink);
+		IVertexBiPartition minCut = alg.computeMinimumCut(g, w, source, sink);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
 		final int n = g.vertices().size();
@@ -203,7 +203,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		} else {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
-			VertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
+			IVertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");
@@ -212,7 +212,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 
 	private static void testMinCut(IntGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks,
 			MinimumCutST alg) {
-		VertexBiPartition minCut = alg.computeMinimumCut(g, w, sources, sinks);
+		IVertexBiPartition minCut = alg.computeMinimumCut(g, w, sources, sinks);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
 		final int terminalsNum = sources.size() + sinks.size();
@@ -251,7 +251,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		} else {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
-			VertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
+			IVertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");

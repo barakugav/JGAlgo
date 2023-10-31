@@ -71,7 +71,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			assert e >= artificialEdgesThreshold;
 		}
 
-		VertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
 		if (connectivityRes.numberOfBlocks() > 1)
 			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);
 
@@ -87,7 +87,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
 		final int artificialEdgesThreshold = g.edges().size();
 
-		VertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
 		if (connectivityRes.numberOfBlocks() > 1) {
 			g = g.copy(); // we must copy because we add new vertices and edges
 			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);
@@ -136,7 +136,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private static void addEdgesUntilStronglyConnected(IndexGraph g, VertexPartition connectivityRes,
+	private static void addEdgesUntilStronglyConnected(IndexGraph g, IVertexPartition connectivityRes,
 			int artificialEdgesThreshold) {
 		int N = connectivityRes.numberOfBlocks();
 		if (N <= 1)

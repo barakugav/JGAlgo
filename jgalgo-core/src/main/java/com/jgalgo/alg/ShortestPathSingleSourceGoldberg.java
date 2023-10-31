@@ -173,7 +173,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				}
 
 				/* Find all strong connected components in the graph */
-				VertexPartition connectivityRes = ccAlg.findStronglyConnectedComponents(gNeg);
+				IVertexPartition connectivityRes = ccAlg.findStronglyConnectedComponents(gNeg);
 				final int N = connectivityRes.numberOfBlocks();
 
 				/*

@@ -59,7 +59,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 	}
 
 	@Override
-	VertexPartition computeColoring(IndexGraph g) {
+	IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

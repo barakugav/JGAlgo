@@ -16,7 +16,7 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.ColoringAlgo;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IntGraph;
 
@@ -28,7 +28,7 @@ public class ColoringExample {
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
 		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();
-		VertexPartition colors = coloringAlgo.computeColoring(g);
+		IVertexPartition colors = coloringAlgo.computeColoring(g);
 
 		for (int u : g.vertices()) {
 			int uColor = colors.vertexBlock(u);

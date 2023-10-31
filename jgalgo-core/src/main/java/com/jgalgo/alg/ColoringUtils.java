@@ -23,16 +23,16 @@ class ColoringUtils {
 	static abstract class AbstractImpl implements ColoringAlgo {
 
 		@Override
-		public VertexPartition computeColoring(IntGraph g) {
+		public IVertexPartition computeColoring(IntGraph g) {
 			if (g instanceof IndexGraph)
 				return computeColoring((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			VertexPartition indexResult = computeColoring(iGraph);
-			return new VertexPartitions.PartitionFromIndexPartition(g, indexResult);
+			IVertexPartition indexResult = computeColoring(iGraph);
+			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexResult);
 		}
 
-		abstract VertexPartition computeColoring(IndexGraph g);
+		abstract IVertexPartition computeColoring(IndexGraph g);
 
 	}
 

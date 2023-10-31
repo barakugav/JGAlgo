@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-				VertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);
+				IVertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);
 
 				for (;; startV++) {
 					if (startV >= nFull) {
@@ -235,10 +235,10 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final VertexPartition connectivityResult;
+		private final IVertexPartition connectivityResult;
 		private final int ccIdx;
 
-		StronglyConnectedComponent(int subToFull, VertexPartition connectivityResult, int ccIdx) {
+		StronglyConnectedComponent(int subToFull, IVertexPartition connectivityResult, int ccIdx) {
 			this.subToFull = subToFull;
 			this.connectivityResult = connectivityResult;
 			this.ccIdx = ccIdx;

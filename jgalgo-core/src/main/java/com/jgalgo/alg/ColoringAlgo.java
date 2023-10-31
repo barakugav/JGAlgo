@@ -73,12 +73,12 @@ public interface ColoringAlgo {
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	VertexPartition computeColoring(IntGraph g);
+	IVertexPartition computeColoring(IntGraph g);
 
 	/**
 	 * Check whether a given mapping is a valid coloring of a graph.
 	 * <p>
-	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
+	 * A valid coloring is first of all a valid {@link IVertexPartition}, but also for each edge \((u,v)\) in the graph
 	 * the color of \(u\) is different than the color of \(v\).
 	 *
 	 * @param  g       a graph

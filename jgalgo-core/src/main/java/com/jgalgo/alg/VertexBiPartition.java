@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.Set;
 
 /**
  * A partition of the vertices of a graph into two blocks.
@@ -27,13 +27,38 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * The two blocks (or sets) are called left and right. The left block is the block with index 0, and the right block is
  * the block with index 1, and few methods with 'left/right' names are provided for convenience.
  *
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
-public interface VertexBiPartition extends VertexPartition {
+public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	@Override
 	default int numberOfBlocks() {
 		return 2;
+	}
+
+	/**
+	 * Check whether a vertex is contained in the left block (block 0).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the left block, {@code false} otherwise
+	 */
+	boolean isLeft(V vertex);
+
+	/**
+	 * Check whether a vertex is contained in the right block (block 1).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
+	 */
+	default boolean isRight(V vertex) {
+		return !isLeft(vertex);
+	}
+
+	@Override
+	default int vertexBlock(V vertex) {
+		return isLeft(vertex) ? 0 : 1;
 	}
 
 	/**
@@ -43,8 +68,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the vertices in the left block
 	 */
-	default IntSet leftVertices() {
-		return blockEdges(0);
+	default Set<V> leftVertices() {
+		return blockVertices(0);
 	}
 
 	/**
@@ -54,8 +79,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the vertices in the right block
 	 */
-	default IntSet rightVertices() {
-		return blockEdges(1);
+	default Set<V> rightVertices() {
+		return blockVertices(1);
 	}
 
 	/**
@@ -66,7 +91,7 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that are contained in the left block
 	 */
-	default IntSet leftEdges() {
+	default Set<E> leftEdges() {
 		return blockEdges(0);
 	}
 
@@ -78,7 +103,7 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that are contained in the right block
 	 */
-	default IntSet rightEdges() {
+	default Set<E> rightEdges() {
 		return blockEdges(1);
 	}
 
@@ -93,7 +118,7 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that cross between the left and right blocks
 	 */
-	default IntSet crossEdges() {
+	default Set<E> crossEdges() {
 		return crossEdges(0, 1);
 	}
 

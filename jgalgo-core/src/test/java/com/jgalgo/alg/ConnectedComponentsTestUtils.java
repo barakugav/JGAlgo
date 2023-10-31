@@ -71,7 +71,7 @@ class ConnectedComponentsTestUtils {
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
 	}
 
-	static void assertConnectivityResultsEqual(IntGraph g, Pair<Integer, Int2IntMap> r1, VertexPartition r2) {
+	static void assertConnectivityResultsEqual(IntGraph g, Pair<Integer, Int2IntMap> r1, IVertexPartition r2) {
 		assertEquals(r1.first(), r2.numberOfBlocks());
 		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.numberOfBlocks());
 		for (int u : g.vertices()) {
@@ -86,7 +86,7 @@ class ConnectedComponentsTestUtils {
 		}
 	}
 
-	static void validateConnectivityResult(IntGraph g, VertexPartition res) {
+	static void validateConnectivityResult(IntGraph g, IVertexPartition res) {
 		BitSet ccs = new BitSet();
 		for (int v : g.vertices())
 			ccs.set(res.vertexBlock(v));

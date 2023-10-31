@@ -110,7 +110,7 @@ class VoronoiAlgos {
 
 	}
 
-	static class ResultFromIndexResult extends VertexPartitions.PartitionFromIndexPartition
+	static class ResultFromIndexResult extends VertexPartitions.IntPartitionFromIndexPartition
 			implements VoronoiAlgo.Result {
 
 		ResultFromIndexResult(IntGraph g, VoronoiAlgo.Result res) {
@@ -118,7 +118,7 @@ class VoronoiAlgos {
 		}
 
 		VoronoiAlgo.Result res() {
-			return (VoronoiAlgo.Result) super.res;
+			return (VoronoiAlgo.Result) super.indexPartition;
 		}
 
 		@Override

@@ -55,7 +55,7 @@ public interface MinimumCutST {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, int source, int sink);
+	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, int source, int sink);
 
 	/**
 	 * Compute the minimum cut in a graph between two sets of vertices.
@@ -71,7 +71,7 @@ public interface MinimumCutST {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	VertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks);
+	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new minimum S-T cut algorithm object.

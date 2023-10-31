@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
 
 	@Override
-	VertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		IntStack s = new IntArrayList();
 		IntStack p = new IntArrayList();

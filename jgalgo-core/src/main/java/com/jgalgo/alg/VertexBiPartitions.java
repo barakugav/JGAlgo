@@ -17,15 +17,16 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexBiPartitions {
 
-	static abstract class Impl implements VertexBiPartition {
+	static abstract class Impl implements IVertexBiPartition {
 
 		private final IndexGraph g;
 		private IntSet leftVertices, rightVertices;
@@ -36,13 +37,13 @@ class VertexBiPartitions {
 			this.g = Objects.requireNonNull(g);
 		}
 
-		abstract boolean isLeft(int vertex);
+		abstract boolean isLeft0(int vertex);
 
 		@Override
-		public int vertexBlock(int vertex) {
+		public boolean isLeft(int vertex) {
 			if (!(0 <= vertex && vertex < g.vertices().size()))
 				throw new IndexOutOfBoundsException(vertex);
-			return isLeft(vertex) ? 0 : 1;
+			return isLeft0(vertex);
 		}
 
 		@Override
@@ -52,11 +53,11 @@ class VertexBiPartitions {
 				int[] sortedVertices = new int[n];
 				int i = 0;
 				for (int v = 0; v < n; v++)
-					if (isLeft(v))
+					if (isLeft0(v))
 						sortedVertices[i++] = v;
 				final int leftCount = i;
 				for (int v = 0; v < n; v++)
-					if (!isLeft(v))
+					if (!isLeft0(v))
 						sortedVertices[i++] = v;
 				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {
 					@Override
@@ -84,7 +85,7 @@ class VertexBiPartitions {
 				final int m = g.edges().size();
 				int b1Count = 0, b2Count = 0;
 				for (int e = 0; e < m; e++) {
-					boolean b1 = isLeft(g.edgeSource(e)), b2 = isLeft(g.edgeTarget(e));
+					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 					if (b1 == b2) {
 						if (b1) {
 							b1Count++;
@@ -96,7 +97,7 @@ class VertexBiPartitions {
 				int[] sortedEdges = new int[b1Count + b2Count];
 				int b1Idx = 0, b2Idx = b1Count;
 				for (int e = 0; e < m; e++) {
-					boolean b1 = isLeft(g.edgeSource(e)), b2 = isLeft(g.edgeTarget(e));
+					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 					if (b1 == b2) {
 						if (b1) {
 							sortedEdges[b1Idx++] = e;
@@ -135,7 +136,7 @@ class VertexBiPartitions {
 				if (g.isDirected()) {
 					int crossEdges01Count = 0, crossEdges10Count = 0;
 					for (int e = 0; e < m; e++) {
-						boolean b1 = isLeft(g.edgeSource(e)), b2 = isLeft(g.edgeTarget(e));
+						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 						if (b1 != b2) {
 							if (b1) {
 								crossEdges01Count++;
@@ -147,7 +148,7 @@ class VertexBiPartitions {
 					int[] crossEdges = new int[crossEdges01Count + crossEdges10Count];
 					int crossEdges01Idx = 0, crossEdges10Idx = crossEdges01Count;
 					for (int e = 0; e < m; e++) {
-						boolean b1 = isLeft(g.edgeSource(e)), b2 = isLeft(g.edgeTarget(e));
+						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 						if (b1 != b2) {
 							if (b1) {
 								crossEdges[crossEdges01Idx++] = e;
@@ -173,16 +174,16 @@ class VertexBiPartitions {
 				} else {
 					int crossEdgesCount = 0;
 					for (int e = 0; e < m; e++)
-						if (isLeft(g.edgeSource(e)) != isLeft(g.edgeTarget(e)))
+						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))
 							crossEdgesCount++;
 					int[] crossEdges = new int[crossEdgesCount];
 					for (int i = 0, e = 0; e < m; e++)
-						if (isLeft(g.edgeSource(e)) != isLeft(g.edgeTarget(e)))
+						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))
 							crossEdges[i++] = e;
 					crossEdges01 = crossEdges10 = new ImmutableIntArraySet(crossEdges) {
 						@Override
 						public boolean contains(int e) {
-							return 0 <= e && e < m && isLeft(g.edgeSource(e)) != isLeft(g.edgeTarget(e));
+							return 0 <= e && e < m && isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e));
 						}
 					};;
 				}
@@ -215,7 +216,7 @@ class VertexBiPartitions {
 		}
 
 		@Override
-		boolean isLeft(int vertex) {
+		boolean isLeft0(int vertex) {
 			return bitSet.get(vertex);
 		}
 	}
@@ -230,18 +231,43 @@ class VertexBiPartitions {
 		}
 
 		@Override
-		boolean isLeft(int vertex) {
+		boolean isLeft0(int vertex) {
 			return weights.get(vertex);
 		}
 	}
 
-	static class BiPartitionFromIndexBiPartition extends VertexPartitions.PartitionFromIndexPartition
-			implements VertexBiPartition {
+	static class IntBiPartitionFromIndexBiPartition extends VertexPartitions.IntPartitionFromIndexPartition
+			implements IVertexBiPartition {
 
-		BiPartitionFromIndexBiPartition(IntGraph g, VertexBiPartition res) {
-			super(g, res);
+		IntBiPartitionFromIndexBiPartition(IntGraph g, IVertexBiPartition indexPartition) {
+			super(g, indexPartition);
 		}
 
+		IVertexBiPartition indexPartition() {
+			return (IVertexBiPartition) indexPartition;
+		}
+
+		@Override
+		public boolean isLeft(int vertex) {
+			return indexPartition().isLeft(viMap.idToIndex(vertex));
+		}
+	}
+
+	static class ObjBiPartitionFromIndexBiPartition<V, E> extends VertexPartitions.ObjPartitionFromIndexPartition<V, E>
+			implements VertexBiPartition<V, E> {
+
+		ObjBiPartitionFromIndexBiPartition(Graph<V, E> g, IVertexBiPartition indexPartition) {
+			super(g, indexPartition);
+		}
+
+		IVertexBiPartition indexPartition() {
+			return (IVertexBiPartition) indexPartition;
+		}
+
+		@Override
+		public boolean isLeft(V vertex) {
+			return indexPartition().isLeft(viMap.idToIndex(vertex));
+		}
 	}
 
 }

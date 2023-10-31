@@ -18,13 +18,17 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
@@ -39,7 +43,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 class VertexPartitions {
 
-	static class Impl implements VertexPartition {
+	static class Impl implements IVertexPartition {
 		final IndexGraph g;
 		private final int blockNum;
 		private final int[] vertexToBlock;
@@ -54,13 +58,13 @@ class VertexPartitions {
 		}
 
 		@Override
-		public int vertexBlock(int vertex) {
-			return vertexToBlock[vertex];
+		public int numberOfBlocks() {
+			return blockNum;
 		}
 
 		@Override
-		public int numberOfBlocks() {
-			return blockNum;
+		public int vertexBlock(int vertex) {
+			return vertexToBlock[vertex];
 		}
 
 		@Override
@@ -285,7 +289,7 @@ class VertexPartitions {
 		}
 	}
 
-	static IntGraph blocksGraph(IndexGraph g, VertexPartition partition, boolean parallelEdges, boolean selfEdges) {
+	static IntGraph blocksGraph(IndexGraph g, IVertexPartition partition, boolean parallelEdges, boolean selfEdges) {
 		assert g == partition.graph();
 		final int numberOfBlocks = partition.numberOfBlocks();
 		final boolean directed = g.isDirected();
@@ -330,44 +334,44 @@ class VertexPartitions {
 		return gb.build();
 	}
 
-	static class PartitionFromIndexPartition implements VertexPartition {
+	static class IntPartitionFromIndexPartition implements IVertexPartition {
 
 		private final IntGraph g;
-		final VertexPartition res;
+		final IVertexPartition indexPartition;
 		final IndexIntIdMap viMap;
 		final IndexIntIdMap eiMap;
 
-		PartitionFromIndexPartition(IntGraph g, VertexPartition res) {
+		IntPartitionFromIndexPartition(IntGraph g, IVertexPartition indexPartition) {
 			this.g = Objects.requireNonNull(g);
-			assert g.indexGraph() == res.graph();
-			this.res = Objects.requireNonNull(res);
+			assert g.indexGraph() == indexPartition.graph();
+			this.indexPartition = Objects.requireNonNull(indexPartition);
 			this.viMap = g.indexGraphVerticesMap();
 			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
-		public int vertexBlock(int vertex) {
-			return res.vertexBlock(viMap.idToIndex(vertex));
+		public int numberOfBlocks() {
+			return indexPartition.numberOfBlocks();
 		}
 
 		@Override
-		public int numberOfBlocks() {
-			return res.numberOfBlocks();
+		public int vertexBlock(int vertex) {
+			return indexPartition.vertexBlock(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public IntSet blockVertices(int block) {
-			return IndexIdMaps.indexToIdSet(res.blockVertices(block), viMap);
+			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);
 		}
 
 		@Override
 		public IntSet blockEdges(int block) {
-			return IndexIdMaps.indexToIdSet(res.blockEdges(block), eiMap);
+			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);
 		}
 
 		@Override
 		public IntSet crossEdges(int block1, int block2) {
-			return IndexIdMaps.indexToIdSet(res.crossEdges(block1, block2), eiMap);
+			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);
 		}
 
 		@Override
@@ -377,8 +381,7 @@ class VertexPartitions {
 
 		@Override
 		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), res, parallelEdges, selfEdges);
+			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);
 			IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
 			gb.expectedVerticesNum(ig.vertices().size());
 			gb.expectedEdgesNum(ig.edges().size());
@@ -386,6 +389,71 @@ class VertexPartitions {
 				gb.addVertex(b);
 			for (int e : ig.edges())
 				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToIdInt(e));
+			return gb.build();
+		}
+
+		@Override
+		public String toString() {
+			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]"));
+		}
+	}
+
+	static class ObjPartitionFromIndexPartition<V, E> implements VertexPartition<V, E> {
+
+		private final Graph<V, E> g;
+		final IVertexPartition indexPartition;
+		final IndexIdMap<V> viMap;
+		final IndexIdMap<E> eiMap;
+
+		ObjPartitionFromIndexPartition(Graph<V, E> g, IVertexPartition indexPartition) {
+			this.g = Objects.requireNonNull(g);
+			assert g.indexGraph() == indexPartition.graph();
+			this.indexPartition = Objects.requireNonNull(indexPartition);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
+		}
+
+		@Override
+		public int numberOfBlocks() {
+			return indexPartition.numberOfBlocks();
+		}
+
+		@Override
+		public int vertexBlock(V vertex) {
+			return indexPartition.vertexBlock(viMap.idToIndex(vertex));
+		}
+
+		@Override
+		public Set<V> blockVertices(int block) {
+			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);
+		}
+
+		@Override
+		public Set<E> blockEdges(int block) {
+			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);
+		}
+
+		@Override
+		public Set<E> crossEdges(int block1, int block2) {
+			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);
+		}
+
+		@Override
+		public Graph<V, E> graph() {
+			return g;
+		}
+
+		@Override
+		public Graph<Integer, E> blocksGraph(boolean parallelEdges, boolean selfEdges) {
+			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);
+			GraphBuilder<Integer, E> gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			gb.expectedVerticesNum(ig.vertices().size());
+			gb.expectedEdgesNum(ig.edges().size());
+			for (int b : ig.vertices())
+				gb.addVertex(b);
+			for (int e : ig.edges())
+				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToId(e));
 			return gb.build();
 		}
 

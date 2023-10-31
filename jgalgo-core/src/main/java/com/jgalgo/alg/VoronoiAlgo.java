@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
- * @see    VertexPartition
+ * @see    IVertexPartition
  * @author Barak Ugav
  */
 public interface VoronoiAlgo {
@@ -54,9 +54,9 @@ public interface VoronoiAlgo {
 	/**
 	 * A result object of {@link VoronoiAlgo} computation.
 	 * <p>
-	 * The result object is firstly a valid {@link VertexPartition} of the graph. The partition is defined by the sites.
-	 * Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If some
-	 * vertices are unreachable from any sites, the partition will contain an addition block with index
+	 * The result object is firstly a valid {@link IVertexPartition} of the graph. The partition is defined by the
+	 * sites. Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If
+	 * some vertices are unreachable from any sites, the partition will contain an addition block with index
 	 * {@code siteNumber+1} that contains all these vertices.
 	 * <p>
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
@@ -67,7 +67,7 @@ public interface VoronoiAlgo {
 	 * @see    Path
 	 * @author Barak Ugav
 	 */
-	static interface Result extends VertexPartition {
+	static interface Result extends IVertexPartition {
 
 		/**
 		 * Get the distance of a vertex from its site.

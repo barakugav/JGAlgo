@@ -40,7 +40,7 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			VertexPartition actual = WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
+			IVertexPartition actual = WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
 			IntGraphBuilder gb = IntGraphBuilder.newUndirected();
@@ -48,7 +48,7 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 				gb.addVertex(u);
 			for (int e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
-			VertexPartition expected =
+			IVertexPartition expected =
 					WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(gb.build());
 			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
 			for (int v : g.vertices())
