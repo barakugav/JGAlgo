@@ -421,7 +421,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LowestCommonAncestorStatic.IDataStructure lcaDS =
-					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, root);
+					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(root));
 			for (int q = 0; q < queriesNum; q++) {
 				int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 				if (u == v)

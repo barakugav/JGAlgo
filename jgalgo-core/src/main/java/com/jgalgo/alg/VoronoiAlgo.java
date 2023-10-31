@@ -20,6 +20,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Voronoi cells algorithm.

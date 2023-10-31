@@ -165,7 +165,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 	}
 
 	private static void testMinCut(IntGraph g, IWeightFunction w, int source, int sink, MinimumCutST alg) {
-		IVertexBiPartition minCut = (IVertexBiPartition) alg.computeMinimumCut(g, w, source, sink);
+		IVertexBiPartition minCut = (IVertexBiPartition) alg.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
 		final int n = g.vertices().size();
@@ -204,7 +204,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			IVertexBiPartition minCutExpected =
-					(IVertexBiPartition) validationAlgo.computeMinimumCut(g, w, source, sink);
+					(IVertexBiPartition) validationAlgo.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, 0.001, "failed to find minimum cut");

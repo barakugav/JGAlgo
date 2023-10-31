@@ -24,9 +24,9 @@
  * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
  * allow more control over the algorithm is provided via {@code newBuilder()} method (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}). In addition, algorithm interfaces define a result
- * specifically for graphs in which the vertices and edges are integer only, {@link IntGraph} (e.g.
+ * specifically for graphs in which the vertices and edges are integer only, {@link com.jgalgo.graph.IntGraph} (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). For the most common use case, there is no need to use
- * {@link IntGraph} and the result objects that are specific to it.
+ * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific to it.
  * <p>
  * Most algorithm implementations are not expose as public API.
  */

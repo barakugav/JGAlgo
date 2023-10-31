@@ -293,7 +293,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 			int source, int sink, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
-		algo.computeMinCostMaxFlow(g, net, cost, source, sink);
+		algo.computeMinCostMaxFlow(g, net, cost, Integer.valueOf(source), Integer.valueOf(sink));
 		double totalFlow = net.getFlowSum(g, source);
 		MaximumFlowTestUtils.assertValidFlow(g, net, source, sink, totalFlow);
 
@@ -305,7 +305,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 			IWeightFunctionInt cost, IWeightFunctionInt lowerBound, int source, int sink, MinimumCostFlow algo) {
 		for (int e : g.edges())
 			net.setFlow(e, 0);
-		algo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);
+		algo.computeMinCostMaxFlow(g, net, cost, lowerBound, Integer.valueOf(source), Integer.valueOf(sink));
 		double totalFlow = net.getFlowSum(g, source);
 		MaximumFlowTestUtils.assertValidFlow(g, net, source, sink, totalFlow);
 		assertLowerBound(g, net, lowerBound);

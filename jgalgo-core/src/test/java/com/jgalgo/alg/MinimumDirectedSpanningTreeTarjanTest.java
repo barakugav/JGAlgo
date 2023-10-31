@@ -46,6 +46,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			this.algo = algo;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <V, E> MinimumSpanningTree.Result<V, E> computeMinimumSpanningTree(Graph<V, E> g, WeightFunction<E> w) {
 			if (g.isDirected())
@@ -55,11 +56,14 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 
-			Object2IntMap<E> gToDg = new Object2IntOpenHashMap<>();
-			Iterator<E> it1 = g.edges().iterator();
+			Object2IntMap<V> gToDg = new Object2IntOpenHashMap<>();
+			Iterator<V> it1 = g.vertices().iterator();
 			IntIterator it2 = dg.vertices().iterator();
-			for (; it1.hasNext();)
+			for (int i = 0; i < n; i++) {
+				assert it1.hasNext();
+				assert it2.hasNext();
 				gToDg.put(it1.next(), it2.nextInt());
+			}
 
 			IWeightsObj<E> edgeRef = dg.addEdgesWeights("edgeRef", Object.class);
 			for (V u : g.vertices()) {
@@ -78,7 +82,12 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			for (int e : mst0.edges())
 				mst.add(g.indexGraphEdgesMap().idToIndex(edgeRef.get(e)));
 			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mst);
-			return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(indexRes, g.indexGraphEdgesMap());
+			if (g instanceof IntGraph) {
+				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTreeUtils.IntResultFromIndexResult(
+						indexRes, ((IntGraph) g).indexGraphEdgesMap());
+			} else {
+				return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(indexRes, g.indexGraphEdgesMap());
+			}
 		}
 	}
 
@@ -118,7 +127,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		int root = g.vertices().iterator().nextInt();
 		@SuppressWarnings("unused")
 		MinimumSpanningTree.IResult mst =
-				(MinimumSpanningTree.IResult) algo.computeMinimumDirectedSpanningTree(g, w, root);
+				(MinimumSpanningTree.IResult) algo.computeMinimumDirectedSpanningTree(g, w, Integer.valueOf(root));
 		// TODO verify the result
 	}
 

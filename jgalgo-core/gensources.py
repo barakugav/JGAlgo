@@ -277,11 +277,13 @@ def generate_iweights(type):
 	 * <p>
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
+	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
 		return get(element.intValue());
 	}
 
+	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
 		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());
@@ -307,11 +309,13 @@ def generate_iweights(type):
 	 * <p>
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
+	@Deprecated
 	@Override
 	default double weight(Integer element) {
 		return get(element.intValue());
 	}
 
+	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
 		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());

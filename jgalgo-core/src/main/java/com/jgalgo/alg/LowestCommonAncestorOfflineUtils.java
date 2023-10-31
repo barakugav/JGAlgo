@@ -48,7 +48,7 @@ class LowestCommonAncestorOfflineUtils {
 				if (queries instanceof LowestCommonAncestorOffline.IQueries) {
 					iQueries = new IndexQueriesFromIntQueries((LowestCommonAncestorOffline.IQueries) queries, viMap);
 				} else {
-					iQueries = new IndexQueriesFromObjQueries<V, E>(queries, tree.indexGraphVerticesMap());
+					iQueries = new IndexQueriesFromObjQueries<>(queries, tree.indexGraphVerticesMap());
 				}
 
 				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);

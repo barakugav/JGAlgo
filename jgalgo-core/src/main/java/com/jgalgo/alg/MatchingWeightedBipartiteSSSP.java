@@ -141,12 +141,12 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
 		ShortestPathSingleSource.IResult sp =
-				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, s);
+				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
 		for (;;) {
-			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc, s);
+			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc, Integer.valueOf(s));
 			IPath augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)

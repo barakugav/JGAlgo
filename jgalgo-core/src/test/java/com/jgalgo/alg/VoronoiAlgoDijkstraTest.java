@@ -78,7 +78,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 		ShortestPathSingleSource sssp = new ShortestPathSingleSourceDijkstra();
 		Int2ObjectMap<ShortestPathSingleSource.IResult> ssspResults = new Int2ObjectOpenHashMap<>();
 		for (int site : sites)
-			ssspResults.put(site, (ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, site));
+			ssspResults.put(site, (ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, Integer.valueOf(site)));
 		for (int v : g.vertices()) {
 			double actual = cells.distance(v);
 			double expected =

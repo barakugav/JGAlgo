@@ -306,8 +306,9 @@ class TreePathMaximaUtils {
 			if (u != v)
 				queries.addQuery(u, v);
 		}
+		IWeightFunction w0 = e -> mstWeights[e];
 		TreePathMaxima.IResult tpmResults =
-				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, e -> mstWeights[e], queries);
+				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
 		for (int m = g.edges().size(), e = 0; e < m; e++) {

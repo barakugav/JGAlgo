@@ -52,7 +52,7 @@ public class SSSPNegativeWeightsBench {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathSingleSource algo = builder.build();
 		ShortestPathSingleSource.IResult result =
-				(ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g, args.w, args.source);
+				(ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
 		blackhole.consume(result);
 	}
 

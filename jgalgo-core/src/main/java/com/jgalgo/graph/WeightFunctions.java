@@ -101,6 +101,9 @@ public class WeightFunctions {
 	 * @return   a weight function on a graph with integer vertices
 	 */
 	public static IWeightFunction asIntGraphWeightFunc(WeightFunction<Integer> w) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction
+				|| w == IWeightFunction.CardinalityWeightFunction)
+			return null;
 		if (w instanceof IWeightFunction) {
 			return (IWeightFunction) w;
 		} else if (w instanceof WeightFunctionInt) {

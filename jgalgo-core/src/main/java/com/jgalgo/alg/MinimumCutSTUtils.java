@@ -117,7 +117,7 @@ class MinimumCutSTUtils {
 		IFlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
 
 		/* compute max flow */
-		maxFlowAlg.computeMaximumFlow(g, net, source, sink);
+		maxFlowAlg.computeMaximumFlow(g, net, Integer.valueOf(source), Integer.valueOf(sink));
 
 		return minCutFromMaxFlow(g, IntLists.singleton(source), net);
 	}
@@ -253,7 +253,7 @@ class MinimumCutSTUtils {
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
-					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w, source, sink);
+					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 					double cutWeight = w.weightSum(cut.crossEdges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;

@@ -118,7 +118,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();
 			for (int source : verticesSubset)
 				ssspResults[vToResIdx[source]] =
-						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, source);
+						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, Integer.valueOf(source));
 
 		} else {
 			/* parallel */
@@ -128,7 +128,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			for (int source : verticesSubset) {
 				final int source0 = source;
 				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
-						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, source0)));
+						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, Integer.valueOf(source0))));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
@@ -173,7 +173,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;
 		}
 		ShortestPathSingleSource.IResult res =
-				(ShortestPathSingleSource.IResult) negativeSssp.computeShortestPaths(refG, refW, fakeV);
+				(ShortestPathSingleSource.IResult) negativeSssp.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)

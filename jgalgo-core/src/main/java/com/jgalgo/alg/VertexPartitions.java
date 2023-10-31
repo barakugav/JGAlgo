@@ -451,9 +451,9 @@ class VertexPartitions {
 			gb.expectedVerticesNum(ig.vertices().size());
 			gb.expectedEdgesNum(ig.edges().size());
 			for (int b : ig.vertices())
-				gb.addVertex(b);
+				gb.addVertex(Integer.valueOf(b));
 			for (int e : ig.edges())
-				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToId(e));
+				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));
 			return gb.build();
 		}
 

@@ -464,7 +464,7 @@ public class IndexIdMaps {
 		@Deprecated
 		@Override
 		public boolean remove(int k) {
-			return indexC.rem(map.idToIndex(k));
+			return ((IntSet) indexC).remove(map.idToIndex(k));
 		}
 	}
 

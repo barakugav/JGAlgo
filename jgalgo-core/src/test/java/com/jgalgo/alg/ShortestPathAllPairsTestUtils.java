@@ -95,7 +95,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 
 		for (int source : verticesSubset) {
 			ShortestPathSingleSource.IResult expectedRes =
-					(ShortestPathSingleSource.IResult) validationAlgo.computeShortestPaths(g, w, source);
+					(ShortestPathSingleSource.IResult) validationAlgo.computeShortestPaths(g, w, Integer.valueOf(source));
 
 			if (result.foundNegativeCycle()) {
 				IPath cycle = null;

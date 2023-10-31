@@ -46,6 +46,8 @@ public interface EulerianTourAlgo {
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph

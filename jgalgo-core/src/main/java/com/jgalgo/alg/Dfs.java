@@ -116,11 +116,11 @@ public interface Dfs {
 		public V next();
 
 		/**
-		 * Get the path from the source to the last vertex returned by {@link nextInt}.
+		 * Get the path from the source to the last vertex returned by {@link #next()}.
 		 * <p>
-		 * The behavior is undefined if {@link nextInt} was not called yet.
+		 * The behavior is undefined if {@link #next()} was not called yet.
 		 *
-		 * @return list of edges forming a path from the source to the last vertex returned by {@link nextInt}. The
+		 * @return list of edges forming a path from the source to the last vertex returned by {@link #next()}. The
 		 *         returned list should not be modified by the user.
 		 */
 		public List<E> edgePath();

@@ -142,7 +142,7 @@ class MinimumSpanningTreeUtils {
 		}
 	}
 
-	private static class IntResultFromIndexResult implements MinimumSpanningTree.IResult {
+	static class IntResultFromIndexResult implements MinimumSpanningTree.IResult {
 
 		private final MinimumSpanningTree.IResult indexRes;
 		private final IndexIntIdMap eiMap;

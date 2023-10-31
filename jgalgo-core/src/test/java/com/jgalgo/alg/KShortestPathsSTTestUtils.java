@@ -59,7 +59,7 @@ class KShortestPathsSTTestUtils extends TestUtils {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void validateKShortestPath(IntGraph g, IWeightFunctionInt w, int source, int target, int k,
 			KShortestPathsST algo) {
-		List<IPath> pathsActual = (List) algo.computeKShortestPaths(g, w, source, target, k);
+		List<IPath> pathsActual = (List) algo.computeKShortestPaths(g, w, Integer.valueOf(source), Integer.valueOf(target), k);
 		for (IPath p : pathsActual) {
 			assertEquals(source, p.sourceInt());
 			assertEquals(target, p.targetInt());
@@ -70,7 +70,7 @@ class KShortestPathsSTTestUtils extends TestUtils {
 
 		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
 			Iterator<IPath> simplePathsIter =
-					(Iterator) SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
+					(Iterator) SimplePathsFinder.newInstance().findAllSimplePaths(g, Integer.valueOf(source), Integer.valueOf(target));
 			List<IPath> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
 					.map(p -> ObjectDoublePair.of(p, w.weightSum(p.edges())))

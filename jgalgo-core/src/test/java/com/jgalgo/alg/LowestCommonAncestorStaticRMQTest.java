@@ -83,7 +83,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorStatic> builder, int[][] queries) {
 		LowestCommonAncestorStatic lca = builder.get();
 		LowestCommonAncestorStatic.IDataStructure lcaDS =
-				(LowestCommonAncestorStatic.IDataStructure) lca.preProcessTree(g, g.vertices().iterator().nextInt());
+				(LowestCommonAncestorStatic.IDataStructure) lca.preProcessTree(g, Integer.valueOf(g.vertices().iterator().nextInt()));
 
 		for (int[] query : queries) {
 			int u = query[0];

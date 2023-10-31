@@ -59,6 +59,7 @@ public interface TopologicalOrderAlgo {
 	 * @param  <E> the edges type
 	 * @author     Barak Ugav
 	 */
+	@SuppressWarnings("unused")
 	static interface Result<V, E> {
 
 		/**

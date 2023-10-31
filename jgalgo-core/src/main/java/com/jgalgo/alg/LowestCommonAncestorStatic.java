@@ -81,6 +81,7 @@ public interface LowestCommonAncestorStatic {
 	 * @param  <E> the edges type
 	 * @author     Barak Ugav
 	 */
+	@SuppressWarnings("unused")
 	interface DataStructure<V, E> {
 
 		/**

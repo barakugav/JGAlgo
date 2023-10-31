@@ -62,12 +62,15 @@ public interface LowestCommonAncestorOffline {
 	 * @param  <E> the edges type
 	 * @author     Barak Ugav
 	 */
+	@SuppressWarnings("unused")
 	static interface Queries<V, E> {
 
 		/**
 		 * Create an empty queries container.
 		 *
-		 * @return a new queries container
+		 * @param  <V> the vertices type
+		 * @param  <E> the edges type
+		 * @return     a new queries container
 		 */
 		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance() {
 			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>();
@@ -85,7 +88,7 @@ public interface LowestCommonAncestorOffline {
 		 * Get a query source by index.
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
-		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
+		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
 		 * @return                           the first vertex of the query
@@ -97,7 +100,7 @@ public interface LowestCommonAncestorOffline {
 		 * Get a query target by index.
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
-		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
+		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
 		 * @return                           the second vertex of the query
@@ -192,6 +195,7 @@ public interface LowestCommonAncestorOffline {
 	 * @param  <E> the edges type
 	 * @author     Barak Ugav
 	 */
+	@SuppressWarnings("unused")
 	static interface Result<V, E> {
 
 		/**

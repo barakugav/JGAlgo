@@ -113,19 +113,16 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 	public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
 			IntToDoubleFunction vHeuristic) {
 		if (g instanceof IndexGraph) {
-			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			int source0 = ((Integer) source).intValue();
-			int target0 = ((Integer) target).intValue();
 			IntToDoubleFunction vHeuristic1 = v -> vHeuristic.applyAsDouble(v);
-			return computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);
+			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic1);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-			int iSource = viMap.idToIndex(((Integer) source).intValue());
-			int iTarget = viMap.idToIndex(((Integer) target).intValue());
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
 			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
 			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
 			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);

@@ -41,7 +41,7 @@ public class LowestCommonAncestorExample {
 		/* Pre process the tree for LCA queries */
 		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();
 		LowestCommonAncestorStatic.IDataStructure lcaDs =
-				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, rt);
+				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(rt));
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
 		assert lcaDs.findLca(v1, v2) == rt;

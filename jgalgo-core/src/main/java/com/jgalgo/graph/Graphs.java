@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import java.util.AbstractSet;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
@@ -1915,10 +1914,10 @@ public class Graphs {
 		if (g instanceof IntGraph) {
 			IntCollection vs = vertices == null ? null
 					: (vertices instanceof IntCollection ? (IntCollection) vertices
-							: new IntArrayList((List<Integer>) vertices));
+							: new IntArrayList((Collection<Integer>) vertices));
 			IntCollection es = edges == null ? null
 					: (edges instanceof IntCollection ? (IntCollection) edges
-							: new IntArrayList((List<Integer>) edges));
+							: new IntArrayList((Collection<Integer>) edges));
 			return (Graph<V, E>) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
 		}
 

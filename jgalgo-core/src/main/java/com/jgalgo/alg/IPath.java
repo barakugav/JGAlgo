@@ -28,7 +28,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * A path of edges in an int graph.
  * <p>
- * <p>
  * This interface is a specific version of {@link Path} for {@link IntGraph}. For the full documentation see
  * {@link Path}.
  *

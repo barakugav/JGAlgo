@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * <pre> {@code
  * Graph<String, Integer> g = ...;
  * String vertex = ...;
- * for (EdgeIter eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
+ * for (EdgeIter<String, Integer> eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
  * 	Integer e = eit.next();
  * 	String u = eit.source();
  * 	String v = eit.target();

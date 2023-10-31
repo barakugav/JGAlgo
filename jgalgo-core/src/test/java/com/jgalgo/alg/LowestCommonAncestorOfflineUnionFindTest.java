@@ -31,7 +31,7 @@ public class LowestCommonAncestorOfflineUnionFindTest {
 		for (int q = 0; q < queries.length; q++)
 			qs.addQuery(queries[q][0], queries[q][1]);
 		LowestCommonAncestorOffline.IResult lcaDS =
-				(LowestCommonAncestorOffline.IResult) lca.findLCAs(g, g.vertices().iterator().nextInt(), qs);
+				(LowestCommonAncestorOffline.IResult) lca.findLCAs(g, Integer.valueOf(g.vertices().iterator().nextInt()), qs);
 
 		for (int q = 0; q < queries.length; q++) {
 			int expected = queries[q][2];

@@ -105,7 +105,7 @@ public class TreesTest extends TestBase {
 			int[] vs = g.vertices().toIntArray();
 			int root = vs[rand.nextInt(n)];
 
-			assertTrue(Trees.isTree(g, root));
+			assertTrue(Trees.isTree(g, Integer.valueOf(root)));
 		});
 	}
 
@@ -128,7 +128,7 @@ public class TreesTest extends TestBase {
 			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
 
-			assertFalse(Trees.isTree(g, root));
+			assertFalse(Trees.isTree(g, Integer.valueOf(root)));
 		});
 	}
 
@@ -154,7 +154,7 @@ public class TreesTest extends TestBase {
 			} while (u == v);
 			g.addEdge(u, v);
 
-			assertFalse(Trees.isTree(g, root));
+			assertFalse(Trees.isTree(g, Integer.valueOf(root)));
 		});
 	}
 

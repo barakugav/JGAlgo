@@ -35,8 +35,10 @@ public interface CyclesFinder {
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
 	 *
-	 * @param  g a graph
-	 * @return   an iterator that iteration over all cycles in the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     an iterator that iteration over all cycles in the graph
 	 */
 	public <V, E> Iterator<Path<V, E>> findAllCycles(Graph<V, E> g);
 

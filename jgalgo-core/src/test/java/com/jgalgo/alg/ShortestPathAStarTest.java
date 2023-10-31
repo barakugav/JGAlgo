@@ -95,7 +95,7 @@ public class ShortestPathAStarTest extends TestBase {
 				g = g.reverseView();
 			ShortestPathSingleSource.IResult ssspRes =
 					(ShortestPathSingleSource.IResult) new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w,
-							params.target);
+							Integer.valueOf(params.target));
 			return v -> ssspRes.distance(v);
 		});
 	}
@@ -115,7 +115,7 @@ public class ShortestPathAStarTest extends TestBase {
 			IWeightFunction w1 = e -> w0.get(e);
 			ShortestPathSingleSource.IResult ssspRes =
 					(ShortestPathSingleSource.IResult) new ShortestPathSingleSourceDijkstra().computeShortestPaths(g,
-							w1, params.target);
+							w1, Integer.valueOf(params.target));
 			return v -> ssspRes.distance(v);
 		});
 	}

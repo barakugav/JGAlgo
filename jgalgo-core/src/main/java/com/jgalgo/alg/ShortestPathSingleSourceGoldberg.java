@@ -99,7 +99,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w, source);
+			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w, Integer.valueOf(source));
 
 		/* calculate a potential function (or find a negative cycle) */
 		Pair<int[], IPath> p = calcPotential(g, w, minWeight);
@@ -112,7 +112,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.IResult res =
-				(ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, pw, source);
+				(ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, pw, Integer.valueOf(source));
 		return Result.ofSuccess(source, potential, res);
 	}
 
@@ -211,7 +211,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
 				ShortestPathSingleSource.IResult ssspRes =
-						(ShortestPathSingleSource.IResult) dagSssp.computeShortestPaths(G, GWeights, fakeS1);
+						(ShortestPathSingleSource.IResult) dagSssp.computeShortestPaths(G, GWeights, Integer.valueOf(fakeS1));
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;

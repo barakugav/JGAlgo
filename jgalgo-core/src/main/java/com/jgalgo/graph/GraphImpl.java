@@ -454,7 +454,7 @@ abstract class GraphImpl<V, E> implements Graph<V, E> {
 					for (int idx : elements) {
 						K id = orig.indexToId(idx);
 						if (id == null)
-							throw new IllegalArgumentException("null id: " + id);
+							throw new IllegalArgumentException("null id");
 						if (indexToId.get(idx) != null)
 							throw new IllegalArgumentException("duplicate index: " + idx);
 						indexToId.set(idx, id);
