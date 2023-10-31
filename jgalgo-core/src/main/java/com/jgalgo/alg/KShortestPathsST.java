@@ -16,8 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.List;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for computing the K shortest paths between two vertices in a graph.
@@ -38,7 +40,12 @@ public interface KShortestPathsST {
 
 	/**
 	 * Compute the K shortest paths from a source vertex to a target vertex.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is a list of {@link IPath}. If If {@code g} is
+	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
 	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
 	 * @param  g      the graph
 	 * @param  w      an edge weight function
 	 * @param  source the source vertex
@@ -47,7 +54,7 @@ public interface KShortestPathsST {
 	 * @return        {@code k} shortest paths from the source to the target, or less if there are no such {@code k}
 	 *                paths
 	 */
-	List<IPath> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k);
+	<V, E> List<Path<V, E>> computeKShortestPaths(Graph<V, E> g, WeightFunction<E> w, V source, V target, int k);
 
 	/**
 	 * Create a new K shortest paths algorithm object.

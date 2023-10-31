@@ -56,9 +56,10 @@ class KShortestPathsSTTestUtils extends TestUtils {
 		});
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void validateKShortestPath(IntGraph g, IWeightFunctionInt w, int source, int target, int k,
 			KShortestPathsST algo) {
-		List<IPath> pathsActual = algo.computeKShortestPaths(g, w, source, target, k);
+		List<IPath> pathsActual = (List) algo.computeKShortestPaths(g, w, source, target, k);
 		for (IPath p : pathsActual) {
 			assertEquals(source, p.sourceInt());
 			assertEquals(target, p.targetInt());

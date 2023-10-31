@@ -17,32 +17,56 @@ package com.jgalgo.alg;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
 class KShortestPathsSTs {
 
 	static abstract class AbstractImpl implements KShortestPathsST {
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public List<IPath> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k) {
-			if (g instanceof IndexGraph)
-				return computeKShortestPaths((IndexGraph) g, w, source, target, k);
+		public <V, E> List<Path<V, E>> computeKShortestPaths(Graph<V, E> g, WeightFunction<E> w, V source, V target,
+				int k) {
+			if (g instanceof IndexGraph) {
+				IndexGraph iGraph = (IndexGraph) g;
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();
+				return (List) computeKShortestPaths(iGraph, w0, source0, target0, k);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			int iSource = viMap.idToIndex(source);
-			int iTarget = viMap.idToIndex(target);
-			List<IPath> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
-			List<IPath> result = new ArrayList<>(indexResult.size());
-			for (IPath p : indexResult)
-				result.add(PathImpl.intPathFromIndexPath(p, viMap, eiMap));
-			return result;
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				int iTarget = viMap.idToIndex(((Integer) target).intValue());
+				List<IPath> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
+				List<IPath> result = new ArrayList<>(indexResult.size());
+				for (IPath p : indexResult)
+					result.add(PathImpl.intPathFromIndexPath(p, viMap, eiMap));
+				return (List) result;
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iSource = viMap.idToIndex(source);
+				int iTarget = viMap.idToIndex(target);
+				List<IPath> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
+				List<Path<V, E>> result = new ArrayList<>(indexResult.size());
+				for (IPath p : indexResult)
+					result.add(PathImpl.objPathFromIndexPath(p, viMap, eiMap));
+				return result;
+			}
 		}
 
 		abstract List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k);
