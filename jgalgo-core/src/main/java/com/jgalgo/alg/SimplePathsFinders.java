@@ -16,27 +16,41 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 
 class SimplePathsFinders {
 
 	static abstract class AbstractImpl implements SimplePathsFinder {
 
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public Iterator<IPath> findAllSimplePaths(IntGraph g, int source, int target) {
-			if (g instanceof IndexGraph)
-				return findAllSimplePaths((IndexGraph) g, source, target);
+		public <V, E> Iterator<Path<V, E>> findAllSimplePaths(Graph<V, E> g, V source, V target) {
+			if (g instanceof IndexGraph) {
+				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();
+				return (Iterator) findAllSimplePaths((IndexGraph) g, source0, target0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			int iSource = viMap.idToIndex(source);
-			int iTarget = viMap.idToIndex(target);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				int iTarget = viMap.idToIndex(((Integer) target).intValue());
+				Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
+				return (Iterator) new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);
 
-			Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
-			return new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				int iSource = viMap.idToIndex(source);
+				int iTarget = viMap.idToIndex(target);
+				Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
+				return new PathImpl.ObjIterFromIndexIter<>(indexResult, viMap, eiMap);
+			}
 		}
 
 		abstract Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target);

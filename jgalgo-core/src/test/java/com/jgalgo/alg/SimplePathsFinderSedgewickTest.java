@@ -60,11 +60,12 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void testSimplePaths(IntGraph g, int source, int target, SimplePathsFinder algo) {
 		final int limit = 20;
 		Set<IntList> paths = new HashSet<>();
 
-		Iterator<IPath> pit = algo.findAllSimplePaths(g, source, target);
+		Iterator<IPath> pit = (Iterator) algo.findAllSimplePaths(g, source, target);
 		if (!pit.hasNext())
 			assertNull(IPath.findPath(g, source, target));
 		for (; pit.hasNext();) {

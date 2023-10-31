@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -32,13 +33,17 @@ public interface SimplePathsFinder {
 
 	/**
 	 * Find all the simple paths between a source and a target vertices in the given graph.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, an iterator of {@link IPath} objects will be returned.
 	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
 	 * @param  g      a graph
 	 * @param  source the source vertex
 	 * @param  target the target vertex
 	 * @return        an iterator that iteration over all simple paths between the two vertices in the graph
 	 */
-	Iterator<IPath> findAllSimplePaths(IntGraph g, int source, int target);
+	<V, E> Iterator<Path<V, E>> findAllSimplePaths(Graph<V, E> g, V source, V target);
 
 	/**
 	 * Create a new algorithm for simple paths finding.
