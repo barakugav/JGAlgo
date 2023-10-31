@@ -19,8 +19,8 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
@@ -71,7 +71,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			assert e >= artificialEdgesThreshold;
 		}
 
-		IVertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
 		if (connectivityRes.numberOfBlocks() > 1)
 			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);
 
@@ -87,7 +87,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
 		final int artificialEdgesThreshold = g.edges().size();
 
-		IVertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
 		if (connectivityRes.numberOfBlocks() > 1) {
 			g = g.copy(); // we must copy because we add new vertices and edges
 			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);

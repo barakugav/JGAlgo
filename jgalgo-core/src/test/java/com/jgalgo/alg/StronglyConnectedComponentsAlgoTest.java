@@ -35,7 +35,8 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.run((n, m) -> {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			IVertexPartition actual = new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			IVertexPartition actual =
+					(IVertexPartition) new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = ConnectedComponentsTestUtils.calcUndirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);
@@ -55,7 +56,8 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 
-			IVertexPartition actual = new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			IVertexPartition actual =
+					(IVertexPartition) new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
 			Pair<Integer, Int2IntMap> expected = ConnectedComponentsTestUtils.calcDirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);

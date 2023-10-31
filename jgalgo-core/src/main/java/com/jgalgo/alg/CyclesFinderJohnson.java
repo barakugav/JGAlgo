@@ -197,7 +197,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();
 
-				IVertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);
+				IVertexPartition connectivityResult = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gSub);
 
 				for (;; startV++) {
 					if (startV >= nFull) {

@@ -20,12 +20,12 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -174,7 +174,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				}
 
 				/* Find all strong connected components in the graph */
-				IVertexPartition connectivityRes = ccAlg.findStronglyConnectedComponents(gNeg);
+				IVertexPartition connectivityRes = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gNeg);
 				final int N = connectivityRes.numberOfBlocks();
 
 				/*

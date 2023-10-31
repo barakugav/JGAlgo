@@ -19,8 +19,8 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -65,7 +65,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		/* find all SCC */
-		IVertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition cc = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 
 		/* init distances and policy */

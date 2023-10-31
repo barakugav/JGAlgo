@@ -18,8 +18,8 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -91,7 +91,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int n = g.vertices().size();
 
 		/* find all SCC */
-		IVertexPartition cc = sccAlg.findStronglyConnectedComponents(g);
+		IVertexPartition cc = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
 		final int ccNum = cc.numberOfBlocks();
 		SourceChooser sourceChooser = new SourceChooser(g, cc);
 

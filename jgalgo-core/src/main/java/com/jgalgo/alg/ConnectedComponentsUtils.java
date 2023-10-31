@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 
 class ConnectedComponentsUtils {
@@ -25,14 +26,23 @@ class ConnectedComponentsUtils {
 		private final WeaklyConnectedComponentsAlgo weaklyConnectedComponentsAlgo =
 				WeaklyConnectedComponentsAlgo.newInstance();
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public IVertexPartition findStronglyConnectedComponents(IntGraph g) {
-			if (g instanceof IndexGraph)
-				return findStronglyConnectedComponents((IndexGraph) g);
+		public <V, E> VertexPartition<V, E> findStronglyConnectedComponents(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (VertexPartition<V, E>) findStronglyConnectedComponents((IndexGraph) g);
 
-			IndexGraph iGraph = g.indexGraph();
-			IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexResult);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
+				return (VertexPartition<V, E>) new VertexPartitions.IntPartitionFromIndexPartition((IntGraph) g,
+						indexResult);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
+				return new VertexPartitions.ObjPartitionFromIndexPartition<>(g, indexResult);
+			}
 		}
 
 		IVertexPartition findStronglyConnectedComponents(IndexGraph g) {
@@ -44,7 +54,7 @@ class ConnectedComponentsUtils {
 		}
 
 		@Override
-		public boolean isStronglyConnected(IntGraph g) {
+		public <V, E> boolean isStronglyConnected(Graph<V, E> g) {
 			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());
 		}
 

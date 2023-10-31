@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -40,11 +41,15 @@ public interface StronglyConnectedComponentsAlgo {
 	 * <p>
 	 * A strongly connected component is a maximal set of vertices for which for any pair of vertices \(u, v\) in the
 	 * set there exist a path from \(u\) to \(v\) and from \(v\) to \(u\).
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing the partition of the vertices into strongly connected components
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the partition of the vertices into strongly connected components
 	 */
-	IVertexPartition findStronglyConnectedComponents(IntGraph g);
+	<V, E> VertexPartition<V, E> findStronglyConnectedComponents(Graph<V, E> g);
 
 	/**
 	 * Check whether a graph is strongly connected.
@@ -52,10 +57,12 @@ public interface StronglyConnectedComponentsAlgo {
 	 * A graph is strongly connected if there is a path from any vertex to any other vertex. Namely if the the whole
 	 * graph is a single strongly connected component.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is strongly connected, {@code false} otherwise
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is strongly connected, {@code false} otherwise
 	 */
-	boolean isStronglyConnected(IntGraph g);
+	<V, E> boolean isStronglyConnected(Graph<V, E> g);
 
 	/**
 	 * Create a new strongly connected components algorithm object.
