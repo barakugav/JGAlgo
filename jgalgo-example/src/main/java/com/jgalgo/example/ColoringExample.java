@@ -28,7 +28,7 @@ public class ColoringExample {
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
 		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();
-		IVertexPartition colors = coloringAlgo.computeColoring(g);
+		IVertexPartition colors = (IVertexPartition) coloringAlgo.computeColoring(g);
 
 		for (int u : g.vertices()) {
 			int uColor = colors.vertexBlock(u);

@@ -19,9 +19,13 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.IntUnaryOperator;
-import com.jgalgo.graph.IntGraph;
+import java.util.function.ToIntFunction;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntContainers;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -38,24 +42,24 @@ import com.jgalgo.graph.IndexIntIdMap;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph g = Graph.newUndirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int v4 = g.addVertex();
- * g.addEdge(v1, v2);
- * g.addEdge(v2, v3);
- * g.addEdge(v3, v1);
- * g.addEdge(v3, v4);
+ * Graph<String, Integer> g = Graph.newUndirected();
+ * g.addVertex("Alice");
+ * g.addVertex("Bob");
+ * g.addVertex("Charlie");
+ * g.addVertex("David");
+ * g.addEdge("Alice", "Bob");
+ * g.addEdge("Bob", "Charlie");
+ * g.addEdge("Charlie", "Alice");
+ * g.addEdge("Charlie", "David");
  *
  * Coloring coloringAlg = Coloring.newInstance();
- * VertexPartition colors = coloringAlg.computeColoring(g);
+ * VertexPartition<String, Integer> colors = coloringAlg.computeColoring(g);
  * System.out.println("A valid coloring with " + colors.numberOfBlocks() + " colors was found");
- * for (int u : g.vertices()) {
+ * for (String u : g.vertices()) {
  * 	System.out.println("The color of vertex " + u + " is " + colors.vertexBlock(u));
- * 	for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
- * 		eit.nextInt();
- * 		int v = eit.target();
+ * 	for (EdgeIter<String, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+ * 		eit.next();
+ * 		String v = eit.target();
  * 		assert colors.vertexBlock(u) != colors.vertexBlock(v);
  * 	}
  * }
@@ -68,39 +72,57 @@ public interface ColoringAlgo {
 
 	/**
 	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	IVertexPartition computeColoring(IntGraph g);
+	<V, E> VertexPartition<V, E> computeColoring(Graph<V, E> g);
 
 	/**
 	 * Check whether a given mapping is a valid coloring of a graph.
 	 * <p>
-	 * A valid coloring is first of all a valid {@link IVertexPartition}, but also for each edge \((u,v)\) in the graph
+	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
 	 * the color of \(u\) is different than the color of \(v\).
 	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
 	 * @param  g       a graph
 	 * @param  mapping a mapping from the vertices of {@code g} to colors in range \([0, \textit{colorsNum})\)
 	 * @return         {@code true} if {@code mapping} is a valid coloring of {@code g}, {@code false} otherwise
 	 */
-	static boolean isColoring(IntGraph g, IntUnaryOperator mapping) {
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isColoring(Graph<V, E> g, ToIntFunction<V> mapping) {
 		final int n = g.vertices().size();
 		IndexGraph ig;
 		int[] vertexToColor = new int[n];
 		int maxColor = -1;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
+			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			for (int v = 0; v < n; v++) {
-				vertexToColor[v] = mapping.applyAsInt(v);
+				vertexToColor[v] = mapping0.applyAsInt(v);
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
+
+		} else if (g instanceof IntGraph) {
+			ig = g.indexGraph();
+			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			for (int v = 0; v < n; v++) {
+				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));
+				maxColor = Math.max(maxColor, vertexToColor[v]);
+			}
+
 		} else {
 			ig = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			for (int v = 0; v < n; v++) {
-				vertexToColor[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
+				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
 		}

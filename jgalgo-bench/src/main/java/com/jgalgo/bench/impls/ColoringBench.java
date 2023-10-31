@@ -73,7 +73,7 @@ public class ColoringBench {
 	private void benchColoring(ColoringAlgo.Builder builder, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ColoringAlgo algo = builder.build();
-		IVertexPartition res = algo.computeColoring(g);
+		IVertexPartition res = (IVertexPartition) algo.computeColoring(g);
 		blackhole.consume(res);
 	}
 
