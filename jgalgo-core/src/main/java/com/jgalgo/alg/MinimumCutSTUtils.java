@@ -80,7 +80,7 @@ class MinimumCutSTUtils {
 	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, int source, int sink,
 			MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
-		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
+		IFlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
 
 		/* compute max flow */
 		maxFlowAlg.computeMaximumFlow(g, net, source, sink);
@@ -91,7 +91,7 @@ class MinimumCutSTUtils {
 	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, IntCollection sources,
 			IntCollection sinks, MaximumFlow maxFlowAlg) {
 		/* create a flow network with weights as capacities */
-		FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
+		IFlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
 
 		/* compute max flow */
 		maxFlowAlg.computeMaximumFlow(g, net, sources, sinks);
@@ -99,7 +99,7 @@ class MinimumCutSTUtils {
 		return minCutFromMaxFlow(g, sources, net);
 	}
 
-	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, FlowNetwork net) {
+	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IFlowNetwork net) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
@@ -179,10 +179,10 @@ class MinimumCutSTUtils {
 		};
 	}
 
-	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, IWeightFunction w) {
+	static IFlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
 		double[] flow = new double[g.edges().size()];
-		FlowNetwork net = new FlowNetwork() {
+		IFlowNetwork net = new IFlowNetwork() {
 			@Override
 			public double getCapacity(int edge) {
 				return w.weight(edge);

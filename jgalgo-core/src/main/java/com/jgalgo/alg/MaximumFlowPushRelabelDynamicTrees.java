@@ -59,16 +59,16 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 	MaximumFlowPushRelabelDynamicTrees() {}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-		if (net instanceof FlowNetworkInt) {
-			return new WorkerInt(g, (FlowNetworkInt) net, source, sink).computeMaxFlow();
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
+		if (net instanceof IFlowNetworkInt) {
+			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink).computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
@@ -85,7 +85,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final LinkedListFixedSize.Doubly children;
 		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();
 
-		AbstractWorker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+		AbstractWorker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			double maxWeight = getMaxCapacity();
@@ -324,7 +324,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = new double[g.edges().size()];
@@ -452,7 +452,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final int[] capacity;
 		final int[] flow;
 
-		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = new int[g.edges().size()];
@@ -467,7 +467,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		double getMaxCapacity() {
-			FlowNetworkInt net = (FlowNetworkInt) this.net;
+			IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 			int maxCapacity = 100;
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));

@@ -56,12 +56,12 @@ public class MaximumFlowTestUtils extends TestUtils {
 		}
 	}
 
-	static FlowNetwork randNetwork(IntGraph g, long seed) {
+	static IFlowNetwork randNetwork(IntGraph g, long seed) {
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(seed);
-		FlowNetwork flow = FlowNetwork.createFromEdgeWeights(g);
+		IFlowNetwork flow = IFlowNetwork.createFromEdgeWeights(g);
 		for (int e : g.edges()) {
 			double cap;
 			for (;;) {
@@ -82,9 +82,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static FlowNetworkInt randNetworkInt(IntGraph g, long seed) {
+	static IFlowNetworkInt randNetworkInt(IntGraph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetworkInt flow = FlowNetworkInt.createFromEdgeWeights(g);
+		IFlowNetworkInt flow = IFlowNetworkInt.createFromEdgeWeights(g);
 		for (int e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
@@ -113,7 +113,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			IntGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
-			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
+			IFlowNetwork net = randNetwork(g, seedGen.nextSeed());
 
 			IntIntPair sourceSink = chooseSourceSink(g, rand);
 			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
@@ -134,7 +134,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			IntGraph g = randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
-			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
+			IFlowNetwork net = randNetwork(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
 			final int sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -175,7 +175,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
 			IntGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
-			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
+			IFlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			IntIntPair sourceSink = chooseSourceSink(g, rand);
 			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
@@ -196,7 +196,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			IntGraph g = randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
-			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
+			IFlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
 			final int sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -233,7 +233,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			IntGraph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
-			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
+			IFlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
 
 			IntIntPair sourceSink = chooseSourceSink(g, rand);
 			testNetwork(g, net, sourceSink.firstInt(), sourceSink.secondInt(), algo);
@@ -260,7 +260,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		}
 	}
 
-	private static void testNetwork(IntGraph g, FlowNetwork net, int source, int sink, MaximumFlow algo) {
+	private static void testNetwork(IntGraph g, IFlowNetwork net, int source, int sink, MaximumFlow algo) {
 		double actualTotalFlow = algo.computeMaximumFlow(g, net, source, sink);
 
 		assertValidFlow(g, net, source, sink, actualTotalFlow);
@@ -269,7 +269,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		assertEquals(expectedTotalFlow, actualTotalFlow, 1E-3, "Unexpected max flow");
 	}
 
-	private static void testNetwork(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks,
+	private static void testNetwork(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks,
 			MaximumFlow algo) {
 		double actualMaxFlow = algo.computeMaximumFlow(g, net, sources, sinks);
 
@@ -305,7 +305,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
-	static void assertValidFlow(IntGraph g, FlowNetwork net, int source, int sink, double totalFlow) {
+	static void assertValidFlow(IntGraph g, IFlowNetwork net, int source, int sink, double totalFlow) {
 		int n = g.vertices().size();
 		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
 		for (int e : g.edges()) {
@@ -319,7 +319,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		}
 	}
 
-	static void assertValidFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks,
+	static void assertValidFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks,
 			double totalFlow) {
 		int n = g.vertices().size();
 		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
@@ -346,7 +346,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		assertEquals(sinksFlowSum, -totalFlow, 1E-3);
 	}
 
-	static void assertValidFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	static void assertValidFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 		int n = g.vertices().size();
 		Int2DoubleMap vertexFlowOut = new Int2DoubleOpenHashMap(n);
 		for (int e : g.edges()) {
@@ -373,7 +373,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	/* implementation taken from the Internet */
 
-	private static double calcExpectedFlow(IntGraph g, FlowNetwork net, int source, int sink) {
+	private static double calcExpectedFlow(IntGraph g, IFlowNetwork net, int source, int sink) {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
 
@@ -390,7 +390,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return fordFulkerson(capacities, vToIdx.idToIndex(source), vToIdx.idToIndex(sink));
 	}
 
-	private static double calcExpectedFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	private static double calcExpectedFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n + 2][n + 2];
 

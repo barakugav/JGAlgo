@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.FlowNetworkInt;
+import com.jgalgo.alg.IFlowNetworkInt;
 import com.jgalgo.alg.MinimumCostFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -68,13 +68,13 @@ public class MinCostFlowBench {
 
 		static class Task {
 			IntGraph g;
-			FlowNetworkInt net;
+			IFlowNetworkInt net;
 			IWeightFunctionInt cost;
 			IWeightFunctionInt lowerBound;
 			IWeightFunctionInt supply;
 
 			static Task newRand(IntGraph g, Random rand) {
-				FlowNetworkInt net = randNetwork(g, rand);
+				IFlowNetworkInt net = randNetwork(g, rand);
 				IWeightFunctionInt supply = randSupply(g, net, rand);
 
 				/*
@@ -261,14 +261,14 @@ public class MinCostFlowBench {
 
 		static class Task {
 			IntGraph g;
-			FlowNetworkInt net;
+			IFlowNetworkInt net;
 			IWeightFunctionInt cost;
 			IWeightFunctionInt lowerBound;
 			IntCollection sources;
 			IntCollection sinks;
 
 			static Task newRand(IntGraph g, Random rand) {
-				FlowNetworkInt net = randNetwork(g, rand);
+				IFlowNetworkInt net = randNetwork(g, rand);
 				Pair<IntCollection, IntCollection> sourcesSinks = MaximumFlowBench.chooseMultiSourceMultiSink(g, rand);
 				IntCollection sources = sourcesSinks.first();
 				IntCollection sinks = sourcesSinks.second();
@@ -439,10 +439,10 @@ public class MinCostFlowBench {
 		}
 	}
 
-	private static FlowNetworkInt randNetwork(IntGraph g, Random rand) {
+	private static IFlowNetworkInt randNetwork(IntGraph g, Random rand) {
 		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
 		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
-		FlowNetworkInt net = FlowNetworkInt.createFromEdgeWeights(capacities, flows);
+		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(capacities, flows);
 		for (int e : g.edges())
 			net.setCapacity(e, 400 + rand.nextInt(1024));
 		return net;
@@ -455,7 +455,7 @@ public class MinCostFlowBench {
 		return cost;
 	}
 
-	private static IWeightFunctionInt randLowerBound(IntGraph g, FlowNetworkInt net, IntCollection sources,
+	private static IWeightFunctionInt randLowerBound(IntGraph g, IFlowNetworkInt net, IntCollection sources,
 			IntCollection sinks, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
@@ -551,7 +551,7 @@ public class MinCostFlowBench {
 		}
 	}
 
-	private static IWeightFunctionInt randSupply(IntGraph g, FlowNetworkInt net, Random rand) {
+	private static IWeightFunctionInt randSupply(IntGraph g, IFlowNetworkInt net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();

@@ -26,9 +26,9 @@ import com.jgalgo.internal.util.Assertions;
 class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 	@Override
-	void computeCirculation(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
-		if (net instanceof FlowNetworkInt && supply instanceof IWeightFunctionInt) {
-			new WorkerInt(g, (FlowNetworkInt) net, (IWeightFunctionInt) supply).computeCirculation();
+	void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
+		if (net instanceof IFlowNetworkInt && supply instanceof IWeightFunctionInt) {
+			new WorkerInt(g, (IFlowNetworkInt) net, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
 			new WorkerDouble(g, net, supply).computeCirculation();
 		}
@@ -37,14 +37,14 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 	private static class Worker {
 
 		final IndexGraph g;
-		final FlowNetwork net;
+		final IFlowNetwork net;
 
 		final int[] label;
 		final LinkedListFixedSize.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-		Worker(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
+		Worker(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
 			Assertions.Graphs.onlyDirected(g);
 			this.g = g;
 			this.net = net;
@@ -89,7 +89,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 		private static final double eps = 1e-9;
 
-		WorkerDouble(IndexGraph g, FlowNetwork net, IWeightFunction supply) {
+		WorkerDouble(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
 			super(g, net, supply);
 
 			final int n = g.vertices().size();
@@ -227,7 +227,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final int[] flow;
 		final int[] excess;
 
-		WorkerInt(IndexGraph g, FlowNetworkInt net, IWeightFunctionInt supply) {
+		WorkerInt(IndexGraph g, IFlowNetworkInt net, IWeightFunctionInt supply) {
 			super(g, net, supply);
 
 			final int n = g.vertices().size();
@@ -353,7 +353,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				}
 			}
 
-			FlowNetworkInt netInt = (FlowNetworkInt) net;
+			IFlowNetworkInt netInt = (IFlowNetworkInt) net;
 			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				netInt.setFlow(e, flow[e]);

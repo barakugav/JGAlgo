@@ -16,13 +16,12 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeights;
-import com.jgalgo.graph.IWeightsDouble;
-import it.unimi.dsi.fastutil.ints.IntIterable;
-import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.List;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
 
 /**
  * Flow on graph edges, with capacities and flows values.
@@ -35,16 +34,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
  * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
  * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
- * going along {@link IntGraph#inEdges(int)} must be equal to the sum of flow units going along
- * {@link IntGraph#outEdges(int)}.
+ * going along {@link Graph#inEdges(Object)} must be equal to the sum of flow units going along
+ * {@link Graph#outEdges(Object)}.
  * <p>
  * A flow is most intuitively defined on directed graphs, as the flow on an edge is transferred from one vertex to
  * another in some direction, but we can define and solve flow problem on undirected graphs as well. Technically, the
- * flows values returned by {@link #getFlow(int)} can either be positive or negative for undirected edges, with values
- * absolutely smaller than the capacity of the edge. A positive flow \(+f\) value assigned to edge {@code e} means a
- * flow directed from {@code edgeSource(e)} to {@code edgeTarget(e)} with \(f\) units of flow. A negative flow \(-f\)
- * value assigned to edge {@code e} means a flow directed from {@code edgeTarget(e)} to {@code edgeSource(e)} (opposite
- * direction) with \(|-f|\) units of flow (see {@link #getFlow(int)}).
+ * flows values returned by {@link #getFlow(Object)} can either be positive or negative for undirected edges, with
+ * values absolutely smaller than the capacity of the edge. A positive flow \(+f\) value assigned to edge {@code e}
+ * means a flow directed from {@code edgeSource(e)} to {@code edgeTarget(e)} with \(f\) units of flow. A negative flow
+ * \(-f\) value assigned to edge {@code e} means a flow directed from {@code edgeTarget(e)} to {@code edgeSource(e)}
+ * (opposite direction) with \(|-f|\) units of flow (see {@link #getFlow(Object)}).
  *
  * <pre> {@code
  * Graph g = ...;
@@ -68,26 +67,26 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @see    MaximumFlow
  * @author Barak Ugav
  */
-public interface FlowNetwork {
+public interface FlowNetwork<V, E> {
 
 	/**
 	 * Get the capacity of an edge.
 	 *
-	 * @param  edge                      an edge identifier in the graph
+	 * @param  edge                      an edge in the graph
 	 * @return                           the capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 */
-	double getCapacity(int edge);
+	double getCapacity(E edge);
 
 	/**
 	 * Set the capacity of an edge.
 	 *
-	 * @param  edge                      an edge identifier in the graph
+	 * @param  edge                      an edge in the graph
 	 * @param  capacity                  the new capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 * @throws IllegalArgumentException  if {@code capacity} is negative
 	 */
-	void setCapacity(int edge, double capacity);
+	void setCapacity(E edge, double capacity);
 
 	/**
 	 * Get the amount of flow units going along an edge.
@@ -97,23 +96,23 @@ public interface FlowNetwork {
 	 * <p>
 	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
 	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
-	 * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
+	 * {@code e}, for \(-cap(e) \leq -f \leq 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
 	 * {@code edgeSource(e)} (opposite direction).
 	 *
-	 * @param  edge                      an edge identifier in the graph
+	 * @param  edge                      an edge in the graph
 	 * @return                           the amount of flow units going along an edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 */
-	double getFlow(int edge);
+	double getFlow(E edge);
 
 	/**
 	 * Set the amount of flow units going along an edge.
 	 *
-	 * @param  edge                      an edge identifier in the graph
+	 * @param  edge                      an edge in the graph
 	 * @param  flow                      the new flow of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 */
-	void setFlow(int edge, double flow);
+	void setFlow(E edge, double flow);
 
 	/**
 	 * Get the sum of flow units going out of a source vertex.
@@ -122,8 +121,8 @@ public interface FlowNetwork {
 	 * @param  source a source vertex
 	 * @return        the sum of flow units going out of {@code source}
 	 */
-	default double getFlowSum(IntGraph g, int source) {
-		return getFlowSum(g, IntList.of(source));
+	default double getFlowSum(Graph<V, E> g, V source) {
+		return getFlowSum(g, List.of(source));
 	}
 
 	/**
@@ -133,21 +132,21 @@ public interface FlowNetwork {
 	 * @param  sources a set of source vertices
 	 * @return         the sum of flow units going out of {@code sources}
 	 */
-	default double getFlowSum(IntGraph g, IntIterable sources) {
+	default double getFlowSum(Graph<V, E> g, Iterable<V> sources) {
 		double sum = 0;
 		if (g.isDirected()) {
-			for (int source : sources) {
-				for (int e : g.outEdges(source))
+			for (V source : sources) {
+				for (E e : g.outEdges(source))
 					sum += getFlow(e);
-				for (int e : g.inEdges(source))
+				for (E e : g.inEdges(source))
 					sum -= getFlow(e);
 			}
 		} else {
-			for (int source : sources) {
-				for (int e : g.outEdges(source)) {
-					if (source != g.edgeTarget(e)) {
+			for (V source : sources) {
+				for (E e : g.outEdges(source)) {
+					if (!source.equals(g.edgeTarget(e))) {
 						sum += getFlow(e);
-					} else if (source != g.edgeSource(e)) {
+					} else if (!source.equals(g.edgeSource(e))) {
 						sum -= getFlow(e);
 					}
 				}
@@ -166,53 +165,57 @@ public interface FlowNetwork {
 	 * @param  cost  a edge weight cost function
 	 * @return       the sum of the cost of the flow along the edges
 	 */
-	default double getCostSum(IntIterable edges, IWeightFunction cost) {
+	default double getCostSum(Iterable<E> edges, WeightFunction<E> cost) {
 		double sum = 0;
-		if (cost instanceof IWeightFunctionInt) {
-			IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
-			for (int e : edges)
+		if (cost instanceof WeightFunctionInt) {
+			WeightFunctionInt<E> costInt = (WeightFunctionInt<E>) cost;
+			for (E e : edges)
 				sum += getFlow(e) * costInt.weightInt(e);
 		} else {
-			for (int e : edges)
+			for (E e : edges)
 				sum += getFlow(e) * cost.weight(e);
 		}
 		return sum;
 	}
 
 	/**
-	 * Create a flow network by adding edge weights using {@link IntGraph#addEdgesWeights}.
+	 * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
 	 * <p>
-	 * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
-	 * edge will be zero.
+	 * Unless {@link #setCapacity(Object, double)} or {@link #setFlow(Object, double)} are used, the capacity and flow
+	 * of each edge will be zero.
 	 * <p>
-	 * By using {@link IntGraph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
-	 * the graph is modified, as they are added to the graph. This is a key difference between this function and
-	 * {@link #createFromEdgeWeights(IWeightsDouble, IWeightsDouble)}, which if provided with weights containers created
-	 * with {@link IWeights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
+	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
+	 * graph is modified, as they are added to the graph. This is a key difference between this function and
+	 * {@link #createFromEdgeWeights(WeightsDouble, WeightsDouble)}, which if provided with weights containers created
+	 * with {@link Weights#createExternalEdgesWeights} doesn't remain valid if the graph is modified, but may suite in
 	 * scenarios in which we are not allowed to add weights to the graph.
 	 *
-	 * @param  g a graph
-	 * @return   a flow network implemented as edge weights containers added to the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a flow network implemented as edge weights containers added to the graph
 	 */
-	static FlowNetwork createFromEdgeWeights(IntGraph g) {
-		IWeightsDouble capacities = g.addEdgesWeights("_capacity", double.class);
-		IWeightsDouble flows = g.addEdgesWeights("_flow", double.class);
+	static <V, E> FlowNetwork<V, E> createFromEdgeWeights(Graph<V, E> g) {
+		WeightsDouble<E> capacities = g.addEdgesWeights("_capacity", double.class);
+		WeightsDouble<E> flows = g.addEdgesWeights("_flow", double.class);
 		return createFromEdgeWeights(capacities, flows);
 	}
 
 	/**
 	 * Create a flow network by using existing edge weights.
 	 * <p>
-	 * This method can be used together with {@link IWeights#createExternalEdgesWeights}, creating a flow network for a
-	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
-	 * the graph.
+	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
+	 * graph without adding any new weights containers to it. This is useful in scenarios in which we are not allowed to
+	 * modify the graph.
 	 *
+	 * @param  <V>        the vertices type
+	 * @param  <E>        the edges type
 	 * @param  capacities a weight container containing the capacities of the edges
 	 * @param  flows      a weight container that will contain the flow values of the edges
 	 * @return            a flow network implemented as external edge weights containers
 	 */
-	static FlowNetwork createFromEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
-		return new FlowNetworks.NetImplEdgeWeights(capacities, flows);
+	static <V, E> FlowNetwork<V, E> createFromEdgeWeights(WeightsDouble<E> capacities, WeightsDouble<E> flows) {
+		return FlowNetworks.createFromEdgeWeights(capacities, flows);
 	}
 
 }

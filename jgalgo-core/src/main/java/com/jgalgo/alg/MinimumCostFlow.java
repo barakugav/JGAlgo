@@ -50,7 +50,7 @@ public interface MinimumCostFlow {
 	 * @param source a source vertex
 	 * @param sink   a sink vertex
 	 */
-	void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, int source, int sink);
+	void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
 
 	/**
 	 * Compute the min-cost max-flow in a network between a source and a sink given a lower bound for the edges flows.
@@ -62,8 +62,8 @@ public interface MinimumCostFlow {
 	 * @param source     a source vertex
 	 * @param sink       a sink vertex
 	 */
-	void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound, int source,
-			int sink);
+	void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
+			int source, int sink);
 
 	/**
 	 * Compute the min-cost max-flow in a network between a set of sources and a set of sinks.
@@ -74,7 +74,7 @@ public interface MinimumCostFlow {
 	 * @param sources a set of source vertices
 	 * @param sinks   a set of sinks vertices
 	 */
-	void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IntCollection sources,
+	void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IntCollection sources,
 			IntCollection sinks);
 
 	/**
@@ -88,7 +88,7 @@ public interface MinimumCostFlow {
 	 * @param sources    a set of source vertices
 	 * @param sinks      a set of sinks vertices
 	 */
-	void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
+	void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
 			IntCollection sources, IntCollection sinks);
 
 	/**
@@ -103,7 +103,7 @@ public interface MinimumCostFlow {
 	 * @param cost   an edge weight function representing the cost of each unit of flow along the edge
 	 * @param supply a vertex weight function representing the supply for each vertex
 	 */
-	void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply);
+	void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply);
 
 	/**
 	 * Compute the min-cost (not maximum!) flow in a network given a supply for each vertex and a lower bound for the
@@ -119,7 +119,7 @@ public interface MinimumCostFlow {
 	 * @param lowerBound an edge weight function representing a lower bound for the flow along each edge
 	 * @param supply     a vertex weight function representing the supply for each vertex
 	 */
-	void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
+	void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
 			IWeightFunction supply);
 
 	/**
@@ -168,9 +168,9 @@ public interface MinimumCostFlow {
 						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();
 
 						@Override
-						public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, int source,
-								int sink) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt) {
+						public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
+								int source, int sink) {
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);
 							} else {
 								floatsAlgo.computeMinCostMaxFlow(g, net, cost, source, sink);
@@ -178,9 +178,9 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost,
+						public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
 								IWeightFunction lowerBound, int source, int sink) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt
 									&& lowerBound instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, source, sink);
 							} else {
@@ -189,9 +189,9 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost,
+						public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
 								IntCollection sources, IntCollection sinks) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt) {
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);
 							} else {
 								floatsAlgo.computeMinCostMaxFlow(g, net, cost, sources, sinks);
@@ -199,9 +199,9 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost,
+						public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
 								IWeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt
 									&& lowerBound instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostMaxFlow(g, net, cost, lowerBound, sources, sinks);
 							} else {
@@ -210,9 +210,9 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						public void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost,
+						public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
 								IWeightFunction supply) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt
 									&& supply instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostFlow(g, net, cost, supply);
 							} else {
@@ -221,10 +221,11 @@ public interface MinimumCostFlow {
 						}
 
 						@Override
-						public void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost,
+						public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
 								IWeightFunction lowerBound, IWeightFunction supply) {
-							if (net instanceof FlowNetworkInt && cost instanceof IWeightFunctionInt
-									&& lowerBound instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt) {
+							if (net instanceof IFlowNetworkInt && cost instanceof IWeightFunctionInt
+									&& lowerBound instanceof IWeightFunctionInt
+									&& supply instanceof IWeightFunctionInt) {
 								integerAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);
 							} else {
 								floatsAlgo.computeMinCostFlow(g, net, cost, lowerBound, supply);

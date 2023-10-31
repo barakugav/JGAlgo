@@ -22,6 +22,7 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class IntContainers {
@@ -29,112 +30,152 @@ public class IntContainers {
 	private IntContainers() {}
 
 	public static IntIterator toIntIterator(Iterator<Integer> it) {
-		Objects.requireNonNull(it);
-		if (it instanceof IntIterator)
+		if (it instanceof IntIterator) {
 			return (IntIterator) it;
-		return new IntIterator() {
-			@Override
-			public boolean hasNext() {
-				return it.hasNext();
-			}
+		} else {
+			return new IntIteratorWrapper(it);
+		}
+	}
 
-			@Override
-			public int nextInt() {
-				return it.next().intValue();
-			}
-		};
+	public static IntIterable toIntIterable(Iterable<Integer> it) {
+		if (it instanceof IntIterable) {
+			return (IntIterable) it;
+		} else {
+			return new IntIterableWrapper(it);
+		}
 	}
 
 	public static IntCollection toIntCollection(Collection<Integer> c) {
-		Objects.requireNonNull(c);
-		if (c instanceof IntCollection)
+		if (c instanceof IntCollection) {
 			return (IntCollection) c;
-		return new AbstractIntCollection() {
-			@Override
-			public int size() {
-				return c.size();
-			}
+		} else {
+			return new IntCollectionWrapper(c);
+		}
+	}
 
-			@Override
-			public boolean isEmpty() {
-				return c.isEmpty();
-			}
+	private static class IntIteratorWrapper implements IntIterator {
+		private final Iterator<Integer> it;
 
-			@Override
-			public Object[] toArray() {
-				return c.toArray();
-			}
+		public IntIteratorWrapper(Iterator<Integer> it) {
+			this.it = Objects.requireNonNull(it);
+		}
 
-			@Override
-			public <T> T[] toArray(T[] a) {
-				return c.toArray(a);
-			}
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
 
-			@Override
-			public boolean containsAll(Collection<?> c2) {
-				return c.containsAll(c2);
-			}
+		@Override
+		public int nextInt() {
+			return it.next().intValue();
+		}
+	}
 
-			@Override
-			public boolean addAll(Collection<? extends Integer> c2) {
-				return c.addAll(c2);
-			}
+	private static class IntIterableWrapper implements IntIterable {
+		private final Iterable<Integer> it;
 
-			@Override
-			public boolean removeAll(Collection<?> c2) {
-				return c.removeAll(c2);
-			}
+		public IntIterableWrapper(Iterable<Integer> it) {
+			this.it = Objects.requireNonNull(it);
+		}
 
-			@Override
-			public boolean retainAll(Collection<?> c2) {
-				return c.retainAll(c2);
-			}
+		@Override
+		public IntIterator iterator() {
+			return new IntIteratorWrapper(it.iterator());
+		}
+	}
 
-			@Override
-			public void clear() {
-				c.clear();
-			}
+	private static class IntCollectionWrapper extends AbstractIntCollection {
+		private final Collection<Integer> c;
 
-			@Override
-			public IntIterator iterator() {
-				return toIntIterator(c.iterator());
-			}
+		public IntCollectionWrapper(Collection<Integer> c) {
+			this.c = Objects.requireNonNull(c);
+		}
 
-			@Override
-			public boolean add(int key) {
-				return c.add(Integer.valueOf(key));
-			}
+		@Override
+		public int size() {
+			return c.size();
+		}
 
-			@Override
-			public boolean contains(int key) {
-				return c.contains(Integer.valueOf(key));
-			}
+		@Override
+		public boolean isEmpty() {
+			return c.isEmpty();
+		}
 
-			@Override
-			public boolean rem(int key) {
-				return c.remove(Integer.valueOf(key));
-			}
+		@Override
+		public Object[] toArray() {
+			return c.toArray();
+		}
 
-			@Override
-			public boolean addAll(IntCollection c2) {
-				return c.addAll(c2);
-			}
+		@Override
+		public <T> T[] toArray(T[] a) {
+			return c.toArray(a);
+		}
 
-			@Override
-			public boolean containsAll(IntCollection c2) {
-				return c.containsAll(c2);
-			}
+		@Override
+		public boolean containsAll(Collection<?> c2) {
+			return c.containsAll(c2);
+		}
 
-			@Override
-			public boolean removeAll(IntCollection c2) {
-				return c.removeAll(c2);
-			}
+		@Override
+		public boolean addAll(Collection<? extends Integer> c2) {
+			return c.addAll(c2);
+		}
 
-			@Override
-			public boolean retainAll(IntCollection c2) {
-				return c.retainAll(c2);
-			}
-		};
+		@Override
+		public boolean removeAll(Collection<?> c2) {
+			return c.removeAll(c2);
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c2) {
+			return c.retainAll(c2);
+		}
+
+		@Override
+		public void clear() {
+			c.clear();
+		}
+
+		@Override
+		public IntIterator iterator() {
+			return toIntIterator(c.iterator());
+		}
+
+		@Override
+		public boolean add(int key) {
+			return c.add(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return c.contains(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean rem(int key) {
+			return c.remove(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean addAll(IntCollection c2) {
+			return c.addAll(c2);
+		}
+
+		@Override
+		public boolean containsAll(IntCollection c2) {
+			return c.containsAll(c2);
+		}
+
+		@Override
+		public boolean removeAll(IntCollection c2) {
+			return c.removeAll(c2);
+		}
+
+		@Override
+		public boolean retainAll(IntCollection c2) {
+			return c.retainAll(c2);
+		}
+
 	}
 
 	public static IntUnaryOperator toIntUnaryOperator(ToIntFunction<Integer> op) {

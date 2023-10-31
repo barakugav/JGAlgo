@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implements MaximumFlow {
 
 	@Override
-	public double computeMaximumFlow(IntGraph g, FlowNetwork net, int source, int sink) {
+	public double computeMaximumFlow(IntGraph g, IFlowNetwork net, int source, int sink) {
 		if (g instanceof IndexGraph)
 			return computeMaximumFlow((IndexGraph) g, net, source, sink);
 
@@ -37,14 +37,14 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+		IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 		int iSource = viMap.idToIndex(source);
 		int iSink = viMap.idToIndex(sink);
 		return computeMaximumFlow(iGraph, iNet, iSource, iSink);
 	}
 
 	@Override
-	public double computeMaximumFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	public double computeMaximumFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 		if (g instanceof IndexGraph)
 			return computeMaximumFlow((IndexGraph) g, net, sources, sinks);
 
@@ -52,15 +52,15 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-		FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+		IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 		IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 		IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 		return computeMaximumFlow(iGraph, iNet, iSources, iSinks);
 	}
 
-	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink);
+	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink);
 
-	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
+	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
@@ -79,10 +79,10 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			final int source;
 			final int sink;
 			final int n;
-			final FlowNetwork net;
+			final IFlowNetwork net;
 			final boolean directed;
 
-			Worker(IndexGraph g, FlowNetwork net, int source, int sink) {
+			Worker(IndexGraph g, IFlowNetwork net, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
 				Assertions.Flows.positiveCapacities(g, net);
 				this.g = g;
@@ -94,7 +94,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			void initCapacities(int[] capacities) {
-				FlowNetworkInt net = (FlowNetworkInt) this.net;
+				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					capacities[e] = net.getCapacityInt(e);
 			}
@@ -171,7 +171,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-				FlowNetworkInt net = (FlowNetworkInt) this.net;
+				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					net.setFlow(e, capacity[e] - residualCapacity[e]);
 
@@ -196,7 +196,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 		}
 
 		@Override
-		double computeMaximumFlow(IndexGraph gOrig, FlowNetwork netOrig, IntCollection sources, IntCollection sinks) {
+		double computeMaximumFlow(IndexGraph gOrig, IFlowNetwork netOrig, IntCollection sources, IntCollection sinks) {
 			if (sources.size() == 1 && sinks.size() == 1)
 				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
@@ -215,8 +215,8 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 			Object capacities;
-			if (netOrig instanceof FlowNetworkInt) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+			if (netOrig instanceof IFlowNetworkInt) {
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				int[] capacities0 = new int[sources.size() + sinks.size()];
 				int capIdx = 0;
 				for (int s : sources) {
@@ -243,11 +243,11 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 			IndexGraph g = builder.build();
 
-			FlowNetwork net;
-			if (netOrig instanceof FlowNetworkInt) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+			IFlowNetwork net;
+			if (netOrig instanceof IFlowNetworkInt) {
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 
-				FlowNetworkInt netInt = new FlowNetworkInt() {
+				IFlowNetworkInt netInt = new IFlowNetworkInt() {
 					final int[] caps = (int[]) capacities;
 					final int[] flows = new int[caps.length];
 
@@ -280,7 +280,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				net = netInt;
 
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					final double[] caps = (double[]) capacities;
 					final double[] flows = new double[caps.length];
 
@@ -324,7 +324,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			final int source;
 			final int sink;
 			final int n;
-			final FlowNetwork net;
+			final IFlowNetwork net;
 
 			final IndexGraph g;
 			final int[] edgeRef;
@@ -334,7 +334,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			final IntCollection sources;
 			final IntCollection sinks;
 
-			Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+			Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
 				Assertions.Flows.positiveCapacities(gOrig, net);
 				this.gOrig = gOrig;
@@ -355,7 +355,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 				twin = residualGraph.twin;
 			}
 
-			Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+			Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 				Assertions.Flows.positiveCapacities(gOrig, net);
 				this.gOrig = gOrig;
@@ -419,7 +419,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			void initCapacities(int[] residualCapacity) {
-				FlowNetworkInt net = (FlowNetworkInt) this.net;
+				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 				if (gOrig.isDirected()) {
 					for (int m = g.edges().size(), e = 0; e < m; e++) {
 						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
@@ -479,7 +479,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] flow) {
-				FlowNetworkInt net = (FlowNetworkInt) this.net;
+				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
@@ -528,7 +528,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			}
 
 			int constructResult(int[] capacity, int[] residualCapacity) {
-				FlowNetworkInt net = (FlowNetworkInt) this.net;
+				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */

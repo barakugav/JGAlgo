@@ -53,12 +53,12 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 	MaximumFlowDinicDynamicTrees() {}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
 		return new Worker(g, net, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 		return new Worker(g, net, sources, sinks).computeMaximumFlow();
 	}
 
@@ -67,7 +67,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 		final double[] capacity;
 		final double[] flow;
 
-		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = new double[g.edges().size()];
@@ -75,7 +75,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+		Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 			super(gOrig, net, sources, sinks);
 
 			flow = new double[g.edges().size()];

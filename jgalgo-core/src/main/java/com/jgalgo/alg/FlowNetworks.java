@@ -16,26 +16,129 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 class FlowNetworks {
 
-	static class NetImplEdgeWeights implements FlowNetwork {
+	@SuppressWarnings("unchecked")
+	static <V, E> FlowNetwork<V, E> createFromEdgeWeights(WeightsDouble<E> capacities, WeightsDouble<E> flows) {
+		if (capacities instanceof IWeightsDouble && flows instanceof IWeightsDouble) {
+			return (FlowNetwork<V, E>) new FlowNetworks.NetImplEdgeIWeights((IWeightsDouble) capacities,
+					(IWeightsDouble) flows);
+		} else {
+			return new FlowNetworks.NetImplEdgeWeights<>(capacities, flows);
+		}
+	}
+
+	static IFlowNetwork createFromEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
+		return new FlowNetworks.NetImplEdgeIWeights(capacities, flows);
+	}
+
+	static class NetImplEdgeWeights<V, E> implements FlowNetwork<V, E> {
+
+		final WeightsDouble<E> capacities;
+		final WeightsDouble<E> flows;
+		static final double EPS = 0.0001;
+
+		NetImplEdgeWeights(WeightsDouble<E> capacities, WeightsDouble<E> flows) {
+			this.capacities = Objects.requireNonNull(capacities);
+			this.flows = Objects.requireNonNull(flows);
+		}
+
+		@Override
+		public double getCapacity(E edge) {
+			return capacities.get(edge);
+		}
+
+		@Override
+		public void setCapacity(E edge, double capacity) {
+			if (capacity < 0)
+				throw new IllegalArgumentException("capacity can't be negative");
+			capacities.set(edge, capacity);
+		}
+
+		@Override
+		public double getFlow(E edge) {
+			return flows.get(edge);
+		}
+
+		@Override
+		public void setFlow(E edge, double flow) {
+			double capacity = getCapacity(edge);
+			if (flow > capacity + EPS)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			flows.set(edge, Math.min(flow, capacity));
+		}
+	}
+
+	static class NetImplEdgeWeightsInt<V, E> implements FlowNetworkInt<V, E> {
+
+		final WeightsInt<E> capacities;
+		final WeightsInt<E> flows;
+
+		NetImplEdgeWeightsInt(WeightsInt<E> capacities, WeightsInt<E> flows) {
+			this.capacities = Objects.requireNonNull(capacities);
+			this.flows = Objects.requireNonNull(flows);
+		}
+
+		static <V, E> FlowNetworkInt<V, E> addWeightsAndCreateNet(Graph<V, E> g) {
+			WeightsInt<E> capacities = g.addEdgesWeights("_capacity", int.class);
+			WeightsInt<E> flows = g.addEdgesWeights("_flow", int.class);
+			return new NetImplEdgeWeightsInt<>(capacities, flows);
+		}
+
+		static <V, E> FlowNetworkInt<V, E> createExternalWeightsAndCreateNet(Graph<V, E> g) {
+			WeightsInt<E> capacities = Weights.createExternalEdgesWeights(g, int.class);
+			WeightsInt<E> flows = Weights.createExternalEdgesWeights(g, int.class);
+			return new NetImplEdgeWeightsInt<>(capacities, flows);
+		}
+
+		@Override
+		public int getCapacityInt(E edge) {
+			return capacities.get(edge);
+		}
+
+		@Override
+		public void setCapacity(E edge, int capacity) {
+			if (capacity < 0)
+				throw new IllegalArgumentException("capacity can't be negative");
+			capacities.set(edge, capacity);
+		}
+
+		@Override
+		public int getFlowInt(E edge) {
+			return flows.get(edge);
+		}
+
+		@Override
+		public void setFlow(E edge, int flow) {
+			int capacity = getCapacityInt(edge);
+			if (flow > capacity)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			flows.set(edge, Math.min(flow, capacity));
+		}
+	}
+
+	static class NetImplEdgeIWeights implements IFlowNetwork {
 
 		final IWeightsDouble capacities;
 		final IWeightsDouble flows;
 		static final double EPS = 0.0001;
 
-		NetImplEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
+		NetImplEdgeIWeights(IWeightsDouble capacities, IWeightsDouble flows) {
 			this.capacities = Objects.requireNonNull(capacities);
 			this.flows = Objects.requireNonNull(flows);
 		}
@@ -64,29 +167,28 @@ class FlowNetworks {
 				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
 			flows.set(edge, Math.min(flow, capacity));
 		}
-
 	}
 
-	static class NetImplEdgeWeightsInt implements FlowNetworkInt {
+	static class NetImplEdgeIWeightsInt implements IFlowNetworkInt {
 
 		final IWeightsInt capacities;
 		final IWeightsInt flows;
 
-		NetImplEdgeWeightsInt(IWeightsInt capacities, IWeightsInt flows) {
+		NetImplEdgeIWeightsInt(IWeightsInt capacities, IWeightsInt flows) {
 			this.capacities = Objects.requireNonNull(capacities);
 			this.flows = Objects.requireNonNull(flows);
 		}
 
-		static FlowNetworkInt addWeightsAndCreateNet(IntGraph g) {
+		static IFlowNetworkInt addWeightsAndCreateNet(IntGraph g) {
 			IWeightsInt capacities = g.addEdgesWeights("_capacity", int.class);
 			IWeightsInt flows = g.addEdgesWeights("_flow", int.class);
-			return new NetImplEdgeWeightsInt(capacities, flows);
+			return new NetImplEdgeIWeightsInt(capacities, flows);
 		}
 
-		static FlowNetworkInt createExternalWeightsAndCreateNet(IntGraph g) {
+		static IFlowNetworkInt createExternalWeightsAndCreateNet(IntGraph g) {
 			IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
 			IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
-			return new NetImplEdgeWeightsInt(capacities, flows);
+			return new NetImplEdgeIWeightsInt(capacities, flows);
 		}
 
 		@Override
@@ -113,7 +215,6 @@ class FlowNetworks {
 				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
 			flows.set(edge, Math.min(flow, capacity));
 		}
-
 	}
 
 	static class ResidualGraph {
@@ -209,19 +310,19 @@ class FlowNetworks {
 
 	}
 
-	private static class IndexNetFromNet implements FlowNetwork {
+	private static class IndexNetFromNet implements IFlowNetwork {
 
-		private final FlowNetwork idNet;
+		private final IFlowNetwork idNet;
 		final IndexIntIdMap eiMap;
 
-		IndexNetFromNet(FlowNetwork idNet, IndexIntIdMap eiMap) {
-			if (idNet instanceof NetImplEdgeWeights || idNet instanceof NetImplEdgeWeightsInt)
+		IndexNetFromNet(IFlowNetwork idNet, IndexIntIdMap eiMap) {
+			if (idNet instanceof NetImplEdgeIWeights || idNet instanceof NetImplEdgeIWeightsInt)
 				throw new IllegalArgumentException("net is already an index flow network");
 			this.idNet = Objects.requireNonNull(idNet);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
-		FlowNetwork idNet() {
+		IFlowNetwork idNet() {
 			return idNet;
 		}
 
@@ -247,15 +348,15 @@ class FlowNetworks {
 
 	}
 
-	private static class IndexNetFromNetInt extends IndexNetFromNet implements FlowNetworkInt {
+	private static class IndexNetFromNetInt extends IndexNetFromNet implements IFlowNetworkInt {
 
-		IndexNetFromNetInt(FlowNetworkInt idNet, IndexIntIdMap eiMap) {
+		IndexNetFromNetInt(IFlowNetworkInt idNet, IndexIntIdMap eiMap) {
 			super(idNet, eiMap);
 		}
 
 		@Override
-		FlowNetworkInt idNet() {
-			return (FlowNetworkInt) super.idNet();
+		IFlowNetworkInt idNet() {
+			return (IFlowNetworkInt) super.idNet();
 		}
 
 		@Override
@@ -281,36 +382,36 @@ class FlowNetworks {
 		@Deprecated
 		@Override
 		public double getCapacity(int edge) {
-			return FlowNetworkInt.super.getCapacity(edge);
+			return IFlowNetworkInt.super.getCapacity(edge);
 		}
 
 		@Deprecated
 		@Override
 		public void setCapacity(int edge, double capacity) {
-			FlowNetworkInt.super.setCapacity(edge, capacity);
+			IFlowNetworkInt.super.setCapacity(edge, capacity);
 		}
 
 		@Deprecated
 		@Override
 		public double getFlow(int edge) {
-			return FlowNetworkInt.super.getFlow(edge);
+			return IFlowNetworkInt.super.getFlow(edge);
 		}
 
 		@Deprecated
 		@Override
 		public void setFlow(int edge, double flow) {
-			FlowNetworkInt.super.setFlow(edge, flow);
+			IFlowNetworkInt.super.setFlow(edge, flow);
 		}
 	}
 
-	static FlowNetworkInt indexNetFromNet(FlowNetworkInt net, IndexIntIdMap eiMap) {
-		if (net instanceof NetImplEdgeWeightsInt) {
-			NetImplEdgeWeightsInt net0 = (NetImplEdgeWeightsInt) net;
+	static IFlowNetworkInt indexNetFromNet(IFlowNetworkInt net, IndexIntIdMap eiMap) {
+		if (net instanceof NetImplEdgeIWeightsInt) {
+			NetImplEdgeIWeightsInt net0 = (NetImplEdgeIWeightsInt) net;
 
 			/* Create a network from the underlying index weights containers */
 			IWeightsInt capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
 			IWeightsInt flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
-			return new NetImplEdgeWeightsInt(capacityWeights, flowWeights);
+			return new NetImplEdgeIWeightsInt(capacityWeights, flowWeights);
 		} else {
 
 			/* Unknown network implementation, create a mapped wrapper */
@@ -318,16 +419,16 @@ class FlowNetworks {
 		}
 	}
 
-	static FlowNetwork indexNetFromNet(FlowNetwork net, IndexIntIdMap eiMap) {
-		if (net instanceof FlowNetworkInt)
-			return indexNetFromNet((FlowNetworkInt) net, eiMap);
-		if (net instanceof NetImplEdgeWeights) {
-			NetImplEdgeWeights net0 = (NetImplEdgeWeights) net;
+	static IFlowNetwork indexNetFromNet(IFlowNetwork net, IndexIntIdMap eiMap) {
+		if (net instanceof IFlowNetworkInt)
+			return indexNetFromNet((IFlowNetworkInt) net, eiMap);
+		if (net instanceof NetImplEdgeIWeights) {
+			NetImplEdgeIWeights net0 = (NetImplEdgeIWeights) net;
 
 			/* Create a network from the underlying index weights containers */
 			IWeightsDouble capacityWeights = IndexIdMaps.idToIndexWeights(net0.capacities, eiMap);
 			IWeightsDouble flowWeights = IndexIdMaps.idToIndexWeights(net0.flows, eiMap);
-			return new NetImplEdgeWeights(capacityWeights, flowWeights);
+			return new NetImplEdgeIWeights(capacityWeights, flowWeights);
 
 		} else {
 
@@ -336,9 +437,9 @@ class FlowNetworks {
 		}
 	}
 
-	static double hugeCapacity(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
-		if (net instanceof FlowNetworkInt)
-			return hugeCapacityLong(g, (FlowNetworkInt) net, sources, sinks);
+	static double hugeCapacity(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
+		if (net instanceof IFlowNetworkInt)
+			return hugeCapacityLong(g, (IFlowNetworkInt) net, sources, sinks);
 
 		double sourcesOutCapacity = 0;
 		double sinksOutCapacity = 0;
@@ -351,7 +452,7 @@ class FlowNetworks {
 		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;
 	}
 
-	static int hugeCapacity(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
+	static int hugeCapacity(IndexGraph g, IFlowNetworkInt net, IntCollection sources, IntCollection sinks) {
 		long hugeCapacity = hugeCapacityLong(g, net, sources, sinks);
 		int hugeCapacityInt = (int) hugeCapacity;
 		if (hugeCapacityInt != hugeCapacity)
@@ -359,7 +460,7 @@ class FlowNetworks {
 		return hugeCapacityInt;
 	}
 
-	static long hugeCapacityLong(IndexGraph g, FlowNetworkInt net, IntCollection sources, IntCollection sinks) {
+	static long hugeCapacityLong(IndexGraph g, IFlowNetworkInt net, IntCollection sources, IntCollection sinks) {
 		long sourcesOutCapacity = 0;
 		long sinksOutCapacity = 0;
 		for (int s : sources)
@@ -371,9 +472,9 @@ class FlowNetworks {
 		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;
 	}
 
-	static double vertexMaxSupply(IndexGraph g, FlowNetwork net, int v) {
-		if (net instanceof FlowNetworkInt)
-			return vertexMaxSupply(g, (FlowNetworkInt) net, v);
+	static double vertexMaxSupply(IndexGraph g, IFlowNetwork net, int v) {
+		if (net instanceof IFlowNetworkInt)
+			return vertexMaxSupply(g, (IFlowNetworkInt) net, v);
 
 		double maxSupply = 0;
 		for (int e : g.outEdges(v))
@@ -381,7 +482,7 @@ class FlowNetworks {
 		return maxSupply;
 	}
 
-	static int vertexMaxSupply(IndexGraph g, FlowNetworkInt net, int v) {
+	static int vertexMaxSupply(IndexGraph g, IFlowNetworkInt net, int v) {
 		long maxSupply = 0;
 		for (int e : g.outEdges(v))
 			maxSupply += net.getCapacityInt(e);
@@ -391,9 +492,9 @@ class FlowNetworks {
 		return maxSupplyInt;
 	}
 
-	static double vertexMaxDemand(IndexGraph g, FlowNetwork net, int v) {
-		if (net instanceof FlowNetworkInt)
-			return vertexMaxDemand(g, (FlowNetworkInt) net, v);
+	static double vertexMaxDemand(IndexGraph g, IFlowNetwork net, int v) {
+		if (net instanceof IFlowNetworkInt)
+			return vertexMaxDemand(g, (IFlowNetworkInt) net, v);
 
 		double maxDemand = 0;
 		for (int e : g.inEdges(v))
@@ -401,7 +502,7 @@ class FlowNetworks {
 		return maxDemand;
 	}
 
-	static int vertexMaxDemand(IndexGraph g, FlowNetworkInt net, int v) {
+	static int vertexMaxDemand(IndexGraph g, IFlowNetworkInt net, int v) {
 		long maxDemand = 0;
 		for (int e : g.inEdges(v))
 			maxDemand += net.getCapacityInt(e);

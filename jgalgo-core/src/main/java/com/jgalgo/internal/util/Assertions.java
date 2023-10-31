@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import com.jgalgo.alg.FlowNetwork;
-import com.jgalgo.alg.FlowNetworkInt;
+import com.jgalgo.alg.IFlowNetwork;
+import com.jgalgo.alg.IFlowNetworkInt;
 import com.jgalgo.alg.GraphsUtils;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -159,9 +159,9 @@ public class Assertions {
 			}
 		}
 
-		public static void positiveCapacities(IndexGraph g, FlowNetwork net) {
-			if (net instanceof FlowNetworkInt) {
-				FlowNetworkInt netInt = (FlowNetworkInt) net;
+		public static void positiveCapacities(IndexGraph g, IFlowNetwork net) {
+			if (net instanceof IFlowNetworkInt) {
+				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap = netInt.getCapacityInt(e);
 					if (cap < 0)
@@ -176,9 +176,9 @@ public class Assertions {
 			}
 		}
 
-		public static void checkLowerBound(IndexGraph g, FlowNetwork net, IWeightFunction lowerBound) {
-			if (net instanceof FlowNetworkInt && lowerBound instanceof IWeightFunctionInt) {
-				FlowNetworkInt netInt = (FlowNetworkInt) net;
+		public static void checkLowerBound(IndexGraph g, IFlowNetwork net, IWeightFunction lowerBound) {
+			if (net instanceof IFlowNetworkInt && lowerBound instanceof IWeightFunctionInt) {
+				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int l = lowerBoundInt.weightInt(e);

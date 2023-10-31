@@ -39,7 +39,7 @@ class MinimumCostFlows {
 	private static abstract class AbstractImplBase implements MinimumCostFlow {
 
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, int source, int sink) {
+		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
 			if (g instanceof IndexGraph) {
 				computeMinCostMaxFlow((IndexGraph) g, net, cost, source, sink);
 				return;
@@ -48,7 +48,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
@@ -57,8 +57,8 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
-				int source, int sink) {
+		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
+				IWeightFunction lowerBound, int source, int sink) {
 			if (g instanceof IndexGraph) {
 				computeMinCostMaxFlow((IndexGraph) g, net, cost, lowerBound, source, sink);
 				return;
@@ -67,7 +67,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
 			int iSource = viMap.idToIndex(source);
@@ -77,7 +77,7 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IntCollection sources,
+		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IntCollection sources,
 				IntCollection sinks) {
 			if (g instanceof IndexGraph) {
 				computeMinCostMaxFlow((IndexGraph) g, net, cost, sources, sinks);
@@ -87,7 +87,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
@@ -96,8 +96,8 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostMaxFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
-				IntCollection sources, IntCollection sinks) {
+		public void computeMinCostMaxFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost,
+				IWeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
 			if (g instanceof IndexGraph) {
 				computeMinCostMaxFlow((IndexGraph) g, net, cost, lowerBound, sources, sinks);
 				return;
@@ -106,7 +106,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
 			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
@@ -116,7 +116,7 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
+		public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
 			if (g instanceof IndexGraph) {
 				computeMinCostFlow((IndexGraph) g, net, cost, supply);
 				return;
@@ -125,7 +125,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
 
@@ -133,7 +133,7 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		public void computeMinCostFlow(IntGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
+		public void computeMinCostFlow(IntGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
 				IWeightFunction supply) {
 			if (g instanceof IndexGraph) {
 				computeMinCostFlow((IndexGraph) g, net, cost, lowerBound, supply);
@@ -143,7 +143,7 @@ class MinimumCostFlows {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);
 			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);
 			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
@@ -151,20 +151,20 @@ class MinimumCostFlows {
 			computeMinCostFlow(iGraph, iNet, iCost, iLowerBound, iSupply);
 		}
 
-		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, int source, int sink);
+		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
 
-		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost,
+		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost,
 				IWeightFunction lowerBound, int source, int sink);
 
-		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IntCollection sources,
+		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IntCollection sources,
 				IntCollection sinks);
 
-		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost,
+		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost,
 				IWeightFunction lowerBound, IntCollection sources, IntCollection sinks);
 
-		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply);
+		abstract void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply);
 
-		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost,
+		abstract void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost,
 				IWeightFunction lowerBound, IWeightFunction supply);
 
 	}
@@ -172,14 +172,14 @@ class MinimumCostFlows {
 	static abstract class AbstractImpl extends AbstractImplBase {
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
+		void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
 				int source, int sink) {
 			Objects.requireNonNull(lowerBound);
 			computeMinCostMaxFlow(g, net, cost, lowerBound, IntList.of(source), IntList.of(sink));
 		}
 
 		@Override
-		void computeMinCostFlow(IndexGraph g, FlowNetwork netOrig, IWeightFunction cost, IWeightFunction lowerBound,
+		void computeMinCostFlow(IndexGraph g, IFlowNetwork netOrig, IWeightFunction cost, IWeightFunction lowerBound,
 				IWeightFunction supply) {
 			Objects.requireNonNull(g);
 			Objects.requireNonNull(netOrig);
@@ -190,7 +190,7 @@ class MinimumCostFlows {
 			Assertions.Flows.checkLowerBound(g, netOrig, lowerBound);
 			Assertions.Flows.checkSupply(g, supply);
 
-			final boolean integerFlow = netOrig instanceof FlowNetworkInt && lowerBound instanceof IWeightFunctionInt;
+			final boolean integerFlow = netOrig instanceof IFlowNetworkInt && lowerBound instanceof IWeightFunctionInt;
 
 			/*
 			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
@@ -199,11 +199,11 @@ class MinimumCostFlows {
 			 */
 
 			/* Create a network by subtracting the lower bound from each edge capacity */
-			FlowNetwork net;
+			IFlowNetwork net;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
-				net = new FlowNetworkInt() {
+				net = new IFlowNetworkInt() {
 					@Override
 					public int getCapacityInt(int edge) {
 						return netOrigInt.getCapacityInt(edge) - lowerBoundInt.weightInt(edge);
@@ -225,7 +225,7 @@ class MinimumCostFlows {
 					}
 				};
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					@Override
 					public double getCapacity(int edge) {
 						return netOrig.getCapacity(edge) - lowerBound.weight(edge);
@@ -280,15 +280,15 @@ class MinimumCostFlows {
 			return costSum + 1;
 		}
 
-		static IWeightFunction computeSupply(IndexGraph g, FlowNetwork net, IWeightFunction lowerBound,
+		static IWeightFunction computeSupply(IndexGraph g, IFlowNetwork net, IWeightFunction lowerBound,
 				IWeightFunction supply) {
-			boolean isInt = net instanceof FlowNetworkInt;
+			boolean isInt = net instanceof IFlowNetworkInt;
 			if (lowerBound != null)
 				isInt = isInt && lowerBound instanceof IWeightFunctionInt;
 			if (supply != null)
 				isInt = isInt && lowerBound instanceof IWeightFunctionInt;
 			if (isInt)
-				return computeSupply(g, (FlowNetworkInt) net, (IWeightFunctionInt) lowerBound,
+				return computeSupply(g, (IFlowNetworkInt) net, (IWeightFunctionInt) lowerBound,
 						(IWeightFunctionInt) supply);
 
 			IWeightsDouble supply2 = IWeights.createExternalVerticesWeights(g, double.class);
@@ -310,7 +310,7 @@ class MinimumCostFlows {
 			return supply2;
 		}
 
-		static IWeightFunctionInt computeSupply(IndexGraph g, FlowNetworkInt net, IWeightFunctionInt lowerBound,
+		static IWeightFunctionInt computeSupply(IndexGraph g, IFlowNetworkInt net, IWeightFunctionInt lowerBound,
 				IWeightFunctionInt supply) {
 			IWeightsInt supply2 = IWeights.createExternalVerticesWeights(g, int.class);
 			if (supply != null) {
@@ -336,14 +336,14 @@ class MinimumCostFlows {
 	static abstract class AbstractImplBasedSourceSink extends AbstractImpl {
 
 		@Override
-		abstract void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, int source, int sink);
+		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, IWeightFunction costOrig,
+		void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork netOrig, IWeightFunction costOrig,
 				IntCollection sources, IntCollection sinks) {
 			Assertions.Graphs.onlyDirected(gOrig);
 
-			final boolean integerFlow = netOrig instanceof FlowNetworkInt;
+			final boolean integerFlow = netOrig instanceof IFlowNetworkInt;
 			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
 
 			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
@@ -366,7 +366,7 @@ class MinimumCostFlows {
 			/* Connect the sinks to the sink with high capacity edges */
 			Object capacities;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				int[] capacities0 = new int[sources.size() + sinks.size()];
 				int capIdx = 0;
 				for (int s : sources) {
@@ -398,10 +398,10 @@ class MinimumCostFlows {
 			 * Create a network for the new graph by storing capacities and flows of the artificial edges and by
 			 * reducing the capacities of edges by their lower bound
 			 */
-			FlowNetwork net;
+			IFlowNetwork net;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
-				net = new FlowNetworkInt() {
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
+				net = new IFlowNetworkInt() {
 					final int[] caps = (int[]) capacities;
 					final int[] flows = new int[caps.length];
 
@@ -432,7 +432,7 @@ class MinimumCostFlows {
 					}
 				};
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					final double[] caps = (double[]) capacities;
 					final double[] flows = new double[caps.length];
 
@@ -476,7 +476,7 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, IWeightFunction costOrig,
+		void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork netOrig, IWeightFunction costOrig,
 				IWeightFunction lowerBound, IntCollection sources, IntCollection sinks) {
 			Objects.requireNonNull(gOrig);
 			Objects.requireNonNull(netOrig);
@@ -486,7 +486,7 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkLowerBound(gOrig, netOrig, lowerBound);
 
-			final boolean integerFlow = netOrig instanceof FlowNetworkInt && lowerBound instanceof IWeightFunctionInt;
+			final boolean integerFlow = netOrig instanceof IFlowNetworkInt && lowerBound instanceof IWeightFunctionInt;
 			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
 
 			/*
@@ -527,7 +527,7 @@ class MinimumCostFlows {
 			/* Connect the sinks to the sink with high capacity edges */
 			final List<?> capacities;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				IntList capacities0 = new IntArrayList(sources.size() + sinks.size());
 				for (int s : sources) {
 					builder.addEdge(source, s);
@@ -593,11 +593,11 @@ class MinimumCostFlows {
 			 * Create a network for the new graph by storing capacities and flows of the artificial edges and by
 			 * reducing the capacities of edges by their lower bound
 			 */
-			FlowNetwork net;
+			IFlowNetwork net;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
-				net = new FlowNetworkInt() {
+				net = new IFlowNetworkInt() {
 					int[] caps = ((IntArrayList) capacities).elements();
 					int[] flows = new int[g.edges().size() - origEdgesThreshold];
 
@@ -630,7 +630,7 @@ class MinimumCostFlows {
 					}
 				};
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					double[] caps = ((DoubleArrayList) capacities).elements();
 					double[] flows = new double[g.edges().size() - origEdgesThreshold];
 
@@ -701,7 +701,7 @@ class MinimumCostFlows {
 
 			/* assert all supply was provided */
 			if (integerFlow) {
-				FlowNetworkInt netInt = (FlowNetworkInt) net;
+				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
 				for (int m = g.edges().size(), e = sourcesSinksThreshold; e < m; e++)
 					assert netInt.getFlowInt(e) == netInt.getCapacityInt(e);
 			} else {
@@ -711,7 +711,7 @@ class MinimumCostFlows {
 		}
 
 		@Override
-		void computeMinCostFlow(IndexGraph gOrig, FlowNetwork netOrig, IWeightFunction costOrig,
+		void computeMinCostFlow(IndexGraph gOrig, IFlowNetwork netOrig, IWeightFunction costOrig,
 				IWeightFunction supply) {
 			Objects.requireNonNull(gOrig);
 			Objects.requireNonNull(netOrig);
@@ -721,7 +721,7 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 
-			final boolean integerFlow = netOrig instanceof FlowNetworkInt && supply instanceof IWeightFunctionInt;
+			final boolean integerFlow = netOrig instanceof IFlowNetworkInt && supply instanceof IWeightFunctionInt;
 			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
 
 			/*
@@ -783,10 +783,10 @@ class MinimumCostFlows {
 			/*
 			 * Create a network for the new graph by using two new arrays for the artificial edges capacities and flows
 			 */
-			FlowNetwork net;
+			IFlowNetwork net;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
-				net = new FlowNetworkInt() {
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
+				net = new IFlowNetworkInt() {
 					int[] caps = ((IntArrayList) capacities).elements();
 					int[] flows = new int[capacities.size()];
 
@@ -817,7 +817,7 @@ class MinimumCostFlows {
 					}
 				};
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					double[] caps = ((DoubleArrayList) capacities).elements();
 					double[] flows = new double[capacities.size()];
 
@@ -869,26 +869,26 @@ class MinimumCostFlows {
 	static abstract class AbstractImplBasedSupply extends AbstractImpl {
 
 		@Override
-		abstract void computeMinCostFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply);
+		abstract void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply);
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, int source, int sink) {
+		void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
 			computeMinCostMaxFlow(g, net, cost, IntList.of(source), IntList.of(sink));
 		}
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IntCollection sources,
+		void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IntCollection sources,
 				IntCollection sinks) {
 			computeMinCostMaxFlow(g, net, cost, null, sources, sinks);
 		}
 
 		@Override
-		void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork netOrig, IWeightFunction costOrig,
+		void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork netOrig, IWeightFunction costOrig,
 				IWeightFunction lowerBoundOrig, IntCollection sources, IntCollection sinks) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
-			final boolean integerFlow = netOrig instanceof FlowNetworkInt
+			final boolean integerFlow = netOrig instanceof IFlowNetworkInt
 					&& (lowerBoundOrig == null || lowerBoundOrig instanceof IWeightFunctionInt);
 			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
 
@@ -923,13 +923,13 @@ class MinimumCostFlows {
 			IndexGraph g = builder.build();
 
 			final double hugeCapacity = FlowNetworks.hugeCapacity(gOrig, netOrig, sources, sinks);
-			FlowNetwork net;
+			IFlowNetwork net;
 			if (integerFlow) {
-				FlowNetworkInt netOrigInt = (FlowNetworkInt) netOrig;
+				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
 				int hugeCapacityInt = (int) hugeCapacity;
 				if (hugeCapacityInt != hugeCapacity)
 					throw new AssertionError("integer overflow");
-				net = new FlowNetworkInt() {
+				net = new IFlowNetworkInt() {
 					int[] flows = new int[builder.edges().size() - origEdgesThreshold];
 
 					@Override
@@ -958,7 +958,7 @@ class MinimumCostFlows {
 					}
 				};
 			} else {
-				net = new FlowNetwork() {
+				net = new IFlowNetwork() {
 					double[] flows = new double[builder.edges().size() - origEdgesThreshold];
 
 					@Override
@@ -1050,11 +1050,11 @@ class MinimumCostFlows {
 
 	}
 
-	static void saturateNegativeCostSelfEdges(IndexGraph g, FlowNetwork net, IWeightFunction cost) {
+	static void saturateNegativeCostSelfEdges(IndexGraph g, IFlowNetwork net, IWeightFunction cost) {
 		if (!g.isAllowSelfEdges())
 			return;
-		if (net instanceof FlowNetworkInt) {
-			FlowNetworkInt netInt = (FlowNetworkInt) net;
+		if (net instanceof IFlowNetworkInt) {
+			IFlowNetworkInt netInt = (IFlowNetworkInt) net;
 			if (cost instanceof IWeightFunctionInt) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 				for (int m = g.edges().size(), e = 0; e < m; e++)

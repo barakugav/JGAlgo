@@ -59,7 +59,7 @@ public interface MaximumFlow {
 	/**
 	 * Calculate the maximum flow in a network between a source and a sink.
 	 * <p>
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
+	 * The function will set the edges flow by {@link IFlowNetwork#setFlow(int, double)}.
 	 *
 	 * @param  g                        a graph
 	 * @param  net                      network flow
@@ -68,12 +68,12 @@ public interface MaximumFlow {
 	 * @return                          the maximum flow in the network from the source to the sink
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	double computeMaximumFlow(IntGraph g, FlowNetwork net, int source, int sink);
+	double computeMaximumFlow(IntGraph g, IFlowNetwork net, int source, int sink);
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
 	 * <p>
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
+	 * The function will set the edges flow by {@link IFlowNetwork#setFlow(int, double)}.
 	 *
 	 * @param  g                        a graph
 	 * @param  net                      network flow
@@ -83,7 +83,7 @@ public interface MaximumFlow {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	double computeMaximumFlow(IntGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks);
+	double computeMaximumFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks);
 
 	/**
 	 * Create a new maximum flow algorithm object.

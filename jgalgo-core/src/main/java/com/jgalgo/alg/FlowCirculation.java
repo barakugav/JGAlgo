@@ -20,7 +20,7 @@ import com.jgalgo.graph.IWeightFunction;
 
 interface FlowCirculation {
 
-	void computeCirculation(IntGraph g, FlowNetwork net, IWeightFunction supply);
+	void computeCirculation(IntGraph g, IFlowNetwork net, IWeightFunction supply);
 
 	// void computeCirculation(Graph g, FlowNetwork net, WeightFunction lowerBound, WeightFunction supply);
 

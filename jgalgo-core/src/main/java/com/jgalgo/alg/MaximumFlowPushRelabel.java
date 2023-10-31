@@ -112,9 +112,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-		if (net instanceof FlowNetworkInt) {
-			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
+		if (net instanceof IFlowNetworkInt) {
+			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMaxFlow();
@@ -123,19 +123,19 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	@Override
 	public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		FlowNetwork net = flowNetFromEdgeWeights(w);
+		IFlowNetwork net = flowNetFromEdgeWeights(w);
 		if (w instanceof IWeightFunctionInt) {
-			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
+			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMinimumCut();
 		} else {
 			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();
 		}
 	}
 
-	private static FlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
+	private static IFlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
 		if (w instanceof IWeightFunctionInt) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
-			FlowNetworkInt net = new FlowNetworkInt() {
+			IFlowNetworkInt net = new IFlowNetworkInt() {
 
 				@Override
 				public int getCapacityInt(int edge) {
@@ -160,7 +160,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			};
 			return net;
 		} else {
-			FlowNetwork net = new FlowNetwork() {
+			IFlowNetwork net = new IFlowNetwork() {
 
 				@Override
 				public double getCapacity(int edge) {
@@ -210,7 +210,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		private final ActiveOrderPolicyImpl activeOrderPolicy;
 		private final DischargePolicyImpl dischargePolicy;
 
-		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 			super(gOrig, net, source, sink);
 
@@ -1728,7 +1728,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);
 
@@ -1952,7 +1952,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final int[] excess;
 
-		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);
 

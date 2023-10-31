@@ -26,7 +26,7 @@ class FlowCirculations {
 	static abstract class AbstractImpl implements FlowCirculation {
 
 		@Override
-		public void computeCirculation(IntGraph g, FlowNetwork net, IWeightFunction supply) {
+		public void computeCirculation(IntGraph g, IFlowNetwork net, IWeightFunction supply) {
 			if (g instanceof IndexGraph) {
 				computeCirculation((IndexGraph) g, net, supply);
 				return;
@@ -35,13 +35,13 @@ class FlowCirculations {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			FlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
 			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
 
 			computeCirculation(iGraph, iNet, iSupply);
 		}
 
-		abstract void computeCirculation(IndexGraph g, FlowNetwork net, IWeightFunction supply);
+		abstract void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply);
 
 	}
 

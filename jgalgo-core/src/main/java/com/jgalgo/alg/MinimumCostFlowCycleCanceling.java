@@ -44,7 +44,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 	private static final double EPS = 0.0001;
 
 	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, IWeightFunction cost, int source, int sink) {
+	void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
 		Assertions.Graphs.onlyDirected(gOrig);
 		Assertions.Flows.sourceSinkNotTheSame(source, sink);
 
@@ -70,7 +70,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);
 	}
 
-	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, FlowNetwork net,
+	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, IFlowNetwork net,
 			FlowNetworks.ResidualGraph resGraph, double[] capacity, double[] flow) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;

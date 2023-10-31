@@ -45,12 +45,12 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 	private static final int alpha = 16;
 
 	@Override
-	void computeMinCostFlow(IndexGraph g, FlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
-		if (!(net instanceof FlowNetworkInt && supply instanceof IWeightFunctionInt))
+	void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
+		if (!(net instanceof IFlowNetworkInt && supply instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
 		if (!(cost instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer costs are supported");
-		new Worker(g, (FlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();
+		new Worker(g, (IFlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();
 	}
 
 	private static class Worker {
@@ -59,7 +59,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private final IndexGraph g;
 		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
-		private final FlowNetworkInt net;
+		private final IFlowNetworkInt net;
 		private final IWeightFunctionInt costOrig;
 
 		/* per-edge information */
@@ -98,7 +98,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-		Worker(IndexGraph gOrig, FlowNetworkInt net, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
+		Worker(IndexGraph gOrig, IFlowNetworkInt net, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 			this.gOrig = gOrig;
