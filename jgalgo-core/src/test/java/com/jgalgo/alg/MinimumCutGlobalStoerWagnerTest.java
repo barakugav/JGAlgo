@@ -63,7 +63,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 	}
 
 	private static void testMinCut(IntGraph g, IWeightFunctionInt w, MinimumCutGlobal alg) {
-		IVertexBiPartition minCut = alg.computeMinimumCut(g, w);
+		IVertexBiPartition minCut = (IVertexBiPartition) alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) w.weightSum(minCut.crossEdges());
 
 		final int n = g.vertices().size();
@@ -97,7 +97,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
 		} else {
 			MinimumCutGlobal validationAlgo = MinimumCutSTUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
-			IVertexBiPartition minCutExpected = validationAlgo.computeMinimumCut(g, w);
+			IVertexBiPartition minCutExpected = (IVertexBiPartition) validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, "failed to find minimum cut");

@@ -15,25 +15,42 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
 abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w) {
-		if (g instanceof IndexGraph)
-			return computeMinimumCut((IndexGraph) g, w);
+	public <V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g,
+					WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
 
-		IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
-		return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexCut);
+			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
+			return (VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
+					indexCut);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+
+			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
+			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexCut);
+		}
 	}
 
 	abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);

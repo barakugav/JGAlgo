@@ -16,8 +16,11 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import java.util.Collection;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -47,7 +50,12 @@ public interface MinimumCutST {
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @param  source                   a special vertex that will be in \(C\)
@@ -55,14 +63,20 @@ public interface MinimumCutST {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, int source, int sink);
+	<V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w, V source, V sink);
 
 	/**
 	 * Compute the minimum cut in a graph between two sets of vertices.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link IntCollection} as {@code sources} and
+	 * {@code sinks} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @param  sources                  special vertices that will be in \(C\)
@@ -71,7 +85,8 @@ public interface MinimumCutST {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks);
+	<V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w, Collection<V> sources,
+			Collection<V> sinks);
 
 	/**
 	 * Create a new minimum S-T cut algorithm object.

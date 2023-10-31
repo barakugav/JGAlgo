@@ -15,8 +15,10 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.
@@ -44,13 +46,18 @@ public interface MinimumCutGlobal {
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w);
+	<V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Create a new minimum global cut algorithm object.

@@ -16,15 +16,20 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import java.util.Collection;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -35,39 +40,68 @@ class MinimumCutSTUtils {
 
 	static abstract class AbstractImpl implements MinimumCutST {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, int source, int sink) {
-			if (g instanceof IndexGraph)
-				return computeMinimumCut((IndexGraph) g, w, source, sink);
+		public <V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w, V source, V sink) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
+				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g, w0, source0, sink0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				int iSink = viMap.idToIndex(((Integer) sink).intValue());
+				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
+				return (VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
+						indexCut);
 
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			int iSource = viMap.idToIndex(source);
-			int iSink = viMap.idToIndex(sink);
-
-			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexCut);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iSource = viMap.idToIndex(source);
+				int iSink = viMap.idToIndex(sink);
+				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
+				return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexCut);
+			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public IVertexBiPartition computeMinimumCut(IntGraph g, IWeightFunction w, IntCollection sources,
-				IntCollection sinks) {
-			if (g instanceof IndexGraph)
-				return computeMinimumCut((IndexGraph) g, w, sources, sinks);
+		public <V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w,
+				Collection<V> sources, Collection<V> sinks) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection((Collection<Integer>) sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection((Collection<Integer>) sinks, viMap);
+				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
+				return (VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
+						indexCut);
 
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
-			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
-
-			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexCut);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
+				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
+				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
+				return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexCut);
+			}
 		}
 
 		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int sources, int sinks);
@@ -219,7 +253,7 @@ class MinimumCutSTUtils {
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
-					IVertexBiPartition cut = stMinCut.computeMinimumCut(g, w, source, sink);
+					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w, source, sink);
 					double cutWeight = w.weightSum(cut.crossEdges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;
