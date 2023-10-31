@@ -15,8 +15,10 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for computing the shortest path between two vertices in a graph.
@@ -41,14 +43,19 @@ public interface ShortestPathST {
 
 	/**
 	 * Compute the shortest path from a source vertex to a target vertex.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
 	 * @param  g      the graph
 	 * @param  w      an edge weight function
 	 * @param  source the source vertex
 	 * @param  target the target vertex
 	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
 	 */
-	IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target);
+	<V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target);
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
@@ -76,8 +83,8 @@ public interface ShortestPathST {
 				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();
 
 				@Override
-				public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
-					boolean cardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
+				public <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
+					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction || w == IWeightFunction.CardinalityWeightFunction;
 					if (cardinality) {
 						return cardinalityStSp.computeShortestPath(g, w, source, target);
 					} else {

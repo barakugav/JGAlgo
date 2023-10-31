@@ -39,7 +39,7 @@ class ShortestPathSTTestUtils {
 				int source0 = ((Integer) source).intValue();
 				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
 				for (int v : g0.vertices())
-					paths.put(v, spst.computeShortestPath(g0, w0, source0, v));
+					paths.put(v, (IPath) spst.computeShortestPath(g0, w0, source0, v));
 				return (ShortestPathSingleSource.Result<V, E>) new ShortestPathSingleSource.IResult() {
 
 					@Override
