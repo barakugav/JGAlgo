@@ -16,15 +16,23 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.IntContainers;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
@@ -50,27 +58,46 @@ public interface SteinerTreeAlgo {
 	 * <p>
 	 * The algorithm with search for the minimum Steiner tree that spans all the terminals with respect to the given
 	 * edge weight function. The tree may contain additional vertices that are not terminals.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link SteinerTreeAlgo.IResult} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link IntCollection} as {@code terminals} to avoid
+	 * boxing/unboxing.
 	 *
+	 * @param  <V>       the vertices type
+	 * @param  <E>       the edges type
 	 * @param  g         a graph
 	 * @param  w         an edge weight function
 	 * @param  terminals a set of terminals vertices
 	 * @return           a result object containing all the edges of the computed tree
 	 */
-	SteinerTreeAlgo.Result computeSteinerTree(IntGraph g, IWeightFunction w, IntCollection terminals);
+	<V, E> SteinerTreeAlgo.Result<V, E> computeSteinerTree(Graph<V, E> g, WeightFunction<E> w, Collection<V> terminals);
 
 	/**
 	 * A result object for {@link SteinerTreeAlgo} computation.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * Get all the edges that form the Steiner tree.
 		 *
 		 * @return a collection of the Steiner tree edges.
 		 */
-		IntCollection edges();
+		Set<E> edges();
+	}
+
+	/**
+	 * A result object for {@link SteinerTreeAlgo} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends SteinerTreeAlgo.Result<Integer, Integer> {
+
+		@Override
+		IntSet edges();
 	}
 
 	/**
@@ -78,33 +105,54 @@ public interface SteinerTreeAlgo {
 	 * <p>
 	 * A set of edges is a valid Steiner tree if it spans all the terminals, does not contain any cycles, form a single
 	 * connected components, and there are no non-terminal leaves in the tree.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code terminals} and
+	 * {@code edges} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>       the vertices type
+	 * @param  <E>       the edges type
 	 * @param  g         a graph
 	 * @param  terminals a set of terminals vertices
 	 * @param  edges     a set of edges
 	 * @return           {@code true} if the given set of edges is a valid Steiner tree
 	 */
-	static boolean isSteinerTree(IntGraph g, IntCollection terminals, IntCollection edges) {
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isSteinerTree(Graph<V, E> g, Collection<V> terminals, Collection<E> edges) {
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraph ig;
+		IntCollection terminals0;
+		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
+			terminals0 = IntContainers.toIntCollection((Collection<Integer>) terminals);
+			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
+
+		} else if (g instanceof IntGraph) {
+			ig = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			terminals0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) terminals, viMap);
+			edges0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) edges, eiMap);
+
 		} else {
 			ig = g.indexGraph();
-			terminals = IndexIdMaps.idToIndexCollection(terminals, g.indexGraphVerticesMap());
-			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			terminals0 = IndexIdMaps.idToIndexCollection(terminals, viMap);
+			edges0 = IndexIdMaps.idToIndexCollection(edges, eiMap);
 		}
+
 		final int m = ig.edges().size();
 		final int n = ig.vertices().size();
 		if (n == 0) {
 			assert m == 0;
-			return terminals.isEmpty() && edges.isEmpty();
+			return terminals0.isEmpty() && edges0.isEmpty();
 		}
-		if (terminals.isEmpty() || terminals.size() == 1)
-			return edges.isEmpty();
+		if (terminals0.isEmpty() || terminals0.size() == 1)
+			return edges0.isEmpty();
 
 		BitSet edgesBitmap = new BitSet(m);
-		for (int e : edges) {
+		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);
 			if (edgesBitmap.get(e))
@@ -114,7 +162,7 @@ public interface SteinerTreeAlgo {
 
 		BitSet visited = new BitSet(n);
 		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
-		int root = terminals.iterator().nextInt();
+		int root = terminals0.iterator().nextInt();
 		visited.set(root);
 		queue.enqueue(JGAlgoUtils.longPack(root, -1));
 		while (!queue.isEmpty()) {
@@ -132,20 +180,20 @@ public interface SteinerTreeAlgo {
 				queue.enqueue(JGAlgoUtils.longPack(v, e));
 			}
 		}
-		for (int t : terminals)
+		for (int t : terminals0)
 			if (!visited.get(t))
 				return false; /* not all terminals are connected */
 
 		/* check for non-terminal leaves */
 		BitSet isTerminal = visited;
 		isTerminal.clear();
-		for (int t : terminals) {
+		for (int t : terminals0) {
 			if (isTerminal.get(t))
 				throw new IllegalArgumentException("Duplicate terminal: " + t);
 			isTerminal.set(t);
 		}
 		int[] degree = new int[n];
-		for (int e : edges) {
+		for (int e : edges0) {
 			degree[ig.edgeSource(e)]++;
 			degree[ig.edgeTarget(e)]++;
 		}

@@ -83,7 +83,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 
 	private static void testSteinerTree(IntGraph g, IWeightFunctionInt w, IntCollection terminals, SteinerTreeAlgo algo,
 			double appxFactor) {
-		SteinerTreeAlgo.Result steinerEdges = algo.computeSteinerTree(g, w, terminals);
+		SteinerTreeAlgo.IResult steinerEdges = (SteinerTreeAlgo.IResult) algo.computeSteinerTree(g, w, terminals);
 		IntGraph treeRes = g.subGraphCopy(null, steinerEdges.edges());
 
 		assertTrue(treeRes.vertices().containsAll(terminals));

@@ -51,7 +51,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 
 	@Override
-	Result computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
+	IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (terminals.isEmpty())
