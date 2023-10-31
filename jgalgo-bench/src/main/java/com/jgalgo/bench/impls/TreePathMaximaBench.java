@@ -70,7 +70,7 @@ public class TreePathMaximaBench {
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			IntGraph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
-			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());
+			TreePathMaxima.IQueries queries = generateRandQueries(tree, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(tree, w, queries));
 		}
 	}
@@ -78,7 +78,8 @@ public class TreePathMaximaBench {
 	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
 		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		TreePathMaxima algo = builder.build();
-		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
+		TreePathMaxima.IResult result =
+				(TreePathMaxima.IResult) algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
 	}
 
@@ -95,18 +96,18 @@ public class TreePathMaximaBench {
 	private static class TPMArgs {
 		final IntGraph tree;
 		final IWeightFunction w;
-		final TreePathMaxima.Queries queries;
+		final TreePathMaxima.IQueries queries;
 
-		TPMArgs(IntGraph tree, IWeightFunction w, TreePathMaxima.Queries queries) {
+		TPMArgs(IntGraph tree, IWeightFunction w, TreePathMaxima.IQueries queries) {
 			this.tree = tree;
 			this.w = w;
 			this.queries = queries;
 		}
 	}
 
-	private static TreePathMaxima.Queries generateRandQueries(IntGraph tree, int m, long seed) {
+	private static TreePathMaxima.IQueries generateRandQueries(IntGraph tree, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
 		for (int q = 0; q < m; q++) {
 			int i, j;

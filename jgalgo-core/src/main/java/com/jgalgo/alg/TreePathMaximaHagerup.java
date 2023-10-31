@@ -73,8 +73,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	}
 
 	@Override
-	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
-			TreePathMaxima.Queries queries) {
+	TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
+			TreePathMaxima.IQueries queries) {
 		Assertions.Graphs.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
 			throw new IllegalArgumentException("only trees are supported");
@@ -132,7 +132,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			edgeRef = t.second();
 		}
 
-		TreePathMaxima.Result calcTPM(TreePathMaxima.Queries queries) {
+		TreePathMaxima.IResult calcTPM(TreePathMaxima.IQueries queries) {
 			int[] lcaQueries = splitQueriesIntoLCAQueries(queries);
 
 			int[] q = calcQueriesPerVertex(lcaQueries);
@@ -140,7 +140,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			return extractEdgesFromAnswers(a, q, lcaQueries);
 		}
 
-		private TreePathMaxima.Result extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries) {
+		private TreePathMaxima.IResult extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
@@ -416,14 +416,14 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			return Pair.of(treeBuilder.build(), edgeRef);
 		}
 
-		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.Queries queries) {
+		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.IQueries queries) {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LowestCommonAncestorStatic.IDataStructure lcaDS =
 					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, root);
 			for (int q = 0; q < queriesNum; q++) {
-				int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
+				int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 				if (u == v)
 					throw new IllegalArgumentException(
 							"Tree path maxima query can not be composed of two identical vertices");

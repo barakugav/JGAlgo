@@ -33,11 +33,11 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	private TreePathMaximaTestUtils() {}
 
-	private static int[] calcExpectedTPM(IntGraph t, IWeightFunction w, TreePathMaxima.Queries queries) {
+	private static int[] calcExpectedTPM(IntGraph t, IWeightFunction w, TreePathMaxima.IQueries queries) {
 		int queriesNum = queries.size();
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
-			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
+			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 
 			IPath path = IPath.findPath(t, u, v);
 
@@ -54,8 +54,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return res;
 	}
 
-	public static TreePathMaxima.Queries generateAllPossibleQueries(IntGraph tree) {
-		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
+	public static TreePathMaxima.IQueries generateAllPossibleQueries(IntGraph tree) {
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
 		for (int i = 0; i < vs.length; i++)
 			for (int j = i + 1; j < vs.length; j++)
@@ -63,9 +63,9 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return queries;
 	}
 
-	private static TreePathMaxima.Queries generateRandQueries(IntGraph tree, int m, long seed) {
+	private static TreePathMaxima.IQueries generateRandQueries(IntGraph tree, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
 		int[] vs = tree.vertices().toIntArray();
 		for (int q = 0; q < m; q++) {
 			int i, j;
@@ -78,14 +78,14 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, TreePathMaxima.Result actual,
+	static void compareActualToExpectedResults(TreePathMaxima.IQueries queries, TreePathMaxima.IResult actual,
 			int[] expected, IWeightFunction w) {
 		assertEquals(expected.length, actual.size(), "Unexpected result size");
 		for (int i = 0; i < actual.size(); i++) {
-			int u = queries.getQuerySource(i), v = queries.getQueryTarget(i);
-			double aw = actual.getHeaviestEdge(i) != -1 ? w.weight(actual.getHeaviestEdge(i)) : Double.MIN_VALUE;
+			int u = queries.getQuerySourceInt(i), v = queries.getQueryTargetInt(i);
+			double aw = actual.getHeaviestEdgeInt(i) != -1 ? w.weight(actual.getHeaviestEdgeInt(i)) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdge(i)
+			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdgeInt(i)
 					+ " != " + expected[i]);
 		}
 	}
@@ -110,9 +110,9 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		IntGraph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 		IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
 
-		TreePathMaxima.Queries queries = n <= 32 ? generateAllPossibleQueries(tree)
+		TreePathMaxima.IQueries queries = n <= 32 ? generateAllPossibleQueries(tree)
 				: generateRandQueries(tree, Math.min(n * 16, 1000), seedGen.nextSeed());
-		TreePathMaxima.Result actual = algo.computeHeaviestEdgeInTreePaths(tree, w, queries);
+		TreePathMaxima.IResult actual = (TreePathMaxima.IResult) algo.computeHeaviestEdgeInTreePaths(tree, w, queries);
 		int[] expected = calcExpectedTPM(tree, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}

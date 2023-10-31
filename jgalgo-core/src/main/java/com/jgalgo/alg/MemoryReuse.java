@@ -94,7 +94,7 @@ class MemoryReuse {
 	static final IWeightsDouble[] EmptyWeightsDoubleArr = new IWeightsDouble[0];
 	@SuppressWarnings("rawtypes")
 	static final HeapReference[] EmptyHeapReferenceArr = new HeapReference[0];
-	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];
-	static final TreePathMaxima.Result[] EmptyTpmResultArr = new TreePathMaxima.Result[0];
+	static final TreePathMaxima.IQueries[] EmptyTpmQueriesArr = new TreePathMaxima.IQueries[0];
+	static final TreePathMaxima.IResult[] EmptyTpmResultArr = new TreePathMaxima.IResult[0];
 
 }
