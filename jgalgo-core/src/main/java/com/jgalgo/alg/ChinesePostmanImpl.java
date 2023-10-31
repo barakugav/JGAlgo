@@ -64,8 +64,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 		assert oddVertices.size() % 2 == 0;
 
 		/* Find the shortest path between each pair of odd degree vertices */
-		ShortestPathAllPairs.Result allPairsRes =
-				shortestPathAllPairsAlgo.computeSubsetShortestPaths(g, oddVertices, w);
+		ShortestPathAllPairs.IResult allPairsRes =
+				(ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo.computeSubsetShortestPaths(g, oddVertices, w);
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
 		IndexGraph oddGraph = Graphs.newCompleteGraphUndirected(oddVertices.size());
 		IWeightFunction oddW = e -> {

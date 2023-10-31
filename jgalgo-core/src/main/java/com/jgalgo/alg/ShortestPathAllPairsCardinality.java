@@ -49,16 +49,16 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	ShortestPathAllPairsCardinality() {}
 
 	@Override
-	ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
+	ShortestPathAllPairs.IResult computeAllCardinalityShortestPaths(IndexGraph g) {
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
-	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
+	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
 	}
 
-	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
@@ -101,7 +101,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeAllCardinalityShortestPaths(g);
@@ -114,7 +114,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");

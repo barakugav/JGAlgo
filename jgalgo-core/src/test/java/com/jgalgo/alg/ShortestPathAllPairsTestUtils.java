@@ -91,7 +91,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 
 	static void testAPSP(IntGraph g, IntCollection verticesSubset, IWeightFunction w, ShortestPathAllPairs algo,
 			ShortestPathSingleSource validationAlgo) {
-		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(g, w);
+		ShortestPathAllPairs.IResult result = (ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(g, w);
 
 		for (int source : verticesSubset) {
 			ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);

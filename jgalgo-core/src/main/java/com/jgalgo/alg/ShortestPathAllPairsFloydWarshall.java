@@ -39,7 +39,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
@@ -47,12 +47,12 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	}
 
 	@Override
-	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeAllShortestPaths(g, w);
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
@@ -98,7 +98,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, IWeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeAPSPDirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);

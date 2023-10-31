@@ -144,7 +144,7 @@ public interface WeightFunction<K> extends Comparator<K> {
 	 * @return     the cardinality weight function
 	 */
 	@SuppressWarnings("unchecked")
-	public static <K> WeightFunctionInt<K> CardinalityWeightFunction() {
+	public static <K> WeightFunctionInt<K> cardinalityWeightFunction() {
 		return (WeightFunctionInt<K>) CardinalityWeightFunction;
 	}
 

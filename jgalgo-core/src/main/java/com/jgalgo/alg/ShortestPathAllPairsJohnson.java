@@ -63,17 +63,17 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, g.vertices(), w, true);
 	}
 
 	@Override
-	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, verticesSubset, w, false);
 	}
 
-	private ShortestPathAllPairs.Result computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
+	private ShortestPathAllPairs.IResult computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w, boolean allVertices) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
@@ -199,7 +199,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		negativeSssp = Objects.requireNonNull(algo);
 	}
 
-	private static class NegCycleRes implements ShortestPathAllPairs.Result {
+	private static class NegCycleRes implements ShortestPathAllPairs.IResult {
 
 		private final IPath negCycle;
 
@@ -230,7 +230,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	}
 
-	private static abstract class SuccessRes implements ShortestPathAllPairs.Result {
+	private static abstract class SuccessRes implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.Result[] ssspResults;
 		double[] potential;

@@ -77,7 +77,8 @@ public class APSPBench {
 	private void benchAPSPPositiveWeights(ShortestPathAllPairs.Builder builder, Blackhole blackhole) {
 		Pair<IntGraph, IWeightFunctionInt> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathAllPairs algo = builder.build();
-		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
+		ShortestPathAllPairs.IResult result =
+				(ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(graph.first(), graph.second());
 		blackhole.consume(result);
 	}
 

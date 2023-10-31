@@ -16,8 +16,11 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import java.util.Collection;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -38,16 +41,27 @@ public interface ShortestPathAllPairs {
 	 * <p>
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
+	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  g a graph
-	 * @param  w an edge weight function
-	 * @return   a result object containing information on the shortest path between each pair of vertices
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @param  w   an edge weight function
+	 * @return     a result object containing information on the shortest path between each pair of vertices
 	 */
-	public ShortestPathAllPairs.Result computeAllShortestPaths(IntGraph g, IWeightFunction w);
+	public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
+	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
+	 * {@code verticesSubset} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>            the vertices type
+	 * @param  <E>            the edges type
 	 * @param  g              a graph
 	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
 	 *                            of vertices from the subset
@@ -55,20 +69,24 @@ public interface ShortestPathAllPairs {
 	 * @return                a result object containing information on the shortest path between each pair of vertices
 	 *                        in the subset
 	 */
-	public ShortestPathAllPairs.Result computeSubsetShortestPaths(IntGraph g, IntCollection verticesSubset,
-			IWeightFunction w);
+	public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
+			Collection<V> verticesSubset, WeightFunction<E> w);
 
 	/**
 	 * Compute the cardinality shortest path between each pair of vertices in a graph.
 	 * <p>
 	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
 	 * to some other vertex is the path with the minimum number of edges.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing information on the cardinality shortest path between each pair of vertices
 	 */
-	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IntGraph g) {
-		return computeAllShortestPaths(g, IWeightFunction.CardinalityWeightFunction);
+	default <V, E> ShortestPathAllPairs.Result<V, E> computeAllCardinalityShortestPaths(Graph<V, E> g) {
+		return computeAllShortestPaths(g, WeightFunction.cardinalityWeightFunction());
 	}
 
 	/**
@@ -77,24 +95,31 @@ public interface ShortestPathAllPairs {
 	 * <p>
 	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
 	 * to some other vertex is the path with the minimum number of edges.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
+	 * case, its better to pass a {@link IntCollection} as {@code verticesSubset} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>            the vertices type
+	 * @param  <E>            the edges type
 	 * @param  g              a graph
 	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
 	 *                            of vertices from the subset
 	 * @return                a result object containing information on the cardinality shortest path between each pair
 	 *                        of vertices in the subset
 	 */
-	default ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IntGraph g,
-			IntCollection verticesSubset) {
-		return computeSubsetShortestPaths(g, verticesSubset, IWeightFunction.CardinalityWeightFunction);
+	default <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetCardinalityShortestPaths(Graph<V, E> g,
+			Collection<V> verticesSubset) {
+		return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.cardinalityWeightFunction());
 	}
 
 	/**
 	 * A result object for an {@link ShortestPathAllPairs} algorithm.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	interface Result {
+	interface Result<V, E> {
 
 		/**
 		 * Get the distance of the shortest path between two vertices.
@@ -105,7 +130,7 @@ public interface ShortestPathAllPairs {
 		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
 		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
 		 */
-		public double distance(int source, int target);
+		public double distance(V source, V target);
 
 		/**
 		 * Get the shortest path between vertices.
@@ -116,7 +141,7 @@ public interface ShortestPathAllPairs {
 		 *                                  exists
 		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
 		 */
-		public IPath getPath(int source, int target);
+		public Path<V, E> getPath(V source, V target);
 
 		/**
 		 * Check whether a negative cycle was found.
@@ -134,6 +159,51 @@ public interface ShortestPathAllPairs {
 		 * @return                          the negative cycle that was found.
 		 * @throws IllegalArgumentException if a negative cycle was found. See {@link foundNegativeCycle}
 		 */
+		public Path<V, E> getNegativeCycle();
+	}
+
+	/**
+	 * A result object for an {@link ShortestPathAllPairs} algorithm for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	interface IResult extends ShortestPathAllPairs.Result<Integer, Integer> {
+
+		/**
+		 * Get the distance of the shortest path between two vertices.
+		 *
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the sum of weights of edges in the shortest path from the source to target,
+		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
+		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 */
+		public double distance(int source, int target);
+
+		@Deprecated
+		@Override
+		default double distance(Integer source, Integer target) {
+			return distance(source.intValue(), target.intValue());
+		}
+
+		/**
+		 * Get the shortest path between vertices.
+		 *
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the shortest path from the source to target, or {@code null} if no such path
+		 *                                  exists
+		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 */
+		public IPath getPath(int source, int target);
+
+		@Deprecated
+		@Override
+		default IPath getPath(Integer source, Integer target) {
+			return getPath(source.intValue(), target.intValue());
+		}
+
+		@Override
 		public IPath getNegativeCycle();
 	}
 
@@ -182,8 +252,10 @@ public interface ShortestPathAllPairs {
 					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();
 
 					@Override
-					public ShortestPathAllPairs.Result computeAllShortestPaths(IntGraph g, IWeightFunction w) {
-						if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+					public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g,
+							WeightFunction<E> w) {
+						if (w == null || w == WeightFunction.CardinalityWeightFunction
+								|| w == IWeightFunction.CardinalityWeightFunction) {
 							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);
 						} else {
 							return weightedAlgo.computeAllShortestPaths(g, w);
@@ -191,9 +263,10 @@ public interface ShortestPathAllPairs {
 					}
 
 					@Override
-					public Result computeSubsetShortestPaths(IntGraph g, IntCollection verticesSubset,
-							IWeightFunction w) {
-						if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+					public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
+							Collection<V> verticesSubset, WeightFunction<E> w) {
+						if (w == null || w == WeightFunction.CardinalityWeightFunction
+								|| w == IWeightFunction.CardinalityWeightFunction) {
 							return cardinalityAlgo.computeSubsetCardinalityShortestPaths(g, verticesSubset);
 						} else {
 							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);
