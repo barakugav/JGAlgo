@@ -17,13 +17,16 @@
 /**
  * Algorithms for solving graph problems.
  * <p>
- * Most algorithms accept a {@link com.jgalgo.graph.IntGraph} object as input, and perform some computation on it.
+ * Most algorithms accept a {@link com.jgalgo.graph.Graph} object as input, and perform some computation on it.
  * Algorithms in this package follow a common pattern: an interface is defined for the functionality only (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}), a default implementation is provided via
+ * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via
  * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
  * allow more control over the algorithm is provided via {@code newBuilder()} method (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}).
+ * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}). In addition, algorithm interfaces define a result
+ * specifically for graphs in which the vertices and edges are integer only, {@link IntGraph} (e.g.
+ * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). For the most common use case, there is no need to use
+ * {@link IntGraph} and the result objects that are specific to it.
  * <p>
  * Most algorithm implementations are not expose as public API.
  */
