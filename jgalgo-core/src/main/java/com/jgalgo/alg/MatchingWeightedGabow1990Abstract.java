@@ -52,14 +52,14 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 	static final double EPS = 0.00001;
 
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
@@ -529,7 +529,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 		abstract EdgeEvent extractNextBlossomEvent();
 
-		private Matching computeMaxMatching(boolean perfect) {
+		private IMatching computeMaxMatching(boolean perfect) {
 			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2

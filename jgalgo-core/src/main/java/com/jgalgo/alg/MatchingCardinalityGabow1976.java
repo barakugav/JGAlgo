@@ -48,7 +48,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 	MatchingCardinalityGabow1976() {}
 
 	@Override
-	Matching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 

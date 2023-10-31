@@ -54,12 +54,12 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	private static void testAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
-		Matching match = algo.computeMaximumCardinalityMatching(g);
+		IMatching match = (IMatching) algo.computeMaximumCardinalityMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	static void validateMatching(IntGraph g, Matching matching) {
+	static void validateMatching(IntGraph g, IMatching matching) {
 		IntSet matched = new IntOpenHashSet();
 		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
@@ -67,7 +67,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 					fail("Invalid matching, clash: " + v + " " + e);
 			}
 		}
-		assertTrue(Matching.isMatching(g, matching.edges()));
+		assertTrue(IMatching.isMatching(g, matching.edges()));
 	}
 
 	/* implementation of general graphs maximum matching from the Internet */

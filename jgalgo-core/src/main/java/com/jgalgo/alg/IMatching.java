@@ -16,30 +16,24 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.Set;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * A matching in a graph.
+ * A matching in a {@link IntGraph}.
  * <p>
- * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
- * adjacent edge in \(M\). Its a common problem to compute the maximum (cardinality) matching, namely the matching with
- * the greatest number of edges. Another variant is to compute the maximum weighted matching with respect to some weight
- * function.
+ * This interface is a specific version of {@link Matching} for {@link IntGraph}. For the full documentation see
+ * {@link Matching}.
  *
  * @see    MatchingAlgo
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface Matching<V, E> {
+public interface IMatching extends Matching<Integer, Integer> {
 
 	/**
 	 * Check whether a vertex is matched by the matching.
@@ -50,7 +44,13 @@ public interface Matching<V, E> {
 	 * @param  vertex a vertex
 	 * @return        {@code true} if {@code vertex} has an adjacent edge in the matching, else {@code false}
 	 */
-	boolean isVertexMatched(V vertex);
+	boolean isVertexMatched(int vertex);
+
+	@Deprecated
+	@Override
+	default boolean isVertexMatched(Integer vertex) {
+		return isVertexMatched(vertex.intValue());
+	}
 
 	/**
 	 * Get the only matched edge adjacent to a given vertex.
@@ -59,27 +59,19 @@ public interface Matching<V, E> {
 	 * @return        the edge adjacent to {@code vertex} in the matching, or {@code -1} if {@code vertex} is not
 	 *                matched
 	 */
-	E getMatchedEdge(V vertex);
+	int getMatchedEdge(int vertex);
 
-	/**
-	 * Get all the vertices matched by the matching.
-	 * <p>
-	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
-	 * \(w\).
-	 *
-	 * @return all the matched vertices
-	 */
-	Set<V> matchedVertices();
+	@Deprecated
+	@Override
+	default Integer getMatchedEdge(Integer vertex) {
+		return Integer.valueOf(getMatchedEdge(vertex.intValue()));
+	}
 
-	/**
-	 * Get all the vertices that are not matched by the matching.
-	 * <p>
-	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
-	 * \(w\).
-	 *
-	 * @return all the unmatched vertices
-	 */
-	Set<V> unmatchedVertices();
+	@Override
+	IntSet matchedVertices();
+
+	@Override
+	IntSet unmatchedVertices();
 
 	/**
 	 * Check whether an edge is part of the matching.
@@ -90,59 +82,44 @@ public interface Matching<V, E> {
 	 * @param  edge an edge
 	 * @return      {@code true} if the edge is part of the matching, else {@code false}
 	 */
-	boolean containsEdge(E edge);
+	boolean containsEdge(int edge);
 
-	/**
-	 * The collection of edges forming this matching.
-	 *
-	 * @return collection containing all the edges that are part of this matching
-	 */
-	Set<E> edges();
+	@Deprecated
+	@Override
+	default boolean containsEdge(Integer edge) {
+		return containsEdge(edge.intValue());
+	}
 
-	/**
-	 * Check whether this matching is perfect.
-	 * <p>
-	 * A perfect matching is a matching in which all the vertices are matched.
-	 *
-	 * @return {@code true} if this matching is perfect, else {@code false}.
-	 */
-	boolean isPerfect();
+	@Override
+	IntSet edges();
 
 	/**
 	 * Check whether the given collection of edges form a valid matching in the graph.
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
 	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
-	 * <p>
-	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code edges} to avoid
-	 * boxing/unboxing.
 	 *
-	 * @param  <V>   the vertices type
-	 * @param  <E>   the edges type
 	 * @param  g     a graph
 	 * @param  edges a collection of edges
 	 * @return       {@code true} if {@code edges} form a valid matching in {@code g}, else {@code false}
 	 */
-	@SuppressWarnings("unchecked")
-	static <V, E> boolean isMatching(Graph<V, E> g, Collection<E> edges) {
+	static boolean isMatching(IntGraph g, IntCollection edges) {
 		IndexGraph ig;
-		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
 		} else {
 			ig = g.indexGraph();
-			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
 		}
 		final int n = ig.vertices().size();
 
-		if (edges0.size() > n / 2)
+		if (edges.size() > n / 2)
 			return false;
 
-		if (edges0.size() * 4 > n / 8) {
+		if (edges.size() * 4 > n / 8) {
 			/* matching is big, use BitSet */
 			BitSet matched = new BitSet(n);
-			for (int e : edges0) {
+			for (int e : edges) {
 				int u = ig.edgeSource(e), v = ig.edgeTarget(e);
 				if (matched.get(u))
 					return false;
@@ -154,8 +131,8 @@ public interface Matching<V, E> {
 
 		} else {
 			/* matching is small, use hashtable */
-			IntSet matched = new IntOpenHashSet(edges0.size() * 2);
-			for (int e : edges0) {
+			IntSet matched = new IntOpenHashSet(edges.size() * 2);
+			for (int e : edges) {
 				int u = ig.edgeSource(e), v = ig.edgeTarget(e);
 				if (!matched.add(u))
 					return false;

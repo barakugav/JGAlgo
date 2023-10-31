@@ -17,8 +17,8 @@
 package com.jgalgo.alg;
 
 import java.util.function.Supplier;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Maximum/minimum matching algorithm.
@@ -40,58 +40,78 @@ public interface MatchingAlgo {
 
 	/**
 	 * Compute the maximum matching of unweighted undirected graph.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        an undirected graph
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumCardinalityMatching(IntGraph g);
+	<V, E> Matching<V, E> computeMaximumCardinalityMatching(Graph<V, E> g);
 
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedMatching(IntGraph g, IWeightFunction w);
+	<V, E> Matching<V, E> computeMaximumWeightedMatching(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Compute the minimum weighted matching of a weighted undirected graph.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedMatching(IntGraph g, IWeightFunction w);
+	<V, E> Matching<V, E> computeMinimumWeightedMatching(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 * <p>
 	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
 	 * if no such matching exist the behavior is undefined.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedPerfectMatching(IntGraph g, IWeightFunction w);
+	<V, E> Matching<V, E> computeMaximumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Compute the minimum perfect matching of a weighted undirected graph.
 	 * <p>
 	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
 	 * if no such matching exist the behavior is undefined.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedPerfectMatching(IntGraph g, IWeightFunction w);
+	<V, E> Matching<V, E> computeMinimumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Create a new matching algorithm object.

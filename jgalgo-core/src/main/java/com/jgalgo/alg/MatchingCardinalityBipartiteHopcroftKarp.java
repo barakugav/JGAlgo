@@ -51,7 +51,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 

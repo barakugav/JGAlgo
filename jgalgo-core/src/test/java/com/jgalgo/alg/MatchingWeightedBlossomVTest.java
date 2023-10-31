@@ -36,7 +36,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		g.addEdge(v3, v0);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
+		IMatching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}
@@ -59,7 +59,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		w.set(e3, 53);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching m = bv.computeMaximumWeightedPerfectMatching(g, w);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}
@@ -92,7 +92,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		g.addEdge(v04, v14);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
+		IMatching m = bv.computeMaximumWeightedPerfectMatching(g, IWeightFunction.CardinalityWeightFunction);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}
@@ -138,7 +138,7 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 		w.set(e20, 40);
 
 		MatchingWeightedBlossomV bv = new MatchingWeightedBlossomV();
-		Matching m = bv.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching m = bv.computeMaximumWeightedPerfectMatching(g, w);
 
 		MatchingUnweightedTestUtils.validateMatching(g, m);
 	}

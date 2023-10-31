@@ -76,7 +76,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-		Matching matching = matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);
+		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();

@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	@Override
-	Matching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -106,7 +106,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			wDup = e -> e < dummyEdgesThreshold ? w.weight(e / 2) : 0;
 		}
 		IndexGraph gDup = b.build();
-		Matching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);
+		IMatching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);
 
 		/* Convert matching to the original graph */
 		int[] matched = new int[g.vertices().size()];
@@ -121,7 +121,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 	}
 
 	@Override
-	Matching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return new Worker(g, w).solve();
 	}
@@ -189,7 +189,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			};
 		}
 
-		Matching solve() {
+		IMatching solve() {
 			dbgLog.format("\n\nsolve()\n");
 			initGreedy();
 			Debug.assertConstraints(this);
@@ -1499,7 +1499,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			treeNum--;
 		}
 
-		private Matching finish() {
+		private IMatching finish() {
 			for (Blossom blossom : singletonNodes) {
 				if (blossom.isMatched())
 					continue;

@@ -68,7 +68,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
@@ -191,7 +191,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 */
 	@Deprecated
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 

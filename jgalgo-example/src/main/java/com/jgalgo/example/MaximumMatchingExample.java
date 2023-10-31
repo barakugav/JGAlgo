@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Matching;
+import com.jgalgo.alg.IMatching;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -29,7 +29,7 @@ public class MaximumMatchingExample {
 
 		/* Compute a maximum (cardinality) matching */
 		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
-		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);
+		IMatching matching = (IMatching) matchingAlgo.computeMaximumCardinalityMatching(g);
 
 		/* Validate the matching is valid */
 		for (int u : g.vertices()) {

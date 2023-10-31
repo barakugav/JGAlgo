@@ -69,7 +69,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
-			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
+			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
 			IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			unmatchedVerticesS.removeIf(v -> partition.get(v));
@@ -116,11 +116,11 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	private static void testGraphWeighted(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationAlgo) {
-		Matching actual = algo.computeMaximumWeightedMatching(g, w);
+		IMatching actual = (IMatching) algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		double actualWeight = w.weightSum(actual.edges());
 
-		Matching expected = validationAlgo.computeMaximumWeightedMatching(g, w);
+		IMatching expected = (IMatching) validationAlgo.computeMaximumWeightedMatching(g, w);
 		double expectedWeight = w.weightSum(expected.edges());
 
 		if (actualWeight > expectedWeight) {
@@ -145,7 +145,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				throw new IllegalArgumentException("there is no perfect matching");
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityGabow1976();
-			Matching cardinalityMatch = cardinalityAlgo.computeMaximumCardinalityMatching(g);
+			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
 			IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			assert unmatchedVertices.size() % 2 == 0;
 			IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));
@@ -170,7 +170,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	static void testGraphWeightedPerfect(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
-		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching actual = (IMatching) algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		int actualSize = actual.edges().size();
 		double actualWeight = w.weightSum(actual.edges());
@@ -183,7 +183,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		}
 		assertEquals(expectedSize, actualSize, "unexpected match size");
 
-		Matching expected = validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching expected = (IMatching) validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
 		double expectedWeight = w.weightSum(expected.edges());
 		if (actualWeight > expectedWeight) {
 			System.err.println(

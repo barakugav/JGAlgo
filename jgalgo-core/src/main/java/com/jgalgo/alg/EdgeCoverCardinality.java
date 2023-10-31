@@ -30,7 +30,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 		Assertions.Graphs.onlyCardinality(w);
 		final int m = g.edges().size();
 
-		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);
+		IMatching matching = (IMatching) matchingAlgo.computeMaximumCardinalityMatching(g);
 		BitSet cover = new BitSet(m);
 
 		/* add more edges greedily to complete the cover */
