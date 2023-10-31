@@ -92,7 +92,8 @@ public class HeapReferenceableBench {
 
 		/* Prim MST */
 		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().setOption("heap-builder", heapBuilder).build();
-		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
+		MinimumSpanningTree.IResult mst =
+				(MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);
 		blackhole.consume(mst);
 	}
 

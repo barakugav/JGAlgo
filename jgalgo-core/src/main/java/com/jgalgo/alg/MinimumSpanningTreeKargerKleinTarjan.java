@@ -75,7 +75,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w));
 	}

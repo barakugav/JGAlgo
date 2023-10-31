@@ -48,7 +48,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 			IntGraph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
+			MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
 		});
 	}
@@ -86,7 +86,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(IntGraph g, IWeightFunction w, MinimumSpanningTree.Result mst) {
+	private static void verifyMST(IntGraph g, IWeightFunction w, MinimumSpanningTree.IResult mst) {
 		assertTrue(MinimumSpanningTree.isSpanningForest(g, mst.edges()));
 		if (WeaklyConnectedComponentsAlgo.newInstance().isWeaklyConnected(g))
 			assertTrue(MinimumSpanningTree.isSpanningTree(g, mst.edges()));
@@ -95,7 +95,8 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
 		 * correct
 		 */
-		MinimumSpanningTree.Result expected = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w);
+		MinimumSpanningTree.IResult expected =
+				(MinimumSpanningTree.IResult) new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w);
 
 		IntComparator c = new MSTEdgeComparator(g, w);
 		IntSet actualSet = new IntAVLTreeSet(c);

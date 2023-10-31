@@ -69,7 +69,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
@@ -81,7 +81,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		}
 	}
 
-	private MinimumSpanningTree.Result computeMSTDouble(IndexGraph g, IWeightFunction w) {
+	private MinimumSpanningTree.IResult computeMSTDouble(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -138,7 +138,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
+	private MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

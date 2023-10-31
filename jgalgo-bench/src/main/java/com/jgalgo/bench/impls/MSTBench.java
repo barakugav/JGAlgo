@@ -77,7 +77,7 @@ public class MSTBench {
 		IntGraph g = gw.first();
 		IWeightFunctionInt w = gw.second();
 		MinimumSpanningTree algo = builder.build();
-		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
+		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);
 	}
 

@@ -16,12 +16,17 @@
 
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -31,49 +36,75 @@ class MinimumSpanningTreeUtils {
 
 	static abstract class AbstractUndirected implements MinimumSpanningTree {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public MinimumSpanningTree.Result computeMinimumSpanningTree(IntGraph g, IWeightFunction w) {
-			if (g instanceof IndexGraph)
-				return computeMinimumSpanningTree((IndexGraph) g, w);
+		public <V, E> MinimumSpanningTree.Result<V, E> computeMinimumSpanningTree(Graph<V, E> g, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (MinimumSpanningTree.Result<V, E>) computeMinimumSpanningTree((IndexGraph) g, w0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);
+				return (MinimumSpanningTree.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
 
-			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, iw);
-			return new ResultFromIndexResult(indexResult, eiMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);
+				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+			}
 		}
 
-		abstract MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w);
+		abstract MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w);
 
 	}
 
+	@SuppressWarnings("unchecked")
 	static abstract class AbstractDirected implements MinimumDirectedSpanningTree {
 
 		@Override
-		public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IntGraph g, IWeightFunction w, int root) {
-			if (g instanceof IndexGraph)
-				return computeMinimumDirectedSpanningTree((IndexGraph) g, w, root);
+		public <V, E> MinimumSpanningTree.Result<V, E> computeMinimumDirectedSpanningTree(Graph<V, E> g,
+				WeightFunction<E> w, V root) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int root0 = ((Integer) root).intValue();
+				return (MinimumSpanningTree.Result<V, E>) computeMinimumDirectedSpanningTree((IndexGraph) g, w0, root0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			int iRoot = viMap.idToIndex(root);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				int iRoot = viMap.idToIndex(((Integer) root).intValue());
 
-			MinimumSpanningTree.Result indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
-			return new ResultFromIndexResult(indexResult, eiMap);
+				MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
+				return (MinimumSpanningTree.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iRoot = viMap.idToIndex(root);
+
+				MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
+				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+			}
 		}
 
-		abstract MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w,
+		abstract MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w,
 				int root);
 
 	}
 
-	static class ResultImpl implements MinimumSpanningTree.Result {
+	static class ResultImpl implements MinimumSpanningTree.IResult {
 
 		private final IntCollection edges;
-		static final MinimumSpanningTree.Result Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
+		static final MinimumSpanningTree.IResult Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
 
 		ResultImpl(IntCollection edges) {
 			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
@@ -95,21 +126,36 @@ class MinimumSpanningTreeUtils {
 
 	}
 
-	private static class ResultFromIndexResult implements MinimumSpanningTree.Result {
+	static class ObjResultFromIndexResult<V, E> implements MinimumSpanningTree.Result<V, E> {
 
-		private final MinimumSpanningTree.Result res;
+		private final MinimumSpanningTree.IResult indexRes;
+		private final IndexIdMap<E> eiMap;
+
+		ObjResultFromIndexResult(MinimumSpanningTree.IResult indexRes, IndexIdMap<E> eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public Collection<E> edges() {
+			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);
+		}
+	}
+
+	private static class IntResultFromIndexResult implements MinimumSpanningTree.IResult {
+
+		private final MinimumSpanningTree.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIntIdMap eiMap) {
-			this.res = Objects.requireNonNull(res);
+		IntResultFromIndexResult(MinimumSpanningTree.IResult indexRes, IndexIntIdMap eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public IntCollection edges() {
-			return IndexIdMaps.indexToIdCollection(res.edges(), eiMap);
+			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);
 		}
-
 	}
 
 }

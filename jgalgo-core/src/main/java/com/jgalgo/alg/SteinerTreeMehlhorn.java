@@ -118,7 +118,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		IWeightFunction g1WeightFunc = e -> g1EdgeWeight[e];
 
 		/* 2. Find a minimum spanning tree G2 of G1 */
-		IntCollection g2 = mstAlgo.computeMinimumSpanningTree(g1, g1WeightFunc).edges();
+		IntCollection g2 = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g1, g1WeightFunc)).edges();
 
 		/* 3. Construct a subgraph G3 of G by replacing each edge in G2 by its corresponding shortest path in G */
 		IndexGraphBuilder g3Builder = g1Builder;
@@ -155,7 +155,7 @@ public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		IWeightFunction g3WeightFunc = e -> g3EdgeWeight[e];
 
 		/* 4. Find the minimum spanning tree G4 of G3 */
-		IntCollection g4 = mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc).edges();
+		IntCollection g4 = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc)).edges();
 		int[] g4Edges = new int[g4.size() * 2];
 		int[] g4EdgesOffset = new int[n + 1];
 		for (int e4 : g4) {

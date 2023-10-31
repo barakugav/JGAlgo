@@ -16,22 +16,25 @@
 
 package com.jgalgo.alg;
 
+import java.util.Iterator;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
@@ -44,34 +47,38 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		}
 
 		@Override
-		public MinimumSpanningTree.Result computeMinimumSpanningTree(IntGraph g, IWeightFunction w) {
+		public <V, E> MinimumSpanningTree.Result<V, E> computeMinimumSpanningTree(Graph<V, E> g, WeightFunction<E> w) {
 			if (g.isDirected())
-				return algo.computeMinimumDirectedSpanningTree(g, w, 0);
+				return algo.computeMinimumDirectedSpanningTree(g, w, g.vertices().iterator().next());
 			int n = g.vertices().size();
 			IntGraph dg = IntGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 
-			Int2IntMap gToDg = new Int2IntOpenHashMap();
-			for (IntIterator it1 = g.vertices().iterator(), it2 = dg.vertices().iterator(); it1.hasNext();)
-				gToDg.put(it1.nextInt(), it2.nextInt());
+			Object2IntMap<E> gToDg = new Object2IntOpenHashMap<>();
+			Iterator<E> it1 = g.edges().iterator();
+			IntIterator it2 = dg.vertices().iterator();
+			for (; it1.hasNext();)
+				gToDg.put(it1.next(), it2.nextInt());
 
-			IWeightsInt edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
-			for (int u : g.vertices()) {
-				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.targetInt();
-					edgeRef.set(dg.addEdge(gToDg.get(u), gToDg.get(v)), e);
-					edgeRef.set(dg.addEdge(gToDg.get(v), gToDg.get(u)), e);
+			IWeightsObj<E> edgeRef = dg.addEdgesWeights("edgeRef", Object.class);
+			for (V u : g.vertices()) {
+				for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					E e = eit.next();
+					V v = eit.target();
+					edgeRef.set(dg.addEdge(gToDg.getInt(u), gToDg.getInt(v)), e);
+					edgeRef.set(dg.addEdge(gToDg.getInt(v), gToDg.getInt(u)), e);
 				}
 			}
 			int root = dg.vertices().iterator().nextInt();
-			MinimumSpanningTree.Result mst0 =
-					algo.computeMinimumDirectedSpanningTree(dg, e -> w.weight(edgeRef.get(e)), root);
+			IWeightFunction w0 = e -> w.weight(edgeRef.get(e));
+			MinimumSpanningTree.IResult mst0 = (MinimumSpanningTree.IResult) algo.computeMinimumDirectedSpanningTree(dg,
+					w0, Integer.valueOf(root));
 			IntCollection mst = new IntArrayList(mst0.edges().size());
 			for (int e : mst0.edges())
-				mst.add(edgeRef.get(e));
-			return new MinimumSpanningTreeUtils.ResultImpl(mst);
+				mst.add(g.indexGraphEdgesMap().idToIndex(edgeRef.get(e)));
+			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mst);
+			return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(indexRes, g.indexGraphEdgesMap());
 		}
 	}
 
@@ -110,7 +117,8 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	private static void testRandGraph(MinimumDirectedSpanningTree algo, IntGraph g, IWeightFunction w) {
 		int root = g.vertices().iterator().nextInt();
 		@SuppressWarnings("unused")
-		MinimumSpanningTree.Result mst = algo.computeMinimumDirectedSpanningTree(g, w, root);
+		MinimumSpanningTree.IResult mst =
+				(MinimumSpanningTree.IResult) algo.computeMinimumDirectedSpanningTree(g, w, root);
 		// TODO verify the result
 	}
 

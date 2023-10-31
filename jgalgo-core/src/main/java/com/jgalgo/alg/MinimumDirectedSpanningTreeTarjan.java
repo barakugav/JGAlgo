@@ -57,7 +57,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
@@ -81,7 +81,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	@Override
-	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
+	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
@@ -97,7 +97,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		return expand(g, contractedGraph, root, artificialEdgesThreshold);
 	}
 
-	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root,
+	private static MinimumSpanningTree.IResult expand(IndexGraph g, ContractedGraph cg, int root,
 			int artificialEdgesThreshold) {
 		int[] inEdge = new int[cg.n];
 

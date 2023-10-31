@@ -54,7 +54,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();
+		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();
 		if (mst.size() < n - 1)
 			throw new IllegalArgumentException("graph is not connected");
 

@@ -130,7 +130,9 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			IntCollection mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
+			IntCollection mstEdges =
+					((MinimumSpanningTree.IResult) new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w))
+							.edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);

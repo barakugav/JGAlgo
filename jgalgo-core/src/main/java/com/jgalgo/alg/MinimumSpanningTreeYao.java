@@ -51,7 +51,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 

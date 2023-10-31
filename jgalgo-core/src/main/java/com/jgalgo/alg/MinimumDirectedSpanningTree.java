@@ -16,8 +16,10 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Minimum spanning tree algorithm for directed graphs.
@@ -34,14 +36,20 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
+	 * its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a directed graph
 	 * @param  w                        an edge weight function
 	 * @param  root                     vertex in the graph the spanning tree will be rooted from
 	 * @return                          all edges composing the spanning tree
 	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IntGraph g, IWeightFunction w, int root);
+	public <V, E> MinimumSpanningTree.Result<V, E> computeMinimumDirectedSpanningTree(Graph<V, E> g,
+			WeightFunction<E> w, V root);
 
 	/**
 	 * Create a new directed-MST algorithm object.
