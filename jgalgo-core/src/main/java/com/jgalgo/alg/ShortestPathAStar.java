@@ -17,12 +17,17 @@
 package com.jgalgo.alg;
 
 import java.util.function.IntToDoubleFunction;
+import java.util.function.ToDoubleFunction;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -66,24 +71,66 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target,
+			ToDoubleFunction<V> vHeuristic) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			int source0 = ((Integer) source).intValue();
+			int target0 = ((Integer) target).intValue();
+			ToDoubleFunction<Integer> vHeuristic0 = (ToDoubleFunction<Integer>) vHeuristic;
+			IntToDoubleFunction vHeuristic1 = v -> vHeuristic0.applyAsDouble(Integer.valueOf(v));
+			return (Path<V, E>) computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);
+
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+			int iSource = viMap.idToIndex(((Integer) source).intValue());
+			int iTarget = viMap.idToIndex(((Integer) target).intValue());
+			ToDoubleFunction<Integer> vHeuristic0 = (ToDoubleFunction<Integer>) vHeuristic;
+			IntToDoubleFunction indexVHeuristic =
+					vIdx -> vHeuristic0.applyAsDouble(Integer.valueOf(viMap.indexToIdInt(vIdx)));
+			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
+			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
+			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToId(vIdx));
+			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
+			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+		}
+	}
+
 	@Override
 	public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
 			IntToDoubleFunction vHeuristic) {
-		if (g instanceof IndexGraph)
-			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic);
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			int source0 = ((Integer) source).intValue();
+			int target0 = ((Integer) target).intValue();
+			IntToDoubleFunction vHeuristic1 = v -> vHeuristic.applyAsDouble(v);
+			return computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+			int iSource = viMap.idToIndex(((Integer) source).intValue());
+			int iTarget = viMap.idToIndex(((Integer) target).intValue());
+			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
+			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
+			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+		}
 
-		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-		int iSource = viMap.idToIndex(source);
-		int iTarget = viMap.idToIndex(target);
-
-		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
-
-		IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
-		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 	@SuppressWarnings("boxing")

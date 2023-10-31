@@ -16,8 +16,11 @@
 package com.jgalgo.alg;
 
 import java.util.function.IntToDoubleFunction;
-import com.jgalgo.graph.IntGraph;
+import java.util.function.ToDoubleFunction;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 
 /**
  * Shortest path algorithm that uses a distance heuristic function.
@@ -42,6 +45,25 @@ public interface ShortestPathHeuristicST {
 
 	/**
 	 * Compute the shortest path between two vertices in a graph.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  <V>        the vertices type
+	 * @param  <E>        the edges type
+	 * @param  g          a graph
+	 * @param  w          an edge weight function
+	 * @param  source     a source vertex
+	 * @param  target     a target vertex
+	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
+	 *                        the real distance of each vertex to the target.
+	 * @return            the short path found from {@code source} to {@code target}
+	 */
+	<V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target,
+			ToDoubleFunction<V> vHeuristic);
+
+	/**
+	 * Compute the shortest path between two vertices in an int graph.
 	 *
 	 * @param  g          a graph
 	 * @param  w          an edge weight function
