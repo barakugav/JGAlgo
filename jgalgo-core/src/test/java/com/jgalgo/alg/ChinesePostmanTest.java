@@ -60,7 +60,7 @@ public class ChinesePostmanTest extends TestBase {
 	}
 
 	private static void testGraph(IntGraph g, IWeightFunctionInt w, ChinesePostman algo) {
-		IPath chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
+		IPath chinesePostmanTour = (IPath) algo.computeShortestEdgeVisitorCircle(g, w);
 
 		/* Asserts all edges are traversed by the tour */
 		IntSet tourEdges = new IntOpenHashSet();

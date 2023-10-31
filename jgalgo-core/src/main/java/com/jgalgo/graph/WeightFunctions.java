@@ -94,4 +94,22 @@ public class WeightFunctions {
 		return wLocal;
 	}
 
+	/**
+	 * Treat a given weight function as a weight function on a graph with integer vertices.
+	 *
+	 * @param  w a weight function
+	 * @return   a weight function on a graph with integer vertices
+	 */
+	public static IWeightFunction asIntGraphWeightFunc(WeightFunction<Integer> w) {
+		if (w instanceof IWeightFunction) {
+			return (IWeightFunction) w;
+		} else if (w instanceof WeightFunctionInt) {
+			WeightFunctionInt<Integer> wInt = (WeightFunctionInt<Integer>) w;
+			IWeightFunctionInt ret = elm -> wInt.weightInt(Integer.valueOf(elm));
+			return ret;
+		} else {
+			return elm -> w.weight(Integer.valueOf(elm));
+		}
+	}
+
 }

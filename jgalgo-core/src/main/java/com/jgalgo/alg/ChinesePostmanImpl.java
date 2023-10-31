@@ -15,14 +15,18 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -110,16 +114,30 @@ class ChinesePostmanImpl implements ChinesePostman {
 		return new PathImpl(g, pathSource, pathSource, path);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IPath computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w) {
-		if (g instanceof IndexGraph)
-			return computeShortestEdgeVisitorCircle((IndexGraph) g, w);
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-		IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
-		return PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
+	public <V, E> Path<V, E> computeShortestEdgeVisitorCircle(Graph<V, E> g, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (Path<V, E>) computeShortestEdgeVisitorCircle((IndexGraph) g, w0);
+
+		} else if (g instanceof IntGraph) {
+			IntGraph g0 = (IntGraph) g;
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = g0.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g0.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+			IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
+			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
+			return PathImpl.objPathFromIndexPath(indexResult, viMap, eiMap);
+		}
 	}
 
 }
