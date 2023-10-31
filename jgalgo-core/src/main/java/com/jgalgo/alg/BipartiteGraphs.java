@@ -17,11 +17,12 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Optional;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -50,13 +51,15 @@ public class BipartiteGraphs {
 	/**
 	 * Check whether the given graph is bipartite or not.
 	 * <p>
-	 * If the computed partition is needed, use {@link #findPartition(IntGraph)}. This function does not have any side
+	 * If the computed partition is needed, use {@link #findPartition(Graph)}. This function does not have any side
 	 * effects on the graph object itself, namely it does not add the partition (if one exist) as vertex weights.
 	 *
-	 * @param  g the graph
-	 * @return   {@code true} if the graph is bipartite, {@code false} otherwise
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   the graph
+	 * @return     {@code true} if the graph is bipartite, {@code false} otherwise
 	 */
-	public static boolean isBipartite(IntGraph g) {
+	public static <V, E> boolean isBipartite(Graph<V, E> g) {
 		return findBipartitePartition0(g.indexGraph()) != null;
 	}
 
@@ -64,20 +67,29 @@ public class BipartiteGraphs {
 	 * Find a bipartite partition of the given graph (if one exists).
 	 * <p>
 	 * This function does not have any side effects on the graph object itself, namely it does not add the partition (if
-	 * one exist) as vertex weights. To add the partition as vertex weights, use
-	 * {@link #findPartition(IntGraph, boolean)}.
+	 * one exist) as vertex weights. To add the partition as vertex weights, use {@link #findPartition(Graph, boolean)}.
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
+	 * exist).
 	 *
-	 * @param  g the graph
-	 * @return   the bipartite partition of the graph if one exists
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   the graph
+	 * @return     the bipartite partition of the graph if one exists
 	 */
-	public static Optional<IVertexBiPartition> findPartition(IntGraph g) {
+	public static <V, E> Optional<VertexBiPartition<V, E>> findPartition(Graph<V, E> g) {
 		return findPartition(g, false);
 	}
 
 	/**
 	 * Find a bipartite partition of the given graph (if one exists), and optionally add the partition as vertex
 	 * weights.
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
+	 * exist).
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        the graph
 	 * @param  addPartitionWeight       if {@code true}, add the partition (if exist) will be added to the graph as
 	 *                                      vertex weights. If no valid bipartite partition is found, the graph will not
@@ -87,7 +99,8 @@ public class BipartiteGraphs {
 	 * @throws IllegalArgumentException if {@code addPartitionWeight} is {@code true} and the graph already has a non
 	 *                                      boolean vertex weights with key {@link #VertexBiPartitionWeightKey}
 	 */
-	public static Optional<IVertexBiPartition> findPartition(IntGraph g, boolean addPartitionWeight) {
+	@SuppressWarnings("unchecked")
+	public static <V, E> Optional<VertexBiPartition<V, E>> findPartition(Graph<V, E> g, boolean addPartitionWeight) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
 
 		BitSet partition0 = findBipartitePartition0(ig);
@@ -98,10 +111,18 @@ public class BipartiteGraphs {
 		for (int n = ig.vertices().size(), v = 0; v < n; v++)
 			partition.set(v, partition0.get(v));
 
-		IVertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
-		if (!(g instanceof IndexGraph))
-			partitionRes = new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, partitionRes);
-		return Optional.of(partitionRes);
+		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);
+		VertexBiPartition<V, E> resultPartition;
+		if (g instanceof IndexGraph) {
+			resultPartition = (VertexBiPartition<V, E>) indexPartition;
+		} else if (g instanceof IntGraph) {
+			resultPartition =
+					(VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
+							indexPartition);
+		} else {
+			resultPartition = new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+		return Optional.of(resultPartition);
 	}
 
 	private static BitSet findBipartitePartition0(IndexGraph g) {
@@ -172,13 +193,19 @@ public class BipartiteGraphs {
 	 * <p>
 	 * Note that if the graph was modified after the bipartite partition was computed and added, it might be invalid and
 	 * no checks are performed in this function to verify that it is still valid.
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
+	 * exist).
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        the graph
 	 * @return                          the bipartite partition of the graph if one exists
 	 * @throws IllegalArgumentException if the graph has a non boolean vertex weights with key
 	 *                                      {@link #VertexBiPartitionWeightKey}
 	 */
-	public static Optional<IVertexBiPartition> getExistingPartition(IntGraph g) {
+	@SuppressWarnings("unchecked")
+	public static <V, E> Optional<VertexBiPartition<V, E>> getExistingPartition(Graph<V, E> g) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
 		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
@@ -188,10 +215,18 @@ public class BipartiteGraphs {
 					+ "' but it is not a boolean weights");
 		IWeightsBool partition = (IWeightsBool) existingPartition;
 
-		IVertexBiPartition partitionRes = new VertexBiPartitions.FromWeights(ig, partition);
-		if (!(g instanceof IndexGraph))
-			partitionRes = new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, partitionRes);
-		return Optional.of(partitionRes);
+		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);
+		VertexBiPartition<V, E> resultPartition;
+		if (g instanceof IndexGraph) {
+			resultPartition = (VertexBiPartition<V, E>) indexPartition;
+		} else if (g instanceof IntGraph) {
+			resultPartition =
+					(VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
+							indexPartition);
+		} else {
+			resultPartition = new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+		return Optional.of(resultPartition);
 	}
 
 	/**
@@ -199,12 +234,12 @@ public class BipartiteGraphs {
 	 * <p>
 	 * The bipartite partition is usually represented as a vertex boolean weight keyed by this key. The weight of each
 	 * vertex indicates to which of the two partitions it belongs to. Functions such as
-	 * {@link #findPartition(IntGraph, boolean)} may attempt to find a valid bipartition of a graph, and if one is
-	 * found, to store it as vertex weights with this key. When an algorithm accept a graph to operate on, it may check
-	 * for such vertex weights, and if they exists it may assume the graph is bipartite and use them.
+	 * {@link #findPartition(Graph, boolean)} may attempt to find a valid bipartition of a graph, and if one is found,
+	 * to store it as vertex weights with this key. When an algorithm accept a graph to operate on, it may check for
+	 * such vertex weights, and if they exists it may assume the graph is bipartite and use them.
 	 * <p>
 	 * If a graph contains vertex weights with this key, the partition can be retrieved by
-	 * {@link #getExistingPartition(IntGraph)}. But note that a bipartite partition may become invalid if the graph is
+	 * {@link #getExistingPartition(Graph)}. But note that a bipartite partition may become invalid if the graph is
 	 * modified after the vertex weights were added. Consider removing the vertex weights to avoid misleading
 	 * algorithms.
 	 */
