@@ -43,7 +43,8 @@ class CyclesFinderTestUtils extends TestUtils {
 		int e2 = g.addEdge(v2, v1);
 		int e3 = g.addEdge(v2, v0);
 
-		Iterator<IPath> actual = cyclesFinder.findAllCycles(g);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Iterator<IPath> actual = (Iterator) cyclesFinder.findAllCycles(g);
 
 		IPath c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
 		IPath c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
@@ -71,8 +72,10 @@ class CyclesFinderTestUtils extends TestUtils {
 	private static void testGraph(IntGraph g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
-		Iterator<IPath> actual = cyclesFinder.findAllCycles(g);
-		Iterator<IPath> expected = validationAlgo.findAllCycles(g);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Iterator<IPath> actual = (Iterator) cyclesFinder.findAllCycles(g);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Iterator<IPath> expected = (Iterator) validationAlgo.findAllCycles(g);
 		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
 	}
 

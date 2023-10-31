@@ -16,23 +16,34 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 
 abstract class CyclesFinderAbstract implements CyclesFinder {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Iterator<IPath> findAllCycles(IntGraph g) {
-		if (g instanceof IndexGraph)
-			return findAllCycles((IndexGraph) g);
+	public <V, E> Iterator<Path<V, E>> findAllCycles(Graph<V, E> g) {
+		if (g instanceof IndexGraph) {
+			return (Iterator) findAllCycles((IndexGraph) g);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			Iterator<IPath> indexResult = findAllCycles(iGraph);
+			return (Iterator) new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);
 
-		Iterator<IPath> indexResult = findAllCycles(iGraph);
-		return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			Iterator<IPath> indexResult = findAllCycles(iGraph);
+			return new PathImpl.ObjIterFromIndexIter<>(indexResult, viMap, eiMap);
+		}
 	}
 
 	abstract Iterator<IPath> findAllCycles(IndexGraph g);

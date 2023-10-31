@@ -36,7 +36,7 @@ class SimplePathsFinders {
 			int iTarget = viMap.idToIndex(target);
 
 			Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
-			return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
+			return new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);
 		}
 
 		abstract Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target);

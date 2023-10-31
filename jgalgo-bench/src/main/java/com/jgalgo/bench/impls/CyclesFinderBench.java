@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.impls;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -71,10 +72,11 @@ public class CyclesFinderBench {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void benchMST(CyclesFinder.Builder builder, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		CyclesFinder algo = builder.build();
-		List<IPath> cycles = new ObjectArrayList<>(algo.findAllCycles(g));
+		List<IPath> cycles = new ObjectArrayList<>((Iterator) algo.findAllCycles(g));
 		blackhole.consume(cycles);
 	}
 

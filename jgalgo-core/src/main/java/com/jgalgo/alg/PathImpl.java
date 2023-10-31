@@ -410,28 +410,50 @@ class PathImpl implements IPath {
 		}
 	}
 
-	static class IterFromIndexIter implements Iterator<IPath> {
+	static class IntIterFromIndexIter implements Iterator<IPath> {
 
-		private final Iterator<IPath> res;
+		private final Iterator<IPath> indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IterFromIndexIter(Iterator<IPath> res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.res = Objects.requireNonNull(res);
+		IntIterFromIndexIter(Iterator<IPath> indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public boolean hasNext() {
-			return res.hasNext();
+			return indexIter.hasNext();
 		}
 
 		@Override
 		public IPath next() {
-			return intPathFromIndexPath(res.next(), viMap, eiMap);
+			return intPathFromIndexPath(indexIter.next(), viMap, eiMap);
+		}
+	}
+
+	static class ObjIterFromIndexIter<V, E> implements Iterator<Path<V, E>> {
+
+		private final Iterator<IPath> indexIter;
+		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+
+		ObjIterFromIndexIter(Iterator<IPath> indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
+		@Override
+		public boolean hasNext() {
+			return indexIter.hasNext();
+		}
+
+		@Override
+		public Path<V, E> next() {
+			return objPathFromIndexPath(indexIter.next(), viMap, eiMap);
+		}
 	}
 
 }

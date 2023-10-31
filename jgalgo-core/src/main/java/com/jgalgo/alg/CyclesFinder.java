@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -31,11 +32,13 @@ public interface CyclesFinder {
 
 	/**
 	 * Find all cycles in the given graph.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
 	 *
 	 * @param  g a graph
 	 * @return   an iterator that iteration over all cycles in the graph
 	 */
-	public Iterator<IPath> findAllCycles(IntGraph g);
+	public <V, E> Iterator<Path<V, E>> findAllCycles(Graph<V, E> g);
 
 	/**
 	 * Create a new algorithm for cycles finding.

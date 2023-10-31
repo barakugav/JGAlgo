@@ -95,7 +95,8 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, IntGraph g, IWeightFunction w) {
 		IPath cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
-			Iterator<IPath> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			Iterator<IPath> cycles = (Iterator) new CyclesFinderTarjan().findAllCycles(g);
 			IPath missedCycle = cycles.hasNext() ? cycles.next() : null;
 			assertNull(missedCycle, "failed to find a cycle");
 			return;
@@ -103,7 +104,8 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		double cycleMeanWeight = getMeanWeight(cycle, w);
 
 		if (g.vertices().size() <= 32 && g.edges().size() <= 32) {
-			Iterator<IPath> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			Iterator<IPath> cycles = (Iterator) new CyclesFinderTarjan().findAllCycles(g);
 			assertEquals(cycle.sourceInt(), cycle.targetInt());
 			int prevV = cycle.sourceInt();
 			for (IEdgeIter eit = cycle.edgeIter();;) {
