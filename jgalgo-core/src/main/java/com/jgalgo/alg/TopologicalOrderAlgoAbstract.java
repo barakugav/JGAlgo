@@ -15,49 +15,80 @@
  */
 package com.jgalgo.alg;
 
+import java.util.List;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public TopologicalOrderAlgo.Result computeTopologicalSorting(IntGraph g) {
-		if (g instanceof IndexGraph)
-			return computeTopologicalSorting((IndexGraph) g);
+	public <V, E> TopologicalOrderAlgo.Result<V, E> computeTopologicalSorting(Graph<V, E> g) {
+		if (g instanceof IndexGraph) {
+			return (TopologicalOrderAlgo.Result<V, E>) computeTopologicalSorting((IndexGraph) g);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			TopologicalOrderAlgo.IResult indexResult = computeTopologicalSorting(iGraph);
+			return (TopologicalOrderAlgo.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
 
-		TopologicalOrderAlgo.Result indexResult = computeTopologicalSorting(iGraph);
-		return new ResultFromIndexResult(indexResult, viMap);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			TopologicalOrderAlgo.IResult indexResult = computeTopologicalSorting(iGraph);
+			return new ObjResultFromIndexResult<>(indexResult, viMap);
+		}
 	}
 
-	abstract TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g);
+	abstract TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g);
 
-	private static class ResultFromIndexResult implements TopologicalOrderAlgo.Result {
+	private static class ObjResultFromIndexResult<V, E> implements TopologicalOrderAlgo.Result<V, E> {
 
-		private final TopologicalOrderAlgo.Result res;
+		private final TopologicalOrderAlgo.IResult indexRes;
+		private final IndexIdMap<V> viMap;
+
+		ObjResultFromIndexResult(TopologicalOrderAlgo.IResult indexRes, IndexIdMap<V> viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public List<V> orderedVertices() {
+			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);
+		}
+
+		@Override
+		public int vertexOrderIndex(V vertex) {
+			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));
+		}
+	}
+
+	private static class IntResultFromIndexResult implements TopologicalOrderAlgo.IResult {
+
+		private final TopologicalOrderAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIntIdMap viMap) {
-			this.res = Objects.requireNonNull(res);
+		IntResultFromIndexResult(TopologicalOrderAlgo.IResult indexRes, IndexIntIdMap viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public IntList orderedVertices() {
-			return IndexIdMaps.indexToIdList(res.orderedVertices(), viMap);
+			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);
 		}
 
 		@Override
 		public int vertexOrderIndex(int vertex) {
-			return res.vertexOrderIndex(viMap.idToIndex(vertex));
+			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));
 		}
-
 	}
 
 }

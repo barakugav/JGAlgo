@@ -51,7 +51,8 @@ public class TopologicalOrderTest extends TestBase {
 					.selfEdges(false).cycles(false).connected(connected).build();
 
 			IntIterator topolSort =
-					new TopologicalOrderAlgoImpl().computeTopologicalSorting(g).orderedVertices().iterator();
+					((TopologicalOrderAlgo.IResult) new TopologicalOrderAlgoImpl().computeTopologicalSorting(g))
+							.orderedVertices().iterator();
 
 			IntSet seenVertices = new IntOpenHashSet(n);
 			while (topolSort.hasNext()) {

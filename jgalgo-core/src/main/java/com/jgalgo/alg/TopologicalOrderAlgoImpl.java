@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 
 	@Override
-	TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g) {
+	TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
@@ -63,7 +63,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		return new Res(topolSort);
 	}
 
-	private static class Res implements TopologicalOrderAlgo.Result {
+	private static class Res implements TopologicalOrderAlgo.IResult {
 
 		private final IntList orderedVertices;
 		private int[] vertexOrderIndex;

@@ -59,7 +59,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
-		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);
+		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
 		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
 				.hasNext();) {
 			int u = uit.nextInt();
@@ -83,7 +83,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
-		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);
+		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
 		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
 				.hasNext();) {
 			int u = uit.nextInt();

@@ -15,6 +15,9 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Comparator;
+import java.util.List;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -38,25 +41,59 @@ public interface TopologicalOrderAlgo {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link TopologicalOrderAlgo.IResult}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a directed acyclic graph (DAG).
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	TopologicalOrderAlgo.Result computeTopologicalSorting(IntGraph g);
+	<V, E> TopologicalOrderAlgo.Result<V, E> computeTopologicalSorting(Graph<V, E> g);
 
 	/**
 	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * Get all the vertices ordered in the list by the topological order.
 		 *
 		 * @return all the vertices ordered in the list by the topological order
 		 */
+		List<V> orderedVertices();
+
+		/**
+		 * Get the index of a vertex in the topological order.
+		 *
+		 * @param  vertex the vertex
+		 * @return        the index of the vertex in the topological order, in range \([0, n)\)
+		 */
+		int vertexOrderIndex(V vertex);
+
+		/**
+		 * Get a comparator that compare vertices by their order in the topological order.
+		 *
+		 * @return a comparator that compare vertices by their order in the topological order
+		 */
+		default Comparator<V> orderComparator() {
+			return (v1, v2) -> Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));
+		}
+	}
+
+	/**
+	 * A result object of a {@link TopologicalOrderAlgo} algorithm for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends TopologicalOrderAlgo.Result<Integer, Integer> {
+
+		@Override
 		IntList orderedVertices();
 
 		/**
@@ -67,15 +104,16 @@ public interface TopologicalOrderAlgo {
 		 */
 		int vertexOrderIndex(int vertex);
 
-		/**
-		 * Get a comparator that compare vertices by their order in the topological order.
-		 *
-		 * @return a comparator that compare vertices by their order in the topological order
-		 */
+		@Deprecated
+		@Override
+		default int vertexOrderIndex(Integer vertex) {
+			return vertexOrderIndex(vertex.intValue());
+		}
+
+		@Override
 		default IntComparator orderComparator() {
 			return (v1, v2) -> Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));
 		}
-
 	}
 
 	/**
