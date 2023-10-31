@@ -18,16 +18,20 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Iterator;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
  * Static methods class for tree graphs.
@@ -45,13 +49,15 @@ public class Trees {
 	 * <p>
 	 * This method runs in linear time.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @return                          {@code true} if the graph is a tree, else {@code false}
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean isTree(IntGraph g) {
+	public static <V, E> boolean isTree(Graph<V, E> g) {
 		Assertions.Graphs.onlyUndirected(g);
-		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());
+		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());
 	}
 
 	/**
@@ -63,12 +69,14 @@ public class Trees {
 	 * <p>
 	 * This method runs in linear time.
 	 *
+	 * @param  <V>  the vertices type
+	 * @param  <E>  the edges type
 	 * @param  g    a graph
 	 * @param  root a root vertex
 	 * @return      {@code true} if the graph is a tree rooted at {@code root}, else {@code false}.
 	 */
-	public static boolean isTree(IntGraph g, int root) {
-		return isForest(g, IntIterators.singleton(root));
+	public static <V, E> boolean isTree(Graph<V, E> g, V root) {
+		return isForest(g, ObjectIterators.singleton(root));
 	}
 
 	/**
@@ -78,10 +86,12 @@ public class Trees {
 	 * <p>
 	 * This method runs in linear time.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is a forest, else {@code false}
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is a forest, else {@code false}
 	 */
-	public static boolean isForest(IntGraph g) {
+	public static <V, E> boolean isForest(Graph<V, E> g) {
 		return isForest(g, g.vertices().iterator(), true);
 	}
 
@@ -94,21 +104,34 @@ public class Trees {
 	 * <p>
 	 * This method runs in linear time.
 	 *
+	 * @param  <V>   the vertices type
+	 * @param  <E>   the edges type
 	 * @param  g     a graph
 	 * @param  roots a set of roots
 	 * @return       true if the graph is a forest rooted at the given roots.
 	 */
-	private static boolean isForest(IntGraph g, IntIterator roots) {
+	private static <V, E> boolean isForest(Graph<V, E> g, Iterator<V> roots) {
 		return isForest(g, roots, false);
 	}
 
-	private static boolean isForest(IntGraph g, IntIterator roots, boolean allowVisitedRoot) {
-		if (g instanceof IndexGraph)
-			return isForest((IndexGraph) g, roots, allowVisitedRoot);
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		roots = IndexIdMaps.idToIndexIterator(roots, viMap);
-		return isForest(iGraph, roots, allowVisitedRoot);
+	@SuppressWarnings("unchecked")
+	private static <V, E> boolean isForest(Graph<V, E> g, Iterator<V> roots, boolean allowVisitedRoot) {
+		if (g instanceof IndexGraph) {
+			IntIterator roots0 = IntContainers.toIntIterator((Iterator<Integer>) roots);
+			return isForest((IndexGraph) g, roots0, allowVisitedRoot);
+
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IntIterator roots0 = IndexIdMaps.idToIndexIterator((Iterator<Integer>) roots, viMap);
+			return isForest(iGraph, roots0, allowVisitedRoot);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IntIterator roots0 = IndexIdMaps.idToIndexIterator(roots, viMap);
+			return isForest(iGraph, roots0, allowVisitedRoot);
+		}
 	}
 
 	private static boolean isForest(IndexGraph g, IntIterator roots, boolean allowVisitedRoot) {
