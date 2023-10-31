@@ -22,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
 import java.util.Random;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -93,7 +93,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	}
 
 	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, IntGraph g, IWeightFunction w) {
-		IPath cycle = algo.computeMinimumMeanCycle(g, w);
+		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			Iterator<IPath> cycles = (Iterator) new CyclesFinderTarjan().findAllCycles(g);
@@ -126,7 +126,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		} else {
 			MinimumMeanCycle validationAlgo = algo instanceof MinimumMeanCycleHoward ? new MinimumMeanCycleDasdanGupta()
 					: new MinimumMeanCycleHoward();
-			IPath expectedCycle = validationAlgo.computeMinimumMeanCycle(g, w);
+			IPath expectedCycle = (IPath) validationAlgo.computeMinimumMeanCycle(g, w);
 			assertNotNull(expectedCycle, "validation algo failed to find a cycle");
 			double expectedWeight = getMeanWeight(expectedCycle, w);
 

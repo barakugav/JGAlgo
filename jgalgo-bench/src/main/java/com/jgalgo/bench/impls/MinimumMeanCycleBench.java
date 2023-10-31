@@ -80,7 +80,7 @@ public class MinimumMeanCycleBench {
 		IntGraph g = gw.first();
 		IWeightFunctionInt w = gw.second();
 		MinimumMeanCycle algo = builder.build();
-		IPath cycle = algo.computeMinimumMeanCycle(g, w);
+		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);
 		blackhole.consume(cycle);
 	}
 

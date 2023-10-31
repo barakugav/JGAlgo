@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -489,7 +489,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		residualWeights = residualGraph.getEdgesWeights("cost");
 
 		/* the circulation is optimal if no circle with negative mean cost exists */
-		IPath cycle = MinimumMeanCycle.newInstance().computeMinimumMeanCycle(residualGraph, residualWeights);
+		IPath cycle = (IPath) MinimumMeanCycle.newInstance().computeMinimumMeanCycle(residualGraph, residualWeights);
 		assertTrue(cycle == null || residualWeights.weightSum(cycle.edges()) >= 0,
 				"Negative cycle found in residual graph, the circulation is not optimal");
 	}
