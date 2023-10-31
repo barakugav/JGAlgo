@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
+class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 
 	private final VoronoiAlgo voronoiAlgo = VoronoiAlgo.newInstance();
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
