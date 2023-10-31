@@ -116,7 +116,7 @@ public interface ShortestPathAllPairs {
 		 *                                  exists
 		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
 		 */
-		public Path getPath(int source, int target);
+		public IPath getPath(int source, int target);
 
 		/**
 		 * Check whether a negative cycle was found.
@@ -134,7 +134,7 @@ public interface ShortestPathAllPairs {
 		 * @return                          the negative cycle that was found.
 		 * @throws IllegalArgumentException if a negative cycle was found. See {@link foundNegativeCycle}
 		 */
-		public Path getNegativeCycle();
+		public IPath getNegativeCycle();
 	}
 
 	/**

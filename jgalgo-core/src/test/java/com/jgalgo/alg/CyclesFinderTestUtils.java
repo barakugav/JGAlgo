@@ -43,11 +43,11 @@ class CyclesFinderTestUtils extends TestUtils {
 		int e2 = g.addEdge(v2, v1);
 		int e3 = g.addEdge(v2, v0);
 
-		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
+		Iterator<IPath> actual = cyclesFinder.findAllCycles(g);
 
-		Path c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
-		Path c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
-		List<Path> expected = List.of(c1, c2);
+		IPath c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
+		IPath c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
+		List<IPath> expected = List.of(c1, c2);
 
 		assertEquals(transformCyclesToCanonical(expected.iterator()), transformCyclesToCanonical(actual));
 	}
@@ -71,15 +71,15 @@ class CyclesFinderTestUtils extends TestUtils {
 	private static void testGraph(IntGraph g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
-		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
-		Iterator<Path> expected = validationAlgo.findAllCycles(g);
+		Iterator<IPath> actual = cyclesFinder.findAllCycles(g);
+		Iterator<IPath> expected = validationAlgo.findAllCycles(g);
 		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
 	}
 
-	private static Set<IntList> transformCyclesToCanonical(Iterator<Path> cycles) {
+	private static Set<IntList> transformCyclesToCanonical(Iterator<IPath> cycles) {
 		int expectedCount = 0;
 		Set<IntList> cycles0 = new TreeSet<>();
-		for (Path cycle : JGAlgoUtils.iterable(cycles)) {
+		for (IPath cycle : JGAlgoUtils.iterable(cycles)) {
 			IntArrayList cycle0 = new IntArrayList(cycle.edges());
 			transformCycleToCanonical(cycle0);
 			cycles0.add(cycle0);

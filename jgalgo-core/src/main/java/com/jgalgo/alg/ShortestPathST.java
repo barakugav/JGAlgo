@@ -48,7 +48,7 @@ public interface ShortestPathST {
 	 * @param  target the target vertex
 	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
 	 */
-	Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target);
+	IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target);
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
@@ -76,7 +76,7 @@ public interface ShortestPathST {
 				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();
 
 				@Override
-				public Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
+				public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
 					boolean cardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
 					if (cardinality) {
 						return cardinalityStSp.computeShortestPath(g, w, source, target);

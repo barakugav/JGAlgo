@@ -64,7 +64,7 @@ public interface VoronoiAlgo {
 	 * a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
 	 * reversed view of the original graph by using {@link IntGraph#reverseView()}.
 	 *
-	 * @see    Path
+	 * @see    IPath
 	 * @author Barak Ugav
 	 */
 	static interface Result extends IVertexPartition {
@@ -91,7 +91,7 @@ public interface VoronoiAlgo {
 		 * @return        the shortest path from any site to the target vertex, or {@code null} if the target vertex is
 		 *                unreachable from any site
 		 */
-		Path getPath(int target);
+		IPath getPath(int target);
 
 		/**
 		 * Get the site vertex of a block.

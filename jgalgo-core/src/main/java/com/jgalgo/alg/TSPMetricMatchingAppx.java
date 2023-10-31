@@ -45,7 +45,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 	public TSPMetricMatchingAppx() {}
 
 	@Override
-	Path computeShortestTour(IndexGraph g, IWeightFunction w) {
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
@@ -99,7 +99,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		}
 		IndexGraph g1 = g1Builder.build();
 
-		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
+		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
 		return cycle;

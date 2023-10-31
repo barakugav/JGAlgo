@@ -93,30 +93,30 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	}
 
 	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, IntGraph g, IWeightFunction w) {
-		Path cycle = algo.computeMinimumMeanCycle(g, w);
+		IPath cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
-			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
-			Path missedCycle = cycles.hasNext() ? cycles.next() : null;
+			Iterator<IPath> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			IPath missedCycle = cycles.hasNext() ? cycles.next() : null;
 			assertNull(missedCycle, "failed to find a cycle");
 			return;
 		}
 		double cycleMeanWeight = getMeanWeight(cycle, w);
 
 		if (g.vertices().size() <= 32 && g.edges().size() <= 32) {
-			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
-			assertEquals(cycle.source(), cycle.target());
-			int prevV = cycle.source();
+			Iterator<IPath> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			assertEquals(cycle.sourceInt(), cycle.targetInt());
+			int prevV = cycle.sourceInt();
 			for (IEdgeIter eit = cycle.edgeIter();;) {
 				int e = eit.nextInt();
 				assertEquals(prevV, g.edgeSource(e));
 				prevV = g.edgeTarget(e);
 				if (!eit.hasNext()) {
-					assertEquals(cycle.target(), prevV);
+					assertEquals(cycle.targetInt(), prevV);
 					break;
 				}
 			}
 
-			for (Path c : JGAlgoUtils.iterable(cycles)) {
+			for (IPath c : JGAlgoUtils.iterable(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
 				final double EPS = 0.0001;
 				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
@@ -124,7 +124,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		} else {
 			MinimumMeanCycle validationAlgo = algo instanceof MinimumMeanCycleHoward ? new MinimumMeanCycleDasdanGupta()
 					: new MinimumMeanCycleHoward();
-			Path expectedCycle = validationAlgo.computeMinimumMeanCycle(g, w);
+			IPath expectedCycle = validationAlgo.computeMinimumMeanCycle(g, w);
 			assertNotNull(expectedCycle, "validation algo failed to find a cycle");
 			double expectedWeight = getMeanWeight(expectedCycle, w);
 
@@ -132,7 +132,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		}
 	}
 
-	private static double getMeanWeight(Path cycle, IWeightFunction w) {
+	private static double getMeanWeight(IPath cycle, IWeightFunction w) {
 		return w.weightSum(cycle.edges()) / cycle.edges().size();
 	}
 

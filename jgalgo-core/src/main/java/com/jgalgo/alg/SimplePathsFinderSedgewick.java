@@ -36,9 +36,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
 
 	@Override
-	Iterator<Path> findAllSimplePaths(IndexGraph g, int source, int target) {
+	Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target) {
 		if (source == target)
-			return List.<Path>of(new PathImpl(g, source, target, IntList.of())).iterator();
+			return List.<IPath>of(new PathImpl(g, source, target, IntList.of())).iterator();
 		return new Iterator<>() {
 
 			final int n = g.vertices().size();
@@ -84,9 +84,9 @@ class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
 			}
 
 			@Override
-			public Path next() {
+			public IPath next() {
 				Assertions.Iters.hasNext(this);
-				Path ret = new PathImpl(g, source, target, new IntArrayList(path));
+				IPath ret = new PathImpl(g, source, target, new IntArrayList(path));
 
 				/* remove last edge to target */
 				int lastEdge = path.popInt();

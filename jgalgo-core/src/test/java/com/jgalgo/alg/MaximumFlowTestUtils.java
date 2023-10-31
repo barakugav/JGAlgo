@@ -245,7 +245,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		for (int retry = 0;; retry++) {
 			int source = vs[rand.nextInt(vs.length)];
 			int sink = vs[rand.nextInt(vs.length)];
-			if (source != sink && Path.findPath(g, source, sink) != null)
+			if (source != sink && IPath.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
 			if (retry > 1000) {
 				boolean allSelfEdges = true;

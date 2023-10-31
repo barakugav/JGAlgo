@@ -204,7 +204,7 @@ public class TreesTest extends TestBase {
 			for (int[] vs = g.vertices().toIntArray();;) {
 				int u = vs[rand.nextInt(n)];
 				int v = vs[rand.nextInt(n)];
-				if (u != v && Path.findPath(g, u, v) != null) {
+				if (u != v && IPath.findPath(g, u, v) != null) {
 					g.addEdge(u, v);
 					break;
 				}

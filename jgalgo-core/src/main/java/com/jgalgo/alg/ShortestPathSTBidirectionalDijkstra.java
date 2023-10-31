@@ -31,7 +31,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 
 	@SuppressWarnings("boxing") // TODO
 	@Override
-	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw new IndexOutOfBoundsException(source);
 		if (!g.vertices().contains(target))

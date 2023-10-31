@@ -27,19 +27,19 @@ class ShortestPathSTTestUtils {
 
 			@Override
 			public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
-				Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
+				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
 				for (int v : g.vertices())
 					paths.put(v, spst.computeShortestPath(g, w, source, v));
 				return new ShortestPathSingleSource.Result() {
 
 					@Override
 					public double distance(int target) {
-						Path path = getPath(target);
+						IPath path = getPath(target);
 						return path == null ? Double.POSITIVE_INFINITY : IWeightFunction.weightSum(w, path.edges());
 					}
 
 					@Override
-					public Path getPath(int target) {
+					public IPath getPath(int target) {
 						return paths.get(target);
 					}
 
@@ -49,7 +49,7 @@ class ShortestPathSTTestUtils {
 					}
 
 					@Override
-					public Path getNegativeCycle() {
+					public IPath getNegativeCycle() {
 						throw new IllegalStateException();
 					}
 				};

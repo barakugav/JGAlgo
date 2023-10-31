@@ -49,7 +49,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	CyclesFinderJohnson() {}
 
 	@Override
-	Iterator<Path> findAllCycles(IndexGraph g) {
+	Iterator<IPath> findAllCycles(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
 		final int n = g.vertices().size();
@@ -71,7 +71,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			 * the store depth, we decrease it by one.
 			 */
 			int cycleFoundDepth = -1;
-			Path nextCycle;
+			IPath nextCycle;
 
 			{
 				isBlocked = new BitSet(n);
@@ -219,9 +219,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			}
 
 			@Override
-			public Path next() {
+			public IPath next() {
 				Assertions.Iters.hasNext(this);
-				Path ret = nextCycle;
+				IPath ret = nextCycle;
 				advance();
 				return ret;
 			}

@@ -60,7 +60,7 @@ public class ChinesePostmanTest extends TestBase {
 	}
 
 	private static void testGraph(IntGraph g, IWeightFunctionInt w, ChinesePostman algo) {
-		Path chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
+		IPath chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
 
 		/* Asserts all edges are traversed by the tour */
 		IntSet tourEdges = new IntOpenHashSet();
@@ -94,7 +94,7 @@ public class ChinesePostmanTest extends TestBase {
 			if (eulerianGraph.vertices().intStream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
 				continue;
 
-			Path eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
+			IPath eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
 			double eulerianTourWeight = bWeights.weightSum(eulerianTour.edges());
 			if (bestWeight > eulerianTourWeight)
 				bestWeight = eulerianTourWeight;

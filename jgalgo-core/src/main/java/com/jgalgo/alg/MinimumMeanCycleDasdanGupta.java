@@ -55,11 +55,11 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
-		Path cycle = computeMinimumMeanCycle0(g, w);
+		IPath cycle = computeMinimumMeanCycle0(g, w);
 
 		/* The regular algorithm doesn't handle self edges (and specifically skip CC with a single vertex) */
 		if (g.isAllowSelfEdges()) {
@@ -87,7 +87,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		return cycle;
 	}
 
-	private Path computeMinimumMeanCycle0(IndexGraph g, IWeightFunction w) {
+	private IPath computeMinimumMeanCycle0(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 
 		/* find all SCC */

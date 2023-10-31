@@ -91,7 +91,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 				assertEquals(-1, cells.vertexSite(v));
 
 			} else {
-				Path path = cells.getPath(v);
+				IPath path = cells.getPath(v);
 				assertNotNull(path);
 				assertTrue(cells.vertexBlock(v) < sites.size());
 				assertEquals(cells.blockSite(cells.vertexBlock(v)), cells.vertexSite(v));

@@ -146,7 +146,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 		for (;;) {
 			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);
-			Path augPath = sp.getPath(t);
+			IPath augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)
 				break;

@@ -47,7 +47,7 @@ public interface KShortestPathsST {
 	 * @return        {@code k} shortest paths from the source to the target, or less if there are no such {@code k}
 	 *                paths
 	 */
-	List<Path> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k);
+	List<IPath> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k);
 
 	/**
 	 * Create a new K shortest paths algorithm object.

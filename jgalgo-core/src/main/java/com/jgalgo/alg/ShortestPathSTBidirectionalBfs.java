@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 
 	@Override
-	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw new IndexOutOfBoundsException(source);
 		if (!g.vertices().contains(target))

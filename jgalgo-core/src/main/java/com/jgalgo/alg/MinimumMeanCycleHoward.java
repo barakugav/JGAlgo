@@ -59,7 +59,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		w = WeightFunctions.localEdgeWeightFunction(g, w);

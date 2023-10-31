@@ -95,7 +95,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return res;
 		}
 
-		Pair<double[], Path> potential0 = calcPotential(g, w);
+		Pair<double[], IPath> potential0 = calcPotential(g, w);
 		if (potential0.second() != null)
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
@@ -142,7 +142,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 	}
 
-	private Pair<double[], Path> calcPotential(IndexGraph g, IWeightFunction w) {
+	private Pair<double[], IPath> calcPotential(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -178,11 +178,11 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 				potential[v] = res.distance(v);
 			return Pair.of(potential, null);
 		} else {
-			Path negCycleRef = res.getNegativeCycle();
+			IPath negCycleRef = res.getNegativeCycle();
 			IntList negCycle = new IntArrayList(negCycleRef.edges().size());
 			for (int e : negCycleRef.edges())
 				negCycle.add(e);
-			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));
+			return Pair.of(null, new PathImpl(g, negCycleRef.sourceInt(), negCycleRef.targetInt(), negCycle));
 		}
 	}
 
@@ -201,9 +201,9 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private static class NegCycleRes implements ShortestPathAllPairs.Result {
 
-		private final Path negCycle;
+		private final IPath negCycle;
 
-		public NegCycleRes(Path negCycle) {
+		public NegCycleRes(IPath negCycle) {
 			Objects.requireNonNull(negCycle);
 			this.negCycle = negCycle;
 		}
@@ -214,7 +214,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 
 		@Override
-		public Path getPath(int source, int target) {
+		public IPath getPath(int source, int target) {
 			throw new IllegalStateException("negative cycle found, no shortest path exists");
 		}
 
@@ -224,7 +224,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 
 		@Override
-		public Path getNegativeCycle() {
+		public IPath getNegativeCycle() {
 			return negCycle;
 		}
 
@@ -245,7 +245,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 
 		@Override
-		public Path getNegativeCycle() {
+		public IPath getNegativeCycle() {
 			throw new IllegalStateException("no negative cycle found");
 		}
 
@@ -261,7 +261,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			}
 
 			@Override
-			public Path getPath(int source, int target) {
+			public IPath getPath(int source, int target) {
 				return ssspResults[source].getPath(target);
 			}
 
@@ -282,7 +282,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			}
 
 			@Override
-			public Path getPath(int source, int target) {
+			public IPath getPath(int source, int target) {
 				return ssspResults[vToResIdx[source]].getPath(target);
 			}
 

@@ -51,7 +51,7 @@ public interface ShortestPathHeuristicST {
 	 *                        the real distance of each vertex to the target.
 	 * @return            the short path found from {@code source} to {@code target}
 	 */
-	Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
+	IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
 
 	/**
 	 * Create a new shortest path algorithm with heuristic.

@@ -49,29 +49,29 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 
 	@SuppressWarnings("boxing") // TODO
 	@Override
-	List<Path> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+	List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		if (source == target)
 			return List.of(new PathImpl(g, source, target, IntList.of()));
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		HeapReferenceable<Double, ObjectIntPair<Path>> heap = HeapReferenceable.newBuilder()
-				.keysTypePrimitive(double.class).<ObjectIntPair<Path>>valuesTypeObj().build();
+		HeapReferenceable<Double, ObjectIntPair<IPath>> heap = HeapReferenceable.newBuilder()
+				.keysTypePrimitive(double.class).<ObjectIntPair<IPath>>valuesTypeObj().build();
 		BitSet verticesMask = new BitSet(n);
 		BitSet edgesMask = new BitSet(m);
 		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
 
 		/* compute the shortest path from source to target */
-		ObjectDoublePair<Path> shortestPath = spFunc.computeShortestPath(source);
+		ObjectDoublePair<IPath> shortestPath = spFunc.computeShortestPath(source);
 		if (shortestPath == null)
 			return ObjectLists.emptyList();
 		heap.insert(shortestPath.secondDouble(), ObjectIntPair.of(shortestPath.first(), 0));
 
-		List<Path> paths = k <= m ? new ArrayList<>(k) : new ArrayList<>();
+		List<IPath> paths = k <= m ? new ArrayList<>(k) : new ArrayList<>();
 		while (!heap.isEmpty()) {
-			HeapReference<Double, ObjectIntPair<Path>> min = heap.extractMin();
-			Path kthPath = min.value().first();
+			HeapReference<Double, ObjectIntPair<IPath>> min = heap.extractMin();
+			IPath kthPath = min.value().first();
 			int kthPathDeviationIdx = min.value().secondInt();
 			assert kthPath.isSimple();
 			paths.add(kthPath);
@@ -86,7 +86,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 				IntList rootPath = kthPathEdges.subList(0, deviationIdx);
 
 				/* remove edges that are part of the previous shortest paths */
-				for (Path p1 : paths) {
+				for (IPath p1 : paths) {
 					IntList p1Edges = p1.edges();
 					if (p1Edges.size() > rootPath.size() && p1Edges.subList(0, deviationIdx).equals(rootPath))
 						edgesMask.set(p1Edges.getInt(deviationIdx));
@@ -172,8 +172,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			visitedT = new BitSet(n);
 		}
 
-		ObjectDoublePair<Path> computeShortestPath(int source) {
-			ObjectDoublePair<Path> res = computeShortestPath0(source);
+		ObjectDoublePair<IPath> computeShortestPath(int source) {
+			ObjectDoublePair<IPath> res = computeShortestPath0(source);
 			heapS.clear();
 			heapT.clear();
 			final int n = g.vertices().size();
@@ -211,7 +211,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		}
 
 		@SuppressWarnings("boxing") // TODO
-		private ObjectDoublePair<Path> computeShortestPath0(int source) {
+		private ObjectDoublePair<IPath> computeShortestPath0(int source) {
 			assert source != target;
 			assert !verticesMask.get(source);
 			assert !verticesMask.get(target);

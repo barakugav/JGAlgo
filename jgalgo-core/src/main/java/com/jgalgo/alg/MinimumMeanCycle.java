@@ -41,7 +41,7 @@ public interface MinimumMeanCycle {
 	 * @param  w an edge weight function
 	 * @return   the cycle with the minimum mean weight in the graph, or {@code null} if no cycles were found
 	 */
-	Path computeMinimumMeanCycle(IntGraph g, IWeightFunction w);
+	IPath computeMinimumMeanCycle(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new min mean cycle algorithm object.

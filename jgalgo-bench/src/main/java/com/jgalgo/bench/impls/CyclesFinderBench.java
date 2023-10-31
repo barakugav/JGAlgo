@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.CyclesFinder;
-import com.jgalgo.alg.Path;
+import com.jgalgo.alg.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -74,7 +74,7 @@ public class CyclesFinderBench {
 	private void benchMST(CyclesFinder.Builder builder, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		CyclesFinder algo = builder.build();
-		List<Path> cycles = new ObjectArrayList<>(algo.findAllCycles(g));
+		List<IPath> cycles = new ObjectArrayList<>(algo.findAllCycles(g));
 		blackhole.consume(cycles);
 	}
 

@@ -49,7 +49,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 	public TSPMetricMSTAppx() {}
 
 	@Override
-	Path computeShortestTour(IndexGraph g, IWeightFunction w) {
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
@@ -79,7 +79,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 		}
 		IndexGraph g1 = g1Builder.build();
 
-		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
+		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.edges().size() == n;
 		assert cycle.isCycle();
 

@@ -32,11 +32,11 @@ class EulerianTourImpl implements EulerianTourAlgo {
 	 * <p>
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
-	Path computeEulerianTour(IndexGraph g) {
+	IPath computeEulerianTour(IndexGraph g) {
 		return g.isDirected() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
 
-	private static Path computeTourUndirected(IndexGraph g) {
+	private static IPath computeTourUndirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -109,7 +109,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		return d;
 	}
 
-	private static Path computeTourDirected(IndexGraph g) {
+	private static IPath computeTourDirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -188,7 +188,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 	}
 
 	@Override
-	public Path computeEulerianTour(IntGraph g) {
+	public IPath computeEulerianTour(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return computeEulerianTour((IndexGraph) g);
 
@@ -196,8 +196,8 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-		Path indexPath = computeEulerianTour(iGraph);
-		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+		IPath indexPath = computeEulerianTour(iGraph);
+		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 }

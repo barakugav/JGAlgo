@@ -133,7 +133,7 @@ public interface ShortestPathSingleSource {
 		 * @throws IllegalStateException if a negative cycle was found and {@link #foundNegativeCycle()} return
 		 *                                   {@code true}.
 		 */
-		public Path getPath(int target);
+		public IPath getPath(int target);
 
 		/**
 		 * Check whether a negative cycle was found.
@@ -152,7 +152,7 @@ public interface ShortestPathSingleSource {
 		 * @throws IllegalStateException if no negative cycle was found and {@link #foundNegativeCycle()} return
 		 *                                   {@code false}.
 		 */
-		public Path getNegativeCycle();
+		public IPath getNegativeCycle();
 
 	}
 

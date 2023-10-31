@@ -63,10 +63,10 @@ public class TSPMetricTest extends TestBase {
 			return Math.sqrt(xd * xd + yd * yd);
 		};
 
-		Path appxMst = new TSPMetricMSTAppx().computeShortestTour(g, distances);
-		Path appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
+		IPath appxMst = new TSPMetricMSTAppx().computeShortestTour(g, distances);
+		IPath appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
 
-		Predicate<Path> isPathVisitAllVertices = path -> {
+		Predicate<IPath> isPathVisitAllVertices = path -> {
 			BitSet visited = new BitSet(n);
 			for (int u : path.vertices())
 				visited.set(u);

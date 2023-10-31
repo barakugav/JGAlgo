@@ -47,7 +47,7 @@ public interface EulerianTourAlgo {
 	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
-	public Path computeEulerianTour(IntGraph g);
+	public IPath computeEulerianTour(IntGraph g);
 
 	/**
 	 * Create a new Eulerian tour computation algorithm.

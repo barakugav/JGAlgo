@@ -204,7 +204,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 
 	private static class Result extends ShortestPathSingleSourceUtils.ResultImpl {
 
-		private Path negCycle;
+		private IPath negCycle;
 
 		private Result(IndexGraph g, int source) {
 			super(g, source);
@@ -218,7 +218,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		}
 
 		@Override
-		public Path getPath(int target) {
+		public IPath getPath(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException("negative cycle found, no shortest path exists");
 			return super.getPath(target);
@@ -230,7 +230,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		}
 
 		@Override
-		public Path getNegativeCycle() {
+		public IPath getNegativeCycle() {
 			if (!foundNegativeCycle())
 				throw new IllegalStateException("no negative cycle found");
 			return negCycle;

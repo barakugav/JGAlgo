@@ -28,7 +28,7 @@ class KShortestPathsSTs {
 	static abstract class AbstractImpl implements KShortestPathsST {
 
 		@Override
-		public List<Path> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k) {
+		public List<IPath> computeKShortestPaths(IntGraph g, IWeightFunction w, int source, int target, int k) {
 			if (g instanceof IndexGraph)
 				return computeKShortestPaths((IndexGraph) g, w, source, target, k);
 
@@ -38,14 +38,14 @@ class KShortestPathsSTs {
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
-			List<Path> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
-			List<Path> result = new ArrayList<>(indexResult.size());
-			for (Path p : indexResult)
-				result.add(PathImpl.pathFromIndexPath(p, viMap, eiMap));
+			List<IPath> indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);
+			List<IPath> result = new ArrayList<>(indexResult.size());
+			for (IPath p : indexResult)
+				result.add(PathImpl.intPathFromIndexPath(p, viMap, eiMap));
 			return result;
 		}
 
-		abstract List<Path> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k);
+		abstract List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k);
 
 	}
 

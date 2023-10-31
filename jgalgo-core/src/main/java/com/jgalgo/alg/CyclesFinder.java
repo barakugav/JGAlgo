@@ -35,7 +35,7 @@ public interface CyclesFinder {
 	 * @param  g a graph
 	 * @return   an iterator that iteration over all cycles in the graph
 	 */
-	public Iterator<Path> findAllCycles(IntGraph g);
+	public Iterator<IPath> findAllCycles(IntGraph g);
 
 	/**
 	 * Create a new algorithm for cycles finding.

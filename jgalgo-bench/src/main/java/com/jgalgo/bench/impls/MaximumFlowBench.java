@@ -36,7 +36,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.FlowNetworkInt;
 import com.jgalgo.alg.MaximumFlow;
-import com.jgalgo.alg.Path;
+import com.jgalgo.alg.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -354,7 +354,7 @@ public class MaximumFlowBench {
 		for (int[] vs = g.vertices().toIntArray();;) {
 			source = vs[rand.nextInt(vs.length)];
 			sink = vs[rand.nextInt(vs.length)];
-			if (source != sink && Path.findPath(g, source, sink) != null)
+			if (source != sink && IPath.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
 		}
 	}

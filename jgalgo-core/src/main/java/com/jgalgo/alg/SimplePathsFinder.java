@@ -38,7 +38,7 @@ public interface SimplePathsFinder {
 	 * @param  target the target vertex
 	 * @return        an iterator that iteration over all simple paths between the two vertices in the graph
 	 */
-	Iterator<Path> findAllSimplePaths(IntGraph g, int source, int target);
+	Iterator<IPath> findAllSimplePaths(IntGraph g, int source, int target);
 
 	/**
 	 * Create a new algorithm for simple paths finding.

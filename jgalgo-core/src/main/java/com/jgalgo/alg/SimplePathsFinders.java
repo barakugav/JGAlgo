@@ -25,7 +25,7 @@ class SimplePathsFinders {
 	static abstract class AbstractImpl implements SimplePathsFinder {
 
 		@Override
-		public Iterator<Path> findAllSimplePaths(IntGraph g, int source, int target) {
+		public Iterator<IPath> findAllSimplePaths(IntGraph g, int source, int target) {
 			if (g instanceof IndexGraph)
 				return findAllSimplePaths((IndexGraph) g, source, target);
 
@@ -35,11 +35,11 @@ class SimplePathsFinders {
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 
-			Iterator<Path> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
+			Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
 			return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
 		}
 
-		abstract Iterator<Path> findAllSimplePaths(IndexGraph g, int source, int target);
+		abstract Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target);
 
 	}
 

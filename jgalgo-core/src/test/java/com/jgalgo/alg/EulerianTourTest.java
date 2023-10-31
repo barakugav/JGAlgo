@@ -64,7 +64,7 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			IntGraph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
-			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
+			IPath tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
@@ -77,12 +77,12 @@ public class EulerianTourTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			IntGraph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
-			Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
+			IPath tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
 
-	private static void validateEulerianTour(IntGraph g, Path tour) {
+	private static void validateEulerianTour(IntGraph g, IPath tour) {
 		IntSet usedEdges = new IntOpenHashSet(g.edges().size());
 		for (IEdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e = it.nextInt();

@@ -41,7 +41,7 @@ public interface ChinesePostman {
 	 * @return   a closed path that visits all edges in the graph, with minimum weight sum with respect to the given
 	 *           edge weight function
 	 */
-	Path computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w);
+	IPath computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w);
 
 	/**
 	 * Create a new algorithm object for chinese postman problem.

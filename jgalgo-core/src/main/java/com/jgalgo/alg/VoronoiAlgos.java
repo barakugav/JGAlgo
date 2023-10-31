@@ -67,7 +67,7 @@ class VoronoiAlgos {
 		}
 
 		@Override
-		public Path getPath(int target) {
+		public IPath getPath(int target) {
 			if (distance[target] == Double.POSITIVE_INFINITY)
 				return null;
 			IntArrayList path = new IntArrayList();
@@ -127,9 +127,9 @@ class VoronoiAlgos {
 		}
 
 		@Override
-		public Path getPath(int target) {
-			Path indexPath = res().getPath(viMap.idToIndex(target));
-			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+		public IPath getPath(int target) {
+			IPath indexPath = res().getPath(viMap.idToIndex(target));
+			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 		}
 
 		@Override

@@ -134,14 +134,14 @@ public class ShortestPathAStarTest extends TestBase {
 			@Override
 			public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
 				final int n = g.vertices().size();
-				Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>(n);
+				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(n);
 				Int2DoubleMap distances = new Int2DoubleOpenHashMap(n);
 				distances.defaultReturnValue(Double.POSITIVE_INFINITY);
 
 				ShortestPathAStar aStar = new ShortestPathAStar();
 				for (int target : g.vertices()) {
 					IntToDoubleFunction vHeuristic = vHeuristicBuilder.apply(new HeuristicParams(g, w, source, target));
-					Path path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
+					IPath path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
 						paths.put(target, path);
 						distances.put(target, w.weightSum(path.edges()));
@@ -156,7 +156,7 @@ public class ShortestPathAStarTest extends TestBase {
 					}
 
 					@Override
-					public Path getPath(int target) {
+					public IPath getPath(int target) {
 						return paths.get(target);
 					}
 
@@ -166,7 +166,7 @@ public class ShortestPathAStarTest extends TestBase {
 					}
 
 					@Override
-					public Path getNegativeCycle() {
+					public IPath getNegativeCycle() {
 						throw new IllegalStateException("no negative cycle found");
 					}
 				};

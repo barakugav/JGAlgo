@@ -26,7 +26,7 @@ class ShortestPathSTs {
 	static abstract class AbstractImpl implements ShortestPathST {
 
 		@Override
-		public Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
+		public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target) {
 			if (g instanceof IndexGraph)
 				return computeShortestPath((IndexGraph) g, w, source, target);
 
@@ -37,11 +37,11 @@ class ShortestPathSTs {
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 
-			Path indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);
-			return PathImpl.pathFromIndexPath(indexResult, viMap, eiMap);
+			IPath indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);
+			return PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
 		}
 
-		abstract Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target);
+		abstract IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target);
 	}
 
 }

@@ -139,7 +139,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 		if (result.foundNegativeCycle()) {
-			Path cycle = null;
+			IPath cycle = null;
 			try {
 				cycle = result.getNegativeCycle();
 			} catch (UnsupportedOperationException e) {
@@ -161,7 +161,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			Path path = result.getPath(v);
+			IPath path = result.getPath(v);
 			if (path != null) {
 				double pathWeight = IWeightFunction.weightSum(w, path.edges());
 				assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("

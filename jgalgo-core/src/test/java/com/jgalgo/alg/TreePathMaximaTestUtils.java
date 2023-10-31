@@ -39,7 +39,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		for (int q = 0; q < queriesNum; q++) {
 			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 
-			Path path = Path.findPath(t, u, v);
+			IPath path = IPath.findPath(t, u, v);
 
 			int maxEdge = -1;
 			double maxEdgeWeight = 0;
@@ -169,7 +169,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 				if (badEdgeSource == badEdgeTarget)
 					continue;
 
-				Path mstPath = Path.findPath(mst, badEdgeSource, badEdgeTarget);
+				IPath mstPath = IPath.findPath(mst, badEdgeSource, badEdgeTarget);
 				int goodEdge = mstPath.edges().getInt(rand.nextInt(mstPath.edges().size()));
 
 				if (w.weightInt(goodEdge) < w.weightInt(badEdge)) {

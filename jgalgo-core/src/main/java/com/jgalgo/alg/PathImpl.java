@@ -18,21 +18,25 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class PathImpl implements Path {
+class PathImpl implements IPath {
 
 	private final IndexGraph g;
 	private final int source;
@@ -51,7 +55,7 @@ class PathImpl implements Path {
 	 *                   graph.
 	 */
 	PathImpl(IndexGraph g, int source, int target, IntList edges) {
-		assert Path.isPath(g, source, target, edges);
+		assert IPath.isPath(g, source, target, edges);
 		this.g = g;
 		this.source = source;
 		this.target = target;
@@ -60,12 +64,12 @@ class PathImpl implements Path {
 	}
 
 	@Override
-	public int source() {
+	public int sourceInt() {
 		return source;
 	}
 
 	@Override
-	public int target() {
+	public int targetInt() {
 		return target;
 	}
 
@@ -92,8 +96,8 @@ class PathImpl implements Path {
 					res[resIdx++] = it.sourceInt();
 					if (!it.hasNext()) {
 						if (!isCycle()) {
-							assert it.targetInt() == target();
-							res[resIdx++] = target();
+							assert it.targetInt() == targetInt();
+							res[resIdx++] = targetInt();
 						}
 						break;
 					}
@@ -241,11 +245,15 @@ class PathImpl implements Path {
 		return edges().toString();
 	}
 
-	static Path pathFromIndexPath(Path path, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
+	static IPath intPathFromIndexPath(IPath indexPath, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		return indexPath == null ? null : new IntPathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
-	static Path findPath(IndexGraph g, final int source, final int target) {
+	static <V, E> Path<V, E> objPathFromIndexPath(IPath indexPath, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		return indexPath == null ? null : new ObjPathFromIndexPath<>(indexPath, viMap, eiMap);
+	}
+
+	static IPath findPath(IndexGraph g, final int source, final int target) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
@@ -272,46 +280,80 @@ class PathImpl implements Path {
 		return new PathImpl(g, source, target, path);
 	}
 
-	private static class PathFromIndexPath implements Path {
+	static boolean isPath(IndexGraph g, int source, int target, IntIterator edges) {
+		if (!g.vertices().contains(source) || !g.vertices().contains(target))
+			return false;
+		if (!edges.hasNext())
+			return source == target;
 
-		private final Path path;
-		private final IndexIntIdMap viMap;
-		private final IndexIntIdMap eiMap;
+		if (g.isDirected()) {
+			int v = source;
+			while (edges.hasNext()) {
+				int e = edges.nextInt();
+				if (!g.edges().contains(e) || g.edgeSource(e) != v)
+					return false;
+				v = g.edgeTarget(e);
+			}
+			return v == target;
 
-		PathFromIndexPath(Path path, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.path = Objects.requireNonNull(path);
+		} else {
+			int v = source;
+			while (edges.hasNext()) {
+				int e = edges.nextInt();
+				if (!g.edges().contains(e))
+					return false;
+				if (g.edgeSource(e) == v) {
+					v = g.edgeTarget(e);
+				} else if (g.edgeTarget(e) == v) {
+					v = g.edgeSource(e);
+				} else {
+					return false;
+				}
+			}
+			return v == target;
+		}
+	}
+
+	private static class ObjPathFromIndexPath<V, E> implements Path<V, E> {
+
+		private final IPath indexPath;
+		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+
+		ObjPathFromIndexPath(IPath indexPath, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+			this.indexPath = Objects.requireNonNull(indexPath);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
-		public int source() {
-			return viMap.indexToIdInt(path.source());
+		public V source() {
+			return viMap.indexToId(indexPath.sourceInt());
 		}
 
 		@Override
-		public int target() {
-			return viMap.indexToIdInt(path.target());
+		public V target() {
+			return viMap.indexToId(indexPath.targetInt());
 		}
 
 		@Override
-		public IEdgeIter edgeIter() {
-			return IndexIdMaps.indexToIdEdgeIter(path.edgeIter(), viMap, eiMap);
+		public EdgeIter<V, E> edgeIter() {
+			return IndexIdMaps.indexToIdEdgeIter(indexPath.edgeIter(), viMap, eiMap);
 		}
 
 		@Override
-		public IntList edges() {
-			return IndexIdMaps.indexToIdList(path.edges(), eiMap);
+		public List<E> edges() {
+			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);
 		}
 
 		@Override
-		public IntList vertices() {
-			return IndexIdMaps.indexToIdList(path.vertices(), viMap);
+		public List<V> vertices() {
+			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);
 		}
 
 		@Override
 		public boolean isSimple() {
-			return path.isSimple();
+			return indexPath.isSimple();
 		}
 
 		@Override
@@ -320,13 +362,61 @@ class PathImpl implements Path {
 		}
 	}
 
-	static class IterFromIndexIter implements Iterator<Path> {
+	private static class IntPathFromIndexPath implements IPath {
 
-		private final Iterator<Path> res;
+		private final IPath indexPath;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IterFromIndexIter(Iterator<Path> res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntPathFromIndexPath(IPath indexPath, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexPath = Objects.requireNonNull(indexPath);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public int sourceInt() {
+			return viMap.indexToIdInt(indexPath.sourceInt());
+		}
+
+		@Override
+		public int targetInt() {
+			return viMap.indexToIdInt(indexPath.targetInt());
+		}
+
+		@Override
+		public IEdgeIter edgeIter() {
+			return IndexIdMaps.indexToIdEdgeIter(indexPath.edgeIter(), viMap, eiMap);
+		}
+
+		@Override
+		public IntList edges() {
+			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);
+		}
+
+		@Override
+		public IntList vertices() {
+			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);
+		}
+
+		@Override
+		public boolean isSimple() {
+			return indexPath.isSimple();
+		}
+
+		@Override
+		public String toString() {
+			return edges().toString();
+		}
+	}
+
+	static class IterFromIndexIter implements Iterator<IPath> {
+
+		private final Iterator<IPath> res;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
+
+		IterFromIndexIter(Iterator<IPath> res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -338,8 +428,8 @@ class PathImpl implements Path {
 		}
 
 		@Override
-		public Path next() {
-			return pathFromIndexPath(res.next(), viMap, eiMap);
+		public IPath next() {
+			return intPathFromIndexPath(res.next(), viMap, eiMap);
 		}
 
 	}

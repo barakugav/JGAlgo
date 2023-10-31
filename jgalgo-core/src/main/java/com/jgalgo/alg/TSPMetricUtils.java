@@ -30,14 +30,14 @@ class TSPMetricUtils {
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, int[] edgeRef) {
+	static IPath calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, int[] edgeRef) {
 		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
 		assert g.vertices().intStream().allMatch(v -> g1.outEdges(v).size() % 2 == 0);
 
 		/* Calculate Eulerian tour in the new graph */
-		Path tour = EulerianTourAlgo.newInstance().computeEulerianTour(g1);
+		IPath tour = EulerianTourAlgo.newInstance().computeEulerianTour(g1);
 		assert isValidCycle(g1, tour);
 		assert isPathVisitEvery(g1, tour);
 
@@ -61,13 +61,13 @@ class TSPMetricUtils {
 		}
 
 		assert firstVertex == lastVertex;
-		Path cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);
+		IPath cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);
 		assert isValidCycle(g, cycle0);
 		assert isPathVisitEvery(g, cycle0);
 		return cycle0;
 	}
 
-	private static boolean isValidCycle(IndexGraph g, Path path) {
+	private static boolean isValidCycle(IndexGraph g, IPath path) {
 		IEdgeIter it = path.edgeIter();
 		it.nextInt();
 		final int begin = it.sourceInt();
@@ -81,7 +81,7 @@ class TSPMetricUtils {
 		}
 	}
 
-	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
+	private static boolean isPathVisitEvery(IndexGraph g, IPath path) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		for (int e : path.edges()) {
@@ -98,7 +98,7 @@ class TSPMetricUtils {
 	static abstract class AbstractImpl implements TSPMetric {
 
 		@Override
-		public Path computeShortestTour(IntGraph g, IWeightFunction w) {
+		public IPath computeShortestTour(IntGraph g, IWeightFunction w) {
 			if (g instanceof IndexGraph)
 				return computeShortestTour((IndexGraph) g, w);
 
@@ -107,11 +107,11 @@ class TSPMetricUtils {
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
-			Path indexPath = computeShortestTour(iGraph, iw);
-			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+			IPath indexPath = computeShortestTour(iGraph, iw);
+			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 		}
 
-		abstract Path computeShortestTour(IndexGraph g, IWeightFunction w);
+		abstract IPath computeShortestTour(IndexGraph g, IWeightFunction w);
 
 	}
 

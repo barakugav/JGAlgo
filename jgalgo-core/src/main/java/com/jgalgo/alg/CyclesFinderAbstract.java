@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexIntIdMap;
 abstract class CyclesFinderAbstract implements CyclesFinder {
 
 	@Override
-	public Iterator<Path> findAllCycles(IntGraph g) {
+	public Iterator<IPath> findAllCycles(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return findAllCycles((IndexGraph) g);
 
@@ -31,10 +31,10 @@ abstract class CyclesFinderAbstract implements CyclesFinder {
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 
-		Iterator<Path> indexResult = findAllCycles(iGraph);
+		Iterator<IPath> indexResult = findAllCycles(iGraph);
 		return new PathImpl.IterFromIndexIter(indexResult, viMap, eiMap);
 	}
 
-	abstract Iterator<Path> findAllCycles(IndexGraph g);
+	abstract Iterator<IPath> findAllCycles(IndexGraph g);
 
 }

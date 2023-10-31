@@ -58,18 +58,18 @@ class KShortestPathsSTTestUtils extends TestUtils {
 
 	private static void validateKShortestPath(IntGraph g, IWeightFunctionInt w, int source, int target, int k,
 			KShortestPathsST algo) {
-		List<Path> pathsActual = algo.computeKShortestPaths(g, w, source, target, k);
-		for (Path p : pathsActual) {
-			assertEquals(source, p.source());
-			assertEquals(target, p.target());
+		List<IPath> pathsActual = algo.computeKShortestPaths(g, w, source, target, k);
+		for (IPath p : pathsActual) {
+			assertEquals(source, p.sourceInt());
+			assertEquals(target, p.targetInt());
 			assertTrue(p.isSimple());
-			assertTrue(Path.isPath(g, source, target, p.edges()));
+			assertTrue(IPath.isPath(g, source, target, p.edges()));
 			assertTrue(p.vertices().intStream().distinct().count() == p.vertices().size());
 		}
 
 		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
-			Iterator<Path> simplePathsIter = SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
-			List<Path> pathsExpected = StreamSupport
+			Iterator<IPath> simplePathsIter = SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
+			List<IPath> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
 					.map(p -> ObjectDoublePair.of(p, w.weightSum(p.edges())))
 					.sorted((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble())).limit(k)

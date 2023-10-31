@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.MinimumMeanCycle;
-import com.jgalgo.alg.Path;
+import com.jgalgo.alg.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
@@ -80,7 +80,7 @@ public class MinimumMeanCycleBench {
 		IntGraph g = gw.first();
 		IWeightFunctionInt w = gw.second();
 		MinimumMeanCycle algo = builder.build();
-		Path cycle = algo.computeMinimumMeanCycle(g, w);
+		IPath cycle = algo.computeMinimumMeanCycle(g, w);
 		blackhole.consume(cycle);
 	}
 

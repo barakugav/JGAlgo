@@ -43,7 +43,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 	CyclesFinderTarjan() {}
 
 	@Override
-	Iterator<Path> findAllCycles(IndexGraph g) {
+	Iterator<IPath> findAllCycles(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		return new Iterator<>() {
 
@@ -61,7 +61,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			 * to the store depth, we decrease it by one.
 			 */
 			int cycleFoundDepth = -1;
-			Path nextCycle;
+			IPath nextCycle;
 
 			{
 				isMarked.set(startV);
@@ -141,9 +141,9 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			}
 
 			@Override
-			public Path next() {
+			public IPath next() {
 				Assertions.Iters.hasNext(this);
-				Path ret = nextCycle;
+				IPath ret = nextCycle;
 				advance();
 				return ret;
 			}

@@ -64,15 +64,15 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		final int limit = 20;
 		Set<IntList> paths = new HashSet<>();
 
-		Iterator<Path> pit = algo.findAllSimplePaths(g, source, target);
+		Iterator<IPath> pit = algo.findAllSimplePaths(g, source, target);
 		if (!pit.hasNext())
-			assertNull(Path.findPath(g, source, target));
+			assertNull(IPath.findPath(g, source, target));
 		for (; pit.hasNext();) {
-			Path p = pit.next();
-			assertEquals(source, p.source());
-			assertEquals(target, p.target());
+			IPath p = pit.next();
+			assertEquals(source, p.sourceInt());
+			assertEquals(target, p.targetInt());
 			assertTrue(p.isSimple());
-			assertTrue(Path.isPath(g, source, target, p.edges()));
+			assertTrue(IPath.isPath(g, source, target, p.edges()));
 			assertTrue(p.vertices().intStream().distinct().count() == p.vertices().size());
 			assertTrue(paths.add(p.edges()));
 			if (paths.size() >= limit)

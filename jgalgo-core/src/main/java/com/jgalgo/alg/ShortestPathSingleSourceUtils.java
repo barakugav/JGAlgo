@@ -87,8 +87,8 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public Path getPath(int target) {
-			return PathImpl.pathFromIndexPath(result.getPath(viMap.idToIndex(target)), viMap, eiMap);
+		public IPath getPath(int target) {
+			return PathImpl.intPathFromIndexPath(result.getPath(viMap.idToIndex(target)), viMap, eiMap);
 		}
 
 		@Override
@@ -97,8 +97,8 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public Path getNegativeCycle() {
-			return PathImpl.pathFromIndexPath(result.getNegativeCycle(), viMap, eiMap);
+		public IPath getNegativeCycle() {
+			return PathImpl.intPathFromIndexPath(result.getNegativeCycle(), viMap, eiMap);
 		}
 	}
 
@@ -242,7 +242,7 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public Path getPath(int target) {
+		public IPath getPath(int target) {
 			if (distances[target] == Double.POSITIVE_INFINITY)
 				return null;
 			IntArrayList path = new IntArrayList();
@@ -277,7 +277,7 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public Path getNegativeCycle() {
+		public IPath getNegativeCycle() {
 			throw new IllegalStateException("no negative cycle found");
 		}
 
@@ -317,7 +317,7 @@ class ShortestPathSingleSourceUtils {
 			}
 
 			@Override
-			public Path getPath(int target) {
+			public IPath getPath(int target) {
 				if (distances[target] == Integer.MAX_VALUE)
 					return null;
 				IntArrayList path = new IntArrayList();
@@ -340,7 +340,7 @@ class ShortestPathSingleSourceUtils {
 			}
 
 			@Override
-			public Path getNegativeCycle() {
+			public IPath getNegativeCycle() {
 				throw new IllegalStateException("no negative cycle found");
 			}
 

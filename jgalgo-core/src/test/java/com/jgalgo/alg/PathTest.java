@@ -49,15 +49,17 @@ public class PathTest extends TestBase {
 			int source = vs[rand.nextInt(vs.length)];
 			int target = vs[rand.nextInt(vs.length)];
 
-			Path actual = Path.findPath(g, source, target);
-			Path expected = validationAlgo.computeCardinalityShortestPaths(g, source).getPath(target);
+			IPath actual = IPath.findPath(g, source, target);
+			IPath expected = validationAlgo.computeCardinalityShortestPaths(g, source).getPath(target);
 			if (expected == null) {
 				assertNull(actual, "found non existing path");
 			} else {
 				assertNotNull(actual, "failed to found a path");
 				assertEquals(expected.edges().size(), actual.edges().size(), "failed to find shortest path");
 
-				assertTrue(Path.isPath(g, source, target, actual.edges()));
+				assertEquals(source, actual.sourceInt());
+				assertEquals(target, actual.targetInt());
+				assertTrue(IPath.isPath(g, source, target, actual.edges()));
 
 				boolean isSimpleExpected = actual.vertices().intStream().distinct().count() == actual.vertices().size();
 				assertEquals(isSimpleExpected, actual.isSimple());
@@ -78,21 +80,21 @@ public class PathTest extends TestBase {
 		int e4 = g.addEdge(v4, v1);
 		int e5 = g.addEdge(v2, v4);
 
-		assertTrue(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e5)));
-		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
+		assertTrue(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e3, e5)));
+		assertFalse(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
 
-		assertTrue(Path.isPath(g, v1, v2, IntList.of(e1, e5, e3, e2)));
-		assertFalse(Path.isPath(g, v2, v2, IntList.of(e1, e5, e3, e2)));
-		assertFalse(Path.isPath(g, v4, v2, IntList.of(e1, e5, e3, e2)));
-		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e3, e2)));
-		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e5, e3, e2)));
-		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e5, e3, e5)));
-		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e2, e5, e3, e2)));
+		assertTrue(IPath.isPath(g, v1, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(IPath.isPath(g, v2, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(IPath.isPath(g, v4, v2, IntList.of(e1, e5, e3, e2)));
+		assertFalse(IPath.isPath(g, v1, v3, IntList.of(e1, e5, e3, e2)));
+		assertFalse(IPath.isPath(g, v1, v1, IntList.of(e1, e5, e3, e2)));
+		assertFalse(IPath.isPath(g, v1, v2, IntList.of(e1, e5, e3, e5)));
+		assertFalse(IPath.isPath(g, v1, v2, IntList.of(e1, e2, e5, e3, e2)));
 	}
 
 	@Test
@@ -108,21 +110,21 @@ public class PathTest extends TestBase {
 		int e4 = g.addEdge(v4, v1);
 		int e5 = g.addEdge(v2, v4);
 
-		assertTrue(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
-		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4, e1)));
-		assertFalse(Path.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
+		assertTrue(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v2, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v3, v1, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v4, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v3, IntList.of(e1, e2, e3, e4)));
+		assertFalse(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e3, e4, e1)));
+		assertFalse(IPath.isPath(g, v1, v1, IntList.of(e1, e2, e5, e3, e4)));
 
-		assertTrue(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2)));
-		assertFalse(Path.isPath(g, v3, v3, IntList.of(e1, e5, e4, e1, e2)));
-		assertFalse(Path.isPath(g, v2, v3, IntList.of(e1, e5, e4, e1, e2)));
-		assertFalse(Path.isPath(g, v1, v4, IntList.of(e1, e5, e4, e1, e2)));
-		assertFalse(Path.isPath(g, v1, v2, IntList.of(e1, e5, e4, e1, e2)));
-		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2, e3)));
-		assertFalse(Path.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e5, e2)));
+		assertTrue(IPath.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(IPath.isPath(g, v3, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(IPath.isPath(g, v2, v3, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(IPath.isPath(g, v1, v4, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(IPath.isPath(g, v1, v2, IntList.of(e1, e5, e4, e1, e2)));
+		assertFalse(IPath.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e2, e3)));
+		assertFalse(IPath.isPath(g, v1, v3, IntList.of(e1, e5, e4, e1, e5, e2)));
 	}
 
 	@Test
@@ -138,9 +140,9 @@ public class PathTest extends TestBase {
 		int e4 = g.addEdge(v4, v1);
 		int e5 = g.addEdge(v2, v4);
 
-		assertFalse(Path.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
-		assertFalse(Path.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
-		assertTrue(Path.newInstance(g, v1, v3, IntList.of(e1, e5, e3)).isSimple());
+		assertFalse(IPath.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
+		assertFalse(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
+		assertTrue(IPath.newInstance(g, v1, v3, IntList.of(e1, e5, e3)).isSimple());
 	}
 
 }

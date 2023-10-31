@@ -43,7 +43,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		return nonSelfEdgesCount;
 	}
 
-	Path computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
+	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
 		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
@@ -92,7 +92,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;
 
 		/* Compute an Eulerian tour in the new graph */
-		Path eulerianTour = eulerianTourAlgo.computeEulerianTour(eulerianGraph);
+		IPath eulerianTour = eulerianTourAlgo.computeEulerianTour(eulerianGraph);
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
 		IntList path = new IntArrayList(eulerianTour.edges().size());
 		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {
@@ -106,20 +106,20 @@ class ChinesePostmanImpl implements ChinesePostman {
 			}
 		}
 
-		int pathSource = eulerianTour.source();
+		int pathSource = eulerianTour.sourceInt();
 		return new PathImpl(g, pathSource, pathSource, path);
 	}
 
 	@Override
-	public Path computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w) {
+	public IPath computeShortestEdgeVisitorCircle(IntGraph g, IWeightFunction w) {
 		if (g instanceof IndexGraph)
 			return computeShortestEdgeVisitorCircle((IndexGraph) g, w);
 		IndexGraph iGraph = g.indexGraph();
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-		Path indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
-		return PathImpl.pathFromIndexPath(indexResult, viMap, eiMap);
+		IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
+		return PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
 	}
 
 }

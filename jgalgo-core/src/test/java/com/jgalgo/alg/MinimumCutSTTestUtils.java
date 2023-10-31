@@ -83,7 +83,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		for (int[] vs = g.vertices().toIntArray();;) {
 			source = vs[rand.nextInt(vs.length)];
 			sink = vs[rand.nextInt(vs.length)];
-			if (source != sink && Path.findPath(g, source, sink) != null)
+			if (source != sink && IPath.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
 		}
 	}

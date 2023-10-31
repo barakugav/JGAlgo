@@ -102,7 +102,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			return positiveSsspAlgo.computeShortestPaths(g, w, source);
 
 		/* calculate a potential function (or find a negative cycle) */
-		Pair<int[], Path> p = calcPotential(g, w, minWeight);
+		Pair<int[], IPath> p = calcPotential(g, w, minWeight);
 		if (p.second() != null)
 			return Result.ofNegCycle(source, p.second());
 
@@ -115,7 +115,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private Pair<int[], Path> calcPotential(IndexGraph g, IWeightFunctionInt w0, int minWeight) {
+	private Pair<int[], IPath> calcPotential(IndexGraph g, IWeightFunctionInt w0, int minWeight) {
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -195,7 +195,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 						} else if (weight < 0) {
 							// negative cycle
-							Path negCycle0 = Path.findPath(gNeg, v, u);
+							IPath negCycle0 = IPath.findPath(gNeg, v, u);
 							IntList negCycle = new IntArrayList(negCycle0.edges().size() + 1);
 							for (int e2 : negCycle0.edges())
 								negCycle.add(gNegEdgeRefs[e2]);
@@ -309,9 +309,9 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		private final int sourcePotential;
 		private final int[] potential;
 		private final ShortestPathSingleSource.Result dijkstraRes;
-		private final Path cycle;
+		private final IPath cycle;
 
-		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, Path cycle) {
+		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, IPath cycle) {
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
@@ -322,7 +322,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			return new Result(source, potential, dijkstraRes, null);
 		}
 
-		static Result ofNegCycle(int source, Path cycle) {
+		static Result ofNegCycle(int source, IPath cycle) {
 			return new Result(source, null, null, cycle);
 		}
 
@@ -334,7 +334,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		}
 
 		@Override
-		public Path getPath(int target) {
+		public IPath getPath(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException("negative cycle found, no shortest path exists");
 			return dijkstraRes.getPath(target);
@@ -346,7 +346,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		}
 
 		@Override
-		public Path getNegativeCycle() {
+		public IPath getNegativeCycle() {
 			if (!foundNegativeCycle())
 				throw new IllegalStateException("no negative cycle found");
 			return cycle;

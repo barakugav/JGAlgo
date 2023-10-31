@@ -67,7 +67,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 	}
 
 	@Override
-	public Path computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
+	public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
 			IntToDoubleFunction vHeuristic) {
 		if (g instanceof IndexGraph)
 			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic);
@@ -82,12 +82,12 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 
 		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
 
-		Path indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
-		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+		IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
+		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 	@SuppressWarnings("boxing")
-	Path computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
@@ -133,7 +133,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		return null;
 	}
 
-	private static Path computePath(IndexGraph g, int source, int target, Int2ObjectMap<Info> info) {
+	private static IPath computePath(IndexGraph g, int source, int target, Int2ObjectMap<Info> info) {
 		IntArrayList path = new IntArrayList();
 		if (g.isDirected()) {
 			for (int v = target;;) {
