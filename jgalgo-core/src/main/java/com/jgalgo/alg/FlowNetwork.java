@@ -44,20 +44,25 @@ import com.jgalgo.graph.WeightsDouble;
  * means a flow directed from {@code edgeSource(e)} to {@code edgeTarget(e)} with \(f\) units of flow. A negative flow
  * \(-f\) value assigned to edge {@code e} means a flow directed from {@code edgeTarget(e)} to {@code edgeSource(e)}
  * (opposite direction) with \(|-f|\) units of flow (see {@link #getFlow(Object)}).
+ * <p>
+ * Some algorithm might be more efficient when the capacities and flows are integers. The interface
+ * {@link FlowNetworkInt} represent a network in which the capacities and flows are integers. In addition, both
+ * interfaces {@link IFlowNetwork} and {@link IFlowNetworkInt} are specific versions of {@link FlowNetwork} and
+ * {@link FlowNetworkInt} for {@link IntGraph}.
  *
  * <pre> {@code
- * Graph g = ...;
- * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
- * for (int e : g.edges())
+ * Graph<String, Integer> g = ...;
+ * FlowNetwork<String, Integer> net = FlowNetwork.createAsEdgeWeight(g);
+ * for (Integer e : g.edges())
  *  f.setCapacity(e, 1);
  *
- * int sourceVertex = ...;
- * int targetVertex = ...;
+ * String sourceVertex = ...;
+ * String targetVertex = ...;
  * MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
- * for (int e : g.edges()) {
+ * for (Integer e : g.edges()) {
  * 	double capacity = net.getCapacity(e);
  * 	double flow = net.getFlow(e);
  * 	System.out.println("flow on edge " + e + ": " + flow + "/" + capacity);

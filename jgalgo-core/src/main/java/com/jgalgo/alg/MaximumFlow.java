@@ -16,15 +16,15 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import java.util.Collection;
+import com.jgalgo.graph.Graph;
 
 /**
  * Calculate the maximum flow in a flow network.
  * <p>
  * A maximum flow is firstly a valid flow, namely for each vertex except the source and sink the sum of flow units going
- * along {@link IntGraph#inEdges(int)} must be equal to the sum of flow units going along
- * {@link IntGraph#outEdges(int)}. In addition, a maximum flow maximize the number of flow units originated at the
+ * along {@link Graph#inEdges(Object)} must be equal to the sum of flow units going along
+ * {@link Graph#outEdges(Object)}. In addition, a maximum flow maximize the number of flow units originated at the
  * source and reaching the sink, which is equivalent to the sum of flows going out(in) of the source(sink) subtracted by
  * the sum of flows going in(out) to the source(sink).
  * <p>
@@ -32,18 +32,18 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph g = ...;
- * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
- * for (int e : g.edges())
+ * Graph<String, Integer> g = ...;
+ * FlowNetwork<String, Integer> net = FlowNetwork.createAsEdgeWeight(g);
+ * for (Integer e : g.edges())
  *  f.setCapacity(e, 1);
  *
- * int sourceVertex = ...;
- * int targetVertex = ...;
+ * String sourceVertex = ...;
+ * String targetVertex = ...;
  * MaxFlow maxFlowAlg = MaximumFlow.newInstance();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
- * for (int e : g.edges()) {
+ * for (Integer e : g.edges()) {
  * 	double capacity = net.getCapacity(e);
  * 	double flow = net.getFlow(e);
  * 	System.out.println("flow on edge " + e + ": " + flow + "/" + capacity);
@@ -59,8 +59,10 @@ public interface MaximumFlow {
 	/**
 	 * Calculate the maximum flow in a network between a source and a sink.
 	 * <p>
-	 * The function will set the edges flow by {@link IFlowNetwork#setFlow(int, double)}.
+	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @param  net                      network flow
 	 * @param  source                   a source vertex
@@ -68,13 +70,15 @@ public interface MaximumFlow {
 	 * @return                          the maximum flow in the network from the source to the sink
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	double computeMaximumFlow(IntGraph g, IFlowNetwork net, int source, int sink);
+	<V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink);
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
 	 * <p>
-	 * The function will set the edges flow by {@link IFlowNetwork#setFlow(int, double)}.
+	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
 	 * @param  net                      network flow
 	 * @param  sources                  a set of source vertices
@@ -83,7 +87,7 @@ public interface MaximumFlow {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	double computeMaximumFlow(IntGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks);
+	<V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, Collection<V> sources, Collection<V> sinks);
 
 	/**
 	 * Create a new maximum flow algorithm object.
