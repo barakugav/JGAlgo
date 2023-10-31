@@ -27,7 +27,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	@Override
-	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();

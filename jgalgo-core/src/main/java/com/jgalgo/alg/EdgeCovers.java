@@ -17,11 +17,16 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -30,24 +35,34 @@ class EdgeCovers {
 
 	static abstract class AbstractImpl implements EdgeCover {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public EdgeCover.Result computeMinimumEdgeCover(IntGraph g, IWeightFunction w) {
-			if (g instanceof IndexGraph)
-				return computeMinimumEdgeCover((IndexGraph) g, w);
+		public <V, E> EdgeCover.Result<V, E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (EdgeCover.Result<V, E>) computeMinimumEdgeCover((IndexGraph) g, w0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);
+				return (EdgeCover.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
 
-			EdgeCover.Result indexResult = computeMinimumEdgeCover(iGraph, iw);
-			return new ResultFromIndexResult(indexResult, eiMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);
+				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+			}
 		}
 
-		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
+		abstract EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
 
 	}
 
-	static class ResultImpl implements EdgeCover.Result {
+	static class ResultImpl implements EdgeCover.IResult {
 
 		private final IndexGraph g;
 		private final BitSet cover;
@@ -83,24 +98,49 @@ class EdgeCovers {
 			return edges().toString();
 		}
 	}
-	private static class ResultFromIndexResult implements EdgeCover.Result {
+	private static class IntResultFromIndexResult implements EdgeCover.IResult {
 
-		private final EdgeCover.Result res;
+		private final EdgeCover.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(EdgeCover.Result res, IndexIntIdMap eiMap) {
-			this.res = Objects.requireNonNull(res);
+		IntResultFromIndexResult(EdgeCover.IResult indexRes, IndexIntIdMap eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public IntSet edges() {
-			return IndexIdMaps.indexToIdSet(res.edges(), eiMap);
+			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
 		}
 
 		@Override
 		public boolean isInCover(int edge) {
-			return res.isInCover(eiMap.idToIndex(edge));
+			return indexRes.isInCover(eiMap.idToIndex(edge));
+		}
+
+		@Override
+		public String toString() {
+			return edges().toString();
+		}
+	}
+	private static class ObjResultFromIndexResult<V, E> implements EdgeCover.Result<V, E> {
+
+		private final EdgeCover.IResult indexRes;
+		private final IndexIdMap<E> eiMap;
+
+		ObjResultFromIndexResult(EdgeCover.IResult indexRes, IndexIdMap<E> eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public Set<E> edges() {
+			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
+		}
+
+		@Override
+		public boolean isInCover(E edge) {
+			return indexRes.isInCover(eiMap.idToIndex(edge));
 		}
 
 		@Override

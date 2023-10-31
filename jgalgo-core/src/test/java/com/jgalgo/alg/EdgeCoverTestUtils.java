@@ -69,7 +69,7 @@ class EdgeCoverTestUtils {
 	}
 
 	static void testEdgeCover(IntGraph g, IWeightFunctionInt w, EdgeCover algo) {
-		EdgeCover.Result ec = algo.computeMinimumEdgeCover(g, w);
+		EdgeCover.IResult ec = (EdgeCover.IResult) algo.computeMinimumEdgeCover(g, w);
 
 		for (int v : g.vertices()) {
 			boolean isCovered = g.outEdges(v).intStream().anyMatch(ec::isInCover);

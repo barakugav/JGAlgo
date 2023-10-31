@@ -16,10 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.IntGraph;
+import java.util.Collection;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -42,27 +47,53 @@ public interface EdgeCover {
 
 	/**
 	 * Compute a minimum edge cover of a graph with respect to an edge weight function.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If If {@code g} is
+	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
 	 *
-	 * @param  g a graph
-	 * @param  w an edge weight function
-	 * @return   a minimum edge cover
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @param  w   an edge weight function
+	 * @return     a minimum edge cover
 	 */
-	EdgeCover.Result computeMinimumEdgeCover(IntGraph g, IWeightFunction w);
+	<V, E> EdgeCover.Result<V, E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * A result object of {@link EdgeCover} computation.
 	 * <p>
 	 * The result object is basically the set of edges that form the cover.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * Get the edges which are included in the cover.
 		 *
 		 * @return the edges that are included in the cover
 		 */
+		Set<E> edges();
+
+		/**
+		 * Check whether a edge is included in the cover.
+		 *
+		 * @param  edge a graph edge identifier
+		 * @return      {@code true} if {@code edge} is included in the cover
+		 */
+		boolean isInCover(E edge);
+	}
+
+	/**
+	 * A result object of {@link EdgeCover} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends EdgeCover.Result<Integer, Integer> {
+
+		@Override
 		IntSet edges();
 
 		/**
@@ -73,6 +104,11 @@ public interface EdgeCover {
 		 */
 		boolean isInCover(int edge);
 
+		@Deprecated
+		@Override
+		default boolean isInCover(Integer edge) {
+			return isInCover(edge.intValue());
+		}
 	}
 
 	/**
@@ -81,22 +117,27 @@ public interface EdgeCover {
 	 * A set of edges is an edge cover of a graph if for every vertex has at least one adjacent edge which is in the
 	 * set. In addition, the collection of the edges must not contain duplicates.
 	 *
+	 * @param  <V>   the vertices type
+	 * @param  <E>   the edges type
 	 * @param  g     a graph
 	 * @param  edges a collection of edges that should cover all the vertices in the graph
 	 * @return       {@code true} if {@code edges} is an edge cover of {@code g}
 	 */
-	static boolean isCover(IntGraph g, IntCollection edges) {
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isCover(Graph<V, E> g, Collection<E> edges) {
 		IndexGraph ig;
+		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
+			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
 		} else {
 			ig = g.indexGraph();
-			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
 		}
 		final int n = ig.vertices().size();
 		final int m = ig.edges().size();
 		BitSet coverEdges = new BitSet(m);
-		for (int e : edges) {
+		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);
 			if (coverEdges.get(e))
@@ -148,12 +189,15 @@ public interface EdgeCover {
 		return () -> {
 			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();
 			EdgeCover weightedAlgo = new EdgeCoverWeighted();
-			return (g, w) -> {
-				boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
-				if (isCardinality) {
-					return cardinalityAlgo.computeMinimumEdgeCover(g, null);
-				} else {
-					return weightedAlgo.computeMinimumEdgeCover(g, w);
+			return new EdgeCover() {
+				@Override
+				public <V, E> Result<V, E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
+					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
+					if (isCardinality) {
+						return cardinalityAlgo.computeMinimumEdgeCover(g, null);
+					} else {
+						return weightedAlgo.computeMinimumEdgeCover(g, w);
+					}
 				}
 			};
 		};

@@ -17,6 +17,7 @@ package com.jgalgo.internal.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
@@ -28,6 +29,7 @@ public class IntContainers {
 	private IntContainers() {}
 
 	public static IntIterator toIntIterator(Iterator<Integer> it) {
+		Objects.requireNonNull(it);
 		if (it instanceof IntIterator)
 			return (IntIterator) it;
 		return new IntIterator() {
@@ -44,6 +46,7 @@ public class IntContainers {
 	}
 
 	public static IntCollection toIntCollection(Collection<Integer> c) {
+		Objects.requireNonNull(c);
 		if (c instanceof IntCollection)
 			return (IntCollection) c;
 		return new AbstractIntCollection() {

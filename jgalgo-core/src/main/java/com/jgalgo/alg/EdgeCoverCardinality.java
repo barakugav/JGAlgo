@@ -26,7 +26,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
 
 	@Override
-	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		final int m = g.edges().size();
 
