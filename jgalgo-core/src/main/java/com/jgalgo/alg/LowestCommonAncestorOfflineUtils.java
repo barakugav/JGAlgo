@@ -16,41 +16,98 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 class LowestCommonAncestorOfflineUtils {
 
 	static abstract class AbstractImpl implements LowestCommonAncestorOffline {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public LowestCommonAncestorOffline.Result findLCAs(IntGraph tree, int root,
-				LowestCommonAncestorOffline.Queries queries) {
-			if (tree instanceof IndexGraph)
-				return findLCAs((IndexGraph) tree, root, queries);
+		public <V, E> LowestCommonAncestorOffline.Result<V, E> findLCAs(Graph<V, E> tree, V root,
+				LowestCommonAncestorOffline.Queries<V, E> queries) {
+			if (tree instanceof IndexGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
+				return (LowestCommonAncestorOffline.Result<V, E>) findLCAs((IndexGraph) tree,
+						((Integer) root).intValue(), (LowestCommonAncestorOffline.IQueries) queries);
 
-			IndexGraph iGraph = tree.indexGraph();
-			IndexIntIdMap viMap = tree.indexGraphVerticesMap();
-			int iRoot = viMap.idToIndex(root);
-			LowestCommonAncestorOffline.Queries iQueries = new IndexQueriesFromQueries(queries, viMap);
+			} else if (tree instanceof IntGraph) {
+				IndexGraph iGraph = tree.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();
+				int iRoot = viMap.idToIndex(((Integer) root).intValue());
 
-			LowestCommonAncestorOffline.Result indexResult = findLCAs(iGraph, iRoot, iQueries);
-			return new ResultFromIndexResult(indexResult, viMap);
+				LowestCommonAncestorOffline.IQueries iQueries;
+				if (queries instanceof LowestCommonAncestorOffline.IQueries) {
+					iQueries = new IndexQueriesFromIntQueries((LowestCommonAncestorOffline.IQueries) queries, viMap);
+				} else {
+					iQueries = new IndexQueriesFromObjQueries<V, E>(queries, tree.indexGraphVerticesMap());
+				}
+
+				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);
+				return (LowestCommonAncestorOffline.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
+
+			} else {
+				IndexGraph iGraph = tree.indexGraph();
+				IndexIdMap<V> viMap = tree.indexGraphVerticesMap();
+				int iRoot = viMap.idToIndex(root);
+				LowestCommonAncestorOffline.IQueries iQueries = new IndexQueriesFromObjQueries<>(queries, viMap);
+
+				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);
+				return new ObjResultFromIndexResult<>(indexResult, viMap);
+			}
 		}
 
-		abstract LowestCommonAncestorOffline.Result findLCAs(IndexGraph tree, int root,
-				LowestCommonAncestorOffline.Queries queries);
+		abstract LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+				LowestCommonAncestorOffline.IQueries queries);
 
 	}
 
-	static class QueriesImpl implements LowestCommonAncestorOffline.Queries {
+	static class ObjQueriesImpl<V, E> implements LowestCommonAncestorOffline.Queries<V, E> {
+		private final ObjectList<V> qs;
+
+		ObjQueriesImpl() {
+			qs = new ObjectArrayList<>();
+		}
+
+		@Override
+		public void addQuery(V u, V v) {
+			qs.add(u);
+			qs.add(v);
+		}
+
+		@Override
+		public V getQuerySource(int idx) {
+			return qs.get(idx * 2 + 0);
+		}
+
+		@Override
+		public V getQueryTarget(int idx) {
+			return qs.get(idx * 2 + 1);
+		}
+
+		@Override
+		public int size() {
+			return qs.size() / 2;
+		}
+
+		@Override
+		public void clear() {
+			qs.clear();
+		}
+	}
+
+	static class IntQueriesImpl implements LowestCommonAncestorOffline.IQueries {
 		private final LongList qs;
 
-		QueriesImpl() {
+		IntQueriesImpl() {
 			qs = new LongArrayList();
 		}
 
@@ -60,12 +117,12 @@ class LowestCommonAncestorOfflineUtils {
 		}
 
 		@Override
-		public int getQuerySource(int idx) {
+		public int getQuerySourceInt(int idx) {
 			return JGAlgoUtils.long2low(qs.getLong(idx));
 		}
 
 		@Override
-		public int getQueryTarget(int idx) {
+		public int getQueryTargetInt(int idx) {
 			return JGAlgoUtils.long2high(qs.getLong(idx));
 		}
 
@@ -80,27 +137,27 @@ class LowestCommonAncestorOfflineUtils {
 		}
 	}
 
-	static class IndexQueriesFromQueries implements LowestCommonAncestorOffline.Queries {
-		private final LowestCommonAncestorOffline.Queries qs;
-		private final IndexIntIdMap viMap;
+	static class IndexQueriesFromObjQueries<V, E> implements LowestCommonAncestorOffline.IQueries {
+		private final LowestCommonAncestorOffline.Queries<V, E> qs;
+		private final IndexIdMap<V> viMap;
 
-		IndexQueriesFromQueries(LowestCommonAncestorOffline.Queries qs, IndexIntIdMap viMap) {
+		IndexQueriesFromObjQueries(LowestCommonAncestorOffline.Queries<V, E> qs, IndexIdMap<V> viMap) {
 			this.qs = Objects.requireNonNull(qs);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public void addQuery(int u, int v) {
-			qs.addQuery(viMap.indexToIdInt(u), viMap.indexToIdInt(v));
+			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));
 		}
 
 		@Override
-		public int getQuerySource(int idx) {
+		public int getQuerySourceInt(int idx) {
 			return viMap.idToIndex(qs.getQuerySource(idx));
 		}
 
 		@Override
-		public int getQueryTarget(int idx) {
+		public int getQueryTargetInt(int idx) {
 			return viMap.idToIndex(qs.getQueryTarget(idx));
 		}
 
@@ -115,7 +172,42 @@ class LowestCommonAncestorOfflineUtils {
 		}
 	}
 
-	static class ResultImpl implements LowestCommonAncestorOffline.Result {
+	static class IndexQueriesFromIntQueries implements LowestCommonAncestorOffline.IQueries {
+		private final LowestCommonAncestorOffline.IQueries qs;
+		private final IndexIntIdMap viMap;
+
+		IndexQueriesFromIntQueries(LowestCommonAncestorOffline.IQueries qs, IndexIntIdMap viMap) {
+			this.qs = Objects.requireNonNull(qs);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public void addQuery(int u, int v) {
+			qs.addQuery(viMap.indexToIdInt(u), viMap.indexToIdInt(v));
+		}
+
+		@Override
+		public int getQuerySourceInt(int idx) {
+			return viMap.idToIndex(qs.getQuerySourceInt(idx));
+		}
+
+		@Override
+		public int getQueryTargetInt(int idx) {
+			return viMap.idToIndex(qs.getQueryTargetInt(idx));
+		}
+
+		@Override
+		public int size() {
+			return qs.size();
+		}
+
+		@Override
+		public void clear() {
+			qs.clear();
+		}
+	}
+
+	static class ResultImpl implements LowestCommonAncestorOffline.IResult {
 
 		private final int[] res;
 
@@ -124,7 +216,7 @@ class LowestCommonAncestorOfflineUtils {
 		}
 
 		@Override
-		public int getLca(int queryIdx) {
+		public int getLcaInt(int queryIdx) {
 			return res[queryIdx];
 		}
 
@@ -135,25 +227,47 @@ class LowestCommonAncestorOfflineUtils {
 
 	}
 
-	private static class ResultFromIndexResult implements LowestCommonAncestorOffline.Result {
+	private static class ObjResultFromIndexResult<V, E> implements LowestCommonAncestorOffline.Result<V, E> {
 
-		private final LowestCommonAncestorOffline.Result res;
-		private final IndexIntIdMap viMap;
+		private final LowestCommonAncestorOffline.IResult indexRes;
+		private final IndexIdMap<V> viMap;
 
-		ResultFromIndexResult(LowestCommonAncestorOffline.Result res, IndexIntIdMap viMap) {
-			this.res = Objects.requireNonNull(res);
+		ObjResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIdMap<V> viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
-		public int getLca(int queryIdx) {
-			int vIdx = res.getLca(queryIdx);
+		public V getLca(int queryIdx) {
+			int vIdx = indexRes.getLcaInt(queryIdx);
+			return vIdx == -1 ? null : viMap.indexToId(vIdx);
+		}
+
+		@Override
+		public int size() {
+			return indexRes.size();
+		}
+	}
+
+	private static class IntResultFromIndexResult implements LowestCommonAncestorOffline.IResult {
+
+		private final LowestCommonAncestorOffline.IResult indexRes;
+		private final IndexIntIdMap viMap;
+
+		IntResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIntIdMap viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public int getLcaInt(int queryIdx) {
+			int vIdx = indexRes.getLcaInt(queryIdx);
 			return vIdx == -1 ? -1 : viMap.indexToIdInt(vIdx);
 		}
 
 		@Override
 		public int size() {
-			return res.size();
+			return indexRes.size();
 		}
 	}
 

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -37,32 +38,39 @@ public interface LowestCommonAncestorOffline {
 
 	/**
 	 * Find the lowest common ancestors of the given queries.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link LowestCommonAncestorOffline.IResult}.
 	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
 	 * @param  tree    the tree
 	 * @param  root    the root of the tree
 	 * @param  queries the queries
 	 * @return         the lowest common ancestors of the given queries
 	 */
-	LowestCommonAncestorOffline.Result findLCAs(IntGraph tree, int root, LowestCommonAncestorOffline.Queries queries);
+	<V, E> LowestCommonAncestorOffline.Result<V, E> findLCAs(Graph<V, E> tree, V root,
+			LowestCommonAncestorOffline.Queries<V, E> queries);
 
 	/**
 	 * Queries container for {@link LowestCommonAncestorOffline} computations.
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a
 	 * {@link LowestCommonAncestorOffline} algorithm using
-	 * {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}.
+	 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Queries {
+	static interface Queries<V, E> {
 
 		/**
 		 * Create an empty queries container.
 		 *
 		 * @return a new queries container
 		 */
-		static LowestCommonAncestorOffline.Queries newInstance() {
-			return new LowestCommonAncestorOfflineUtils.QueriesImpl();
+		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance() {
+			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>();
 		}
 
 		/**
@@ -71,31 +79,31 @@ public interface LowestCommonAncestorOffline {
 		 * @param u the first vertex
 		 * @param v the second vertex
 		 */
-		void addQuery(int u, int v);
+		void addQuery(V u, V v);
 
 		/**
 		 * Get a query source by index.
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
-		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
+		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
 		 * @return                           the first vertex of the query
 		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
 		 */
-		int getQuerySource(int idx);
+		V getQuerySource(int idx);
 
 		/**
 		 * Get a query target by index.
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
-		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
+		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
 		 *
 		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
 		 * @return                           the second vertex of the query
 		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
 		 */
-		int getQueryTarget(int idx);
+		V getQueryTarget(int idx);
 
 		/**
 		 * Get the number of queries in this container.
@@ -111,34 +119,130 @@ public interface LowestCommonAncestorOffline {
 	}
 
 	/**
-	 * Result of a {@link LowestCommonAncestorOffline} computation.
+	 * Queries container for {@link LowestCommonAncestorOffline} computations for {@link IntGraph}.
 	 *
 	 * @author Barak Ugav
 	 */
-	static interface Result {
+	static interface IQueries extends LowestCommonAncestorOffline.Queries<Integer, Integer> {
+
+		/**
+		 * Create an empty queries container.
+		 *
+		 * @return a new queries container
+		 */
+		static LowestCommonAncestorOffline.IQueries newInstance() {
+			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+		}
+
+		/**
+		 * Add a query for the lowest common ancestor of {@code u} and {@code v}.
+		 *
+		 * @param u the first vertex
+		 * @param v the second vertex
+		 */
+		void addQuery(int u, int v);
+
+		@Deprecated
+		@Override
+		default void addQuery(Integer u, Integer v) {
+			addQuery(u.intValue(), v.intValue());
+		}
+
+		/**
+		 * Get a query source by index.
+		 * <p>
+		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
+		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the first vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
+		 */
+		int getQuerySourceInt(int idx);
+
+		@Deprecated
+		@Override
+		default Integer getQuerySource(int idx) {
+			return Integer.valueOf(getQuerySourceInt(idx));
+		}
+
+		/**
+		 * Get a query target by index.
+		 * <p>
+		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
+		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
+		 *
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           the second vertex of the query
+		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
+		 */
+		int getQueryTargetInt(int idx);
+
+		@Deprecated
+		@Override
+		default Integer getQueryTarget(int idx) {
+			return Integer.valueOf(getQueryTargetInt(idx));
+		}
+	}
+
+	/**
+	 * Result of a {@link LowestCommonAncestorOffline} computation.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
+	 */
+	static interface Result<V, E> {
 
 		/**
 		 * Get the lowest common ancestor of the given query.
 		 * <p>
 		 * This result object was obtained by calling
-		 * {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}, which accept a set of multiple queries
-		 * using the {@link LowestCommonAncestorOffline.Queries} object. This method return the answer to a
+		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
+		 * using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer to a
 		 * <b>single</b> queries among them, by its index.
 		 *
 		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
 		 * @return          the lowest common ancestor of the given query
 		 */
-		int getLca(int queryIdx);
+		V getLca(int queryIdx);
 
 		/**
 		 * Get the number of queries in this result.
 		 * <p>
-		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.Queries} object
-		 * passed to {@link LowestCommonAncestorOffline#findLCAs(IntGraph, int, Queries)}.
+		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.IQueries} object
+		 * passed to {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}.
 		 *
 		 * @return the number of queries in this result
 		 */
 		int size();
+	}
+
+	/**
+	 * Result of a {@link LowestCommonAncestorOffline} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends LowestCommonAncestorOffline.Result<Integer, Integer> {
+
+		/**
+		 * Get the lowest common ancestor of the given query.
+		 * <p>
+		 * This result object was obtained by calling
+		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
+		 * using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer to a
+		 * <b>single</b> queries among them, by its index.
+		 *
+		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
+		 * @return          the lowest common ancestor of the given query
+		 */
+		int getLcaInt(int queryIdx);
+
+		@Deprecated
+		@Override
+		default Integer getLca(int queryIdx) {
+			return Integer.valueOf(getLcaInt(queryIdx));
+		}
 	}
 
 	/**

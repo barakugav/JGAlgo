@@ -27,14 +27,15 @@ public class LowestCommonAncestorOfflineUnionFindTest {
 
 	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorOffline> builder, int[][] queries) {
 		LowestCommonAncestorOffline lca = builder.get();
-		LowestCommonAncestorOffline.Queries qs = LowestCommonAncestorOffline.Queries.newInstance();
+		LowestCommonAncestorOffline.IQueries qs = LowestCommonAncestorOffline.IQueries.newInstance();
 		for (int q = 0; q < queries.length; q++)
 			qs.addQuery(queries[q][0], queries[q][1]);
-		LowestCommonAncestorOffline.Result lcaDS = lca.findLCAs(g, g.vertices().iterator().nextInt(), qs);
+		LowestCommonAncestorOffline.IResult lcaDS =
+				(LowestCommonAncestorOffline.IResult) lca.findLCAs(g, g.vertices().iterator().nextInt(), qs);
 
 		for (int q = 0; q < queries.length; q++) {
 			int expected = queries[q][2];
-			int actual = lcaDS.getLca(q);
+			int actual = lcaDS.getLcaInt(q);
 			assertEquals(expected, actual, "<- [" + queries[q][0] + "," + queries[q][1] + "]");
 		}
 	}

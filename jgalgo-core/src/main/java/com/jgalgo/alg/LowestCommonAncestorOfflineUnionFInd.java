@@ -29,15 +29,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {
 
 	@Override
-	LowestCommonAncestorOffline.Result findLCAs(IndexGraph tree, int root,
-			LowestCommonAncestorOffline.Queries queries) {
+	LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+			LowestCommonAncestorOffline.IQueries queries) {
 		final int n = tree.vertices().size();
 		int[] res = new int[queries.size()];
 
 		int[] queriesNum = new int[n];
 		int queriesNumCount = 0;
 		for (int qNum = queries.size(), q = 0; q < qNum; q++) {
-			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
+			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 			if (u != v) {
 				queriesNum[u]++;
 				queriesNum[v]++;
@@ -52,7 +52,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 		for (int v = 1; v < n; v++)
 			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1] + queriesNum[v - 1];
 		for (int qNum = queries.size(), q = 0; q < qNum; q++) {
-			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
+			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 			if (u != v) {
 				perVertexQueries[perVertexQueriesOffset[u]++] = q;
 				perVertexQueries[perVertexQueriesOffset[v]++] = q;
@@ -111,11 +111,11 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			for (IntIterator qit = vertexQueries.apply(u); qit.hasNext();) {
 				int q = qit.nextInt();
 				if (mark.get(q)) {
-					if (u == queries.getQuerySource(q)) {
-						res[q] = ufRoot[uf.find(queries.getQueryTarget(q))];
+					if (u == queries.getQuerySourceInt(q)) {
+						res[q] = ufRoot[uf.find(queries.getQueryTargetInt(q))];
 					} else {
-						assert u == queries.getQueryTarget(q);
-						res[q] = ufRoot[uf.find(queries.getQuerySource(q))];
+						assert u == queries.getQueryTargetInt(q);
+						res[q] = ufRoot[uf.find(queries.getQuerySourceInt(q))];
 					}
 
 				} else {
