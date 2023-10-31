@@ -16,37 +16,49 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import com.jgalgo.graph.IntGraph;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MaximalCliquesUtils {
 
 	static abstract class AbstractImpl implements MaximalCliques {
 
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public Iterator<IntSet> iterateMaximalCliques(IntGraph g) {
-			if (g instanceof IndexGraph)
-				return iterateMaximalCliques((IndexGraph) g);
+		public <V, E> Iterator<Set<V>> iterateMaximalCliques(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (Iterator) iterateMaximalCliques((IndexGraph) g);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
-			return new ResultFromIndexResult(indexResult, viMap);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
+				return (Iterator) new IntResultFromIndexResult(indexResult, viMap);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
+				return new ObjResultFromIndexResult<>(indexResult, viMap);
+			}
 		}
 
 		abstract Iterator<IntSet> iterateMaximalCliques(IndexGraph g);
 
 	}
 
-	private static class ResultFromIndexResult implements Iterator<IntSet> {
+	private static class IntResultFromIndexResult implements Iterator<IntSet> {
 
 		private final Iterator<IntSet> indexResult;
 		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(Iterator<IntSet> indexResult, IndexIntIdMap viMap) {
+		IntResultFromIndexResult(Iterator<IntSet> indexResult, IndexIntIdMap viMap) {
 			this.indexResult = indexResult;
 			this.viMap = viMap;
 		}
@@ -60,7 +72,27 @@ class MaximalCliquesUtils {
 		public IntSet next() {
 			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);
 		}
+	}
 
+	private static class ObjResultFromIndexResult<V> implements Iterator<Set<V>> {
+
+		private final Iterator<IntSet> indexResult;
+		private final IndexIdMap<V> viMap;
+
+		ObjResultFromIndexResult(Iterator<IntSet> indexResult, IndexIdMap<V> viMap) {
+			this.indexResult = indexResult;
+			this.viMap = viMap;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return indexResult.hasNext();
+		}
+
+		@Override
+		public Set<V> next() {
+			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);
+		}
 	}
 
 }

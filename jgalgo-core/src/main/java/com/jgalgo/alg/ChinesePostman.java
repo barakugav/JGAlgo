@@ -38,8 +38,8 @@ public interface ChinesePostman {
 	/**
 	 * Compute the shortest circuit that visits all edges in the graph at least once.
 	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}. If If {@code g} is {@link IntGraph},
-	 * prefer to pass {@link IWeightFunction} for best performance.
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}. If {@code g} is {@link IntGraph}, prefer
+	 * to pass {@link IWeightFunction} for best performance.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type

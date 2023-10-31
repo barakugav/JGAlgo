@@ -52,10 +52,11 @@ public class MaximalCliquesBench {
 	final int graphsNum = 31;
 	final AtomicInteger graphIdx = new AtomicInteger();
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void benchMaximalCliques(MaximalCliques.Builder builder, Blackhole blackhole) {
 		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		MaximalCliques algo = builder.build();
-		for (Iterator<IntSet> cliqueIter = algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
+		for (Iterator<IntSet> cliqueIter = (Iterator) algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
 			blackhole.consume(cliqueIter.next());
 	}
 

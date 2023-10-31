@@ -48,7 +48,7 @@ public interface EdgeCover {
 	/**
 	 * Compute a minimum edge cover of a graph with respect to an edge weight function.
 	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If If {@code g} is
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
 	 *
 	 * @param  <V> the vertices type

@@ -45,9 +45,10 @@ class MaximalCliquesTestUtils extends TestUtils {
 		});
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void testAlgo(IntGraph g, MaximalCliques algo) {
 		final int n = g.vertices().size();
-		Collection<IntSet> cliques = algo.findAllMaximalCliques(g);
+		Collection<IntSet> cliques = (Collection) algo.findAllMaximalCliques(g);
 
 		Set<IntIntPair> edges = new HashSet<>();
 		for (int e : g.edges()) {

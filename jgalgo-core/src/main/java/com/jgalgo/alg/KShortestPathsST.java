@@ -41,7 +41,7 @@ public interface KShortestPathsST {
 	/**
 	 * Compute the K shortest paths from a source vertex to a target vertex.
 	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object is a list of {@link IPath}. If If {@code g} is
+	 * If {@code g} is {@link IntGraph}, the returned object is a list of {@link IPath}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
 	 *
 	 * @param  <V>    the vertices type

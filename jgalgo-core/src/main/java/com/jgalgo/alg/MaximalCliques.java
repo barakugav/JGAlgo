@@ -18,6 +18,8 @@ package com.jgalgo.alg;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -33,12 +35,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph g = ...;
+ * Graph<String, Integer> g = ...;
  * MaximalCliques maxCliquesAlgo = MaximalCliques.newInstance();
  *
- * for (IntCollection clique : maxCliquesAlgo.findAllMaximalCliques(g)) {
+ * for (Set<String> clique : maxCliquesAlgo.findAllMaximalCliques(g)) {
  * 	System.out.println("Clique in the graph:");
- * 	for (int v : clique)
+ * 	for (String v : clique)
  * 		System.out.println("\t" + v);
  * }
  * }</pre>
@@ -51,15 +53,19 @@ public interface MaximalCliques {
 	 * Finds all the maximal cliques in a graph.
 	 * <p>
 	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
-	 * consider using the {@link #iterateMaximalCliques(IntGraph)} method instead, which may iterate the cliques one at
-	 * a time without storing all them at the same time in memory.
+	 * consider using the {@link #iterateMaximalCliques(Graph)} method instead, which may iterate the cliques one at a
+	 * time without storing all them at the same time in memory.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object will be a collection of {@link IntSet}.
 	 *
-	 * @param  g a graph
-	 * @return   a collection containing all maximal cliques in the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a collection containing all maximal cliques in the graph
 	 */
-	default Collection<IntSet> findAllMaximalCliques(IntGraph g) {
-		List<IntSet> cliques = new ObjectArrayList<>();
-		for (Iterator<IntSet> it = iterateMaximalCliques(g); it.hasNext();)
+	default <V, E> Collection<Set<V>> findAllMaximalCliques(Graph<V, E> g) {
+		List<Set<V>> cliques = new ObjectArrayList<>();
+		for (Iterator<Set<V>> it = iterateMaximalCliques(g); it.hasNext();)
 			cliques.add(it.next());
 		return cliques;
 	}
@@ -67,13 +73,17 @@ public interface MaximalCliques {
 	/**
 	 * Iterate over all maximal cliques in a graph.
 	 * <p>
-	 * In contrast to {@link #findAllMaximalCliques(IntGraph)}, this method may iterate the cliques one at a time and
-	 * can be used to avoid storing all the cliques in memory at the the time.
+	 * In contrast to {@link #findAllMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can
+	 * be used to avoid storing all the cliques in memory at the the time.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
 	 *
-	 * @param  g a graph
-	 * @return   an iterator that iterates over all maximal cliques in the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     an iterator that iterates over all maximal cliques in the graph
 	 */
-	Iterator<IntSet> iterateMaximalCliques(IntGraph g);
+	<V, E> Iterator<Set<V>> iterateMaximalCliques(Graph<V, E> g);
 
 	/**
 	 * Create a new maximal cliques algorithm object.
