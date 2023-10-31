@@ -17,11 +17,15 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.Range;
+
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexBiPartitions {
@@ -203,6 +207,12 @@ class VertexBiPartitions {
 		@Override
 		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
 			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);
+		}
+
+		@Override
+		public String toString() {
+			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}
 

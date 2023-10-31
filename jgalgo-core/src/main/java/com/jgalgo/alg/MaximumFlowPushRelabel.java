@@ -133,6 +133,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	private static IFlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
 		if (w instanceof IWeightFunctionInt) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			IFlowNetworkInt net = new IFlowNetworkInt() {
@@ -160,11 +162,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			};
 			return net;
 		} else {
+			IWeightFunction w0 = w;
 			IFlowNetwork net = new IFlowNetwork() {
 
 				@Override
 				public double getCapacity(int edge) {
-					return w.weight(edge);
+					return w0.weight(edge);
 				}
 
 				@Override
