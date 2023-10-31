@@ -15,26 +15,26 @@
  */
 package com.jgalgo.io;
 
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.graph.WeightsByte;
-import com.jgalgo.graph.WeightsChar;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsFloat;
-import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.graph.WeightsLong;
-import com.jgalgo.graph.WeightsObj;
-import com.jgalgo.graph.WeightsShort;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsByte;
+import com.jgalgo.graph.IWeightsChar;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsFloat;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IWeightsLong;
+import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.IWeightsShort;
 
 interface WeightsStringer {
 
 	String getWeightAsString(int id);
 
-	static WeightsStringer newInstance(Weights&lt;?&gt; weights) {
+	static WeightsStringer newInstance(IWeights&lt;?&gt; weights) {
 <span class="fc" id="L34">		return newInstance(weights, null, null);</span>
 	}
 
-	static WeightsStringer newInstance(Weights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
+	static WeightsStringer newInstance(IWeights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
 <span class="fc" id="L38">		boolean nonNumberEnclosing = false;</span>
 <span class="pc bpc" id="L39" title="1 of 4 branches missed.">		if (nonNumberPrefix != null || nonNumberSuffix != null) {</span>
 <span class="pc bpc" id="L40" title="1 of 2 branches missed.">			if (nonNumberPrefix == null)</span>
@@ -44,32 +44,32 @@ interface WeightsStringer {
 <span class="fc" id="L44">			nonNumberEnclosing = true;</span>
 		}
 
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (weights instanceof WeightsByte) {</span>
-<span class="nc" id="L48">			WeightsByte ws = (WeightsByte) weights;</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (weights instanceof IWeightsByte) {</span>
+<span class="nc" id="L48">			IWeightsByte ws = (IWeightsByte) weights;</span>
 <span class="nc" id="L49">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsShort) {</span>
-<span class="nc" id="L52">			WeightsShort ws = (WeightsShort) weights;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsShort) {</span>
+<span class="nc" id="L52">			IWeightsShort ws = (IWeightsShort) weights;</span>
 <span class="nc" id="L53">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		} else if (weights instanceof WeightsInt) {</span>
-<span class="fc" id="L56">			WeightsInt ws = (WeightsInt) weights;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		} else if (weights instanceof IWeightsInt) {</span>
+<span class="fc" id="L56">			IWeightsInt ws = (IWeightsInt) weights;</span>
 <span class="fc" id="L57">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsLong) {</span>
-<span class="nc" id="L60">			WeightsLong ws = (WeightsLong) weights;</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsLong) {</span>
+<span class="nc" id="L60">			IWeightsLong ws = (IWeightsLong) weights;</span>
 <span class="nc" id="L61">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsFloat) {</span>
-<span class="nc" id="L64">			WeightsFloat ws = (WeightsFloat) weights;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsFloat) {</span>
+<span class="nc" id="L64">			IWeightsFloat ws = (IWeightsFloat) weights;</span>
 <span class="nc" id="L65">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		} else if (weights instanceof WeightsDouble) {</span>
-<span class="fc" id="L68">			WeightsDouble ws = (WeightsDouble) weights;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		} else if (weights instanceof IWeightsDouble) {</span>
+<span class="fc" id="L68">			IWeightsDouble ws = (IWeightsDouble) weights;</span>
 <span class="fc" id="L69">			return elm -&gt; String.valueOf(ws.get(elm));</span>
 
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsBool) {</span>
-<span class="nc" id="L72">			WeightsBool ws = (WeightsBool) weights;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsBool) {</span>
+<span class="nc" id="L72">			IWeightsBool ws = (IWeightsBool) weights;</span>
 <span class="nc bnc" id="L73" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
 <span class="nc" id="L74">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
 <span class="nc" id="L75">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>
@@ -77,8 +77,8 @@ interface WeightsStringer {
 <span class="nc" id="L77">				return elm -&gt; String.valueOf(ws.get(elm));</span>
 			}
 
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsChar) {</span>
-<span class="nc" id="L81">			WeightsChar ws = (WeightsChar) weights;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsChar) {</span>
+<span class="nc" id="L81">			IWeightsChar ws = (IWeightsChar) weights;</span>
 <span class="nc bnc" id="L82" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
 <span class="nc" id="L83">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
 <span class="nc" id="L84">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>
@@ -86,8 +86,8 @@ interface WeightsStringer {
 <span class="nc" id="L86">				return elm -&gt; String.valueOf(ws.get(elm));</span>
 			}
 
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsObj) {</span>
-<span class="fc" id="L90">			WeightsObj&lt;?&gt; ws = (WeightsObj&lt;?&gt;) weights;</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsObj) {</span>
+<span class="fc" id="L90">			IWeightsObj&lt;?&gt; ws = (IWeightsObj&lt;?&gt;) weights;</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">			if (nonNumberEnclosing) {</span>
 <span class="fc" id="L92">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
 <span class="fc" id="L93">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>

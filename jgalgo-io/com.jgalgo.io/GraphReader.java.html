@@ -20,8 +20,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 
 /**
  * A reader that reads Graphs from files/IO-reader.
@@ -42,7 +42,7 @@ public interface GraphReader {
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a new graph read from the reader
 	 */
-	default Graph readGraph(Reader reader) {
+	default IntGraph readGraph(Reader reader) {
 <span class="fc" id="L46">		return readIntoBuilder(reader).build();</span>
 	}
 
@@ -52,7 +52,7 @@ public interface GraphReader {
 	 * @param  file a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default Graph readGraph(File file) {
+	default IntGraph readGraph(File file) {
 <span class="nc" id="L56">		try (Reader reader = new FileReader(file, GraphIO.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L57">			return readGraph(reader);</span>
 <span class="nc" id="L58">		} catch (IOException e) {</span>
@@ -66,7 +66,7 @@ public interface GraphReader {
 	 * @param  path a path to a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default Graph readGraph(String path) {
+	default IntGraph readGraph(String path) {
 <span class="nc" id="L70">		try (Reader reader = new FileReader(path, GraphIO.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L71">			return readGraph(reader);</span>
 <span class="nc" id="L72">		} catch (IOException e) {</span>
@@ -75,12 +75,12 @@ public interface GraphReader {
 	}
 
 	/**
-	 * Read a graph from an I/O reader into a {@link GraphBuilder}.
+	 * Read a graph from an I/O reader into a {@link IntGraphBuilder}.
 	 *
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a graph builder containing the vertices and edge read from the reader
 	 */
-	GraphBuilder readIntoBuilder(Reader reader);
+	IntGraphBuilder readIntoBuilder(Reader reader);
 
 	/**
 	 * Get new {@link GraphReader} instance by a format name.

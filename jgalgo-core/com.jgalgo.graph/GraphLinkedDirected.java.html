@@ -104,13 +104,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L104">	}</span>
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L108">		checkVertex(source);</span>
 <span class="fc" id="L109">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L114">		checkVertex(target);</span>
 <span class="fc" id="L115">		return new EdgeSetIn(target);</span>
 	}
@@ -243,13 +243,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L243">		super.clearEdges();</span>
 <span class="fc" id="L244">	}</span>
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 <span class="fc" id="L247">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L248">			super(source);</span>
 <span class="fc" id="L249">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L253">			return new EdgeIterOut(edgesOut[source]);</span>
 		}
 
@@ -259,13 +259,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 <span class="fc" id="L263">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L264">			super(target);</span>
 <span class="fc" id="L265">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L269">			return new EdgeIterIn(edgesIn[target]);</span>
 		}
 
@@ -281,12 +281,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L281">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L285">			return last.source;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L290">			return last.target;</span>
 		}
 	}

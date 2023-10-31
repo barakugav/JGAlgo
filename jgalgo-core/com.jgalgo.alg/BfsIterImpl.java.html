@@ -17,9 +17,10 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -27,9 +28,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
-<span class="nc" id="L30">class BfsIterImpl {</span>
+<span class="nc" id="L31">class BfsIterImpl {</span>
 
-	private static abstract class Abstract implements BfsIter {
+	private static abstract class Abstract implements Bfs.IntIter {
 
 		final IndexGraph g;
 		final BitSet visited;
@@ -38,37 +39,37 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		int layer;
 		int firstVInLayer;
 
-<span class="fc" id="L41">		private Abstract(IndexGraph g, IntIterator sources) {</span>
-<span class="fc" id="L42">			this.g = g;</span>
-<span class="fc" id="L43">			int n = g.vertices().size();</span>
-<span class="fc" id="L44">			visited = new BitSet(n);</span>
-<span class="fc" id="L45">			queue = new FIFOQueueLongNoReduce();</span>
-<span class="fc" id="L46">			inEdge = -1;</span>
-<span class="fc" id="L47">			layer = -1;</span>
+<span class="fc" id="L42">		private Abstract(IndexGraph g, IntIterator sources) {</span>
+<span class="fc" id="L43">			this.g = g;</span>
+<span class="fc" id="L44">			int n = g.vertices().size();</span>
+<span class="fc" id="L45">			visited = new BitSet(n);</span>
+<span class="fc" id="L46">			queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc" id="L47">			inEdge = -1;</span>
+<span class="fc" id="L48">			layer = -1;</span>
 
-<span class="fc" id="L49">			firstVInLayer = -1;</span>
+<span class="fc" id="L50">			firstVInLayer = -1;</span>
 			do {
-<span class="fc" id="L51">				int source = sources.nextInt();</span>
-<span class="fc" id="L52">				visited.set(source);</span>
-<span class="fc" id="L53">				queue.enqueue(JGAlgoUtils.longPack(source, -1));</span>
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">				if (firstVInLayer == -1)</span>
-<span class="fc" id="L55">					firstVInLayer = source;</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">			} while (sources.hasNext());</span>
-<span class="fc" id="L57">		}</span>
+<span class="fc" id="L52">				int source = sources.nextInt();</span>
+<span class="fc" id="L53">				visited.set(source);</span>
+<span class="fc" id="L54">				queue.enqueue(JGAlgoUtils.longPack(source, -1));</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">				if (firstVInLayer == -1)</span>
+<span class="fc" id="L56">					firstVInLayer = source;</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			} while (sources.hasNext());</span>
+<span class="fc" id="L58">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			return !queue.isEmpty();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			return !queue.isEmpty();</span>
 		}
 
 		@Override
-		public int lastEdge() {
-<span class="fc" id="L66">			return inEdge;</span>
+		public int lastEdgeInt() {
+<span class="fc" id="L67">			return inEdge;</span>
 		}
 
 		@Override
 		public int layer() {
-<span class="fc" id="L71">			return layer;</span>
+<span class="fc" id="L72">			return layer;</span>
 		}
 	}
 
@@ -81,8 +82,8 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		 * @param source a vertex in the graph from which the search will start from
 		 */
 		Forward(IndexGraph g, int source) {
-<span class="fc" id="L84">			this(g, IntIterators.singleton(source));</span>
-<span class="fc" id="L85">		}</span>
+<span class="fc" id="L85">			this(g, IntIterators.singleton(source));</span>
+<span class="fc" id="L86">		}</span>
 
 		/**
 		 * Create a BFS iterator rooted at multiple sources vertices.
@@ -92,104 +93,138 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		 * @throws IllegalArgumentException if the sources iterator is empty
 		 */
 		private Forward(IndexGraph g, IntIterator sources) {
-<span class="fc" id="L95">			super(g, sources);</span>
-<span class="fc" id="L96">		}</span>
+<span class="fc" id="L96">			super(g, sources);</span>
+<span class="fc" id="L97">		}</span>
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L100">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L101">			long l = queue.dequeueLong();</span>
-<span class="fc" id="L102">			final int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L103">			inEdge = JGAlgoUtils.long2high(l);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (u == firstVInLayer) {</span>
-<span class="fc" id="L105">				layer++;</span>
-<span class="fc" id="L106">				firstVInLayer = -1;</span>
+<span class="fc" id="L101">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L102">			long l = queue.dequeueLong();</span>
+<span class="fc" id="L103">			final int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L104">			inEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (u == firstVInLayer) {</span>
+<span class="fc" id="L106">				layer++;</span>
+<span class="fc" id="L107">				firstVInLayer = -1;</span>
 			}
 
-<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L110">				int e = eit.nextInt();</span>
-<span class="fc" id="L111">				int v = eit.target();</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L113">					continue;</span>
-<span class="fc" id="L114">				visited.set(v);</span>
-<span class="fc" id="L115">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
-<span class="fc" id="L117">					firstVInLayer = v;</span>
-<span class="fc" id="L118">			}</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L111">				int e = eit.nextInt();</span>
+<span class="fc" id="L112">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L114">					continue;</span>
+<span class="fc" id="L115">				visited.set(v);</span>
+<span class="fc" id="L116">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
+<span class="fc" id="L118">					firstVInLayer = v;</span>
+<span class="fc" id="L119">			}</span>
 
-<span class="fc" id="L120">			return u;</span>
+<span class="fc" id="L121">			return u;</span>
 		}
 	}
 
 	static class Backward extends BfsIterImpl.Abstract {
 
 		Backward(IndexGraph g, int source) {
-<span class="fc" id="L127">			this(g, IntIterators.singleton(source));</span>
-<span class="fc" id="L128">		}</span>
+<span class="fc" id="L128">			this(g, IntIterators.singleton(source));</span>
+<span class="fc" id="L129">		}</span>
 
 		private Backward(IndexGraph g, IntIterator sources) {
-<span class="fc" id="L131">			super(g, sources);</span>
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L132">			super(g, sources);</span>
+<span class="fc" id="L133">		}</span>
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L136">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L137">			long l = queue.dequeueLong();</span>
-<span class="fc" id="L138">			final int v = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L139">			inEdge = JGAlgoUtils.long2high(l);</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (v == firstVInLayer) {</span>
-<span class="fc" id="L141">				layer++;</span>
-<span class="fc" id="L142">				firstVInLayer = -1;</span>
+<span class="fc" id="L137">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L138">			long l = queue.dequeueLong();</span>
+<span class="fc" id="L139">			final int v = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L140">			inEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (v == firstVInLayer) {</span>
+<span class="fc" id="L142">				layer++;</span>
+<span class="fc" id="L143">				firstVInLayer = -1;</span>
 			}
 
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L146">				int e = eit.nextInt();</span>
-<span class="fc" id="L147">				int u = eit.source();</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">				if (visited.get(u))</span>
-<span class="fc" id="L149">					continue;</span>
-<span class="fc" id="L150">				visited.set(u);</span>
-<span class="fc" id="L151">				queue.enqueue(JGAlgoUtils.longPack(u, e));</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
-<span class="fc" id="L153">					firstVInLayer = u;</span>
-<span class="fc" id="L154">			}</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L147">				int e = eit.nextInt();</span>
+<span class="fc" id="L148">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">				if (visited.get(u))</span>
+<span class="fc" id="L150">					continue;</span>
+<span class="fc" id="L151">				visited.set(u);</span>
+<span class="fc" id="L152">				queue.enqueue(JGAlgoUtils.longPack(u, e));</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
+<span class="fc" id="L154">					firstVInLayer = u;</span>
+<span class="fc" id="L155">			}</span>
 
-<span class="fc" id="L156">			return v;</span>
+<span class="fc" id="L157">			return v;</span>
 		}
 	}
 
-	static class BFSFromIndexBFS implements BfsIter {
+	static class IntBfsFromIndexBfs implements Bfs.IntIter {
 
-		private final BfsIter it;
-		private final IndexIdMap viMap;
-		private final IndexIdMap eiMap;
+		private final Bfs.IntIter indexIter;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L166">		BFSFromIndexBFS(BfsIter it, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L167">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L168">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L169">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L170">		}</span>
+<span class="fc" id="L167">		IntBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {</span>
+<span class="fc" id="L168">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="fc" id="L169">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L170">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L171">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L174">			return it.hasNext();</span>
+<span class="fc" id="L175">			return indexIter.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L179">			return viMap.indexToId(it.nextInt());</span>
+<span class="fc" id="L180">			return viMap.indexToIdInt(indexIter.nextInt());</span>
 		}
 
 		@Override
-		public int lastEdge() {
-<span class="fc" id="L184">			int e = it.lastEdge();</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToId(e);</span>
+		public int lastEdgeInt() {
+<span class="fc" id="L185">			int e = indexIter.lastEdgeInt();</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToIdInt(e);</span>
 		}
 
 		@Override
 		public int layer() {
-<span class="nc" id="L190">			return it.layer();</span>
+<span class="nc" id="L191">			return indexIter.layer();</span>
+		}
+	}
+
+	static class ObjBfsFromIndexBfs&lt;V, E&gt; implements Bfs.Iter&lt;V, E&gt; {
+
+		private final Bfs.IntIter indexIter;
+		private final IndexIdMap&lt;V&gt; viMap;
+		private final IndexIdMap&lt;E&gt; eiMap;
+
+<span class="nc" id="L201">		ObjBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap) {</span>
+<span class="nc" id="L202">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="nc" id="L203">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="nc" id="L204">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="nc" id="L205">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="nc" id="L209">			return indexIter.hasNext();</span>
 		}
 
+		@Override
+		public V next() {
+<span class="nc" id="L214">			return viMap.indexToId(indexIter.nextInt());</span>
+		}
+
+		@Override
+		public E lastEdge() {
+<span class="nc" id="L219">			int e = indexIter.lastEdgeInt();</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">			return e == -1 ? null : eiMap.indexToId(e);</span>
+		}
+
+		@Override
+		public int layer() {
+<span class="nc" id="L225">			return indexIter.layer();</span>
+		}
 	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

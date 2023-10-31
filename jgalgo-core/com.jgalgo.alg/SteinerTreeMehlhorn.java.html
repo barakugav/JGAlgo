@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.function.IntConsumer;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L51">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 
 	@Override
-	Result computeSteinerTree(IndexGraph g, WeightFunction w, IntCollection terminals) {
+	IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 <span class="fc" id="L55">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L56">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (terminals.isEmpty())</span>
@@ -65,7 +65,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L65">		}</span>
 
 		/* 1.1. Compute the Voronoi cells of the terminals */
-<span class="fc" id="L68">		VoronoiAlgo.Result cells = voronoiAlgo.computeVoronoiCells(g, terminals, w);</span>
+<span class="fc" id="L68">		VoronoiAlgo.IResult cells = (VoronoiAlgo.IResult) voronoiAlgo.computeVoronoiCells(g, terminals, w);</span>
 
 		/*
 		 * 1.2. Build the subgraph G'1 where each vertex is a terminal node and the edge connecting each pair of
@@ -86,9 +86,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="pc bnc" id="L86" title="All 6 branches missed.">			assert neighbors.isEmpty() &amp;&amp; Arrays.stream(neighborsBestEdge).allMatch(e -&gt; e == -1);</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u : cells.blockVertices(t)) {</span>
 <span class="fc" id="L88">				double uDistance = cells.distance(u);</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L90">					int e = eit.nextInt();</span>
-<span class="fc" id="L91">					int v = eit.target();</span>
+<span class="fc" id="L91">					int v = eit.targetInt();</span>
 <span class="fc" id="L92">					int vT = cells.vertexBlock(v);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">					if (vT &lt;= t)</span>
 <span class="fc" id="L94">						continue;</span>
@@ -115,10 +115,10 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L115">		g1Builder.clear();</span>
 <span class="fc" id="L116">		int[] g1EdgeRef = g1EdgeRef0.elements();</span>
 <span class="fc" id="L117">		double[] g1EdgeWeight = g1EdgeWeight0.elements();</span>
-<span class="fc" id="L118">		WeightFunction g1WeightFunc = e -&gt; g1EdgeWeight[e];</span>
+<span class="fc" id="L118">		IWeightFunction g1WeightFunc = e -&gt; g1EdgeWeight[e];</span>
 
 		/* 2. Find a minimum spanning tree G2 of G1 */
-<span class="fc" id="L121">		IntCollection g2 = mstAlgo.computeMinimumSpanningTree(g1, g1WeightFunc).edges();</span>
+<span class="fc" id="L121">		IntCollection g2 = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g1, g1WeightFunc)).edges();</span>
 
 		/* 3. Construct a subgraph G3 of G by replacing each edge in G2 by its corresponding shortest path in G */
 <span class="fc" id="L124">		IndexGraphBuilder g3Builder = g1Builder;</span>
@@ -152,10 +152,10 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L152">		g3Builder.clear();</span>
 <span class="fc" id="L153">		int[] g3EdgeRef = g3EdgeRef0.elements();</span>
 <span class="fc" id="L154">		double[] g3EdgeWeight = g3EdgeWeight0.elements();</span>
-<span class="fc" id="L155">		WeightFunction g3WeightFunc = e -&gt; g3EdgeWeight[e];</span>
+<span class="fc" id="L155">		IWeightFunction g3WeightFunc = e -&gt; g3EdgeWeight[e];</span>
 
 		/* 4. Find the minimum spanning tree G4 of G3 */
-<span class="fc" id="L158">		IntCollection g4 = mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc).edges();</span>
+<span class="fc" id="L158">		IntCollection g4 = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g3, g3WeightFunc)).edges();</span>
 <span class="fc" id="L159">		int[] g4Edges = new int[g4.size() * 2];</span>
 <span class="fc" id="L160">		int[] g4EdgesOffset = new int[n + 1];</span>
 <span class="fc bfc" id="L161" title="All 2 branches covered.">		for (int e4 : g4) {</span>

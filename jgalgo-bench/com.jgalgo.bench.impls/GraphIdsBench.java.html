@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigNonFrozen;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L45">	public static class Query {</span>
 
 		private Random rand;
-		private Graph g;
+		private IntGraph g;
 
 		void setupCreateGraph(String args) {
 <span class="nc" id="L51">			final long seed = 0x7a1521bf6435883cL;</span>
@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L54">			final int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
 <span class="nc" id="L55">			final int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="nc" id="L57">			g = Graph.newDirected();</span>
+<span class="nc" id="L57">			g = IntGraph.newDirected();</span>
 <span class="nc bnc" id="L58" title="All 2 branches missed.">			for (int i = 0; i &lt; n; i++)</span>
 <span class="nc" id="L59">				g.addVertex();</span>
 <span class="nc" id="L60">			int[] vertices = g.vertices().toIntArray();</span>
@@ -103,16 +103,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L103">				super.setupCreateGraph(args);</span>
 <span class="nc" id="L104">			}</span>
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="nc" id="L108">				super.setupCreateQueries();</span>
-<span class="nc" id="L109">			}</span>
+<span class="nc" id="L109">				super.setupCreateQueries();</span>
+<span class="nc" id="L110">			}</span>
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
-<span class="nc" id="L114">				super.bench(blackhole);</span>
-<span class="nc" id="L115">			}</span>
+<span class="nc" id="L116">				super.bench(blackhole);</span>
+<span class="nc" id="L117">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -121,27 +123,29 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="nc" id="L124">		public static class Rand extends Query {</span>
+<span class="nc" id="L126">		public static class Rand extends Query {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-<span class="nc" id="L131">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, &quot;rand&quot;);</span>
-<span class="nc" id="L132">				super.setupCreateGraph(args);</span>
-<span class="nc" id="L133">			}</span>
+<span class="nc" id="L133">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, &quot;rand&quot;);</span>
+<span class="nc" id="L134">				super.setupCreateGraph(args);</span>
+<span class="nc" id="L135">			}</span>
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="nc" id="L137">				super.setupCreateQueries();</span>
-<span class="nc" id="L138">			}</span>
+<span class="nc" id="L140">				super.setupCreateQueries();</span>
+<span class="nc" id="L141">			}</span>
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
-<span class="nc" id="L143">				super.bench(blackhole);</span>
-<span class="nc" id="L144">			}</span>
+<span class="nc" id="L147">				super.bench(blackhole);</span>
+<span class="nc" id="L148">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -150,42 +154,44 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="nc" id="L153">		public static class Increment0x61c88647 extends Query {</span>
+<span class="nc" id="L157">		public static class Increment0x61c88647 extends Query {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-<span class="nc" id="L160">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
-<span class="nc" id="L161">					var state = new Object() {</span>
-<span class="nc" id="L162">						int nextId = 1;</span>
+<span class="nc" id="L164">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
+<span class="nc" id="L165">					var state = new Object() {</span>
+<span class="nc" id="L166">						int nextId = 1;</span>
 					};
-<span class="nc" id="L164">					return idSet -&gt; {</span>
+<span class="nc" id="L168">					return idSet -&gt; {</span>
 						for (;;) {
-<span class="nc" id="L166">							int id = state.nextId;</span>
-<span class="nc" id="L167">							state.nextId += 0x61c88647;</span>
-<span class="nc bnc" id="L168" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+<span class="nc" id="L170">							int id = state.nextId;</span>
+<span class="nc" id="L171">							state.nextId += 0x61c88647;</span>
+<span class="nc bnc" id="L172" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
 								// We prefer non zero IDs because fastutil handle zero (null) keys
 								// separately
-<span class="nc" id="L171">								return id;</span>
-<span class="nc" id="L172">						}</span>
+<span class="nc" id="L175">								return id;</span>
+<span class="nc" id="L176">						}</span>
 					};
 				};
-<span class="nc" id="L175">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
-<span class="nc" id="L176">				super.setupCreateGraph(args);</span>
-<span class="nc" id="L177">			}</span>
+<span class="nc" id="L179">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
+<span class="nc" id="L180">				super.setupCreateGraph(args);</span>
+<span class="nc" id="L181">			}</span>
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="nc" id="L181">				super.setupCreateQueries();</span>
-<span class="nc" id="L182">			}</span>
+<span class="nc" id="L186">				super.setupCreateQueries();</span>
+<span class="nc" id="L187">			}</span>
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
-<span class="nc" id="L187">				super.bench(blackhole);</span>
-<span class="nc" id="L188">			}</span>
+<span class="nc" id="L193">				super.bench(blackhole);</span>
+<span class="nc" id="L194">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -194,42 +200,44 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="nc" id="L197">		public static class MurmurHash3 extends Query {</span>
+<span class="nc" id="L203">		public static class MurmurHash3 extends Query {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-<span class="nc" id="L204">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
-<span class="nc" id="L205">					var state = new Object() {</span>
-<span class="nc" id="L206">						long nextId = 1;</span>
+<span class="nc" id="L210">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
+<span class="nc" id="L211">					var state = new Object() {</span>
+<span class="nc" id="L212">						long nextId = 1;</span>
 					};
-<span class="nc" id="L208">					return idSet -&gt; {</span>
+<span class="nc" id="L214">					return idSet -&gt; {</span>
 						for (;;) {
-<span class="nc" id="L210">							int id = Long.hashCode(state.nextId);</span>
-<span class="nc" id="L211">							state.nextId = HashCommon.murmurHash3(state.nextId);</span>
-<span class="nc bnc" id="L212" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+<span class="nc" id="L216">							int id = Long.hashCode(state.nextId);</span>
+<span class="nc" id="L217">							state.nextId = HashCommon.murmurHash3(state.nextId);</span>
+<span class="nc bnc" id="L218" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
 								// We prefer non zero IDs because fastutil handle zero (null) keys
 								// separately
-<span class="nc" id="L215">								return id;</span>
-<span class="nc" id="L216">						}</span>
+<span class="nc" id="L221">								return id;</span>
+<span class="nc" id="L222">						}</span>
 					};
 				};
-<span class="nc" id="L219">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
-<span class="nc" id="L220">				super.setupCreateGraph(args);</span>
-<span class="nc" id="L221">			}</span>
+<span class="nc" id="L225">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
+<span class="nc" id="L226">				super.setupCreateGraph(args);</span>
+<span class="nc" id="L227">			}</span>
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="nc" id="L225">				super.setupCreateQueries();</span>
-<span class="nc" id="L226">			}</span>
+<span class="nc" id="L232">				super.setupCreateQueries();</span>
+<span class="nc" id="L233">			}</span>
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
-<span class="nc" id="L231">				super.bench(blackhole);</span>
-<span class="nc" id="L232">			}</span>
+<span class="nc" id="L239">				super.bench(blackhole);</span>
+<span class="nc" id="L240">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -238,42 +246,44 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="nc" id="L241">		public static class Mult0x7ffb01f extends Query {</span>
+<span class="nc" id="L249">		public static class Mult0x7ffb01f extends Query {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-<span class="nc" id="L248">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
-<span class="nc" id="L249">					var state = new Object() {</span>
-<span class="nc" id="L250">						long nextId = 1;</span>
+<span class="nc" id="L256">				Supplier&lt;ToIntFunction&lt;IntSet&gt;&gt; strat = () -&gt; {</span>
+<span class="nc" id="L257">					var state = new Object() {</span>
+<span class="nc" id="L258">						long nextId = 1;</span>
 					};
-<span class="nc" id="L252">					return idSet -&gt; {</span>
+<span class="nc" id="L260">					return idSet -&gt; {</span>
 						for (;;) {
-<span class="nc" id="L254">							int id = Long.hashCode(state.nextId);</span>
-<span class="nc" id="L255">							state.nextId *= 0x7ffb01f;</span>
-<span class="nc bnc" id="L256" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+<span class="nc" id="L262">							int id = Long.hashCode(state.nextId);</span>
+<span class="nc" id="L263">							state.nextId *= 0x7ffb01f;</span>
+<span class="nc bnc" id="L264" title="All 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
 								// We prefer non zero IDs because fastutil handle zero (null) keys
 								// separately
-<span class="nc" id="L259">								return id;</span>
-<span class="nc" id="L260">						}</span>
+<span class="nc" id="L267">								return id;</span>
+<span class="nc" id="L268">						}</span>
 					};
 				};
-<span class="nc" id="L263">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
-<span class="nc" id="L264">				super.setupCreateGraph(args);</span>
-<span class="nc" id="L265">			}</span>
+<span class="nc" id="L271">				JGAlgoConfigNonFrozen.setOption(&quot;GraphIdStrategy&quot;, strat);</span>
+<span class="nc" id="L272">				super.setupCreateGraph(args);</span>
+<span class="nc" id="L273">			}</span>
 
+			@Override
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="nc" id="L269">				super.setupCreateQueries();</span>
-<span class="nc" id="L270">			}</span>
+<span class="nc" id="L278">				super.setupCreateQueries();</span>
+<span class="nc" id="L279">			}</span>
 
+			@Override
 			@Benchmark
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			public void bench(Blackhole blackhole) {
-<span class="nc" id="L275">				super.bench(blackhole);</span>
-<span class="nc" id="L276">			}</span>
+<span class="nc" id="L285">				super.bench(blackhole);</span>
+<span class="nc" id="L286">			}</span>
 		}
 
 	}

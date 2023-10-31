@@ -15,7 +15,10 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Comparator;
+import java.util.List;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -38,25 +41,60 @@ public interface TopologicalOrderAlgo {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link TopologicalOrderAlgo.IResult}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a directed acyclic graph (DAG).
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g);
+	&lt;V, E&gt; TopologicalOrderAlgo.Result&lt;V, E&gt; computeTopologicalSorting(Graph&lt;V, E&gt; g);
 
 	/**
 	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
 	 *
-	 * @author Barak Ugav
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	@SuppressWarnings(&quot;unused&quot;)
+	static interface Result&lt;V, E&gt; {
 
 		/**
 		 * Get all the vertices ordered in the list by the topological order.
 		 *
 		 * @return all the vertices ordered in the list by the topological order
 		 */
+		List&lt;V&gt; orderedVertices();
+
+		/**
+		 * Get the index of a vertex in the topological order.
+		 *
+		 * @param  vertex the vertex
+		 * @return        the index of the vertex in the topological order, in range \([0, n)\)
+		 */
+		int vertexOrderIndex(V vertex);
+
+		/**
+		 * Get a comparator that compare vertices by their order in the topological order.
+		 *
+		 * @return a comparator that compare vertices by their order in the topological order
+		 */
+		default Comparator&lt;V&gt; orderComparator() {
+<span class="nc" id="L86">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+		}
+	}
+
+	/**
+	 * A result object of a {@link TopologicalOrderAlgo} algorithm for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends TopologicalOrderAlgo.Result&lt;Integer, Integer&gt; {
+
+		@Override
 		IntList orderedVertices();
 
 		/**
@@ -67,15 +105,16 @@ public interface TopologicalOrderAlgo {
 		 */
 		int vertexOrderIndex(int vertex);
 
-		/**
-		 * Get a comparator that compare vertices by their order in the topological order.
-		 *
-		 * @return a comparator that compare vertices by their order in the topological order
-		 */
-		default IntComparator orderComparator() {
-<span class="nc" id="L76">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+		@Deprecated
+		@Override
+		default int vertexOrderIndex(Integer vertex) {
+<span class="nc" id="L111">			return vertexOrderIndex(vertex.intValue());</span>
 		}
 
+		@Override
+		default IntComparator orderComparator() {
+<span class="nc" id="L116">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+		}
 	}
 
 	/**
@@ -87,7 +126,7 @@ public interface TopologicalOrderAlgo {
 	 * @return a default implementation of {@link TopologicalOrderAlgo}
 	 */
 	static TopologicalOrderAlgo newInstance() {
-<span class="fc" id="L90">		return newBuilder().build();</span>
+<span class="fc" id="L129">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -98,7 +137,7 @@ public interface TopologicalOrderAlgo {
 	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
 	 */
 	static TopologicalOrderAlgo.Builder newBuilder() {
-<span class="fc" id="L101">		return TopologicalOrderAlgoImpl::new;</span>
+<span class="fc" id="L140">		return TopologicalOrderAlgoImpl::new;</span>
 	}
 
 	/**
@@ -130,7 +169,7 @@ public interface TopologicalOrderAlgo {
 		 * @return       this builder
 		 */
 		default TopologicalOrderAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L133">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L172">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

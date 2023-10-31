@@ -36,8 +36,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
@@ -132,75 +132,75 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 		private void benchOutEdges(Blackhole blackhole) {
 <span class="fc" id="L134">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L135">			EdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L135">			IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L136">			blackhole.consume(edgeSet);</span>
 <span class="fc" id="L137">		}</span>
 
 		private void benchOutEdgesSize(Blackhole blackhole) {
 <span class="fc" id="L140">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L141">			EdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L141">			IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L142">			blackhole.consume(edgeSet.size());</span>
 <span class="fc" id="L143">		}</span>
 
 		private void benchOutEdgesIteration(Blackhole blackhole) {
 <span class="fc" id="L146">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L147">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
+<span class="fc" id="L147">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
 <span class="fc" id="L149">				blackhole.consume(eit.nextInt());</span>
 <span class="fc" id="L150">		}</span>
 
 		private void benchOutEdgesSource(Blackhole blackhole) {
 <span class="fc" id="L153">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L154">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L154">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L156">				eit.nextInt();</span>
-<span class="fc" id="L157">				blackhole.consume(eit.source());</span>
+<span class="fc" id="L157">				blackhole.consume(eit.sourceInt());</span>
 			}
 <span class="fc" id="L159">		}</span>
 
 		private void benchOutEdgesTarget(Blackhole blackhole) {
 <span class="fc" id="L162">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L163">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L163">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L165">				eit.nextInt();</span>
-<span class="fc" id="L166">				blackhole.consume(eit.target());</span>
+<span class="fc" id="L166">				blackhole.consume(eit.targetInt());</span>
 			}
 <span class="fc" id="L168">		}</span>
 
 		private void benchInEdges(Blackhole blackhole) {
 <span class="fc" id="L171">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L172">			EdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L172">			IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L173">			blackhole.consume(edgeSet);</span>
 <span class="fc" id="L174">		}</span>
 
 		private void benchInEdgesSize(Blackhole blackhole) {
 <span class="fc" id="L177">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L178">			EdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L178">			IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L179">			blackhole.consume(edgeSet.size());</span>
 <span class="fc" id="L180">		}</span>
 
 		private void benchInEdgesIteration(Blackhole blackhole) {
 <span class="fc" id="L183">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L184">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
+<span class="fc" id="L184">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
 <span class="fc" id="L186">				blackhole.consume(eit.nextInt());</span>
 <span class="fc" id="L187">		}</span>
 
 		private void benchInEdgesSource(Blackhole blackhole) {
 <span class="fc" id="L190">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L191">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L191">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L193">				eit.nextInt();</span>
-<span class="fc" id="L194">				blackhole.consume(eit.source());</span>
+<span class="fc" id="L194">				blackhole.consume(eit.sourceInt());</span>
 			}
 <span class="fc" id="L196">		}</span>
 
 		private void benchInEdgesTarget(Blackhole blackhole) {
 <span class="fc" id="L199">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L200">			EdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (EdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L200">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L202">				eit.nextInt();</span>
-<span class="fc" id="L203">				blackhole.consume(eit.target());</span>
+<span class="fc" id="L203">				blackhole.consume(eit.targetInt());</span>
 			}
 <span class="fc" id="L205">		}</span>
 
@@ -222,7 +222,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L222">			long l = queryUVIter.nextLong();</span>
 <span class="fc" id="L223">			int u = JGAlgoUtils.long2low(l);</span>
 <span class="fc" id="L224">			int v = JGAlgoUtils.long2high(l);</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">			for (EdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)</span>
 <span class="fc" id="L226">				blackhole.consume(eit.nextInt());</span>
 <span class="fc" id="L227">		}</span>
 

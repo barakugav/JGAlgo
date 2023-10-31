@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntGraphFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">IntGraphFactory.java</span></div><h1>IntGraphFactory.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+/**
+ * A factory for {@link IntGraph} objects.
+ * &lt;p&gt;
+ * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
+ * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
+ * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ * &lt;p&gt;
+ * Both the graph factory and {@link IntGraphBuilder} are used to create new graphs. The difference is that vertices and
+ * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
+ * to choose a graph implementation and create an empty graph.
+ * &lt;p&gt;
+ * This interface is a specific version of {@link GraphFactory} for {@link IntGraph}.
+ *
+ * @see    IntGraphFactory#newDirected()
+ * @see    IntGraphFactory#newUndirected()
+ * @see    IntGraph
+ * @see    IntGraphBuilder
+ * @author Barak Ugav
+ */
+public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
+
+	@Override
+	IntGraph newGraph();
+
+	@Override
+	default IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g) {
+<span class="fc" id="L44">		return (IntGraph) GraphFactory.super.newCopyOf(g);</span>
+	}
+
+	@Override
+	IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights);
+
+	@Override
+	IntGraphFactory setDirected(boolean directed);
+
+	@Override
+	IntGraphFactory allowSelfEdges(boolean selfEdges);
+
+	@Override
+	IntGraphFactory allowParallelEdges(boolean parallelEdges);
+
+	@Override
+	IntGraphFactory expectedVerticesNum(int expectedVerticesNum);
+
+	@Override
+	IntGraphFactory expectedEdgesNum(int expectedEdgesNum);
+
+	@Override
+	IntGraphFactory addHint(GraphFactory.Hint hint);
+
+	@Override
+	IntGraphFactory removeHint(GraphFactory.Hint hint);
+
+	/**
+	 * Create an undirected int graph factory.
+	 *
+	 * @return a new factory that can build undirected int graphs
+	 */
+	public static IntGraphFactory newUndirected() {
+<span class="fc" id="L77">		return new IntGraphImpl.Factory(false);</span>
+	}
+
+	/**
+	 * Create a directed int graph factory.
+	 *
+	 * @return a new factory that can build directed int graphs
+	 */
+	public static IntGraphFactory newDirected() {
+<span class="fc" id="L86">		return new IntGraphImpl.Factory(true);</span>
+	}
+
+	/**
+	 * Create a new graph factory based on a given implementation.
+	 * &lt;p&gt;
+	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
+	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
+	 * such use case see {@link IntGraph#copy()} or {@link IntGraphFactory#newCopyOf(Graph)}.
+	 *
+	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
+	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
+	 */
+	public static IntGraphFactory newFrom(IntGraph g) {
+<span class="fc" id="L100">		return new IntGraphImpl.Factory(g);</span>
+	}
+
+	@Override
+	default IntGraphFactory setOption(String key, Object value) {
+<span class="nc" id="L105">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

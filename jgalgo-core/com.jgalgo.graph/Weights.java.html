@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.ShortestPathSingleSource;
 
@@ -24,41 +25,39 @@ import com.jgalgo.alg.ShortestPathSingleSource;
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
  * edge (vertex). Such weights are useful for various algorithms such as {@link ShortestPathSingleSource} or
  * {@link MatchingAlgo} to assigned the &lt;i&gt;cost&lt;/i&gt; of edges. Another example is boolean weights used to represent the
- * partition of vertices in bipartite graphs, which is used by algorithms such as Hopcroft-Karp algorithm for
- * cardinality maximum matching in bipartite graphs.
+ * partition of vertices in {@linkplain BipartiteGraphs bipartite graphs}, which is used by algorithms such as
+ * Hopcroft-Karp algorithm for cardinality maximum matching.
  * &lt;p&gt;
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
- * {@link Graph#addVerticesWeights(String, Class)} and {@link Graph#addEdgesWeights(String, Class)}. Weights of
- * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
- * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource}
- * algorithm:
+ * {@link Graph#addVerticesWeights(String, Class)} and {@link Graph#addEdgesWeights(String, Class)}. When a new weights
+ * is added to the edges (vertices) of a graph, it is added to ALL edges (vertices) of the graph. Weights of primitive
+ * types can be created by passing a primitive class to these methods, for example this snippet demonstrate how a
+ * {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource} algorithm:
  *
  * &lt;pre&gt; {@code
- * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newDirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int e1 = g.addEdge(v1, v2);
- * int e2 = g.addEdge(v2, v3);
- * int e3 = g.addEdge(v1, v3);
+ * // Create an undirected graph with three vertices and edges between them
+ * Graph&lt;String, Integer&gt; g = Graph.newUndirected();
+ * g.addVertex(&quot;Berlin&quot;);
+ * g.addVertex(&quot;Leipzig&quot;);
+ * g.addVertex(&quot;Dresden&quot;);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Leipzig&quot;, 9);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Dresden&quot;, 13);
+ * g.addEdge(&quot;Dresden&quot;, &quot;Leipzig&quot;, 14);
  *
  * // Assign some weights to the edges
- * WeightsDouble w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
- * w.set(e1, 1.2);
- * w.set(e2, 3.1);
- * w.set(e3, 15.1);
+ * WeightsDouble&lt;Integer&gt; w = g.addEdgesWeights(&quot;distance-km&quot;, double.class);
+ * w.set(9, 191.1);
+ * w.set(13, 193.3);
+ * w.set(14, 121.3);
  *
- * // Calculate the shortest paths from v1 to all other vertices
+ * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, &quot;Berlin&quot;);
  *
- * // Print the shortest path from v1 to v3
- * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
- * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
- * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
- * for (int e : ssspRes.getPath(v3)) {
+ * // Print the shortest path from Berlin to Leipzig
+ * System.out.println(&quot;Distance from Berlin to Leipzig is: &quot; + ssspRes.distance(&quot;Leipzig&quot;));
+ * System.out.println(&quot;The shortest path from Berlin to Leipzig is:&quot;);
+ * for (int e : ssspRes.getPath(&quot;Leipzig&quot;)) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
  * }
@@ -68,56 +67,73 @@ import com.jgalgo.alg.ShortestPathSingleSource;
  * A default weight can be provided in the time of the weights container. The default weight will be returned for every
  * edge (vertex) that was not explicitly set another value.
  * &lt;p&gt;
+ * There are type specific weights interfaces for both primitives and objects, such as {@link WeightsDouble},
+ * {@link WeightsInt}, {@link WeightsObj}, etc. The super interface {@link Weights} allow to get and set weights as
+ * objects, and should not be used when the type of the weights is known. The sub interfaces expose methods to get and
+ * set weights as the specific type, for example {@link WeightsInt#get(Object)}.
+ * &lt;p&gt;
  * If the weights container is associated with the edges of an index graph, and the graph implementation chooses to
  * perform some swaps and renames to the edges, the weights container will update automatically (see
  * {@link IndexGraph#addEdgeSwapListener(IndexSwapListener)}).
+ * &lt;p&gt;
+ * The {@link Weights} interface can be used for edges or vertices, depending on how it was created. In this
+ * documentation we use the term 'element' to refer to either an edge or a vertex.
  *
- * @param  &lt;E&gt; the weights type
+ * @param  &lt;K&gt; the elements (vertices/edges) type
+ * @param  &lt;T&gt; the weights type
  * @author     Barak Ugav
  */
-public interface Weights&lt;E&gt; {
+public interface Weights&lt;K, T&gt; {
 
 	/**
-	 * Get the weight associated with the given id.
+	 * Get the weight associated with the given element.
+	 * &lt;p&gt;
+	 * This method return the weight as an object, and should not be used when its known what type the weights are.
 	 *
-	 * @param  id an id of edge/vertex
-	 * @return    the weight associated with the given id
+	 * @param  element an element (edge/vertex)
+	 * @return         the weight associated with the given element
 	 */
-	public E getAsObj(int id);
+	public T getAsObj(K element);
 
 	/**
-	 * Set the weight associated with the given id.
+	 * Set the weight associated with the given element.
+	 * &lt;p&gt;
+	 * This method accept the weight as an object, and should not be used when its known what type the weights are.
 	 *
-	 * @param id     an id of edge/vertex
-	 * @param weight new weight that will be associated with the given id
+	 * @param element an element (edge/vertex)
+	 * @param weight  new weight that will be associated with the given element
 	 */
-	public void setAsObj(int id, E weight);
+	public void setAsObj(K element, T weight);
 
 	/**
 	 * Get the default weight of this weights container.
 	 * &lt;p&gt;
-	 * The default weight is the weight associated with all ids that were not explicitly set.
+	 * The default weight is the weight associated with all ids that were not explicitly set. This method return the
+	 * default weight as an object, and should not be used when its known what type the weights are.
 	 *
-	 * @return the default weight of this weights container.
+	 * @return the default weight of this weights container
 	 */
-	public E defaultWeightAsObj();
+	public T defaultWeightAsObj();
 
 	/**
 	 * Create an external vertex weights container.
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
 	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
+	 * &lt;p&gt;
+	 * The created weights container will have a default weight of {@code null} or {@code 0} for primitives.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
-	 * @param  &lt;E&gt;        the weights type
+	 * @param  &lt;V&gt;        the vertices type
+	 * @param  &lt;T&gt;        the weights type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
-			Class&lt;? super E&gt; type) {
-<span class="fc" id="L120">		return createExternalVerticesWeights(g, type, null);</span>
+	public static &lt;V, T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT createExternalVerticesWeights(Graph&lt;V, ?&gt; g,
+			Class&lt;? super T&gt; type) {
+<span class="nc" id="L136">		return createExternalVerticesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -130,21 +146,25 @@ public interface Weights&lt;E&gt; {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
-	 * @param  &lt;E&gt;        the weights type
+	 * @param  &lt;V&gt;        the vertices type
+	 * @param  &lt;T&gt;        the weights type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
-			Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L140">		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();</span>
-<span class="fc" id="L141">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (vertices.size() &gt; 0)</span>
-<span class="fc" id="L143">			weights.expand(vertices.size());</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L145">			return (WeightsT) weights;</span>
+	public static &lt;V, T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT createExternalVerticesWeights(Graph&lt;V, ?&gt; g,
+			Class&lt;? super T&gt; type, T defVal) {
+<span class="nc" id="L157">		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();</span>
+<span class="nc" id="L158">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">		if (vertices.size() &gt; 0)</span>
+<span class="nc" id="L160">			weights.expand(vertices.size());</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L162">			return (WeightsT) weights;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="nc" id="L164">			IntGraph g0 = (IntGraph) g;</span>
+<span class="nc" id="L165">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g0.indexGraphVerticesMap());</span>
 		} else {
-<span class="fc" id="L147">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());</span>
+<span class="nc" id="L167">			return (WeightsT) WeightsImpl.ObjMapped.newInstance(weights, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -153,16 +173,20 @@ public interface Weights&lt;E&gt; {
 	 * &lt;p&gt;
 	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
 	 * update when the graph is updated. This method should be used only in cases where the graph is immutable.
+	 * &lt;p&gt;
+	 * The created weights container will have a default weight of {@code null} or {@code 0} for primitives.
 	 *
 	 * @param  g          a graph
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @return            a new weights container
-	 * @param  &lt;E&gt;        the weights type
+	 * @param  &lt;E&gt;        the edges type
+	 * @param  &lt;T&gt;        the weights type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
-	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type) {
-<span class="fc" id="L165">		return createExternalEdgesWeights(g, type, null);</span>
+	public static &lt;E, T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT createExternalEdgesWeights(Graph&lt;?, E&gt; g,
+			Class&lt;? super T&gt; type) {
+<span class="nc" id="L189">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -175,21 +199,25 @@ public interface Weights&lt;E&gt; {
 	 * @param  type       the type of the weights, used for primitive types weights
 	 * @param  defVal     default value use for the weights container
 	 * @return            a new weights container
-	 * @param  &lt;E&gt;        the weights type
+	 * @param  &lt;E&gt;        the edges type
+	 * @param  &lt;T&gt;        the weights type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
-			E defVal) {
-<span class="fc" id="L185">		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();</span>
-<span class="fc" id="L186">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
-<span class="fc" id="L188">			weights.expand(edges.size());</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L190">			return (WeightsT) weights;</span>
+	public static &lt;E, T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT createExternalEdgesWeights(Graph&lt;?, E&gt; g,
+			Class&lt;? super T&gt; type, T defVal) {
+<span class="nc" id="L210">		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();</span>
+<span class="nc" id="L211">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">		if (edges.size() &gt; 0)</span>
+<span class="nc" id="L213">			weights.expand(edges.size());</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L215">			return (WeightsT) weights;</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="nc" id="L217">			IntGraph g0 = (IntGraph) g;</span>
+<span class="nc" id="L218">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g0.indexGraphEdgesMap());</span>
 		} else {
-<span class="fc" id="L192">			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());</span>
+<span class="nc" id="L220">			return (WeightsT) WeightsImpl.ObjMapped.newInstance(weights, g.indexGraphEdgesMap());</span>
 		}
 	}
 

@@ -150,13 +150,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L154">		checkVertex(source);</span>
 <span class="fc" id="L155">		return new EdgeSetOut(source, edges);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L160">		checkVertex(target);</span>
 <span class="fc" id="L161">		return new EdgeSetIn(target, edges);</span>
 	}
@@ -252,7 +252,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		// edges.clear();
 <span class="fc" id="L253">	}</span>
 
-	class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 		private final Int2IntMap edges;
 
 <span class="fc" id="L258">		EdgeSetOut(int source, Int2IntMap[] edges) {</span>
@@ -271,12 +271,12 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L275">			return new EdgeIterOut(source, edges);</span>
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 		private final Int2IntMap edges;
 
 <span class="fc" id="L282">		EdgeSetIn(int target, Int2IntMap[] edges) {</span>
@@ -295,7 +295,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L299">			return new EdgeIterIn(target, edges);</span>
 		}
 	}

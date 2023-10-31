@@ -45,9 +45,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
-	public IndexGraph newCopyOf(IndexGraph g, boolean copyWeights) {
+	public IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights) {
 <span class="fc" id="L49">		setDirected(g.isDirected());</span>
-<span class="fc" id="L50">		return chooseImpl().newCopyOf(g, copyWeights);</span>
+<span class="fc" id="L50">		return chooseImpl().newCopyOf((IndexGraph) g, copyWeights);</span>
 	}
 
 	private static interface Impl {

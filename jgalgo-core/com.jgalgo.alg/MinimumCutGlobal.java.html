@@ -16,6 +16,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -44,13 +46,18 @@ public interface MinimumCutGlobal {
 	 * &lt;p&gt;
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w);
+	&lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * Create a new minimum global cut algorithm object.
@@ -61,7 +68,7 @@ public interface MinimumCutGlobal {
 	 * @return a default implementation of {@link MinimumCutGlobal}
 	 */
 	static MinimumCutGlobal newInstance() {
-<span class="nc" id="L64">		return newBuilder().build();</span>
+<span class="nc" id="L71">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -72,7 +79,7 @@ public interface MinimumCutGlobal {
 	 * @return a new builder that can build {@link MinimumCutGlobal} objects
 	 */
 	static MinimumCutGlobal.Builder newBuilder() {
-<span class="nc" id="L75">		return MinimumCutGlobalStoerWagner::new;</span>
+<span class="nc" id="L82">		return MinimumCutGlobalStoerWagner::new;</span>
 	}
 
 	/**
@@ -104,7 +111,7 @@ public interface MinimumCutGlobal {
 		 * @return       this builder
 		 */
 		default MinimumCutGlobal.Builder setOption(String key, Object value) {
-<span class="nc" id="L107">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L114">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 }

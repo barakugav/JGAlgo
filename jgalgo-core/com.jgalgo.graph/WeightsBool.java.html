@@ -21,41 +21,41 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsBool  extends Weights&lt;Boolean&gt;  {
+public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 
 	/**
-	 * Get the weight associated with the given id.
+	 * Get the weight associated with the given element.
 	 *
-	 * @param  id an id of edge/vertex.
-	 * @return    the weight associated with the given id.
+	 * @param  element an element (edge/vertex).
+	 * @return    the weight associated with the given element.
 	 */
-	public boolean get(int id);
+	public boolean get(K element);
 
 	@Deprecated
 	@Override
-	default Boolean getAsObj(int id) {
-<span class="fc" id="L37">		return Boolean.valueOf(get(id));</span>
+	default Boolean getAsObj(K element) {
+<span class="nc" id="L37">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
-	 * Set the weight associated with the given id.
+	 * Set the weight associated with the given element.
 	 *
-	 * @param id     an id of edge/vertex
-	 * @param weight new weight that will be associated with the given id
+	 * @param  element an element (edge/vertex).
+	 * @param weight new weight that will be associated with the given element
 	 */
-	public void set(int id, boolean weight);
+	public void set(K element, boolean weight);
 
 	@Deprecated
 	@Override
-	default void setAsObj(int id, Boolean weight) {
-<span class="fc" id="L51">		set(id, weight.booleanValue());</span>
-<span class="fc" id="L52">	}</span>
+	default void setAsObj(K element, Boolean weight) {
+<span class="nc" id="L51">		set(element, weight.booleanValue());</span>
+<span class="nc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
 	 * &lt;p&gt;
-	 * The default weight is the weight associated with all ids that were not explicitly set using
-	 * {@link #set(int, boolean)}.
+	 * The default weight is the weight associated with all elements that were not explicitly set using
+	 * {@link #set(Object, boolean)}.
 	 *
 	 * @return the default weight of this weights container.
 	 */

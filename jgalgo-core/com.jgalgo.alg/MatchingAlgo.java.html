@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.function.Supplier;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -40,58 +41,78 @@ public interface MatchingAlgo {
 
 	/**
 	 * Compute the maximum matching of unweighted undirected graph.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        an undirected graph
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumCardinalityMatching(Graph g);
+	&lt;V, E&gt; Matching&lt;V, E&gt; computeMaximumCardinalityMatching(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedMatching(Graph g, WeightFunction w);
+	&lt;V, E&gt; Matching&lt;V, E&gt; computeMaximumWeightedMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * Compute the minimum weighted matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedMatching(Graph g, WeightFunction w);
+	&lt;V, E&gt; Matching&lt;V, E&gt; computeMinimumWeightedMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 * &lt;p&gt;
 	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
 	 * if no such matching exist the behavior is undefined.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w);
+	&lt;V, E&gt; Matching&lt;V, E&gt; computeMaximumWeightedPerfectMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * Compute the minimum perfect matching of a weighted undirected graph.
 	 * &lt;p&gt;
 	 * A perfect matching in which each vertex has an adjacent matched edge is assumed to exist in the input graph, and
 	 * if no such matching exist the behavior is undefined.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IMatching}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
 	 * @return                          the computed perfect matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	Matching computeMinimumWeightedPerfectMatching(Graph g, WeightFunction w);
+	&lt;V, E&gt; Matching&lt;V, E&gt; computeMinimumWeightedPerfectMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * Create a new matching algorithm object.
@@ -102,7 +123,7 @@ public interface MatchingAlgo {
 	 * @return a default implementation of {@link MatchingAlgo}
 	 */
 	static MatchingAlgo newInstance() {
-<span class="fc" id="L105">		return newBuilder().build();</span>
+<span class="fc" id="L126">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -113,86 +134,86 @@ public interface MatchingAlgo {
 	 * @return a new builder that can build {@link MatchingAlgo} objects
 	 */
 	static MatchingAlgo.Builder newBuilder() {
-<span class="fc" id="L116">		return new MatchingAlgo.Builder() {</span>
+<span class="fc" id="L137">		return new MatchingAlgo.Builder() {</span>
 
-<span class="fc" id="L118">			boolean cardinality = false;</span>
-<span class="fc" id="L119">			boolean isBipartite = false;</span>
+<span class="fc" id="L139">			boolean cardinality = false;</span>
+<span class="fc" id="L140">			boolean isBipartite = false;</span>
 			String impl;
 
 			@Override
 			public MatchingAlgo build() {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L125" title="All 8 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L146" title="All 8 branches missed.">					switch (impl) {</span>
 						case &quot;cardinality-bipartite-hopcroft-karp&quot;:
-<span class="nc" id="L127">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
+<span class="nc" id="L148">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
 						case &quot;cardinality-gabow-1976&quot;:
-<span class="nc" id="L129">							return new MatchingCardinalityGabow1976();</span>
+<span class="nc" id="L150">							return new MatchingCardinalityGabow1976();</span>
 						case &quot;bipartite-hungarian-method&quot;:
-<span class="nc" id="L131">							return new MatchingWeightedBipartiteHungarianMethod();</span>
+<span class="nc" id="L152">							return new MatchingWeightedBipartiteHungarianMethod();</span>
 						case &quot;bipartite-sssp&quot;:
-<span class="nc" id="L133">							return new MatchingWeightedBipartiteSSSP();</span>
+<span class="nc" id="L154">							return new MatchingWeightedBipartiteSSSP();</span>
 						case &quot;gabow-1990&quot;:
-<span class="nc" id="L135">							return new MatchingWeightedGabow1990();</span>
+<span class="nc" id="L156">							return new MatchingWeightedGabow1990();</span>
 						case &quot;gabow-1990-simpler&quot;:
-<span class="nc" id="L137">							return new MatchingWeightedGabow1990Simpler();</span>
+<span class="nc" id="L158">							return new MatchingWeightedGabow1990Simpler();</span>
 						case &quot;blossom-v&quot;:
-<span class="nc" id="L139">							return new MatchingWeightedBlossomV();</span>
+<span class="nc" id="L160">							return new MatchingWeightedBlossomV();</span>
 						default:
-<span class="nc" id="L141">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L162">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L144">				Supplier&lt;MatchingAlgo&gt; cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;</span>
-<span class="fc" id="L145">				Supplier&lt;MatchingAlgo&gt; cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;</span>
-<span class="fc" id="L146">				Supplier&lt;MatchingAlgo&gt; weightedGeneralAlgo = MatchingWeightedBlossomV::new;</span>
-<span class="fc" id="L147">				Supplier&lt;MatchingAlgo&gt; weightedBipartiteAlgo = weightedGeneralAlgo;</span>
+<span class="fc" id="L165">				Supplier&lt;MatchingAlgo&gt; cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;</span>
+<span class="fc" id="L166">				Supplier&lt;MatchingAlgo&gt; cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;</span>
+<span class="fc" id="L167">				Supplier&lt;MatchingAlgo&gt; weightedGeneralAlgo = MatchingWeightedBlossomV::new;</span>
+<span class="fc" id="L168">				Supplier&lt;MatchingAlgo&gt; weightedBipartiteAlgo = weightedGeneralAlgo;</span>
 
-<span class="fc bfc" id="L149" title="All 4 branches covered.">				if (cardinality &amp;&amp; isBipartite) {</span>
-<span class="fc" id="L150">					return cardinalityBipartiteAlgo.get();</span>
+<span class="fc bfc" id="L170" title="All 4 branches covered.">				if (cardinality &amp;&amp; isBipartite) {</span>
+<span class="fc" id="L171">					return cardinalityBipartiteAlgo.get();</span>
 
-<span class="pc bpc" id="L152" title="1 of 4 branches missed.">				} else if (cardinality &amp;&amp; !isBipartite) {</span>
-<span class="fc" id="L153">					MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
-<span class="fc" id="L154">					MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L155">					return new Matchings.SuperImpl(a, b, a, b);</span>
+<span class="pc bpc" id="L173" title="1 of 4 branches missed.">				} else if (cardinality &amp;&amp; !isBipartite) {</span>
+<span class="fc" id="L174">					MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
+<span class="fc" id="L175">					MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L176">					return new Matchings.SuperImpl(a, b, a, b);</span>
 
-<span class="pc bpc" id="L157" title="1 of 4 branches missed.">				} else if (!cardinality &amp;&amp; isBipartite) {</span>
-<span class="fc" id="L158">					MatchingAlgo a = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L159">					MatchingAlgo b = weightedBipartiteAlgo.get();</span>
-<span class="fc" id="L160">					return new Matchings.SuperImpl(a, a, b, b);</span>
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">				} else if (!cardinality &amp;&amp; isBipartite) {</span>
+<span class="fc" id="L179">					MatchingAlgo a = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L180">					MatchingAlgo b = weightedBipartiteAlgo.get();</span>
+<span class="fc" id="L181">					return new Matchings.SuperImpl(a, a, b, b);</span>
 
-<span class="pc bpc" id="L162" title="2 of 4 branches missed.">				} else if (!cardinality &amp;&amp; !isBipartite) {</span>
-<span class="fc" id="L163">					MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
-<span class="fc" id="L164">					MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L165">					MatchingAlgo c = weightedGeneralAlgo.get();</span>
-<span class="fc" id="L166">					MatchingAlgo d = weightedBipartiteAlgo.get();</span>
-<span class="fc" id="L167">					return new Matchings.SuperImpl(a, b, c, d);</span>
+<span class="pc bpc" id="L183" title="2 of 4 branches missed.">				} else if (!cardinality &amp;&amp; !isBipartite) {</span>
+<span class="fc" id="L184">					MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
+<span class="fc" id="L185">					MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L186">					MatchingAlgo c = weightedGeneralAlgo.get();</span>
+<span class="fc" id="L187">					MatchingAlgo d = weightedBipartiteAlgo.get();</span>
+<span class="fc" id="L188">					return new Matchings.SuperImpl(a, b, c, d);</span>
 
 				} else {
-<span class="nc" id="L170">					throw new AssertionError();</span>
+<span class="nc" id="L191">					throw new AssertionError();</span>
 				}
 			}
 
 			@Override
 			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
-<span class="fc" id="L176">				isBipartite = bipartite;</span>
-<span class="fc" id="L177">				return this;</span>
+<span class="fc" id="L197">				isBipartite = bipartite;</span>
+<span class="fc" id="L198">				return this;</span>
 			}
 
 			@Override
 			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
-<span class="fc" id="L182">				this.cardinality = cardinality;</span>
-<span class="fc" id="L183">				return this;</span>
+<span class="fc" id="L203">				this.cardinality = cardinality;</span>
+<span class="fc" id="L204">				return this;</span>
 			}
 
 			@Override
 			public MatchingAlgo.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L188" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L190">						impl = (String) value;</span>
-<span class="nc" id="L191">						break;</span>
+<span class="nc" id="L211">						impl = (String) value;</span>
+<span class="nc" id="L212">						break;</span>
 					default:
-<span class="nc" id="L193">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L214">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L195">				return this;</span>
+<span class="nc" id="L216">				return this;</span>
 			}
 		};
 	}
@@ -247,7 +268,7 @@ public interface MatchingAlgo {
 		 * @return       this builder
 		 */
 		default MatchingAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L250">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L271">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

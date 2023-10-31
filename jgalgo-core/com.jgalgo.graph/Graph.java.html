@@ -16,10 +16,9 @@
 
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A discrete graph with vertices and edges.
@@ -41,26 +40,24 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
  * &lt;p&gt;
- * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
- * &lt;i&gt;directed&lt;/i&gt;, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
+ * A directed graph and an undirected graph are both implemented by this interface. In a directed graph, the edges are
+ * &lt;i&gt;directed&lt;/i&gt;, namely an edge \(e=(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
  * will not be contained in {@code outEdges(v)} and {@code inEdges(u)}. In an undirected graph, the edges are
- * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
- * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
- * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
- * directed or not, use the {@link #isDirected()} method.
+ * undirected, namely an edge \(e=\{u, v\}\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
+ * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(Object)}, {@link #removeInEdgesOf(Object)}
+ * and {@link #removeOutEdgesOf(Object)} are equivalent for the same vertex in an undirected graph. To check if a graph
+ * is directed or not, use the {@link #isDirected()} method.
  * &lt;p&gt;
- * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
- * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
- * by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose the
- * {@code int} ID and will return it to the user. Alternatively, the methods {@link #addVertex(int)} and
- * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
+ * Each vertex and edge in the graph is identified by a unique non null hashable object. The existing vertices and edges
+ * of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be added by
+ * {@link #addVertex(Object)} and {@link #addEdge(Object, Object, Object)}.
  * &lt;p&gt;
  * Weights may be assigned to the graph vertices and/or edges. A &lt;i&gt;weight&lt;/i&gt; is some value such as any primitive (for
  * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
- * the vertices and/or edges, each is identified by some key. When a new weights type is added to a graph, it is added
- * to &lt;i&gt;all&lt;/i&gt; the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in case
- * the weight type is primitive). The weights are accessed via the {@link Weights} container, which can be used to get
- * or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
+ * the vertices and/or edges, each is identified by some string key. When a new weights type is added to a graph, it is
+ * added to &lt;i&gt;all&lt;/i&gt; the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in
+ * case the weight type is primitive). The weights are accessed via the {@link Weights} container, which can be used to
+ * get or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
  * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link Weights} for the
  * full weights documentation.
  * &lt;p&gt;
@@ -83,93 +80,79 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * graph, use {@link GraphBuilder}.
  *
  * &lt;pre&gt; {@code
- * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newDirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int e1 = g.addEdge(v1, v2);
- * int e2 = g.addEdge(v2, v3);
- * int e3 = g.addEdge(v1, v3);
+ * // Create an undirected graph with three vertices and edges between them
+ * Graph&lt;String, Integer&gt; g = Graph.newUndirected();
+ * g.addVertex(&quot;Berlin&quot;);
+ * g.addVertex(&quot;Leipzig&quot;);
+ * g.addVertex(&quot;Dresden&quot;);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Leipzig&quot;, 9);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Dresden&quot;, 13);
+ * g.addEdge(&quot;Dresden&quot;, &quot;Leipzig&quot;, 14);
  *
  * // Assign some weights to the edges
- * WeightsDouble w = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
- * w.set(e1, 1.2);
- * w.set(e2, 3.1);
- * w.set(e3, 15.1);
+ * WeightsDouble&lt;Integer&gt; w = g.addEdgesWeights(&quot;distance-km&quot;, double.class);
+ * w.set(9, 191.1);
+ * w.set(13, 193.3);
+ * w.set(14, 121.3);
  *
- * // Calculate the shortest paths from v1 to all other vertices
+ * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, &quot;Berlin&quot;);
  *
- * // Print the shortest path from v1 to v3
- * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
- * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
- * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
- * for (int e : ssspRes.getPath(v3)) {
+ * // Print the shortest path from Berlin to Leipzig
+ * System.out.println(&quot;Distance from Berlin to Leipzig is: &quot; + ssspRes.distance(&quot;Leipzig&quot;));
+ * System.out.println(&quot;The shortest path from Berlin to Leipzig is:&quot;);
+ * for (int e : ssspRes.getPath(&quot;Leipzig&quot;)) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
  * }
  * }&lt;/pre&gt;
  *
- * @see    GraphFactory
- * @see    GraphBuilder
- * @see    IndexGraph
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @see        GraphFactory
+ * @see        GraphBuilder
+ * @see        IndexGraph
+ * @author     Barak Ugav
  */
-public interface Graph {
+public interface Graph&lt;V, E&gt; {
 
 	/**
 	 * Get the set of all vertices of the graph.
 	 * &lt;p&gt;
-	 * Each vertex in the graph is identified by a unique non negative integer ID and the returned set is a set of all
+	 * Each vertex in the graph is identified by a unique non null hashable object and the returned set is a set of all
 	 * these identifiers.
 	 * &lt;p&gt;
 	 * The Graph object does not expose an explicit method to get the number of vertices, but it can accessed using this
 	 * method by {@code g.vertices().size()}.
 	 *
-	 * @return a set containing all IDs of the graph vertices
+	 * @return a set containing all vertices of the graph
 	 */
-	IntSet vertices();
+	Set&lt;V&gt; vertices();
 
 	/**
 	 * Get the set of all edges of the graph.
 	 * &lt;p&gt;
-	 * Each edge in the graph is identified by a unique non negative integer ID, and the returned set is a set of all
+	 * Each edge in the graph is identified by a unique non null hashable object, and the returned set is a set of all
 	 * these identifiers.
 	 * &lt;p&gt;
 	 * The Graph object does not expose an explicit method to get the number of edges, but it can accessed using this
 	 * method by {@code g.edges().size()}.
 	 *
-	 * @return a set containing all IDs of the graph edges
+	 * @return a set containing all edges of the graph
 	 */
-	IntSet edges();
+	Set&lt;E&gt; edges();
 
 	/**
 	 * Add a new vertex to the graph.
 	 * &lt;p&gt;
-	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
-	 * edges, and will return it as the new vertex ID.
+	 * A vertex can be any non null hashable object, namely it must implement {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. The set of graph vertices must not contain duplications, therefore the
+	 * provided identifier must not be currently used as one of the graph vertices IDs.
 	 *
-	 * @return the new vertex identifier
+	 * @param vertex new vertex
 	 */
-	int addVertex();
-
-	/**
-	 * Add a new vertex to the graph with user chosen ID.
-	 * &lt;p&gt;
-	 * In contrast to {@link #addVertex()}, in which the implementation chooses ,the new vertex identifier, the user can
-	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
-	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
-	 * &lt;p&gt;
-	 * Note that vertices IDs must be non negative.
-	 *
-	 * @param  vertex                   a user chosen identifier for the new vertex
-	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
-	 *                                      vertices, or if its negative
-	 */
-	void addVertex(int vertex);
+	void addVertex(V vertex);
 
 	/**
 	 * Remove a vertex and all its edges from the graph.
@@ -177,35 +160,35 @@ public interface Graph {
 	 * @param  vertex                    the vertex identifier to remove
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
-	void removeVertex(int vertex);
+	void removeVertex(V vertex);
 
 	/**
 	 * Get the edges whose source is {@code source}.
 	 * &lt;p&gt;
 	 * In case the graph is undirected, the set will contain all edges whose {@code source} is one of their end points.
 	 * &lt;p&gt;
-	 * The Graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
+	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
 	 *
 	 * @param  source                    a source vertex
 	 * @return                           all the edges whose source is {@code source}
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
-	EdgeSet outEdges(int source);
+	EdgeSet&lt;V, E&gt; outEdges(V source);
 
 	/**
 	 * Get the edges whose target is {@code target}.
 	 * &lt;p&gt;
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
 	 * &lt;p&gt;
-	 * The Graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
+	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
 	 *
 	 * @param  target                    a target vertex
 	 * @return                           all the edges whose target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
-	EdgeSet inEdges(int target);
+	EdgeSet&lt;V, E&gt; inEdges(V target);
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
@@ -218,16 +201,16 @@ public interface Graph {
 	 *
 	 * @param  source                    a source vertex
 	 * @param  target                    a target vertex
-	 * @return                           id of the edge or {@code -1} if no such edge exists
+	 * @return                           id of the edge or {@code null} if no such edge exists
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L225" title="All 2 branches covered.">		for (EdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L226">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L228">				return e;</span>
-<span class="fc" id="L229">		}</span>
-<span class="fc" id="L230">		return -1;</span>
+	default E getEdge(V source, V target) {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="nc" id="L209">			E e = it.next();</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">			if (target.equals(it.target()))</span>
+<span class="nc" id="L211">				return e;</span>
+<span class="nc" id="L212">		}</span>
+<span class="nc" id="L213">		return null;</span>
 	}
 
 	/**
@@ -238,43 +221,30 @@ public interface Graph {
 	 * @return                           all the edges whose source is {@code source} and target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	EdgeSet getEdges(int source, int target);
+	EdgeSet&lt;V, E&gt; getEdges(V source, V target);
 
 	/**
 	 * Add a new edge to the graph.
 	 * &lt;p&gt;
-	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
-	 * edges, and will return it as the new edge ID.
-	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           the new edge identifier
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
-	 */
-	int addEdge(int source, int target);
-
-	/**
-	 * Add a new edge to the graph with user chosen ID.
+	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
+	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
+	 * {@code target} are the same vertex, an exception will be raised.
 	 * &lt;p&gt;
-	 * In contrast to {@link #addEdge(int, int)}, in which the implementation chooses the new edge identifier, the user
-	 * can specified what {@code int} ID the new edge should be assigned. The set of graph edges must not contain
-	 * duplications, therefore the provided identifier must not be currently used as one of the graph edges IDs.
+	 * The edge identifier must be unique and non null.
 	 *
-	 * @param  source                   a source vertex
-	 * @param  target                   a target vertex
-	 * @param  edge                     a user chosen identifier for the new edge
-	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
-	 *                                      edges, or if its negative
+	 * @param source a source vertex
+	 * @param target a target vertex
+	 * @param edge   a new edge identifier
 	 */
-	void addEdge(int source, int target, int edge);
+	void addEdge(V source, V target, E edge);
 
 	/**
 	 * Remove an edge from the graph.
 	 *
-	 * @param  edge                      the edge identifier
+	 * @param  edge                      the edge to remove
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	void removeEdge(int edge);
+	void removeEdge(E edge);
 
 	/**
 	 * Remove all the edges of a vertex.
@@ -282,10 +252,10 @@ public interface Graph {
 	 * @param  vertex                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
-	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L286">		removeOutEdgesOf(vertex);</span>
-<span class="fc" id="L287">		removeInEdgesOf(vertex);</span>
-<span class="fc" id="L288">	}</span>
+	default void removeEdgesOf(V vertex) {
+<span class="nc" id="L256">		removeOutEdgesOf(vertex);</span>
+<span class="nc" id="L257">		removeInEdgesOf(vertex);</span>
+<span class="nc" id="L258">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -293,12 +263,12 @@ public interface Graph {
 	 * @param  source                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
-	default void removeOutEdgesOf(int source) {
-<span class="fc bfc" id="L297" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L298">			eit.nextInt();</span>
-<span class="fc" id="L299">			eit.remove();</span>
+	default void removeOutEdgesOf(V source) {
+<span class="nc bnc" id="L267" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L268">			eit.next();</span>
+<span class="nc" id="L269">			eit.remove();</span>
 		}
-<span class="fc" id="L301">	}</span>
+<span class="nc" id="L271">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -306,12 +276,12 @@ public interface Graph {
 	 * @param  target                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
-	default void removeInEdgesOf(int target) {
-<span class="fc bfc" id="L310" title="All 2 branches covered.">		for (EdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L311">			eit.nextInt();</span>
-<span class="fc" id="L312">			eit.remove();</span>
+	default void removeInEdgesOf(V target) {
+<span class="nc bnc" id="L280" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L281">			eit.next();</span>
+<span class="nc" id="L282">			eit.remove();</span>
 		}
-<span class="fc" id="L314">	}</span>
+<span class="nc" id="L284">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -321,31 +291,31 @@ public interface Graph {
 	 * @param  edge                      an existing edge in the graph
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	void reverseEdge(int edge);
+	void reverseEdge(E edge);
 
 	/**
 	 * Get the source vertex of an edge.
 	 * &lt;p&gt;
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
-	 * than {@link #edgeTarget(int)} returns.
+	 * than {@link #edgeTarget(Object)} returns.
 	 *
 	 * @param  edge                      the edge identifier
 	 * @return                           the edge source vertex
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	int edgeSource(int edge);
+	V edgeSource(E edge);
 
 	/**
 	 * Get the target vertex of an edge.
 	 * &lt;p&gt;
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
-	 * end-point than {@link #edgeSource(int)} returns.
+	 * end-point than {@link #edgeSource(Object)} returns.
 	 *
 	 * @param  edge                      the edge identifier
 	 * @return                           the edge target vertex
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	int edgeTarget(int edge);
+	V edgeTarget(E edge);
 
 	/**
 	 * Get the other end-point of an edge.
@@ -360,16 +330,16 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
-	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L364">		int u = edgeSource(edge);</span>
-<span class="fc" id="L365">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L367">			return v;</span>
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L369">			return u;</span>
+	default V edgeEndpoint(E edge, V endpoint) {
+<span class="nc" id="L334">		V u = edgeSource(edge);</span>
+<span class="nc" id="L335">		V v = edgeTarget(edge);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">		if (endpoint.equals(u)) {</span>
+<span class="nc" id="L337">			return v;</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">		} else if (endpoint.equals(v)) {</span>
+<span class="nc" id="L339">			return u;</span>
 		} else {
-<span class="nc" id="L371">			throw new IllegalArgumentException(&quot;The given vertex (idx=&quot; + endpoint</span>
-					+ &quot;) is not an endpoint of the edge (idx=&quot; + u + &quot;, idx=&quot; + v + &quot;)&quot;);
+<span class="nc" id="L341">			throw new IllegalArgumentException(</span>
+					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
 
@@ -396,11 +366,11 @@ public interface Graph {
 	 *
 	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  &lt;V&gt;        The weight data type
+	 * @param  &lt;T&gt;        The weight data type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
@@ -410,17 +380,17 @@ public interface Graph {
 	 * and we are not allowed to modify it, use {@link Weights#createExternalVerticesWeights(Graph, Class)}.
 	 *
 	 * &lt;pre&gt; {@code
-	 * Graph g = ...;
-	 * int v1 = g.newVertex();
-	 * int v2 = g.newVertex();
+	 * Graph&lt;String, Int&gt; g = ...;
+	 * g.newVertex(&quot;Alice&quot;);
+	 * g.newVertex(&quot;Bob&quot;);
 	 *
-	 * Weights&lt;String&gt; names = g.addVerticesWeights(&quot;name&quot;, String.class);
-	 * names.set(v1, &quot;Alice&quot;);
-	 * names.set(v2, &quot;Bob&quot;);
+	 * Weights&lt;String&gt; names = g.addVerticesWeights(&quot;surname&quot;, String.class);
+	 * names.set(&quot;Alice&quot;, &quot;Miller&quot;);
+	 * names.set(&quot;Bob&quot;, &quot;Jones&quot;);
 	 *
 	 * WeightsInt ages = g.addVerticesWeights(&quot;age&quot;, int.class);
-	 * ages.set(v1, 42);
-	 * ages.set(v2, 35);
+	 * ages.set(&quot;Alice&quot;, 42);
+	 * ages.set(&quot;Bob&quot;, 35);
 	 * }&lt;/pre&gt;
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -429,12 +399,12 @@ public interface Graph {
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  &lt;V&gt;                      The weight data type
+	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type) {
-<span class="fc" id="L437">		return addVerticesWeights(key, type, null);</span>
+	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
+<span class="fc" id="L407">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -445,18 +415,18 @@ public interface Graph {
 	 * {@link Weights#createExternalVerticesWeights(Graph, Class, Object)}.
 	 *
 	 * &lt;pre&gt; {@code
-	 * Graph g = ...;
-	 * int v1 = g.newVertex();
-	 * int v2 = g.newVertex();
-	 * int v3 = g.newVertex();
+	 * Graph&lt;String, Int&gt; g = ...;
+	 * g.newVertex(&quot;Alice&quot;);
+	 * g.newVertex(&quot;Bob&quot;);
+	 * g.newVertex(&quot;Charlie&quot;);
 	 *
 	 * Weights&lt;String&gt; names = g.addVerticesWeights(&quot;name&quot;, String.class, &quot;Unknown&quot;);
-	 * names.set(v1, &quot;Alice&quot;);
-	 * names.set(v2, &quot;Bob&quot;);
+	 * names.set(&quot;Alice&quot;, &quot;Miller&quot;);
+	 * names.set(&quot;Bob&quot;, &quot;Jones&quot;);
 	 *
-	 * assert &quot;Alice&quot;.equals(names.get(v1))
-	 * assert &quot;Bob&quot;.equals(names.get(v2))
-	 * assert &quot;Unknown&quot;.equals(names.get(v3))
+	 * assert &quot;Miller&quot;.equals(names.get(&quot;Alice&quot;))
+	 * assert &quot;Jones&quot;.equals(names.get(&quot;Bob&quot;))
+	 * assert &quot;Unknown&quot;.equals(names.get(&quot;Charlie&quot;))
 	 * }&lt;/pre&gt;
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -466,11 +436,11 @@ public interface Graph {
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  &lt;V&gt;                      The weight data type
+	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type, V defVal);
+	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
@@ -497,11 +467,11 @@ public interface Graph {
 	 *
 	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
-	 * @param  &lt;E&gt;        The weight data type
+	 * @param  &lt;T&gt;        The weight data type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
@@ -511,20 +481,20 @@ public interface Graph {
 	 * {@link Weights#createExternalEdgesWeights(Graph, Class)}.
 	 *
 	 * &lt;pre&gt; {@code
-	 * Graph g = ...;
-	 * int v1 = g.addVertex();
-	 * int v2 = g.addVertex();
-	 * int v3 = g.addVertex();
-	 * int e1 = g.addEdge(v1, v2);
-	 * int e2 = g.addEdge(v2, v3);
+	 * Graph&lt;String, Integer&gt; g = ...;
+	 * g.addVertex(&quot;Berlin&quot;);
+	 * g.addVertex(&quot;Leipzig&quot;);
+	 * g.addVertex(&quot;Dresden&quot;);
+	 * g.addEdge(&quot;Berlin&quot;, &quot;Leipzig&quot;, 9);
+	 * g.addEdge(&quot;Berlin&quot;, &quot;Dresden&quot;, 13);
 	 *
 	 * Weights&lt;String&gt; roadTypes = g.addEdgesWeights(&quot;roadType&quot;, String.class);
-	 * roadTypes.set(e1, &quot;Asphalt&quot;);
-	 * roadTypes.set(e2, &quot;Gravel&quot;);
+	 * roadTypes.set(9, &quot;Asphalt&quot;);
+	 * roadTypes.set(13, &quot;Gravel&quot;);
 	 *
 	 * WeightsDouble roadLengths = g.addEdgesWeights(&quot;roadLength&quot;, double.class);
-	 * roadLengths.set(e1, 42);
-	 * roadLengths.set(e2, 35);
+	 * roadLengths.set(9, 42);
+	 * roadLengths.set(13, 35);
 	 * }&lt;/pre&gt;
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -533,12 +503,12 @@ public interface Graph {
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  &lt;E&gt;                      The weight data type
+	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	default &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L541">		return addEdgesWeights(key, type, null);</span>
+	default &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
+<span class="fc" id="L511">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -549,21 +519,21 @@ public interface Graph {
 	 * {@link Weights#createExternalEdgesWeights(Graph, Class, Object)}.
 	 *
 	 * &lt;pre&gt; {@code
-	 * Graph g = ...;
-	 * int v1 = g.addVertex();
-	 * int v2 = g.addVertex();
-	 * int v3 = g.addVertex();
-	 * int e1 = g.addEdge(v1, v2);
-	 * int e2 = g.addEdge(v2, v3);
-	 * int e3 = g.addEdge(v1, v3);
+	 * Graph&lt;String, Integer&gt; g = ...;
+	 * g.addVertex(&quot;Berlin&quot;);
+	 * g.addVertex(&quot;Leipzig&quot;);
+	 * g.addVertex(&quot;Dresden&quot;);
+	 * g.addEdge(&quot;Berlin&quot;, &quot;Leipzig&quot;, 9);
+	 * g.addEdge(&quot;Berlin&quot;, &quot;Dresden&quot;, 13);
+	 * g.addEdge(&quot;Dresden&quot;, &quot;Leipzig&quot;, 14);
 	 *
 	 * Weights&lt;String&gt; roadTypes = g.addEdgesWeights(&quot;roadType&quot;, String.class, &quot;Unknown&quot;);
-	 * roadTypes.set(e1, &quot;Asphalt&quot;);
-	 * roadTypes.set(e2, &quot;Gravel&quot;);
+	 * roadTypes.set(9, &quot;Asphalt&quot;);
+	 * roadTypes.set(13, &quot;Gravel&quot;);
 	 *
-	 * assert &quot;Asphalt&quot;.equals(names.get(e1))
-	 * assert &quot;Gravel&quot;.equals(names.get(e2))
-	 * assert &quot;Unknown&quot;.equals(names.get(e3))
+	 * assert &quot;Asphalt&quot;.equals(names.get(9))
+	 * assert &quot;Gravel&quot;.equals(names.get(13))
+	 * assert &quot;Unknown&quot;.equals(names.get(14))
 	 * }&lt;/pre&gt;
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -573,11 +543,11 @@ public interface Graph {
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  &lt;E&gt;                      The weight data type
+	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type, E defVal);
+	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.
@@ -656,7 +626,7 @@ public interface Graph {
 	 *
 	 * @return a mapping that map vertices IDs to vertices indices
 	 */
-	IndexIdMap indexGraphVerticesMap();
+	IndexIdMap&lt;V&gt; indexGraphVerticesMap();
 
 	/**
 	 * Get the index-id edges mapping of this graph.
@@ -672,27 +642,27 @@ public interface Graph {
 	 *
 	 * @return a mapping that map edges IDs to edges indices
 	 */
-	IndexIdMap indexGraphEdgesMap();
+	IndexIdMap&lt;E&gt; indexGraphEdgesMap();
 
 	/**
 	 * Create a copy of this graph, with the same vertices and edges, without copying weights.
 	 * &lt;p&gt;
-	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive), without
-	 * copying the vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the
-	 * original graph.
+	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
+	 * self edges and parallel edges support, without copying the vertices/edges weights. The returned graph will always
+	 * be modifiable, with no side affects on the original graph.
 	 *
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
-	default Graph copy() {
-<span class="fc" id="L687">		return copy(false);</span>
+	default Graph&lt;V, E&gt; copy() {
+<span class="fc" id="L657">		return copy(false);</span>
 	}
 
 	/**
 	 * Create a copy of this graph, with the same vertices and edges, with/without copying weights.
 	 * &lt;p&gt;
-	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive),
-	 * with/without copying the vertices/edges weights. The returned Graph will always be modifiable, with no side
-	 * affects on the original graph.
+	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
+	 * self edges and parallel edges support, with/without copying the vertices/edges weights. The returned graph will
+	 * always be modifiable, with no side affects on the original graph.
 	 * &lt;p&gt;
 	 * Note that although {@code g.equals(g.copy())} is always {@code true} if {@code copyWeights} is {@code true},
 	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
@@ -702,8 +672,8 @@ public interface Graph {
 	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
 	 *                     graph weights
 	 */
-	default Graph copy(boolean copyWeights) {
-<span class="fc" id="L706">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+	default Graph&lt;V, E&gt; copy(boolean copyWeights) {
+<span class="nc" id="L676">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	/**
@@ -723,8 +693,8 @@ public interface Graph {
 	 *
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
-	default Graph immutableCopy() {
-<span class="fc" id="L727">		return GraphBuilder.newFrom(this).build();</span>
+	default Graph&lt;V, E&gt; immutableCopy() {
+<span class="nc" id="L697">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -746,21 +716,21 @@ public interface Graph {
 	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
 	 *                     weights
 	 */
-	default Graph immutableCopy(boolean copyWeights) {
-<span class="fc" id="L750">		IndexIdMap viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L751">		IndexIdMap eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L752" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L753">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L754">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
-<span class="fc" id="L755">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L756">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L757">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="pc bpc" id="L758" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
-<span class="pc bpc" id="L759" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
-<span class="fc" id="L760">			return new GraphImpl.Directed(iGraph, viMap, eiMap);</span>
+	default Graph&lt;V, E&gt; immutableCopy(boolean copyWeights) {
+<span class="nc" id="L720">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
+<span class="nc" id="L721">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">		if (isDirected()) {</span>
+<span class="nc" id="L723">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="nc" id="L724">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
+<span class="nc" id="L725">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="nc" id="L726">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="nc" id="L727">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
+<span class="nc bnc" id="L729" title="All 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
+<span class="nc" id="L730">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
 		} else {
-<span class="fc" id="L762">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="fc" id="L763">			return new GraphImpl.Undirected(iGraph, viMap, eiMap);</span>
+<span class="nc" id="L732">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="nc" id="L733">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
 		}
 	}
 
@@ -773,8 +743,8 @@ public interface Graph {
 	 *
 	 * @return an immutable view of this graph
 	 */
-	default Graph immutableView() {
-<span class="fc" id="L777">		return Graphs.immutableView(this);</span>
+	default Graph&lt;V, E&gt; immutableView() {
+<span class="fc" id="L747">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -788,8 +758,8 @@ public interface Graph {
 	 *
 	 * @return a reversed view of this graph
 	 */
-	default Graph reverseView() {
-<span class="fc" id="L792">		return Graphs.reverseView(this);</span>
+	default Graph&lt;V, E&gt; reverseView() {
+<span class="fc" id="L762">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -806,7 +776,7 @@ public interface Graph {
 	 * created graph will be a subset of the vertices and edges of this graph.
 	 * &lt;p&gt;
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link Graphs#subGraph(Graph, IntCollection, IntCollection, boolean, boolean)}.
+	 * creation, see {@link Graphs#subGraph(Graph, Collection, Collection, boolean, boolean)}.
 	 *
 	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
 	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
@@ -816,8 +786,8 @@ public interface Graph {
 	 * @return                      a new graph that is a subgraph of this graph
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
-	default Graph subGraphCopy(IntCollection vertices, IntCollection edges) {
-<span class="fc" id="L820">		return Graphs.subGraph(this, vertices, edges);</span>
+	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
+<span class="nc" id="L790">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -826,10 +796,12 @@ public interface Graph {
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link GraphFactory}.
 	 *
-	 * @return a new undirected empty graph
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new undirected empty graph
 	 */
-	static Graph newUndirected() {
-<span class="fc" id="L832">		return GraphFactory.newUndirected().newGraph();</span>
+	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
+<span class="nc" id="L804">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -838,10 +810,12 @@ public interface Graph {
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link GraphFactory}.
 	 *
-	 * @return a new directed empty graph
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new directed empty graph
 	 */
-	static Graph newDirected() {
-<span class="fc" id="L844">		return GraphFactory.newDirected().newGraph();</span>
+	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
+<span class="nc" id="L818">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
 	}
 
 }

@@ -17,95 +17,135 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L29">class EdgeCovers {</span>
+<span class="nc" id="L34">class EdgeCovers {</span>
 
-<span class="fc" id="L31">	static abstract class AbstractImpl implements EdgeCover {</span>
+<span class="fc" id="L36">	static abstract class AbstractImpl implements EdgeCover {</span>
 
+		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public EdgeCover.Result computeMinimumEdgeCover(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L36">				return computeMinimumEdgeCover((IndexGraph) g, w);</span>
+		public &lt;V, E&gt; EdgeCover.Result&lt;V, E&gt; computeMinimumEdgeCover(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L42">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L43">				return (EdgeCover.Result&lt;V, E&gt;) computeMinimumEdgeCover((IndexGraph) g, w0);</span>
 
-<span class="fc" id="L38">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L39">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L40">			WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L47">				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
+<span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
+<span class="fc" id="L49">				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
+<span class="fc" id="L50">				return (EdgeCover.Result&lt;V, E&gt;) new IntResultFromIndexResult(indexResult, eiMap);</span>
 
-<span class="fc" id="L42">			EdgeCover.Result indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
-<span class="fc" id="L43">			return new ResultFromIndexResult(indexResult, eiMap);</span>
+			} else {
+<span class="nc" id="L53">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L54">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L55">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="nc" id="L56">				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
+<span class="nc" id="L57">				return new ObjResultFromIndexResult&lt;&gt;(indexResult, eiMap);</span>
+			}
 		}
 
-		abstract EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w);
+		abstract EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
 
 	}
 
-	static class ResultImpl implements EdgeCover.Result {
+	static class ResultImpl implements EdgeCover.IResult {
 
 		private final IndexGraph g;
 		private final BitSet cover;
 		private IntSet edges;
 
-<span class="fc" id="L56">		ResultImpl(IndexGraph g, BitSet cover) {</span>
-<span class="fc" id="L57">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L58">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L59">		}</span>
+<span class="fc" id="L71">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L72">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L73">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L74">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (edges == null) {</span>
-<span class="fc" id="L64">				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (edges == null) {</span>
+<span class="fc" id="L79">				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
 					@Override
 					public boolean contains(int e) {
-<span class="nc bnc" id="L67" title="All 6 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; g.edges().size() &amp;&amp; cover.get(e);</span>
+<span class="nc bnc" id="L82" title="All 6 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; g.edges().size() &amp;&amp; cover.get(e);</span>
 					}
 				};
 			}
-<span class="fc" id="L71">			return edges;</span>
+<span class="fc" id="L86">			return edges;</span>
 		}
 
 		@Override
 		public boolean isInCover(int edge) {
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			if (!g.edges().contains(edge))</span>
-<span class="nc" id="L77">				throw new IndexOutOfBoundsException(edge);</span>
-<span class="fc" id="L78">			return cover.get(edge);</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">			if (!g.edges().contains(edge))</span>
+<span class="nc" id="L92">				throw new IndexOutOfBoundsException(edge);</span>
+<span class="fc" id="L93">			return cover.get(edge);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L83">			return edges().toString();</span>
+<span class="nc" id="L98">			return edges().toString();</span>
 		}
 	}
-	private static class ResultFromIndexResult implements EdgeCover.Result {
+	private static class IntResultFromIndexResult implements EdgeCover.IResult {
 
-		private final EdgeCover.Result res;
-		private final IndexIdMap eiMap;
+		private final EdgeCover.IResult indexRes;
+		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L91">		ResultFromIndexResult(EdgeCover.Result res, IndexIdMap eiMap) {</span>
-<span class="fc" id="L92">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L93">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L94">		}</span>
+<span class="fc" id="L106">		IntResultFromIndexResult(EdgeCover.IResult indexRes, IndexIntIdMap eiMap) {</span>
+<span class="fc" id="L107">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L108">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L109">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L98">			return IndexIdMaps.indexToIdSet(res.edges(), eiMap);</span>
+<span class="fc" id="L113">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int edge) {
-<span class="fc" id="L103">			return res.isInCover(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L118">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L108">			return edges().toString();</span>
+<span class="nc" id="L123">			return edges().toString();</span>
+		}
+	}
+	private static class ObjResultFromIndexResult&lt;V, E&gt; implements EdgeCover.Result&lt;V, E&gt; {
+
+		private final EdgeCover.IResult indexRes;
+		private final IndexIdMap&lt;E&gt; eiMap;
+
+<span class="nc" id="L131">		ObjResultFromIndexResult(EdgeCover.IResult indexRes, IndexIdMap&lt;E&gt; eiMap) {</span>
+<span class="nc" id="L132">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="nc" id="L133">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="nc" id="L134">		}</span>
+
+		@Override
+		public Set&lt;E&gt; edges() {
+<span class="nc" id="L138">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+		}
+
+		@Override
+		public boolean isInCover(E edge) {
+<span class="nc" id="L143">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L148">			return edges().toString();</span>
 		}
 	}
 

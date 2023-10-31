@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L25">class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.AbstractWeaklyConnectedComponentsAlgo {</span>
 
 	@Override
-	VertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+	IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
 <span class="fc" id="L29">		final boolean directed = g.isDirected();</span>
 <span class="fc" id="L30">		final int n = g.vertices().size();</span>
 <span class="fc" id="L31">		int[] comp = new int[n];</span>
@@ -43,9 +43,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L43" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
 <span class="fc" id="L44">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L46" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L47">					eit.nextInt();</span>
-<span class="fc" id="L48">					int v = eit.target();</span>
+<span class="fc" id="L48">					int v = eit.targetInt();</span>
 <span class="fc bfc" id="L49" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
 <span class="pc bnc" id="L50" title="All 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
@@ -55,9 +55,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L55">				}</span>
 
 <span class="fc bfc" id="L57" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L59">						eit.nextInt();</span>
-<span class="fc" id="L60">						int v = eit.source();</span>
+<span class="fc" id="L60">						int v = eit.sourceInt();</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">						if (comp[v] != -1) {</span>
 <span class="pc bnc" id="L62" title="All 2 branches missed.">							assert comp[v] == compIdx;</span>
 							continue;
@@ -68,7 +68,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 				}
 <span class="fc" id="L69">			}</span>
 		}
-<span class="fc" id="L71">		return new VertexPartitions.ImplIndex(g, compNum, comp);</span>
+<span class="fc" id="L71">		return new VertexPartitions.Impl(g, compNum, comp);</span>
 	}
 
 	@Override
@@ -85,9 +85,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L85" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
 <span class="fc" id="L86">			int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L89">				eit.nextInt();</span>
-<span class="fc" id="L90">				int v = eit.target();</span>
+<span class="fc" id="L90">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">				if (visited.get(v))</span>
 <span class="fc" id="L92">					continue;</span>
 <span class="fc" id="L93">				visited.set(v);</span>
@@ -96,9 +96,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L96">			}</span>
 
 <span class="pc bpc" id="L98" title="1 of 2 branches missed.">			if (directed) {</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">				for (EdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L100">					eit.nextInt();</span>
-<span class="nc" id="L101">					int v = eit.source();</span>
+<span class="nc" id="L101">					int v = eit.sourceInt();</span>
 <span class="nc bnc" id="L102" title="All 2 branches missed.">					if (visited.get(v))</span>
 <span class="nc" id="L103">						continue;</span>
 <span class="nc" id="L104">					visited.set(v);</span>

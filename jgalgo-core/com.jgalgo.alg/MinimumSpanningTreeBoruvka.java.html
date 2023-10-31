@@ -19,7 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L58">		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);</span>
 	}
 
@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L70">		}</span>
 	}
 
-	RunBoruvkaResult runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds) {
+	RunBoruvkaResult runBoruvka(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 <span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
 <span class="nc" id="L75">			throw new IllegalArgumentException(&quot;number of rounds must be positive&quot;);</span>
 <span class="fc" id="L76">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
@@ -96,7 +96,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L96">		return new RunBoruvkaResult(contractedG, mstRes.mst, edgeRef);</span>
 	}
 
-	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {
+	private static Res computeMST(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 <span class="fc" id="L100">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L101">		final int n = g.vertices().size();</span>
 

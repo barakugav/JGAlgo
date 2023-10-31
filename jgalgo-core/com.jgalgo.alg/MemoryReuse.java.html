@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.ds.HeapReference;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -88,14 +88,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L88">		return Math.max(a.length * 2, len);</span>
 	}
 
-<span class="fc" id="L91">	static final EdgeIter[] EmptyEdgeIterArr = new EdgeIter[0];</span>
+<span class="fc" id="L91">	static final IEdgeIter[] EmptyEdgeIterArr = new IEdgeIter[0];</span>
 <span class="fc" id="L92">	static final IntList[] EmptyIntListArr = new IntList[0];</span>
 <span class="fc" id="L93">	static final IndexGraph[] EmptyGraphArr = new IndexGraph[0];</span>
-<span class="fc" id="L94">	static final WeightsDouble[] EmptyWeightsDoubleArr = new WeightsDouble[0];</span>
+<span class="fc" id="L94">	static final IWeightsDouble[] EmptyWeightsDoubleArr = new IWeightsDouble[0];</span>
 	@SuppressWarnings(&quot;rawtypes&quot;)
 <span class="fc" id="L96">	static final HeapReference[] EmptyHeapReferenceArr = new HeapReference[0];</span>
-<span class="fc" id="L97">	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];</span>
-<span class="fc" id="L98">	static final TreePathMaxima.Result[] EmptyTpmResultArr = new TreePathMaxima.Result[0];</span>
+<span class="fc" id="L97">	static final TreePathMaxima.IQueries[] EmptyTpmQueriesArr = new TreePathMaxima.IQueries[0];</span>
+<span class="fc" id="L98">	static final TreePathMaxima.IResult[] EmptyTpmResultArr = new TreePathMaxima.IResult[0];</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

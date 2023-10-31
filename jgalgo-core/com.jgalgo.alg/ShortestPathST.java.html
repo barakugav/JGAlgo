@@ -16,6 +16,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -41,14 +43,19 @@ public interface ShortestPathST {
 
 	/**
 	 * Compute the shortest path from a source vertex to a target vertex.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
 	 * @param  g      the graph
 	 * @param  w      an edge weight function
 	 * @param  source the source vertex
 	 * @param  target the target vertex
 	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
 	 */
-	Path computeShortestPath(Graph g, WeightFunction w, int source, int target);
+	&lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target);
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
@@ -59,7 +66,7 @@ public interface ShortestPathST {
 	 * @return a default implementation of {@link ShortestPathST}
 	 */
 	static ShortestPathST newInstance() {
-<span class="nc" id="L62">		return newBuilder().build();</span>
+<span class="nc" id="L69">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -70,18 +77,18 @@ public interface ShortestPathST {
 	 * @return a new builder that can build {@link ShortestPathST} objects
 	 */
 	static ShortestPathST.Builder newBuilder() {
-<span class="nc" id="L73">		return () -&gt; {</span>
-<span class="nc" id="L74">			return new ShortestPathST() {</span>
-<span class="nc" id="L75">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
-<span class="nc" id="L76">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
+<span class="nc" id="L80">		return () -&gt; {</span>
+<span class="nc" id="L81">			return new ShortestPathST() {</span>
+<span class="nc" id="L82">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
+<span class="nc" id="L83">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
 
 				@Override
-				public Path computeShortestPath(Graph g, WeightFunction w, int source, int target) {
-<span class="nc bnc" id="L80" title="All 4 branches missed.">					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">					if (cardinality) {</span>
-<span class="nc" id="L82">						return cardinalityStSp.computeShortestPath(g, w, source, target);</span>
+				public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
+<span class="nc bnc" id="L87" title="All 6 branches missed.">					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction || w == IWeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">					if (cardinality) {</span>
+<span class="nc" id="L89">						return cardinalityStSp.computeShortestPath(g, w, source, target);</span>
 					} else {
-<span class="nc" id="L84">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
+<span class="nc" id="L91">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
 					}
 				}
 			};
@@ -117,7 +124,7 @@ public interface ShortestPathST {
 		 * @return       this builder
 		 */
 		default ShortestPathST.Builder setOption(String key, Object value) {
-<span class="nc" id="L120">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L127">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

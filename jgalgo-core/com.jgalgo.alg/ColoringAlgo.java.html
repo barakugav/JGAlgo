@@ -19,9 +19,13 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.IntUnaryOperator;
+import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntContainers;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -38,24 +42,24 @@ import com.jgalgo.graph.IndexIdMap;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
- * Graph g = Graph.newUndirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int v4 = g.addVertex();
- * g.addEdge(v1, v2);
- * g.addEdge(v2, v3);
- * g.addEdge(v3, v1);
- * g.addEdge(v3, v4);
+ * Graph&lt;String, Integer&gt; g = Graph.newUndirected();
+ * g.addVertex(&quot;Alice&quot;);
+ * g.addVertex(&quot;Bob&quot;);
+ * g.addVertex(&quot;Charlie&quot;);
+ * g.addVertex(&quot;David&quot;);
+ * g.addEdge(&quot;Alice&quot;, &quot;Bob&quot;);
+ * g.addEdge(&quot;Bob&quot;, &quot;Charlie&quot;);
+ * g.addEdge(&quot;Charlie&quot;, &quot;Alice&quot;);
+ * g.addEdge(&quot;Charlie&quot;, &quot;David&quot;);
  *
  * Coloring coloringAlg = Coloring.newInstance();
- * VertexPartition colors = coloringAlg.computeColoring(g);
+ * VertexPartition&lt;String, Integer&gt; colors = coloringAlg.computeColoring(g);
  * System.out.println(&quot;A valid coloring with &quot; + colors.numberOfBlocks() + &quot; colors was found&quot;);
- * for (int u : g.vertices()) {
+ * for (String u : g.vertices()) {
  * 	System.out.println(&quot;The color of vertex &quot; + u + &quot; is &quot; + colors.vertexBlock(u));
- * 	for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
- * 		eit.nextInt();
- * 		int v = eit.target();
+ * 	for (EdgeIter&lt;String, Integer&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {
+ * 		eit.next();
+ * 		String v = eit.target();
  * 		assert colors.vertexBlock(u) != colors.vertexBlock(v);
  * 	}
  * }
@@ -68,12 +72,16 @@ public interface ColoringAlgo {
 
 	/**
 	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
 	 * @return                          a valid coloring with (hopefully) small number of different colors
 	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	VertexPartition computeColoring(Graph g);
+	&lt;V, E&gt; VertexPartition&lt;V, E&gt; computeColoring(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Check whether a given mapping is a valid coloring of a graph.
@@ -81,44 +89,58 @@ public interface ColoringAlgo {
 	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
 	 * the color of \(u\) is different than the color of \(v\).
 	 *
+	 * @param  &lt;V&gt;     the vertices type
+	 * @param  &lt;E&gt;     the edges type
 	 * @param  g       a graph
 	 * @param  mapping a mapping from the vertices of {@code g} to colors in range \([0, \textit{colorsNum})\)
 	 * @return         {@code true} if {@code mapping} is a valid coloring of {@code g}, {@code false} otherwise
 	 */
-	static boolean isColoring(Graph g, IntUnaryOperator mapping) {
-<span class="fc" id="L89">		final int n = g.vertices().size();</span>
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isColoring(Graph&lt;V, E&gt; g, ToIntFunction&lt;V&gt; mapping) {
+<span class="fc" id="L100">		final int n = g.vertices().size();</span>
 		IndexGraph ig;
-<span class="fc" id="L91">		int[] vertexToColor = new int[n];</span>
-<span class="fc" id="L92">		int maxColor = -1;</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L94">			ig = (IndexGraph) g;</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L96">				vertexToColor[v] = mapping.applyAsInt(v);</span>
-<span class="nc" id="L97">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L102">		int[] vertexToColor = new int[n];</span>
+<span class="fc" id="L103">		int maxColor = -1;</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L105">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L106">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L108">				vertexToColor[v] = mapping0.applyAsInt(v);</span>
+<span class="nc" id="L109">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
 			}
-		} else {
-<span class="fc" id="L100">			ig = g.indexGraph();</span>
-<span class="fc" id="L101">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L103">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
-<span class="fc" id="L104">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L113">			ig = g.indexGraph();</span>
+<span class="fc" id="L114">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L115">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L117">				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));</span>
+<span class="fc" id="L118">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+			}
+
+<span class="fc" id="L121">		} else {</span>
+<span class="nc" id="L122">			ig = g.indexGraph();</span>
+<span class="nc" id="L123">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L125">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="nc" id="L126">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
 			}
 		}
-<span class="fc" id="L107">		final int colorNum = maxColor + 1;</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (maxColor &gt; n)</span>
-<span class="nc" id="L109">			return false;</span>
-<span class="fc" id="L110">		BitSet seenColors = new BitSet(colorNum);</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (int b : vertexToColor) {</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (b &lt; 0)</span>
-<span class="nc" id="L113">				return false;</span>
-<span class="fc" id="L114">			seenColors.set(b);</span>
+<span class="fc" id="L129">		final int colorNum = maxColor + 1;</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (maxColor &gt; n)</span>
+<span class="nc" id="L131">			return false;</span>
+<span class="fc" id="L132">		BitSet seenColors = new BitSet(colorNum);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int b : vertexToColor) {</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (b &lt; 0)</span>
+<span class="nc" id="L135">				return false;</span>
+<span class="fc" id="L136">			seenColors.set(b);</span>
 		}
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (seenColors.nextClearBit(0) != colorNum)</span>
-<span class="nc" id="L117">			return false;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int m = ig.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])</span>
-<span class="nc" id="L120">				return false;</span>
-<span class="fc" id="L121">		return true;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (seenColors.nextClearBit(0) != colorNum)</span>
+<span class="nc" id="L139">			return false;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		for (int m = ig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])</span>
+<span class="nc" id="L142">				return false;</span>
+<span class="fc" id="L143">		return true;</span>
 	}
 
 	/**
@@ -130,7 +152,7 @@ public interface ColoringAlgo {
 	 * @return a default implementation of {@link ColoringAlgo}
 	 */
 	static ColoringAlgo newInstance() {
-<span class="nc" id="L133">		return newBuilder().build();</span>
+<span class="nc" id="L155">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -141,40 +163,40 @@ public interface ColoringAlgo {
 	 * @return a new builder that can build {@link ColoringAlgo} objects
 	 */
 	static ColoringAlgo.Builder newBuilder() {
-<span class="nc" id="L144">		return new ColoringAlgo.Builder() {</span>
+<span class="nc" id="L166">		return new ColoringAlgo.Builder() {</span>
 			String impl;
 			Random rand;
 
 			@Override
 			public ColoringAlgo build() {
-<span class="nc bnc" id="L150" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L151" title="All 4 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L173" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;greedy&quot;:
-<span class="nc bnc" id="L153" title="All 2 branches missed.">							return rand == null ? new ColoringGreedy() : new ColoringGreedy(rand.nextLong());</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">							return rand == null ? new ColoringGreedy() : new ColoringGreedy(rand.nextLong());</span>
 						case &quot;dsatur&quot;:
-<span class="nc" id="L155">							return new ColoringDSatur();</span>
+<span class="nc" id="L177">							return new ColoringDSatur();</span>
 						case &quot;rlf&quot;:
-<span class="nc" id="L157">							return new ColoringRecursiveLargestFirst();</span>
+<span class="nc" id="L179">							return new ColoringRecursiveLargestFirst();</span>
 						default:
-<span class="nc" id="L159">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L181">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L162">				return new ColoringDSatur();</span>
+<span class="nc" id="L184">				return new ColoringDSatur();</span>
 			}
 
 			@Override
 			public ColoringAlgo.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L167" title="All 3 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L189" title="All 3 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L169">						impl = (String) value;</span>
-<span class="nc" id="L170">						break;</span>
+<span class="nc" id="L191">						impl = (String) value;</span>
+<span class="nc" id="L192">						break;</span>
 					case &quot;seed&quot;:
-<span class="nc bnc" id="L172" title="All 2 branches missed.">						rand = value == null ? null : new Random(((Long) value).longValue());</span>
-<span class="nc" id="L173">						break;</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">						rand = value == null ? null : new Random(((Long) value).longValue());</span>
+<span class="nc" id="L195">						break;</span>
 					default:
-<span class="nc" id="L175">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L197">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L177">				return this;</span>
+<span class="nc" id="L199">				return this;</span>
 			}
 		};
 	}
@@ -208,7 +230,7 @@ public interface ColoringAlgo {
 		 * @return       this builder
 		 */
 		default ColoringAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L211">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L233">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

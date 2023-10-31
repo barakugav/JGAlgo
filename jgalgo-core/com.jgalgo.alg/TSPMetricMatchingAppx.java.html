@@ -19,9 +19,9 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L45">	public TSPMetricMatchingAppx() {}</span>
 
 	@Override
-	Path computeShortestTour(IndexGraph g, WeightFunction w) {
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L49">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L51">			return null;</span>
@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-<span class="fc" id="L57">		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();</span>
+<span class="fc" id="L57">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
 <span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
 <span class="nc" id="L59">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
@@ -68,7 +68,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc bfc" id="L68" title="All 2 branches covered.">			if (degree[u] % 2 != 0)</span>
 <span class="fc" id="L69">				mVtoV[mGn++] = u;</span>
 <span class="fc" id="L70">		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);</span>
-<span class="fc" id="L71">		WeightsDouble mGWeightsNeg = Weights.createExternalEdgesWeights(mG, double.class);</span>
+<span class="fc" id="L71">		IWeightsDouble mGWeightsNeg = IWeights.createExternalEdgesWeights(mG, double.class);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int m = mG.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L73">			int u = mVtoV[mG.edgeSource(e)];</span>
 <span class="fc" id="L74">			int v = mVtoV[mG.edgeTarget(e)];</span>
@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-<span class="fc" id="L79">		Matching matching = matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
+<span class="fc" id="L79">		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
 
 		/* Build a graph of the union of the MST and the matching result */
 <span class="fc" id="L82">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>
@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L99">		}</span>
 <span class="fc" id="L100">		IndexGraph g1 = g1Builder.build();</span>
 
-<span class="fc" id="L102">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
+<span class="fc" id="L102">		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
 
 		/* Convert cycle of edges to list of vertices */
 <span class="fc" id="L105">		return cycle;</span>

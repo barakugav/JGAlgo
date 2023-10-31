@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
@@ -59,16 +59,16 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L59">	MaximumFlowPushRelabelDynamicTrees() {}</span>
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
-<span class="fc" id="L64">			return new WorkerInt(g, (FlowNetworkInt) net, source, sink).computeMaxFlow();</span>
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (net instanceof IFlowNetworkInt) {</span>
+<span class="fc" id="L64">			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink).computeMaxFlow();</span>
 		} else {
 <span class="fc" id="L66">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
 		}
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 <span class="nc" id="L72">		throw new UnsupportedOperationException(&quot;multi source/sink not supported&quot;);</span>
 	}
 
@@ -85,7 +85,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final LinkedListFixedSize.Doubly children;
 <span class="fc" id="L86">		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();</span>
 
-		AbstractWorker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+		AbstractWorker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 <span class="fc" id="L89">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L91">			double maxWeight = getMaxCapacity();</span>
@@ -137,11 +137,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc bfc" id="L137" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
 <span class="fc" id="L138">				int v = queue.dequeueInt();</span>
 <span class="fc" id="L139">				int vLabel = vertexData[v].label;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L141">					int e = eit.nextInt();</span>
 <span class="fc bfc" id="L142" title="All 2 branches covered.">					if (!isResidual(e))</span>
 <span class="fc" id="L143">						continue;</span>
-<span class="fc" id="L144">					int u = eit.source();</span>
+<span class="fc" id="L144">					int u = eit.sourceInt();</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">					if (visited.get(u))</span>
 <span class="fc" id="L146">						continue;</span>
 <span class="fc" id="L147">					vertexData[u].label = vLabel + 1;</span>
@@ -164,11 +164,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L164">				Vertex U = active.pop();</span>
 <span class="pc bnc" id="L165" title="All 4 branches missed.">				assert U.v != source &amp;&amp; U.v != sink;</span>
 <span class="pc bnc" id="L166" title="All 2 branches missed.">				assert U.dtVertex.getParent() == null;</span>
-<span class="fc" id="L167">				EdgeIter it = U.edgeIter;</span>
+<span class="fc" id="L167">				IEdgeIter it = U.edgeIter;</span>
 <span class="fc" id="L168">				int uSize = dtTreeSize.getTreeSize(U.dtVertex);</span>
 
 <span class="fc bfc" id="L170" title="All 4 branches covered.">				while (U.hasExcess() &amp;&amp; it.hasNext()) {</span>
-<span class="fc" id="L171">					int e = it.peekNext();</span>
+<span class="fc" id="L171">					int e = it.peekNextInt();</span>
 <span class="fc" id="L172">					Vertex V = vertexData(g.edgeTarget(e));</span>
 
 <span class="fc bfc" id="L174" title="All 4 branches covered.">					if (!(isResidual(e) &amp;&amp; U.label == V.label + 1)) {</span>
@@ -299,7 +299,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			final int v;
 			boolean isActive;
 			int label;
-			EdgeIter edgeIter;
+			IEdgeIter edgeIter;
 
 			final DynamicTree.Vertex dtVertex;
 			int firstDtChild;
@@ -324,7 +324,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
 <span class="fc" id="L328">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L330">			flow = new double[g.edges().size()];</span>
@@ -360,12 +360,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L363" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L364">				int e = eit.nextInt();</span>
 <span class="fc" id="L365">				double f = capacity[e] - flow[e];</span>
 <span class="fc bfc" id="L366" title="All 2 branches covered.">				if (f &gt; 0) {</span>
 <span class="fc" id="L367">					pushFlow(e, f);</span>
-<span class="fc" id="L368">					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());</span>
+<span class="fc" id="L368">					Vertex U = vertexData(eit.sourceInt()), V = vertexData(eit.targetInt());</span>
 <span class="fc" id="L369">					U.excess -= f;</span>
 <span class="fc" id="L370">					V.excess += f;</span>
 <span class="fc bfc" id="L371" title="All 2 branches covered.">					if (!V.isActive) {</span>
@@ -452,7 +452,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final int[] capacity;
 		final int[] flow;
 
-		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink) {
 <span class="fc" id="L456">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L458">			flow = new int[g.edges().size()];</span>
@@ -467,7 +467,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		double getMaxCapacity() {
-<span class="fc" id="L470">			FlowNetworkInt net = (FlowNetworkInt) this.net;</span>
+<span class="fc" id="L470">			IFlowNetworkInt net = (IFlowNetworkInt) this.net;</span>
 <span class="fc" id="L471">			int maxCapacity = 100;</span>
 <span class="fc bfc" id="L472" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L473">				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));</span>
@@ -489,12 +489,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L492" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L493">				int e = eit.nextInt();</span>
 <span class="fc" id="L494">				int f = capacity[e] - flow[e];</span>
 <span class="fc bfc" id="L495" title="All 2 branches covered.">				if (f &gt; 0) {</span>
 <span class="fc" id="L496">					pushFlow(e, f);</span>
-<span class="fc" id="L497">					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());</span>
+<span class="fc" id="L497">					Vertex U = vertexData(eit.sourceInt()), V = vertexData(eit.targetInt());</span>
 <span class="fc" id="L498">					U.excess -= f;</span>
 <span class="fc" id="L499">					V.excess += f;</span>
 <span class="fc bfc" id="L500" title="All 2 branches covered.">					if (!V.isActive) {</span>

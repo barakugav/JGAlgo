@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Weakly Connected components algorithm.
@@ -40,22 +41,30 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * &lt;p&gt;
 	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strongly)
 	 * connected components in the result undirected graph.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing the partition of the vertices into weakly connected components
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the partition of the vertices into weakly connected components
 	 */
-	VertexPartition findWeaklyConnectedComponents(Graph g);
+	&lt;V, E&gt; VertexPartition&lt;V, E&gt; findWeaklyConnectedComponents(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Check whether a graph is weakly connected.
 	 * &lt;p&gt;
 	 * A graph is weakly connected if there is an &lt;i&gt;undirected&lt;/i&gt; path from any vertex to any other vertex. Namely if
 	 * the the whole graph is a single weakly connected component.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is weakly connected, {@code false} otherwise
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is weakly connected, {@code false} otherwise
 	 */
-	boolean isWeaklyConnected(Graph g);
+	&lt;V, E&gt; boolean isWeaklyConnected(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Create a new weakly connected components algorithm object.
@@ -67,7 +76,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @return a default implementation of {@link WeaklyConnectedComponentsAlgo}
 	 */
 	static WeaklyConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L70">		return newBuilder().build();</span>
+<span class="fc" id="L79">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -78,7 +87,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link WeaklyConnectedComponentsAlgo} objects
 	 */
 	static WeaklyConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L81">		return WeaklyConnectedComponentsAlgoImpl::new;</span>
+<span class="fc" id="L90">		return WeaklyConnectedComponentsAlgoImpl::new;</span>
 	}
 
 	/**
@@ -110,7 +119,7 @@ public interface WeaklyConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default WeaklyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L122">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

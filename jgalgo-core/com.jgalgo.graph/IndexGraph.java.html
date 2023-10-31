@@ -20,9 +20,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A graph whose vertices and edges identifiers are indices.
  * &lt;p&gt;
- * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using {@code int}
+ * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using some hashable
  * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
- * graph lifetime. On the other hand, an &lt;i&gt;Index&lt;/i&gt; graph is a {@link Graph} object in which the vertices and edges
+ * graph lifetime. On the other hand, an &lt;i&gt;Index&lt;/i&gt; graph is a {@link IntGraph} object in which the vertices and edges
  * identifiers of the graph are &lt;b&gt;always&lt;/b&gt; {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
  * &lt;p&gt;
  * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
  * created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is required, and
  * there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a regular
- * {@link Graph}, as it will expose an identical functionality while providing better performance.
+ * {@link IntGraph}, as it will expose an identical functionality while providing better performance.
  * &lt;p&gt;
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
  * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IndexIdMap
  * @author Barak Ugav
  */
-public interface IndexGraph extends Graph {
+public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
@@ -119,7 +119,7 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L122">		Graph.super.removeEdgesOf(vertex);</span>
+<span class="fc" id="L122">		IntGraph.super.removeEdgesOf(vertex);</span>
 <span class="fc" id="L123">	}</span>
 
 	/**
@@ -130,7 +130,7 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeOutEdgesOf(int source) {
-<span class="fc" id="L133">		Graph.super.removeOutEdgesOf(source);</span>
+<span class="fc" id="L133">		IntGraph.super.removeOutEdgesOf(source);</span>
 <span class="fc" id="L134">	}</span>
 
 	/**
@@ -141,7 +141,7 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	default void removeInEdgesOf(int target) {
-<span class="fc" id="L144">		Graph.super.removeInEdgesOf(target);</span>
+<span class="fc" id="L144">		IntGraph.super.removeInEdgesOf(target);</span>
 <span class="fc" id="L145">	}</span>
 
 	/**
@@ -205,7 +205,7 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIdMap indexGraphVerticesMap() {
+	default IndexIntIdMap indexGraphVerticesMap() {
 <span class="fc" id="L209">		return Graphs.IndexIdMapIdentify;</span>
 	}
 
@@ -216,7 +216,7 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIdMap indexGraphEdgesMap() {
+	default IndexIntIdMap indexGraphEdgesMap() {
 <span class="fc" id="L220">		return Graphs.IndexIdMapIdentify;</span>
 	}
 

@@ -100,7 +100,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 <span class="fc" id="L100">		super.clearEdges();</span>
 <span class="fc" id="L101">	}</span>
 
-	abstract class EdgeItr implements EdgeIter {
+	abstract class EdgeItr implements IEdgeIter {
 
 		private Edge next;
 		Edge last;
@@ -124,7 +124,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L128">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L129">			return next.id;</span>
 		}

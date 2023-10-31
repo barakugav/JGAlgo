@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 <span class="nc" id="L23">class Edges {</span>
 
-<span class="fc" id="L25">	static class EmptyEdgeIter implements EdgeIter {</span>
+<span class="fc" id="L25">	static class EmptyEdgeIter implements IEdgeIter {</span>
 
 <span class="fc" id="L27">		static final EmptyEdgeIter Instance = new EmptyEdgeIter();</span>
 
@@ -37,24 +37,24 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="nc" id="L41">			throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);</span>
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="nc" id="L46">			throw new IllegalStateException();</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="nc" id="L51">			throw new IllegalStateException();</span>
 		}
 	};
 
-<span class="fc" id="L55">	static final EdgeSet EmptyEdgeSet = new EmptyEdgeSet();</span>
+<span class="fc" id="L55">	static final IEdgeSet EmptyEdgeSet = new EmptyEdgeSet();</span>
 
-	static class EmptyEdgeSet extends AbstractIntSet implements EdgeSet {
+	static class EmptyEdgeSet extends AbstractIntSet implements IEdgeSet {
 
 		private EmptyEdgeSet() {}
 
@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L73">			return EmptyEdgeIter.Instance;</span>
 		}
 

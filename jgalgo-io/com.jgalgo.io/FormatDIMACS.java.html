@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.List;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Range;
 
 class FormatDIMACS implements GraphFormat {
@@ -52,7 +52,7 @@ class FormatDIMACS implements GraphFormat {
 	private static class WriterImpl implements GraphWriter {
 
 		@Override
-		public void writeGraph(Graph graph, Writer writer) {
+		public void writeGraph(IntGraph graph, Writer writer) {
 <span class="fc bfc" id="L56" title="All 2 branches covered.">			if (graph.isDirected())</span>
 <span class="fc" id="L57">				throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
 <span class="fc" id="L58">			final int numVertices = graph.vertices().size();</span>
@@ -64,7 +64,7 @@ class FormatDIMACS implements GraphFormat {
 
 			try {
 <span class="fc" id="L66">				writer.append(&quot;c DIMACS written graph by JGAlgo&quot;).append(System.lineSeparator());</span>
-<span class="fc" id="L67">				final WeightsInt w = graph.getEdgesWeights(&quot;weightsEdges&quot;);</span>
+<span class="fc" id="L67">				final IWeightsInt w = graph.getEdgesWeights(&quot;weightsEdges&quot;);</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">				final boolean hasWeights = w != null;</span>
 
 <span class="fc bfc" id="L70" title="All 2 branches covered.">				if (hasWeights) {</span>
@@ -127,11 +127,11 @@ class FormatDIMACS implements GraphFormat {
 		 * &lt;/pre&gt;
 		 */
 		@Override
-		public GraphBuilder readIntoBuilder(Reader reader) {
+		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			try (BufferedReader br =
 <span class="pc bpc" id="L132" title="1 of 2 branches missed.">					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {</span>
-<span class="fc" id="L133">				GraphBuilder gb = GraphBuilder.newUndirected();</span>
-<span class="fc" id="L134">				WeightsInt w = null;</span>
+<span class="fc" id="L133">				IntGraphBuilder gb = IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L134">				IWeightsInt w = null;</span>
 <span class="fc" id="L135">				int num_vertices = -1;</span>
 <span class="fc" id="L136">				int num_edges = -1;</span>
 <span class="fc" id="L137">				boolean hasWeights = false;</span>

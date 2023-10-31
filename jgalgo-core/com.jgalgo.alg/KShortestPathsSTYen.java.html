@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KShortestPathsSTYen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">KShortestPathsSTYen.java</span></div><h1>KShortestPathsSTYen.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Objects;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.internal.ds.HeapReference;
+import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
+import it.unimi.dsi.fastutil.objects.ObjectLists;
+
+/**
+ * Yen's algorithm for computing the K shortest paths between two vertices in a graph.
+ * &lt;p&gt;
+ * This implementation contains Lawler's improvements to the original algorithm, which avoid checked for duplicate paths
+ * in the heap by storing for each path the index in which it deviates from the previous path, and only considering
+ * paths that deviate from a path after that index, which eliminate duplications entirely.
+ * &lt;p&gt;
+ * The algorithms runs in \(O(nk(m+n \log n))\) time.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Yen%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L48">class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {</span>
+
+	@SuppressWarnings(&quot;boxing&quot;) // TODO
+	@Override
+	List&lt;IPath&gt; computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L54">			return List.of(new PathImpl(g, source, target, IntList.of()));</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (w == null)</span>
+<span class="nc" id="L56">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L57">		final int n = g.vertices().size();</span>
+<span class="fc" id="L58">		final int m = g.edges().size();</span>
+<span class="fc" id="L59">		HeapReferenceable&lt;Double, ObjectIntPair&lt;IPath&gt;&gt; heap = HeapReferenceable.newBuilder()</span>
+<span class="fc" id="L60">				.keysTypePrimitive(double.class).&lt;ObjectIntPair&lt;IPath&gt;&gt;valuesTypeObj().build();</span>
+<span class="fc" id="L61">		BitSet verticesMask = new BitSet(n);</span>
+<span class="fc" id="L62">		BitSet edgesMask = new BitSet(m);</span>
+<span class="fc" id="L63">		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);</span>
+
+		/* compute the shortest path from source to target */
+<span class="fc" id="L66">		ObjectDoublePair&lt;IPath&gt; shortestPath = spFunc.computeShortestPath(source);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (shortestPath == null)</span>
+<span class="fc" id="L68">			return ObjectLists.emptyList();</span>
+<span class="fc" id="L69">		heap.insert(shortestPath.secondDouble(), ObjectIntPair.of(shortestPath.first(), 0));</span>
+
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		List&lt;IPath&gt; paths = k &lt;= m ? new ArrayList&lt;&gt;(k) : new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc" id="L73">			HeapReference&lt;Double, ObjectIntPair&lt;IPath&gt;&gt; min = heap.extractMin();</span>
+<span class="fc" id="L74">			IPath kthPath = min.value().first();</span>
+<span class="fc" id="L75">			int kthPathDeviationIdx = min.value().secondInt();</span>
+<span class="pc bnc" id="L76" title="All 2 branches missed.">			assert kthPath.isSimple();</span>
+<span class="fc" id="L77">			paths.add(kthPath);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (paths.size() == k)</span>
+<span class="fc" id="L79">				break;</span>
+
+<span class="fc" id="L81">			IntList kthPathEdges = kthPath.edges();</span>
+<span class="fc" id="L82">			IntList kthPathVertices = kthPath.vertices();</span>
+<span class="pc bnc" id="L83" title="All 2 branches missed.">			assert kthPathVertices.getInt(kthPathVertices.size() - 1) == target;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int deviationIdx = kthPathDeviationIdx; deviationIdx &lt; kthPathVertices.size() - 1; deviationIdx++) {</span>
+<span class="fc" id="L85">				int spurNode = kthPathVertices.getInt(deviationIdx);</span>
+<span class="fc" id="L86">				IntList rootPath = kthPathEdges.subList(0, deviationIdx);</span>
+
+				/* remove edges that are part of the previous shortest paths */
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				for (IPath p1 : paths) {</span>
+<span class="fc" id="L90">					IntList p1Edges = p1.edges();</span>
+<span class="fc bfc" id="L91" title="All 4 branches covered.">					if (p1Edges.size() &gt; rootPath.size() &amp;&amp; p1Edges.subList(0, deviationIdx).equals(rootPath))</span>
+<span class="fc" id="L92">						edgesMask.set(p1Edges.getInt(deviationIdx));</span>
+<span class="fc" id="L93">				}</span>
+				/* remove vertices that are part of the root path to enforce simple paths */
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (int v : kthPathVertices.subList(0, deviationIdx))</span>
+<span class="fc" id="L96">					verticesMask.set(v);</span>
+
+<span class="fc" id="L98">				shortestPath = spFunc.computeShortestPath(spurNode);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (shortestPath != null) {</span>
+<span class="fc" id="L100">					IntList path = new IntArrayList(rootPath.size() + shortestPath.first().edges().size());</span>
+<span class="fc" id="L101">					path.addAll(rootPath);</span>
+<span class="fc" id="L102">					path.addAll(shortestPath.first().edges());</span>
+<span class="fc" id="L103">					heap.insert(w.weightSum(path),</span>
+<span class="fc" id="L104">							ObjectIntPair.of(new PathImpl(g, source, target, path), deviationIdx));</span>
+<span class="pc" id="L105">					assert heap.stream().map(r -&gt; r.value().left().edges()).distinct().count() == heap</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">							.size() : &quot;heap contains duplicate paths&quot;;</span>
+				}
+
+<span class="fc" id="L109">				verticesMask.clear();</span>
+<span class="fc" id="L110">				edgesMask.clear();</span>
+			}
+<span class="fc" id="L112">		}</span>
+<span class="fc" id="L113">		return paths;</span>
+	}
+
+<span class="fc" id="L116">	private static class ShortestPathSubroutine {</span>
+
+		private final IndexGraph g;
+		private final IWeightFunction w;
+		private final int target;
+		private final BitSet verticesMask;
+		private final BitSet edgesMask;
+
+		private final HeapReferenceable&lt;Double, Integer&gt; heapS;
+		private final HeapReferenceable&lt;Double, Integer&gt; heapT;
+
+		/*
+		 * usually bidirectional dijkstra uses hashtable to store vertex information, to hopefully achieve less than
+		 * linear time and space. Because we call this subroutine many times, we use arrays instead of hashtables to
+		 * avoid the overhead of hashtable operations. This leads to linear space, but we allocate it only once, and for
+		 * each shortest path computation we only need to clear the arrays, which we do in less than linear time using
+		 * toClearS and toClearT which store exactly which vertices we need to clean.
+		 */
+
+		private final int[] backtrackS;
+		private final int[] backtrackT;
+		private final double[] distanceS;
+		private final double[] distanceT;
+		private final HeapReference&lt;Double, Integer&gt;[] heapPtrsS;
+		private final HeapReference&lt;Double, Integer&gt;[] heapPtrsT;
+		private final BitSet visitedS;
+		private final BitSet visitedT;
+
+<span class="fc" id="L144">		private final IntList toClearS = new IntArrayList();</span>
+<span class="fc" id="L145">		private final IntList toClearT = new IntArrayList();</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L148">		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, BitSet verticesMask, BitSet edgesMask) {</span>
+<span class="fc" id="L149">			this.g = g;</span>
+<span class="fc" id="L150">			this.w = w;</span>
+<span class="fc" id="L151">			this.target = target;</span>
+<span class="fc" id="L152">			this.verticesMask = verticesMask;</span>
+<span class="fc" id="L153">			this.edgesMask = edgesMask;</span>
+
+			HeapReferenceable.Builder&lt;Double, Integer&gt; heapBuilder =
+<span class="fc" id="L156">					HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
+<span class="fc" id="L157">			heapS = heapBuilder.build();</span>
+<span class="fc" id="L158">			heapT = heapBuilder.build();</span>
+
+<span class="fc" id="L160">			final int n = g.vertices().size();</span>
+<span class="fc" id="L161">			backtrackS = new int[n];</span>
+<span class="fc" id="L162">			backtrackT = new int[n];</span>
+			// Arrays.fill(backtrackS, -1);
+			// Arrays.fill(backtrackT, -1);
+<span class="fc" id="L165">			distanceS = new double[n];</span>
+<span class="fc" id="L166">			distanceT = new double[n];</span>
+			// Arrays.fill(distanceS, Double.POSITIVE_INFINITY);
+			// Arrays.fill(distanceT, Double.POSITIVE_INFINITY);
+<span class="fc" id="L169">			heapPtrsS = new HeapReference[n];</span>
+<span class="fc" id="L170">			heapPtrsT = new HeapReference[n];</span>
+<span class="fc" id="L171">			visitedS = new BitSet(n);</span>
+<span class="fc" id="L172">			visitedT = new BitSet(n);</span>
+<span class="fc" id="L173">		}</span>
+
+		ObjectDoublePair&lt;IPath&gt; computeShortestPath(int source) {
+<span class="fc" id="L176">			ObjectDoublePair&lt;IPath&gt; res = computeShortestPath0(source);</span>
+<span class="fc" id="L177">			heapS.clear();</span>
+<span class="fc" id="L178">			heapT.clear();</span>
+<span class="fc" id="L179">			final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">			if (toClearS.size() &lt; n / 64) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">				for (int v : toClearS) {</span>
+<span class="nc" id="L182">					visitedS.clear(v);</span>
+<span class="nc" id="L183">					heapPtrsS[v] = null;</span>
+<span class="nc" id="L184">				}</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			} else if (toClearS.size() &lt; 8) {</span>
+<span class="fc" id="L186">				visitedS.clear();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				for (int v : toClearS)</span>
+<span class="fc" id="L188">					heapPtrsS[v] = null;</span>
+			} else {
+<span class="fc" id="L190">				visitedS.clear();</span>
+<span class="fc" id="L191">				Arrays.fill(heapPtrsS, null);</span>
+			}
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">			if (toClearT.size() &lt; n / 64) {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">				for (int v : toClearT) {</span>
+<span class="nc" id="L195">					visitedT.clear(v);</span>
+<span class="nc" id="L196">					heapPtrsT[v] = null;</span>
+<span class="nc" id="L197">				}</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			} else if (toClearT.size() &lt; 8) {</span>
+<span class="fc" id="L199">				visitedT.clear();</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">				for (int v : toClearT)</span>
+<span class="fc" id="L201">					heapPtrsT[v] = null;</span>
+			} else {
+<span class="fc" id="L203">				visitedT.clear();</span>
+<span class="fc" id="L204">				Arrays.fill(heapPtrsT, null);</span>
+			}
+<span class="pc bnc" id="L206" title="All 2 branches missed.">			assert visitedS.isEmpty();</span>
+<span class="pc bnc" id="L207" title="All 2 branches missed.">			assert visitedT.isEmpty();</span>
+<span class="pc bnc" id="L208" title="All 2 branches missed.">			assert Arrays.stream(heapPtrsS).allMatch(Objects::isNull);</span>
+<span class="pc bnc" id="L209" title="All 2 branches missed.">			assert Arrays.stream(heapPtrsT).allMatch(Objects::isNull);</span>
+<span class="fc" id="L210">			return res;</span>
+		}
+
+		@SuppressWarnings(&quot;boxing&quot;) // TODO
+		private ObjectDoublePair&lt;IPath&gt; computeShortestPath0(int source) {
+<span class="pc bnc" id="L215" title="All 2 branches missed.">			assert source != target;</span>
+<span class="pc bnc" id="L216" title="All 2 branches missed.">			assert !verticesMask.get(source);</span>
+<span class="pc bnc" id="L217" title="All 2 branches missed.">			assert !verticesMask.get(target);</span>
+
+<span class="fc" id="L219">			int middle = -1;</span>
+<span class="fc" id="L220">			double mu = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L221">			heapS.insert(.0, source);</span>
+<span class="fc" id="L222">			heapT.insert(.0, target);</span>
+<span class="fc" id="L223">			toClearS.add(source);</span>
+<span class="fc" id="L224">			toClearT.add(target);</span>
+<span class="fc bfc" id="L225" title="All 4 branches covered.">			for (; !heapS.isEmpty() &amp;&amp; !heapT.isEmpty();) {</span>
+
+<span class="fc" id="L227">				HeapReference&lt;Double, Integer&gt; min = heapS.extractMin();</span>
+<span class="fc" id="L228">				double uDistanceS = min.key();</span>
+<span class="fc" id="L229">				int uS = min.value();</span>
+<span class="fc" id="L230">				heapPtrsS[uS] = null;</span>
+<span class="fc" id="L231">				visitedS.set(uS);</span>
+<span class="fc" id="L232">				distanceS[uS] = uDistanceS;</span>
+
+<span class="fc" id="L234">				min = heapT.extractMin();</span>
+<span class="fc" id="L235">				double uDistanceT = min.key();</span>
+<span class="fc" id="L236">				int uT = min.value();</span>
+<span class="fc" id="L237">				heapPtrsT[uT] = null;</span>
+<span class="fc" id="L238">				visitedT.set(uT);</span>
+<span class="fc" id="L239">				distanceT[uT] = uDistanceT;</span>
+
+<span class="fc bfc" id="L241" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L242">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">					if (edgesMask.get(e))</span>
+<span class="fc" id="L244">						continue;</span>
+<span class="fc" id="L245">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">					if (verticesMask.get(v))</span>
+<span class="fc" id="L247">						continue;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">					if (visitedS.get(v))</span>
+<span class="fc" id="L249">						continue;</span>
+<span class="fc" id="L250">					double ew = w.weight(e);</span>
+<span class="fc" id="L251">					Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L252">					double vDistance = uDistanceS + ew;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">					if (visitedT.get(v)) {</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">						if (mu &gt; vDistance + distanceT[v]) {</span>
+<span class="fc" id="L255">							mu = vDistance + distanceT[v];</span>
+<span class="fc" id="L256">							middle = v;</span>
+						}
+					}
+
+<span class="fc" id="L260">					HeapReference&lt;Double, Integer&gt; vPtr = heapPtrsS[v];</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">					if (vPtr == null) {</span>
+<span class="fc" id="L262">						toClearS.add(v);</span>
+<span class="fc" id="L263">						heapPtrsS[v] = heapS.insert(Double.valueOf(vDistance), Integer.valueOf(v));</span>
+<span class="fc" id="L264">						backtrackS[v] = e;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
+<span class="fc" id="L266">						heapS.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
+<span class="fc" id="L267">						backtrackS[v] = e;</span>
+					}
+<span class="fc" id="L269">				}</span>
+
+<span class="fc bfc" id="L271" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L272">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">					if (edgesMask.get(e))</span>
+<span class="fc" id="L274">						continue;</span>
+<span class="fc" id="L275">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">					if (verticesMask.get(v))</span>
+<span class="fc" id="L277">						continue;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					if (visitedT.get(v))</span>
+<span class="fc" id="L279">						continue;</span>
+<span class="fc" id="L280">					double ew = w.weight(e);</span>
+<span class="fc" id="L281">					Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L282">					double vDistance = uDistanceT + ew;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">					if (visitedS.get(v)) {</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">						if (mu &gt; vDistance + distanceS[v]) {</span>
+<span class="fc" id="L285">							mu = vDistance + distanceS[v];</span>
+<span class="fc" id="L286">							middle = v;</span>
+						}
+					}
+
+<span class="fc" id="L290">					HeapReference&lt;Double, Integer&gt; vPtr = heapPtrsT[v];</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">					if (vPtr == null) {</span>
+<span class="fc" id="L292">						toClearT.add(v);</span>
+<span class="fc" id="L293">						heapPtrsT[v] = heapT.insert(Double.valueOf(vDistance), Integer.valueOf(v));</span>
+<span class="fc" id="L294">						backtrackT[v] = e;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
+<span class="fc" id="L296">						heapT.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
+<span class="fc" id="L297">						backtrackT[v] = e;</span>
+					}
+<span class="fc" id="L299">				}</span>
+
+<span class="fc bfc" id="L301" title="All 2 branches covered.">				if (uDistanceS + uDistanceT &gt;= mu)</span>
+<span class="fc" id="L302">					break;</span>
+<span class="fc" id="L303">			}</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">			if (middle == -1)</span>
+<span class="fc" id="L305">				return null;</span>
+
+<span class="fc" id="L307">			IntArrayList path = new IntArrayList();</span>
+
+			/* add edges from source to middle */
+<span class="fc bfc" id="L310" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">				for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
+<span class="fc" id="L312">					path.add(e = backtrackS[u]);</span>
+			} else {
+<span class="fc bfc" id="L314" title="All 2 branches covered.">				for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L315">					path.add(e = backtrackS[u]);</span>
+			}
+<span class="fc" id="L317">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+
+			/* add edges from middle to target */
+<span class="fc bfc" id="L320" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">				for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
+<span class="fc" id="L322">					path.add(e = backtrackT[u]);</span>
+			} else {
+<span class="fc bfc" id="L324" title="All 2 branches covered.">				for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L325">					path.add(e = backtrackT[u]);</span>
+			}
+<span class="fc" id="L327">			return ObjectDoublePair.of(new PathImpl(g, source, target, path), mu);</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

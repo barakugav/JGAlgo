@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IFlowNetworkInt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">IFlowNetworkInt.java</span></div><h1>IFlowNetworkInt.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.IntContainers;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+
+/**
+ * Flow on graph edges, with integer capacities and flows values.
+ * &lt;p&gt;
+ * Similar to the regular {@link IFlowNetwork} interface, but with integer capacities and flows. Some algorithms that
+ * work on flow networks are specifically for integers networks, or may performed faster if the capacities and flows are
+ * integers.
+ *
+ * @author Barak Ugav
+ */
+public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer, Integer&gt; {
+
+	/**
+	 * Get the integer capacity of an edge.
+	 *
+	 * @param  edge                      an edge in the graph
+	 * @return                           the capacity of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 */
+	public int getCapacityInt(int edge);
+
+	@Deprecated
+	@Override
+	default double getCapacity(int edge) {
+<span class="fc" id="L53">		return getCapacityInt(edge);</span>
+	}
+
+	@Deprecated
+	@Override
+	default int getCapacityInt(Integer edge) {
+<span class="nc" id="L59">		return getCapacityInt(edge.intValue());</span>
+	}
+
+	@Deprecated
+	@Override
+	default double getCapacity(Integer edge) {
+<span class="nc" id="L65">		return getCapacityInt(edge.intValue());</span>
+	}
+
+	/**
+	 * Set the integer capacity of an edge.
+	 *
+	 * @param  edge                      an edge in the graph
+	 * @param  capacity                  the new capacity of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @throws IllegalArgumentException  if {@code capacity} is negative
+	 */
+	public void setCapacity(int edge, int capacity);
+
+	@Deprecated
+	@Override
+	default void setCapacity(int edge, double capacity) {
+<span class="nc" id="L81">		setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L82">	}</span>
+
+	@Deprecated
+	@Override
+	default void setCapacity(Integer edge, int capacity) {
+<span class="nc" id="L87">		setCapacity(edge.intValue(), capacity);</span>
+<span class="nc" id="L88">	}</span>
+
+	@Deprecated
+	@Override
+	default void setCapacity(Integer edge, double capacity) {
+<span class="nc" id="L93">		setCapacity(edge.intValue(), (int) capacity);</span>
+<span class="nc" id="L94">	}</span>
+
+	/**
+	 * Get the integer amount of flow units going along an edge.
+	 * &lt;p&gt;
+	 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
+	 * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+	 * &lt;p&gt;
+	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
+	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
+	 * {@code e}, for \(-cap(e) \leq -f \leq 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
+	 * {@code edgeSource(e)} (opposite direction).
+	 *
+	 * @param  edge                      an edge in the graph
+	 * @return                           the amount of flow units going along an edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 */
+	public int getFlowInt(int edge);
+
+	@Deprecated
+	@Override
+	default double getFlow(int edge) {
+<span class="fc" id="L116">		return getFlowInt(edge);</span>
+	}
+
+	@Deprecated
+	@Override
+	default int getFlowInt(Integer edge) {
+<span class="nc" id="L122">		return getFlowInt(edge.intValue());</span>
+	}
+
+	@Deprecated
+	@Override
+	default double getFlow(Integer edge) {
+<span class="nc" id="L128">		return getFlowInt(edge.intValue());</span>
+	}
+
+	/**
+	 * Set the integer amount of flow units going along an edge.
+	 *
+	 * @param  edge                      an edge in the graph
+	 * @param  flow                      the new flow of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 */
+	public void setFlow(int edge, int flow);
+
+	@Deprecated
+	@Override
+	default void setFlow(int edge, double flow) {
+<span class="fc" id="L143">		setFlow(edge, (int) flow);</span>
+<span class="fc" id="L144">	}</span>
+
+	@Deprecated
+	@Override
+	default void setFlow(Integer edge, int flow) {
+<span class="nc" id="L149">		setFlow(edge.intValue(), flow);</span>
+<span class="nc" id="L150">	}</span>
+
+	@Deprecated
+	@Override
+	default void setFlow(Integer edge, double flow) {
+<span class="nc" id="L155">		setFlow(edge.intValue(), (int) flow);</span>
+<span class="nc" id="L156">	}</span>
+
+	@Override
+	default double getFlowSum(Graph&lt;Integer, Integer&gt; g, Iterable&lt;Integer&gt; sources) {
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">		if (!(g instanceof IntGraph))</span>
+<span class="nc" id="L161">			return FlowNetworkInt.super.getFlowSum(g, sources);</span>
+<span class="fc" id="L162">		long sum = 0;</span>
+<span class="fc" id="L163">		IntGraph g0 = (IntGraph) g;</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		if (g0.isDirected()) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (int e : g0.outEdges(source))</span>
+<span class="fc" id="L167">					sum += getFlowInt(e);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				for (int e : g0.inEdges(source))</span>
+<span class="fc" id="L169">					sum -= getFlowInt(e);</span>
+<span class="fc" id="L170">			}</span>
+		} else {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">				for (int e : g0.outEdges(source)) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">					if (source != g0.edgeTarget(e)) {</span>
+<span class="nc" id="L175">						sum += getFlowInt(e);</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">					} else if (source != g0.edgeSource(e)) {</span>
+<span class="nc" id="L177">						sum -= getFlowInt(e);</span>
+					}
+<span class="nc" id="L179">				}</span>
+<span class="nc" id="L180">			}</span>
+		}
+<span class="fc" id="L182">		return sum;</span>
+	}
+
+	@Override
+	default double getCostSum(Iterable&lt;Integer&gt; edges, WeightFunction&lt;Integer&gt; cost) {
+<span class="nc" id="L187">		IntIterable edges0 = IntContainers.toIntIterable(edges);</span>
+<span class="nc" id="L188">		IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">		if (cost0 instanceof IWeightFunctionInt) {</span>
+<span class="nc" id="L190">			IWeightFunctionInt costInt = (IWeightFunctionInt) cost0;</span>
+<span class="nc" id="L191">			long sum = 0;</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">			for (int e : edges0)</span>
+<span class="nc" id="L193">				sum += getFlowInt(e) * costInt.weightInt(e);</span>
+<span class="nc" id="L194">			return sum;</span>
+		} else {
+<span class="nc" id="L196">			double sum = 0;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">			for (int e : edges0)</span>
+<span class="nc" id="L198">				sum += getFlowInt(e) * cost0.weight(e);</span>
+<span class="nc" id="L199">			return sum;</span>
+		}
+	}
+
+	/**
+	 * Create an integer flow network by adding edge weights using {@link IntGraph#addEdgesWeights}.
+	 * &lt;p&gt;
+	 * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each edge
+	 * will be zero.
+	 * &lt;p&gt;
+	 * By using {@link IntGraph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
+	 * the graph is modified, as they are added to the graph. This is a key difference between this function and
+	 * {@link #createFromEdgeWeights(IWeightsDouble, IWeightsDouble)}, which if provided with weights containers created
+	 * with {@link IWeights#createExternalEdgesWeights}. doesn't remain valid if the graph is modified, but may suite in
+	 * scenarios in which we are not allowed to add weights to the graph.
+	 *
+	 * @param  g a graph
+	 * @return   a flow network implemented as edge weights containers added to the graph
+	 */
+	static IFlowNetworkInt createFromEdgeWeights(IntGraph g) {
+<span class="fc" id="L219">		IWeightsInt capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
+<span class="fc" id="L220">		IWeightsInt flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
+<span class="fc" id="L221">		return createFromEdgeWeights(capacities, flows);</span>
+	}
+
+	/**
+	 * Create a flow network by using existing edge weights.
+	 * &lt;p&gt;
+	 * This method can be used together with {@link IWeights#createExternalEdgesWeights}, creating a flow network for a
+	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
+	 * the graph.
+	 *
+	 * @param  capacities a weight container containing the capacities of the edges
+	 * @param  flows      a weight container that will contain the flow values of the edges
+	 * @return            a flow network implemented as external edge weights containers
+	 */
+	static IFlowNetworkInt createFromEdgeWeights(IWeightsInt capacities, IWeightsInt flows) {
+<span class="fc" id="L236">		return new FlowNetworks.NetImplEdgeIWeightsInt(capacities, flows);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

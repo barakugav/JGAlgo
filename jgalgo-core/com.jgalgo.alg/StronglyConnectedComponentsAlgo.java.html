@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * Strongly Connected components algorithm.
@@ -40,11 +41,15 @@ public interface StronglyConnectedComponentsAlgo {
 	 * &lt;p&gt;
 	 * A strongly connected component is a maximal set of vertices for which for any pair of vertices \(u, v\) in the
 	 * set there exist a path from \(u\) to \(v\) and from \(v\) to \(u\).
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing the partition of the vertices into strongly connected components
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the partition of the vertices into strongly connected components
 	 */
-	VertexPartition findStronglyConnectedComponents(Graph g);
+	&lt;V, E&gt; VertexPartition&lt;V, E&gt; findStronglyConnectedComponents(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Check whether a graph is strongly connected.
@@ -52,10 +57,12 @@ public interface StronglyConnectedComponentsAlgo {
 	 * A graph is strongly connected if there is a path from any vertex to any other vertex. Namely if the the whole
 	 * graph is a single strongly connected component.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is strongly connected, {@code false} otherwise
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is strongly connected, {@code false} otherwise
 	 */
-	boolean isStronglyConnected(Graph g);
+	&lt;V, E&gt; boolean isStronglyConnected(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Create a new strongly connected components algorithm object.
@@ -67,7 +74,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a default implementation of {@link StronglyConnectedComponentsAlgo}
 	 */
 	static StronglyConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L70">		return newBuilder().build();</span>
+<span class="fc" id="L77">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -78,7 +85,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
 	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L81">		return StronglyConnectedComponentsAlgoTarjan::new;</span>
+<span class="fc" id="L88">		return StronglyConnectedComponentsAlgoTarjan::new;</span>
 	}
 
 	/**
@@ -110,7 +117,7 @@ public interface StronglyConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default StronglyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L120">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

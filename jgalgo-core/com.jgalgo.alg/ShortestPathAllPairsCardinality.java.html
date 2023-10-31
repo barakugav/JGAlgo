@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -49,19 +49,19 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 <span class="fc" id="L49">	ShortestPathAllPairsCardinality() {}</span>
 
 	@Override
-	ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
+	ShortestPathAllPairs.IResult computeAllCardinalityShortestPaths(IndexGraph g) {
 <span class="fc" id="L53">		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);</span>
 	}
 
 	@Override
-	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
+	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
 <span class="nc" id="L58">		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);</span>
 	}
 
-	ShortestPathAllPairs.Result computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			boolean allVertices) {
 <span class="fc" id="L63">		final int verticesSubsetSize = verticesSubset.size();</span>
-<span class="fc" id="L64">		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];</span>
+<span class="fc" id="L64">		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];</span>
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);</span>
 
 <span class="fc" id="L67">		ForkJoinPool pool = JGAlgoUtils.getPool();</span>
@@ -69,28 +69,29 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			/* sequential */
 <span class="fc" id="L70">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();</span>
 <span class="fc bfc" id="L71" title="All 2 branches covered.">			for (int source : verticesSubset)</span>
-<span class="fc" id="L72">				ssspResults[vToResIdx[source]] = sssp.computeCardinalityShortestPaths(g, source);</span>
+<span class="fc" id="L72">				ssspResults[vToResIdx[source]] =</span>
+<span class="fc" id="L73">						(ShortestPathSingleSource.IResult) sssp.computeCardinalityShortestPaths(g, Integer.valueOf(source));</span>
 
-<span class="fc" id="L74">		} else {</span>
+<span class="fc" id="L75">		} else {</span>
 			/* parallel */
-<span class="nc" id="L76">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
-<span class="nc" id="L77">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="nc" id="L78">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().setCardinality(true).build());</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">			for (int source : verticesSubset) {</span>
-<span class="nc" id="L80">				final int source0 = source;</span>
-<span class="nc" id="L81">				tasks.add(JGAlgoUtils.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] =</span>
-<span class="nc" id="L82">						sssp.get().computeCardinalityShortestPaths(g, source0)));</span>
-<span class="nc" id="L83">			}</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L85">				pool.execute(task);</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L87">				task.join();</span>
+<span class="nc" id="L77">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
+<span class="nc" id="L78">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="nc" id="L79">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().setCardinality(true).build());</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">			for (int source : verticesSubset) {</span>
+<span class="nc" id="L81">				final int source0 = source;</span>
+<span class="nc" id="L82">				tasks.add(JGAlgoUtils.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] =</span>
+<span class="nc" id="L83">						(ShortestPathSingleSource.IResult) sssp.get().computeCardinalityShortestPaths(g, Integer.valueOf(source0))));</span>
+<span class="nc" id="L84">			}</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L86">				pool.execute(task);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L88">				task.join();</span>
 		}
 
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (allVertices) {</span>
-<span class="fc" id="L91">			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (allVertices) {</span>
+<span class="fc" id="L92">			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);</span>
 		} else {
-<span class="nc" id="L93">			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
+<span class="nc" id="L94">			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
 		}
 	}
 
@@ -98,27 +99,27 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
-<span class="pc bpc" id="L105" title="3 of 4 branches missed.">		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))</span>
-<span class="nc" id="L106">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
-<span class="fc" id="L107">		return computeAllCardinalityShortestPaths(g);</span>
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+<span class="pc bpc" id="L106" title="3 of 4 branches missed.">		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))</span>
+<span class="nc" id="L107">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
+<span class="fc" id="L108">		return computeAllCardinalityShortestPaths(g);</span>
 	}
 
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link WeightFunction#CardinalityWeightFunction}
+	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			WeightFunction w) {
-<span class="nc bnc" id="L119" title="All 4 branches missed.">		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))</span>
-<span class="nc" id="L120">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
-<span class="nc" id="L121">		return computeSubsetCardinalityShortestPaths(g, verticesSubset);</span>
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			IWeightFunction w) {
+<span class="nc bnc" id="L120" title="All 4 branches missed.">		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))</span>
+<span class="nc" id="L121">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
+<span class="nc" id="L122">		return computeSubsetCardinalityShortestPaths(g, verticesSubset);</span>
 	}
 
 }

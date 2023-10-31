@@ -15,7 +15,10 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -27,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * each vertex is assigned to exactly one site.
  * &lt;p&gt;
  * The distances and paths are directed from the sites to the vertices. If the other direction is needed, consider
- * passing a reversed view of the original graph by using {@link Graph#reverseView()}.
+ * passing a reversed view of the original graph by using {@link IntGraph#reverseView()}.
  * &lt;p&gt;
  * If there are some vertices that are unreachable from any sites, the partition will contain an addition block with
  * index {@code siteNumber+1} that contains all these vertices.
@@ -36,38 +39,108 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
- * @see    VertexPartition
+ * @see    IVertexPartition
  * @author Barak Ugav
  */
 public interface VoronoiAlgo {
 
 	/**
 	 * Compute the Voronoi cells of a graph with respect to a set of sites and an edge weight function.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link VoronoiAlgo.IResult} object will be returned. In that case, its
+	 * better to pass a {@link IntCollection} as {@code sites} and {@link IWeightFunction} as {@code w} to avoid
+	 * boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;   the vertices type
+	 * @param  &lt;E&gt;   the edges type
 	 * @param  g     a graph
 	 * @param  sites a set of sites
 	 * @param  w     an edge weight function
 	 * @return       the Voronoi cells of the sites
 	 */
-	VoronoiAlgo.Result computeVoronoiCells(Graph g, IntCollection sites, WeightFunction w);
+	&lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; computeVoronoiCells(Graph&lt;V, E&gt; g, Collection&lt;V&gt; sites, WeightFunction&lt;E&gt; w);
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation.
 	 * &lt;p&gt;
-	 * The result object is firstly a valid {@link VertexPartition} of the graph. The partition is defined by the sites.
-	 * Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If some
-	 * vertices are unreachable from any sites, the partition will contain an addition block with index
+	 * The result object is firstly a valid {@link IVertexPartition} of the graph. The partition is defined by the
+	 * sites. Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If
+	 * some vertices are unreachable from any sites, the partition will contain an addition block with index
 	 * {@code siteNumber+1} that contains all these vertices.
 	 * &lt;p&gt;
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
 	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
 	 * a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
-	 * reversed view of the original graph by using {@link Graph#reverseView()}.
+	 * reversed view of the original graph by using {@link IntGraph#reverseView()}.
 	 *
-	 * @see    Path
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @see        Path
+	 * @author     Barak Ugav
+	 */
+	static interface Result&lt;V, E&gt; extends VertexPartition&lt;V, E&gt; {
+
+		/**
+		 * Get the distance of a vertex from its site.
+		 * &lt;p&gt;
+		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
+		 * vertices.
+		 *
+		 * @param  vertex a target vertex
+		 * @return        the shortest distance from any site to the target vertex, or {@link Double#POSITIVE_INFINITY}
+		 *                if the target vertex is unreachable from any site
+		 */
+		double distance(V vertex);
+
+		/**
+		 * Get the shortest path of a vertex from its site.
+		 * &lt;p&gt;
+		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
+		 * vertices.
+		 *
+		 * @param  target a target vertex
+		 * @return        the shortest path from any site to the target vertex, or {@code null} if the target vertex is
+		 *                unreachable from any site
+		 */
+		Path&lt;V, E&gt; getPath(V target);
+
+		/**
+		 * Get the site vertex of a block.
+		 * &lt;p&gt;
+		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
+		 * site of the block than to any other site. This method return the site vertex of one of the blocks
+		 * {@code [0, numberOfBlocks())}.
+		 * &lt;p&gt;
+		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
+		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code -1} for this block.
+		 *
+		 * @param  block index of a block
+		 * @return       the site vertex of the block, or {@code null} if the block is the unreachable block
+		 */
+		V blockSite(int block);
+
+		/**
+		 * Get the site vertex of a vertex.
+		 * &lt;p&gt;
+		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
+		 * site of the block than to any other site. This method return the site vertex of the block that contains the
+		 * vertex, namely the site with the shortest path from any site to the vertex.
+		 *
+		 * @param  vertex a vertex
+		 * @return        the site vertex with the shortest path from any site to the vertex, or {@code null} if the
+		 *                block is the unreachable block
+		 */
+		V vertexSite(V vertex);
+	}
+
+	/**
+	 * A result object of {@link VoronoiAlgo} computation for {@link IntGraph}.
+	 * &lt;p&gt;
+	 * See {@link VoronoiAlgo.Result} for the result object documentation.
+	 *
 	 * @author Barak Ugav
 	 */
-	static interface Result extends VertexPartition {
+	static interface IResult extends IVertexPartition, VoronoiAlgo.Result&lt;Integer, Integer&gt; {
 
 		/**
 		 * Get the distance of a vertex from its site.
@@ -81,6 +154,12 @@ public interface VoronoiAlgo {
 		 */
 		double distance(int vertex);
 
+		@Deprecated
+		@Override
+		default double distance(Integer vertex) {
+<span class="nc" id="L160">			return distance(vertex.intValue());</span>
+		}
+
 		/**
 		 * Get the shortest path of a vertex from its site.
 		 * &lt;p&gt;
@@ -91,7 +170,13 @@ public interface VoronoiAlgo {
 		 * @return        the shortest path from any site to the target vertex, or {@code null} if the target vertex is
 		 *                unreachable from any site
 		 */
-		Path getPath(int target);
+		IPath getPath(int target);
+
+		@Deprecated
+		@Override
+		default IPath getPath(Integer target) {
+<span class="nc" id="L178">			return getPath(target.intValue());</span>
+		}
 
 		/**
 		 * Get the site vertex of a block.
@@ -106,7 +191,13 @@ public interface VoronoiAlgo {
 		 * @param  block index of a block
 		 * @return       the site vertex of the block, or {@code -1} if the block is the unreachable block
 		 */
-		int blockSite(int block);
+		int blockSiteInt(int block);
+
+		@Deprecated
+		@Override
+		default Integer blockSite(int block) {
+<span class="nc" id="L199">			return Integer.valueOf(blockSiteInt(block));</span>
+		}
 
 		/**
 		 * Get the site vertex of a vertex.
@@ -120,6 +211,11 @@ public interface VoronoiAlgo {
 		 */
 		int vertexSite(int vertex);
 
+		@Deprecated
+		@Override
+		default Integer vertexSite(Integer vertex) {
+<span class="nc" id="L217">			return Integer.valueOf(vertexSite(vertex.intValue()));</span>
+		}
 	}
 
 	/**
@@ -131,7 +227,7 @@ public interface VoronoiAlgo {
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-<span class="fc" id="L134">		return newBuilder().build();</span>
+<span class="fc" id="L230">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -142,7 +238,7 @@ public interface VoronoiAlgo {
 	 * @return a new builder that can build {@link VoronoiAlgo} objects
 	 */
 	static VoronoiAlgo.Builder newBuilder() {
-<span class="fc" id="L145">		return VoronoiAlgoDijkstra::new;</span>
+<span class="fc" id="L241">		return VoronoiAlgoDijkstra::new;</span>
 	}
 
 	/**
@@ -174,7 +270,7 @@ public interface VoronoiAlgo {
 		 * @return       this builder
 		 */
 		default VoronoiAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L177">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L273">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

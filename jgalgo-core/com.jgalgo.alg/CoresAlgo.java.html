@@ -15,7 +15,9 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -37,13 +39,17 @@ public interface CoresAlgo {
 	/**
 	 * Compute the cores of the graph with respect to both in and out degree of the vertices.
 	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 * &lt;p&gt;
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
-	 * @param  g a graph
-	 * @return   the cores of the graph
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     the cores of the graph
 	 */
-	default CoresAlgo.Result computeCores(Graph g) {
-<span class="fc" id="L46">		return computeCores(g, DegreeType.OutAndInDegree);</span>
+	default &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L52">		return computeCores(g, DegreeType.OutAndInDegree);</span>
 	}
 
 	/**
@@ -52,13 +58,17 @@ public interface CoresAlgo {
 	 * Cores are defined with respect to either the out edges, in edges, or both. For undirected graphs the degree type
 	 * is ignored.
 	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 * &lt;p&gt;
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
+	 * @param  &lt;V&gt;        the vertices type
+	 * @param  &lt;E&gt;        the edges type
 	 * @param  g          a graph
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	CoresAlgo.Result computeCores(Graph g, DegreeType degreeType);
+	&lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, DegreeType degreeType);
 
 	/**
 	 * The degree type the cores are defined with respect to.
@@ -71,29 +81,32 @@ public interface CoresAlgo {
 	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L74">	static enum DegreeType {</span>
+<span class="fc" id="L84">	static enum DegreeType {</span>
 		/**
 		 * Cores will be computed with respect to the out-degree of the vertices, namely the number of outgoing edges.
 		 */
-<span class="fc" id="L78">		OutDegree,</span>
+<span class="fc" id="L88">		OutDegree,</span>
 
 		/**
 		 * Cores will be computed with respect to the in-degree of the vertices, namely the number of incoming edges.
 		 */
-<span class="fc" id="L83">		InDegree,</span>
+<span class="fc" id="L93">		InDegree,</span>
 
 		/**
 		 * Cores will be computed with respect to the sum of the in and out degrees of the vertices.
 		 */
-<span class="fc" id="L88">		OutAndInDegree</span>
+<span class="fc" id="L98">		OutAndInDegree</span>
 	}
 
 	/**
 	 * The result of the cores computation.
 	 *
-	 * @author Barak Ugav
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	@SuppressWarnings(&quot;unused&quot;)
+	static interface Result&lt;V, E&gt; {
 
 		/**
 		 * The core number of the given vertex.
@@ -103,7 +116,7 @@ public interface CoresAlgo {
 		 * @param  v a vertex in the graph
 		 * @return   the core number of the vertex
 		 */
-		int vertexCoreNum(int v);
+		int vertexCoreNum(V v);
 
 		/**
 		 * The maximum core number of the graph.
@@ -120,7 +133,7 @@ public interface CoresAlgo {
 		 * @param  k the core number (order)
 		 * @return   the vertices of the core
 		 */
-		IntSet coreVertices(int k);
+		Set&lt;V&gt; coreVertices(int k);
 
 		/**
 		 * The vertices in the shell of the given core.
@@ -131,7 +144,7 @@ public interface CoresAlgo {
 		 * @param  core the core number (order)
 		 * @return      the vertices in the shell of the core
 		 */
-		IntSet coreShell(int core);
+		Set&lt;V&gt; coreShell(int core);
 
 		/**
 		 * The vertices in the crust of the given core.
@@ -142,8 +155,40 @@ public interface CoresAlgo {
 		 * @param  core the core number (order)
 		 * @return      the vertices in the crust of the core
 		 */
-		IntSet coreCrust(int core);
+		Set&lt;V&gt; coreCrust(int core);
+	}
 
+	/**
+	 * The result of the cores computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends CoresAlgo.Result&lt;Integer, Integer&gt; {
+
+		/**
+		 * The core number of the given vertex.
+		 * &lt;p&gt;
+		 * The core number of a vertex is the highest order of a core that contains this vertex.
+		 *
+		 * @param  v a vertex in the graph
+		 * @return   the core number of the vertex
+		 */
+		int vertexCoreNum(int v);
+
+		@Deprecated
+		@Override
+		default int vertexCoreNum(Integer v) {
+<span class="nc" id="L181">			return vertexCoreNum(v.intValue());</span>
+		}
+
+		@Override
+		IntSet coreVertices(int k);
+
+		@Override
+		IntSet coreShell(int core);
+
+		@Override
+		IntSet coreCrust(int core);
 	}
 
 	/**
@@ -155,7 +200,7 @@ public interface CoresAlgo {
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-<span class="nc" id="L158">		return newBuilder().build();</span>
+<span class="nc" id="L203">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -166,7 +211,7 @@ public interface CoresAlgo {
 	 * @return a new builder for core algorithms
 	 */
 	static CoresAlgo.Builder newBuilder() {
-<span class="nc" id="L169">		return CoresAlgoImpl::new;</span>
+<span class="nc" id="L214">		return CoresAlgoImpl::new;</span>
 	}
 
 	/**
@@ -198,7 +243,7 @@ public interface CoresAlgo {
 		 * @return       this builder
 		 */
 		default CoresAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L201">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L246">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

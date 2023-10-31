@@ -38,8 +38,8 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Param({ &quot;|V|=64 |E|=256&quot;, &quot;|V|=200 |E|=1200&quot;, &quot;|V|=512 |E|=4096&quot; })
 	public String args;
 
-	private List&lt;Pair&lt;Graph, WeightFunctionInt&gt;&gt; graphs;
+	private List&lt;Pair&lt;IntGraph, IWeightFunctionInt&gt;&gt; graphs;
 <span class="fc" id="L58">	private final int graphsNum = 31;</span>
 <span class="fc" id="L59">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
@@ -67,28 +67,29 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L67">		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);</span>
 <span class="fc" id="L68">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L70">			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)</span>
+<span class="fc" id="L70">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)</span>
 <span class="fc" id="L71">					.selfEdges(true).cycles(true).connected(false).build();</span>
-<span class="fc" id="L72">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L72">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 <span class="fc" id="L73">			graphs.add(Pair.of(g, w));</span>
 		}
 <span class="fc" id="L75">	}</span>
 
 	private void benchAPSPPositiveWeights(ShortestPathAllPairs.Builder builder, Blackhole blackhole) {
-<span class="fc" id="L78">		Pair&lt;Graph, WeightFunctionInt&gt; graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L78">		Pair&lt;IntGraph, IWeightFunctionInt&gt; graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L79">		ShortestPathAllPairs algo = builder.build();</span>
-<span class="fc" id="L80">		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());</span>
-<span class="fc" id="L81">		blackhole.consume(result);</span>
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L80">		ShortestPathAllPairs.IResult result =</span>
+<span class="fc" id="L81">				(ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(graph.first(), graph.second());</span>
+<span class="fc" id="L82">		blackhole.consume(result);</span>
+<span class="fc" id="L83">	}</span>
 
 	@Benchmark
 	public void FloydWarshall(Blackhole blackhole) {
-<span class="fc" id="L86">		benchAPSPPositiveWeights(ShortestPathAllPairs.newBuilder().setOption(&quot;impl&quot;, &quot;floyd-warshall&quot;), blackhole);</span>
-<span class="fc" id="L87">	}</span>
+<span class="fc" id="L87">		benchAPSPPositiveWeights(ShortestPathAllPairs.newBuilder().setOption(&quot;impl&quot;, &quot;floyd-warshall&quot;), blackhole);</span>
+<span class="fc" id="L88">	}</span>
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-<span class="fc" id="L91">		benchAPSPPositiveWeights(ShortestPathAllPairs.newBuilder().setOption(&quot;impl&quot;, &quot;johnson&quot;), blackhole);</span>
-<span class="fc" id="L92">	}</span>
+<span class="fc" id="L92">		benchAPSPPositiveWeights(ShortestPathAllPairs.newBuilder().setOption(&quot;impl&quot;, &quot;johnson&quot;), blackhole);</span>
+<span class="fc" id="L93">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

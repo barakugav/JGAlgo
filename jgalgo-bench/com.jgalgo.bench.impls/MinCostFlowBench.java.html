@@ -33,15 +33,15 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.FlowNetworkInt;
+import com.jgalgo.alg.IFlowNetworkInt;
 import com.jgalgo.alg.MinimumCostFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -67,29 +67,29 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		List&lt;Supply.Task&gt; graphs;
 
 <span class="fc" id="L69">		static class Task {</span>
-			Graph g;
-			FlowNetworkInt net;
-			WeightFunctionInt cost;
-			WeightFunctionInt lowerBound;
-			WeightFunctionInt supply;
+			IntGraph g;
+			IFlowNetworkInt net;
+			IWeightFunctionInt cost;
+			IWeightFunctionInt lowerBound;
+			IWeightFunctionInt supply;
 
-			static Task newRand(Graph g, Random rand) {
-<span class="fc" id="L77">				FlowNetworkInt net = randNetwork(g, rand);</span>
-<span class="fc" id="L78">				WeightFunctionInt supply = randSupply(g, net, rand);</span>
+			static Task newRand(IntGraph g, Random rand) {
+<span class="fc" id="L77">				IFlowNetworkInt net = randNetwork(g, rand);</span>
+<span class="fc" id="L78">				IWeightFunctionInt supply = randSupply(g, net, rand);</span>
 
 				/*
 				 * build a 'random' lower bound by solving min-cost flow with a different cost function and use the
 				 * flows
 				 */
-<span class="fc" id="L84">				WeightFunctionInt cost1 = randCost(g, rand);</span>
+<span class="fc" id="L84">				IWeightFunctionInt cost1 = randCost(g, rand);</span>
 <span class="fc" id="L85">				MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);</span>
-<span class="fc" id="L86">				WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L86">				IWeightsInt lowerBound = IWeights.createExternalEdgesWeights(g, int.class);</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
 <span class="fc" id="L88">					lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));</span>
 <span class="fc" id="L89">					net.setFlow(e, 0);</span>
 <span class="fc" id="L90">				}</span>
 
-<span class="fc" id="L92">				WeightFunctionInt cost = randCost(g, rand);</span>
+<span class="fc" id="L92">				IWeightFunctionInt cost = randCost(g, rand);</span>
 
 <span class="fc" id="L94">				Task t = new Task();</span>
 <span class="fc" id="L95">				t.g = g;</span>
@@ -144,7 +144,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L144">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L145">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L147">					Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L147">					IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L148">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L150">			}</span>
@@ -190,7 +190,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L190">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L191">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L193">					Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L193">					IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L194">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L196">			}</span>
@@ -238,7 +238,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L238">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L239">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L241">					Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L241">					IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L242">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L244">			}</span>
@@ -260,20 +260,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		List&lt;MaxFlow.Task&gt; graphs;
 
 <span class="fc" id="L262">		static class Task {</span>
-			Graph g;
-			FlowNetworkInt net;
-			WeightFunctionInt cost;
-			WeightFunctionInt lowerBound;
+			IntGraph g;
+			IFlowNetworkInt net;
+			IWeightFunctionInt cost;
+			IWeightFunctionInt lowerBound;
 			IntCollection sources;
 			IntCollection sinks;
 
-			static Task newRand(Graph g, Random rand) {
-<span class="fc" id="L271">				FlowNetworkInt net = randNetwork(g, rand);</span>
+			static Task newRand(IntGraph g, Random rand) {
+<span class="fc" id="L271">				IFlowNetworkInt net = randNetwork(g, rand);</span>
 <span class="fc" id="L272">				Pair&lt;IntCollection, IntCollection&gt; sourcesSinks = MaximumFlowBench.chooseMultiSourceMultiSink(g, rand);</span>
 <span class="fc" id="L273">				IntCollection sources = sourcesSinks.first();</span>
 <span class="fc" id="L274">				IntCollection sinks = sourcesSinks.second();</span>
-<span class="fc" id="L275">				WeightFunctionInt cost = randCost(g, rand);</span>
-<span class="fc" id="L276">				WeightFunctionInt lowerBound = randLowerBound(g, net, sources, sinks, rand);</span>
+<span class="fc" id="L275">				IWeightFunctionInt cost = randCost(g, rand);</span>
+<span class="fc" id="L276">				IWeightFunctionInt lowerBound = randLowerBound(g, net, sources, sinks, rand);</span>
 
 <span class="fc" id="L278">				Task t = new Task();</span>
 <span class="fc" id="L279">				t.g = g;</span>
@@ -329,7 +329,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L329">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L330">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L331" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L332">					Graph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L332">					IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L333">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L335">			}</span>
@@ -375,7 +375,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L375">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L376">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L377" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L378">					Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L378">					IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L379">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L381">			}</span>
@@ -422,7 +422,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L422">				Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L423">				graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L424" title="All 2 branches covered.">				for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L425">					Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L425">					IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
 <span class="fc" id="L426">					graphs.add(Task.newRand(g, rand));</span>
 				}
 <span class="fc" id="L428">			}</span>
@@ -439,23 +439,23 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 	}
 
-	private static FlowNetworkInt randNetwork(Graph g, Random rand) {
-<span class="fc" id="L443">		WeightsInt capacities = Weights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc" id="L444">		WeightsInt flows = Weights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc" id="L445">		FlowNetworkInt net = FlowNetworkInt.createFromEdgeWeights(capacities, flows);</span>
+	private static IFlowNetworkInt randNetwork(IntGraph g, Random rand) {
+<span class="fc" id="L443">		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L444">		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L445">		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(capacities, flows);</span>
 <span class="fc bfc" id="L446" title="All 2 branches covered.">		for (int e : g.edges())</span>
 <span class="fc" id="L447">			net.setCapacity(e, 400 + rand.nextInt(1024));</span>
 <span class="fc" id="L448">		return net;</span>
 	}
 
-	private static WeightFunctionInt randCost(Graph g, Random rand) {
-<span class="fc" id="L452">		WeightsInt cost = Weights.createExternalEdgesWeights(g, int.class);</span>
+	private static IWeightFunctionInt randCost(IntGraph g, Random rand) {
+<span class="fc" id="L452">		IWeightsInt cost = IWeights.createExternalEdgesWeights(g, int.class);</span>
 <span class="fc bfc" id="L453" title="All 2 branches covered.">		for (int e : g.edges())</span>
 <span class="fc" id="L454">			cost.set(e, rand.nextInt(2424) - 600);</span>
 <span class="fc" id="L455">		return cost;</span>
 	}
 
-	private static WeightFunctionInt randLowerBound(Graph g, FlowNetworkInt net, IntCollection sources,
+	private static IWeightFunctionInt randLowerBound(IntGraph g, IFlowNetworkInt net, IntCollection sources,
 			IntCollection sinks, Random rand) {
 <span class="fc" id="L460">		Assertions.Graphs.onlyDirected(g);</span>
 
@@ -466,7 +466,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L466">		IntSet sinksSet = new IntOpenHashSet(sinks);</span>
 <span class="fc" id="L467">		IntList sourcesList = new IntArrayList(sources);</span>
 
-<span class="fc" id="L469">		WeightsInt lowerBound = Weights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc" id="L469">		IWeightsInt lowerBound = IWeights.createExternalEdgesWeights(g, int.class);</span>
 <span class="fc" id="L470">		IntArrayList path = new IntArrayList();</span>
 <span class="fc" id="L471">		IntSet visited = new IntOpenHashSet();</span>
 
@@ -551,7 +551,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L551">		}</span>
 	}
 
-	private static WeightFunctionInt randSupply(Graph g, FlowNetworkInt net, Random rand) {
+	private static IWeightFunctionInt randSupply(IntGraph g, IFlowNetworkInt net, Random rand) {
 <span class="fc" id="L555">		Assertions.Graphs.onlyDirected(g);</span>
 
 <span class="fc" id="L557">		IntList suppliers = new IntArrayList();</span>
@@ -579,7 +579,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L579">		IntSet demandersSet = new IntOpenHashSet(demanders);</span>
 <span class="fc" id="L580">		IntList suppliersList = new IntArrayList(suppliers);</span>
 
-<span class="fc" id="L582">		WeightsInt supply = Weights.createExternalVerticesWeights(g, int.class);</span>
+<span class="fc" id="L582">		IWeightsInt supply = IWeights.createExternalVerticesWeights(g, int.class);</span>
 <span class="fc" id="L583">		IntArrayList path = new IntArrayList();</span>
 <span class="fc" id="L584">		IntSet visited = new IntOpenHashSet();</span>
 		suppliersLoop: for (;;) {

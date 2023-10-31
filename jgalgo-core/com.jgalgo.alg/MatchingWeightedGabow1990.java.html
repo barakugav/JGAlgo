@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SubtreeMergeFindMin;
 import com.jgalgo.internal.util.DebugPrinter;
@@ -44,7 +44,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 <span class="fc" id="L44">	MatchingWeightedGabow1990() {}</span>
 
 	@Override
-	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	Worker newWorker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrinter debugPrint) {
 <span class="fc" id="L49">		return new Worker(gOrig, w, heapBuilder, debugPrint);</span>
 	}
@@ -66,7 +66,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 		 */
 		final int[] oddBlossomPath;
 
-		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 				DebugPrinter debugPrint) {
 <span class="fc" id="L71">			super(gOrig, w, heapBuilder, debugPrint);</span>
 <span class="fc" id="L72">			int n = gOrig.vertices().size();</span>

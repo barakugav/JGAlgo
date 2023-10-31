@@ -19,11 +19,11 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -49,7 +49,7 @@ public class RandomGraphBuilder {
 	private boolean selfEdges;
 	private boolean cycles;
 	private boolean connected;
-<span class="fc" id="L52">	private Boolean2ObjectFunction&lt;Graph&gt; impl = GraphsTestUtils.defaultGraphImpl();</span>
+<span class="fc" id="L52">	private Boolean2ObjectFunction&lt;IntGraph&gt; impl = GraphsTestUtils.defaultGraphImpl();</span>
 
 <span class="fc" id="L54">	public RandomGraphBuilder(long seed) {</span>
 <span class="fc" id="L55">		seedGen = new SeedGenerator(seed);</span>
@@ -111,15 +111,15 @@ public class RandomGraphBuilder {
 <span class="fc" id="L111">		return this;</span>
 	}
 
-	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction&lt;Graph&gt; impl) {
+	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction&lt;IntGraph&gt; impl) {
 <span class="nc" id="L115">		this.impl = impl;</span>
 <span class="nc" id="L116">		return this;</span>
 	}
 
-	public Graph build() {
+	public IntGraph build() {
 <span class="fc" id="L120">		IntList vertices = new IntArrayList();</span>
-		final Graph g;
-<span class="fc" id="L122">		WeightsBool partition = null;</span>
+		final IntGraph g;
+<span class="fc" id="L122">		IWeightsBool partition = null;</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">		if (!bipartite) {</span>
 <span class="pc bpc" id="L124" title="2 of 4 branches missed.">			if (n &lt; 0 || m &lt; 0)</span>
 <span class="nc" id="L125">				throw new IllegalStateException();</span>
@@ -161,14 +161,14 @@ public class RandomGraphBuilder {
 
 <span class="fc" id="L162">		Set&lt;IntList&gt; existingEdges = new ObjectOpenHashSet&lt;&gt;();</span>
 <span class="fc" id="L163">		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();</span>
-<span class="fc" id="L164">		WeightsInt vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L164">		IWeightsInt vertexToUf = IWeights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L165" title="All 2 branches covered.">		for (int v : g.vertices()) {</span>
 <span class="fc" id="L166">			int ufIdx = uf.make();</span>
 <span class="fc" id="L167">			vertexToUf.set(v, ufIdx);</span>
 <span class="fc" id="L168">		}</span>
 <span class="fc" id="L169">		int componentsNum = n;</span>
 <span class="fc" id="L170">		Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L171">		WeightsBool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);</span>
+<span class="fc" id="L171">		IWeightsBool reachableFromRoot = IWeights.createExternalVerticesWeights(g, boolean.class);</span>
 <span class="fc" id="L172">		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);</span>
 <span class="fc" id="L173">		int reachableFromRootCount = 1;</span>
 <span class="fc" id="L174">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
@@ -254,9 +254,9 @@ public class RandomGraphBuilder {
 <span class="nc bnc" id="L254" title="All 2 branches missed.">						while (!queue.isEmpty()) {</span>
 <span class="nc" id="L255">							int p = queue.dequeueInt();</span>
 
-<span class="nc bnc" id="L257" title="All 2 branches missed.">							for (EdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">							for (IEdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L258">								eit.nextInt();</span>
-<span class="nc" id="L259">								int pv = eit.target();</span>
+<span class="nc" id="L259">								int pv = eit.targetInt();</span>
 <span class="nc bnc" id="L260" title="All 2 branches missed.">								if (reachableFromRoot.get(pv))</span>
 <span class="nc" id="L261">									continue;</span>
 <span class="nc" id="L262">								reachableFromRoot.set(pv, true);</span>

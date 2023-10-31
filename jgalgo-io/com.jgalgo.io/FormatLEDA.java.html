@@ -26,15 +26,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.graph.WeightsFloat;
-import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.graph.WeightsLong;
-import com.jgalgo.graph.WeightsObj;
-import com.jgalgo.graph.WeightsShort;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsFloat;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IWeightsLong;
+import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.internal.util.Range;
 
 class FormatLEDA implements GraphFormat {
@@ -63,7 +63,7 @@ class FormatLEDA implements GraphFormat {
 	private static class WriterImpl implements GraphWriter {
 
 		@Override
-		public void writeGraph(Graph graph, Writer writer) {
+		public void writeGraph(IntGraph graph, Writer writer) {
 <span class="fc" id="L67">			final int numVertices = graph.vertices().size();</span>
 <span class="fc" id="L68">			final int numEdges = graph.edges().size();</span>
 <span class="pc bpc" id="L69" title="1 of 2 branches missed.">			if (!Range.of(1, numVertices + 1).equals(graph.vertices()))</span>
@@ -73,23 +73,23 @@ class FormatLEDA implements GraphFormat {
 
 			try {
 				String info_type_for_vertices; // can be void, string, int etc
-				Weights&lt;?&gt; w_vertices; // weights for vertices
+				IWeights&lt;?&gt; w_vertices; // weights for vertices
 <span class="fc bfc" id="L77" title="All 2 branches covered.">				if (graph.getVerticesWeightsKeys().isEmpty()) {</span>
 <span class="fc" id="L78">					info_type_for_vertices = &quot;void&quot;;</span>
 <span class="fc" id="L79">					w_vertices = null;</span>
 				} else {
 					// for now, take the first weights collection
 <span class="fc" id="L82">					String key = graph.getVerticesWeightsKeys().iterator().next();</span>
-<span class="fc" id="L83">					w_vertices = graph.getVerticesWeights(key);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">					if (w_vertices instanceof WeightsInt) {</span>
+<span class="fc" id="L83">					w_vertices = graph.getVerticesIWeights(key);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">					if (w_vertices instanceof IWeightsInt) {</span>
 <span class="nc" id="L85">						info_type_for_vertices = &quot;int&quot;;</span>
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">					} else if (w_vertices instanceof WeightsShort) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">					} else if (w_vertices instanceof IWeightsShort) {</span>
 <span class="nc" id="L87">						info_type_for_vertices = &quot;short&quot;;</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">					} else if (w_vertices instanceof WeightsLong) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">					} else if (w_vertices instanceof IWeightsLong) {</span>
 <span class="nc" id="L89">						info_type_for_vertices = &quot;long&quot;;</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">					} else if (w_vertices instanceof WeightsFloat) {</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">					} else if (w_vertices instanceof IWeightsFloat) {</span>
 <span class="nc" id="L91">						info_type_for_vertices = &quot;float&quot;;</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">					} else if (w_vertices instanceof WeightsDouble) {</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">					} else if (w_vertices instanceof IWeightsDouble) {</span>
 <span class="nc" id="L93">						info_type_for_vertices = &quot;double&quot;;</span>
 					} else {
 <span class="fc" id="L95">						info_type_for_vertices = &quot;string&quot;;</span>
@@ -97,23 +97,23 @@ class FormatLEDA implements GraphFormat {
 				}
 
 				String info_type_for_edges; // can be void, string, int etc
-				Weights&lt;?&gt; w_edges; // weights for edges
+				IWeights&lt;?&gt; w_edges; // weights for edges
 <span class="fc bfc" id="L101" title="All 2 branches covered.">				if (graph.getEdgesWeightsKeys().isEmpty()) {</span>
 <span class="fc" id="L102">					info_type_for_edges = &quot;void&quot;;</span>
 <span class="fc" id="L103">					w_edges = null;</span>
 				} else {
 					// for now, take the first weights collection
 <span class="fc" id="L106">					String key = graph.getEdgesWeightsKeys().iterator().next();</span>
-<span class="fc" id="L107">					w_edges = graph.getEdgesWeights(key);</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">					if (w_edges instanceof WeightsInt) {</span>
+<span class="fc" id="L107">					w_edges = graph.getEdgesIWeights(key);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">					if (w_edges instanceof IWeightsInt) {</span>
 <span class="fc" id="L109">						info_type_for_edges = &quot;int&quot;;</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">					} else if (w_edges instanceof WeightsShort) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">					} else if (w_edges instanceof IWeightsShort) {</span>
 <span class="nc" id="L111">						info_type_for_edges = &quot;short&quot;;</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">					} else if (w_edges instanceof WeightsLong) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">					} else if (w_edges instanceof IWeightsLong) {</span>
 <span class="nc" id="L113">						info_type_for_edges = &quot;long&quot;;</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">					} else if (w_edges instanceof WeightsFloat) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">					} else if (w_edges instanceof IWeightsFloat) {</span>
 <span class="nc" id="L115">						info_type_for_edges = &quot;float&quot;;</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">					} else if (w_edges instanceof WeightsDouble) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">					} else if (w_edges instanceof IWeightsDouble) {</span>
 <span class="nc" id="L117">						info_type_for_edges = &quot;double&quot;;</span>
 					} else {
 <span class="nc" id="L119">						info_type_for_edges = &quot;string&quot;;</span>
@@ -171,8 +171,8 @@ class FormatLEDA implements GraphFormat {
 	private static class ReaderImpl implements GraphReader {
 
 		@Override
-		public GraphBuilder readIntoBuilder(Reader reader) {
-<span class="fc" id="L175">			GraphBuilder builder = null;</span>
+		public IntGraphBuilder readIntoBuilder(Reader reader) {
+<span class="fc" id="L175">			IntGraphBuilder builder = null;</span>
 
 			// list_nodes keep the label/name of each node/vertex
 			// we do not need it, but for future use
@@ -201,8 +201,8 @@ class FormatLEDA implements GraphFormat {
 <span class="fc" id="L201">				int section_ix_element = -1;</span>
 <span class="fc" id="L202">				String info_type_for_vertices = null; // can be void,string, int etc</span>
 <span class="fc" id="L203">				String info_type_for_edges = null; // can be void,string, int etc</span>
-<span class="fc" id="L204">				Weights&lt;?&gt; w_info_type_for_vertices = null;</span>
-<span class="fc" id="L205">				Weights&lt;?&gt; w_info_type_for_edges = null;</span>
+<span class="fc" id="L204">				IWeights&lt;?&gt; w_info_type_for_vertices = null;</span>
+<span class="fc" id="L205">				IWeights&lt;?&gt; w_info_type_for_edges = null;</span>
 
 				// read all lines from file
 <span class="fc bfc" id="L208" title="All 2 branches covered.">				for (String line; (line = br.readLine()) != null;) {</span>
@@ -243,10 +243,10 @@ class FormatLEDA implements GraphFormat {
 						// or undirected (-2).
 <span class="pc bpc" id="L244" title="1 of 3 branches missed.">						switch (line) {</span>
 							case &quot;-1&quot;:
-<span class="fc" id="L246">								builder = GraphBuilder.newDirected();</span>
+<span class="fc" id="L246">								builder = IntGraphBuilder.newDirected();</span>
 <span class="fc" id="L247">								break;</span>
 							case &quot;-2&quot;:
-<span class="fc" id="L249">								builder = GraphBuilder.newUndirected();</span>
+<span class="fc" id="L249">								builder = IntGraphBuilder.newUndirected();</span>
 <span class="fc" id="L250">								break;</span>
 							default:
 <span class="nc" id="L252">								throw new IllegalArgumentException(</span>
@@ -255,154 +255,166 @@ class FormatLEDA implements GraphFormat {
 
 <span class="pc bpc" id="L256" title="5 of 7 branches missed.">						switch (info_type_for_vertices) {</span>
 							case &quot;int&quot;:
-<span class="nc" id="L258">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, int.class);</span>
-<span class="nc" id="L259">								break;</span>
+<span class="nc" id="L258">								w_info_type_for_vertices =</span>
+<span class="nc" id="L259">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, int.class);</span>
+<span class="nc" id="L260">								break;</span>
 							case &quot;short&quot;:
-<span class="nc" id="L261">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, short.class);</span>
-<span class="nc" id="L262">								break;</span>
+<span class="nc" id="L262">								w_info_type_for_vertices =</span>
+<span class="nc" id="L263">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, short.class);</span>
+<span class="nc" id="L264">								break;</span>
 							case &quot;long&quot;:
-<span class="nc" id="L264">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, long.class);</span>
-<span class="nc" id="L265">								break;</span>
-							case &quot;float&quot;:
-<span class="nc" id="L267">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, float.class);</span>
+<span class="nc" id="L266">								w_info_type_for_vertices =</span>
+<span class="nc" id="L267">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, long.class);</span>
 <span class="nc" id="L268">								break;</span>
-							case &quot;double&quot;:
-<span class="nc" id="L270">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, double.class);</span>
-<span class="nc" id="L271">								break;</span>
-							case &quot;void&quot;:
-<span class="fc" id="L273">								break;</span>
-							case &quot;string&quot;:
-							default:
-<span class="fc" id="L276">								w_info_type_for_vertices = builder.addVerticesWeights(&quot;weightsKey&quot;, String.class);</span>
-								break;
-						}
-
-<span class="pc bpc" id="L280" title="5 of 7 branches missed.">						switch (info_type_for_edges) {</span>
-							case &quot;int&quot;:
-<span class="fc" id="L282">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, int.class);</span>
-<span class="fc" id="L283">								break;</span>
-							case &quot;short&quot;:
-<span class="nc" id="L285">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, short.class);</span>
-<span class="nc" id="L286">								break;</span>
-							case &quot;long&quot;:
-<span class="nc" id="L288">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, long.class);</span>
-<span class="nc" id="L289">								break;</span>
 							case &quot;float&quot;:
-<span class="nc" id="L291">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, float.class);</span>
-<span class="nc" id="L292">								break;</span>
+<span class="nc" id="L270">								w_info_type_for_vertices =</span>
+<span class="nc" id="L271">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, float.class);</span>
+<span class="nc" id="L272">								break;</span>
 							case &quot;double&quot;:
-<span class="nc" id="L294">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
-<span class="nc" id="L295">								break;</span>
+<span class="nc" id="L274">								w_info_type_for_vertices =</span>
+<span class="nc" id="L275">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, double.class);</span>
+<span class="nc" id="L276">								break;</span>
 							case &quot;void&quot;:
-<span class="fc" id="L297">								break;</span>
+<span class="fc" id="L278">								break;</span>
 							case &quot;string&quot;:
 							default:
-<span class="nc" id="L300">								w_info_type_for_edges = builder.addEdgesWeights(&quot;weightsKey&quot;, String.class);</span>
+<span class="fc" id="L281">								w_info_type_for_vertices =</span>
+<span class="fc" id="L282">										(IWeights&lt;?&gt;) builder.addVerticesWeights(&quot;weightsKey&quot;, String.class);</span>
 								break;
 						}
 
-<span class="fc" id="L304">						continue;</span>
+<span class="pc bpc" id="L286" title="5 of 7 branches missed.">						switch (info_type_for_edges) {</span>
+							case &quot;int&quot;:
+<span class="fc" id="L288">								w_info_type_for_edges = (IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, int.class);</span>
+<span class="fc" id="L289">								break;</span>
+							case &quot;short&quot;:
+<span class="nc" id="L291">								w_info_type_for_edges =</span>
+<span class="nc" id="L292">										(IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, short.class);</span>
+<span class="nc" id="L293">								break;</span>
+							case &quot;long&quot;:
+<span class="nc" id="L295">								w_info_type_for_edges = (IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, long.class);</span>
+<span class="nc" id="L296">								break;</span>
+							case &quot;float&quot;:
+<span class="nc" id="L298">								w_info_type_for_edges =</span>
+<span class="nc" id="L299">										(IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, float.class);</span>
+<span class="nc" id="L300">								break;</span>
+							case &quot;double&quot;:
+<span class="nc" id="L302">								w_info_type_for_edges =</span>
+<span class="nc" id="L303">										(IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
+<span class="nc" id="L304">								break;</span>
+							case &quot;void&quot;:
+<span class="fc" id="L306">								break;</span>
+							case &quot;string&quot;:
+							default:
+<span class="nc" id="L309">								w_info_type_for_edges =</span>
+<span class="nc" id="L310">										(IWeights&lt;?&gt;) builder.addEdgesWeights(&quot;weightsKey&quot;, String.class);</span>
+								break;
+						}
+
+<span class="fc" id="L314">						continue;</span>
 					}
 
-<span class="fc bfc" id="L307" title="All 2 branches covered.">					if (!in_section) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">					if (!in_section) {</span>
 						// this line must be the number of elements in this section
-<span class="fc" id="L309">						in_section = true;</span>
-<span class="fc" id="L310">						num_secetion++; // 1=nodes/vertices, 2=edges</span>
-<span class="fc" id="L311">						section_ix_element = 0;</span>
-<span class="fc" id="L312">						section_num_elements = -1;</span>
+<span class="fc" id="L319">						in_section = true;</span>
+<span class="fc" id="L320">						num_secetion++; // 1=nodes/vertices, 2=edges</span>
+<span class="fc" id="L321">						section_ix_element = 0;</span>
+<span class="fc" id="L322">						section_num_elements = -1;</span>
 						try {
-<span class="fc" id="L314">							section_num_elements = Integer.parseInt(line);</span>
-<span class="nc" id="L315">						} catch (Exception e) {</span>
-<span class="nc" id="L316">							section_num_elements = -1;</span>
-<span class="fc" id="L317">						}</span>
-<span class="pc bpc" id="L318" title="1 of 2 branches missed.">						if (section_num_elements &lt; 0)</span>
-<span class="nc" id="L319">							throw new IllegalArgumentException(</span>
+<span class="fc" id="L324">							section_num_elements = Integer.parseInt(line);</span>
+<span class="nc" id="L325">						} catch (Exception e) {</span>
+<span class="nc" id="L326">							section_num_elements = -1;</span>
+<span class="fc" id="L327">						}</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">						if (section_num_elements &lt; 0)</span>
+<span class="nc" id="L329">							throw new IllegalArgumentException(</span>
 									&quot;Leda file format: number of elements must be non-negative integers.&quot;);
 						continue; // next
 					}
 
 					// we are inside a section
-<span class="fc" id="L325">					section_ix_element++;</span>
+<span class="fc" id="L335">					section_ix_element++;</span>
 
 					// is this the nodes section?
-<span class="fc bfc" id="L328" title="All 2 branches covered.">					if (num_secetion == 1) {</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">					if (num_secetion == 1) {</span>
 						// define node/vertex
 						// |{v1}| --&gt; v1 is any label or name or identifier
 						// |{}| --&gt; empty label or name or identifier
-<span class="pc bpc" id="L332" title="2 of 4 branches missed.">						if (!line.startsWith(&quot;|{&quot;) || !line.endsWith(&quot;}|&quot;))</span>
-<span class="nc" id="L333">							throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L342" title="2 of 4 branches missed.">						if (!line.startsWith(&quot;|{&quot;) || !line.endsWith(&quot;}|&quot;))</span>
+<span class="nc" id="L343">							throw new IllegalArgumentException(</span>
 									&quot;Leda file format: node/vertex error. must be |{any_name_label}| or |{}|.&quot;);
 						// get the label
-<span class="fc" id="L336">						String label = line.substring(2, line.length() - 2);</span>
+<span class="fc" id="L346">						String label = line.substring(2, line.length() - 2);</span>
 						// debug
-<span class="fc" id="L338">						list_nodes.add(label);</span>
-<span class="fc" id="L339">						final int id = builder.vertices().size() + 1; // 1,2,3...</span>
-<span class="fc" id="L340">						builder.addVertex(id);</span>
+<span class="fc" id="L348">						list_nodes.add(label);</span>
+<span class="fc" id="L349">						final int id = builder.vertices().size() + 1; // 1,2,3...</span>
+<span class="fc" id="L350">						builder.addVertex(id);</span>
 
 						// record label/weight
-<span class="pc bpc" id="L343" title="5 of 7 branches missed.">						switch (info_type_for_vertices) {</span>
+<span class="pc bpc" id="L353" title="5 of 7 branches missed.">						switch (info_type_for_vertices) {</span>
 							case &quot;int&quot;:
 								try {
-<span class="nc" id="L346">									int val = Integer.parseInt(label);</span>
-<span class="nc" id="L347">									((WeightsInt) w_info_type_for_vertices).set(id, val);</span>
-<span class="nc" id="L348">								} catch (Exception e) {</span>
-<span class="nc" id="L349">									throw new IllegalArgumentException(&quot;Leda file format: vertex must have int info.&quot;);</span>
-<span class="nc" id="L350">								}</span>
+<span class="nc" id="L356">									int val = Integer.parseInt(label);</span>
+<span class="nc" id="L357">									((IWeightsInt) w_info_type_for_vertices).set(id, val);</span>
+<span class="nc" id="L358">								} catch (Exception e) {</span>
+<span class="nc" id="L359">									throw new IllegalArgumentException(&quot;Leda file format: vertex must have int info.&quot;);</span>
+<span class="nc" id="L360">								}</span>
 								break;
 							case &quot;short&quot;:
 								try {
-<span class="nc" id="L354">									short val = Short.parseShort(label);</span>
-<span class="nc" id="L355">									((WeightsShort) w_info_type_for_vertices).set(id, val);</span>
-<span class="nc" id="L356">								} catch (Exception e) {</span>
-<span class="nc" id="L357">									throw new IllegalArgumentException(</span>
+<span class="nc" id="L364">									short val = Short.parseShort(label);</span>
+<span class="nc" id="L365">									((IWeightsShort) w_info_type_for_vertices).set(id, val);</span>
+<span class="nc" id="L366">								} catch (Exception e) {</span>
+<span class="nc" id="L367">									throw new IllegalArgumentException(</span>
 											&quot;Leda file format: vertex must have short info.&quot;);
-<span class="nc" id="L359">								}</span>
+<span class="nc" id="L369">								}</span>
 								break;
 							case &quot;long&quot;:
 								try {
-<span class="nc" id="L363">									long val = Long.parseLong(label);</span>
-<span class="nc" id="L364">									((WeightsLong) w_info_type_for_vertices).set(id, val);</span>
-<span class="nc" id="L365">								} catch (Exception e) {</span>
-<span class="nc" id="L366">									throw new IllegalArgumentException(&quot;Leda file format: vertex must have long info.&quot;);</span>
-<span class="nc" id="L367">								}</span>
+<span class="nc" id="L373">									long val = Long.parseLong(label);</span>
+<span class="nc" id="L374">									((IWeightsLong) w_info_type_for_vertices).set(id, val);</span>
+<span class="nc" id="L375">								} catch (Exception e) {</span>
+<span class="nc" id="L376">									throw new IllegalArgumentException(&quot;Leda file format: vertex must have long info.&quot;);</span>
+<span class="nc" id="L377">								}</span>
 								break;
 							case &quot;float&quot;:
 								try {
-<span class="nc" id="L371">									float val = Float.parseFloat(label);</span>
-<span class="nc" id="L372">									((WeightsFloat) w_info_type_for_vertices).set(id, val);</span>
-<span class="nc" id="L373">								} catch (Exception e) {</span>
-<span class="nc" id="L374">									throw new IllegalArgumentException(</span>
+<span class="nc" id="L381">									float val = Float.parseFloat(label);</span>
+<span class="nc" id="L382">									((IWeightsFloat) w_info_type_for_vertices).set(id, val);</span>
+<span class="nc" id="L383">								} catch (Exception e) {</span>
+<span class="nc" id="L384">									throw new IllegalArgumentException(</span>
 											&quot;Leda file format: vertex must have float info.&quot;);
-<span class="nc" id="L376">								}</span>
+<span class="nc" id="L386">								}</span>
 								break;
 							case &quot;double&quot;:
 								try {
-<span class="nc" id="L380">									double val = Double.parseDouble(label);</span>
-<span class="nc" id="L381">									((WeightsDouble) w_info_type_for_vertices).set(id, val);</span>
-<span class="nc" id="L382">								} catch (Exception e) {</span>
-<span class="nc" id="L383">									throw new IllegalArgumentException(</span>
+<span class="nc" id="L390">									double val = Double.parseDouble(label);</span>
+<span class="nc" id="L391">									((IWeightsDouble) w_info_type_for_vertices).set(id, val);</span>
+<span class="nc" id="L392">								} catch (Exception e) {</span>
+<span class="nc" id="L393">									throw new IllegalArgumentException(</span>
 											&quot;Leda file format: vertex must have double info.&quot;);
-<span class="nc" id="L385">								}</span>
+<span class="nc" id="L395">								}</span>
 								break;
 							case &quot;void&quot;:
-<span class="fc" id="L388">								break;</span>
+<span class="fc" id="L398">								break;</span>
 							case &quot;string&quot;:
 							default:
-<span class="fc" id="L391">								((WeightsObj&lt;String&gt;) w_info_type_for_vertices).set(id, label);</span>
+								@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L402">								IWeightsObj&lt;String&gt; temp = (IWeightsObj&lt;String&gt;) w_info_type_for_vertices;</span>
+<span class="fc" id="L403">								temp.set(id, label);</span>
 								break;
 						}
 
-<span class="fc bfc" id="L395" title="All 2 branches covered.">						if (section_ix_element == section_num_elements) {</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">						if (section_ix_element == section_num_elements) {</span>
 							// we ended the current section
-<span class="fc" id="L397">							in_section = false;</span>
-<span class="fc" id="L398">							section_ix_element = -1;</span>
-<span class="fc" id="L399">							section_num_elements = -1;</span>
+<span class="fc" id="L409">							in_section = false;</span>
+<span class="fc" id="L410">							section_ix_element = -1;</span>
+<span class="fc" id="L411">							section_num_elements = -1;</span>
 						}
 						continue;
 					}
 
-<span class="pc bpc" id="L404" title="1 of 2 branches missed.">					if (num_secetion == 3)</span>
-<span class="nc" id="L405">						throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L416" title="1 of 2 branches missed.">					if (num_secetion == 3)</span>
+<span class="nc" id="L417">						throw new IllegalArgumentException(</span>
 								&quot;Leda file format: too many parameers. 2nd section, the edges, is complete.&quot;);
 
 					// if (num_secetion == 2)
@@ -414,96 +426,98 @@ class FormatLEDA implements GraphFormat {
 					// ==&gt; the information associated with the edge (cf. nodes section)
 
 					// We use regexp to parse line
-<span class="fc" id="L417">					final Matcher edge_matcher = pattern_edge.matcher(line);</span>
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">					if (!edge_matcher.find())</span>
-<span class="nc" id="L419">						throw new IllegalArgumentException(&quot;Leda file format: invalid edge. must have 4 parts.&quot;);</span>
+<span class="fc" id="L429">					final Matcher edge_matcher = pattern_edge.matcher(line);</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">					if (!edge_matcher.find())</span>
+<span class="nc" id="L431">						throw new IllegalArgumentException(&quot;Leda file format: invalid edge. must have 4 parts.&quot;);</span>
 
-<span class="fc" id="L421">					int from_vertex = Integer.parseInt(edge_matcher.group(1));</span>
-<span class="fc" id="L422">					int to_vertex = Integer.parseInt(edge_matcher.group(2));</span>
-<span class="fc" id="L423">					int reversal_edge = Integer.parseInt(edge_matcher.group(3)); // not used right now</span>
-<span class="fc" id="L424">					String label = edge_matcher.group(4);</span>
+<span class="fc" id="L433">					int from_vertex = Integer.parseInt(edge_matcher.group(1));</span>
+<span class="fc" id="L434">					int to_vertex = Integer.parseInt(edge_matcher.group(2));</span>
+					// int reversal_edge = Integer.parseInt(edge_matcher.group(3)); // not used right now
+<span class="fc" id="L436">					String label = edge_matcher.group(4);</span>
 
-<span class="pc bpc" id="L426" title="2 of 4 branches missed.">					if (from_vertex &lt; 1 //</span>
+<span class="pc bpc" id="L438" title="2 of 4 branches missed.">					if (from_vertex &lt; 1 //</span>
 							|| to_vertex &lt; 1 //
-<span class="pc bpc" id="L428" title="1 of 2 branches missed.">							|| from_vertex &gt; list_nodes.size() //</span>
-<span class="pc bpc" id="L429" title="1 of 2 branches missed.">							|| to_vertex &gt; list_nodes.size())</span>
-<span class="nc" id="L430">						throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">							|| from_vertex &gt; list_nodes.size() //</span>
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">							|| to_vertex &gt; list_nodes.size())</span>
+<span class="nc" id="L442">						throw new IllegalArgumentException(</span>
 								&quot;Leda file format: invalid edge. must be between 1 and num nodes/vertices.&quot;);
 
 					// |{v1}| --&gt; v1 is any label or name or identifier
 					// |{}| --&gt; empty label or name or identifier
-<span class="pc bpc" id="L435" title="2 of 4 branches missed.">					if (!label.startsWith(&quot;|{&quot;) || !label.endsWith(&quot;}|&quot;))</span>
-<span class="nc" id="L436">						throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L447" title="2 of 4 branches missed.">					if (!label.startsWith(&quot;|{&quot;) || !label.endsWith(&quot;}|&quot;))</span>
+<span class="nc" id="L448">						throw new IllegalArgumentException(</span>
 								&quot;Leda file format: invalid edge. inof/label must be starts with |{ and ends with }|.&quot;);
 					// get the label
-<span class="fc" id="L439">					label = label.substring(2, label.length() - 2);</span>
+<span class="fc" id="L451">					label = label.substring(2, label.length() - 2);</span>
 
 					// add the edge
-<span class="fc" id="L442">					final int id = builder.edges().size() + 1; // 1,2,3...</span>
-<span class="fc" id="L443">					builder.addEdge(from_vertex, to_vertex, id);</span>
+<span class="fc" id="L454">					final int id = builder.edges().size() + 1; // 1,2,3...</span>
+<span class="fc" id="L455">					builder.addEdge(from_vertex, to_vertex, id);</span>
 
 					// record label/weight
-<span class="pc bpc" id="L446" title="5 of 7 branches missed.">					switch (info_type_for_edges) {</span>
+<span class="pc bpc" id="L458" title="5 of 7 branches missed.">					switch (info_type_for_edges) {</span>
 						case &quot;int&quot;:
 							try {
-<span class="fc" id="L449">								int val = Integer.parseInt(label);</span>
-<span class="fc" id="L450">								((WeightsInt) w_info_type_for_edges).set(id, val);</span>
-<span class="nc" id="L451">							} catch (Exception e) {</span>
-<span class="nc" id="L452">								throw new IllegalArgumentException(&quot;Leda file format: edge must have int info.&quot;);</span>
-<span class="fc" id="L453">							}</span>
+<span class="fc" id="L461">								int val = Integer.parseInt(label);</span>
+<span class="fc" id="L462">								((IWeightsInt) w_info_type_for_edges).set(id, val);</span>
+<span class="nc" id="L463">							} catch (Exception e) {</span>
+<span class="nc" id="L464">								throw new IllegalArgumentException(&quot;Leda file format: edge must have int info.&quot;);</span>
+<span class="fc" id="L465">							}</span>
 							break;
 						case &quot;short&quot;:
 							try {
-<span class="nc" id="L457">								short val = Short.parseShort(label);</span>
-<span class="nc" id="L458">								((WeightsShort) w_info_type_for_edges).set(id, val);</span>
-<span class="nc" id="L459">							} catch (Exception e) {</span>
-<span class="nc" id="L460">								throw new IllegalArgumentException(&quot;Leda file format: edge must have short info.&quot;);</span>
-<span class="nc" id="L461">							}</span>
+<span class="nc" id="L469">								short val = Short.parseShort(label);</span>
+<span class="nc" id="L470">								((IWeightsShort) w_info_type_for_edges).set(id, val);</span>
+<span class="nc" id="L471">							} catch (Exception e) {</span>
+<span class="nc" id="L472">								throw new IllegalArgumentException(&quot;Leda file format: edge must have short info.&quot;);</span>
+<span class="nc" id="L473">							}</span>
 							break;
 						case &quot;long&quot;:
 							try {
-<span class="nc" id="L465">								long val = Long.parseLong(label);</span>
-<span class="nc" id="L466">								((WeightsLong) w_info_type_for_edges).set(id, val);</span>
-<span class="nc" id="L467">							} catch (Exception e) {</span>
-<span class="nc" id="L468">								throw new IllegalArgumentException(&quot;Leda file format: edge must have long info.&quot;);</span>
-<span class="nc" id="L469">							}</span>
+<span class="nc" id="L477">								long val = Long.parseLong(label);</span>
+<span class="nc" id="L478">								((IWeightsLong) w_info_type_for_edges).set(id, val);</span>
+<span class="nc" id="L479">							} catch (Exception e) {</span>
+<span class="nc" id="L480">								throw new IllegalArgumentException(&quot;Leda file format: edge must have long info.&quot;);</span>
+<span class="nc" id="L481">							}</span>
 							break;
 						case &quot;float&quot;:
 							try {
-<span class="nc" id="L473">								float val = Float.parseFloat(label);</span>
-<span class="nc" id="L474">								((WeightsFloat) w_info_type_for_edges).set(id, val);</span>
-<span class="nc" id="L475">							} catch (Exception e) {</span>
-<span class="nc" id="L476">								throw new IllegalArgumentException(&quot;Leda file format: edge must have float info.&quot;);</span>
-<span class="nc" id="L477">							}</span>
+<span class="nc" id="L485">								float val = Float.parseFloat(label);</span>
+<span class="nc" id="L486">								((IWeightsFloat) w_info_type_for_edges).set(id, val);</span>
+<span class="nc" id="L487">							} catch (Exception e) {</span>
+<span class="nc" id="L488">								throw new IllegalArgumentException(&quot;Leda file format: edge must have float info.&quot;);</span>
+<span class="nc" id="L489">							}</span>
 							break;
 						case &quot;double&quot;:
 							try {
-<span class="nc" id="L481">								double val = Double.parseDouble(label);</span>
-<span class="nc" id="L482">								((WeightsDouble) w_info_type_for_edges).set(id, val);</span>
-<span class="nc" id="L483">							} catch (Exception e) {</span>
-<span class="nc" id="L484">								throw new IllegalArgumentException(&quot;Leda file format: edge must have double info.&quot;);</span>
-<span class="nc" id="L485">							}</span>
+<span class="nc" id="L493">								double val = Double.parseDouble(label);</span>
+<span class="nc" id="L494">								((IWeightsDouble) w_info_type_for_edges).set(id, val);</span>
+<span class="nc" id="L495">							} catch (Exception e) {</span>
+<span class="nc" id="L496">								throw new IllegalArgumentException(&quot;Leda file format: edge must have double info.&quot;);</span>
+<span class="nc" id="L497">							}</span>
 							break;
 						case &quot;void&quot;:
-<span class="fc" id="L488">							break;</span>
+<span class="fc" id="L500">							break;</span>
 						case &quot;string&quot;:
 						default:
-<span class="nc" id="L491">							((WeightsObj&lt;String&gt;) w_info_type_for_edges).set(id, label);</span>
+							@SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L504">							IWeightsObj&lt;String&gt; temp = (IWeightsObj&lt;String&gt;) w_info_type_for_edges;</span>
+<span class="nc" id="L505">							temp.set(id, label);</span>
 							break;
 					}
 
-<span class="fc bfc" id="L495" title="All 2 branches covered.">					if (section_ix_element == section_num_elements) {</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">					if (section_ix_element == section_num_elements) {</span>
 						// we ended the current section
-<span class="fc" id="L497">						in_section = false;</span>
-<span class="fc" id="L498">						section_ix_element = -1;</span>
-<span class="fc" id="L499">						section_num_elements = -1;</span>
+<span class="fc" id="L511">						in_section = false;</span>
+<span class="fc" id="L512">						section_ix_element = -1;</span>
+<span class="fc" id="L513">						section_num_elements = -1;</span>
 					}
-<span class="fc" id="L501">				}</span>
-<span class="nc" id="L502">			} catch (IOException e) {</span>
-<span class="nc" id="L503">				throw new UncheckedIOException(e);</span>
-<span class="fc" id="L504">			}</span>
+<span class="fc" id="L515">				}</span>
+<span class="nc" id="L516">			} catch (IOException e) {</span>
+<span class="nc" id="L517">				throw new UncheckedIOException(e);</span>
+<span class="fc" id="L518">			}</span>
 
-<span class="fc" id="L506">			return builder;</span>
+<span class="fc" id="L520">			return builder;</span>
 		}
 
 	}

@@ -18,11 +18,11 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -68,9 +68,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L72">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L73">		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L73">		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
 <span class="fc" id="L74">		Objects.requireNonNull(partition,</span>
 				&quot;Bipartiteness values weren't found with weight &quot; + BipartiteGraphs.VertexBiPartitionWeightKey);
 <span class="fc" id="L76">		Assertions.Graphs.onlyBipartite(g, partition);</span>
@@ -79,14 +79,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L79">		return new Matchings.MatchingImpl(g, match);</span>
 	}
 
-	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction wOrig, WeightsBool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, IWeightFunction wOrig, IWeightsBool partition) {
 <span class="fc" id="L83">		final int n = gOrig.vertices().size();</span>
 <span class="fc" id="L84">		IndexGraph g = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2)</span>
 <span class="fc" id="L85">				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();</span>
 <span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L87">			g.addVertex();</span>
 <span class="fc" id="L88">		final int s = g.addVertex(), t = g.addVertex();</span>
-<span class="fc" id="L89">		WeightsDouble w = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
+<span class="fc" id="L89">		IWeightsDouble w = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
 
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L92">			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
@@ -136,52 +136,53 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		}
 
 <span class="fc" id="L138">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L139">		WeightFunction spWeightFunc = JGAlgoUtils.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L139">		IWeightFunction spWeightFunc = JGAlgoUtils.potentialWeightFunc(g, w, potential);</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-<span class="fc" id="L143">		ShortestPathSingleSource.Result sp = ssspNegative.computeShortestPaths(g, w, s);</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
-<span class="fc" id="L145">			potential[v] = sp.distance(v);</span>
+<span class="fc" id="L143">		ShortestPathSingleSource.IResult sp =</span>
+<span class="fc" id="L144">				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
+<span class="fc" id="L146">			potential[v] = sp.distance(v);</span>
 
 		for (;;) {
-<span class="fc" id="L148">			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);</span>
-<span class="fc" id="L149">			Path augPath = sp.getPath(t);</span>
-<span class="fc" id="L150">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
-<span class="pc bpc" id="L151" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
-<span class="fc" id="L152">				break;</span>
+<span class="fc" id="L149">			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc, Integer.valueOf(s));</span>
+<span class="fc" id="L150">			IPath augPath = sp.getPath(t);</span>
+<span class="fc" id="L151">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
+<span class="pc bpc" id="L152" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
+<span class="fc" id="L153">				break;</span>
 
 			// avoid using augPath.iterator() as we modify the graph during iteration
-<span class="fc" id="L155">			IntIterator it = new IntArrayList(augPath.edges()).iterator();</span>
+<span class="fc" id="L156">			IntIterator it = new IntArrayList(augPath.edges()).iterator();</span>
 			// 'remove' edge from S to new matched vertex
-<span class="fc" id="L157">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
+<span class="fc" id="L158">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
 			for (;;) {
-<span class="fc" id="L159">				int matchedEdge = it.nextInt();</span>
+<span class="fc" id="L160">				int matchedEdge = it.nextInt();</span>
 
 				// Reverse newly matched edge
-<span class="fc" id="L162">				g.reverseEdge(matchedEdge);</span>
-<span class="fc" id="L163">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;</span>
-<span class="fc" id="L164">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
+<span class="fc" id="L163">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L164">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;</span>
+<span class="fc" id="L165">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
 
-<span class="fc" id="L166">				int unmatchedEdge = it.nextInt();</span>
+<span class="fc" id="L167">				int unmatchedEdge = it.nextInt();</span>
 
-<span class="fc bfc" id="L168" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 					// 'remove' edge from new matched vertex to T
-<span class="fc" id="L170">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
-<span class="fc" id="L171">					break;</span>
+<span class="fc" id="L171">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
+<span class="fc" id="L172">					break;</span>
 				}
 
 				// Reverse newly unmatched edge
-<span class="fc" id="L175">				g.reverseEdge(unmatchedEdge);</span>
-<span class="fc" id="L176">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
-<span class="fc" id="L177">			}</span>
+<span class="fc" id="L176">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L177">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
+<span class="fc" id="L178">			}</span>
 
 			// Update potential based on the distances
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L181">				potential[u] += sp.distance(u);</span>
-<span class="fc" id="L182">		}</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L182">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L183">		}</span>
 
-<span class="fc" id="L184">		return match;</span>
+<span class="fc" id="L185">		return match;</span>
 	}
 
 	/**
@@ -191,8 +192,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 	 */
 	@Deprecated
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
-<span class="nc" id="L195">		throw new UnsupportedOperationException();</span>
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+<span class="nc" id="L196">		throw new UnsupportedOperationException();</span>
 	}
 
 }

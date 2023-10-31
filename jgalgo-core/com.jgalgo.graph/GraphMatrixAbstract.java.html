@@ -66,9 +66,9 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L66">				addInternalVerticesContainer(vEdges);</span>
 <span class="fc" id="L67">				edges.set(u, vEdges);</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L70">					int e = eit.nextInt();</span>
-<span class="fc" id="L71">					int v = eit.target();</span>
+<span class="fc" id="L71">					int v = eit.targetInt();</span>
 <span class="fc" id="L72">					int existingEdge = vEdges.get(v);</span>
 <span class="pc bpc" id="L73" title="3 of 4 branches missed.">					if (existingEdge != EdgeNone &amp;&amp; existingEdge != e)</span>
 <span class="nc" id="L74">						throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
@@ -125,7 +125,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 <span class="fc" id="L129">		int edge = edges.get(source).get(target);</span>
 <span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (edge == EdgeNone) {</span>
 <span class="nc" id="L131">			return Edges.EmptyEdgeSet;</span>
@@ -181,7 +181,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L181">		super.clearEdges();</span>
 <span class="fc" id="L182">	}</span>
 
-	class EdgeIterOut implements EdgeIter {
+	class EdgeIterOut implements IEdgeIter {
 
 		private final int source;
 		private int target;
@@ -210,7 +210,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L214">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L215">			return sourceEdges.get(target);</span>
 		}
@@ -227,22 +227,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L227">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L231">			return source;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L236">			return lastTarget;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L241">			removeEdge(sourceEdges.get(target()));</span>
+<span class="fc" id="L241">			removeEdge(sourceEdges.get(targetInt()));</span>
 <span class="fc" id="L242">		}</span>
 	}
 
-	class EdgeIterInUndirected implements EdgeIter {
+	class EdgeIterInUndirected implements IEdgeIter {
 
 		private int source;
 		private final int target;
@@ -271,7 +271,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L275">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L276">			return targetEdges.get(source);</span>
 		}
@@ -288,22 +288,22 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L288">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L292">			return lastSource;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L297">			return target;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L302">			removeEdge(targetEdges.get(source()));</span>
+<span class="fc" id="L302">			removeEdge(targetEdges.get(sourceInt()));</span>
 <span class="fc" id="L303">		}</span>
 	}
 
-	class EdgeIterInDirected implements EdgeIter {
+	class EdgeIterInDirected implements IEdgeIter {
 
 		private int source;
 		private final int target;
@@ -330,7 +330,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L334">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L335">			return edges.get(source).get(target);</span>
 		}
@@ -347,18 +347,18 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 <span class="fc" id="L347">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L351">			return lastSource;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L356">			return target;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L361">			removeEdge(edges.get(source()).get(target()));</span>
+<span class="fc" id="L361">			removeEdge(edges.get(sourceInt()).get(targetInt()));</span>
 <span class="fc" id="L362">		}</span>
 	}
 

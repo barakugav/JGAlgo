@@ -17,13 +17,13 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 <span class="pc" id="L22">public class LowestCommonAncestorExample {</span>
 
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-<span class="fc" id="L26">		Graph tree = Graph.newUndirected();</span>
+<span class="fc" id="L26">		IntGraph tree = IntGraph.newUndirected();</span>
 <span class="fc" id="L27">		int rt = tree.addVertex();</span>
 <span class="fc" id="L28">		int v1 = tree.addVertex();</span>
 <span class="fc" id="L29">		int v2 = tree.addVertex();</span>
@@ -40,41 +40,42 @@ import com.jgalgo.graph.Graph;
 
 		/* Pre process the tree for LCA queries */
 <span class="fc" id="L42">		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();</span>
-<span class="fc" id="L43">		LowestCommonAncestorStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);</span>
+<span class="fc" id="L43">		LowestCommonAncestorStatic.IDataStructure lcaDs =</span>
+<span class="fc" id="L44">				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(rt));</span>
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
-<span class="pc bnc" id="L46" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v2) == rt;</span>
-<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v1, v3) == v1;</span>
-<span class="pc bnc" id="L48" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v4) == v1;</span>
-<span class="pc bnc" id="L49" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v5, v6) == v2;</span>
-<span class="pc bnc" id="L50" title="All 2 branches missed.">		assert lcaDs.findLowestCommonAncestor(v3, v6) == rt;</span>
-<span class="fc" id="L51">	}</span>
+<span class="pc bnc" id="L47" title="All 2 branches missed.">		assert lcaDs.findLca(v1, v2) == rt;</span>
+<span class="pc bnc" id="L48" title="All 2 branches missed.">		assert lcaDs.findLca(v1, v3) == v1;</span>
+<span class="pc bnc" id="L49" title="All 2 branches missed.">		assert lcaDs.findLca(v3, v4) == v1;</span>
+<span class="pc bnc" id="L50" title="All 2 branches missed.">		assert lcaDs.findLca(v5, v6) == v2;</span>
+<span class="pc bnc" id="L51" title="All 2 branches missed.">		assert lcaDs.findLca(v3, v6) == rt;</span>
+<span class="fc" id="L52">	}</span>
 
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
-<span class="fc" id="L55">		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();</span>
-<span class="fc" id="L56">		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();</span>
+<span class="fc" id="L56">		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();</span>
+<span class="fc" id="L57">		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();</span>
 
-<span class="fc" id="L58">		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);</span>
-<span class="fc" id="L59">		LowestCommonAncestorDynamic.Vertex v2 = lcaAlgo.addLeaf(rt);</span>
-<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
+<span class="fc" id="L59">		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);</span>
+<span class="fc" id="L60">		LowestCommonAncestorDynamic.Vertex v2 = lcaAlgo.addLeaf(rt);</span>
+<span class="pc bnc" id="L61" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
 
-<span class="fc" id="L62">		LowestCommonAncestorDynamic.Vertex v3 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bnc" id="L63" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
+<span class="fc" id="L63">		LowestCommonAncestorDynamic.Vertex v3 = lcaAlgo.addLeaf(v1);</span>
+<span class="pc bnc" id="L64" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
 
-<span class="fc" id="L65">		LowestCommonAncestorDynamic.Vertex v4 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bnc" id="L66" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
+<span class="fc" id="L66">		LowestCommonAncestorDynamic.Vertex v4 = lcaAlgo.addLeaf(v1);</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
 
-<span class="fc" id="L68">		LowestCommonAncestorDynamic.Vertex v5 = lcaAlgo.addLeaf(v2);</span>
-<span class="fc" id="L69">		LowestCommonAncestorDynamic.Vertex v6 = lcaAlgo.addLeaf(v2);</span>
-<span class="pc bnc" id="L70" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
-<span class="pc bnc" id="L71" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L69">		LowestCommonAncestorDynamic.Vertex v5 = lcaAlgo.addLeaf(v2);</span>
+<span class="fc" id="L70">		LowestCommonAncestorDynamic.Vertex v6 = lcaAlgo.addLeaf(v2);</span>
+<span class="pc bnc" id="L71" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
+<span class="fc" id="L73">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L75">		staticLCAExample();</span>
-<span class="fc" id="L76">		dynamicLCAExample();</span>
-<span class="fc" id="L77">	}</span>
+<span class="fc" id="L76">		staticLCAExample();</span>
+<span class="fc" id="L77">		dynamicLCAExample();</span>
+<span class="fc" id="L78">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

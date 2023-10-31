@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="nc" id="L57">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L58">	}</span>
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 <span class="nc" id="L61">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="nc bnc" id="L62" title="All 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
 <span class="nc" id="L63">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
@@ -71,7 +71,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="nc bnc" id="L71" title="All 2 branches missed.">			assert e &gt;= artificialEdgesThreshold;</span>
 		}
 
-<span class="nc" id="L74">		VertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="nc" id="L74">		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);</span>
 <span class="nc bnc" id="L75" title="All 2 branches missed.">		if (connectivityRes.numberOfBlocks() &gt; 1)</span>
 <span class="nc" id="L76">			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);</span>
 
@@ -81,13 +81,13 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	}
 
 	@Override
-	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w, int root) {
+	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 <span class="fc" id="L85">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="pc bpc" id="L86" title="2 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
 <span class="nc" id="L87">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
 <span class="fc" id="L88">		final int artificialEdgesThreshold = g.edges().size();</span>
 
-<span class="fc" id="L90">		VertexPartition connectivityRes = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L90">		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		if (connectivityRes.numberOfBlocks() &gt; 1) {</span>
 <span class="fc" id="L92">			g = g.copy(); // we must copy because we add new vertices and edges</span>
 <span class="fc" id="L93">			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);</span>
@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L97">		return expand(g, contractedGraph, root, artificialEdgesThreshold);</span>
 	}
 
-	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root,
+	private static MinimumSpanningTree.IResult expand(IndexGraph g, ContractedGraph cg, int root,
 			int artificialEdgesThreshold) {
 <span class="fc" id="L102">		int[] inEdge = new int[cg.n];</span>
 
@@ -136,7 +136,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L136">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
-	private static void addEdgesUntilStronglyConnected(IndexGraph g, VertexPartition connectivityRes,
+	private static void addEdgesUntilStronglyConnected(IndexGraph g, IVertexPartition connectivityRes,
 			int artificialEdgesThreshold) {
 <span class="fc" id="L141">		int N = connectivityRes.numberOfBlocks();</span>
 <span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (N &lt;= 1)</span>
@@ -153,9 +153,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		ccLoop: for (int V = 0; V &lt; N; V++) {</span>
 <span class="fc bfc" id="L155" title="All 2 branches covered.">			int vNext = V &lt; N - 1 ? V + 1 : 0;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L157">				eit.nextInt();</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">				if (connectivityRes.vertexBlock(eit.target()) == vNext)</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">				if (connectivityRes.vertexBlock(eit.targetInt()) == vNext)</span>
 <span class="fc" id="L159">					continue ccLoop; /* V already connected to vNext */</span>
 			}
 <span class="fc" id="L161">			int e = g.addEdge(V2v[V], V2v[vNext]);</span>
@@ -163,7 +163,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		}
 <span class="fc" id="L164">	}</span>
 
-	private ContractedGraph contract(IndexGraph g, WeightFunction wOrig, int artificialEdgesThreshold) {
+	private ContractedGraph contract(IndexGraph g, IWeightFunction wOrig, int artificialEdgesThreshold) {
 <span class="pc bnc" id="L167" title="All 2 branches missed.">		assert sccAlg.isStronglyConnected(g);</span>
 
 <span class="fc" id="L169">		int n = g.vertices().size();</span>
@@ -174,7 +174,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L174" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L175">			ufIdxToV[uf.make()] = v;</span>
 
-<span class="fc" id="L177">		WeightFunction w =</span>
+<span class="fc" id="L177">		IWeightFunction w =</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">				e -&gt; (e &lt; artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L180">		HeapReferenceable&lt;Integer, Void&gt;[] heap = new HeapReferenceable[VMaxNum];</span>

@@ -18,9 +18,9 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -59,13 +59,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L63">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L64">		final int n = g.vertices().size();</span>
 <span class="fc" id="L65">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 
 		/* find all SCC */
-<span class="fc" id="L68">		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L68">		IVertexPartition cc = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);</span>
 <span class="fc" id="L69">		final int ccNum = cc.numberOfBlocks();</span>
 
 		/* init distances and policy */
@@ -156,7 +156,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L156">				queue.enqueue(bestCycleVertex);</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
 <span class="fc" id="L158">					int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L160">						int e = eit.nextInt();</span>
 <span class="fc" id="L161">						int u = g.edgeSource(e);</span>
 <span class="pc bpc" id="L162" title="1 of 4 branches missed.">						if (policy[u] != e || visited.test(u))</span>

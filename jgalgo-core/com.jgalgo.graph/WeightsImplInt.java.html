@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 <span class="nc" id="L22">class WeightsImplInt {</span>
 
-	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Integer&gt; implements WeightsInt  {
+	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Integer&gt; implements IWeightsInt  {
 
 		int[] weights;
 		final int defaultWeight;
@@ -125,8 +125,8 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="fc" id="L125">		}</span>
 	}
 
-	static class Mapped  extends WeightsImpl.Mapped&lt;Integer&gt; implements WeightsInt  {
-		Mapped(WeightsImplInt.IndexImpl  weights, IndexIdMap indexMap) {
+	static class IntMapped  extends WeightsImpl.IntMapped&lt;Integer&gt; implements IWeightsInt  {
+		IntMapped(WeightsImplInt.IndexImpl  weights, IndexIntIdMap indexMap) {
 <span class="fc" id="L130">			super(weights, indexMap);</span>
 <span class="fc" id="L131">		}</span>
 
@@ -151,29 +151,81 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 		}
 	}
 
-	static class ImmutableView  extends WeightsImpl.ImmutableView&lt;Integer&gt; implements WeightsInt  {
-		ImmutableView(WeightsInt  w) {
-<span class="fc" id="L156">			super(w);</span>
-<span class="fc" id="L157">		}</span>
+	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Integer&gt; implements WeightsInt&lt;K &gt; {
+		ObjMapped(WeightsImplInt.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
+<span class="nc" id="L156">			super(weights, indexMap);</span>
+<span class="nc" id="L157">		}</span>
 
 		@Override
-		WeightsInt  weights() {
-<span class="fc" id="L161">			return (WeightsInt ) super.weights();</span>
+		public WeightsImplInt.IndexImpl  weights() {
+<span class="nc" id="L161">			return (WeightsImplInt.IndexImpl ) super.weights();</span>
+		}
+
+		@Override
+		public int get(K id) {
+<span class="nc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
+		}
+
+		@Override
+		public void set(K id, int weight) {
+<span class="nc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="nc" id="L172">		}</span>
+
+		@Override
+		public int defaultWeight() {
+<span class="nc" id="L176">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class IntImmutableView  extends WeightsImpl.IntImmutableView&lt;Integer&gt; implements IWeightsInt  {
+		IntImmutableView(IWeightsInt  w) {
+<span class="fc" id="L182">			super(w);</span>
+<span class="fc" id="L183">		}</span>
+
+		@Override
+		IWeightsInt  weights() {
+<span class="fc" id="L187">			return (IWeightsInt ) super.weights();</span>
 		}
 
 		@Override
 		public int get(int id) {
-<span class="fc" id="L166">			return weights().get(id);</span>
+<span class="fc" id="L192">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(int id, int weight) {
-<span class="fc" id="L171">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L197">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public int defaultWeight() {
-<span class="fc" id="L176">			return weights().defaultWeight();</span>
+<span class="fc" id="L202">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Integer&gt; implements WeightsInt &lt;K &gt; {
+		ObjImmutableView(WeightsInt &lt;K &gt; w) {
+<span class="nc" id="L208">			super(w);</span>
+<span class="nc" id="L209">		}</span>
+
+		@Override
+		WeightsInt &lt;K &gt; weights() {
+<span class="nc" id="L213">			return (WeightsInt &lt;K &gt;) super.weights();</span>
+		}
+
+		@Override
+		public int get(K id) {
+<span class="nc" id="L218">			return weights().get(id);</span>
+		}
+
+		@Override
+		public void set(K id, int weight) {
+<span class="nc" id="L223">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+		}
+
+		@Override
+		public int defaultWeight() {
+<span class="nc" id="L228">			return weights().defaultWeight();</span>
 		}
 	}
 

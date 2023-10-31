@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -55,11 +55,11 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L59">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L60">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 
-<span class="fc" id="L62">		Path cycle = computeMinimumMeanCycle0(g, w);</span>
+<span class="fc" id="L62">		IPath cycle = computeMinimumMeanCycle0(g, w);</span>
 
 		/* The regular algorithm doesn't handle self edges (and specifically skip CC with a single vertex) */
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (g.isAllowSelfEdges()) {</span>
@@ -87,11 +87,11 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L87">		return cycle;</span>
 	}
 
-	private Path computeMinimumMeanCycle0(IndexGraph g, WeightFunction w) {
+	private IPath computeMinimumMeanCycle0(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L91">		final int n = g.vertices().size();</span>
 
 		/* find all SCC */
-<span class="fc" id="L94">		VertexPartition cc = sccAlg.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L94">		IVertexPartition cc = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);</span>
 <span class="fc" id="L95">		final int ccNum = cc.numberOfBlocks();</span>
 <span class="fc" id="L96">		SourceChooser sourceChooser = new SourceChooser(g, cc);</span>
 
@@ -131,9 +131,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc bfc" id="L131" title="All 2 branches covered.">					if (!visit[u])</span>
 <span class="fc" id="L132">						continue;</span>
 <span class="fc" id="L133">					visit[u] = false;</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L135">						int e = eit.nextInt();</span>
-<span class="fc" id="L136">						int v = eit.target();</span>
+<span class="fc" id="L136">						int v = eit.targetInt();</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">						if (cc.vertexBlock(v) != ccIdx)</span>
 <span class="fc" id="L138">							continue;</span>
 <span class="fc" id="L139">						double newDistance = d[k][u] + w.weight(e);</span>
@@ -204,12 +204,12 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	private static class SourceChooser {
 
 		final IndexGraph g;
-		final VertexPartition cc;
+		final IVertexPartition cc;
 		final int[] interCcDegree;
 		final int[] f;
 		final int[] l;
 
-<span class="fc" id="L212">		SourceChooser(IndexGraph g, VertexPartition cc) {</span>
+<span class="fc" id="L212">		SourceChooser(IndexGraph g, IVertexPartition cc) {</span>
 <span class="fc" id="L213">			this.g = g;</span>
 <span class="fc" id="L214">			this.cc = cc;</span>
 
@@ -220,9 +220,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 				l = new int[n];
 				for (int u = 0; u &lt; n; u++) {
 					final int uCc = cc.vertexBlock(u);
-					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						int v = eit.target();
+						int v = eit.targetInt();
 						if (uCc == cc.vertexBlock(v))
 							interCcDegree[u]++;
 					}
@@ -244,9 +244,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					for (int u : cc.blockVertices(ccIdx)) {
 						final int uCc = cc.vertexBlock(u);
 						l[u] = interCcDegree[u];
-						for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
-							int v = eit.target();
+							int v = eit.targetInt();
 							if (uCc == cc.vertexBlock(v))
 								l[u] += f[v];
 						}

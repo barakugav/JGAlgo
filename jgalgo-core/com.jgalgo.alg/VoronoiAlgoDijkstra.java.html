@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 	@SuppressWarnings(&quot;boxing&quot;)
 	@Override
-	VoronoiAlgo.Result computeVoronoiCells(IndexGraph g, IntCollection sites, WeightFunction w) {
+	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 <span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (sites.isEmpty())</span>
 <span class="nc" id="L33">			throw new IllegalArgumentException(&quot;no sites provided&quot;);</span>
 <span class="fc" id="L34">		final int n = g.vertices().size();</span>
@@ -61,9 +61,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L61">			int uCell = cell[u];</span>
 <span class="fc" id="L62">			heapVPtrs[u] = null;</span>
 
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L65">				int e = eit.nextInt();</span>
-<span class="fc" id="L66">				int v = eit.target();</span>
+<span class="fc" id="L66">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">				if (distance[v] != Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L68">					continue;</span>
 <span class="fc" id="L69">				double ew = w.weight(e);</span>

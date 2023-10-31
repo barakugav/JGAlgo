@@ -16,16 +16,16 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.MinimumSpanningTree;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="pc" id="L24">public class MinimumSpanningTreeExample {</span>
 
 	public static void MSTExample() {
 		/* Create a graph with 7 vertices */
-<span class="fc" id="L28">		Graph g = Graph.newUndirected();</span>
+<span class="fc" id="L28">		IntGraph g = IntGraph.newUndirected();</span>
 <span class="fc" id="L29">		int v1 = g.addVertex();</span>
 <span class="fc" id="L30">		int v2 = g.addVertex();</span>
 <span class="fc" id="L31">		int v3 = g.addVertex();</span>
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L49">		int e12 = g.addEdge(v3, v6);</span>
 
 		/* Assign a weight to each edge */
-<span class="fc" id="L52">		WeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
+<span class="fc" id="L52">		IWeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
 <span class="fc" id="L53">		weights.set(e1, 4.6);</span>
 <span class="fc" id="L54">		weights.set(e2, 5.2);</span>
 <span class="fc" id="L55">		weights.set(e3, 6.1);</span>
@@ -64,9 +64,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L64">		weights.set(e12, 5.5);</span>
 
 		/* Compute the minimum spanning tree of the graph */
-<span class="fc" id="L67">		WeightFunction w = weights;</span>
+<span class="fc" id="L67">		IWeightFunction w = weights;</span>
 <span class="fc" id="L68">		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
-<span class="fc" id="L69">		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);</span>
+<span class="fc" id="L69">		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w);</span>
 
 <span class="pc bnc" id="L71" title="All 2 branches missed.">		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));</span>
 <span class="fc" id="L72">		System.out.println(&quot;The minimum spanning tree of the graph has the following edges: &quot; + mst.edges());</span>

@@ -78,7 +78,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L78">			addInternalVerticesContainer(edgesNumContainer);</span>
 
 <span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L81">				EdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L81">				IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L82">				int edgeSetSize = edgesNum[v] = edgeSet.size();</span>
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">				if (edgeSetSize != 0) {</span>
 <span class="fc" id="L84">					int[] edgesArr = edges[v] = new int[edgeSetSize];</span>
@@ -140,13 +140,13 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L140">	}</span>
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L144">		checkVertex(source);</span>
 <span class="fc" id="L145">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L150">		checkVertex(target);</span>
 <span class="fc" id="L151">		return new EdgeSetIn(target);</span>
 	}
@@ -231,7 +231,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		// edges.clear();
 <span class="fc" id="L232">	}</span>
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 <span class="fc" id="L235">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L236">			super(source);</span>
 <span class="fc" id="L237">		}</span>
@@ -247,12 +247,12 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L251">			return new EdgeIterOut(source, edges[source], edgesNum[source]);</span>
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 <span class="fc" id="L256">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L257">			super(target);</span>
 <span class="fc" id="L258">		}</span>
@@ -268,7 +268,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L272">			return new EdgeIterIn(target, edges[target], edgesNum[target]);</span>
 		}
 	}
@@ -280,7 +280,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L280">		}</span>
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L284">			return edgeEndpoint(lastEdge, source);</span>
 		}
 	}
@@ -292,7 +292,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L292">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L296">			return edgeEndpoint(lastEdge, target);</span>
 		}
 	}

@@ -46,13 +46,13 @@ abstract class DataContainer {
 
 	abstract int capacity();
 
-<span class="fc" id="L49">	static class Obj&lt;E&gt; extends DataContainer {</span>
+<span class="fc" id="L49">	static class Obj&lt;T&gt; extends DataContainer {</span>
 
-		private E[] weights;
-		private final E defaultWeight;
-		private final Consumer&lt;E[]&gt; onArrayAlloc;
+		private T[] weights;
+		private final T defaultWeight;
+		private final Consumer&lt;T[]&gt; onArrayAlloc;
 
-		Obj(GraphElementSet elements, E defVal, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+		Obj(GraphElementSet elements, T defVal, T[] emptyArr, Consumer&lt;T[]&gt; onArrayAlloc) {
 <span class="fc" id="L56">			super(elements);</span>
 
 <span class="fc" id="L58">			defaultWeight = defVal;</span>
@@ -62,12 +62,12 @@ abstract class DataContainer {
 <span class="fc" id="L62">			onArrayAlloc.accept(weights);</span>
 <span class="fc" id="L63">		}</span>
 
-		public E get(int idx) {
+		public T get(int idx) {
 <span class="fc" id="L66">			checkIdx(idx);</span>
 <span class="fc" id="L67">			return weights[idx];</span>
 		}
 
-		public void set(int idx, E weight) {
+		public void set(int idx, T weight) {
 <span class="fc" id="L71">			checkIdx(idx);</span>
 <span class="fc" id="L72">			weights[idx] = weight;</span>
 <span class="fc" id="L73">		}</span>
@@ -92,7 +92,7 @@ abstract class DataContainer {
 <span class="fc" id="L92">			ObjectArrays.swap(weights, idx1, idx2);</span>
 <span class="fc" id="L93">		}</span>
 
-		void swap(E[] weights, int idx1, int idx2) {
+		void swap(T[] weights, int idx1, int idx2) {
 <span class="fc" id="L96">			ObjectArrays.swap(weights, idx1, idx2);</span>
 <span class="fc" id="L97">		}</span>
 
@@ -100,7 +100,7 @@ abstract class DataContainer {
 <span class="nc" id="L100">			weights[idx] = defaultWeight;</span>
 <span class="nc" id="L101">		}</span>
 
-		void clear(E[] weights, int idx) {
+		void clear(T[] weights, int idx) {
 <span class="fc" id="L104">			weights[idx] = defaultWeight;</span>
 <span class="fc" id="L105">		}</span>
 
@@ -108,14 +108,14 @@ abstract class DataContainer {
 <span class="nc" id="L108">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
 <span class="nc" id="L109">		}</span>
 
-		public void clear(E[] weights) {
+		public void clear(T[] weights) {
 <span class="fc" id="L112">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
 <span class="fc" id="L113">		}</span>
 
-		public DataContainer.Obj&lt;E&gt; copy(GraphElementSet elements, E[] emptyArr, Consumer&lt;E[]&gt; onArrayAlloc) {
+		public DataContainer.Obj&lt;T&gt; copy(GraphElementSet elements, T[] emptyArr, Consumer&lt;T[]&gt; onArrayAlloc) {
 <span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
 <span class="nc" id="L117">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L118">			DataContainer.Obj&lt;E&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultWeight, emptyArr, onArrayAlloc);</span>
+<span class="fc" id="L118">			DataContainer.Obj&lt;T&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultWeight, emptyArr, onArrayAlloc);</span>
 <span class="fc" id="L119">			copy.weights = Arrays.copyOf(weights, elements.size());</span>
 <span class="fc" id="L120">			onArrayAlloc.accept(copy.weights);</span>
 <span class="fc" id="L121">			return copy;</span>

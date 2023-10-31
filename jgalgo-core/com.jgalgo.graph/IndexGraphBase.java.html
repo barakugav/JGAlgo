@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 
-abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
+abstract class IndexGraphBase extends IntGraphBase implements IndexGraphImpl {
 
 	private final boolean isDirected;
 	private final boolean isAllowSelfEdges;
@@ -63,7 +63,7 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 	}
 
 	@Override
-	public EdgeSet getEdges(int source, int target) {
+	public IEdgeSet getEdges(int source, int target) {
 <span class="fc" id="L67">		Assertions.Graphs.checkVertex(source, vertices().size());</span>
 <span class="fc" id="L68">		Assertions.Graphs.checkVertex(target, vertices().size());</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)</span>
@@ -81,14 +81,14 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 
 		@Override
 		public void clear() {
-<span class="nc bnc" id="L84" title="All 2 branches missed.">			for (EdgeIter it = iterator(); it.hasNext();) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">			for (IEdgeIter it = iterator(); it.hasNext();) {</span>
 <span class="nc" id="L85">				it.nextInt();</span>
 <span class="nc" id="L86">				it.remove();</span>
 			}
 <span class="nc" id="L88">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L92">			return new EdgeIterSourceTarget(source, target);</span>
 		}
 	}
@@ -136,10 +136,10 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		}
 	}
 
-	private class EdgeIterSourceTarget implements EdgeIter {
+	private class EdgeIterSourceTarget implements IEdgeIter {
 
 		private final int source, target;
-		private final EdgeIter it;
+		private final IEdgeIter it;
 <span class="fc" id="L143">		private int nextEdge = -1;</span>
 
 <span class="fc" id="L145">		EdgeIterSourceTarget(int source, int target) {</span>
@@ -152,7 +152,7 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		private void advance() {
 <span class="fc bfc" id="L153" title="All 2 branches covered.">			while (it.hasNext()) {</span>
 <span class="fc" id="L154">				int e = it.nextInt();</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (it.target() == target) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (it.targetInt() == target) {</span>
 <span class="fc" id="L156">					nextEdge = e;</span>
 <span class="fc" id="L157">					return;</span>
 				}
@@ -174,18 +174,18 @@ abstract class IndexGraphBase extends GraphBase implements IndexGraphImpl {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L178">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L179">			return nextEdge;</span>
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L184">			return source;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L189">			return target;</span>
 		}
 	}

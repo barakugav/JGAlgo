@@ -17,60 +17,58 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
+import java.util.Comparator;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
-import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIterable;
+import com.jgalgo.alg.VertexCover;
 
 /**
- * Weight function that maps graph edges (or vertices) to weights.
+ * Weight function that maps graph edges or vertices to weights.
  * &lt;p&gt;
  * This interface is usually used as weight function of edges, for example in algorithms such as
- * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo} try to find a set of edges
- * satisfying some constraint while minimizing/maximizing some objective function based on the weights of the edges. But
- * it can represent weights assigned to vertices, in algorithms such as vertex cover.
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo}, in which the algorithm try to
+ * find a set of edges satisfying some constraint while minimizing/maximizing some objective function based on the
+ * weights of the edges. But it can represent weights assigned to vertices, in algorithms such as {@link VertexCover}.
  * &lt;p&gt;
  * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.
  *
  * &lt;pre&gt; {@code
- * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newDirected();
- * int v1 = g.addVertex();
- * int v2 = g.addVertex();
- * int v3 = g.addVertex();
- * int e1 = g.addEdge(v1, v2);
- * int e2 = g.addEdge(v2, v3);
- * int e3 = g.addEdge(v1, v3);
+ * // Create an undirected graph with three vertices and edges between them
+ * Graph&lt;String, Integer&gt; g = Graph.newUndirected();
+ * g.addVertex(&quot;Berlin&quot;);
+ * g.addVertex(&quot;Leipzig&quot;);
+ * g.addVertex(&quot;Dresden&quot;);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Leipzig&quot;, 9);
+ * g.addEdge(&quot;Berlin&quot;, &quot;Dresden&quot;, 13);
+ * g.addEdge(&quot;Dresden&quot;, &quot;Leipzig&quot;, 14);
  *
  * // Assign some weights to the edges
- * WeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
- * weights.set(e1, 1.2);
- * weights.set(e2, 3.1);
- * weights.set(e3, 15.1);
- * EdgeWeightFunc weightFunc = weights;
+ * WeightsDouble&lt;Integer&gt; w = g.addEdgesWeights(&quot;distance-km&quot;, double.class);
+ * w.set(9, 191.1);
+ * w.set(13, 193.3);
+ * w.set(14, 121.3);
  *
- * // Calculate the shortest paths from v1 to all other vertices
+ * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, &quot;Berlin&quot;);
  *
- * // Print the shortest path from v1 to v3
- * assert ssspRes.distance(v3) == 4.3;
- * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
- * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
- * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
- * for (int e : ssspRes.getPath(v3)) {
+ * // Print the shortest path from Berlin to Leipzig
+ * System.out.println(&quot;Distance from Berlin to Leipzig is: &quot; + ssspRes.distance(&quot;Leipzig&quot;));
+ * System.out.println(&quot;The shortest path from Berlin to Leipzig is:&quot;);
+ * for (int e : ssspRes.getPath(&quot;Leipzig&quot;)) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
  * }
  * }&lt;/pre&gt;
  *
- * @see    WeightFunctionInt
- * @author Barak Ugav
+ * @param  &lt;K&gt; the elements (vertices/edges) type
+ * @see        WeightFunctionInt
+ * @author     Barak Ugav
  */
 @FunctionalInterface
-public interface WeightFunction extends IntComparator {
+public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 
 	/**
 	 * Get the weight of an element.
@@ -79,14 +77,14 @@ public interface WeightFunction extends IntComparator {
 	 * @return                           the weight of the element
 	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
 	 */
-	public double weight(int element);
+	double weight(K element);
 
 	/**
 	 * Compare two elements by their weights.
 	 */
 	@Override
-	default int compare(int e1, int e2) {
-<span class="fc" id="L89">		return Double.compare(weight(e1), weight(e2));</span>
+	default int compare(K e1, K e2) {
+<span class="nc" id="L87">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
@@ -95,43 +93,60 @@ public interface WeightFunction extends IntComparator {
 	 * @param  elements a collection of elements
 	 * @return          the sum of the weights of the elements
 	 */
-	default double weightSum(IntIterable elements) {
-<span class="fc" id="L99">		double sum = 0;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		for (int e : elements)</span>
-<span class="fc" id="L101">			sum += weight(e);</span>
-<span class="fc" id="L102">		return sum;</span>
+	default double weightSum(Iterable&lt;K&gt; elements) {
+<span class="nc" id="L97">		double sum = 0;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		for (K e : elements)</span>
+<span class="nc" id="L99">			sum += weight(e);</span>
+<span class="nc" id="L100">		return sum;</span>
 	}
 
 	/**
 	 * Get the sum of the weights of multiple elements.
 	 * &lt;p&gt;
-	 * This method is equivalent to {@link #weightSum(IntIterable)}, but it also support {@code null} weight function,
+	 * This method is equivalent to {@link #weightSum(Iterable)}, but it also support {@code null} weight function,
 	 * which is treated is cardinality weight function.
 	 *
+	 * @param  &lt;K&gt;        the elements (vertices/edges) type
 	 * @param  weightFunc the weight function to use, or {@code null} to use cardinality weight function
 	 * @param  elements   a collection of elements
 	 * @return            the sum of the weights of the elements
 	 */
-	static double weightSum(WeightFunction weightFunc, IntIterable elements) {
-<span class="pc bpc" id="L116" title="1 of 4 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="fc" id="L118">				return ((Collection&lt;?&gt;) elements).size();</span>
+	static &lt;K&gt; double weightSum(WeightFunction&lt;K&gt; weightFunc, Iterable&lt;K&gt; elements) {
+<span class="nc bnc" id="L115" title="All 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
+<span class="nc bnc" id="L117" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="nc" id="L118">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {
 <span class="nc" id="L120">				int s = 0;</span>
 				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L122" title="All 2 branches missed.">				int elm : elements)</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">				K elm : elements)</span>
 <span class="nc" id="L123">					s++;</span>
 <span class="nc" id="L124">				return s;</span>
 			}
 		} else {
-<span class="fc" id="L127">			return weightFunc.weightSum(elements);</span>
+<span class="nc" id="L127">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L134">	public static WeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="pc" id="L134">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
+
+	/**
+	 * Get the cardinality weight function.
+	 * &lt;p&gt;
+	 * The cardinality weight function assign a weight of {@code 1} to any element. The function always return the same
+	 * object, which can be accessed directed via {@link #CardinalityWeightFunction}. This is method is exposed only to
+	 * avoid unchecked casts with generics.
+	 *
+	 * @param  &lt;K&gt; the type of the elements
+	 * @return     the cardinality weight function
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; cardinalityWeightFunction() {
+<span class="nc" id="L148">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

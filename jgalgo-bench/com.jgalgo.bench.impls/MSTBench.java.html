@@ -37,8 +37,8 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Param({ &quot;|V|=200 |E|=1000&quot;, &quot;|V|=1600 |E|=10000&quot;, &quot;|V|=6000 |E|=25000&quot; })
 	public String args;
 
-	private List&lt;Pair&lt;Graph, WeightFunctionInt&gt;&gt; graphs;
+	private List&lt;Pair&lt;IntGraph, IWeightFunctionInt&gt;&gt; graphs;
 <span class="fc" id="L57">	private final int graphsNum = 31;</span>
 <span class="fc" id="L58">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
@@ -66,18 +66,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L66">		final SeedGenerator seedGen = new SeedGenerator(0x4453dff0c083fe6cL);</span>
 <span class="fc" id="L67">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L69">			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
-<span class="fc" id="L70">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L69">			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L70">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 <span class="fc" id="L71">			graphs.add(Pair.of(g, w));</span>
 		}
 <span class="fc" id="L73">	}</span>
 
 	private void benchMST(MinimumSpanningTree.Builder builder, Blackhole blackhole) {
-<span class="fc" id="L76">		Pair&lt;Graph, WeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L77">		Graph g = gw.first();</span>
-<span class="fc" id="L78">		WeightFunctionInt w = gw.second();</span>
+<span class="fc" id="L76">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L77">		IntGraph g = gw.first();</span>
+<span class="fc" id="L78">		IWeightFunctionInt w = gw.second();</span>
 <span class="fc" id="L79">		MinimumSpanningTree algo = builder.build();</span>
-<span class="fc" id="L80">		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);</span>
+<span class="fc" id="L80">		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);</span>
 <span class="fc" id="L81">		blackhole.consume(mst);</span>
 <span class="fc" id="L82">	}</span>
 

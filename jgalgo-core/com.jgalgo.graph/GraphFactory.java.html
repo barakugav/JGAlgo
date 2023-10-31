@@ -17,19 +17,31 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@link Graph} objects.
+ * &lt;p&gt;
+ * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
+ * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
+ * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ * &lt;p&gt;
+ * Both the graph factory and {@link GraphBuilder} are used to create new graphs. The difference is that vertices and
+ * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
+ * to choose a graph implementation and create an empty graph.
  *
- * @see    GraphFactory#newDirected()
- * @see    GraphFactory#newUndirected()
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @see        GraphFactory#newDirected()
+ * @see        GraphFactory#newUndirected()
+ * @see        Graph
+ * @see        GraphBuilder
+ * @author     Barak Ugav
  */
-public interface GraphFactory {
+public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Create a new empty graph.
 	 *
 	 * @return a new graph with the factory options
 	 */
-	Graph newGraph();
+	Graph&lt;V, E&gt; newGraph();
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, without copying weights.
@@ -47,8 +59,8 @@ public interface GraphFactory {
 	 * @return   an identical copy of the given graph, with the same vertices and edges, without the original graph
 	 *           weights
 	 */
-	default Graph newCopyOf(Graph g) {
-<span class="fc" id="L51">		return newCopyOf(g, false);</span>
+	default Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L63">		return newCopyOf(g, false);</span>
 	}
 
 	/**
@@ -68,7 +80,7 @@ public interface GraphFactory {
 	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without the
 	 *                     original graph weights
 	 */
-	Graph newCopyOf(Graph g, boolean copyWeights);
+	Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyWeights);
 
 	/**
 	 * Determine if graphs built by this factory should be directed or not.
@@ -76,7 +88,7 @@ public interface GraphFactory {
 	 * @param  directed if {@code true}, graphs built by this factory will be directed
 	 * @return          this factory
 	 */
-	GraphFactory setDirected(boolean directed);
+	GraphFactory&lt;V, E&gt; setDirected(boolean directed);
 
 	/**
 	 * Determine if graphs built by this factory should be support self edges.
@@ -84,7 +96,7 @@ public interface GraphFactory {
 	 * @param  selfEdges if {@code true}, graphs built by this factory will support self edges
 	 * @return           this factory
 	 */
-	GraphFactory allowSelfEdges(boolean selfEdges);
+	GraphFactory&lt;V, E&gt; allowSelfEdges(boolean selfEdges);
 
 	/**
 	 * Determine if graphs built by this factory should be support parallel edges.
@@ -92,7 +104,7 @@ public interface GraphFactory {
 	 * @param  parallelEdges if {@code true}, graphs built by this factory will support parallel edges
 	 * @return               this factory
 	 */
-	GraphFactory allowParallelEdges(boolean parallelEdges);
+	GraphFactory&lt;V, E&gt; allowParallelEdges(boolean parallelEdges);
 
 	/**
 	 * Set the expected number of vertices that will exist in the graph.
@@ -100,7 +112,7 @@ public interface GraphFactory {
 	 * @param  expectedVerticesNum the expected number of vertices in the graph
 	 * @return                     this factory
 	 */
-	GraphFactory expectedVerticesNum(int expectedVerticesNum);
+	GraphFactory&lt;V, E&gt; expectedVerticesNum(int expectedVerticesNum);
 
 	/**
 	 * Set the expected number of edges that will exist in the graph.
@@ -108,7 +120,7 @@ public interface GraphFactory {
 	 * @param  expectedEdgesNum the expected number of edges in the graph
 	 * @return                  this factory
 	 */
-	GraphFactory expectedEdgesNum(int expectedEdgesNum);
+	GraphFactory&lt;V, E&gt; expectedEdgesNum(int expectedEdgesNum);
 
 	/**
 	 * Add a hint to this factory.
@@ -118,7 +130,7 @@ public interface GraphFactory {
 	 * @param  hint the hint to add
 	 * @return      this factory
 	 */
-	GraphFactory addHint(GraphFactory.Hint hint);
+	GraphFactory&lt;V, E&gt; addHint(GraphFactory.Hint hint);
 
 	/**
 	 * Remove a hint from this factory.
@@ -128,7 +140,7 @@ public interface GraphFactory {
 	 * @param  hint the hint to remove
 	 * @return      this factory
 	 */
-	GraphFactory removeHint(GraphFactory.Hint hint);
+	GraphFactory&lt;V, E&gt; removeHint(GraphFactory.Hint hint);
 
 	/**
 	 * Hints for a graph factory.
@@ -137,35 +149,38 @@ public interface GraphFactory {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L140">	static enum Hint {</span>
-		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L142">		FastEdgeRemoval,</span>
-		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L144">		FastEdgeLookup,</span>
+<span class="fc" id="L152">	static enum Hint {</span>
+		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)} */
+<span class="fc" id="L154">		FastEdgeRemoval,</span>
+		/**
+		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
+		 * {@link Graph#getEdges(Object, Object)}
+		 */
+<span class="fc" id="L159">		FastEdgeLookup,</span>
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
-<span class="fc" id="L146">		DenseGraph,</span>
+<span class="fc" id="L161">		DenseGraph,</span>
 	}
 
 	/**
 	 * Create an undirected graph factory.
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new undirected graph.
 	 *
-	 * @return a new factory that can build undirected graphs
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new factory that can build undirected graphs
 	 */
-	public static GraphFactory newUndirected() {
-<span class="fc" id="L157">		return new GraphImpl.Factory(false);</span>
+	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newUndirected() {
+<span class="nc" id="L172">		return new GraphImpl.Factory&lt;&gt;(false);</span>
 	}
 
 	/**
 	 * Create a directed graph factory.
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new directed graph.
 	 *
-	 * @return a new factory that can build directed graphs
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new factory that can build directed graphs
 	 */
-	public static GraphFactory newDirected() {
-<span class="fc" id="L168">		return new GraphImpl.Factory(true);</span>
+	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newDirected() {
+<span class="nc" id="L183">		return new GraphImpl.Factory&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -175,11 +190,13 @@ public interface GraphFactory {
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
 	 * such use case see {@link Graph#copy()} or {@link GraphFactory#newCopyOf(Graph)}.
 	 *
-	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
-	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph from which the factory should copy its capabilities (inclusive)
+	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
-	public static GraphFactory newFrom(Graph g) {
-<span class="fc" id="L182">		return new GraphImpl.Factory(g);</span>
+	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
+<span class="nc" id="L199">		return new GraphImpl.Factory&lt;&gt;(g);</span>
 	}
 
 	/**
@@ -195,8 +212,8 @@ public interface GraphFactory {
 	 * @param  value the option value
 	 * @return       this builder
 	 */
-	default GraphFactory setOption(String key, Object value) {
-<span class="nc" id="L199">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
+<span class="nc" id="L216">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

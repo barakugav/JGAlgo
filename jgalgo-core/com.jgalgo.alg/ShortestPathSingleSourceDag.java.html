@@ -16,10 +16,10 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -47,28 +47,28 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc" id="L51">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L53">			w = WeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		return w instanceof WeightFunctionInt ? computeSsspInt(g, (WeightFunctionInt) w, source)</span>
+<span class="fc" id="L53">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		return w instanceof IWeightFunctionInt ? computeSsspInt(g, (IWeightFunctionInt) w, source)</span>
 <span class="nc" id="L55">				: computeSsspDouble(g, w, source);</span>
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, WeightFunction w, int source) {
+	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
 <span class="nc" id="L59">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
 <span class="nc" id="L60">		res.distances[source] = 0;</span>
 
-<span class="nc" id="L62">		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);</span>
+<span class="nc" id="L62">		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
 <span class="nc" id="L63">		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit</span>
 <span class="nc bnc" id="L64" title="All 2 branches missed.">				.hasNext();) {</span>
 <span class="nc" id="L65">			int u = uit.nextInt();</span>
 <span class="nc" id="L66">			double uDistance = res.distances[u];</span>
 <span class="nc bnc" id="L67" title="All 2 branches missed.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
 <span class="nc" id="L68">				continue;</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="nc" id="L70">				int e = eit.nextInt();</span>
-<span class="nc" id="L71">				int v = eit.target();</span>
+<span class="nc" id="L71">				int v = eit.targetInt();</span>
 <span class="nc" id="L72">				double d = uDistance + w.weight(e);</span>
 <span class="nc bnc" id="L73" title="All 2 branches missed.">				if (d &lt; res.distances[v]) {</span>
 <span class="nc" id="L74">					res.distances[v] = d;</span>
@@ -79,20 +79,20 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="nc" id="L79">		return res;</span>
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunctionInt w, int source) {
+	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
 <span class="fc" id="L83">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
 <span class="fc" id="L84">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L86">		TopologicalOrderAlgo.Result topoOrder = topoAlg.computeTopologicalSorting(g);</span>
+<span class="fc" id="L86">		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
 <span class="fc" id="L87">		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">				.hasNext();) {</span>
 <span class="fc" id="L89">			int u = uit.nextInt();</span>
 <span class="fc" id="L90">			int uDistance = res.distances[u];</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">			if (uDistance == Integer.MAX_VALUE)</span>
 <span class="fc" id="L92">				continue;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L94">				int e = eit.nextInt();</span>
-<span class="fc" id="L95">				int v = eit.target();</span>
+<span class="fc" id="L95">				int v = eit.targetInt();</span>
 <span class="fc" id="L96">				int d = uDistance + w.weightInt(e);</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
 <span class="fc" id="L98">					res.distances[v] = d;</span>

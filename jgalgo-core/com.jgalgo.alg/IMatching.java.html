@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IMatching.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">IMatching.java</span></div><h1>IMatching.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.BitSet;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A matching in a {@link IntGraph}.
+ * &lt;p&gt;
+ * This interface is a specific version of {@link Matching} for {@link IntGraph}. For the full documentation see
+ * {@link Matching}.
+ *
+ * @see    MatchingAlgo
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Matching_(graph_theory)&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface IMatching extends Matching&lt;Integer, Integer&gt; {
+
+	/**
+	 * Check whether a vertex is matched by the matching.
+	 * &lt;p&gt;
+	 * A vertex \(v\) is said to be &lt;i&gt;matched&lt;/i&gt; if the matching contains an edge \((v,w)\) for some other vertex
+	 * \(w\).
+	 *
+	 * @param  vertex a vertex
+	 * @return        {@code true} if {@code vertex} has an adjacent edge in the matching, else {@code false}
+	 */
+	boolean isVertexMatched(int vertex);
+
+	@Deprecated
+	@Override
+	default boolean isVertexMatched(Integer vertex) {
+<span class="nc" id="L52">		return isVertexMatched(vertex.intValue());</span>
+	}
+
+	/**
+	 * Get the only matched edge adjacent to a given vertex.
+	 *
+	 * @param  vertex a vertex
+	 * @return        the edge adjacent to {@code vertex} in the matching, or {@code -1} if {@code vertex} is not
+	 *                matched
+	 */
+	int getMatchedEdge(int vertex);
+
+	@Deprecated
+	@Override
+	default Integer getMatchedEdge(Integer vertex) {
+<span class="nc" id="L67">		return Integer.valueOf(getMatchedEdge(vertex.intValue()));</span>
+	}
+
+	@Override
+	IntSet matchedVertices();
+
+	@Override
+	IntSet unmatchedVertices();
+
+	/**
+	 * Check whether an edge is part of the matching.
+	 * &lt;p&gt;
+	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
+	 * \(M\).
+	 *
+	 * @param  edge an edge
+	 * @return      {@code true} if the edge is part of the matching, else {@code false}
+	 */
+	boolean containsEdge(int edge);
+
+	@Deprecated
+	@Override
+	default boolean containsEdge(Integer edge) {
+<span class="nc" id="L90">		return containsEdge(edge.intValue());</span>
+	}
+
+	@Override
+	IntSet edges();
+
+	/**
+	 * Check whether the given collection of edges form a valid matching in the graph.
+	 * &lt;p&gt;
+	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
+	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
+	 *
+	 * @param  g     a graph
+	 * @param  edges a collection of edges
+	 * @return       {@code true} if {@code edges} form a valid matching in {@code g}, else {@code false}
+	 */
+	static boolean isMatching(IntGraph g, IntCollection edges) {
+		IndexGraph ig;
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L109">			ig = (IndexGraph) g;</span>
+		} else {
+<span class="fc" id="L111">			ig = g.indexGraph();</span>
+<span class="fc" id="L112">			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L114">		final int n = ig.vertices().size();</span>
+
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (edges.size() &gt; n / 2)</span>
+<span class="nc" id="L117">			return false;</span>
+
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		if (edges.size() * 4 &gt; n / 8) {</span>
+			/* matching is big, use BitSet */
+<span class="fc" id="L121">			BitSet matched = new BitSet(n);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int e : edges) {</span>
+<span class="fc" id="L123">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				if (matched.get(u))</span>
+<span class="nc" id="L125">					return false;</span>
+<span class="fc" id="L126">				matched.set(u);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">				if (matched.get(v))</span>
+<span class="nc" id="L128">					return false;</span>
+<span class="fc" id="L129">				matched.set(v);</span>
+<span class="fc" id="L130">			}</span>
+
+<span class="fc" id="L132">		} else {</span>
+			/* matching is small, use hashtable */
+<span class="nc" id="L134">			IntSet matched = new IntOpenHashSet(edges.size() * 2);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">			for (int e : edges) {</span>
+<span class="nc" id="L136">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">				if (!matched.add(u))</span>
+<span class="nc" id="L138">					return false;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">				if (!matched.add(v))</span>
+<span class="nc" id="L140">					return false;</span>
+<span class="nc" id="L141">			}</span>
+
+		}
+<span class="fc" id="L144">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

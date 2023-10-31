@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm that finds all cycles in a graph.
@@ -31,11 +32,15 @@ public interface CyclesFinder {
 
 	/**
 	 * Find all cycles in the given graph.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
 	 *
-	 * @param  g a graph
-	 * @return   an iterator that iteration over all cycles in the graph
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     an iterator that iteration over all cycles in the graph
 	 */
-	public Iterator&lt;Path&gt; findAllCycles(Graph g);
+	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; findAllCycles(Graph&lt;V, E&gt; g);
 
 	/**
 	 * Create a new algorithm for cycles finding.
@@ -46,7 +51,7 @@ public interface CyclesFinder {
 	 * @return a default implementation of {@link CyclesFinder}
 	 */
 	static CyclesFinder newInstance() {
-<span class="nc" id="L49">		return newBuilder().build();</span>
+<span class="nc" id="L54">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -57,34 +62,34 @@ public interface CyclesFinder {
 	 * @return a new builder that can build {@link CyclesFinder} objects
 	 */
 	static CyclesFinder.Builder newBuilder() {
-<span class="nc" id="L60">		return new CyclesFinder.Builder() {</span>
+<span class="nc" id="L65">		return new CyclesFinder.Builder() {</span>
 			String impl;
 
 			@Override
 			public CyclesFinder build() {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L66" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L71" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L68">							return new CyclesFinderJohnson();</span>
+<span class="nc" id="L73">							return new CyclesFinderJohnson();</span>
 						case &quot;tarjan&quot;:
-<span class="nc" id="L70">							return new CyclesFinderTarjan();</span>
+<span class="nc" id="L75">							return new CyclesFinderTarjan();</span>
 						default:
-<span class="nc" id="L72">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L77">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L75">				return new CyclesFinderTarjan();</span>
+<span class="nc" id="L80">				return new CyclesFinderTarjan();</span>
 			}
 
 			@Override
 			public CyclesFinder.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L80" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L82">						impl = (String) value;</span>
-<span class="nc" id="L83">						break;</span>
+<span class="nc" id="L87">						impl = (String) value;</span>
+<span class="nc" id="L88">						break;</span>
 					default:
-<span class="nc" id="L85">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L90">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L87">				return this;</span>
+<span class="nc" id="L92">				return this;</span>
 			}
 		};
 	}
@@ -118,7 +123,7 @@ public interface CyclesFinder {
 		 * @return       this builder
 		 */
 		default CyclesFinder.Builder setOption(String key, Object value) {
-<span class="nc" id="L121">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L126">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

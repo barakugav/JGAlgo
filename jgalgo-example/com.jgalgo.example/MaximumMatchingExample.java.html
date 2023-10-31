@@ -15,9 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Matching;
+import com.jgalgo.alg.IMatching;
 import com.jgalgo.alg.MatchingAlgo;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -25,11 +25,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	public static void maximumMatchingExample() {
 		/* Create a graph with few vertices and edges */
-<span class="fc" id="L28">		Graph g = createGraph();</span>
+<span class="fc" id="L28">		IntGraph g = createGraph();</span>
 
 		/* Compute a maximum (cardinality) matching */
 <span class="fc" id="L31">		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
-<span class="fc" id="L32">		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L32">		IMatching matching = (IMatching) matchingAlgo.computeMaximumCardinalityMatching(g);</span>
 
 		/* Validate the matching is valid */
 <span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
@@ -46,8 +46,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L46">		System.out.println(&quot;The maximum matching is: &quot; + matching.edges());</span>
 <span class="fc" id="L47">	}</span>
 
-	public static Graph createGraph() {
-<span class="fc" id="L50">		Graph g = Graph.newUndirected();</span>
+	public static IntGraph createGraph() {
+<span class="fc" id="L50">		IntGraph g = IntGraph.newUndirected();</span>
 <span class="fc" id="L51">		int v1 = g.addVertex();</span>
 <span class="fc" id="L52">		int v2 = g.addVertex();</span>
 <span class="fc" id="L53">		int v3 = g.addVertex();</span>

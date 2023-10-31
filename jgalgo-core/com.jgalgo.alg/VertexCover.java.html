@@ -16,10 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -49,27 +54,54 @@ public interface VertexCover {
 	 * &lt;p&gt;
 	 * Note that finding the minimum vertex cover is an NP-hard problem, therefore the result of this function is an
 	 * approximation of the optimal solution.
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link VertexCover.IResult}. If {@code g} is
+	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  g a graph
-	 * @param  w a vertex weight function
-	 * @return   a minimum vertex cover
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @param  w   a vertex weight function
+	 * @return     a minimum vertex cover
 	 */
-	VertexCover.Result computeMinimumVertexCover(Graph g, WeightFunction w);
+	&lt;V, E&gt; VertexCover.Result&lt;V, E&gt; computeMinimumVertexCover(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w);
 
 	/**
 	 * A result object of {@link VertexCover} computation.
 	 * &lt;p&gt;
 	 * The result object is basically the set of vertices that form the cover.
 	 *
-	 * @author Barak Ugav
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	@SuppressWarnings(&quot;unused&quot;)
+	static interface Result&lt;V, E&gt; {
 
 		/**
 		 * Get the vertices which are included in the cover.
 		 *
 		 * @return the vertices that are included in the cover
 		 */
+		Set&lt;V&gt; vertices();
+
+		/**
+		 * Check whether a vertex is included in the cover.
+		 *
+		 * @param  vertex a graph vertex identifier
+		 * @return        {@code true} if {@code vertex} is included in the cover
+		 */
+		boolean isInCover(V vertex);
+	}
+
+	/**
+	 * A result object of {@link VertexCover} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends VertexCover.Result&lt;Integer, Integer&gt; {
+
+		@Override
 		IntSet vertices();
 
 		/**
@@ -80,6 +112,11 @@ public interface VertexCover {
 		 */
 		boolean isInCover(int vertex);
 
+		@Deprecated
+		@Override
+		default boolean isInCover(Integer vertex) {
+<span class="nc" id="L118">			return isInCover(vertex.intValue());</span>
+		}
 	}
 
 	/**
@@ -88,33 +125,42 @@ public interface VertexCover {
 	 * A set of vertices is a vertex cover of a graph if for every edge in the graph at least one of its vertices is in
 	 * the set. In addition, the collection of the vertices must not contain duplicates.
 	 *
+	 * @param  &lt;V&gt;      the vertices type
+	 * @param  &lt;E&gt;      the edges type
 	 * @param  g        a graph
 	 * @param  vertices a collection of vertices that should cover all the edges in the graph
 	 * @return          {@code true} if {@code vertices} is a vertex cover of {@code g}
 	 */
-	static boolean isCover(Graph g, IntCollection vertices) {
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isCover(Graph&lt;V, E&gt; g, Collection&lt;V&gt; vertices) {
 		IndexGraph ig;
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L98">			ig = (IndexGraph) g;</span>
+		IntCollection vertices0;
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L139">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L140">			vertices0 = IntContainers.toIntCollection((Collection&lt;Integer&gt;) vertices);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L142">			ig = g.indexGraph();</span>
+<span class="fc" id="L143">			vertices0 = IndexIdMaps.idToIndexCollection((Collection&lt;Integer&gt;) vertices,</span>
+<span class="fc" id="L144">					((IntGraph) g).indexGraphVerticesMap());</span>
 		} else {
-<span class="fc" id="L100">			ig = g.indexGraph();</span>
-<span class="fc" id="L101">			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
+<span class="nc" id="L146">			ig = g.indexGraph();</span>
+<span class="nc" id="L147">			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L103">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L104">		final int m = ig.edges().size();</span>
-<span class="fc" id="L105">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (int v : vertices) {</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
-<span class="nc" id="L108">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			if (visited.get(v))</span>
-<span class="nc" id="L110">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L149">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L150">		final int m = ig.edges().size();</span>
+<span class="fc" id="L151">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		for (int v : vertices0) {</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
+<span class="nc" id="L154">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">			if (visited.get(v))</span>
+<span class="nc" id="L156">				throw new IllegalArgumentException(</span>
 						&quot;vertex with index &quot; + v + &quot; is included more than once in the cover&quot;);
-<span class="fc" id="L112">			visited.set(v);</span>
-<span class="fc" id="L113">		}</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L115" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
-<span class="nc" id="L116">				return false;</span>
-<span class="fc" id="L117">		return true;</span>
+<span class="fc" id="L158">			visited.set(v);</span>
+<span class="fc" id="L159">		}</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
+<span class="nc" id="L162">				return false;</span>
+<span class="fc" id="L163">		return true;</span>
 	}
 
 	/**
@@ -126,7 +172,7 @@ public interface VertexCover {
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-<span class="nc" id="L129">		return newBuilder().build();</span>
+<span class="nc" id="L175">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -137,7 +183,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L140">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L186">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
@@ -169,7 +215,7 @@ public interface VertexCover {
 		 * @return       this builder
 		 */
 		default VertexCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L172">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L218">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

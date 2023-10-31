@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L55">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L56">		int n = g.vertices().size();</span>
 
@@ -166,7 +166,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L166">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
-	private int[][][] partitionEdgesToBuckets(IndexGraph g, WeightFunction w) {
+	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L170">		int n = g.vertices().size(), k = JGAlgoUtils.log2ceil(n);</span>
 
 <span class="fc" id="L172">		int[][][] edges = new int[n][][];</span>

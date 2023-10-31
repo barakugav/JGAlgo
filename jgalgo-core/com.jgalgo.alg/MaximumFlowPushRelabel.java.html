@@ -19,10 +19,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -112,9 +112,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
-<span class="fc" id="L117">			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)</span>
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (net instanceof IFlowNetworkInt) {</span>
+<span class="fc" id="L117">			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)</span>
 <span class="fc" id="L118">					.computeMaxFlow();</span>
 		} else {
 <span class="fc" id="L120">			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMaxFlow();</span>
@@ -122,20 +122,20 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	}
 
 	@Override
-	public VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
-<span class="fc" id="L126">		FlowNetwork net = flowNetFromEdgeWeights(w);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (w instanceof WeightFunctionInt) {</span>
-<span class="fc" id="L128">			return new WorkerInt(g, (FlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)</span>
+	public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+<span class="fc" id="L126">		IFlowNetwork net = flowNetFromEdgeWeights(w);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L128">			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)</span>
 <span class="fc" id="L129">					.computeMinimumCut();</span>
 		} else {
 <span class="fc" id="L131">			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();</span>
 		}
 	}
 
-	private static FlowNetwork flowNetFromEdgeWeights(WeightFunction w) {
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (w instanceof WeightFunctionInt) {</span>
-<span class="fc" id="L137">			WeightFunctionInt wInt = (WeightFunctionInt) w;</span>
-<span class="fc" id="L138">			FlowNetworkInt net = new FlowNetworkInt() {</span>
+	private static IFlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L137">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L138">			IFlowNetworkInt net = new IFlowNetworkInt() {</span>
 
 				@Override
 				public int getCapacityInt(int edge) {
@@ -160,7 +160,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			};
 <span class="fc" id="L161">			return net;</span>
 		} else {
-<span class="fc" id="L163">			FlowNetwork net = new FlowNetwork() {</span>
+<span class="fc" id="L163">			IFlowNetwork net = new IFlowNetwork() {</span>
 
 				@Override
 				public double getCapacity(int edge) {
@@ -190,8 +190,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	static abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
 		final int[] label;
-		final EdgeIter[] outEdgeIters;
-		final EdgeIter[] inEdgeIters;
+		final IEdgeIter[] outEdgeIters;
+		final IEdgeIter[] inEdgeIters;
 
 		private final BitSet relabelVisited;
 		private final IntPriorityQueue relabelQueue;
@@ -210,13 +210,13 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		private final ActiveOrderPolicyImpl activeOrderPolicy;
 		private final DischargePolicyImpl dischargePolicy;
 
-		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 <span class="fc" id="L215">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L217">			label = new int[n];</span>
-<span class="fc" id="L218">			outEdgeIters = new EdgeIter[n];</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">			inEdgeIters = directed ? new EdgeIter[n] : null;</span>
+<span class="fc" id="L218">			outEdgeIters = new IEdgeIter[n];</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			inEdgeIters = directed ? new IEdgeIter[n] : null;</span>
 
 <span class="fc" id="L221">			relabelVisited = new BitSet(n);</span>
 <span class="fc" id="L222">			relabelQueue = new FIFOQueueIntNoReduce();</span>
@@ -284,11 +284,11 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L284" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
 <span class="fc" id="L285">					int v = queue.dequeueInt();</span>
 <span class="fc" id="L286">					int vLabel = label[v];</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L288">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L289" title="All 2 branches covered.">						if (!isResidual(e))</span>
 <span class="fc" id="L290">							continue;</span>
-<span class="fc" id="L291">						int u = eit.source();</span>
+<span class="fc" id="L291">						int u = eit.sourceInt();</span>
 <span class="fc bfc" id="L292" title="All 2 branches covered.">						if (visited.get(u))</span>
 <span class="fc" id="L293">							continue;</span>
 <span class="fc" id="L294">						label[u] = vLabel + 1;</span>
@@ -298,11 +298,11 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L298">						visited.set(u);</span>
 <span class="fc" id="L299">						queue.enqueue(u);</span>
 <span class="fc" id="L300">					}</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L302">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L303" title="All 2 branches covered.">						if (!hasFlow(e))</span>
 <span class="fc" id="L304">							continue;</span>
-<span class="fc" id="L305">						int u = eit.target();</span>
+<span class="fc" id="L305">						int u = eit.targetInt();</span>
 <span class="fc bfc" id="L306" title="All 2 branches covered.">						if (visited.get(u))</span>
 <span class="fc" id="L307">							continue;</span>
 <span class="fc" id="L308">						label[u] = vLabel + 1;</span>
@@ -515,8 +515,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-<span class="fc bfc" id="L518" title="All 2 branches covered.">						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L519">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L519">							int e = it.peekNextInt();</span>
 <span class="fc" id="L520">							int v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L521">							int eAccess = worker().getResidualCapacity(e);</span>
 <span class="fc bfc" id="L522" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
@@ -535,8 +535,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								}
 							}
 						}
-<span class="fc bfc" id="L538" title="All 2 branches covered.">						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L539">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L539">							int e = it.peekNextInt();</span>
 <span class="fc" id="L540">							int v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L541">							int eAccess = worker().flow(e);</span>
 <span class="fc bfc" id="L542" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
@@ -567,8 +567,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeUndirected(int u) {
-<span class="fc" id="L570">					for (EdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L571">						int e = it.peekNext();</span>
+<span class="fc" id="L570">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L571">						int e = it.peekNextInt();</span>
 <span class="fc bfc" id="L572" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
 <span class="fc" id="L573">							int v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L574">							int eAccess = worker().getResidualCapacity(e);</span>
@@ -636,8 +636,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-<span class="fc bfc" id="L639" title="All 2 branches covered.">						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L640">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L639" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L640">							int e = it.peekNextInt();</span>
 <span class="fc" id="L641">							int v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L642">							double eAccess = worker().getResidualCapacity(e);</span>
 <span class="fc bfc" id="L643" title="All 4 branches covered.">							if (eAccess &gt; WorkerDouble.EPS &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
@@ -659,8 +659,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								}
 							}
 						}
-<span class="fc bfc" id="L662" title="All 2 branches covered.">						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L663">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L662" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L663">							int e = it.peekNextInt();</span>
 <span class="fc" id="L664">							int v = worker.g.edgeSource(e);</span>
 <span class="fc" id="L665">							double eAccess = worker().flow(e);</span>
 <span class="fc bfc" id="L666" title="All 4 branches covered.">							if (eAccess &gt; WorkerDouble.EPS &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
@@ -694,8 +694,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void dischargeUndirected(int u) {
-<span class="fc" id="L697">					for (EdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L698">						int e = it.peekNext();</span>
+<span class="fc" id="L697">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L698">						int e = it.peekNextInt();</span>
 <span class="fc bfc" id="L699" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
 <span class="fc" id="L700">							int v = worker.g.edgeTarget(e);</span>
 <span class="fc" id="L701">							double eAccess = worker().getResidualCapacity(e);</span>
@@ -770,8 +770,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L770">					dfs: for (int u = searchSource;;) {</span>
 <span class="fc" id="L771">						int uLabel = worker.label[u];</span>
 
-<span class="fc bfc" id="L773" title="All 2 branches covered.">						for (EdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L774">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L774">							int e = it.peekNextInt();</span>
 <span class="fc" id="L775">							int v = worker.g.edgeTarget(e);</span>
 <span class="fc bfc" id="L776" title="All 4 branches covered.">							boolean isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 <span class="fc bfc" id="L777" title="All 2 branches covered.">							if (isAdmissible) {</span>
@@ -808,8 +808,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L808">								continue dfs;</span>
 							}
 						}
-<span class="fc bfc" id="L811" title="All 2 branches covered.">						for (EdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L812">							int e = it.peekNext();</span>
+<span class="fc bfc" id="L811" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L812">							int e = it.peekNextInt();</span>
 <span class="fc" id="L813">							int v = worker.g.edgeSource(e);</span>
 <span class="fc bfc" id="L814" title="All 4 branches covered.">							boolean isAdmissible = worker.hasFlow(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 <span class="fc bfc" id="L815" title="All 2 branches covered.">							if (isAdmissible) {</span>
@@ -896,8 +896,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 <span class="fc" id="L897">					dfs: for (int u = searchSource;;) {</span>
 <span class="fc" id="L898">						int uLabel = worker.label[u];</span>
-<span class="fc" id="L899">						for (EdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L900">							int e = it.peekNext();</span>
+<span class="fc" id="L899">						for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L900">							int e = it.peekNextInt();</span>
 							int v;
 							boolean isAdmissible;
 <span class="fc bfc" id="L903" title="All 2 branches covered.">							if (u == worker.g.edgeSource(e)) {</span>
@@ -1477,7 +1477,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1477">					vState[root] = OnPath;</span>
 <span class="fc" id="L1478">					dfs: for (int u = root;;) {</span>
 <span class="fc bfc" id="L1479" title="All 2 branches covered.">						edgeIteration: for (; inEdgeIters[u].hasNext(); inEdgeIters[u].nextInt()) {</span>
-<span class="fc" id="L1480">							int e = inEdgeIters[u].peekNext();</span>
+<span class="fc" id="L1480">							int e = inEdgeIters[u].peekNextInt();</span>
 <span class="fc bfc" id="L1481" title="All 2 branches covered.">							if (!hasFlow(e))</span>
 <span class="fc" id="L1482">								continue;</span>
 <span class="fc" id="L1483">							int v = g.edgeSource(e);</span>
@@ -1495,7 +1495,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								// back out the DFS up to the first saturated edge
 <span class="fc" id="L1496">								int backOutTo = u;</span>
 <span class="fc bfc" id="L1497" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
-<span class="fc" id="L1498">									vw = inEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1498">									vw = inEdgeIters[v].peekNextInt();</span>
 <span class="fc" id="L1499">									w = g.edgeSource(vw);</span>
 <span class="fc bfc" id="L1500" title="All 4 branches covered.">									if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
 <span class="fc" id="L1501">										continue;</span>
@@ -1542,7 +1542,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1542">					vState[root] = OnPath;</span>
 <span class="fc" id="L1543">					dfs: for (int u = root;;) {</span>
 <span class="fc bfc" id="L1544" title="All 2 branches covered.">						edgeIteration: for (; outEdgeIters[u].hasNext(); outEdgeIters[u].nextInt()) {</span>
-<span class="fc" id="L1545">							int e = outEdgeIters[u].peekNext();</span>
+<span class="fc" id="L1545">							int e = outEdgeIters[u].peekNextInt();</span>
 							int v;
 <span class="fc bfc" id="L1547" title="All 2 branches covered.">							if (u == g.edgeSource(e)) {</span>
 <span class="fc bfc" id="L1548" title="All 2 branches covered.">								if (!hasNegativeFlow(e))</span>
@@ -1568,7 +1568,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 								// back out the DFS up to the first saturated edge
 <span class="fc" id="L1569">								int backOutTo = u;</span>
 <span class="fc bfc" id="L1570" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
-<span class="fc" id="L1571">									vw = outEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1571">									vw = outEdgeIters[v].peekNextInt();</span>
 <span class="fc bfc" id="L1572" title="All 2 branches covered.">									if (v == g.edgeSource(vw)) {</span>
 <span class="fc" id="L1573">										w = g.edgeTarget(vw);</span>
 <span class="fc bfc" id="L1574" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasNegativeFlow(vw))</span>
@@ -1638,7 +1638,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1638">			return constructResult();</span>
 		}
 
-		VertexBiPartition computeMinimumCut() {
+		IVertexBiPartition computeMinimumCut() {
 			// first phase
 <span class="fc" id="L1643">			calcMaxPreflow();</span>
 			// no need for second phase
@@ -1654,21 +1654,21 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc bfc" id="L1654" title="All 2 branches covered.">			if (directed) {</span>
 <span class="fc bfc" id="L1655" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
 <span class="fc" id="L1656">					int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L1657" title="All 2 branches covered.">					for (EdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1657" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1658">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L1659" title="All 2 branches covered.">						if (!isResidual(e))</span>
 <span class="fc" id="L1660">							continue;</span>
-<span class="fc" id="L1661">						int u = eit.source();</span>
+<span class="fc" id="L1661">						int u = eit.sourceInt();</span>
 <span class="fc bfc" id="L1662" title="All 2 branches covered.">						if (visited.get(u))</span>
 <span class="fc" id="L1663">							continue;</span>
 <span class="fc" id="L1664">						visited.set(u);</span>
 <span class="fc" id="L1665">						queue.enqueue(u);</span>
 <span class="fc" id="L1666">					}</span>
-<span class="fc bfc" id="L1667" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1667" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1668">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L1669" title="All 2 branches covered.">						if (!hasFlow(e))</span>
 <span class="fc" id="L1670">							continue;</span>
-<span class="fc" id="L1671">						int u = eit.target();</span>
+<span class="fc" id="L1671">						int u = eit.targetInt();</span>
 <span class="fc bfc" id="L1672" title="All 2 branches covered.">						if (visited.get(u))</span>
 <span class="fc" id="L1673">							continue;</span>
 <span class="fc" id="L1674">						visited.set(u);</span>
@@ -1728,7 +1728,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 <span class="fc" id="L1733">			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);</span>
 
@@ -1742,10 +1742,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		@Override
 		void pushAsMuchFromSource() {
 <span class="fc bfc" id="L1744" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1745" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1745" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1746">					int e = eit.nextInt(), v;</span>
 <span class="fc" id="L1747">					double f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1748" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.target()]) {</span>
+<span class="fc bfc" id="L1748" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
 <span class="fc bfc" id="L1749" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
 <span class="fc" id="L1750">							activate(v);</span>
 <span class="fc" id="L1751">						push(e, f);</span>
@@ -1791,7 +1791,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="pc bnc" id="L1791" title="All 2 branches missed.">			assert hasFlow(e);</span>
 <span class="fc" id="L1792">			double f = flow(e);</span>
 			for (;;) {
-<span class="fc" id="L1794">				e = inEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1794">				e = inEdgeIters[v].peekNextInt();</span>
 <span class="pc bnc" id="L1795" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L1796">				f = Math.min(f, flow(e));</span>
 <span class="fc bfc" id="L1797" title="All 2 branches covered.">				if (v == u)</span>
@@ -1802,7 +1802,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L1804">			for (v = u;;) {</span>
-<span class="fc" id="L1805">				e = inEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1805">				e = inEdgeIters[v].peekNextInt();</span>
 <span class="fc" id="L1806">				residualCapacity[e] += f;</span>
 <span class="fc" id="L1807">				v = g.edgeSource(e);</span>
 <span class="fc bfc" id="L1808" title="All 2 branches covered.">				if (v == u)</span>
@@ -1826,7 +1826,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L1826">				f = flow(e);</span>
 			}
 			for (int w;;) {
-<span class="fc" id="L1829">				e = outEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1829">				e = outEdgeIters[v].peekNextInt();</span>
 <span class="fc" id="L1830">				double ef = flow(e);</span>
 <span class="fc bfc" id="L1831" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
 <span class="pc bnc" id="L1832" title="All 2 branches missed.">					assert ef &lt; 0;</span>
@@ -1846,7 +1846,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L1848">			for (v = u;;) {</span>
-<span class="fc" id="L1849">				e = outEdgeIters[v].peekNext();</span>
+<span class="fc" id="L1849">				e = outEdgeIters[v].peekNextInt();</span>
 <span class="fc bfc" id="L1850" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
 <span class="fc" id="L1851">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L1852">					v = g.edgeTarget(e);</span>
@@ -1952,7 +1952,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final int[] excess;
 
-		WorkerInt(IndexGraph gOrig, FlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
 <span class="fc" id="L1957">			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);</span>
 
@@ -1966,10 +1966,10 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		@Override
 		void pushAsMuchFromSource() {
 <span class="fc bfc" id="L1968" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1969" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1969" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1970">					int e = eit.nextInt(), v;</span>
 <span class="fc" id="L1971">					int f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1972" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.target()]) {</span>
+<span class="fc bfc" id="L1972" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
 <span class="fc bfc" id="L1973" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
 <span class="fc" id="L1974">							activate(v);</span>
 <span class="fc" id="L1975">						push(e, f);</span>
@@ -2015,7 +2015,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="pc bnc" id="L2015" title="All 2 branches missed.">			assert hasFlow(e);</span>
 <span class="fc" id="L2016">			int f = flow(e);</span>
 			for (;;) {
-<span class="fc" id="L2018">				e = inEdgeIters[v].peekNext();</span>
+<span class="fc" id="L2018">				e = inEdgeIters[v].peekNextInt();</span>
 <span class="pc bnc" id="L2019" title="All 2 branches missed.">				assert hasFlow(e);</span>
 <span class="fc" id="L2020">				f = Math.min(f, flow(e));</span>
 <span class="fc bfc" id="L2021" title="All 2 branches covered.">				if (v == u)</span>
@@ -2026,7 +2026,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L2028">			for (v = u;;) {</span>
-<span class="fc" id="L2029">				e = inEdgeIters[v].peekNext();</span>
+<span class="fc" id="L2029">				e = inEdgeIters[v].peekNextInt();</span>
 <span class="fc" id="L2030">				residualCapacity[e] += f;</span>
 <span class="fc" id="L2031">				v = g.edgeSource(e);</span>
 <span class="fc bfc" id="L2032" title="All 2 branches covered.">				if (v == u)</span>
@@ -2050,7 +2050,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 <span class="fc" id="L2050">				f = flow(e);</span>
 			}
 			for (int w;;) {
-<span class="fc" id="L2053">				e = outEdgeIters[v].peekNext();</span>
+<span class="fc" id="L2053">				e = outEdgeIters[v].peekNextInt();</span>
 <span class="fc" id="L2054">				int ef = flow(e);</span>
 <span class="fc bfc" id="L2055" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
 <span class="pc bnc" id="L2056" title="All 2 branches missed.">					assert ef &lt; 0;</span>
@@ -2070,7 +2070,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 			// remove delta from all edges of the cycle
 <span class="fc" id="L2072">			for (v = u;;) {</span>
-<span class="fc" id="L2073">				e = outEdgeIters[v].peekNext();</span>
+<span class="fc" id="L2073">				e = outEdgeIters[v].peekNextInt();</span>
 <span class="fc bfc" id="L2074" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
 <span class="fc" id="L2075">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L2076">					v = g.edgeTarget(e);</span>

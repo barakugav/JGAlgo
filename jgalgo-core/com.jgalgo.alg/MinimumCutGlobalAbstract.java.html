@@ -16,28 +16,44 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
-<span class="fc" id="L24">abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {</span>
+<span class="fc" id="L28">abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {</span>
 
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public VertexBiPartition computeMinimumCut(Graph g, WeightFunction w) {
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L29">			return computeMinimumCut((IndexGraph) g, w);</span>
+	public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L34">			return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g,</span>
+<span class="nc" id="L35">					WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w));</span>
 
-<span class="fc" id="L31">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L32">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L33">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L34">		w = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L38">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L39">			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
+<span class="fc" id="L40">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
 
-<span class="fc" id="L36">		VertexBiPartition indexCut = computeMinimumCut(iGraph, w);</span>
-<span class="fc" id="L37">		return new VertexBiPartitions.BiPartitionFromIndexBiPartition(indexCut, viMap, eiMap);</span>
+<span class="fc" id="L42">			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);</span>
+<span class="fc" id="L43">			return (VertexBiPartition&lt;V, E&gt;) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,</span>
+					indexCut);
+
+		} else {
+<span class="nc" id="L47">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L48">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L49">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="nc" id="L51">			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);</span>
+<span class="nc" id="L52">			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexCut);</span>
+		}
 	}
 
-	abstract VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w);
+	abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

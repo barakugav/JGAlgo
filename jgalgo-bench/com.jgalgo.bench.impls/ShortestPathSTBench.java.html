@@ -41,11 +41,11 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L51">public class ShortestPathSTBench {</span>
@@ -56,8 +56,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	void benchStShortestPath(Object algo, Blackhole blackhole) {
 <span class="fc" id="L58">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L59">		Graph g = args.g;</span>
-<span class="fc" id="L60">		WeightFunction w = args.w;</span>
+<span class="fc" id="L59">		IntGraph g = args.g;</span>
+<span class="fc" id="L60">		IWeightFunction w = args.w;</span>
 <span class="fc" id="L61">		int source = args.source;</span>
 <span class="fc" id="L62">		int target = args.target;</span>
 <span class="fc" id="L63">		IntToDoubleFunction heuristic = args.heuristic;</span>
@@ -66,7 +66,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L66" title="All 2 branches covered.">		if (algo instanceof ShortestPathHeuristicST) {</span>
 <span class="fc" id="L67">			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);</span>
 <span class="pc bpc" id="L68" title="1 of 2 branches missed.">		} else if (algo instanceof ShortestPathST) {</span>
-<span class="fc" id="L69">			result = ((ShortestPathST) algo).computeShortestPath(g, w, source, target);</span>
+<span class="fc" id="L69">			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));</span>
 		} else {
 <span class="nc" id="L71">			throw new IllegalArgumentException();</span>
 		}
@@ -95,8 +95,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L95">			Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L96">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L98">				Graph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
-<span class="fc" id="L99">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L98">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
+<span class="fc" id="L99">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L100">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L101">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L102">				int target = vs[rand.nextInt(vs.length)];</span>
@@ -138,8 +138,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L138">			Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L139">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L141">				Graph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
-<span class="fc" id="L142">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L141">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
+<span class="fc" id="L142">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L143">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L144">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L145">				int target = vs[rand.nextInt(vs.length)];</span>
@@ -182,8 +182,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L182">			Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L183">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L184" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L185">				Graph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
-<span class="fc" id="L186">				WeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L185">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
+<span class="fc" id="L186">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
 <span class="fc" id="L187">				int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L188">				int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L189">				int target = vs[rand.nextInt(vs.length)];</span>
@@ -204,13 +204,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static class GraphArgs {
-		final Graph g;
-		final WeightFunctionInt w;
+		final IntGraph g;
+		final IWeightFunctionInt w;
 		final int source;
 		final int target;
 		final IntToDoubleFunction heuristic;
 
-<span class="fc" id="L213">		GraphArgs(Graph g, WeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
+<span class="fc" id="L213">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
 <span class="fc" id="L214">			this.g = g;</span>
 <span class="fc" id="L215">			this.w = w;</span>
 <span class="fc" id="L216">			this.source = source;</span>
@@ -219,17 +219,17 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L219">		}</span>
 	}
 
-	private static IntToDoubleFunction randAdmissibleHeuristic(Graph g, WeightFunction w, int target, long seed) {
+	private static IntToDoubleFunction randAdmissibleHeuristic(IntGraph g, IWeightFunction w, int target, long seed) {
 <span class="fc" id="L223">		Random rand = new Random(seed);</span>
 <span class="fc bfc" id="L224" title="All 2 branches covered.">		if (g.isDirected())</span>
 <span class="fc" id="L225">			g = g.reverseView();</span>
 
-<span class="fc" id="L227">		WeightsDouble w0 = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc" id="L227">		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
 <span class="fc bfc" id="L228" title="All 2 branches covered.">		for (int e : g.edges())</span>
 <span class="fc" id="L229">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
 
-		ShortestPathSingleSource.Result ssspRes =
-<span class="fc" id="L232">				ShortestPathSingleSource.newInstance().computeShortestPaths(g, w0, target);</span>
+		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
+<span class="fc" id="L232">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
 <span class="fc" id="L233">		return ssspRes::distance;</span>
 	}
 

@@ -21,49 +21,49 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsObj &lt;E&gt; extends Weights&lt;E&gt;  {
+public interface WeightsObj&lt;K , T&gt; extends Weights&lt;K, T&gt;  {
 
 	/**
-	 * Get the weight associated with the given id.
+	 * Get the weight associated with the given element.
 	 *
-	 * @param  id an id of edge/vertex.
-	 * @return    the weight associated with the given id.
+	 * @param  element an element (edge/vertex).
+	 * @return    the weight associated with the given element.
 	 */
-	public E get(int id);
+	public T get(K element);
 
 	@Deprecated
 	@Override
-	default E getAsObj(int id) {
-<span class="fc" id="L37">		return get(id);</span>
+	default T getAsObj(K element) {
+<span class="nc" id="L37">		return get(element);</span>
 	}
 
 	/**
-	 * Set the weight associated with the given id.
+	 * Set the weight associated with the given element.
 	 *
-	 * @param id     an id of edge/vertex
-	 * @param weight new weight that will be associated with the given id
+	 * @param  element an element (edge/vertex).
+	 * @param weight new weight that will be associated with the given element
 	 */
-	public void set(int id, E weight);
+	public void set(K element, T weight);
 
 	@Deprecated
 	@Override
-	default void setAsObj(int id, E weight) {
-<span class="fc" id="L51">		set(id, weight);</span>
-<span class="fc" id="L52">	}</span>
+	default void setAsObj(K element, T weight) {
+<span class="nc" id="L51">		set(element, weight);</span>
+<span class="nc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
 	 * &lt;p&gt;
-	 * The default weight is the weight associated with all ids that were not explicitly set using
-	 * {@link #set(int, Object)}.
+	 * The default weight is the weight associated with all elements that were not explicitly set using
+	 * {@link #set(Object, Object)}.
 	 *
 	 * @return the default weight of this weights container.
 	 */
-	public E defaultWeight();
+	public T defaultWeight();
 
 	@Deprecated
 	@Override
-	default E defaultWeightAsObj() {
+	default T defaultWeightAsObj() {
 <span class="fc" id="L67">		return defaultWeight();</span>
 	}
 

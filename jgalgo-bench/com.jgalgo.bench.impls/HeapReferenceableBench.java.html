@@ -41,8 +41,8 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -72,9 +72,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L72">		Random rand = new Random(seedGen.nextSeed());</span>
 <span class="fc" id="L73">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L75">			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)</span>
+<span class="fc" id="L75">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)</span>
 <span class="fc" id="L76">					.selfEdges(true).cycles(true).connected(false).build();</span>
-<span class="fc" id="L77">			WeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L77">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 <span class="fc" id="L78">			int[] vs = g.vertices().toIntArray();</span>
 <span class="fc" id="L79">			int source = vs[rand.nextInt(vs.length)];</span>
 <span class="fc" id="L80">			graphs.add(new GraphArgs(g, w, source));</span>
@@ -87,89 +87,91 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		/* SSSP */
 		ShortestPathSingleSource ssspAlgo =
 <span class="fc" id="L89">				ShortestPathSingleSource.newBuilder().setOption(&quot;heap-builder&quot;, heapBuilder).build();</span>
-<span class="fc" id="L90">		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(args.g, args.w, args.source);</span>
-<span class="fc" id="L91">		blackhole.consume(ssspRes);</span>
+<span class="fc" id="L90">		ShortestPathSingleSource.IResult ssspRes =</span>
+<span class="fc" id="L91">				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
+<span class="fc" id="L92">		blackhole.consume(ssspRes);</span>
 
 		/* Prim MST */
-<span class="fc" id="L94">		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().setOption(&quot;heap-builder&quot;, heapBuilder).build();</span>
-<span class="fc" id="L95">		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);</span>
-<span class="fc" id="L96">		blackhole.consume(mst);</span>
-<span class="fc" id="L97">	}</span>
+<span class="fc" id="L95">		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().setOption(&quot;heap-builder&quot;, heapBuilder).build();</span>
+<span class="fc" id="L96">		MinimumSpanningTree.IResult mst =</span>
+<span class="fc" id="L97">				(MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);</span>
+<span class="fc" id="L98">		blackhole.consume(mst);</span>
+<span class="fc" id="L99">	}</span>
 
 	@Benchmark
 	public void Pairings(Blackhole blackhole) {
-<span class="fc" id="L101">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;pairing&quot;), blackhole);</span>
-<span class="fc" id="L102">	}</span>
+<span class="fc" id="L103">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;pairing&quot;), blackhole);</span>
+<span class="fc" id="L104">	}</span>
 
 	@Benchmark
 	public void PairingWithoutPrimitives(Blackhole blackhole) {
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-<span class="fc" id="L107">		HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder = new HeapReferenceable.Builder&lt;&gt;() {</span>
+<span class="fc" id="L109">		HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder = new HeapReferenceable.Builder&lt;&gt;() {</span>
 
 			@Override
 			public HeapReferenceable&lt;Object, Object&gt; build(Comparator&lt;? super Object&gt; cmp) {
-<span class="fc" id="L111">				return HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;pairing&quot;).keysTypeObj().valuesTypeObj()</span>
-<span class="fc" id="L112">						.build(cmp);</span>
+<span class="fc" id="L113">				return HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;pairing&quot;).keysTypeObj().valuesTypeObj()</span>
+<span class="fc" id="L114">						.build(cmp);</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder keysTypeObj() {
-<span class="nc" id="L117">				return this;</span>
+<span class="nc" id="L119">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
-<span class="fc" id="L122">				return this;</span>
+<span class="fc" id="L124">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypeObj() {
-<span class="nc" id="L127">				return this;</span>
+<span class="nc" id="L129">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
-<span class="fc" id="L132">				return this;</span>
+<span class="fc" id="L134">				return this;</span>
 			}
 
 			@Override
 			public HeapReferenceable.Builder valuesTypeVoid() {
-<span class="nc" id="L137">				return this;</span>
+<span class="nc" id="L139">				return this;</span>
 			}
 		};
-<span class="fc" id="L140">		benchHeap(heapBuilder, blackhole);</span>
-<span class="fc" id="L141">	}</span>
+<span class="fc" id="L142">		benchHeap(heapBuilder, blackhole);</span>
+<span class="fc" id="L143">	}</span>
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-<span class="fc" id="L145">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;fibonacci&quot;), blackhole);</span>
-<span class="fc" id="L146">	}</span>
+<span class="fc" id="L147">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;fibonacci&quot;), blackhole);</span>
+<span class="fc" id="L148">	}</span>
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-<span class="fc" id="L150">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;binomial&quot;), blackhole);</span>
-<span class="fc" id="L151">	}</span>
+<span class="fc" id="L152">		benchHeap(HeapReferenceable.newBuilder().setOption(&quot;impl&quot;, &quot;binomial&quot;), blackhole);</span>
+<span class="fc" id="L153">	}</span>
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-<span class="fc" id="L155">		benchHeap(BinarySearchTree.newBuilder().setOption(&quot;impl&quot;, &quot;red-black&quot;), blackhole);</span>
-<span class="fc" id="L156">	}</span>
+<span class="fc" id="L157">		benchHeap(BinarySearchTree.newBuilder().setOption(&quot;impl&quot;, &quot;red-black&quot;), blackhole);</span>
+<span class="fc" id="L158">	}</span>
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-<span class="fc" id="L160">		benchHeap(BinarySearchTree.newBuilder().setOption(&quot;impl&quot;, &quot;splay&quot;), blackhole);</span>
-<span class="fc" id="L161">	}</span>
+<span class="fc" id="L162">		benchHeap(BinarySearchTree.newBuilder().setOption(&quot;impl&quot;, &quot;splay&quot;), blackhole);</span>
+<span class="fc" id="L163">	}</span>
 
 	private static class GraphArgs {
-		final Graph g;
-		final WeightFunctionInt w;
+		final IntGraph g;
+		final IWeightFunctionInt w;
 		final int source;
 
-<span class="fc" id="L168">		GraphArgs(Graph g, WeightFunctionInt w, int source) {</span>
-<span class="fc" id="L169">			this.g = g;</span>
-<span class="fc" id="L170">			this.w = w;</span>
-<span class="fc" id="L171">			this.source = source;</span>
-<span class="fc" id="L172">		}</span>
+<span class="fc" id="L170">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {</span>
+<span class="fc" id="L171">			this.g = g;</span>
+<span class="fc" id="L172">			this.w = w;</span>
+<span class="fc" id="L173">			this.source = source;</span>
+<span class="fc" id="L174">		}</span>
 	}
 
 }

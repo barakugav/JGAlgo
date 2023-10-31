@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
@@ -43,7 +43,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 <span class="fc" id="L43">	CyclesFinderTarjan() {}</span>
 
 	@Override
-	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
+	Iterator&lt;IPath&gt; findAllCycles(IndexGraph g) {
 <span class="fc" id="L47">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L48">		return new Iterator&lt;&gt;() {</span>
 
@@ -52,7 +52,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 <span class="fc" id="L52">			final IntArrayList path = new IntArrayList();</span>
 <span class="fc" id="L53">			final IntArrayList markedStack = new IntArrayList();</span>
 <span class="fc" id="L54">			final BitSet isMarked = new BitSet(n);</span>
-<span class="fc" id="L55">			final Stack&lt;EdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L55">			final Stack&lt;IEdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
 			/**
 			 * In the paper, there is a boolean flag 'f' in each recursive call of the backtrack function. The flag is
 			 * set to true if a cycle was found in the current function call or its successors calls. This invariant
@@ -61,7 +61,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			 * to the store depth, we decrease it by one.
 			 */
 <span class="fc" id="L63">			int cycleFoundDepth = -1;</span>
-			Path nextCycle;
+			IPath nextCycle;
 
 			{
 <span class="fc" id="L67">				isMarked.set(startV);</span>
@@ -78,9 +78,9 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 				}
 				for (;;) {
 <span class="fc bfc" id="L80" title="All 2 branches covered.">					currentStartVLoop: while (!edgeIterStack.isEmpty()) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">						for (EdgeIter it = edgeIterStack.top(); it.hasNext();) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">						for (IEdgeIter it = edgeIterStack.top(); it.hasNext();) {</span>
 <span class="fc" id="L82">							int e = it.nextInt();</span>
-<span class="fc" id="L83">							int v = it.target();</span>
+<span class="fc" id="L83">							int v = it.targetInt();</span>
 <span class="fc bfc" id="L84" title="All 2 branches covered.">							if (v &lt; startV)</span>
 <span class="fc" id="L85">								continue;</span>
 <span class="fc bfc" id="L86" title="All 2 branches covered.">							if (v == startV) {</span>
@@ -141,9 +141,9 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			}
 
 			@Override
-			public Path next() {
+			public IPath next() {
 <span class="fc" id="L145">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L146">				Path ret = nextCycle;</span>
+<span class="fc" id="L146">				IPath ret = nextCycle;</span>
 <span class="fc" id="L147">				advance();</span>
 <span class="fc" id="L148">				return ret;</span>
 			}

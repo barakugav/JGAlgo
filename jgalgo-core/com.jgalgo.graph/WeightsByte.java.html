@@ -21,41 +21,41 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsByte  extends Weights&lt;Byte&gt; , WeightFunctionInt {
+public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFunctionInt&lt;K&gt; {
 
 	/**
-	 * Get the weight associated with the given id.
+	 * Get the weight associated with the given element.
 	 *
-	 * @param  id an id of edge/vertex.
-	 * @return    the weight associated with the given id.
+	 * @param  element an element (edge/vertex).
+	 * @return    the weight associated with the given element.
 	 */
-	public byte get(int id);
+	public byte get(K element);
 
 	@Deprecated
 	@Override
-	default Byte getAsObj(int id) {
-<span class="fc" id="L37">		return Byte.valueOf(get(id));</span>
+	default Byte getAsObj(K element) {
+<span class="nc" id="L37">		return Byte.valueOf(get(element));</span>
 	}
 
 	/**
-	 * Set the weight associated with the given id.
+	 * Set the weight associated with the given element.
 	 *
-	 * @param id     an id of edge/vertex
-	 * @param weight new weight that will be associated with the given id
+	 * @param  element an element (edge/vertex).
+	 * @param weight new weight that will be associated with the given element
 	 */
-	public void set(int id, byte weight);
+	public void set(K element, byte weight);
 
 	@Deprecated
 	@Override
-	default void setAsObj(int id, Byte weight) {
-<span class="fc" id="L51">		set(id, weight.byteValue());</span>
-<span class="fc" id="L52">	}</span>
+	default void setAsObj(K element, Byte weight) {
+<span class="nc" id="L51">		set(element, weight.byteValue());</span>
+<span class="nc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
 	 * &lt;p&gt;
-	 * The default weight is the weight associated with all ids that were not explicitly set using
-	 * {@link #set(int, byte)}.
+	 * The default weight is the weight associated with all elements that were not explicitly set using
+	 * {@link #set(Object, byte)}.
 	 *
 	 * @return the default weight of this weights container.
 	 */
@@ -74,8 +74,8 @@ public interface WeightsByte  extends Weights&lt;Byte&gt; , WeightFunctionInt {
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
-	default int weightInt(int id) {
-<span class="nc" id="L78">		return get(id);</span>
+	default int weightInt(K element) {
+<span class="nc" id="L78">		return get(element);</span>
 	}
 
 

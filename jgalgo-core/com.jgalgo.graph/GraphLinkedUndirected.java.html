@@ -104,13 +104,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 <span class="fc" id="L104">	}</span>
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L108">		checkVertex(source);</span>
 <span class="fc" id="L109">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L114">		checkVertex(target);</span>
 <span class="fc" id="L115">		return new EdgeSetIn(target);</span>
 	}
@@ -274,13 +274,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 <span class="fc" id="L278">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L279">			super(source);</span>
 <span class="fc" id="L280">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L284">			return new EdgeIterOut(source, edges[source]);</span>
 		}
 
@@ -290,13 +290,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 <span class="fc" id="L294">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L295">			super(target);</span>
 <span class="fc" id="L296">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L300">			return new EdgeIterIn(target, edges[target]);</span>
 		}
 
@@ -321,12 +321,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L325">			return source;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L330">			int u0 = last.source, v0 = last.target;</span>
 <span class="fc bfc" id="L331" title="All 2 branches covered.">			return source == u0 ? v0 : u0;</span>
 		}
@@ -347,13 +347,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L351">			int u0 = last.source, v0 = last.target;</span>
 <span class="fc bfc" id="L352" title="All 2 branches covered.">			return target == u0 ? v0 : u0;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L357">			return target;</span>
 		}
 	}

@@ -120,7 +120,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 <span class="fc" id="L120">		super.clearEdges();</span>
 <span class="fc" id="L121">	}</span>
 
-	private abstract class EdgeIterBase implements EdgeIter {
+	private abstract class EdgeIterBase implements IEdgeIter {
 
 		private final int[] edges;
 		private int count;
@@ -144,7 +144,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L148">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L149">			return edges[idx];</span>
 		}
@@ -174,7 +174,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 <span class="fc" id="L174">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L178">			return source;</span>
 		}
 	}
@@ -189,7 +189,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 <span class="fc" id="L189">		}</span>
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L193">			return target;</span>
 		}
 	}

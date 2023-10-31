@@ -16,24 +16,34 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2ObjFunc;
 import com.jgalgo.internal.util.Range;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
-<span class="nc" id="L34">class VertexPartitions {</span>
+<span class="pc" id="L44">class VertexPartitions {</span>
 
-<span class="fc" id="L36">	static class ImplIndex implements VertexPartition {</span>
+<span class="fc" id="L46">	static class Impl implements IVertexPartition {</span>
 		final IndexGraph g;
 		private final int blockNum;
 		private final int[] vertexToBlock;
@@ -41,276 +51,416 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 		private IntSet[] blockEdges;
 		private BiInt2ObjFunc&lt;IntSet&gt; crossEdges;
 
-<span class="fc" id="L44">		ImplIndex(IndexGraph g, int blockNum, int[] vertexToBlock) {</span>
-<span class="fc" id="L45">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L46">			this.blockNum = blockNum;</span>
-<span class="fc" id="L47">			this.vertexToBlock = Objects.requireNonNull(vertexToBlock);</span>
-<span class="fc" id="L48">		}</span>
-
-		@Override
-		public int vertexBlock(int vertex) {
-<span class="fc" id="L52">			return vertexToBlock[vertex];</span>
-		}
+<span class="fc" id="L54">		Impl(IndexGraph g, int blockNum, int[] vertexToBlock) {</span>
+<span class="fc" id="L55">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L56">			this.blockNum = blockNum;</span>
+<span class="fc" id="L57">			this.vertexToBlock = Objects.requireNonNull(vertexToBlock);</span>
+<span class="fc" id="L58">		}</span>
 
 		@Override
 		public int numberOfBlocks() {
-<span class="fc" id="L57">			return blockNum;</span>
+<span class="fc" id="L62">			return blockNum;</span>
+		}
+
+		@Override
+		public int vertexBlock(int vertex) {
+<span class="fc" id="L67">			return vertexToBlock[vertex];</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L62">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
-<span class="nc" id="L63">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L72">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
+<span class="nc" id="L73">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 
 		@Override
 		public IntSet blockVertices(int block) {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			if (blockVertices == null) {</span>
-<span class="fc" id="L69">				final int n = vertexToBlock.length;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (blockVertices == null) {</span>
+<span class="fc" id="L79">				final int n = vertexToBlock.length;</span>
 
-<span class="fc" id="L71">				int[] blockSize = new int[blockNum + 1];</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L73">					blockSize[vertexToBlock[v]]++;</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">				for (int s = 0, b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L75">					int k = blockSize[b];</span>
-<span class="fc" id="L76">					blockSize[b] = s;</span>
-<span class="fc" id="L77">					s += k;</span>
+<span class="fc" id="L81">				int[] blockSize = new int[blockNum + 1];</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L83">					blockSize[vertexToBlock[v]]++;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				for (int s = 0, b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L85">					int k = blockSize[b];</span>
+<span class="fc" id="L86">					blockSize[b] = s;</span>
+<span class="fc" id="L87">					s += k;</span>
 				}
-<span class="fc" id="L79">				int[] sortedVertices = new int[n];</span>
-<span class="fc" id="L80">				int[] blockOffset = blockSize;</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L82">					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
-<span class="fc" id="L84">					blockOffset[b] = blockOffset[b - 1];</span>
-<span class="fc" id="L85">				blockOffset[0] = 0;</span>
+<span class="fc" id="L89">				int[] sortedVertices = new int[n];</span>
+<span class="fc" id="L90">				int[] blockOffset = blockSize;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L92">					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
+<span class="fc" id="L94">					blockOffset[b] = blockOffset[b - 1];</span>
+<span class="fc" id="L95">				blockOffset[0] = 0;</span>
 
-<span class="fc" id="L87">				blockVertices = new IntSet[blockNum];</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L89">					final int b0 = b;</span>
-<span class="fc" id="L90">					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {</span>
+<span class="fc" id="L97">				blockVertices = new IntSet[blockNum];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L99">					final int b0 = b;</span>
+<span class="fc" id="L100">					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="nc bnc" id="L93" title="All 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; vertexToBlock[v] == b0;</span>
+<span class="nc bnc" id="L103" title="All 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; vertexToBlock[v] == b0;</span>
 						}
 					};
 				}
 			}
-<span class="fc" id="L98">			return blockVertices[block];</span>
+<span class="fc" id="L108">			return blockVertices[block];</span>
 		}
 
 		@Override
 		public IntSet blockEdges(int block) {
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (blockEdges == null) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (blockEdges == null) {</span>
 
-<span class="fc" id="L105">				int[] blockSize = new int[blockNum + 1];</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L107">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
-<span class="fc" id="L108">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">					if (b1 == b2)</span>
-<span class="fc" id="L110">						blockSize[b1]++;</span>
+<span class="fc" id="L115">				int[] blockSize = new int[blockNum + 1];</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L117">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
+<span class="fc" id="L118">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">					if (b1 == b2)</span>
+<span class="fc" id="L120">						blockSize[b1]++;</span>
 				}
 
-<span class="fc" id="L113">				int innerEdgesCount = 0;</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L115">					int k = blockSize[b];</span>
-<span class="fc" id="L116">					blockSize[b] = innerEdgesCount;</span>
-<span class="fc" id="L117">					innerEdgesCount += k;</span>
+<span class="fc" id="L123">				int innerEdgesCount = 0;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L125">					int k = blockSize[b];</span>
+<span class="fc" id="L126">					blockSize[b] = innerEdgesCount;</span>
+<span class="fc" id="L127">					innerEdgesCount += k;</span>
 				}
-<span class="fc" id="L119">				int[] sortedEdges = new int[innerEdgesCount];</span>
-<span class="fc" id="L120">				int[] blockOffset = blockSize;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L122">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
-<span class="fc" id="L123">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (b1 == b2)</span>
-<span class="fc" id="L125">						sortedEdges[blockOffset[b1]++] = e;</span>
+<span class="fc" id="L129">				int[] sortedEdges = new int[innerEdgesCount];</span>
+<span class="fc" id="L130">				int[] blockOffset = blockSize;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L132">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
+<span class="fc" id="L133">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					if (b1 == b2)</span>
+<span class="fc" id="L135">						sortedEdges[blockOffset[b1]++] = e;</span>
 				}
-<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
-<span class="fc" id="L128">					blockOffset[b] = blockOffset[b - 1];</span>
-<span class="fc" id="L129">				blockOffset[0] = 0;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
+<span class="fc" id="L138">					blockOffset[b] = blockOffset[b - 1];</span>
+<span class="fc" id="L139">				blockOffset[0] = 0;</span>
 
-<span class="fc" id="L131">				final int m = g.edges().size();</span>
-<span class="fc" id="L132">				blockEdges = new IntSet[blockNum];</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L134">					final int b0 = b;</span>
-<span class="fc" id="L135">					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {</span>
+<span class="fc" id="L141">				final int m = g.edges().size();</span>
+<span class="fc" id="L142">				blockEdges = new IntSet[blockNum];</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L144">					final int b0 = b;</span>
+<span class="fc" id="L145">					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {</span>
 						@Override
 						public boolean contains(int e) {
-<span class="nc bnc" id="L138" title="All 6 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; m &amp;&amp; vertexToBlock[g.edgeSource(e)] == b0</span>
-<span class="nc bnc" id="L139" title="All 2 branches missed.">									&amp;&amp; vertexToBlock[g.edgeSource(e)] == b0;</span>
+<span class="nc bnc" id="L148" title="All 6 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; m &amp;&amp; vertexToBlock[g.edgeSource(e)] == b0</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">									&amp;&amp; vertexToBlock[g.edgeSource(e)] == b0;</span>
 						}
 					};
 				}
 			}
-<span class="fc" id="L144">			return blockEdges[block];</span>
+<span class="fc" id="L154">			return blockEdges[block];</span>
 		}
 
 		@Override
 		public IntSet crossEdges(int block1, int block2) {
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (crossEdges == null) {</span>
-<span class="fc" id="L150">				final int m = g.edges().size();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (crossEdges == null) {</span>
+<span class="fc" id="L160">				final int m = g.edges().size();</span>
 
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				if (blockNum * blockNum &lt; m * 4) {</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">				if (blockNum * blockNum &lt; m * 4) {</span>
 					/* number of blocks is not too high, use 2D table */
 
-<span class="fc" id="L155">					int[][] crossEdgesNum = new int[blockNum][blockNum];</span>
-<span class="fc" id="L156">					IntSet[][] crossEdgesMatrix = new IntSet[blockNum][blockNum];</span>
+<span class="fc" id="L165">					int[][] crossEdgesNum = new int[blockNum][blockNum];</span>
+<span class="fc" id="L166">					IntSet[][] crossEdgesMatrix = new IntSet[blockNum][blockNum];</span>
 
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (g.isDirected()) {</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L160">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc" id="L161">							crossEdgesNum[b1][b2]++;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">					if (g.isDirected()) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L170">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc" id="L171">							crossEdgesNum[b1][b2]++;</span>
 						}
 					} else {
-<span class="fc bfc" id="L164" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L165">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc" id="L166">							crossEdgesNum[b1][b2]++;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">							if (b1 != b2)</span>
-<span class="fc" id="L168">								crossEdgesNum[b2][b1]++;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L175">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc" id="L176">							crossEdgesNum[b1][b2]++;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">							if (b1 != b2)</span>
+<span class="fc" id="L178">								crossEdgesNum[b2][b1]++;</span>
 						}
 					}
-<span class="fc" id="L171">					int crossNumTotal = 0;</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
-<span class="fc" id="L174">							int k = crossEdgesNum[b1][b2];</span>
-<span class="fc" id="L175">							crossEdgesNum[b1][b2] = crossNumTotal;</span>
-<span class="fc" id="L176">							crossNumTotal += k;</span>
+<span class="fc" id="L181">					int crossNumTotal = 0;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
+<span class="fc" id="L184">							int k = crossEdgesNum[b1][b2];</span>
+<span class="fc" id="L185">							crossEdgesNum[b1][b2] = crossNumTotal;</span>
+<span class="fc" id="L186">							crossNumTotal += k;</span>
 						}
 					}
 
-<span class="fc" id="L180">					int[] sortedEdges = new int[crossNumTotal];</span>
-<span class="fc" id="L181">					int[][] crossEdgesOffset = crossEdgesNum;</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">					if (g.isDirected()) {</span>
-<span class="pc bnc" id="L183" title="All 2 branches missed.">						assert crossNumTotal == m;</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L185">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc" id="L186">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
+<span class="fc" id="L190">					int[] sortedEdges = new int[crossNumTotal];</span>
+<span class="fc" id="L191">					int[][] crossEdgesOffset = crossEdgesNum;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">					if (g.isDirected()) {</span>
+<span class="pc bnc" id="L193" title="All 2 branches missed.">						assert crossNumTotal == m;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L195">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc" id="L196">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
 						}
 
 					} else {
-<span class="pc bnc" id="L190" title="All 4 branches missed.">						assert crossNumTotal &gt;= m &amp;&amp; crossNumTotal &lt;= 2 * m;</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L192">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="fc" id="L193">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">							if (b1 != b2)</span>
-<span class="fc" id="L195">								sortedEdges[crossEdgesOffset[b2][b1]++] = e;</span>
+<span class="pc bnc" id="L200" title="All 4 branches missed.">						assert crossNumTotal &gt;= m &amp;&amp; crossNumTotal &lt;= 2 * m;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L202">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="fc" id="L203">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">							if (b1 != b2)</span>
+<span class="fc" id="L205">								sortedEdges[crossEdgesOffset[b2][b1]++] = e;</span>
 						}
 					}
 
-<span class="fc bfc" id="L199" title="All 2 branches covered.">					for (int b1 = blockNum - 1; b1 &gt;= 0; b1--) {</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">						for (int b2 = blockNum - 1; b2 &gt;= 0; b2--) {</span>
-<span class="fc bfc" id="L201" title="All 4 branches covered.">							if (b1 == 0 &amp;&amp; b2 == 0)</span>
-<span class="fc" id="L202">								continue;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">					for (int b1 = blockNum - 1; b1 &gt;= 0; b1--) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">						for (int b2 = blockNum - 1; b2 &gt;= 0; b2--) {</span>
+<span class="fc bfc" id="L211" title="All 4 branches covered.">							if (b1 == 0 &amp;&amp; b2 == 0)</span>
+<span class="fc" id="L212">								continue;</span>
 							int p1, p2;
-<span class="fc bfc" id="L204" title="All 2 branches covered.">							if (b2 &gt; 0) {</span>
-<span class="fc" id="L205">								p1 = b1;</span>
-<span class="fc" id="L206">								p2 = b2 - 1;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">							if (b2 &gt; 0) {</span>
+<span class="fc" id="L215">								p1 = b1;</span>
+<span class="fc" id="L216">								p2 = b2 - 1;</span>
 							} else {
-<span class="fc" id="L208">								p1 = b1 - 1;</span>
-<span class="fc" id="L209">								p2 = blockNum - 1;</span>
+<span class="fc" id="L218">								p1 = b1 - 1;</span>
+<span class="fc" id="L219">								p2 = blockNum - 1;</span>
 							}
-<span class="fc" id="L211">							crossEdgesNum[b1][b2] = crossEdgesNum[p1][p2];</span>
+<span class="fc" id="L221">							crossEdgesNum[b1][b2] = crossEdgesNum[p1][p2];</span>
 						}
 					}
-<span class="fc" id="L214">					crossEdgesNum[0][0] = 0;</span>
+<span class="fc" id="L224">					crossEdgesNum[0][0] = 0;</span>
 
-<span class="fc bfc" id="L216" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
-<span class="fc" id="L218">							int begin = crossEdgesNum[b1][b2], end;</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">							if (b2 &lt; blockNum - 1) {</span>
-<span class="fc" id="L220">								end = crossEdgesNum[b1][b2 + 1];</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">							} else if (b1 &lt; blockNum - 1) {</span>
-<span class="fc" id="L222">								end = crossEdgesNum[b1 + 1][0];</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
+<span class="fc" id="L228">							int begin = crossEdgesNum[b1][b2], end;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">							if (b2 &lt; blockNum - 1) {</span>
+<span class="fc" id="L230">								end = crossEdgesNum[b1][b2 + 1];</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">							} else if (b1 &lt; blockNum - 1) {</span>
+<span class="fc" id="L232">								end = crossEdgesNum[b1 + 1][0];</span>
 							} else {
-<span class="fc" id="L224">								end = crossNumTotal;</span>
+<span class="fc" id="L234">								end = crossNumTotal;</span>
 							}
-<span class="fc" id="L226">							crossEdgesMatrix[b1][b2] = ImmutableIntArraySet.withNaiveContains(sortedEdges, begin, end);</span>
+<span class="fc" id="L236">							crossEdgesMatrix[b1][b2] = ImmutableIntArraySet.withNaiveContains(sortedEdges, begin, end);</span>
 						}
 					}
-<span class="fc" id="L229">					crossEdges = (b1, b2) -&gt; crossEdgesMatrix[b1][b2];</span>
+<span class="fc" id="L239">					crossEdges = (b1, b2) -&gt; crossEdgesMatrix[b1][b2];</span>
 
-<span class="fc" id="L231">				} else {</span>
+<span class="fc" id="L241">				} else {</span>
 					/* number of blocks is high, use hashtable */
-<span class="nc" id="L233">					Long2ObjectOpenHashMap&lt;int[]&gt; map = new Long2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L234" title="All 2 branches missed.">					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longPack : (b1, b2) -&gt; {</span>
-<span class="nc bnc" id="L235" title="All 2 branches missed.">						if (b1 &lt; b2) {</span>
-<span class="nc" id="L236">							int temp = b1;</span>
-<span class="nc" id="L237">							b1 = b2;</span>
-<span class="nc" id="L238">							b2 = temp;</span>
+<span class="nc" id="L243">					Long2ObjectOpenHashMap&lt;int[]&gt; map = new Long2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longPack : (b1, b2) -&gt; {</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">						if (b1 &lt; b2) {</span>
+<span class="nc" id="L246">							int temp = b1;</span>
+<span class="nc" id="L247">							b1 = b2;</span>
+<span class="nc" id="L248">							b2 = temp;</span>
 						}
-<span class="nc" id="L240">						return JGAlgoUtils.longPack(b1, b2);</span>
+<span class="nc" id="L250">						return JGAlgoUtils.longPack(b1, b2);</span>
 					};
-<span class="nc bnc" id="L242" title="All 2 branches missed.">					for (int e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L243">						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
-<span class="nc" id="L244">						long key = buildKey.apply(b1, b2);</span>
-<span class="nc" id="L245">						int[] arr = map.computeIfAbsent(key, k -&gt; new int[2]);</span>
-<span class="nc" id="L246">						int arrSize = arr[0] + 1;</span>
-<span class="nc bnc" id="L247" title="All 2 branches missed.">						if (arrSize == arr.length) {</span>
-<span class="nc" id="L248">							arr = Arrays.copyOf(arr, arr.length * 2);</span>
-<span class="nc" id="L249">							map.put(key, arr);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L253">						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
+<span class="nc" id="L254">						long key = buildKey.apply(b1, b2);</span>
+<span class="nc" id="L255">						int[] arr = map.computeIfAbsent(key, k -&gt; new int[2]);</span>
+<span class="nc" id="L256">						int arrSize = arr[0] + 1;</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">						if (arrSize == arr.length) {</span>
+<span class="nc" id="L258">							arr = Arrays.copyOf(arr, arr.length * 2);</span>
+<span class="nc" id="L259">							map.put(key, arr);</span>
 						}
-<span class="nc" id="L251">						arr[arrSize] = e;</span>
-<span class="nc" id="L252">						arr[0] = arrSize;</span>
+<span class="nc" id="L261">						arr[arrSize] = e;</span>
+<span class="nc" id="L262">						arr[0] = arrSize;</span>
 					}
-<span class="nc bnc" id="L254" title="All 2 branches missed.">					for (var it = map.long2ObjectEntrySet().fastIterator(); it.hasNext();) {</span>
-<span class="nc" id="L255">						var entry = it.next();</span>
-<span class="nc" id="L256">						int[] a = entry.getValue();</span>
-<span class="nc" id="L257">						int size = a[0];</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">					for (var it = map.long2ObjectEntrySet().fastIterator(); it.hasNext();) {</span>
+<span class="nc" id="L265">						var entry = it.next();</span>
+<span class="nc" id="L266">						int[] a = entry.getValue();</span>
+<span class="nc" id="L267">						int size = a[0];</span>
 						@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="nc" id="L259">						Long2ObjectMap.Entry&lt;IntSet&gt; entry0 = (Long2ObjectMap.Entry) entry;</span>
-<span class="nc" id="L260">						entry0.setValue(ImmutableIntArraySet.withNaiveContains(a, 1, size + 1));</span>
-<span class="nc" id="L261">					}</span>
+<span class="nc" id="L269">						Long2ObjectMap.Entry&lt;IntSet&gt; entry0 = (Long2ObjectMap.Entry) entry;</span>
+<span class="nc" id="L270">						entry0.setValue(ImmutableIntArraySet.withNaiveContains(a, 1, size + 1));</span>
+<span class="nc" id="L271">					}</span>
 					@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="nc" id="L263">					Long2ObjectMap&lt;IntSet&gt; crossEdgesMap = (Long2ObjectMap) map;</span>
-<span class="nc" id="L264">					crossEdgesMap.defaultReturnValue(IntSets.emptySet());</span>
-<span class="nc" id="L265">					crossEdges = (b1, b2) -&gt; crossEdgesMap.get(buildKey.apply(b1, b2));</span>
+<span class="nc" id="L273">					Long2ObjectMap&lt;IntSet&gt; crossEdgesMap = (Long2ObjectMap) map;</span>
+<span class="nc" id="L274">					crossEdgesMap.defaultReturnValue(IntSets.emptySet());</span>
+<span class="nc" id="L275">					crossEdges = (b1, b2) -&gt; crossEdgesMap.get(buildKey.apply(b1, b2));</span>
 				}
 			}
-<span class="fc" id="L268">			return crossEdges.apply(block1, block2);</span>
+<span class="fc" id="L278">			return crossEdges.apply(block1, block2);</span>
 		}
-
-	}
-
-	static class PartitionFromIndexPartition implements VertexPartition {
-
-		final VertexPartition res;
-		final IndexIdMap viMap;
-		final IndexIdMap eiMap;
-
-<span class="fc" id="L279">		PartitionFromIndexPartition(VertexPartition res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
-<span class="fc" id="L280">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L281">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L282">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L283">		}</span>
 
 		@Override
-		public int vertexBlock(int vertex) {
-<span class="fc" id="L287">			return res.vertexBlock(viMap.idToIndex(vertex));</span>
+		public IntGraph graph() {
+<span class="nc" id="L283">			return g;</span>
 		}
+
+		@Override
+		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+<span class="fc" id="L288">			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);</span>
+		}
+	}
+
+	static IntGraph blocksGraph(IndexGraph g, IVertexPartition partition, boolean parallelEdges, boolean selfEdges) {
+<span class="pc bnc" id="L293" title="All 2 branches missed.">		assert g == partition.graph();</span>
+<span class="fc" id="L294">		final int numberOfBlocks = partition.numberOfBlocks();</span>
+<span class="fc" id="L295">		final boolean directed = g.isDirected();</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">		IntGraphBuilder gb = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L297">		gb.expectedVerticesNum(numberOfBlocks);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">		for (int b = 0; b &lt; numberOfBlocks; b++)</span>
+<span class="fc" id="L299">			gb.addVertex(b);</span>
+<span class="fc" id="L300">		final int m = g.edges().size();</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">		if (parallelEdges) {</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L303">				int b1 = partition.vertexBlock(g.edgeSource(e));</span>
+<span class="fc" id="L304">				int b2 = partition.vertexBlock(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">				if (b1 != b2) {</span>
+<span class="fc" id="L306">					gb.addEdge(b1, b2, e);</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">				} else if (selfEdges) {</span>
+					// self edge
+<span class="fc" id="L309">					gb.addEdge(b1, b1, e);</span>
+				}
+			}
+		} else {
+<span class="nc" id="L313">			BitSet seen = new BitSet(numberOfBlocks);</span>
+<span class="nc" id="L314">			IntList seenList = new IntArrayList();</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">			for (int b1 = 0; b1 &lt; numberOfBlocks; b1++) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">				for (int u : partition.blockVertices(b1)) {</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L318">						int e = eit.nextInt();</span>
+<span class="nc" id="L319">						int b2 = partition.vertexBlock(eit.targetInt());</span>
+<span class="nc bnc" id="L320" title="All 8 branches missed.">						if ((!selfEdges &amp;&amp; b1 == b2) || (!directed &amp;&amp; b1 &gt; b2))</span>
+<span class="nc" id="L321">							continue;</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">						if (seen.get(b2))</span>
+<span class="nc" id="L323">							continue;</span>
+<span class="nc" id="L324">						seen.set(b2);</span>
+<span class="nc" id="L325">						seenList.add(b2);</span>
+<span class="nc" id="L326">						gb.addEdge(b1, b2, e);</span>
+<span class="nc" id="L327">					}</span>
+<span class="nc" id="L328">				}</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">				for (int s : seenList)</span>
+<span class="nc" id="L330">					seen.clear(s);</span>
+<span class="nc" id="L331">				seenList.clear();</span>
+			}
+		}
+<span class="fc" id="L334">		return gb.build();</span>
+	}
+
+<span class="fc" id="L337">	static class IntPartitionFromIndexPartition implements IVertexPartition {</span>
+
+		private final IntGraph g;
+		final IVertexPartition indexPartition;
+		final IndexIntIdMap viMap;
+		final IndexIntIdMap eiMap;
+
+<span class="fc" id="L344">		IntPartitionFromIndexPartition(IntGraph g, IVertexPartition indexPartition) {</span>
+<span class="fc" id="L345">			this.g = Objects.requireNonNull(g);</span>
+<span class="pc bnc" id="L346" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
+<span class="fc" id="L347">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
+<span class="fc" id="L348">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L349">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L350">		}</span>
 
 		@Override
 		public int numberOfBlocks() {
-<span class="fc" id="L292">			return res.numberOfBlocks();</span>
+<span class="fc" id="L354">			return indexPartition.numberOfBlocks();</span>
+		}
+
+		@Override
+		public int vertexBlock(int vertex) {
+<span class="fc" id="L359">			return indexPartition.vertexBlock(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IntSet blockVertices(int block) {
-<span class="fc" id="L297">			return IndexIdMaps.indexToIdSet(res.blockVertices(block), viMap);</span>
+<span class="fc" id="L364">			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);</span>
 		}
 
 		@Override
 		public IntSet blockEdges(int block) {
-<span class="fc" id="L302">			return IndexIdMaps.indexToIdSet(res.blockEdges(block), eiMap);</span>
+<span class="fc" id="L369">			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);</span>
 		}
 
 		@Override
 		public IntSet crossEdges(int block1, int block2) {
-<span class="fc" id="L307">			return IndexIdMaps.indexToIdSet(res.crossEdges(block1, block2), eiMap);</span>
+<span class="fc" id="L374">			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);</span>
+		}
+
+		@Override
+		public IntGraph graph() {
+<span class="nc" id="L379">			return g;</span>
+		}
+
+		@Override
+		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
+<span class="fc" id="L384">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">			IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L386">			gb.expectedVerticesNum(ig.vertices().size());</span>
+<span class="fc" id="L387">			gb.expectedEdgesNum(ig.edges().size());</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">			for (int b : ig.vertices())</span>
+<span class="fc" id="L389">				gb.addVertex(b);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			for (int e : ig.edges())</span>
+<span class="fc" id="L391">				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToIdInt(e));</span>
+<span class="fc" id="L392">			return gb.build();</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L312">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
-<span class="nc" id="L313">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L397">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
+<span class="nc" id="L398">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+		}
+	}
+
+<span class="nc" id="L402">	static class ObjPartitionFromIndexPartition&lt;V, E&gt; implements VertexPartition&lt;V, E&gt; {</span>
+
+		private final Graph&lt;V, E&gt; g;
+		final IVertexPartition indexPartition;
+		final IndexIdMap&lt;V&gt; viMap;
+		final IndexIdMap&lt;E&gt; eiMap;
+
+<span class="nc" id="L409">		ObjPartitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {</span>
+<span class="nc" id="L410">			this.g = Objects.requireNonNull(g);</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
+<span class="nc" id="L412">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
+<span class="nc" id="L413">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L414">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L415">		}</span>
+
+		@Override
+		public int numberOfBlocks() {
+<span class="nc" id="L419">			return indexPartition.numberOfBlocks();</span>
+		}
+
+		@Override
+		public int vertexBlock(V vertex) {
+<span class="nc" id="L424">			return indexPartition.vertexBlock(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public Set&lt;V&gt; blockVertices(int block) {
+<span class="nc" id="L429">			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);</span>
+		}
+
+		@Override
+		public Set&lt;E&gt; blockEdges(int block) {
+<span class="nc" id="L434">			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);</span>
+		}
+
+		@Override
+		public Set&lt;E&gt; crossEdges(int block1, int block2) {
+<span class="nc" id="L439">			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);</span>
+		}
+
+		@Override
+		public Graph&lt;V, E&gt; graph() {
+<span class="nc" id="L444">			return g;</span>
+		}
+
+		@Override
+		public Graph&lt;Integer, E&gt; blocksGraph(boolean parallelEdges, boolean selfEdges) {
+<span class="nc" id="L449">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">			GraphBuilder&lt;Integer, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="nc" id="L451">			gb.expectedVerticesNum(ig.vertices().size());</span>
+<span class="nc" id="L452">			gb.expectedEdgesNum(ig.edges().size());</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">			for (int b : ig.vertices())</span>
+<span class="nc" id="L454">				gb.addVertex(Integer.valueOf(b));</span>
+<span class="nc bnc" id="L455" title="All 2 branches missed.">			for (int e : ig.edges())</span>
+<span class="nc" id="L456">				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));</span>
+<span class="nc" id="L457">			return gb.build();</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L462">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
+<span class="nc" id="L463">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 	}
 

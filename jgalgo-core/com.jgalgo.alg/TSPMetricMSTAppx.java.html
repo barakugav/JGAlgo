@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L49">	public TSPMetricMSTAppx() {}</span>
 
 	@Override
-	Path computeShortestTour(IndexGraph g, WeightFunction w) {
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L53">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L55">			return null;</span>
@@ -59,7 +59,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-<span class="fc" id="L62">		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();</span>
+<span class="fc" id="L62">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
 <span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
 <span class="nc" id="L64">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
@@ -79,7 +79,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L79">		}</span>
 <span class="fc" id="L80">		IndexGraph g1 = g1Builder.build();</span>
 
-<span class="fc" id="L82">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
+<span class="fc" id="L82">		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
 <span class="pc bnc" id="L83" title="All 2 branches missed.">		assert cycle.edges().size() == n;</span>
 <span class="pc bnc" id="L84" title="All 2 branches missed.">		assert cycle.isCycle();</span>
 

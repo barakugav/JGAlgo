@@ -19,17 +19,17 @@ import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 
 <span class="fc" id="L25">class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {</span>
 
 <span class="fc" id="L27">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
 
 	@Override
-	EdgeCover.Result computeMinimumEdgeCover(IndexGraph g, WeightFunction w) {
+	EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 <span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (w == null)</span>
-<span class="nc" id="L32">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="nc" id="L32">			w = IWeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L33">		final int n = g.vertices().size();</span>
 <span class="fc" id="L34">		final int m = g.edges().size();</span>
 
@@ -50,11 +50,11 @@ import com.jgalgo.graph.WeightFunctionInt;
 <span class="fc" id="L50">			gb.addEdge(v * 2 + 0, v * 2 + 1);</span>
 <span class="fc" id="L51">		IndexGraph g2 = gb.build();</span>
 
-		WeightFunction w2;
+		IWeightFunction w2;
 <span class="fc" id="L54">		int[] minAdjacentEdge = new int[n];</span>
 <span class="fc" id="L55">		Arrays.fill(minAdjacentEdge, -1);</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (w instanceof WeightFunctionInt) {</span>
-<span class="fc" id="L57">			WeightFunctionInt wInt = (WeightFunctionInt) w;</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L57">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
 <span class="fc" id="L58">			int[] minAdjacentWeight = new int[n];</span>
 <span class="fc" id="L59">			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
@@ -73,7 +73,7 @@ import com.jgalgo.graph.WeightFunctionInt;
 <span class="pc bpc" id="L73" title="1 of 2 branches missed.">				if (minAdjacentEdge[v] == -1)</span>
 <span class="nc" id="L74">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="fc" id="L76">			WeightFunctionInt w2Int =</span>
+<span class="fc" id="L76">			IWeightFunctionInt w2Int =</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">					e -&gt; e &lt; vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 <span class="fc" id="L78">			w2 = w2Int;</span>
 
@@ -96,11 +96,11 @@ import com.jgalgo.graph.WeightFunctionInt;
 <span class="nc bnc" id="L96" title="All 2 branches missed.">				if (minAdjacentEdge[v] == -1)</span>
 <span class="nc" id="L97">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="nc" id="L99">			WeightFunction w0 = w;</span>
+<span class="nc" id="L99">			IWeightFunction w0 = w;</span>
 <span class="nc bnc" id="L100" title="All 2 branches missed.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 		}
 
-<span class="fc" id="L103">		Matching matching = matchingAlgo.computeMinimumWeightedPerfectMatching(g2, w2);</span>
+<span class="fc" id="L103">		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(g2, w2);</span>
 <span class="fc" id="L104">		BitSet cover = new BitSet(m);</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>

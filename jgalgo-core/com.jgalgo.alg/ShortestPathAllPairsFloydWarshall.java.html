@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -39,20 +39,20 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc" id="L39">	ShortestPathAllPairsFloydWarshall() {}</span>
 
 	@Override
-	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 <span class="fc bfc" id="L43" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L44">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L44">			w = IWeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L45">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
 	}
 
 	@Override
-	ShortestPathAllPairs.Result computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			WeightFunction w) {
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			IWeightFunction w) {
 <span class="nc" id="L52">		return computeAllShortestPaths(g, w);</span>
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, WeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L56">		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L58">			int u = g.edgeSource(e);</span>
@@ -98,7 +98,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 <span class="fc" id="L98">		return res;</span>
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, WeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeAPSPDirected(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L102">		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L104">			int u = g.edgeSource(e);</span>

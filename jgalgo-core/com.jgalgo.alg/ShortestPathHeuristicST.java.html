@@ -16,7 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.function.IntToDoubleFunction;
+import java.util.function.ToDoubleFunction;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -42,6 +45,25 @@ public interface ShortestPathHeuristicST {
 
 	/**
 	 * Compute the shortest path between two vertices in a graph.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  &lt;V&gt;        the vertices type
+	 * @param  &lt;E&gt;        the edges type
+	 * @param  g          a graph
+	 * @param  w          an edge weight function
+	 * @param  source     a source vertex
+	 * @param  target     a target vertex
+	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
+	 *                        the real distance of each vertex to the target.
+	 * @return            the short path found from {@code source} to {@code target}
+	 */
+	&lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target,
+			ToDoubleFunction&lt;V&gt; vHeuristic);
+
+	/**
+	 * Compute the shortest path between two vertices in an int graph.
 	 *
 	 * @param  g          a graph
 	 * @param  w          an edge weight function
@@ -51,7 +73,7 @@ public interface ShortestPathHeuristicST {
 	 *                        the real distance of each vertex to the target.
 	 * @return            the short path found from {@code source} to {@code target}
 	 */
-	Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
+	IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
 
 	/**
 	 * Create a new shortest path algorithm with heuristic.
@@ -62,7 +84,7 @@ public interface ShortestPathHeuristicST {
 	 * @return a default implementation of {@link ShortestPathHeuristicST}
 	 */
 	static ShortestPathHeuristicST newInstance() {
-<span class="nc" id="L65">		return newBuilder().build();</span>
+<span class="nc" id="L87">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -73,33 +95,33 @@ public interface ShortestPathHeuristicST {
 	 * @return a new builder that can build {@link ShortestPathHeuristicST} objects
 	 */
 	static ShortestPathHeuristicST.Builder newBuilder() {
-<span class="nc" id="L76">		return new ShortestPathHeuristicST.Builder() {</span>
+<span class="nc" id="L98">		return new ShortestPathHeuristicST.Builder() {</span>
 
 			private String impl;
 
 			@Override
 			public ShortestPathHeuristicST build() {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">					switch (impl) {</span>
 						case &quot;a-star&quot;:
-<span class="nc" id="L85">							return new ShortestPathAStar();</span>
+<span class="nc" id="L107">							return new ShortestPathAStar();</span>
 						default:
 							break;
 					}
 				}
-<span class="nc" id="L90">				return new ShortestPathAStar();</span>
+<span class="nc" id="L112">				return new ShortestPathAStar();</span>
 			}
 
 			@Override
 			public ShortestPathHeuristicST.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L95" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L97">						impl = (String) value;</span>
-<span class="nc" id="L98">						break;</span>
+<span class="nc" id="L119">						impl = (String) value;</span>
+<span class="nc" id="L120">						break;</span>
 					default:
-<span class="nc" id="L100">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L122">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L102">				return this;</span>
+<span class="nc" id="L124">				return this;</span>
 			}
 		};
 	}
@@ -133,7 +155,7 @@ public interface ShortestPathHeuristicST {
 		 * @return       this builder
 		 */
 		default ShortestPathHeuristicST.Builder setOption(String key, Object value) {
-<span class="nc" id="L136">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L158">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

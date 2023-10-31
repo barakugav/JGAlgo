@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L27">class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {</span>
 
 	@Override
-	TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g) {
+	TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g) {
 <span class="fc" id="L31">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L32">		int n = g.vertices().size();</span>
 <span class="fc" id="L33">		int[] inDegree = new int[n];</span>
@@ -49,9 +49,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L49" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
 <span class="fc" id="L50">			int u = queue.dequeueInt();</span>
 <span class="fc" id="L51">			topolSort[topolSortSize++] = u;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L53">				eit.nextInt();</span>
-<span class="fc" id="L54">				int v = eit.target();</span>
+<span class="fc" id="L54">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
 <span class="fc" id="L56">					queue.enqueue(v);</span>
 <span class="fc" id="L57">			}</span>
@@ -63,7 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L63">		return new Res(topolSort);</span>
 	}
 
-	private static class Res implements TopologicalOrderAlgo.Result {
+	private static class Res implements TopologicalOrderAlgo.IResult {
 
 		private final IntList orderedVertices;
 		private int[] vertexOrderIndex;

@@ -17,6 +17,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -34,14 +36,20 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
+	 * its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a directed graph
 	 * @param  w                        an edge weight function
 	 * @param  root                     vertex in the graph the spanning tree will be rooted from
 	 * @return                          all edges composing the spanning tree
 	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root);
+	public &lt;V, E&gt; MinimumSpanningTree.Result&lt;V, E&gt; computeMinimumDirectedSpanningTree(Graph&lt;V, E&gt; g,
+			WeightFunction&lt;E&gt; w, V root);
 
 	/**
 	 * Create a new directed-MST algorithm object.
@@ -52,7 +60,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a default implementation of {@link MinimumDirectedSpanningTree}
 	 */
 	static MinimumDirectedSpanningTree newInstance() {
-<span class="fc" id="L55">		return newBuilder().build();</span>
+<span class="fc" id="L63">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -63,7 +71,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
 	 */
 	static MinimumDirectedSpanningTree.Builder newBuilder() {
-<span class="fc" id="L66">		return MinimumDirectedSpanningTreeTarjan::new;</span>
+<span class="fc" id="L74">		return MinimumDirectedSpanningTreeTarjan::new;</span>
 	}
 
 	/**
@@ -95,7 +103,7 @@ public interface MinimumDirectedSpanningTree {
 		 * @return       this builder
 		 */
 		default MinimumDirectedSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc" id="L98">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L106">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

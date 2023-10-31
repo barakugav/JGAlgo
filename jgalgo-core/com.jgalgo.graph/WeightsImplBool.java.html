@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrays;
 
 <span class="nc" id="L22">class WeightsImplBool {</span>
 
-	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Boolean&gt; implements WeightsBool  {
+	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Boolean&gt; implements IWeightsBool  {
 
 		boolean[] weights;
 		final boolean defaultWeight;
@@ -125,8 +125,8 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrays;
 <span class="nc" id="L125">		}</span>
 	}
 
-	static class Mapped  extends WeightsImpl.Mapped&lt;Boolean&gt; implements WeightsBool  {
-		Mapped(WeightsImplBool.IndexImpl  weights, IndexIdMap indexMap) {
+	static class IntMapped  extends WeightsImpl.IntMapped&lt;Boolean&gt; implements IWeightsBool  {
+		IntMapped(WeightsImplBool.IndexImpl  weights, IndexIntIdMap indexMap) {
 <span class="fc" id="L130">			super(weights, indexMap);</span>
 <span class="fc" id="L131">		}</span>
 
@@ -151,29 +151,81 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrays;
 		}
 	}
 
-	static class ImmutableView  extends WeightsImpl.ImmutableView&lt;Boolean&gt; implements WeightsBool  {
-		ImmutableView(WeightsBool  w) {
-<span class="fc" id="L156">			super(w);</span>
-<span class="fc" id="L157">		}</span>
+	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Boolean&gt; implements WeightsBool&lt;K &gt; {
+		ObjMapped(WeightsImplBool.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
+<span class="nc" id="L156">			super(weights, indexMap);</span>
+<span class="nc" id="L157">		}</span>
 
 		@Override
-		WeightsBool  weights() {
-<span class="fc" id="L161">			return (WeightsBool ) super.weights();</span>
+		public WeightsImplBool.IndexImpl  weights() {
+<span class="nc" id="L161">			return (WeightsImplBool.IndexImpl ) super.weights();</span>
+		}
+
+		@Override
+		public boolean get(K id) {
+<span class="nc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
+		}
+
+		@Override
+		public void set(K id, boolean weight) {
+<span class="nc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="nc" id="L172">		}</span>
+
+		@Override
+		public boolean defaultWeight() {
+<span class="nc" id="L176">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class IntImmutableView  extends WeightsImpl.IntImmutableView&lt;Boolean&gt; implements IWeightsBool  {
+		IntImmutableView(IWeightsBool  w) {
+<span class="fc" id="L182">			super(w);</span>
+<span class="fc" id="L183">		}</span>
+
+		@Override
+		IWeightsBool  weights() {
+<span class="fc" id="L187">			return (IWeightsBool ) super.weights();</span>
 		}
 
 		@Override
 		public boolean get(int id) {
-<span class="fc" id="L166">			return weights().get(id);</span>
+<span class="fc" id="L192">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(int id, boolean weight) {
-<span class="fc" id="L171">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L197">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L176">			return weights().defaultWeight();</span>
+<span class="fc" id="L202">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Boolean&gt; implements WeightsBool &lt;K &gt; {
+		ObjImmutableView(WeightsBool &lt;K &gt; w) {
+<span class="nc" id="L208">			super(w);</span>
+<span class="nc" id="L209">		}</span>
+
+		@Override
+		WeightsBool &lt;K &gt; weights() {
+<span class="nc" id="L213">			return (WeightsBool &lt;K &gt;) super.weights();</span>
+		}
+
+		@Override
+		public boolean get(K id) {
+<span class="nc" id="L218">			return weights().get(id);</span>
+		}
+
+		@Override
+		public void set(K id, boolean weight) {
+<span class="nc" id="L223">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+		}
+
+		@Override
+		public boolean defaultWeight() {
+<span class="nc" id="L228">			return weights().defaultWeight();</span>
 		}
 	}
 

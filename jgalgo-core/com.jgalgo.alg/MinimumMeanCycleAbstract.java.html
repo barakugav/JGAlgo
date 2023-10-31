@@ -17,28 +17,43 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
-<span class="fc" id="L25">abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {</span>
+<span class="fc" id="L29">abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {</span>
 
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
-<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L30">			return computeMinimumMeanCycle((IndexGraph) g, w);</span>
+	public &lt;V, E&gt; Path&lt;V, E&gt; computeMinimumMeanCycle(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L35">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L36">			return (Path&lt;V, E&gt;) computeMinimumMeanCycle((IndexGraph) g, w0);</span>
 
-<span class="fc" id="L32">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L33">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L34">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L35">		WeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L39">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L41">			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
+<span class="fc" id="L42">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
+<span class="fc" id="L43">			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
+<span class="fc" id="L44">			return (Path&lt;V, E&gt;) PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);</span>
 
-<span class="fc" id="L37">		Path indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
-<span class="fc" id="L38">		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
+		} else {
+<span class="nc" id="L47">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L48">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L49">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L50">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="nc" id="L51">			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
+<span class="nc" id="L52">			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);</span>
+		}
 	}
 
-	abstract Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w);
+	abstract IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

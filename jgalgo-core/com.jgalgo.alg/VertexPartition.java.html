@@ -16,12 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import java.util.Set;
 import java.util.function.IntUnaryOperator;
+import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexIdMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntContainers;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
  * A partition of the vertices of a graph.
@@ -31,19 +34,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * confusion with the get/set convention.
  * &lt;p&gt;
  * The partition represent a mapping from the vertices of a graph to \(B\) blocks, each block is assigned a number in
- * range \([0,B)\). To check to which block a vertex is assigned use {@link #vertexBlock(int)}.
+ * range \([0,B)\). To check to which block a vertex is assigned use {@link #vertexBlock(Object)}.
  *
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
  */
-public interface VertexPartition {
-
-	/**
-	 * Get the block containing a vertex.
-	 *
-	 * @param  vertex a vertex in the graph
-	 * @return        index of the block containing the vertex, in range \([0, blocksNum)\)
-	 */
-	int vertexBlock(int vertex);
+public interface VertexPartition&lt;V, E&gt; {
 
 	/**
 	 * Get the number of blocks in the partition.
@@ -53,13 +50,21 @@ public interface VertexPartition {
 	int numberOfBlocks();
 
 	/**
+	 * Get the block containing a vertex.
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        index of the block containing the vertex, in range \([0, blocksNum)\)
+	 */
+	int vertexBlock(V vertex);
+
+	/**
 	 * Get all the vertices that are part of a block.
 	 *
 	 * @param  block                     index of a block
 	 * @return                           the vertices that are part of the blocks
 	 * @throws IndexOutOfBoundsException if {@code block} is not in range \([0, blocksNum)\)
 	 */
-	IntSet blockVertices(int block);
+	Set&lt;V&gt; blockVertices(int block);
 
 	/**
 	 * Get all the edges that are contained in a block.
@@ -70,7 +75,7 @@ public interface VertexPartition {
 	 * @return                           the edges that are contained in the blocks
 	 * @throws IndexOutOfBoundsException if {@code block} is not in range \([0, blocksNum)\)
 	 */
-	IntSet blockEdges(int block);
+	Set&lt;E&gt; blockEdges(int block);
 
 	/**
 	 * Get all the edges that cross between two different blocks.
@@ -83,54 +88,131 @@ public interface VertexPartition {
 	 * @param  block2 the second block
 	 * @return        the set of edges that cross between the two blocks
 	 */
-	IntSet crossEdges(int block1, int block2);
+	Set&lt;E&gt; crossEdges(int block1, int block2);
+
+	/**
+	 * Get the graph that the partition is defined on.
+	 *
+	 * @return the graph that the partition is defined on
+	 */
+	Graph&lt;V, E&gt; graph();
+
+	/**
+	 * Create a new graph that contains only the vertices and edges that are contained in a block.
+	 * &lt;p&gt;
+	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
+	 * block and edges between them.
+	 * &lt;p&gt;
+	 * The vertex and edge weights are not copied to the new sub graph. For more coping options see
+	 * {@link #blockSubGraph(int, boolean, boolean)}.
+	 *
+	 * @param  block index of a block
+	 * @return       a new graph that contains only the vertices and edges that are contained in the block
+	 */
+	default Graph&lt;V, E&gt; blockSubGraph(int block) {
+<span class="nc" id="L113">		return blockSubGraph(block, false, false);</span>
+	}
+
+	/**
+	 * Create a new graph that contains only the vertices and edges that are contained in a block with option to copy
+	 * weights.
+	 * &lt;p&gt;
+	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
+	 * block and edges between them.
+	 *
+	 * @param  block               index of a block
+	 * @param  copyVerticesWeights if {@code true} the vertices weights are copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true} the edges weights are copied to the new graph
+	 * @return                     a new graph that contains only the vertices and edges that are contained in the block
+	 */
+	default Graph&lt;V, E&gt; blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L129">		return Graphs.subGraph(graph(), blockVertices(block), blockEdges(block), copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	/**
+	 * Create a new graph representing the edges between the blocks.
+	 * &lt;p&gt;
+	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
+	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
+	 * \(0\) to \(B-1\), where \(B\) is the number of blocks in the partition. The edges of the new graph will have the
+	 * identifiers of the original edges.
+	 * &lt;p&gt;
+	 * If there are multiple edges between two blocks, multiple parallel edges will be created in the new graph.
+	 * Original edges between vertices in the same block will be ignored, instead of copied as self edges in the new
+	 * graph. For more options regarding self and parallel edges see {@link #blocksGraph(boolean, boolean)}.
+	 *
+	 * @return a new graph where each vertex is a block, and there is an edge between two blocks if there is an edge
+	 *         between two original vertices, each in a different block
+	 */
+	default Graph&lt;Integer, E&gt; blocksGraph() {
+<span class="nc" id="L148">		return blocksGraph(true, false);</span>
+	}
+
+	/**
+	 * Create a new graph representing the edges between the blocks.
+	 * &lt;p&gt;
+	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
+	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
+	 * \(0\) to \(B-1\), where \(B\) is the number of blocks in the partition. The edges of the new graph will have the
+	 * identifiers of the original edges.
+	 *
+	 * @param  parallelEdges if {@code true} multiple parallel edges will be created between two blocks if there are
+	 *                           multiple edges between them, if {@code false} only a single edge will be created, with
+	 *                           identifier of one arbitrary original edge between the blocks. This is also relevant for
+	 *                           self edges, if {@code selfEdges} is {@code true}.
+	 * @param  selfEdges     if {@code true} for each original edge between two vertices in the same block, a self edge
+	 *                           will be created in the new graph, if {@code false} such edges will be ignored
+	 * @return               a new graph where each vertex is a block, and there is an edge between two blocks if there
+	 *                       is an edge between two original vertices, each in a different block
+	 */
+	Graph&lt;Integer, E&gt; blocksGraph(boolean parallelEdges, boolean selfEdges);
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex map.
 	 * &lt;p&gt;
-	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
+	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
 	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
 	 * @param  g   the graph
 	 * @param  map a map from vertex to block index
 	 * @return     a new vertex partition
 	 */
-	static VertexPartition fromMap(Graph g, Int2IntMap map) {
-<span class="fc" id="L99">		return fromMapping(g, map::get);</span>
+	static &lt;V, E&gt; VertexPartition&lt;V, E&gt; fromMap(Graph&lt;V, E&gt; g, Object2IntMap&lt;V&gt; map) {
+<span class="nc" id="L183">		return fromMapping(g, map::getInt);</span>
 	}
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex mapping function.
 	 * &lt;p&gt;
-	 * Note that this function does not validate the input, namely it does not check that the blocks number are all the
+	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
 	 *
+	 * @param  &lt;V&gt;     the vertices type
+	 * @param  &lt;E&gt;     the edges type
 	 * @param  g       the graph
 	 * @param  mapping a mapping function that maps from a vertex to block index
 	 * @return         a new vertex partition
 	 */
-	static VertexPartition fromMapping(Graph g, IntUnaryOperator mapping) {
-<span class="fc" id="L113">		final int n = g.vertices().size();</span>
-<span class="fc" id="L114">		int[] vertexToBlock = new int[n];</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L116">			int maxBlock = -1;</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L118">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
-<span class="fc" id="L119">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
-<span class="fc" id="L121">			return new VertexPartitions.ImplIndex((IndexGraph) g, maxBlock + 1, vertexToBlock);</span>
-		} else {
-<span class="fc" id="L123">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L124">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L125">			int maxBlock = -1;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L127">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
-<span class="fc" id="L128">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
-<span class="fc" id="L130">			VertexPartition indexPartition =</span>
-<span class="fc" id="L131">					new VertexPartitions.ImplIndex(g.indexGraph(), maxBlock + 1, vertexToBlock);</span>
-<span class="fc" id="L132">			return new VertexPartitions.PartitionFromIndexPartition(indexPartition, viMap, eiMap);</span>
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; VertexPartition&lt;V, E&gt; fromMapping(Graph&lt;V, E&gt; g, ToIntFunction&lt;V&gt; mapping) {
+<span class="nc bnc" id="L200" title="All 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="nc" id="L201">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc" id="L202">			return (VertexPartition&lt;V, E&gt;) IVertexPartition.fromMapping((IntGraph) g, mapping0);</span>
 		}
+
+<span class="nc" id="L205">		final int n = g.vertices().size();</span>
+<span class="nc" id="L206">		int[] vertexToBlock = new int[n];</span>
+<span class="nc" id="L207">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L208">		int maxBlock = -1;</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L210">			vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="nc" id="L211">			maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
+		}
+
+<span class="nc" id="L214">		IVertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);</span>
+<span class="nc" id="L215">		return new VertexPartitions.ObjPartitionFromIndexPartition&lt;&gt;(g, indexPartition);</span>
 	}
 
 	/**
@@ -139,37 +221,40 @@ public interface VertexPartition {
 	 * A valid vertex partition is a mapping from each vertex to an integer number in range [0, numberOfBlocks), in
 	 * which there are not 'empty blocks', namely at least one vertex is mapped to each block.
 	 *
+	 * @param  &lt;V&gt;     the vertices type
+	 * @param  &lt;E&gt;     the edges type
 	 * @param  g       the graph
 	 * @param  mapping a mapping function that maps from a vertex to block index
 	 * @return         {@code true} if the mapping is a valid partition of the vertices of the graph, {@code false}
 	 *                 otherwise
 	 */
-	static boolean isPartition(Graph g, IntUnaryOperator mapping) {
-<span class="fc" id="L148">		final int n = g.vertices().size();</span>
-<span class="fc" id="L149">		int[] vertexToBlock = new int[n];</span>
-<span class="fc" id="L150">		int maxBlock = -1;</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L153">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
-<span class="fc" id="L154">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
-		} else {
-<span class="fc" id="L157">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L159">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
-<span class="fc" id="L160">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isPartition(Graph&lt;V, E&gt; g, ToIntFunction&lt;V&gt; mapping) {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="nc" id="L234">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc" id="L235">			return IVertexPartition.isPartition((IntGraph) g, mapping0);</span>
 		}
-<span class="fc" id="L163">		final int blockNum = maxBlock + 1;</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		if (maxBlock &gt; n)</span>
-<span class="nc" id="L165">			return false;</span>
-<span class="fc" id="L166">		BitSet seenBlocks = new BitSet(blockNum);</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		for (int b : vertexToBlock) {</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (b &lt; 0)</span>
-<span class="fc" id="L169">				return false;</span>
-<span class="fc" id="L170">			seenBlocks.set(b);</span>
+
+<span class="nc" id="L238">		final int n = g.vertices().size();</span>
+<span class="nc" id="L239">		int[] vertexToBlock = new int[n];</span>
+<span class="nc" id="L240">		int maxBlock = -1;</span>
+
+<span class="nc" id="L242">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L244">			vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="nc" id="L245">			maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
 		}
-<span class="fc bfc" id="L172" title="All 2 branches covered.">		return seenBlocks.nextClearBit(0) == blockNum;</span>
+
+<span class="nc" id="L248">		final int blockNum = maxBlock + 1;</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">		if (maxBlock &gt; n)</span>
+<span class="nc" id="L250">			return false;</span>
+<span class="nc" id="L251">		BitSet seenBlocks = new BitSet(blockNum);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">		for (int b : vertexToBlock) {</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">			if (b &lt; 0)</span>
+<span class="nc" id="L254">				return false;</span>
+<span class="nc" id="L255">			seenBlocks.set(b);</span>
+		}
+<span class="nc bnc" id="L257" title="All 2 branches missed.">		return seenBlocks.nextClearBit(0) == blockNum;</span>
 	}
 
 }

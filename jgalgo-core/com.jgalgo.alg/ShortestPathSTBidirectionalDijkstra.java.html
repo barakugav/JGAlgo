@@ -15,9 +15,9 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	@SuppressWarnings(&quot;boxing&quot;) // TODO
 	@Override
-	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target) {
+	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 <span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
 <span class="nc" id="L36">			throw new IndexOutOfBoundsException(source);</span>
 <span class="pc bpc" id="L37" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L40">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L42">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L42">			w = IWeightFunction.CardinalityWeightFunction;</span>
 
 		HeapReferenceable.Builder&lt;Double, Integer&gt; heapBuilder =
 <span class="fc" id="L45">				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
@@ -73,9 +73,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L73">			uInfoT.markVisited();</span>
 <span class="fc" id="L74">			uInfoT.distance = uDistanceT;</span>
 
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L77">				int e = eit.nextInt();</span>
-<span class="fc" id="L78">				int v = eit.target();</span>
+<span class="fc" id="L78">				int v = eit.targetInt();</span>
 <span class="fc" id="L79">				Info vInfoS = infoS.computeIfAbsent(v, k -&gt; new Info());</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">				if (vInfoS.isVisited())</span>
 <span class="fc" id="L81">					continue;</span>
@@ -100,9 +100,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 				}
 <span class="fc" id="L101">			}</span>
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (EdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L104">				int e = eit.nextInt();</span>
-<span class="fc" id="L105">				int v = eit.source();</span>
+<span class="fc" id="L105">				int v = eit.sourceInt();</span>
 <span class="fc" id="L106">				Info vInfoT = infoT.computeIfAbsent(v, k -&gt; new Info());</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				if (vInfoT.isVisited())</span>
 <span class="fc" id="L108">					continue;</span>

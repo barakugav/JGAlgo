@@ -16,51 +16,83 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L25">class MaximalCliquesUtils {</span>
+<span class="nc" id="L28">class MaximalCliquesUtils {</span>
 
-<span class="fc" id="L27">	static abstract class AbstractImpl implements MaximalCliques {</span>
+<span class="fc" id="L30">	static abstract class AbstractImpl implements MaximalCliques {</span>
 
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		@Override
-		public Iterator&lt;IntSet&gt; iterateMaximalCliques(Graph g) {
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">			if (g instanceof IndexGraph)</span>
-<span class="nc" id="L32">				return iterateMaximalCliques((IndexGraph) g);</span>
+		public &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; iterateMaximalCliques(Graph&lt;V, E&gt; g) {
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L36">				return (Iterator) iterateMaximalCliques((IndexGraph) g);</span>
 
-<span class="fc" id="L34">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L35">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L36">			Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
-<span class="fc" id="L37">			return new ResultFromIndexResult(indexResult, viMap);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L39">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L41">				Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
+<span class="fc" id="L42">				return (Iterator) new IntResultFromIndexResult(indexResult, viMap);</span>
+
+			} else {
+<span class="nc" id="L45">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L46">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L47">				Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
+<span class="nc" id="L48">				return new ObjResultFromIndexResult&lt;&gt;(indexResult, viMap);</span>
+			}
 		}
 
 		abstract Iterator&lt;IntSet&gt; iterateMaximalCliques(IndexGraph g);
 
 	}
 
-	private static class ResultFromIndexResult implements Iterator&lt;IntSet&gt; {
+	private static class IntResultFromIndexResult implements Iterator&lt;IntSet&gt; {
 
 		private final Iterator&lt;IntSet&gt; indexResult;
-		private final IndexIdMap viMap;
+		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L49">		ResultFromIndexResult(Iterator&lt;IntSet&gt; indexResult, IndexIdMap viMap) {</span>
-<span class="fc" id="L50">			this.indexResult = indexResult;</span>
-<span class="fc" id="L51">			this.viMap = viMap;</span>
-<span class="fc" id="L52">		}</span>
+<span class="fc" id="L61">		IntResultFromIndexResult(Iterator&lt;IntSet&gt; indexResult, IndexIntIdMap viMap) {</span>
+<span class="fc" id="L62">			this.indexResult = indexResult;</span>
+<span class="fc" id="L63">			this.viMap = viMap;</span>
+<span class="fc" id="L64">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L56">			return indexResult.hasNext();</span>
+<span class="fc" id="L68">			return indexResult.hasNext();</span>
 		}
 
 		@Override
 		public IntSet next() {
-<span class="fc" id="L61">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
+<span class="fc" id="L73">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
+		}
+	}
+
+	private static class ObjResultFromIndexResult&lt;V&gt; implements Iterator&lt;Set&lt;V&gt;&gt; {
+
+		private final Iterator&lt;IntSet&gt; indexResult;
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="nc" id="L82">		ObjResultFromIndexResult(Iterator&lt;IntSet&gt; indexResult, IndexIdMap&lt;V&gt; viMap) {</span>
+<span class="nc" id="L83">			this.indexResult = indexResult;</span>
+<span class="nc" id="L84">			this.viMap = viMap;</span>
+<span class="nc" id="L85">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="nc" id="L89">			return indexResult.hasNext();</span>
 		}
 
+		@Override
+		public Set&lt;V&gt; next() {
+<span class="nc" id="L94">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
+		}
 	}
 
 }

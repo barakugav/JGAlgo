@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
@@ -53,12 +53,12 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L53">	MaximumFlowDinicDynamicTrees() {}</span>
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
 <span class="fc" id="L57">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, FlowNetwork net, IntCollection sources, IntCollection sinks) {
+	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
 <span class="fc" id="L62">		return new Worker(g, net, sources, sinks).computeMaximumFlow();</span>
 	}
 
@@ -67,7 +67,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 		final double[] capacity;
 		final double[] flow;
 
-<span class="fc" id="L70">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L70">		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
 <span class="fc" id="L71">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L73">			flow = new double[g.edges().size()];</span>
@@ -75,7 +75,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L75">			initCapacitiesAndFlows(flow, capacity);</span>
 <span class="fc" id="L76">		}</span>
 
-<span class="fc" id="L78">		Worker(IndexGraph gOrig, FlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
+<span class="fc" id="L78">		Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
 <span class="fc" id="L79">			super(gOrig, net, sources, sinks);</span>
 
 <span class="fc" id="L81">			flow = new double[g.edges().size()];</span>
@@ -91,8 +91,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L91">				capacitySum += net.getCapacity(e);</span>
 <span class="fc" id="L92">			capacitySum *= 16;</span>
 
-<span class="fc" id="L94">			GraphFactory factory = GraphFactory.newDirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;);</span>
-<span class="fc" id="L95">			Graph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* &gt;= */ n).newGraph();</span>
+<span class="fc" id="L94">			IntGraphFactory factory = IntGraphFactory.newDirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;);</span>
+<span class="fc" id="L95">			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* &gt;= */ n).newGraph();</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L97">				L.addVertex(v);</span>
 
@@ -120,9 +120,9 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc bfc" id="L120" title="All 2 branches covered.">					if (u == sink)</span>
 <span class="fc" id="L121">						break bfs;</span>
 <span class="fc" id="L122">					int lvl = level[u];</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L124">						int e = eit.nextInt();</span>
-<span class="fc" id="L125">						int v = eit.target();</span>
+<span class="fc" id="L125">						int v = eit.targetInt();</span>
 <span class="fc bfc" id="L126" title="All 4 branches covered.">						if (flow[e] &gt;= capacity[e] || level[v] &lt;= lvl)</span>
 <span class="fc" id="L127">							continue;</span>
 <span class="fc" id="L128">						L.addEdge(u, v, e);</span>
@@ -176,7 +176,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 <span class="fc" id="L176">						debug.println(&quot;Retreat&quot;);</span>
 <span class="fc bfc" id="L177" title="All 2 branches covered.">						if (v == source)</span>
 <span class="fc" id="L178">							break calcBlockFlow;</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">						for (EdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">						for (IEdgeIter eit = L.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L180">							int e = eit.nextInt();</span>
 <span class="fc" id="L181">							int u = g.edgeSource(e);</span>
 <span class="fc bfc" id="L182" title="All 2 branches covered.">							if (edgeToParent[u] != e)</span>
@@ -195,7 +195,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 					} else {
 						/* Advance */
 <span class="fc" id="L197">						debug.println(&quot;Advance&quot;);</span>
-<span class="fc" id="L198">						EdgeIter eit = L.outEdges(v).iterator();</span>
+<span class="fc" id="L198">						IEdgeIter eit = L.outEdges(v).iterator();</span>
 <span class="fc" id="L199">						int e = eit.nextInt();</span>
 <span class="fc" id="L200">						int eSource = g.edgeSource(e);</span>
 <span class="fc" id="L201">						int eTarget = g.edgeTarget(e);</span>

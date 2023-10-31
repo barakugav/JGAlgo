@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.Set;
 
 /**
  * A partition of the vertices of a graph into two blocks.
@@ -27,13 +27,38 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * The two blocks (or sets) are called left and right. The left block is the block with index 0, and the right block is
  * the block with index 1, and few methods with 'left/right' names are provided for convenience.
  *
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
  */
-public interface VertexBiPartition extends VertexPartition {
+public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&gt; {
 
 	@Override
 	default int numberOfBlocks() {
-<span class="nc" id="L36">		return 2;</span>
+<span class="nc" id="L38">		return 2;</span>
+	}
+
+	/**
+	 * Check whether a vertex is contained in the left block (block 0).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the left block, {@code false} otherwise
+	 */
+	boolean isLeft(V vertex);
+
+	/**
+	 * Check whether a vertex is contained in the right block (block 1).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
+	 */
+	default boolean isRight(V vertex) {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">		return !isLeft(vertex);</span>
+	}
+
+	@Override
+	default int vertexBlock(V vertex) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	/**
@@ -43,8 +68,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the vertices in the left block
 	 */
-	default IntSet leftVertices() {
-<span class="nc" id="L47">		return blockEdges(0);</span>
+	default Set&lt;V&gt; leftVertices() {
+<span class="nc" id="L72">		return blockVertices(0);</span>
 	}
 
 	/**
@@ -54,8 +79,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the vertices in the right block
 	 */
-	default IntSet rightVertices() {
-<span class="nc" id="L58">		return blockEdges(1);</span>
+	default Set&lt;V&gt; rightVertices() {
+<span class="nc" id="L83">		return blockVertices(1);</span>
 	}
 
 	/**
@@ -66,8 +91,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that are contained in the left block
 	 */
-	default IntSet leftEdges() {
-<span class="nc" id="L70">		return blockEdges(0);</span>
+	default Set&lt;E&gt; leftEdges() {
+<span class="nc" id="L95">		return blockEdges(0);</span>
 	}
 
 	/**
@@ -78,8 +103,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that are contained in the right block
 	 */
-	default IntSet rightEdges() {
-<span class="nc" id="L82">		return blockEdges(1);</span>
+	default Set&lt;E&gt; rightEdges() {
+<span class="nc" id="L107">		return blockEdges(1);</span>
 	}
 
 	/**
@@ -93,8 +118,8 @@ public interface VertexBiPartition extends VertexPartition {
 	 *
 	 * @return the edges that cross between the left and right blocks
 	 */
-	default IntSet crossEdges() {
-<span class="fc" id="L97">		return crossEdges(0, 1);</span>
+	default Set&lt;E&gt; crossEdges() {
+<span class="fc" id="L122">		return crossEdges(0, 1);</span>
 	}
 
 }

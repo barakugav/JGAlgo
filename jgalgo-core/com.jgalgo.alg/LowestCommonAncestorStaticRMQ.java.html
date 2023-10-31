@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.RMQStatic;
 import com.jgalgo.internal.ds.RMQStaticComparator;
@@ -46,15 +46,15 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 <span class="fc" id="L46">	LowestCommonAncestorStaticRMQ() {}</span>
 
 	@Override
-	LowestCommonAncestorStatic.DataStructure preProcessTree(IndexGraph tree, int root) {
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (!Trees.isTree(tree, root))</span>
+	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (!Trees.isTree(tree, Integer.valueOf(root)))</span>
 <span class="nc" id="L51">			throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
 
 <span class="fc" id="L53">		final int n = tree.vertices().size();</span>
 <span class="fc" id="L54">		int[] depths = new int[n * 2];</span>
 <span class="fc" id="L55">		int[] vs = new int[n * 2];</span>
 <span class="fc" id="L56">		int[] parent = new int[n];</span>
-<span class="fc" id="L57">		EdgeIter[] edgeIters = new EdgeIter[n];</span>
+<span class="fc" id="L57">		IEdgeIter[] edgeIters = new IEdgeIter[n];</span>
 		// TODO DFS stack class
 
 <span class="fc" id="L60">		parent[0] = -1;</span>
@@ -66,9 +66,9 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 <span class="fc" id="L66">			vs[sequenceLength] = u;</span>
 <span class="fc" id="L67">			sequenceLength++;</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
 <span class="fc" id="L70">				eit.nextInt();</span>
-<span class="fc" id="L71">				int v = eit.target();</span>
+<span class="fc" id="L71">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">				if (v == parent[depth])</span>
 <span class="fc" id="L73">					continue;</span>
 <span class="fc" id="L74">				depth++;</span>
@@ -98,7 +98,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 <span class="fc" id="L98">		return new DS(n, vs, vToDepthsIdx, rmqDS);</span>
 	}
 
-	private static class DS implements LowestCommonAncestorStatic.DataStructure {
+	private static class DS implements LowestCommonAncestorStatic.IDataStructure {
 
 		private final int n;
 		private final int[] vs;
@@ -113,7 +113,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 <span class="fc" id="L113">		}</span>
 
 		@Override
-		public int findLowestCommonAncestor(int u, int v) {
+		public int findLca(int u, int v) {
 <span class="fc" id="L117">			Assertions.Graphs.checkVertex(u, n);</span>
 <span class="fc" id="L118">			Assertions.Graphs.checkVertex(v, n);</span>
 <span class="fc" id="L119">			int uIdx = vToDepthsIdx[u];</span>

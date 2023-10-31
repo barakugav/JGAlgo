@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IndexIntIdMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">IndexIntIdMap.java</span></div><h1>IndexIntIdMap.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+/**
+ * A mapping between {@link IntGraph} IDs to {@link IndexGraph} indices.
+ * &lt;p&gt;
+ * This interface is a specific version of {@link IndexIdMap} for {@link IntGraph}.
+ * &lt;p&gt;
+ * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An {@link IndexGraph}
+ * view is provided by the {@link IntGraph#indexGraph()} method, which is a graph in which all methods are accessed with
+ * &lt;b&gt;indices&lt;/b&gt; rather than fixed IDs. This interface maps between the indices and the fixed IDs of the graph vertices
+ * or edges.
+ * &lt;p&gt;
+ * Note that the mapping may change during the graph lifetime, as vertices and edges are added and removed from the
+ * graph, and a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}
+ * and {@code (0,1,2, ...,edgesNum-1)}. The mapping object will be updated automatically in such cases.
+ * &lt;p&gt;
+ * The mapping interface is used for both vertices and edges, and we use a unify term &lt;i&gt;element&lt;/i&gt; in the
+ * documentation to describe both of them. If the mapping was obtained by {@link IntGraph#indexGraphVerticesMap()} it
+ * will map between vertices IDs and indices, and if it was obtained by {@link IntGraph#indexGraphEdgesMap()} it will
+ * map between edges IDs and indices.
+ *
+ * @see    IndexGraph
+ * @author Barak Ugav
+ */
+public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
+
+	/**
+	 * Get the ID of an element by its index.
+	 * &lt;p&gt;
+	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
+	 * {@link IntGraph#indexGraphVerticesMap()} or {@link IntGraph#indexGraphEdgesMap()}.
+	 *
+	 * @param  index                     an index of an element (vertex/edge)
+	 * @return                           the ID of the element
+	 * @throws IndexOutOfBoundsException if {@code index} is not in range {@code [, elementsNum)} where
+	 *                                       {@code elementsNum} is the number of either vertices or edges, depending on
+	 *                                       the context
+	 */
+	int indexToIdInt(int index);
+
+	@Deprecated
+	@Override
+	default Integer indexToId(int index) {
+<span class="nc" id="L59">		return Integer.valueOf(indexToIdInt(index));</span>
+	}
+
+	/**
+	 * Get the index of an element by its ID.
+	 * &lt;p&gt;
+	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
+	 * {@link IntGraph#indexGraphVerticesMap()} or {@link IntGraph#indexGraphEdgesMap()}.
+	 *
+	 * @param  id                        an ID of an element (vertex/edge)
+	 * @return                           the index of the element
+	 * @throws IndexOutOfBoundsException if {@code id} is not a valid identifier of vertex/edge, depending on the
+	 *                                       context
+	 */
+	int idToIndex(int id);
+
+	@Deprecated
+	@Override
+	default int idToIndex(Integer id) {
+<span class="fc" id="L78">		return idToIndex(id.intValue());</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

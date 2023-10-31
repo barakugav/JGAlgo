@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IWeightFunction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">IWeightFunction.java</span></div><h1>IWeightFunction.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.graph;
+
+import java.util.Collection;
+import com.jgalgo.alg.MatchingAlgo;
+import com.jgalgo.alg.MinimumSpanningTree;
+import com.jgalgo.alg.ShortestPathSingleSource;
+import com.jgalgo.alg.VertexCover;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+
+/**
+ * Weight function that maps graph edges or vertices of {@link IntGraph} to weights.
+ * &lt;p&gt;
+ * This interface is a specific version of {@link WeightFunction} for {@link IntGraph}.
+ * &lt;p&gt;
+ * This interface is usually used as weight function of edges, for example in algorithms such as
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo}, in which the algorithm try to
+ * find a set of edges satisfying some constraint while minimizing/maximizing some objective function based on the
+ * weights of the edges. But it can represent weights assigned to vertices, in algorithms such as {@link VertexCover}.
+ * &lt;p&gt;
+ * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
+ * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.
+ *
+ * &lt;pre&gt; {@code
+ * // Create a directed graph with three vertices and edges between them
+ * IntGraph g = IntGraph.newDirected();
+ * int v1 = g.addVertex();
+ * int v2 = g.addVertex();
+ * int v3 = g.addVertex();
+ * int e1 = g.addEdge(v1, v2);
+ * int e2 = g.addEdge(v2, v3);
+ * int e3 = g.addEdge(v1, v3);
+ *
+ * // Assign some weights to the edges
+ * IWeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);
+ * weights.set(e1, 1.2);
+ * weights.set(e2, 3.1);
+ * weights.set(e3, 15.1);
+ * IWeightFunction weightFunc = weights;
+ *
+ * // Calculate the shortest paths from v1 to all other vertices
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
+ *
+ * // Print the shortest path from v1 to v3
+ * assert ssspRes.distance(v3) == 4.3;
+ * assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
+ * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
+ * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
+ * for (int e : ssspRes.getPath(v3).edges()) {
+ * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
+ * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @see    IWeightFunctionInt
+ * @author Barak Ugav
+ */
+@FunctionalInterface
+public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntComparator {
+
+	/**
+	 * Get the weight of an element.
+	 *
+	 * @param  element                   an element identifier
+	 * @return                           the weight of the element
+	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 */
+	double weight(int element);
+
+	@Deprecated
+	@Override
+	default double weight(Integer element) {
+<span class="nc" id="L90">		return weight(element.intValue());</span>
+	}
+
+	/**
+	 * Compare two elements by their weights.
+	 */
+	@Override
+	default int compare(int e1, int e2) {
+<span class="fc" id="L98">		return Double.compare(weight(e1), weight(e2));</span>
+	}
+
+	@Deprecated
+	@Override
+	default int compare(Integer e1, Integer e2) {
+<span class="nc" id="L104">		return Double.compare(weight(e1), weight(e2));</span>
+	}
+
+	@Override
+	default double weightSum(Iterable&lt;Integer&gt; elements) {
+<span class="fc" id="L109">		double sum = 0;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (elements instanceof IntIterable) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
+<span class="fc" id="L112">				sum += weight(e);</span>
+		} else {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">			for (Integer e : elements)</span>
+<span class="nc" id="L115">				sum += weight(e.intValue());</span>
+		}
+<span class="fc" id="L117">		return sum;</span>
+	}
+
+	/**
+	 * Get the sum of the weights of multiple elements.
+	 * &lt;p&gt;
+	 * This method is equivalent to {@link #weightSum(Iterable)}, but it also support {@code null} weight function,
+	 * which is treated is cardinality weight function.
+	 *
+	 * @param  weightFunc the weight function to use, or {@code null} to use cardinality weight function
+	 * @param  elements   a collection of elements
+	 * @return            the sum of the weights of the elements
+	 */
+	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="fc" id="L133">				return ((Collection&lt;?&gt;) elements).size();</span>
+			} else {
+<span class="nc" id="L135">				int s = 0;</span>
+				for (@SuppressWarnings(&quot;unused&quot;)
+<span class="nc bnc" id="L137" title="All 2 branches missed.">				int elm : elements)</span>
+<span class="nc" id="L138">					s++;</span>
+<span class="nc" id="L139">				return s;</span>
+			}
+		} else {
+<span class="fc" id="L142">			return weightFunc.weightSum(elements);</span>
+		}
+	}
+
+	/**
+	 * A weight function that assign a weight of {@code 1} to any element.
+	 */
+<span class="fc" id="L149">	public static IWeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -91,7 +91,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	public void removeEdgesOf(int source) {
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (EdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L95">			eit.nextInt();</span>
 <span class="fc" id="L96">			eit.remove();</span>
 		}
@@ -113,12 +113,12 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 <span class="nc" id="L113">	}</span>
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L117">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L122">		return new EdgeSetIn(target);</span>
 	}
 
@@ -158,13 +158,13 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 <span class="fc" id="L158">		super.vertexSwap(v1, v2);</span>
 <span class="fc" id="L159">	}</span>
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
 <span class="fc" id="L162">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L163">			super(source);</span>
 <span class="fc" id="L164">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L168">			return new EdgeIterOut(source);</span>
 		}
 
@@ -174,13 +174,13 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
 <span class="fc" id="L178">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L179">			super(target);</span>
 <span class="fc" id="L180">		}</span>
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L184">			return new EdgeIterInUndirected(target);</span>
 		}
 

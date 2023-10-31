@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Iterator;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
@@ -49,7 +49,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc" id="L49">	CyclesFinderJohnson() {}</span>
 
 	@Override
-	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
+	Iterator&lt;IPath&gt; findAllCycles(IndexGraph g) {
 <span class="fc" id="L53">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L54">		Assertions.Graphs.noParallelEdges(g, &quot;graphs with parallel edges are not supported&quot;);</span>
 <span class="fc" id="L55">		final int n = g.vertices().size();</span>
@@ -62,7 +62,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			final IntSet[] blockingSet;
 <span class="fc" id="L63">			final IntStack unblockStack = new IntArrayList();</span>
 <span class="fc" id="L64">			final IntArrayList path = new IntArrayList();</span>
-<span class="fc" id="L65">			final Stack&lt;EdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L65">			final Stack&lt;IEdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
 			/**
 			 * In the paper, there is a boolean flag in each recursive call of the backtrack function. The flag is set
 			 * to true if a cycle was found in the current function call or its successors calls. This invariant allow
@@ -71,7 +71,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			 * the store depth, we decrease it by one.
 			 */
 <span class="fc" id="L73">			int cycleFoundDepth = -1;</span>
-			Path nextCycle;
+			IPath nextCycle;
 
 			{
 <span class="fc" id="L77">				isBlocked = new BitSet(n);</span>
@@ -97,9 +97,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 				for (;;) {
 <span class="fc bfc" id="L99" title="All 2 branches covered.">					currentStartVLoop: while (!edgeIterStack.isEmpty()) {</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">						for (EdgeIter it = edgeIterStack.top(); it.hasNext();) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">						for (IEdgeIter it = edgeIterStack.top(); it.hasNext();) {</span>
 <span class="fc" id="L101">							int e = it.nextInt();</span>
-<span class="fc" id="L102">							int v = it.target();</span>
+<span class="fc" id="L102">							int v = it.targetInt();</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">							if (!scc.contains(v))</span>
 <span class="fc" id="L104">								continue;</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">							if (v == startV) {</span>
@@ -125,9 +125,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 <span class="fc" id="L125">							unblock(u);</span>
 <span class="fc" id="L126">							cycleFoundDepth--;</span>
 						} else {
-<span class="fc bfc" id="L128" title="All 2 branches covered.">							for (EdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">							for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L129">								it.nextInt();</span>
-<span class="fc" id="L130">								int v = it.target();</span>
+<span class="fc" id="L130">								int v = it.targetInt();</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">								if (!scc.contains(v))</span>
 <span class="fc" id="L132">									continue;</span>
 <span class="fc" id="L133">								blockingSet[v].add(u);</span>
@@ -188,16 +188,16 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 				}
 <span class="fc bfc" id="L189" title="All 2 branches covered.">				for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
 <span class="fc" id="L190">					int uFull = uSub + subToFull;</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">					for (EdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">					for (IEdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L192">						it.nextInt();</span>
-<span class="fc" id="L193">						int vSub = it.target() - subToFull;</span>
+<span class="fc" id="L193">						int vSub = it.targetInt() - subToFull;</span>
 <span class="fc bfc" id="L194" title="All 2 branches covered.">						if (vSub &gt;= 0)</span>
 <span class="fc" id="L195">							gSubBuilder.addEdge(uSub, vSub);</span>
 <span class="fc" id="L196">					}</span>
 				}
 <span class="fc" id="L198">				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
 
-<span class="fc" id="L200">				VertexPartition connectivityResult = ccAlg.findStronglyConnectedComponents(gSub);</span>
+<span class="fc" id="L200">				IVertexPartition connectivityResult = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gSub);</span>
 
 <span class="fc" id="L202">				for (;; startV++) {</span>
 <span class="fc bfc" id="L203" title="All 2 branches covered.">					if (startV &gt;= nFull) {</span>
@@ -219,9 +219,9 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			}
 
 			@Override
-			public Path next() {
+			public IPath next() {
 <span class="fc" id="L223">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L224">				Path ret = nextCycle;</span>
+<span class="fc" id="L224">				IPath ret = nextCycle;</span>
 <span class="fc" id="L225">				advance();</span>
 <span class="fc" id="L226">				return ret;</span>
 			}
@@ -235,10 +235,10 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final VertexPartition connectivityResult;
+		private final IVertexPartition connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L241">		StronglyConnectedComponent(int subToFull, VertexPartition connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L241">		StronglyConnectedComponent(int subToFull, IVertexPartition connectivityResult, int ccIdx) {</span>
 <span class="fc" id="L242">			this.subToFull = subToFull;</span>
 <span class="fc" id="L243">			this.connectivityResult = connectivityResult;</span>
 <span class="fc" id="L244">			this.ccIdx = ccIdx;</span>

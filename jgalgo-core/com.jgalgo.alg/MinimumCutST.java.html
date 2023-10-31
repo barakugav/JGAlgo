@@ -16,7 +16,10 @@
 
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -47,7 +50,12 @@ public interface MinimumCutST {
 	 * &lt;p&gt;
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @param  source                   a special vertex that will be in \(C\)
@@ -55,14 +63,20 @@ public interface MinimumCutST {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, int source, int sink);
+	&lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V sink);
 
 	/**
 	 * Compute the minimum cut in a graph between two sets of vertices.
 	 * &lt;p&gt;
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link IntCollection} as {@code sources} and
+	 * {@code sinks} to avoid boxing/unboxing.
 	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
 	 * @param  sources                  special vertices that will be in \(C\)
@@ -71,7 +85,8 @@ public interface MinimumCutST {
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	VertexBiPartition computeMinimumCut(Graph g, WeightFunction w, IntCollection sources, IntCollection sinks);
+	&lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;V&gt; sources,
+			Collection&lt;V&gt; sinks);
 
 	/**
 	 * Create a new minimum S-T cut algorithm object.
@@ -82,7 +97,7 @@ public interface MinimumCutST {
 	 * @return a default implementation of {@link MinimumCutST}
 	 */
 	static MinimumCutST newInstance() {
-<span class="nc" id="L85">		return newBuilder().build();</span>
+<span class="nc" id="L100">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -93,7 +108,7 @@ public interface MinimumCutST {
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-<span class="nc" id="L96">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
+<span class="nc" id="L111">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
 	}
 
 	/**
@@ -106,7 +121,7 @@ public interface MinimumCutST {
 	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L109">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
+<span class="fc" id="L124">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
 	}
 
 	/**
@@ -138,7 +153,7 @@ public interface MinimumCutST {
 		 * @return       this builder
 		 */
 		default MinimumCutST.Builder setOption(String key, Object value) {
-<span class="nc" id="L141">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L156">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

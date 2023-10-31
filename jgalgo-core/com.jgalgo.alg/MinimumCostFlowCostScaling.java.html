@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.alg.FlowNetworks.ResidualGraph;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -45,12 +45,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	private static final int alpha = 16;
 
 	@Override
-	void computeMinCostFlow(IndexGraph g, FlowNetwork net, WeightFunction cost, WeightFunction supply) {
-<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		if (!(net instanceof FlowNetworkInt &amp;&amp; supply instanceof WeightFunctionInt))</span>
+	void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		if (!(net instanceof IFlowNetworkInt &amp;&amp; supply instanceof IWeightFunctionInt))</span>
 <span class="nc" id="L50">			throw new IllegalArgumentException(&quot;only integer capacities and flows are supported&quot;);</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (!(cost instanceof WeightFunctionInt))</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (!(cost instanceof IWeightFunctionInt))</span>
 <span class="nc" id="L52">			throw new IllegalArgumentException(&quot;only integer costs are supported&quot;);</span>
-<span class="fc" id="L53">		new Worker(g, (FlowNetworkInt) net, (WeightFunctionInt) cost, (WeightFunctionInt) supply).solve();</span>
+<span class="fc" id="L53">		new Worker(g, (IFlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();</span>
 <span class="fc" id="L54">	}</span>
 
 <span class="fc" id="L56">	private static class Worker {</span>
@@ -59,8 +59,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		private final IndexGraph g;
 		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
-		private final FlowNetworkInt net;
-		private final WeightFunctionInt costOrig;
+		private final IFlowNetworkInt net;
+		private final IWeightFunctionInt costOrig;
 
 		/* per-edge information */
 		private final int[] residualCapacity;
@@ -80,7 +80,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		/* Bitmap of the vertices on the path, for fast cycle detection */
 		private final BitSet onPath;
 		/* Per vertex iterator, corresponding to 'current edge' in the paper */
-		private final EdgeIter[] edgeIter;
+		private final IEdgeIter[] edgeIter;
 
 		/* The maximum length of an augmentation path, similar to {@link MaximumFlowPushRelabelPartialAugment} */
 		private static final int MAX_AUGMENT_PATH_LENGTH = 4;
@@ -98,7 +98,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-<span class="fc" id="L101">		Worker(IndexGraph gOrig, FlowNetworkInt net, WeightFunctionInt costOrig, WeightFunctionInt supply) {</span>
+<span class="fc" id="L101">		Worker(IndexGraph gOrig, IFlowNetworkInt net, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {</span>
 <span class="fc" id="L102">			Assertions.Graphs.onlyDirected(gOrig);</span>
 <span class="fc" id="L103">			Assertions.Flows.checkSupply(gOrig, supply);</span>
 <span class="fc" id="L104">			this.gOrig = gOrig;</span>
@@ -148,7 +148,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L148">			activeQueue = new FIFOQueueIntNoReduce(n);</span>
 <span class="fc" id="L149">			path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
 <span class="fc" id="L150">			onPath = new BitSet(n);</span>
-<span class="fc" id="L151">			edgeIter = new EdgeIter[n];</span>
+<span class="fc" id="L151">			edgeIter = new IEdgeIter[n];</span>
 
 <span class="fc" id="L153">			globalUpdateThreshold = n;</span>
 
@@ -194,11 +194,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 				/* Saturate all edges with negative cost */
 <span class="fc bfc" id="L195" title="All 2 branches covered.">				for (int n = g.vertices().size(), u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L196">					long uPotential = potential[u];</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">					for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L198">						int e = eit.nextInt();</span>
 <span class="fc" id="L199">						int delta = residualCapacity[e];</span>
 <span class="fc bfc" id="L200" title="All 2 branches covered.">						if (delta &gt; 0) {</span>
-<span class="fc" id="L201">							int v = eit.target();</span>
+<span class="fc" id="L201">							int v = eit.targetInt();</span>
 <span class="fc bfc" id="L202" title="All 2 branches covered.">							if (cost[e] + uPotential - potential[v] &lt; 0) {</span>
 								/* we found a negative cost edge, saturate it */
 <span class="fc" id="L204">								excess[u] -= delta;</span>
@@ -260,10 +260,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L260">				long uPotential = potential[u];</span>
 <span class="fc" id="L261">				long minReducedCost = Long.MAX_VALUE;</span>
 <span class="pc bnc" id="L262" title="All 2 branches missed.">				assert edgeIter[u].hasNext();</span>
-<span class="fc" id="L263">				final int firstEdge = edgeIter[u].peekNext();</span>
-<span class="fc" id="L264">				for (EdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {</span>
+<span class="fc" id="L263">				final int firstEdge = edgeIter[u].peekNextInt();</span>
+<span class="fc" id="L264">				for (IEdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {</span>
 <span class="pc bnc" id="L265" title="All 2 branches missed.">					assert eit.hasNext();</span>
-<span class="fc" id="L266">					int e = eit.peekNext();</span>
+<span class="fc" id="L266">					int e = eit.peekNextInt();</span>
 <span class="fc bfc" id="L267" title="All 2 branches covered.">					if (isResidual(e)) {</span>
 <span class="fc" id="L268">						int v = g.edgeTarget(e);</span>
 <span class="fc" id="L269">						long reducedCost = cost[e] + uPotential - potential[v];</span>
@@ -301,7 +301,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L301">							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];</span>
 <span class="fc" id="L302">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
 						}
-<span class="fc" id="L304">						for (EdgeIter eit2 = g.outEdges(u).iterator();;) {</span>
+<span class="fc" id="L304">						for (IEdgeIter eit2 = g.outEdges(u).iterator();;) {</span>
 <span class="pc bnc" id="L305" title="All 2 branches missed.">							assert eit2.hasNext();</span>
 <span class="fc" id="L306">							int e2 = eit2.nextInt();</span>
 <span class="fc bfc" id="L307" title="All 2 branches covered.">							if (e2 == firstEdge)</span>
@@ -390,7 +390,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L390">					bucketsHeads[r] = buckets.next(u);</span>
 
 <span class="fc" id="L392">					long uPotential = potential[u];</span>
-<span class="fc" id="L393">					for (EdgeIter it = edgeIter[u];;) {</span>
+<span class="fc" id="L393">					for (IEdgeIter it = edgeIter[u];;) {</span>
 <span class="fc bfc" id="L394" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 <span class="fc" id="L395">							edgeIter[u] = g.outEdges(u).iterator();</span>
 <span class="fc" id="L396">							break;</span>
@@ -559,7 +559,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L559">				dfs: for (int u = root;;) {</span>
 <span class="fc" id="L560">					visited.set(u);</span>
 <span class="fc" id="L561">					long uPotential = potential[u];</span>
-<span class="fc" id="L562">					for (EdgeIter it = edgeIter[u];; it.nextInt()) {</span>
+<span class="fc" id="L562">					for (IEdgeIter it = edgeIter[u];; it.nextInt()) {</span>
 <span class="fc bfc" id="L563" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 							/* No admissible edge from u, go up once in the DFS path */
 <span class="pc bnc" id="L565" title="All 2 branches missed.">							assert !processed.get(u);</span>
@@ -577,7 +577,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 						}
 
 						/* Use only admissible edges */
-<span class="fc" id="L580">						int e = it.peekNext();</span>
+<span class="fc" id="L580">						int e = it.peekNextInt();</span>
 <span class="fc bfc" id="L581" title="All 2 branches covered.">						if (!isResidual(e))</span>
 <span class="fc" id="L582">							continue;</span>
 <span class="fc" id="L583">						int v = g.edgeTarget(e);</span>
@@ -599,7 +599,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L599">							int delta = residualCapacity[e];</span>
 <span class="fc bfc" id="L600" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
 <span class="fc" id="L601">								w = backtrack[w];</span>
-<span class="fc" id="L602">								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNext()]);</span>
+<span class="fc" id="L602">								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNextInt()]);</span>
 							}
 
 							/* Augment along the cycle */
@@ -607,7 +607,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L607">							residualCapacity[twin[e]] += delta;</span>
 <span class="fc bfc" id="L608" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
 <span class="fc" id="L609">								w = backtrack[w];</span>
-<span class="fc" id="L610">								int ca = edgeIter[w].peekNext();</span>
+<span class="fc" id="L610">								int ca = edgeIter[w].peekNextInt();</span>
 <span class="fc" id="L611">								residualCapacity[ca] -= delta;</span>
 <span class="fc" id="L612">								residualCapacity[twin[ca]] += delta;</span>
 <span class="fc" id="L613">							}</span>

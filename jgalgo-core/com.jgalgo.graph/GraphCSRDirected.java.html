@@ -48,16 +48,16 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L48">	}</span>
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L52">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L57">		return new EdgeSetIn(target);</span>
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -78,12 +78,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L82">			return new EdgeIterOut(source, edgesOut, begin, end);</span>
 		}
 	}
 
-	class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 
@@ -104,7 +104,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L108">			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);</span>
 		}
 	}
@@ -118,12 +118,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L118">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L122">			return source;</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L127">			return edgeTarget(lastEdge);</span>
 		}
 	}
@@ -137,12 +137,12 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L137">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L141">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L146">			return target;</span>
 		}
 	}

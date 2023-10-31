@@ -17,9 +17,9 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -44,12 +44,12 @@ import com.jgalgo.internal.util.Assertions;
 	private static final double EPS = 0.0001;
 
 	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, FlowNetwork net, WeightFunction cost, int source, int sink) {
+	void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
 <span class="fc" id="L48">		Assertions.Graphs.onlyDirected(gOrig);</span>
 <span class="fc" id="L49">		Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
 
 		/* Compute maximum flow */
-<span class="fc" id="L52">		maxFlowAlg.computeMaximumFlow(gOrig, net, source, sink);</span>
+<span class="fc" id="L52">		maxFlowAlg.computeMaximumFlow(gOrig, net, Integer.valueOf(source), Integer.valueOf(sink));</span>
 
 		/* Construct the residual graph from the maximum flow */
 <span class="fc" id="L55">		FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);</span>
@@ -70,7 +70,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L70">		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);</span>
 <span class="fc" id="L71">	}</span>
 
-	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, FlowNetwork net,
+	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, IFlowNetwork net,
 			FlowNetworks.ResidualGraph resGraph, double[] capacity, double[] flow) {
 <span class="fc" id="L75">		IndexGraph g = resGraph.g;</span>
 <span class="fc" id="L76">		int[] edgeRef = resGraph.edgeRef;</span>
@@ -100,7 +100,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L100">	}</span>
 
 	private void eliminateAllNegativeCycles(IndexGraph gOrig, FlowNetworks.ResidualGraph resGraph, double[] capacity,
-			double[] flow, WeightFunction cost) {
+			double[] flow, IWeightFunction cost) {
 <span class="fc" id="L104">		IndexGraph g = resGraph.g;</span>
 <span class="fc" id="L105">		int[] edgeRef = resGraph.edgeRef;</span>
 <span class="fc" id="L106">		int[] twin = resGraph.twin;</span>
@@ -117,7 +117,7 @@ import com.jgalgo.internal.util.Assertions;
 		/* cost(e) for original edges */
 		/* -cost(e) for backward (twin) original edges */
 		/* saturatedCost for 'removed' (saturated) edges */
-<span class="fc" id="L120">		WeightsDouble cost0 = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc" id="L120">		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
 <span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc bfc" id="L122" title="All 2 branches covered.">			boolean isSaturated = capacity[e] - flow[e] &lt; EPS;</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">			if (isSaturated) {</span>
@@ -131,7 +131,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		/* Repeatedly find the cycle with the minimum mean cost and push flow through it */
 		for (;;) {
-<span class="fc" id="L134">			Path minCycle = minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);</span>
+<span class="fc" id="L134">			IPath minCycle = (IPath) minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);</span>
 <span class="pc bpc" id="L135" title="1 of 4 branches missed.">			if (minCycle == null || cost0.weightSum(minCycle.edges()) &gt;= -EPS)</span>
 <span class="fc" id="L136">				break; /* no cycle or cycle that will increase the total cost */</span>
 

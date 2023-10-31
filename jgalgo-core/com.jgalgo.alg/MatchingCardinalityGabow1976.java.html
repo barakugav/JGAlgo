@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
@@ -48,7 +48,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 <span class="fc" id="L48">	MatchingCardinalityGabow1976() {}</span>
 
 	@Override
-	Matching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L52">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L53">		int n = g.vertices().size();</span>
 
@@ -95,9 +95,9 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 <span class="fc" id="L95">				final int u = queue.dequeueInt();</span>
 <span class="fc" id="L96">				int uRoot = root[u];</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L99">					final int e = eit.nextInt();</span>
-<span class="fc" id="L100">					final int v = eit.target();</span>
+<span class="fc" id="L100">					final int v = eit.targetInt();</span>
 <span class="fc" id="L101">					int vRoot = root[v];</span>
 
 <span class="fc bfc" id="L103" title="All 2 branches covered.">					if (vRoot == -1) {</span>

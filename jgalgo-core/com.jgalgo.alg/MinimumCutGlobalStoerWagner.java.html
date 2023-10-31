@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L36">class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {</span>
 
 	@Override
-	VertexBiPartition computeMinimumCut(IndexGraph g, WeightFunction w) {
+	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L40">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L41">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
@@ -69,8 +69,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L69">				double weightsSum = 0;</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L71">					int e = eit.nextInt();</span>
-<span class="pc bnc" id="L72" title="All 2 branches missed.">					assert eit.source() == U;</span>
-<span class="fc" id="L73">					int V = eit.target();</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">					assert eit.sourceInt() == U;</span>
+<span class="fc" id="L73">					int V = eit.targetInt();</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">					if (cut.get(V))</span>
 <span class="fc" id="L75">						weightsSum += w.weight(e);</span>
 <span class="fc" id="L76">				}</span>
@@ -95,8 +95,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 <span class="fc bfc" id="L96" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L97">						int e = eit.nextInt();</span>
-<span class="pc bnc" id="L98" title="All 2 branches missed.">						assert eit.source() == U;</span>
-<span class="fc" id="L99">						int V = eit.target();</span>
+<span class="pc bnc" id="L98" title="All 2 branches missed.">						assert eit.sourceInt() == U;</span>
+<span class="fc" id="L99">						int V = eit.targetInt();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">						if (!cut.get(V)) {</span>
 <span class="fc" id="L101">							HeapReference&lt;Double, Integer&gt; vRef = vRefs[V];</span>
 <span class="fc" id="L102">							double weightsSum = -vRef.key().doubleValue();</span>
@@ -109,8 +109,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Find the cut-of-the-phase and its weight */
 <span class="fc bfc" id="L110" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L111">						int e = eit.nextInt();</span>
-<span class="pc bnc" id="L112" title="All 2 branches missed.">						assert eit.source() == U;</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">						assert cut.get(eit.target());</span>
+<span class="pc bnc" id="L112" title="All 2 branches missed.">						assert eit.sourceInt() == U;</span>
+<span class="pc bnc" id="L113" title="All 2 branches missed.">						assert cut.get(eit.targetInt());</span>
 <span class="fc" id="L114">						cutOfThePhaseWeight += w.weight(e);</span>
 <span class="fc" id="L115">					}</span>
 <span class="fc" id="L116">					break minimumCutPhase;</span>

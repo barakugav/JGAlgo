@@ -15,25 +15,25 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.BfsIter;
-import com.jgalgo.alg.DfsIter;
-import com.jgalgo.graph.Graph;
+import com.jgalgo.alg.Dfs;
+import com.jgalgo.alg.Bfs;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 <span class="nc" id="L23">public class BfsDfsExample {</span>
 
 	public static void BFSExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-<span class="fc" id="L27">		Graph g = createGraph();</span>
+<span class="fc" id="L27">		IntGraph g = createGraph();</span>
 <span class="fc" id="L28">		int source = g.vertices().iterator().nextInt();</span>
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		for (BfsIter iter = BfsIter.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		for (Bfs.IntIter iter = Bfs.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
 <span class="fc" id="L33">			int v = iter.nextInt();</span>
 			/* e is the edge used to reach v */
 			/* In a directed graph, v is the 'target' of e */
-<span class="fc" id="L36">			int e = iter.lastEdge();</span>
+<span class="fc" id="L36">			int e = iter.lastEdgeInt();</span>
 			/* the layer is the distance of v from the source vertex */
 <span class="fc" id="L38">			int layer = iter.layer();</span>
 <span class="fc" id="L39">			System.out.println(&quot;BFS reached vertex &quot; + v + &quot; at layer &quot; + layer + &quot; using edge &quot; + e);</span>
@@ -42,11 +42,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	public static void DFSExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-<span class="fc" id="L45">		Graph g = createGraph();</span>
+<span class="fc" id="L45">		IntGraph g = createGraph();</span>
 <span class="fc" id="L46">		int source = g.vertices().iterator().nextInt();</span>
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (DfsIter iter = DfsIter.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (Dfs.IntIter iter = Dfs.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
 <span class="fc" id="L51">			int v = iter.nextInt();</span>
 			/* edgePath is a list of edges, forming a path from the source to v */
@@ -55,8 +55,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L55">		}</span>
 <span class="fc" id="L56">	}</span>
 
-	public static Graph createGraph() {
-<span class="fc" id="L59">		Graph g = Graph.newUndirected();</span>
+	public static IntGraph createGraph() {
+<span class="fc" id="L59">		IntGraph g = IntGraph.newUndirected();</span>
 <span class="fc" id="L60">		int v1 = g.addVertex();</span>
 <span class="fc" id="L61">		int v2 = g.addVertex();</span>
 <span class="fc" id="L62">		int v3 = g.addVertex();</span>

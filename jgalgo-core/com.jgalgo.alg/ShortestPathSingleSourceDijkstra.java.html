@@ -17,10 +17,10 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -68,17 +68,17 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L73">			w = WeightFunction.CardinalityWeightFunction;</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (w instanceof WeightFunctionInt) {</span>
-<span class="fc" id="L75">			return computeSsspInts(g, (WeightFunctionInt) w, source);</span>
+<span class="fc" id="L73">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L75">			return computeSsspInts(g, (IWeightFunctionInt) w, source);</span>
 		} else {
 <span class="fc" id="L77">			return computeSsspDoubles(g, w, source);</span>
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, WeightFunction w, int source) {
+	private ShortestPathSingleSource.IResult computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc" id="L82">		final int n = g.vertices().size();</span>
 <span class="fc" id="L83">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
 <span class="fc" id="L84">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
@@ -90,9 +90,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 <span class="fc" id="L91">		for (int u = source;;) {</span>
 <span class="fc" id="L92">			final double uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L94">				int e = eit.nextInt();</span>
-<span class="fc" id="L95">				int v = eit.target();</span>
+<span class="fc" id="L95">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L97">					continue;</span>
 <span class="fc" id="L98">				double ew = w.weight(e);</span>
@@ -118,7 +118,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L118">		return res;</span>
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunctionInt w, int source) {
+	private ShortestPathSingleSource.IResult computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
 <span class="fc" id="L122">		final int n = g.vertices().size();</span>
 <span class="fc" id="L123">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
 <span class="fc" id="L124">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>
@@ -130,9 +130,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 <span class="fc" id="L131">		for (int u = source;;) {</span>
 <span class="fc" id="L132">			final int uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L134">				int e = eit.nextInt();</span>
-<span class="fc" id="L135">				int v = eit.target();</span>
+<span class="fc" id="L135">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L136" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
 <span class="fc" id="L137">					continue;</span>
 <span class="fc" id="L138">				int ew = w.weightInt(e);</span>

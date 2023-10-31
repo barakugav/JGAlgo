@@ -16,19 +16,19 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
 <span class="fc" id="L26">class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {</span>
 
 	@Override
-	void computeCirculation(IndexGraph g, FlowNetwork net, WeightFunction supply) {
-<span class="pc bpc" id="L30" title="1 of 4 branches missed.">		if (net instanceof FlowNetworkInt &amp;&amp; supply instanceof WeightFunctionInt) {</span>
-<span class="fc" id="L31">			new WorkerInt(g, (FlowNetworkInt) net, (WeightFunctionInt) supply).computeCirculation();</span>
+	void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">		if (net instanceof IFlowNetworkInt &amp;&amp; supply instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L31">			new WorkerInt(g, (IFlowNetworkInt) net, (IWeightFunctionInt) supply).computeCirculation();</span>
 		} else {
 <span class="fc" id="L33">			new WorkerDouble(g, net, supply).computeCirculation();</span>
 		}
@@ -37,14 +37,14 @@ import com.jgalgo.internal.util.Assertions;
 	private static class Worker {
 
 		final IndexGraph g;
-		final FlowNetwork net;
+		final IFlowNetwork net;
 
 		final int[] label;
 		final LinkedListFixedSize.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-<span class="fc" id="L47">		Worker(IndexGraph g, FlowNetwork net, WeightFunction supply) {</span>
+<span class="fc" id="L47">		Worker(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {</span>
 <span class="fc" id="L48">			Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L49">			this.g = g;</span>
 <span class="fc" id="L50">			this.net = net;</span>
@@ -89,7 +89,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		private static final double eps = 1e-9;
 
-		WorkerDouble(IndexGraph g, FlowNetwork net, WeightFunction supply) {
+		WorkerDouble(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
 <span class="fc" id="L93">			super(g, net, supply);</span>
 
 <span class="fc" id="L95">			final int n = g.vertices().size();</span>
@@ -144,9 +144,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="pc bnc" id="L144" title="All 2 branches missed.">				assert exc &gt; eps;</span>
 <span class="fc" id="L145">				int actLevel = maxLayerActive;</span>
 <span class="fc" id="L146">				int minLayer = n;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L148">					int e = eit.nextInt();</span>
-<span class="fc" id="L149">					int v = eit.target();</span>
+<span class="fc" id="L149">					int v = eit.targetInt();</span>
 <span class="fc" id="L150">					double fc = capacity[e] - flow[e];</span>
 <span class="fc bfc" id="L151" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
 <span class="fc" id="L152">						continue;</span>
@@ -174,9 +174,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L174">							activate(v);</span>
 					}
 <span class="fc" id="L176">				}</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L178">					int e = eit.nextInt();</span>
-<span class="fc" id="L179">					int v = eit.source();</span>
+<span class="fc" id="L179">					int v = eit.sourceInt();</span>
 <span class="fc" id="L180">					double fc = flow[e] - lowerBound;</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
 <span class="fc" id="L182">						continue;</span>
@@ -227,7 +227,7 @@ import com.jgalgo.internal.util.Assertions;
 		final int[] flow;
 		final int[] excess;
 
-		WorkerInt(IndexGraph g, FlowNetworkInt net, WeightFunctionInt supply) {
+		WorkerInt(IndexGraph g, IFlowNetworkInt net, IWeightFunctionInt supply) {
 <span class="fc" id="L231">			super(g, net, supply);</span>
 
 <span class="fc" id="L233">			final int n = g.vertices().size();</span>
@@ -282,9 +282,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="pc bnc" id="L282" title="All 2 branches missed.">				assert exc &gt; 0;</span>
 <span class="fc" id="L283">				int actLevel = maxLayerActive;</span>
 <span class="fc" id="L284">				int minLayer = n;</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L286">					int e = eit.nextInt();</span>
-<span class="fc" id="L287">					int v = eit.target();</span>
+<span class="fc" id="L287">					int v = eit.targetInt();</span>
 <span class="fc" id="L288">					int fc = capacity[e] - flow[e];</span>
 <span class="fc bfc" id="L289" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
 <span class="fc" id="L290">						continue;</span>
@@ -312,9 +312,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L312">							activate(v);</span>
 					}
 <span class="fc" id="L314">				}</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">				for (EdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L316">					int e = eit.nextInt();</span>
-<span class="fc" id="L317">					int v = eit.source();</span>
+<span class="fc" id="L317">					int v = eit.sourceInt();</span>
 <span class="fc" id="L318">					int fc = flow[e] - lowerBound;</span>
 <span class="fc bfc" id="L319" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
 <span class="fc" id="L320">						continue;</span>
@@ -353,7 +353,7 @@ import com.jgalgo.internal.util.Assertions;
 				}
 <span class="fc" id="L354">			}</span>
 
-<span class="fc" id="L356">			FlowNetworkInt netInt = (FlowNetworkInt) net;</span>
+<span class="fc" id="L356">			IFlowNetworkInt netInt = (IFlowNetworkInt) net;</span>
 <span class="pc bnc" id="L357" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] == 0);</span>
 <span class="fc bfc" id="L358" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L359">				netInt.setFlow(e, flow[e]);</span>

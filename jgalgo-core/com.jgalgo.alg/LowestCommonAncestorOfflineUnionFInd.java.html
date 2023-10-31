@@ -17,7 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.function.IntFunction;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Stack;
@@ -29,15 +29,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L29">class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {</span>
 
 	@Override
-	LowestCommonAncestorOffline.Result findLCAs(IndexGraph tree, int root,
-			LowestCommonAncestorOffline.Queries queries) {
+	LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+			LowestCommonAncestorOffline.IQueries queries) {
 <span class="fc" id="L34">		final int n = tree.vertices().size();</span>
 <span class="fc" id="L35">		int[] res = new int[queries.size()];</span>
 
 <span class="fc" id="L37">		int[] queriesNum = new int[n];</span>
 <span class="fc" id="L38">		int queriesNumCount = 0;</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int qNum = queries.size(), q = 0; q &lt; qNum; q++) {</span>
-<span class="fc" id="L40">			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);</span>
+<span class="fc" id="L40">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">			if (u != v) {</span>
 <span class="fc" id="L42">				queriesNum[u]++;</span>
 <span class="fc" id="L43">				queriesNum[v]++;</span>
@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		for (int v = 1; v &lt; n; v++)</span>
 <span class="fc" id="L53">			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1] + queriesNum[v - 1];</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int qNum = queries.size(), q = 0; q &lt; qNum; q++) {</span>
-<span class="fc" id="L55">			int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);</span>
+<span class="fc" id="L55">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">			if (u != v) {</span>
 <span class="fc" id="L57">				perVertexQueries[perVertexQueriesOffset[u]++] = q;</span>
 <span class="fc" id="L58">				perVertexQueries[perVertexQueriesOffset[v]++] = q;</span>
@@ -88,7 +88,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L89">		IntStack stack = new IntArrayList();</span>
 <span class="fc" id="L90">		IntStack parentEdgeStack = new IntArrayList();</span>
-<span class="fc" id="L91">		Stack&lt;EdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L91">		Stack&lt;IEdgeIter&gt; edgeIterStack = new ObjectArrayList&lt;&gt;();</span>
 
 <span class="fc" id="L93">		stack.push(root);</span>
 <span class="fc" id="L94">		parentEdgeStack.push(-1);</span>
@@ -97,10 +97,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		dfs: for (;;) {
 <span class="fc" id="L98">			int u = stack.topInt();</span>
 <span class="fc" id="L99">			int parentEdge = parentEdgeStack.topInt();</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (EdgeIter eit = edgeIterStack.top(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (IEdgeIter eit = edgeIterStack.top(); eit.hasNext();) {</span>
 <span class="fc" id="L101">				int e = eit.nextInt();</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">				if (e != parentEdge) {</span>
-<span class="fc" id="L103">					int v = eit.target();</span>
+<span class="fc" id="L103">					int v = eit.targetInt();</span>
 <span class="fc" id="L104">					stack.push(v);</span>
 <span class="fc" id="L105">					parentEdgeStack.push(e);</span>
 <span class="fc" id="L106">					edgeIterStack.push(tree.outEdges(v).iterator());</span>
@@ -111,11 +111,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L111" title="All 2 branches covered.">			for (IntIterator qit = vertexQueries.apply(u); qit.hasNext();) {</span>
 <span class="fc" id="L112">				int q = qit.nextInt();</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">				if (mark.get(q)) {</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">					if (u == queries.getQuerySource(q)) {</span>
-<span class="fc" id="L115">						res[q] = ufRoot[uf.find(queries.getQueryTarget(q))];</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">					if (u == queries.getQuerySourceInt(q)) {</span>
+<span class="fc" id="L115">						res[q] = ufRoot[uf.find(queries.getQueryTargetInt(q))];</span>
 					} else {
-<span class="pc bnc" id="L117" title="All 2 branches missed.">						assert u == queries.getQueryTarget(q);</span>
-<span class="fc" id="L118">						res[q] = ufRoot[uf.find(queries.getQuerySource(q))];</span>
+<span class="pc bnc" id="L117" title="All 2 branches missed.">						assert u == queries.getQueryTargetInt(q);</span>
+<span class="fc" id="L118">						res[q] = ufRoot[uf.find(queries.getQuerySourceInt(q))];</span>
 					}
 
 				} else {

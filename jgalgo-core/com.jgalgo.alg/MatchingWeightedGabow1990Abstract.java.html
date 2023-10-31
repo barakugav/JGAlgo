@@ -25,12 +25,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.jgalgo.alg.MatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SplitFindMin;
@@ -52,20 +52,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	static final double EPS = 0.00001;
 
 	@Override
-	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L56">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L57">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);</span>
 
 	}
 
 	@Override
-	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L63">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L64">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);</span>
 	}
 
-	abstract Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
-			DebugPrinter debugPrint);
+	abstract Worker newWorker(IndexGraph gOrig, IWeightFunction w,
+			HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder, DebugPrinter debugPrint);
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -377,10 +377,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		/* the graph */
 		final IndexGraph g;
 
-		final WeightsObj&lt;EdgeVal&gt; edgeVal;
+		final IWeightsObj&lt;EdgeVal&gt; edgeVal;
 
 		/* the weight function */
-		final WeightFunction w;
+		final IWeightFunction w;
 
 		/* vertex -&gt; matched edge */
 		final int[] matched;
@@ -454,7 +454,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L454">			}</span>
 		}
 
-		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 <span class="fc" id="L458">				DebugPrinter debugPrint) {</span>
 <span class="fc" id="L459">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L460">			this.gOrig = gOrig;</span>
@@ -462,7 +462,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L462" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L463">				g.addVertex();</span>
 <span class="fc" id="L464">			edgeVal = g.addEdgesWeights(&quot;edgeVal&quot;, EdgeVal.class);</span>
-<span class="fc" id="L465">			WeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);</span>
+<span class="fc" id="L465">			IWeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);</span>
 <span class="fc" id="L466">			this.w = e -&gt; wLocal.weight(edgeVal.get(e).e);</span>
 
 <span class="fc bfc" id="L468" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
@@ -529,7 +529,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		abstract EdgeEvent extractNextBlossomEvent();
 
-		private Matching computeMaxMatching(boolean perfect) {
+		private IMatching computeMaxMatching(boolean perfect) {
 <span class="fc" id="L533">			int n = g.vertices().size();</span>
 
 			// init dual value of all vertices as maxWeight / 2
@@ -987,9 +987,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		void insertGrowEventsFromVertex(int u) {
 <span class="fc" id="L989">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L990" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L990" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L991">				int e = eit.nextInt();</span>
-<span class="fc" id="L992">				int v = eit.target();</span>
+<span class="fc" id="L992">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L993" title="All 2 branches covered.">				if (isEven(v))</span>
 <span class="fc" id="L994">					continue;</span>
 <span class="fc" id="L995">				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);</span>
@@ -1014,9 +1014,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bnc" id="L1014" title="All 2 branches missed.">			assert isEven(u);</span>
 <span class="fc" id="L1015">			Blossom U = evens.findBlossom(u);</span>
 <span class="fc" id="L1016">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L1017" title="All 2 branches covered.">			for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1017" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L1018">				final int e = eit.nextInt();</span>
-<span class="fc" id="L1019">				int v = eit.target();</span>
+<span class="fc" id="L1019">				int v = eit.targetInt();</span>
 <span class="fc bfc" id="L1020" title="All 2 branches covered.">				if (!isEven(v))</span>
 <span class="fc" id="L1021">					continue;</span>
 <span class="fc" id="L1022">				Blossom V = evens.findBlossom(v);</span>

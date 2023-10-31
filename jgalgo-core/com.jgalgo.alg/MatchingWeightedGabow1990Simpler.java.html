@@ -17,7 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SubtreeMergeFindMin;
@@ -48,7 +48,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 <span class="fc" id="L48">	MatchingWeightedGabow1990Simpler() {}</span>
 
 	@Override
-	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	Worker newWorker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrinter debugPrint) {
 <span class="fc" id="L53">		return new Worker(gOrig, w, heapBuilder, debugPrint);</span>
 	}
@@ -58,7 +58,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 		/* Heap storing all the blossom and augmenting events */
 		final Heap&lt;EdgeEvent&gt; blossomEvents;
 
-		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 				DebugPrinter debugPrint) {
 <span class="fc" id="L63">			super(gOrig, w, heapBuilder, debugPrint);</span>
 <span class="fc" id="L64">			blossomEvents = Heap.newBuilder().&lt;EdgeEvent&gt;elementsTypeObj()</span>

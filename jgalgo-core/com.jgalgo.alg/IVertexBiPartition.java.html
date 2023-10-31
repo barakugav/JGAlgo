@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IVertexBiPartition.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">IVertexBiPartition.java</span></div><h1>IVertexBiPartition.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A partition of the vertices of an int graph into two blocks.
+ * &lt;p&gt;
+ * This interface is a specific version of {@link VertexBiPartition} for {@link IntGraph}. See {@link VertexBiPartition}
+ * for the complete documentation.
+ *
+ * @author Barak Ugav
+ */
+public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&lt;Integer, Integer&gt; {
+
+	/**
+	 * Check whether a vertex is contained in the left block (block 0).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the left block, {@code false} otherwise
+	 */
+	boolean isLeft(int vertex);
+
+	@Deprecated
+	@Override
+	default boolean isLeft(Integer vertex) {
+<span class="nc" id="L42">		return isLeft(vertex.intValue());</span>
+	}
+
+	/**
+	 * Check whether a vertex is contained in the right block (block 1).
+	 *
+	 * @param  vertex a vertex in the graph
+	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
+	 */
+	default boolean isRight(int vertex) {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		return !isLeft(vertex);</span>
+	}
+
+	@Deprecated
+	@Override
+	default int vertexBlock(Integer vertex) {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+	}
+
+	@Override
+	default int vertexBlock(int vertex) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+	}
+
+	@Override
+	default IntSet leftVertices() {
+<span class="nc" id="L68">		return (IntSet) VertexBiPartition.super.leftVertices();</span>
+	}
+
+	@Override
+	default IntSet rightVertices() {
+<span class="nc" id="L73">		return (IntSet) VertexBiPartition.super.rightVertices();</span>
+	}
+
+	@Override
+	default IntSet leftEdges() {
+<span class="nc" id="L78">		return (IntSet) VertexBiPartition.super.leftEdges();</span>
+	}
+
+	@Override
+	default IntSet rightEdges() {
+<span class="nc" id="L83">		return (IntSet) VertexBiPartition.super.rightEdges();</span>
+	}
+
+	@Override
+	default IntSet crossEdges() {
+<span class="fc" id="L88">		return (IntSet) VertexBiPartition.super.crossEdges();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

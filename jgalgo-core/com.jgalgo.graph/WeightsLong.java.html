@@ -21,41 +21,41 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsLong  extends Weights&lt;Long&gt; , WeightFunction {
+public interface WeightsLong&lt;K &gt; extends Weights&lt;K, Long&gt; , WeightFunction&lt;K&gt; {
 
 	/**
-	 * Get the weight associated with the given id.
+	 * Get the weight associated with the given element.
 	 *
-	 * @param  id an id of edge/vertex.
-	 * @return    the weight associated with the given id.
+	 * @param  element an element (edge/vertex).
+	 * @return    the weight associated with the given element.
 	 */
-	public long get(int id);
+	public long get(K element);
 
 	@Deprecated
 	@Override
-	default Long getAsObj(int id) {
-<span class="fc" id="L37">		return Long.valueOf(get(id));</span>
+	default Long getAsObj(K element) {
+<span class="nc" id="L37">		return Long.valueOf(get(element));</span>
 	}
 
 	/**
-	 * Set the weight associated with the given id.
+	 * Set the weight associated with the given element.
 	 *
-	 * @param id     an id of edge/vertex
-	 * @param weight new weight that will be associated with the given id
+	 * @param  element an element (edge/vertex).
+	 * @param weight new weight that will be associated with the given element
 	 */
-	public void set(int id, long weight);
+	public void set(K element, long weight);
 
 	@Deprecated
 	@Override
-	default void setAsObj(int id, Long weight) {
-<span class="fc" id="L51">		set(id, weight.longValue());</span>
-<span class="fc" id="L52">	}</span>
+	default void setAsObj(K element, Long weight) {
+<span class="nc" id="L51">		set(element, weight.longValue());</span>
+<span class="nc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
 	 * &lt;p&gt;
-	 * The default weight is the weight associated with all ids that were not explicitly set using
-	 * {@link #set(int, long)}.
+	 * The default weight is the weight associated with all elements that were not explicitly set using
+	 * {@link #set(Object, long)}.
 	 *
 	 * @return the default weight of this weights container.
 	 */
@@ -74,8 +74,8 @@ public interface WeightsLong  extends Weights&lt;Long&gt; , WeightFunction {
 	 * Implement the {@link WeightFunction} interface by using the weights of the container.
 	 */
 	@Override
-	default double weight(int id) {
-<span class="nc" id="L78">		return get(id);</span>
+	default double weight(K element) {
+<span class="nc" id="L78">		return get(element);</span>
 	}
 
 

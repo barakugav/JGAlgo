@@ -20,9 +20,9 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import com.jgalgo.graph.EdgeIter;
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -47,14 +47,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L47">class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {</span>
 
 	@Override
-	BiConnectedComponentsAlgo.Result findBiConnectedComponents(IndexGraph g) {
+	BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
 <span class="fc" id="L51">		Assertions.Graphs.onlyUndirected(g);</span>
 
 <span class="fc" id="L53">		final int n = g.vertices().size();</span>
 <span class="fc" id="L54">		int[] depths = new int[n];</span>
 <span class="fc" id="L55">		int[] edgePath = new int[n];</span>
 <span class="fc" id="L56">		int[] lowpoint = new int[n];</span>
-<span class="fc" id="L57">		EdgeIter[] edgeIters = new EdgeIter[n];</span>
+<span class="fc" id="L57">		IEdgeIter[] edgeIters = new IEdgeIter[n];</span>
 		// TODO DFS stack class
 
 <span class="fc" id="L60">		IntArrayList edgeStack = new IntArrayList();</span>
@@ -112,10 +112,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L112">			dfs: for (int u = root;;) {</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">				final int parent = depth == 0 ? -1 : g.edgeEndpoint(edgePath[depth - 1], u);</span>
 
-<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
 <span class="fc" id="L116">					int e = eit.nextInt();</span>
 
-<span class="fc" id="L118">					int v = eit.target();</span>
+<span class="fc" id="L118">					int v = eit.targetInt();</span>
 <span class="fc" id="L119">					final int vDepth = depths[v];</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">					if (vDepth == -1) { /* unvisited */</span>
 <span class="fc" id="L121">						edgeStack.push(e);</span>
@@ -181,7 +181,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L181">		return new Res(g, biccs);</span>
 	}
 
-<span class="fc" id="L184">	private static class Res implements BiConnectedComponentsAlgo.Result {</span>
+<span class="fc" id="L184">	private static class Res implements BiConnectedComponentsAlgo.IResult {</span>
 
 		private final IndexGraph g;
 		private final IntSet[] biccsVertices;
@@ -190,7 +190,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		private IntSet[] vertexBiCcs;
 		private BitSet cutVerticesBitmap;
 		private IntSet cutVertices;
-		private Graph blockGraph;
+		private IntGraph blockGraph;
 
 <span class="fc" id="L195">		Res(IndexGraph g, List&lt;Pair&lt;int[], int[]&gt;&gt; biccs) {</span>
 <span class="fc" id="L196">			this.g = Objects.requireNonNull(g);</span>
@@ -286,18 +286,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L286">						extraEdgesBiccs = new int[m];</span>
 <span class="fc" id="L287">						Arrays.fill(extraEdgesBiccs, -1);</span>
 <span class="fc bfc" id="L288" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L290">								int e = eit.nextInt();</span>
-<span class="fc" id="L291">								int v = eit.target();</span>
+<span class="fc" id="L291">								int v = eit.targetInt();</span>
 <span class="fc bfc" id="L292" title="All 2 branches covered.">								if (u == v)</span>
 <span class="fc" id="L293">									continue;</span>
 <span class="fc" id="L294">								int b = edge2bicc[e];</span>
 <span class="fc bfc" id="L295" title="All 2 branches covered.">								if (b != -1)</span>
 <span class="fc" id="L296">									target2bicc[v] = b;</span>
 <span class="fc" id="L297">							}</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L299">								int e = eit.nextInt();</span>
-<span class="fc" id="L300">								int v = eit.target();</span>
+<span class="fc" id="L300">								int v = eit.targetInt();</span>
 <span class="fc bfc" id="L301" title="All 2 branches covered.">								if (u == v)</span>
 <span class="fc" id="L302">									continue;</span>
 <span class="fc" id="L303">								int b = edge2bicc[e];</span>
@@ -309,9 +309,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L309">									biccExtraEdgesCount[b]++;</span>
 								}
 <span class="fc" id="L311">							}</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L313">								eit.nextInt();</span>
-<span class="fc" id="L314">								target2bicc[eit.target()] = -1;</span>
+<span class="fc" id="L314">								target2bicc[eit.targetInt()] = -1;</span>
 							}
 						}
 					}
@@ -321,9 +321,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bnc" id="L321" title="All 2 branches missed.">						assert g.edges().intStream().filter(e -&gt; g.edgeSource(e) == g.edgeTarget(e))</span>
 <span class="nc bnc" id="L322" title="All 4 branches missed.">								.allMatch(e -&gt; edge2bicc[e] == -1);</span>
 <span class="fc bfc" id="L323" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L325">								eit.nextInt();</span>
-<span class="fc" id="L326">								int v = eit.target();</span>
+<span class="fc" id="L326">								int v = eit.targetInt();</span>
 <span class="fc bfc" id="L327" title="All 2 branches covered.">								if (u != v)</span>
 <span class="fc" id="L328">									continue;</span>
 <span class="fc bfc" id="L329" title="All 2 branches covered.">								for (int b : getVertexBiCcs(u))</span>
@@ -352,9 +352,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 					/* add self edges */
 <span class="pc bpc" id="L353" title="1 of 2 branches missed.">					if (g.isAllowSelfEdges()) {</span>
 <span class="fc bfc" id="L354" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">							for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L356">								int e = eit.nextInt();</span>
-<span class="fc" id="L357">								int v = eit.target();</span>
+<span class="fc" id="L357">								int v = eit.targetInt();</span>
 <span class="fc bfc" id="L358" title="All 2 branches covered.">								if (u != v)</span>
 <span class="fc" id="L359">									continue;</span>
 <span class="fc bfc" id="L360" title="All 2 branches covered.">								for (int b : getVertexBiCcs(u))</span>
@@ -421,10 +421,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 
 		@Override
-		public Graph getBlockGraph() {
+		public IntGraph getBlockGraph() {
 <span class="pc bpc" id="L425" title="1 of 2 branches missed.">			if (blockGraph == null) {</span>
 <span class="fc" id="L426">				final int blockNum = getNumberOfBiCcs();</span>
-<span class="fc" id="L427">				GraphBuilder g = GraphBuilder.newUndirected();</span>
+<span class="fc" id="L427">				IntGraphBuilder g = IntGraphBuilder.newUndirected();</span>
 <span class="fc" id="L428">				g.expectedVerticesNum(blockNum);</span>
 <span class="fc bfc" id="L429" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++)</span>
 <span class="fc" id="L430">					g.addVertex(b);</span>

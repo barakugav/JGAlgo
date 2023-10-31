@@ -58,9 +58,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		if (copyWeights) {</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys())</span>
 <span class="fc" id="L60">				verticesUserWeights.addWeights(key,</span>
-<span class="fc" id="L61">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices));</span>
+<span class="fc" id="L61">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L63">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges));</span>
+<span class="fc" id="L63">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));</span>
 		}
 
 		/* internal data containers should be copied manually */
@@ -187,7 +187,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L187">	}</span>
 
 	@Override
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(String key) {
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesIWeights(String key) {
 <span class="fc" id="L191">		return verticesUserWeights.getWeights(key);</span>
 	}
 
@@ -203,7 +203,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(String key) {
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesIWeights(String key) {
 <span class="fc" id="L207">		return (WeightsT) edgesUserWeights.getWeights(key);</span>
 	}
 
@@ -226,30 +226,32 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L226">	}</span>
 
 	@Override
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type, V defVal) {
-<span class="fc" id="L230">		WeightsImpl.IndexMutable&lt;V&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
-<span class="fc" id="L231">		verticesUserWeights.addWeights(key, weights);</span>
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+			T defVal) {
+<span class="fc" id="L231">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="fc" id="L232">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L233">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L234">		return weights0;</span>
+<span class="fc" id="L234">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L235">		return weights0;</span>
 	}
 
 	@Override
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L239">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
-<span class="fc" id="L240">		edgesUserWeights.addWeights(key, weights);</span>
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+			T defVal) {
+<span class="fc" id="L241">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="fc" id="L242">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L242">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L243">		return weights0;</span>
+<span class="fc" id="L244">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L245">		return weights0;</span>
 	}
 
 	void checkVertex(int vertex) {
-<span class="fc" id="L247">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
-<span class="fc" id="L248">	}</span>
+<span class="fc" id="L249">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
+<span class="fc" id="L250">	}</span>
 
 	void checkEdge(int edge) {
-<span class="fc" id="L251">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
-<span class="fc" id="L252">	}</span>
+<span class="fc" id="L253">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L254">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

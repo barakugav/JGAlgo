@@ -89,16 +89,16 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	}
 
 	@Override
-	public EdgeSet outEdges(int source) {
+	public IEdgeSet outEdges(int source) {
 <span class="fc" id="L93">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeSet inEdges(int target) {
+	public IEdgeSet inEdges(int target) {
 <span class="fc" id="L98">		return new EdgeSetIn(target);</span>
 	}
 
-	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -119,12 +119,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L123">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
-	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 
@@ -145,12 +145,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public EdgeIter iterator() {
+		public IEdgeIter iterator() {
 <span class="fc" id="L149">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
 		}
 	}
 
-	private static abstract class EdgeIterOutAbstract implements EdgeIter {
+	private static abstract class EdgeIterOutAbstract implements IEdgeIter {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
@@ -173,13 +173,13 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 
 		@Override
-		public int peekNext() {
+		public int peekNextInt() {
 <span class="fc" id="L177">			Assertions.Iters.hasNext(this);</span>
 <span class="fc" id="L178">			return nextEdge;</span>
 		}
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L183">			return source;</span>
 		}
 	}
@@ -190,7 +190,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 <span class="fc" id="L190">		}</span>
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L194">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
 <span class="fc" id="L195">			return edgeTarget(lastEdge);</span>
 		}
@@ -205,12 +205,12 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 <span class="fc" id="L205">		}</span>
 
 		@Override
-		public int source() {
+		public int sourceInt() {
 <span class="fc" id="L209">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
-		public int target() {
+		public int targetInt() {
 <span class="fc" id="L214">			return target;</span>
 		}
 	}

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -73,8 +73,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L73">	}</span>
 
 	@Override
-	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
-			TreePathMaxima.Queries queries) {
+	TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
+			TreePathMaxima.IQueries queries) {
 <span class="fc" id="L78">		Assertions.Graphs.onlyUndirected(tree);</span>
 <span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (!Trees.isTree(tree))</span>
 <span class="nc" id="L80">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
@@ -84,7 +84,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L84">	private static class Worker {</span>
 
 		private final IndexGraph tOrig;
-		private final WeightFunction w;
+		private final IWeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
 		private final IndexGraph tree;
@@ -101,7 +101,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 		private final BiInt2IntFunc getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-<span class="fc" id="L104">		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {</span>
+<span class="fc" id="L104">		Worker(IndexGraph tOrig, IWeightFunction w, boolean useBitsLookupTables) {</span>
 <span class="fc" id="L105">			this.tOrig = tOrig;</span>
 <span class="fc" id="L106">			this.w = WeightFunctions.localEdgeWeightFunction(tOrig, w);</span>
 
@@ -132,7 +132,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L132">			edgeRef = t.second();</span>
 <span class="fc" id="L133">		}</span>
 
-		TreePathMaxima.Result calcTPM(TreePathMaxima.Queries queries) {
+		TreePathMaxima.IResult calcTPM(TreePathMaxima.IQueries queries) {
 <span class="fc" id="L136">			int[] lcaQueries = splitQueriesIntoLCAQueries(queries);</span>
 
 <span class="fc" id="L138">			int[] q = calcQueriesPerVertex(lcaQueries);</span>
@@ -140,7 +140,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L140">			return extractEdgesFromAnswers(a, q, lcaQueries);</span>
 		}
 
-		private TreePathMaxima.Result extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries) {
+		private TreePathMaxima.IResult extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries) {
 <span class="fc" id="L144">			int queriesNum = lcaQueries.length / 4;</span>
 <span class="fc" id="L145">			int[] res = new int[queriesNum];</span>
 
@@ -180,7 +180,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L180">			int[] a = new int[n];</span>
 <span class="fc" id="L181">			int[][] res = new int[tOrig.vertices().size()][];</span>
 
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (DfsIter it = DfsIter.newInstance(tree, root); it.hasNext();) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (Dfs.IntIter it = Dfs.newInstance(tree, root); it.hasNext();) {</span>
 <span class="fc" id="L184">				int v = it.nextInt();</span>
 <span class="fc" id="L185">				IntList edgesFromRoot = it.edgePath();</span>
 <span class="fc bfc" id="L186" title="All 2 branches covered.">				if (edgesFromRoot.isEmpty())</span>
@@ -416,65 +416,66 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L416">			return Pair.of(treeBuilder.build(), edgeRef);</span>
 		}
 
-		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.Queries queries) {
+		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.IQueries queries) {
 <span class="fc" id="L420">			int queriesNum = queries.size();</span>
 <span class="fc" id="L421">			int[] lcaQueries = new int[queriesNum * 4];</span>
 
-<span class="fc" id="L423">			LowestCommonAncestorStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);</span>
-<span class="fc bfc" id="L424" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
-<span class="fc" id="L425">				int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);</span>
-<span class="pc bpc" id="L426" title="1 of 2 branches missed.">				if (u == v)</span>
-<span class="nc" id="L427">					throw new IllegalArgumentException(</span>
+<span class="fc" id="L423">			LowestCommonAncestorStatic.IDataStructure lcaDS =</span>
+<span class="fc" id="L424">					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(root));</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
+<span class="fc" id="L426">				int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
+<span class="pc bpc" id="L427" title="1 of 2 branches missed.">				if (u == v)</span>
+<span class="nc" id="L428">					throw new IllegalArgumentException(</span>
 							&quot;Tree path maxima query can not be composed of two identical vertices&quot;);
-<span class="fc" id="L429">				int lca = lcaDS.findLowestCommonAncestor(u, v);</span>
-<span class="fc" id="L430">				lcaQueries[q * 4] = u;</span>
-<span class="fc" id="L431">				lcaQueries[q * 4 + 1] = lca;</span>
-<span class="fc" id="L432">				lcaQueries[q * 4 + 2] = v;</span>
-<span class="fc" id="L433">				lcaQueries[q * 4 + 3] = lca;</span>
+<span class="fc" id="L430">				int lca = lcaDS.findLca(u, v);</span>
+<span class="fc" id="L431">				lcaQueries[q * 4] = u;</span>
+<span class="fc" id="L432">				lcaQueries[q * 4 + 1] = lca;</span>
+<span class="fc" id="L433">				lcaQueries[q * 4 + 2] = v;</span>
+<span class="fc" id="L434">				lcaQueries[q * 4 + 3] = lca;</span>
 			}
-<span class="fc" id="L435">			return lcaQueries;</span>
+<span class="fc" id="L436">			return lcaQueries;</span>
 		}
 
 		private int[] calcQueriesPerVertex(int[] lcaQueries) {
-<span class="fc" id="L439">			final int n = tree.vertices().size();</span>
+<span class="fc" id="L440">			final int n = tree.vertices().size();</span>
 
-<span class="fc" id="L441">			int[] q = new int[n];</span>
-<span class="fc" id="L442">			Arrays.fill(q, 0);</span>
+<span class="fc" id="L442">			int[] q = new int[n];</span>
+<span class="fc" id="L443">			Arrays.fill(q, 0);</span>
 
-<span class="fc" id="L444">			int queriesNum = lcaQueries.length / 2;</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">			for (int query = 0; query &lt; queriesNum; query++) {</span>
-<span class="fc" id="L446">				int u = lcaQueries[query * 2];</span>
-<span class="fc" id="L447">				int ancestor = lcaQueries[query * 2 + 1];</span>
-<span class="pc bpc" id="L448" title="1 of 2 branches missed.">				if (u == ancestor)</span>
-<span class="nc" id="L449">					continue;</span>
-<span class="fc" id="L450">				q[u] |= 1 &lt;&lt; depths[ancestor];</span>
+<span class="fc" id="L445">			int queriesNum = lcaQueries.length / 2;</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">			for (int query = 0; query &lt; queriesNum; query++) {</span>
+<span class="fc" id="L447">				int u = lcaQueries[query * 2];</span>
+<span class="fc" id="L448">				int ancestor = lcaQueries[query * 2 + 1];</span>
+<span class="pc bpc" id="L449" title="1 of 2 branches missed.">				if (u == ancestor)</span>
+<span class="nc" id="L450">					continue;</span>
+<span class="fc" id="L451">				q[u] |= 1 &lt;&lt; depths[ancestor];</span>
 			}
 
 			/* Start traversing the full branching tree from the leaves upwards */
-<span class="fc" id="L454">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L455">			BitSet queued = new BitSet(n);</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">				if (depths[u] == treeHeight - 1) {</span>
-<span class="fc" id="L458">					queue.enqueue(u);</span>
-<span class="fc" id="L459">					queued.set(u);</span>
+<span class="fc" id="L455">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L456">			BitSet queued = new BitSet(n);</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">				if (depths[u] == treeHeight - 1) {</span>
+<span class="fc" id="L459">					queue.enqueue(u);</span>
+<span class="fc" id="L460">					queued.set(u);</span>
 				}
 			}
 
-<span class="fc bfc" id="L463" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L464">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L465">				int u = queue.dequeueInt();</span>
 
-<span class="fc" id="L466">				int parent = parents[u];</span>
-<span class="fc bfc" id="L467" title="All 2 branches covered.">				if (parent == -1)</span>
-<span class="fc" id="L468">					continue;</span>
-<span class="fc" id="L469">				q[parent] |= q[u] &amp; ~(1 &lt;&lt; depths[parent]);</span>
+<span class="fc" id="L467">				int parent = parents[u];</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">				if (parent == -1)</span>
+<span class="fc" id="L469">					continue;</span>
+<span class="fc" id="L470">				q[parent] |= q[u] &amp; ~(1 &lt;&lt; depths[parent]);</span>
 
-<span class="fc bfc" id="L471" title="All 2 branches covered.">				if (queued.get(parent))</span>
-<span class="fc" id="L472">					continue;</span>
-<span class="fc" id="L473">				queue.enqueue(parent);</span>
-<span class="fc" id="L474">				queued.set(parent);</span>
-<span class="fc" id="L475">			}</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">				if (queued.get(parent))</span>
+<span class="fc" id="L473">					continue;</span>
+<span class="fc" id="L474">				queue.enqueue(parent);</span>
+<span class="fc" id="L475">				queued.set(parent);</span>
+<span class="fc" id="L476">			}</span>
 
-<span class="fc" id="L477">			return q;</span>
+<span class="fc" id="L478">			return q;</span>
 		}
 
 	}

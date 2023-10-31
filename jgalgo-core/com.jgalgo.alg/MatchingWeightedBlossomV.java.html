@@ -23,8 +23,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.Heaps;
@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L50">class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {</span>
 
 	@Override
-	Matching computeMinimumWeightedMatching(IndexGraph g, WeightFunction w) {
+	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -97,16 +97,16 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		}
 
 		/* Compute a perfect matching in the new graph */
-		WeightFunction wDup;
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (w instanceof WeightFunctionInt) {</span>
-<span class="nc" id="L102">			WeightFunctionInt wInt = (WeightFunctionInt) w;</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">			WeightFunctionInt wDupInt = e -&gt; e &lt; dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;</span>
+		IWeightFunction wDup;
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="nc" id="L102">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">			IWeightFunctionInt wDupInt = e -&gt; e &lt; dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;</span>
 <span class="nc" id="L104">			wDup = wDupInt;</span>
 <span class="nc" id="L105">		} else {</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			wDup = e -&gt; e &lt; dummyEdgesThreshold ? w.weight(e / 2) : 0;</span>
 		}
 <span class="fc" id="L108">		IndexGraph gDup = b.build();</span>
-<span class="fc" id="L109">		Matching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);</span>
+<span class="fc" id="L109">		IMatching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);</span>
 
 		/* Convert matching to the original graph */
 <span class="fc" id="L112">		int[] matched = new int[g.vertices().size()];</span>
@@ -121,7 +121,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 	}
 
 	@Override
-	Matching computeMinimumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L125">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L126">		return new Worker(g, w).solve();</span>
 	}
@@ -146,7 +146,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc" id="L147">		private static final boolean OptimizationGrowSubTree = Boolean.parseBoolean(&quot;true&quot;);</span>
 
-<span class="fc" id="L149">		Worker(IndexGraph g, WeightFunction w) {</span>
+<span class="fc" id="L149">		Worker(IndexGraph g, IWeightFunction w) {</span>
 <span class="fc" id="L150">			Debug.reset();</span>
 
 <span class="fc" id="L152">			this.g = g;</span>
@@ -189,7 +189,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			};
 <span class="fc" id="L190">		}</span>
 
-		Matching solve() {
+		IMatching solve() {
 <span class="fc" id="L193">			dbgLog.format(&quot;\n\nsolve()\n&quot;);</span>
 <span class="fc" id="L194">			initGreedy();</span>
 <span class="fc" id="L195">			Debug.assertConstraints(this);</span>
@@ -1499,7 +1499,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1499">			treeNum--;</span>
 <span class="fc" id="L1500">		}</span>
 
-		private Matching finish() {
+		private IMatching finish() {
 <span class="fc bfc" id="L1503" title="All 2 branches covered.">			for (Blossom blossom : singletonNodes) {</span>
 <span class="fc bfc" id="L1504" title="All 2 branches covered.">				if (blossom.isMatched())</span>
 <span class="fc" id="L1505">					continue;</span>

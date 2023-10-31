@@ -19,9 +19,9 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -51,11 +51,11 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	Matching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L55">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L56">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L58">		WeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L58">		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
 <span class="fc" id="L59">		Objects.requireNonNull(partition,</span>
 				&quot;Bipartiteness values weren't found with weight &quot; + BipartiteGraphs.VertexBiPartitionWeightKey);
 <span class="fc" id="L61">		Assertions.Graphs.onlyBipartite(g, partition);</span>
@@ -66,7 +66,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 
 		/* DFS */
 <span class="fc" id="L68">		BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L69">		EdgeIter[] edges = new EdgeIter[n / 2 + 1];</span>
+<span class="fc" id="L69">		IEdgeIter[] edges = new IEdgeIter[n / 2 + 1];</span>
 <span class="fc" id="L70">		int[] dfsPath = new int[(n - 1) / 2 + 1];</span>
 
 <span class="fc" id="L72">		int[] matched = new int[n];</span>
@@ -92,9 +92,9 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 <span class="fc bfc" id="L92" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
 <span class="fc" id="L93">					continue;</span>
 
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (EdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L96">					int e = eit.nextInt();</span>
-<span class="fc" id="L97">					int v = eit.target();</span>
+<span class="fc" id="L97">					int v = eit.targetInt();</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
 <span class="fc" id="L99">						continue;</span>
 <span class="fc" id="L100">					es.set(e);</span>
@@ -128,12 +128,12 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 <span class="fc" id="L128">				visited.set(u);</span>
 
 <span class="fc bfc" id="L130" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
-<span class="fc" id="L131">					EdgeIter eit = edges[depth];</span>
+<span class="fc" id="L131">					IEdgeIter eit = edges[depth];</span>
 <span class="fc bfc" id="L132" title="All 2 branches covered.">					if (eit.hasNext()) {</span>
 <span class="fc" id="L133">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">						if (!es.get(e))</span>
 <span class="fc" id="L135">							continue;</span>
-<span class="fc" id="L136">						int v = eit.target();</span>
+<span class="fc" id="L136">						int v = eit.targetInt();</span>
 <span class="pc bpc" id="L137" title="1 of 4 branches missed.">						if (visited.get(v) || depth &gt;= depths[v])</span>
 <span class="nc" id="L138">							continue;</span>
 <span class="fc" id="L139">						visited.set(v);</span>

@@ -65,9 +65,9 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (copyWeights) {</span>
 <span class="nc bnc" id="L66" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys())</span>
 <span class="nc" id="L67">				verticesUserWeights.addWeights(key,</span>
-<span class="nc" id="L68">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices));</span>
+<span class="nc" id="L68">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));</span>
 <span class="nc bnc" id="L69" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys())</span>
-<span class="nc" id="L70">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges));</span>
+<span class="nc" id="L70">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));</span>
 		}
 <span class="fc" id="L72">	}</span>
 
@@ -248,13 +248,13 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="fc" id="L248">	}</span>
 
 	@Override
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(String key) {
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesWeights(String key) {
 <span class="fc" id="L252">		return verticesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super V&gt; type, V defVal) {
-<span class="fc" id="L257">		WeightsImpl.IndexMutable&lt;V&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type, T defVal) {
+<span class="fc" id="L257">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
 <span class="fc" id="L258">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L260">		WeightsT weights0 = (WeightsT) weights;</span>
@@ -267,13 +267,13 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	}
 
 	@Override
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(String key) {
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesWeights(String key) {
 <span class="fc" id="L271">		return edgesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L276">		WeightsImpl.IndexMutable&lt;E&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal) {
+<span class="fc" id="L276">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
 <span class="fc" id="L277">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L279">		WeightsT weights0 = (WeightsT) weights;</span>
