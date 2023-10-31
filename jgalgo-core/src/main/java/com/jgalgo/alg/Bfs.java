@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see    DfsIter
+ * @see    Dfs
  * @see    <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
@@ -68,7 +68,7 @@ public interface Bfs {
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBFSFromIndexBFS<>(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(indexBFS, viMap, eiMap);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public interface Bfs {
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBFSFromIndexBFS<>(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(indexBFS, viMap, eiMap);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public interface Bfs {
 			return new BfsIterImpl.Forward((IndexGraph) g, source);
 		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBFSFromIndexBFS(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public interface Bfs {
 			return new BfsIterImpl.Backward((IndexGraph) g, source);
 		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBFSFromIndexBFS(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public interface Bfs {
 	}
 
 	/**
-	 * A BFS iterator in an int graph.
+	 * A BFS iterator for {@link IntGraph}.
 	 *
 	 * @author Barak Ugav
 	 */

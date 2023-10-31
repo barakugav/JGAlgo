@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.DfsIter;
+import com.jgalgo.alg.Dfs;
 import com.jgalgo.alg.Bfs;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -46,7 +46,7 @@ public class BfsDfsExample {
 		int source = g.vertices().iterator().nextInt();
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-		for (DfsIter iter = DfsIter.newInstance(g, source); iter.hasNext();) {
+		for (Dfs.IntIter iter = Dfs.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
 			int v = iter.nextInt();
 			/* edgePath is a list of edges, forming a path from the source to v */

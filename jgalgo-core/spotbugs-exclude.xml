@@ -18,14 +18,6 @@
     <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
   </Match>
   <Match>
-    <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
-    the graph while the DFS iterator is in use -->
-    <Class name="com.jgalgo.alg.DfsIter" />
-    <Constructor />
-    <Local name="g" />
-    <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
     <!-- Intended -->
     <Class name="com.jgalgo.internal.util.DebugPrinter" />
     <Method name="setPrintStream" />
@@ -38,12 +30,6 @@
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
-    <!-- The retuned list is an unmodifiable view of the real list -->
-    <Class name="com.jgalgo.alg.DfsIter" />
-    <Method name="edgePath" />
-    <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->

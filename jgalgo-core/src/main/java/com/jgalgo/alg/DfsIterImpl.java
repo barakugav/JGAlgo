@@ -16,11 +16,13 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -28,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class DfsIterImpl implements DfsIter {
+class DfsIterImpl implements Dfs.IntIter {
 
 	private final IndexGraph g;
 	private final BitSet visited;
@@ -111,32 +113,60 @@ class DfsIterImpl implements DfsIter {
 		return edgePathView;
 	}
 
-	static class DFSFromIndexDFS implements DfsIter {
+	static class IntDfsFromIndexDfs implements Dfs.IntIter {
 
-		private final DfsIter it;
+		private final Dfs.IntIter indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		DFSFromIndexDFS(DfsIter it, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.it = Objects.requireNonNull(it);
+		IntDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public boolean hasNext() {
-			return it.hasNext();
+			return indexIter.hasNext();
 		}
 
 		@Override
 		public int nextInt() {
-			return viMap.indexToIdInt(it.nextInt());
+			return viMap.indexToIdInt(indexIter.nextInt());
 		}
 
 		@Override
 		public IntList edgePath() {
-			return IndexIdMaps.indexToIdList(it.edgePath(), eiMap);
+			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);
+		}
+	}
+
+	static class ObjDfsFromIndexDfs<V, E> implements Dfs.Iter<V, E> {
+
+		private final Dfs.IntIter indexIter;
+		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+
+		ObjDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+			this.indexIter = Objects.requireNonNull(indexIter);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
+		@Override
+		public boolean hasNext() {
+			return indexIter.hasNext();
+		}
+
+		@Override
+		public V next() {
+			return viMap.indexToId(indexIter.nextInt());
+		}
+
+		@Override
+		public List<E> edgePath() {
+			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);
+		}
 	}
+
 }

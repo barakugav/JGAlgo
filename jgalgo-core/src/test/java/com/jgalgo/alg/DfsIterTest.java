@@ -45,7 +45,7 @@ public class DfsIterTest extends TestBase {
 			int source = vs[rand.nextInt(vs.length)];
 
 			IntSet visited = new IntOpenHashSet();
-			for (DfsIter it = DfsIter.newInstance(g, source); it.hasNext();) {
+			for (Dfs.IntIter it = Dfs.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
@@ -60,7 +60,7 @@ public class DfsIterTest extends TestBase {
 
 			/* run DFS again without calling .hasNext() */
 			IntSet visited2 = new IntOpenHashSet();
-			DfsIter it = DfsIter.newInstance(g, source);
+			Dfs.IntIter it = Dfs.newInstance(g, source);
 			for (int s = visited.size(); s-- > 0;) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();

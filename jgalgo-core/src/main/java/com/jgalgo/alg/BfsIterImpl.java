@@ -158,13 +158,13 @@ class BfsIterImpl {
 		}
 	}
 
-	static class IntBFSFromIndexBFS implements Bfs.IntIter {
+	static class IntBfsFromIndexBfs implements Bfs.IntIter {
 
 		private final Bfs.IntIter indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntBFSFromIndexBFS(Bfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
 			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -192,13 +192,13 @@ class BfsIterImpl {
 		}
 	}
 
-	static class ObjBFSFromIndexBFS<V, E> implements Bfs.Iter<V, E> {
+	static class ObjBfsFromIndexBfs<V, E> implements Bfs.Iter<V, E> {
 
 		private final Bfs.IntIter indexIter;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjBFSFromIndexBFS(Bfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
 			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
