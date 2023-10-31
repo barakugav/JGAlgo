@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -37,12 +39,16 @@ public interface CoresAlgo {
 	/**
 	 * Compute the cores of the graph with respect to both in and out degree of the vertices.
 	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 * <p>
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
-	 * @param  g a graph
-	 * @return   the cores of the graph
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     the cores of the graph
 	 */
-	default CoresAlgo.Result computeCores(IntGraph g) {
+	default <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g) {
 		return computeCores(g, DegreeType.OutAndInDegree);
 	}
 
@@ -52,13 +58,17 @@ public interface CoresAlgo {
 	 * Cores are defined with respect to either the out edges, in edges, or both. For undirected graphs the degree type
 	 * is ignored.
 	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 * <p>
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
+	 * @param  <V>        the vertices type
+	 * @param  <E>        the edges type
 	 * @param  g          a graph
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	CoresAlgo.Result computeCores(IntGraph g, DegreeType degreeType);
+	<V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, DegreeType degreeType);
 
 	/**
 	 * The degree type the cores are defined with respect to.
@@ -68,7 +78,7 @@ public interface CoresAlgo {
 	 * type has no effect.
 	 *
 	 * @see    CoresAlgo
-	 * @see    CoresAlgo#computeCores(IntGraph, DegreeType)
+	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
 	 * @author Barak Ugav
 	 */
 	static enum DegreeType {
@@ -91,9 +101,11 @@ public interface CoresAlgo {
 	/**
 	 * The result of the cores computation.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * The core number of the given vertex.
@@ -103,7 +115,7 @@ public interface CoresAlgo {
 		 * @param  v a vertex in the graph
 		 * @return   the core number of the vertex
 		 */
-		int vertexCoreNum(int v);
+		int vertexCoreNum(V v);
 
 		/**
 		 * The maximum core number of the graph.
@@ -120,7 +132,7 @@ public interface CoresAlgo {
 		 * @param  k the core number (order)
 		 * @return   the vertices of the core
 		 */
-		IntSet coreVertices(int k);
+		Set<V> coreVertices(int k);
 
 		/**
 		 * The vertices in the shell of the given core.
@@ -131,7 +143,7 @@ public interface CoresAlgo {
 		 * @param  core the core number (order)
 		 * @return      the vertices in the shell of the core
 		 */
-		IntSet coreShell(int core);
+		Set<V> coreShell(int core);
 
 		/**
 		 * The vertices in the crust of the given core.
@@ -142,8 +154,40 @@ public interface CoresAlgo {
 		 * @param  core the core number (order)
 		 * @return      the vertices in the crust of the core
 		 */
-		IntSet coreCrust(int core);
+		Set<V> coreCrust(int core);
+	}
 
+	/**
+	 * The result of the cores computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends CoresAlgo.Result<Integer, Integer> {
+
+		/**
+		 * The core number of the given vertex.
+		 * <p>
+		 * The core number of a vertex is the highest order of a core that contains this vertex.
+		 *
+		 * @param  v a vertex in the graph
+		 * @return   the core number of the vertex
+		 */
+		int vertexCoreNum(int v);
+
+		@Deprecated
+		@Override
+		default int vertexCoreNum(Integer v) {
+			return vertexCoreNum(v.intValue());
+		}
+
+		@Override
+		IntSet coreVertices(int k);
+
+		@Override
+		IntSet coreShell(int core);
+
+		@Override
+		IntSet coreCrust(int core);
 	}
 
 	/**

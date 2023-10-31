@@ -16,12 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.IntConsumer;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -39,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 class CoresAlgoImpl implements CoresAlgo {
 
-	CoresAlgo.Result computeCores(IndexGraph g, DegreeType degreeType) {
+	CoresAlgo.IResult computeCores(IndexGraph g, DegreeType degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
@@ -146,7 +149,7 @@ class CoresAlgoImpl implements CoresAlgo {
 		return new ResultImpl(core);
 	}
 
-	private static class ResultImpl implements CoresAlgo.Result {
+	private static class ResultImpl implements CoresAlgo.IResult {
 
 		private final int[] core;
 		private final int maxCore;
@@ -260,23 +263,32 @@ class CoresAlgoImpl implements CoresAlgo {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public CoresAlgo.Result computeCores(IntGraph g, DegreeType degreeType) {
-		if (g instanceof IndexGraph)
-			return computeCores((IndexGraph) g, degreeType);
+	public <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, DegreeType degreeType) {
+		if (g instanceof IndexGraph) {
+			return (CoresAlgo.Result<V, E>) computeCores((IndexGraph) g, degreeType);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		CoresAlgo.Result iResult = computeCores(iGraph, degreeType);
-		return new ResultFromIndexResult(iResult, viMap);
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
+			return (CoresAlgo.Result<V, E>) new IntResultFromIndexResult(iResult, viMap);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
+			return new ObjResultFromIndexResult<>(iResult, viMap);
+		}
 	}
 
-	private static class ResultFromIndexResult implements CoresAlgo.Result {
+	private static class IntResultFromIndexResult implements CoresAlgo.IResult {
 
-		private final CoresAlgo.Result iResult;
+		private final CoresAlgo.IResult iResult;
 		private final IndexIntIdMap viMap;
 
-		public ResultFromIndexResult(CoresAlgo.Result iResult, IndexIntIdMap viMap) {
+		public IntResultFromIndexResult(CoresAlgo.IResult iResult, IndexIntIdMap viMap) {
 			this.iResult = Objects.requireNonNull(iResult);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
@@ -303,6 +315,42 @@ class CoresAlgoImpl implements CoresAlgo {
 
 		@Override
 		public IntSet coreCrust(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
+		}
+	}
+
+	private static class ObjResultFromIndexResult<V, E> implements CoresAlgo.Result<V, E> {
+
+		private final CoresAlgo.IResult iResult;
+		private final IndexIdMap<V> viMap;
+
+		public ObjResultFromIndexResult(CoresAlgo.IResult iResult, IndexIdMap<V> viMap) {
+			this.iResult = Objects.requireNonNull(iResult);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public int vertexCoreNum(V v) {
+			return iResult.vertexCoreNum(viMap.idToIndex(v));
+		}
+
+		@Override
+		public int maxCore() {
+			return iResult.maxCore();
+		}
+
+		@Override
+		public Set<V> coreVertices(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);
+		}
+
+		@Override
+		public Set<V> coreShell(int core) {
+			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);
+		}
+
+		@Override
+		public Set<V> coreCrust(int core) {
 			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
 		}
 	}

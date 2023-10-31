@@ -82,11 +82,11 @@ public class CoresAlgoTest extends TestBase {
 	}
 
 	private static void testCoresAlgo(IntGraph g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
-		CoresAlgo.Result res;
+		CoresAlgo.IResult res;
 		if (degreeType == CoresAlgo.DegreeType.OutAndInDegree) {
-			res = algo.computeCores(g);
+			res = (CoresAlgo.IResult) algo.computeCores(g);
 		} else {
-			res = algo.computeCores(g, degreeType);
+			res = (CoresAlgo.IResult) algo.computeCores(g, degreeType);
 		}
 
 		final boolean directed = g.isDirected();
