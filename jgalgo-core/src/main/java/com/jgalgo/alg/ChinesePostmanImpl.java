@@ -60,7 +60,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 				oddVertices.add(v);
 		if (oddVertices.isEmpty())
 			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
-			return eulerianTourAlgo.computeEulerianTour(g);
+			return (IPath) eulerianTourAlgo.computeEulerianTour(g);
 		assert oddVertices.size() % 2 == 0;
 
 		/* Find the shortest path between each pair of odd degree vertices */
@@ -96,7 +96,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;
 
 		/* Compute an Eulerian tour in the new graph */
-		IPath eulerianTour = eulerianTourAlgo.computeEulerianTour(eulerianGraph);
+		IPath eulerianTour = (IPath) eulerianTourAlgo.computeEulerianTour(eulerianGraph);
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
 		IntList path = new IntArrayList(eulerianTour.edges().size());
 		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {

@@ -17,10 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -187,17 +189,26 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		return new PathImpl(g, start, end, tour);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IPath computeEulerianTour(IntGraph g) {
-		if (g instanceof IndexGraph)
-			return computeEulerianTour((IndexGraph) g);
+	public <V, E> Path<V, E> computeEulerianTour(Graph<V, E> g) {
+		if (g instanceof IndexGraph) {
+			return (Path<V, E>) computeEulerianTour((IndexGraph) g);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+		} else if (g instanceof IntGraph) {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			IPath indexPath = computeEulerianTour(iGraph);
+			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
 
-		IPath indexPath = computeEulerianTour(iGraph);
-		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IPath indexPath = computeEulerianTour(iGraph);
+			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+		}
 	}
 
 }

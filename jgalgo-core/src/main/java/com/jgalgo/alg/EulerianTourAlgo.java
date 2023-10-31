@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -42,12 +43,14 @@ public interface EulerianTourAlgo {
 	 * <p>
 	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will be found, depending on the vertices
 	 * degrees.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}.
 	 *
 	 * @param  g                        a graph
 	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
-	public IPath computeEulerianTour(IntGraph g);
+	public <V, E> Path<V, E> computeEulerianTour(Graph<V, E> g);
 
 	/**
 	 * Create a new Eulerian tour computation algorithm.

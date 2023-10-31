@@ -37,7 +37,7 @@ class TSPMetricUtils {
 		assert g.vertices().intStream().allMatch(v -> g1.outEdges(v).size() % 2 == 0);
 
 		/* Calculate Eulerian tour in the new graph */
-		IPath tour = EulerianTourAlgo.newInstance().computeEulerianTour(g1);
+		IPath tour = (IPath) EulerianTourAlgo.newInstance().computeEulerianTour(g1);
 		assert isValidCycle(g1, tour);
 		assert isPathVisitEvery(g1, tour);
 
