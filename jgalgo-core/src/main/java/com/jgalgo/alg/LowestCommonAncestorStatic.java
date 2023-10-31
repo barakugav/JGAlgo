@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -25,33 +26,33 @@ import com.jgalgo.graph.IntGraph;
  * (common ancestor), and its farthest from the root (lowest). Given a tree \(G=(V,E)\), we would like to pre process it
  * and then answer queries of the type "what is the lower common ancestor of two vertices \(u\) and \(v\)?".
  * <p>
- * Most implementation of this interface achieve linear or near linear preprocessing time and constant or logarithmic
+ * Most implementations of this interface achieve linear or near linear preprocessing time and constant or logarithmic
  * query time.
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
- * Graph tree = Graph.newUndirected();
- * int rt = tree.addVertex();
- * int v1 = tree.addVertex();
- * int v2 = tree.addVertex();
- * int v3 = tree.addVertex();
- * int v4 = tree.addVertex();
- * int v5 = tree.addVertex();
+ * Graph<String, Integer> tree = Graph.newUndirected();
+ * tree.addVertex("Grandfather Bob");
+ * tree.addVertex("Father John");
+ * tree.addVertex("Me");
+ * tree.addVertex("Sister Jane");
+ * tree.addVertex("Uncle Nick");
+ * tree.addVertex("Cousin Alice");
  *
- * tree.addEdge(rt, v1);
- * tree.addEdge(v1, v2);
- * tree.addEdge(v1, v3);
- * tree.addEdge(rt, v4);
- * tree.addEdge(v4, v5);
+ * tree.addEdge("Grandfather Bob", "Father John", 1957);
+ * tree.addEdge("Father John", "Me", 1985);
+ * tree.addEdge("Father John", "Sister Jane", 1987);
+ * tree.addEdge("Grandfather Bob", "Uncle Nick", 1960);
+ * tree.addEdge("Uncle Nick", "Cousin Alice", 1990);
  *
  * LowestCommonAncestorStatic lca = LowestCommonAncestorStatic.newInstance();
- * LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(tree, rt);
- * assert lcaDS.findLowestCommonAncestor(v1, v4) == rt;
- * assert lcaDS.findLowestCommonAncestor(v2, v3) == v1;
- * assert lcaDS.findLowestCommonAncestor(v4, v5) == v4;
- * assert lcaDS.findLowestCommonAncestor(v2, v5) == rt;
+ * LowestCommonAncestorStatic.DataStructure<String, Integer> lcaDS = lca.preProcessTree(tree, "Grandfather Bob");
+ * assert lcaDS.findLowestCommonAncestor("Father John", "Uncle Nick").equals("Grandfather Bob");
+ * assert lcaDS.findLowestCommonAncestor("Me", "Sister Jane").equals("Father John");
+ * assert lcaDS.findLowestCommonAncestor("Uncle Nick", "Cousin Alice").equals("Uncle Nick");
+ * assert lcaDS.findLowestCommonAncestor("Me", "Cousin Alice").equals("Grandfather Bob");
  * }</pre>
  *
  * @see    LowestCommonAncestorDynamic
@@ -62,19 +63,25 @@ public interface LowestCommonAncestorStatic {
 
 	/**
 	 * Perform a static pre processing of a tree for future LCA (Lowest common ancestor) queries.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link LowestCommonAncestorStatic.IDataStructure}.
 	 *
+	 * @param  <V>  the vertices type
+	 * @param  <E>  the edges type
 	 * @param  tree a tree
 	 * @param  root root of the tree
 	 * @return      a data structure built from the preprocessing, that can answer LCA queries efficiently
 	 */
-	public LowestCommonAncestorStatic.DataStructure preProcessTree(IntGraph tree, int root);
+	<V, E> LowestCommonAncestorStatic.DataStructure<V, E> preProcessTree(Graph<V, E> tree, V root);
 
 	/**
 	 * Data structure result created from a static LCA pre-processing.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	interface DataStructure {
+	interface DataStructure<V, E> {
 
 		/**
 		 * Find the lowest common ancestor of two vertices in the tree.
@@ -83,7 +90,30 @@ public interface LowestCommonAncestorStatic {
 		 * @param  v the second vertex
 		 * @return   the lowest common ancestor of \(u\) and \(v\)
 		 */
-		public int findLowestCommonAncestor(int u, int v);
+		V findLca(V u, V v);
+	}
+
+	/**
+	 * Data structure result created from a static LCA pre-processing for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	interface IDataStructure extends DataStructure<Integer, Integer> {
+
+		/**
+		 * Find the lowest common ancestor of two vertices in the tree.
+		 *
+		 * @param  u the first vertex
+		 * @param  v the second vertex
+		 * @return   the lowest common ancestor of \(u\) and \(v\)
+		 */
+		int findLca(int u, int v);
+
+		@Deprecated
+		@Override
+		default Integer findLca(Integer u, Integer v) {
+			return Integer.valueOf(findLca(u.intValue(), v.intValue()));
+		}
 	}
 
 	/**

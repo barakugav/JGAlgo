@@ -46,7 +46,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 	LowestCommonAncestorStaticRMQ() {}
 
 	@Override
-	LowestCommonAncestorStatic.DataStructure preProcessTree(IndexGraph tree, int root) {
+	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
 		if (!Trees.isTree(tree, root))
 			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 
@@ -98,7 +98,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 		return new DS(n, vs, vToDepthsIdx, rmqDS);
 	}
 
-	private static class DS implements LowestCommonAncestorStatic.DataStructure {
+	private static class DS implements LowestCommonAncestorStatic.IDataStructure {
 
 		private final int n;
 		private final int[] vs;
@@ -113,7 +113,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 		}
 
 		@Override
-		public int findLowestCommonAncestor(int u, int v) {
+		public int findLca(int u, int v) {
 			Assertions.Graphs.checkVertex(u, n);
 			Assertions.Graphs.checkVertex(v, n);
 			int uIdx = vToDepthsIdx[u];

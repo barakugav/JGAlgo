@@ -40,14 +40,15 @@ public class LowestCommonAncestorExample {
 
 		/* Pre process the tree for LCA queries */
 		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();
-		LowestCommonAncestorStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);
+		LowestCommonAncestorStatic.IDataStructure lcaDs =
+				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, rt);
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
-		assert lcaDs.findLowestCommonAncestor(v1, v2) == rt;
-		assert lcaDs.findLowestCommonAncestor(v1, v3) == v1;
-		assert lcaDs.findLowestCommonAncestor(v3, v4) == v1;
-		assert lcaDs.findLowestCommonAncestor(v5, v6) == v2;
-		assert lcaDs.findLowestCommonAncestor(v3, v6) == rt;
+		assert lcaDs.findLca(v1, v2) == rt;
+		assert lcaDs.findLca(v1, v3) == v1;
+		assert lcaDs.findLca(v3, v4) == v1;
+		assert lcaDs.findLca(v5, v6) == v2;
+		assert lcaDs.findLca(v3, v6) == rt;
 	}
 
 	public static void dynamicLCAExample() {

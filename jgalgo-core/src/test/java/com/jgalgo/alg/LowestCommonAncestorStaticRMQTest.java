@@ -82,13 +82,14 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
 	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorStatic> builder, int[][] queries) {
 		LowestCommonAncestorStatic lca = builder.get();
-		LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(g, g.vertices().iterator().nextInt());
+		LowestCommonAncestorStatic.IDataStructure lcaDS =
+				(LowestCommonAncestorStatic.IDataStructure) lca.preProcessTree(g, g.vertices().iterator().nextInt());
 
 		for (int[] query : queries) {
 			int u = query[0];
 			int v = query[1];
 			int expected = query[2];
-			int actual = lcaDS.findLowestCommonAncestor(u, v);
+			int actual = lcaDS.findLca(u, v);
 			assertEquals(expected, actual, "<- [" + u + "," + v + "]");
 		}
 	}

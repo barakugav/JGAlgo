@@ -420,13 +420,14 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
-			LowestCommonAncestorStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);
+			LowestCommonAncestorStatic.IDataStructure lcaDS =
+					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, root);
 			for (int q = 0; q < queriesNum; q++) {
 				int u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 				if (u == v)
 					throw new IllegalArgumentException(
 							"Tree path maxima query can not be composed of two identical vertices");
-				int lca = lcaDS.findLowestCommonAncestor(u, v);
+				int lca = lcaDS.findLca(u, v);
 				lcaQueries[q * 4] = u;
 				lcaQueries[q * 4 + 1] = lca;
 				lcaQueries[q * 4 + 2] = v;
