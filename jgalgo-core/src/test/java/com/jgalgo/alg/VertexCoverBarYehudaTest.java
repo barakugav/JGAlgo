@@ -57,7 +57,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 	}
 
 	private static void testVC(IntGraph g, IWeightFunctionInt w, VertexCover algo, double appxFactor) {
-		VertexCover.Result vc = algo.computeMinimumVertexCover(g, w);
+		VertexCover.IResult vc = (VertexCover.IResult) algo.computeMinimumVertexCover(g, w);
 
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

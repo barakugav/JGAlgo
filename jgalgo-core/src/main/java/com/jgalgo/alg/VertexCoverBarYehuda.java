@@ -31,7 +31,7 @@ import com.jgalgo.graph.IWeightFunction;
 class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 
 	@Override
-	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
+	public VertexCover.IResult computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
 		for (int v = 0; v < n; v++)

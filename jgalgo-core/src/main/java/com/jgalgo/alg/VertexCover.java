@@ -16,10 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.BitSet;
-import com.jgalgo.graph.IntGraph;
+import java.util.Collection;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.IntContainers;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -49,27 +54,53 @@ public interface VertexCover {
 	 * <p>
 	 * Note that finding the minimum vertex cover is an NP-hard problem, therefore the result of this function is an
 	 * approximation of the optimal solution.
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link VertexCover.IResult}. If {@code g} is
+	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  g a graph
-	 * @param  w a vertex weight function
-	 * @return   a minimum vertex cover
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @param  w   a vertex weight function
+	 * @return     a minimum vertex cover
 	 */
-	VertexCover.Result computeMinimumVertexCover(IntGraph g, IWeightFunction w);
+	<V, E> VertexCover.Result<V, E> computeMinimumVertexCover(Graph<V, E> g, WeightFunction<V> w);
 
 	/**
 	 * A result object of {@link VertexCover} computation.
 	 * <p>
 	 * The result object is basically the set of vertices that form the cover.
 	 *
-	 * @author Barak Ugav
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @author     Barak Ugav
 	 */
-	static interface Result {
+	static interface Result<V, E> {
 
 		/**
 		 * Get the vertices which are included in the cover.
 		 *
 		 * @return the vertices that are included in the cover
 		 */
+		Set<V> vertices();
+
+		/**
+		 * Check whether a vertex is included in the cover.
+		 *
+		 * @param  vertex a graph vertex identifier
+		 * @return        {@code true} if {@code vertex} is included in the cover
+		 */
+		boolean isInCover(V vertex);
+	}
+
+	/**
+	 * A result object of {@link VertexCover} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends VertexCover.Result<Integer, Integer> {
+
+		@Override
 		IntSet vertices();
 
 		/**
@@ -80,6 +111,11 @@ public interface VertexCover {
 		 */
 		boolean isInCover(int vertex);
 
+		@Deprecated
+		@Override
+		default boolean isInCover(Integer vertex) {
+			return isInCover(vertex.intValue());
+		}
 	}
 
 	/**
@@ -88,22 +124,31 @@ public interface VertexCover {
 	 * A set of vertices is a vertex cover of a graph if for every edge in the graph at least one of its vertices is in
 	 * the set. In addition, the collection of the vertices must not contain duplicates.
 	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
 	 * @param  g        a graph
 	 * @param  vertices a collection of vertices that should cover all the edges in the graph
 	 * @return          {@code true} if {@code vertices} is a vertex cover of {@code g}
 	 */
-	static boolean isCover(IntGraph g, IntCollection vertices) {
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isCover(Graph<V, E> g, Collection<V> vertices) {
 		IndexGraph ig;
+		IntCollection vertices0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
+			vertices0 = IntContainers.toIntCollection((Collection<Integer>) vertices);
+		} else if (g instanceof IntGraph) {
+			ig = g.indexGraph();
+			vertices0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) vertices,
+					((IntGraph) g).indexGraphVerticesMap());
 		} else {
 			ig = g.indexGraph();
-			vertices = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());
+			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());
 		}
 		final int n = ig.vertices().size();
 		final int m = ig.edges().size();
 		BitSet visited = new BitSet(n);
-		for (int v : vertices) {
+		for (int v : vertices0) {
 			if (!ig.vertices().contains(v))
 				throw new IllegalArgumentException("invalid vertex index " + v);
 			if (visited.get(v))

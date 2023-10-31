@@ -17,11 +17,16 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -30,24 +35,34 @@ class VertexCoverUtils {
 
 	static abstract class AbstractImpl implements VertexCover {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public VertexCover.Result computeMinimumVertexCover(IntGraph g, IWeightFunction w) {
-			if (g instanceof IndexGraph)
-				return computeMinimumVertexCover((IndexGraph) g, w);
+		public <V, E> VertexCover.Result<V, E> computeMinimumVertexCover(Graph<V, E> g, WeightFunction<V> w) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (VertexCover.Result<V, E>) computeMinimumVertexCover((IndexGraph) g, w0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, viMap);
+				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);
+				return (VertexCover.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
 
-			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, iw);
-			return new ResultFromIndexResult(indexResult, viMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);
+				return new ObjResultFromIndexResult<>(indexResult, viMap);
+			}
 		}
 
-		abstract VertexCover.Result computeMinimumVertexCover(IndexGraph g, IWeightFunction w);
+		abstract VertexCover.IResult computeMinimumVertexCover(IndexGraph g, IWeightFunction w);
 
 	}
 
-	static class ResultImpl implements VertexCover.Result {
+	static class ResultImpl implements VertexCover.IResult {
 
 		private final IndexGraph g;
 		private final BitSet cover;
@@ -84,24 +99,50 @@ class VertexCoverUtils {
 		}
 	}
 
-	private static class ResultFromIndexResult implements VertexCover.Result {
+	private static class ObjResultFromIndexResult<V, E> implements VertexCover.Result<V, E> {
 
-		private final VertexCover.Result res;
+		private final VertexCover.IResult indexRes;
+		private final IndexIdMap<V> viMap;
+
+		ObjResultFromIndexResult(VertexCover.IResult indexRes, IndexIdMap<V> viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public Set<V> vertices() {
+			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);
+		}
+
+		@Override
+		public boolean isInCover(V vertex) {
+			return indexRes.isInCover(viMap.idToIndex(vertex));
+		}
+
+		@Override
+		public String toString() {
+			return vertices().toString();
+		}
+	}
+
+	private static class IntResultFromIndexResult implements VertexCover.IResult {
+
+		private final VertexCover.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(VertexCover.Result res, IndexIntIdMap viMap) {
-			this.res = Objects.requireNonNull(res);
+		IntResultFromIndexResult(VertexCover.IResult indexRes, IndexIntIdMap viMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public IntSet vertices() {
-			return IndexIdMaps.indexToIdSet(res.vertices(), viMap);
+			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-			return res.isInCover(viMap.idToIndex(vertex));
+			return indexRes.isInCover(viMap.idToIndex(vertex));
 		}
 
 		@Override
