@@ -76,9 +76,9 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 		assertTrue(IVertexPartition.isPartition(g, cells::vertexBlock));
 
 		ShortestPathSingleSource sssp = new ShortestPathSingleSourceDijkstra();
-		Int2ObjectMap<ShortestPathSingleSource.Result> ssspResults = new Int2ObjectOpenHashMap<>();
+		Int2ObjectMap<ShortestPathSingleSource.IResult> ssspResults = new Int2ObjectOpenHashMap<>();
 		for (int site : sites)
-			ssspResults.put(site, sssp.computeShortestPaths(g, w, site));
+			ssspResults.put(site, (ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, site));
 		for (int v : g.vertices()) {
 			double actual = cells.distance(v);
 			double expected =

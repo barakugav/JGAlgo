@@ -56,7 +56,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof IWeightFunctionInt))
@@ -78,7 +78,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                     vertex
 	 * @see                #computeShortestPaths(IntGraph, IWeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
 			int maxDistance) {
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
 		heap.distances[source] = 0;

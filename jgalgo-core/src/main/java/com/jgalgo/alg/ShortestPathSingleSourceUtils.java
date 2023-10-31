@@ -17,12 +17,16 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -32,73 +36,131 @@ class ShortestPathSingleSourceUtils {
 
 	static abstract class AbstractImpl implements ShortestPathSingleSource {
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
-			if (g instanceof IndexGraph)
-				return computeShortestPaths((IndexGraph) g, w, source);
+		public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
+				V source) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue();
+				return (ShortestPathSingleSource.Result<V, E>) computeShortestPaths((IndexGraph) g, w0, source0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			int iSource = viMap.idToIndex(source);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				ShortestPathSingleSource.IResult indexResult = computeShortestPaths(iGraph, iw, iSource);
+				return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
 
-			ShortestPathSingleSource.Result indexResult = computeShortestPaths(iGraph, iw, iSource);
-			return new ResultFromIndexResult(indexResult, viMap, eiMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iSource = viMap.idToIndex(source);
+				ShortestPathSingleSource.IResult indexResult = computeShortestPaths(iGraph, iw, iSource);
+				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
+			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public ShortestPathSingleSource.Result computeCardinalityShortestPaths(IntGraph g, int source) {
-			if (g instanceof IndexGraph)
-				return computeCardinalityShortestPaths((IndexGraph) g, source);
+		public <V, E> ShortestPathSingleSource.Result<V, E> computeCardinalityShortestPaths(Graph<V, E> g, V source) {
+			if (g instanceof IndexGraph) {
+				int source0 = ((Integer) source).intValue();
+				return (ShortestPathSingleSource.Result<V, E>) computeCardinalityShortestPaths((IndexGraph) g, source0);
 
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-			int iSource = viMap.idToIndex(source);
+			} else if (g instanceof IntGraph) {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+				int iSource = viMap.idToIndex(((Integer) source).intValue());
+				ShortestPathSingleSource.IResult indexResult = computeCardinalityShortestPaths(iGraph, iSource);
+				return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
 
-			ShortestPathSingleSource.Result indexResult = computeCardinalityShortestPaths(iGraph, iSource);
-			return new ResultFromIndexResult(indexResult, viMap, eiMap);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				int iSource = viMap.idToIndex(source);
+				ShortestPathSingleSource.IResult indexResult = computeCardinalityShortestPaths(iGraph, iSource);
+				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
+			}
 		}
 
-		abstract ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
+		abstract ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
 
-		ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
+		ShortestPathSingleSource.IResult computeCardinalityShortestPaths(IndexGraph g, int source) {
 			return computeShortestPaths(g, IWeightFunction.CardinalityWeightFunction, source);
 		}
 
 	}
 
-	private static class ResultFromIndexResult implements ShortestPathSingleSource.Result {
+	private static class ObjResultFromIndexResult<V, E> implements ShortestPathSingleSource.Result<V, E> {
 
-		private final ShortestPathSingleSource.Result result;
+		private final ShortestPathSingleSource.IResult indexRes;
+		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+
+		ObjResultFromIndexResult(ShortestPathSingleSource.IResult indexRes, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public double distance(V target) {
+			return indexRes.distance(viMap.idToIndex(target));
+		}
+
+		@Override
+		public Path<V, E> getPath(V target) {
+			return PathImpl.objPathFromIndexPath(indexRes.getPath(viMap.idToIndex(target)), viMap, eiMap);
+		}
+
+		@Override
+		public boolean foundNegativeCycle() {
+			return indexRes.foundNegativeCycle();
+		}
+
+		@Override
+		public Path<V, E> getNegativeCycle() {
+			return PathImpl.objPathFromIndexPath(indexRes.getNegativeCycle(), viMap, eiMap);
+		}
+	}
+
+	private static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
+
+		private final ShortestPathSingleSource.IResult indexRes;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		ResultFromIndexResult(ShortestPathSingleSource.Result result, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.result = Objects.requireNonNull(result);
+		IntResultFromIndexResult(ShortestPathSingleSource.IResult indexRes, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public double distance(int target) {
-			return result.distance(viMap.idToIndex(target));
+			return indexRes.distance(viMap.idToIndex(target));
 		}
 
 		@Override
 		public IPath getPath(int target) {
-			return PathImpl.intPathFromIndexPath(result.getPath(viMap.idToIndex(target)), viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(indexRes.getPath(viMap.idToIndex(target)), viMap, eiMap);
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-			return result.foundNegativeCycle();
+			return indexRes.foundNegativeCycle();
 		}
 
 		@Override
 		public IPath getNegativeCycle() {
-			return PathImpl.intPathFromIndexPath(result.getNegativeCycle(), viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(indexRes.getNegativeCycle(), viMap, eiMap);
 		}
 	}
 
@@ -155,7 +217,7 @@ class ShortestPathSingleSourceUtils {
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
 						@Override
-						ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w,
+						ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w,
 								int source) {
 							final int n = g.vertices().size(), m = g.edges().size();
 							int dialWork = n + m + maxDistance;
@@ -219,7 +281,7 @@ class ShortestPathSingleSourceUtils {
 		}
 	}
 
-	static class ResultImpl implements ShortestPathSingleSource.Result {
+	static class ResultImpl implements ShortestPathSingleSource.IResult {
 
 		private final IndexGraph g;
 		private final int source;
@@ -286,7 +348,7 @@ class ShortestPathSingleSourceUtils {
 			return Arrays.toString(distances);
 		}
 
-		static class Int implements ShortestPathSingleSource.Result {
+		static class Int implements ShortestPathSingleSource.IResult {
 
 			private final IndexGraph g;
 			private final int source;

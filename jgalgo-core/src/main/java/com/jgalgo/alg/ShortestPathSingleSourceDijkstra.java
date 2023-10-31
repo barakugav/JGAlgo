@@ -68,7 +68,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		if (w instanceof IWeightFunctionInt) {
@@ -78,7 +78,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
+	private ShortestPathSingleSource.IResult computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -118,7 +118,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		return res;
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
+	private ShortestPathSingleSource.IResult computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

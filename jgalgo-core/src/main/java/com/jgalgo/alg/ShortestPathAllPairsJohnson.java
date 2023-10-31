@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -109,7 +109,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	private SuccessRes computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, IWeightFunction w,
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
-		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
+		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
 		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
@@ -117,7 +117,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();
 			for (int source : verticesSubset)
-				ssspResults[vToResIdx[source]] = sssp.computeShortestPaths(g, w, source);
+				ssspResults[vToResIdx[source]] =
+						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, source);
 
 		} else {
 			/* parallel */
@@ -126,8 +127,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newInstance());
 			for (int source : verticesSubset) {
 				final int source0 = source;
-				tasks.add(JGAlgoUtils.recursiveAction(
-						() -> ssspResults[vToResIdx[source0]] = sssp.get().computeShortestPaths(g, w, source0)));
+				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
+						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, source0)));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
@@ -171,7 +172,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		} else {
 			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;
 		}
-		ShortestPathSingleSource.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);
+		ShortestPathSingleSource.IResult res =
+				(ShortestPathSingleSource.IResult) negativeSssp.computeShortestPaths(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -232,10 +234,10 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private static abstract class SuccessRes implements ShortestPathAllPairs.IResult {
 
-		final ShortestPathSingleSource.Result[] ssspResults;
+		final ShortestPathSingleSource.IResult[] ssspResults;
 		double[] potential;
 
-		SuccessRes(ShortestPathSingleSource.Result[] ssspResults) {
+		SuccessRes(ShortestPathSingleSource.IResult[] ssspResults) {
 			this.ssspResults = ssspResults;
 		}
 
@@ -251,7 +253,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		private static class AllVertices extends SuccessRes {
 
-			AllVertices(ShortestPathSingleSource.Result[] ssspResults) {
+			AllVertices(ShortestPathSingleSource.IResult[] ssspResults) {
 				super(ssspResults);
 			}
 
@@ -271,7 +273,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 			final int[] vToResIdx;
 
-			VerticesSubset(ShortestPathSingleSource.Result[] ssspResults, int[] vToResIdx) {
+			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
 				super(ssspResults);
 				this.vToResIdx = vToResIdx;
 			}

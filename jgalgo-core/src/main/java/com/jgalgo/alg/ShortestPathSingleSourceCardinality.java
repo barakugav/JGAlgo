@@ -37,7 +37,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	ShortestPathSingleSourceCardinality() {}
 
 	@Override
-	ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
+	ShortestPathSingleSource.IResult computeCardinalityShortestPaths(IndexGraph g, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
@@ -54,7 +54,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeCardinalityShortestPaths(g, source);

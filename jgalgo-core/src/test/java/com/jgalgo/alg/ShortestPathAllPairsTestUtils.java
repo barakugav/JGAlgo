@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -94,7 +94,8 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		ShortestPathAllPairs.IResult result = (ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(g, w);
 
 		for (int source : verticesSubset) {
-			ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
+			ShortestPathSingleSource.IResult expectedRes =
+					(ShortestPathSingleSource.IResult) validationAlgo.computeShortestPaths(g, w, source);
 
 			if (result.foundNegativeCycle()) {
 				IPath cycle = null;

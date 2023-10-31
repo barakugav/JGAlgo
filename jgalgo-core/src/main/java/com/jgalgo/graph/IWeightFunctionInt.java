@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * IWeightFunctionInt weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().setIntWeights(true).build();
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
  * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3

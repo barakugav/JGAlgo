@@ -18,11 +18,11 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -140,12 +140,13 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		ShortestPathSingleSource.Result sp = ssspNegative.computeShortestPaths(g, w, s);
+		ShortestPathSingleSource.IResult sp =
+				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
 		for (;;) {
-			sp = ssspPositive.computeShortestPaths(g, spWeightFunc, s);
+			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc, s);
 			IPath augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)

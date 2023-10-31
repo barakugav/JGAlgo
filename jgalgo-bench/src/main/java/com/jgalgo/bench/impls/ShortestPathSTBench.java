@@ -228,8 +228,8 @@ public class ShortestPathSTBench {
 		for (int e : g.edges())
 			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));
 
-		ShortestPathSingleSource.Result ssspRes =
-				ShortestPathSingleSource.newInstance().computeShortestPaths(g, w0, target);
+		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
+				.newInstance().computeShortestPaths(g, w0, target);
 		return ssspRes::distance;
 	}
 

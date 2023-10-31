@@ -61,7 +61,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
-		final ShortestPathSingleSource.Result[] ssspResults = new ShortestPathSingleSource.Result[verticesSubsetSize];
+		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
 		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
@@ -69,7 +69,8 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();
 			for (int source : verticesSubset)
-				ssspResults[vToResIdx[source]] = sssp.computeCardinalityShortestPaths(g, source);
+				ssspResults[vToResIdx[source]] =
+						(ShortestPathSingleSource.IResult) sssp.computeCardinalityShortestPaths(g, source);
 
 		} else {
 			/* parallel */
@@ -79,7 +80,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			for (int source : verticesSubset) {
 				final int source0 = source;
 				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
-						sssp.get().computeCardinalityShortestPaths(g, source0)));
+						(ShortestPathSingleSource.IResult) sssp.get().computeCardinalityShortestPaths(g, source0)));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);

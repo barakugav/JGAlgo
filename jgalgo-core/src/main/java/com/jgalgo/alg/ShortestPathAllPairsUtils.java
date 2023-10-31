@@ -19,7 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.alg.ShortestPathSingleSource.Result;
+import com.jgalgo.alg.ShortestPathSingleSource.IResult;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -328,9 +328,9 @@ class ShortestPathAllPairsUtils {
 
 	static abstract class ResFromSSSP implements ShortestPathAllPairs.IResult {
 
-		final ShortestPathSingleSource.Result[] ssspResults;
+		final ShortestPathSingleSource.IResult[] ssspResults;
 
-		ResFromSSSP(ShortestPathSingleSource.Result[] ssspResults) {
+		ResFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {
 			this.ssspResults = ssspResults;
 		}
 
@@ -346,7 +346,7 @@ class ShortestPathAllPairsUtils {
 
 		static class AllVertices extends ResFromSSSP {
 
-			AllVertices(Result[] ssspResults) {
+			AllVertices(IResult[] ssspResults) {
 				super(ssspResults);
 			}
 
@@ -366,7 +366,7 @@ class ShortestPathAllPairsUtils {
 
 			final int[] vToResIdx;
 
-			VerticesSubset(Result[] ssspResults, int[] vToResIdx) {
+			VerticesSubset(IResult[] ssspResults, int[] vToResIdx) {
 				super(ssspResults);
 				this.vToResIdx = vToResIdx;
 			}

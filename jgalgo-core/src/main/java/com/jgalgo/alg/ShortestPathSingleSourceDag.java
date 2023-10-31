@@ -47,7 +47,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
@@ -55,7 +55,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 				: computeSsspDouble(g, w, source);
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
+	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
@@ -79,7 +79,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		return res;
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
+	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 

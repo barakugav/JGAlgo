@@ -87,7 +87,8 @@ public class HeapReferenceableBench {
 		/* SSSP */
 		ShortestPathSingleSource ssspAlgo =
 				ShortestPathSingleSource.newBuilder().setOption("heap-builder", heapBuilder).build();
-		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(args.g, args.w, args.source);
+		ShortestPathSingleSource.IResult ssspRes =
+				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(args.g, args.w, args.source);
 		blackhole.consume(ssspRes);
 
 		/* Prim MST */

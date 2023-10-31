@@ -41,7 +41,8 @@ public class ShortestPathExample {
 
 		/* Calculate the shortest paths from v1 to all other vertices */
 		ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
-		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+		ShortestPathSingleSource.IResult ssspRes =
+				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(g, w, v1);
 
 		assert ssspRes.distance(v3) == 4.3;
 		assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));

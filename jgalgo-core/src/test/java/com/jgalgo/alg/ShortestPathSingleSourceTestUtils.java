@@ -130,13 +130,15 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 
 	static void testAlgo(IntGraph g, IWeightFunction w, int source, ShortestPathSingleSource algo,
 			ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.Result result = algo.computeShortestPaths(g, w, source);
+		ShortestPathSingleSource.IResult result =
+				(ShortestPathSingleSource.IResult) algo.computeShortestPaths(g, w, source);
 		validateResult(g, w, source, result, validationAlgo);
 	}
 
-	static void validateResult(IntGraph g, IWeightFunction w, int source, ShortestPathSingleSource.Result result,
+	static void validateResult(IntGraph g, IWeightFunction w, int source, ShortestPathSingleSource.IResult result,
 			ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
+		ShortestPathSingleSource.IResult expectedRes =
+				(ShortestPathSingleSource.IResult) validationAlgo.computeShortestPaths(g, w, source);
 
 		if (result.foundNegativeCycle()) {
 			IPath cycle = null;

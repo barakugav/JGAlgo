@@ -48,7 +48,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);

@@ -82,7 +82,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
@@ -92,14 +92,14 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		return computeShortestPaths0(g, (IWeightFunctionInt) w, source);
 	}
 
-	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, IWeightFunctionInt w, int source) {
+	private ShortestPathSingleSource.IResult computeShortestPaths0(IndexGraph g, IWeightFunctionInt w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return positiveSsspAlgo.computeShortestPaths(g, w, source);
+			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w, source);
 
 		/* calculate a potential function (or find a negative cycle) */
 		Pair<int[], IPath> p = calcPotential(g, w, minWeight);
@@ -111,7 +111,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		IWeightFunctionInt pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
-		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
+		ShortestPathSingleSource.IResult res =
+				(ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
 	}
 
@@ -209,7 +210,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				int fakeS1 = G.addVertex();
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
-				ShortestPathSingleSource.Result ssspRes = dagSssp.computeShortestPaths(G, GWeights, fakeS1);
+				ShortestPathSingleSource.IResult ssspRes =
+						(ShortestPathSingleSource.IResult) dagSssp.computeShortestPaths(G, GWeights, fakeS1);
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;
@@ -304,21 +306,21 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 
-	private static class Result implements ShortestPathSingleSource.Result {
+	private static class Result implements ShortestPathSingleSource.IResult {
 
 		private final int sourcePotential;
 		private final int[] potential;
-		private final ShortestPathSingleSource.Result dijkstraRes;
+		private final ShortestPathSingleSource.IResult dijkstraRes;
 		private final IPath cycle;
 
-		Result(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes, IPath cycle) {
+		Result(int source, int[] potential, ShortestPathSingleSource.IResult dijkstraRes, IPath cycle) {
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
 			this.cycle = cycle;
 		}
 
-		static Result ofSuccess(int source, int[] potential, ShortestPathSingleSource.Result dijkstraRes) {
+		static Result ofSuccess(int source, int[] potential, ShortestPathSingleSource.IResult dijkstraRes) {
 			return new Result(source, potential, dijkstraRes, null);
 		}
 

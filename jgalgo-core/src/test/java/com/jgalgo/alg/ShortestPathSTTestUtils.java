@@ -15,27 +15,37 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 class ShortestPathSTTestUtils {
 
+	@SuppressWarnings("unchecked")
 	static ShortestPathSingleSource ssspFromSpst(ShortestPathST spst) {
 		return new ShortestPathSingleSource() {
 
 			@Override
-			public ShortestPathSingleSource.Result computeShortestPaths(IntGraph g, IWeightFunction w, int source) {
+			public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
+					V source) {
+				if (!(g instanceof IntGraph))
+					throw new IllegalArgumentException("only int graphs are supported");
+				IntGraph g0 = (IntGraph) g;
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue();
 				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
-				for (int v : g.vertices())
-					paths.put(v, spst.computeShortestPath(g, w, source, v));
-				return new ShortestPathSingleSource.Result() {
+				for (int v : g0.vertices())
+					paths.put(v, spst.computeShortestPath(g0, w0, source0, v));
+				return (ShortestPathSingleSource.Result<V, E>) new ShortestPathSingleSource.IResult() {
 
 					@Override
 					public double distance(int target) {
 						IPath path = getPath(target);
-						return path == null ? Double.POSITIVE_INFINITY : IWeightFunction.weightSum(w, path.edges());
+						return path == null ? Double.POSITIVE_INFINITY : IWeightFunction.weightSum(w0, path.edges());
 					}
 
 					@Override

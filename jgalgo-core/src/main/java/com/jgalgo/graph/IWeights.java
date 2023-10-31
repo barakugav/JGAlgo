@@ -38,7 +38,7 @@ import com.jgalgo.alg.ShortestPathSingleSource;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newDirected();
+ * IntGraph g = IntGraph.newDirected();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -47,14 +47,15 @@ import com.jgalgo.alg.ShortestPathSingleSource;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * IWeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
- * w.set(e1, 1.2);
- * w.set(e2, 3.1);
- * w.set(e3, 15.1);
+ * IWeightsDouble weights = g.addEdgesWeights("weightsKey", double.class);
+ * weights.set(e1, 1.2);
+ * weights.set(e2, 3.1);
+ * weights.set(e3, 15.1);
+ * IWeightFunction weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;

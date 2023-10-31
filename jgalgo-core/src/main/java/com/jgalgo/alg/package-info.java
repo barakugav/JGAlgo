@@ -20,7 +20,7 @@
  * Most algorithms accept a {@link com.jgalgo.graph.IntGraph} object as input, and perform some computation on it.
  * Algorithms in this package follow a common pattern: an interface is defined for the functionality only (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via
+ * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}), a default implementation is provided via
  * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
  * allow more control over the algorithm is provided via {@code newBuilder()} method (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}).
