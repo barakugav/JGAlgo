@@ -58,7 +58,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 
 			/* make sure the terminals are connected */
 			connectLoop: for (WeaklyConnectedComponentsAlgo ccAlgo = WeaklyConnectedComponentsAlgo.newInstance();;) {
-				IVertexPartition cc = ccAlgo.findWeaklyConnectedComponents(g);
+				IVertexPartition cc = (IVertexPartition) ccAlgo.findWeaklyConnectedComponents(g);
 				int[] terminalsArr = terminals.toIntArray();
 				IntArrays.shuffle(terminalsArr, rand);
 				int t1 = terminalsArr[0];

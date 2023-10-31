@@ -155,7 +155,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	private IntCollection lightEdges(IndexGraph g, Int2DoubleFunction gw, IndexGraph f, Int2DoubleFunction fw) {
 		final int n = f.vertices().size();
 		/* find connected components in the forest, each one of them is a tree */
-		IVertexPartition connectivityRes = ccAlg.findWeaklyConnectedComponents(f);
+		IVertexPartition connectivityRes = (IVertexPartition) ccAlg.findWeaklyConnectedComponents(f);
 		final int treeCount = connectivityRes.numberOfBlocks();
 		Int2IntFunction vToTree = connectivityRes::vertexBlock;
 

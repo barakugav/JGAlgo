@@ -94,7 +94,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		final WeaklyConnectedComponentsAlgo ccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
-		final IVertexPartition gCcs = ccAlgo.findWeaklyConnectedComponents(g);
+		final IVertexPartition gCcs = (IVertexPartition) ccAlgo.findWeaklyConnectedComponents(g);
 
 		/* Check that each bicc is actually a BiConnected component */
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
@@ -114,7 +114,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 				IntGraph gWithoutV = g.copy();
 				gWithoutV.removeEdgesOf(vToRemove);
 
-				IVertexPartition ccsWithoutV = ccAlgo.findWeaklyConnectedComponents(gWithoutV);
+				IVertexPartition ccsWithoutV = (IVertexPartition) ccAlgo.findWeaklyConnectedComponents(gWithoutV);
 				ccIdxs.clear();
 				for (int u : vertices)
 					if (u != vToRemove)
@@ -139,7 +139,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 					IntGraph gWithoutV = g.copy();
 					gWithoutV.removeEdgesOf(vToRemove);
 
-					IVertexPartition ccsWithoutV = ccAlgo.findWeaklyConnectedComponents(gWithoutV);
+					IVertexPartition ccsWithoutV = (IVertexPartition) ccAlgo.findWeaklyConnectedComponents(gWithoutV);
 					IntSet ccIdxs = new IntOpenHashSet();
 					for (IntIterator uit = IntIterators.concat(vs1.iterator(), vs2.iterator()); uit.hasNext();) {
 						int u = uit.nextInt();

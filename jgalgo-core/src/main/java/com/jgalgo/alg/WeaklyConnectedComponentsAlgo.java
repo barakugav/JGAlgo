@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -40,22 +41,30 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * <p>
 	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strongly)
 	 * connected components in the result undirected graph.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
-	 * @param  g a graph
-	 * @return   a result object containing the partition of the vertices into weakly connected components
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the partition of the vertices into weakly connected components
 	 */
-	IVertexPartition findWeaklyConnectedComponents(IntGraph g);
+	<V, E> VertexPartition<V, E> findWeaklyConnectedComponents(Graph<V, E> g);
 
 	/**
 	 * Check whether a graph is weakly connected.
 	 * <p>
 	 * A graph is weakly connected if there is an <i>undirected</i> path from any vertex to any other vertex. Namely if
 	 * the the whole graph is a single weakly connected component.
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is weakly connected, {@code false} otherwise
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is weakly connected, {@code false} otherwise
 	 */
-	boolean isWeaklyConnected(IntGraph g);
+	<V, E> boolean isWeaklyConnected(Graph<V, E> g);
 
 	/**
 	 * Create a new weakly connected components algorithm object.
