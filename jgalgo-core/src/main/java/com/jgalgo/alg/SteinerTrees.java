@@ -28,7 +28,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -43,7 +43,7 @@ class SteinerTrees {
 		public <V, E> SteinerTreeAlgo.Result<V, E> computeSteinerTree(Graph<V, E> g, WeightFunction<E> w,
 				Collection<V> terminals) {
 			if (g instanceof IndexGraph) {
-				IntCollection terminals0 = IntContainers.toIntCollection((Collection<Integer>) terminals);
+				IntCollection terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (SteinerTreeAlgo.Result<V, E>) computeSteinerTree((IndexGraph) g, w0, terminals0);
 

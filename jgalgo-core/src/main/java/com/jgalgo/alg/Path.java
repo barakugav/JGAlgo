@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -190,7 +190,7 @@ public interface Path<V, E> {
 			ig = (IndexGraph) g;
 			source0 = ((Integer) source).intValue();
 			target0 = ((Integer) target).intValue();
-			eit = IntContainers.toIntIterator(((List<Integer>) edges).iterator());
+			eit = IntAdapters.asIntIterator(((List<Integer>) edges).iterator());
 		} else {
 			ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();

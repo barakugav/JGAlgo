@@ -29,7 +29,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -125,8 +125,8 @@ public interface SteinerTreeAlgo {
 		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			terminals0 = IntContainers.toIntCollection((Collection<Integer>) terminals);
-			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
+			terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
+			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
 
 		} else if (g instanceof IntGraph) {
 			ig = g.indexGraph();

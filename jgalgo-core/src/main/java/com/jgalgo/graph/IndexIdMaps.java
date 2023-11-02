@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -80,8 +80,7 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntIterator idToIndexIterator(Iterator<K> idIter, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
-			return new IntIdToIndexIterator(IntContainers.toIntIterator((Iterator<Integer>) idIter),
-					(IndexIntIdMap) map);
+			return new IntIdToIndexIterator(IntAdapters.asIntIterator((Iterator<Integer>) idIter), (IndexIntIdMap) map);
 		} else {
 			return new IdToIndexIterator<>(idIter, map);
 		}
@@ -479,7 +478,7 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntCollection idToIndexCollection(Collection<K> idCollection, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
-			return new IntIdToIndexCollection(IntContainers.toIntCollection((Collection<Integer>) idCollection),
+			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
 					(IndexIntIdMap) map);
 		} else {
 			return new IdToIndexCollection<>(idCollection, map);

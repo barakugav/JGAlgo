@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -103,7 +103,7 @@ public interface ColoringAlgo {
 		int maxColor = -1;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
+			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			for (int v = 0; v < n; v++) {
 				vertexToColor[v] = mapping0.applyAsInt(v);
 				maxColor = Math.max(maxColor, vertexToColor[v]);
@@ -111,7 +111,7 @@ public interface ColoringAlgo {
 
 		} else if (g instanceof IntGraph) {
 			ig = g.indexGraph();
-			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
+			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
 			for (int v = 0; v < n; v++) {
 				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));

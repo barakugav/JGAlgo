@@ -30,7 +30,7 @@ import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -122,7 +122,7 @@ public interface MinimumSpanningTree {
 		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
+			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
 		} else if (g instanceof IntGraph) {
 			ig = g.indexGraph();
 			edges0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) edges, ((IntGraph) g).indexGraphEdgesMap());

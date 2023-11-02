@@ -23,7 +23,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
@@ -198,7 +198,7 @@ public interface VertexPartition<V, E> {
 	@SuppressWarnings("unchecked")
 	static <V, E> VertexPartition<V, E> fromMapping(Graph<V, E> g, ToIntFunction<V> mapping) {
 		if (g instanceof IntGraph) {
-			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
+			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			return (VertexPartition<V, E>) IVertexPartition.fromMapping((IntGraph) g, mapping0);
 		}
 
@@ -231,7 +231,7 @@ public interface VertexPartition<V, E> {
 	@SuppressWarnings("unchecked")
 	static <V, E> boolean isPartition(Graph<V, E> g, ToIntFunction<V> mapping) {
 		if (g instanceof IntGraph) {
-			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction<Integer>) mapping);
+			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			return IVertexPartition.isPartition((IntGraph) g, mapping0);
 		}
 

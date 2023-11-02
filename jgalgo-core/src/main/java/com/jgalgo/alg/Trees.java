@@ -27,7 +27,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -117,7 +117,7 @@ public class Trees {
 	@SuppressWarnings("unchecked")
 	private static <V, E> boolean isForest(Graph<V, E> g, Iterator<V> roots, boolean allowVisitedRoot) {
 		if (g instanceof IndexGraph) {
-			IntIterator roots0 = IntContainers.toIntIterator((Iterator<Integer>) roots);
+			IntIterator roots0 = IntAdapters.asIntIterator((Iterator<Integer>) roots);
 			return isForest((IndexGraph) g, roots0, allowVisitedRoot);
 
 		} else if (g instanceof IntGraph) {

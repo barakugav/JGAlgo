@@ -18,18 +18,23 @@ package com.jgalgo.internal.util;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.IntSupplier;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class IntContainers {
+public class IntAdapters {
 
-	private IntContainers() {}
+	private IntAdapters() {}
 
-	public static IntIterator toIntIterator(Iterator<Integer> it) {
+	public static IntIterator asIntIterator(Iterator<Integer> it) {
 		if (it instanceof IntIterator) {
 			return (IntIterator) it;
 		} else {
@@ -37,7 +42,7 @@ public class IntContainers {
 		}
 	}
 
-	public static IntIterable toIntIterable(Iterable<Integer> it) {
+	public static IntIterable asIntIterable(Iterable<Integer> it) {
 		if (it instanceof IntIterable) {
 			return (IntIterable) it;
 		} else {
@@ -45,7 +50,7 @@ public class IntContainers {
 		}
 	}
 
-	public static IntCollection toIntCollection(Collection<Integer> c) {
+	public static IntCollection asIntCollection(Collection<Integer> c) {
 		if (c instanceof IntCollection) {
 			return (IntCollection) c;
 		} else {
@@ -138,7 +143,7 @@ public class IntContainers {
 
 		@Override
 		public IntIterator iterator() {
-			return toIntIterator(c.iterator());
+			return asIntIterator(c.iterator());
 		}
 
 		@Override
@@ -178,11 +183,35 @@ public class IntContainers {
 
 	}
 
-	public static IntUnaryOperator toIntUnaryOperator(ToIntFunction<Integer> op) {
+	public static IntUnaryOperator asIntUnaryOperator(ToIntFunction<Integer> op) {
 		if (op instanceof IntUnaryOperator) {
 			return (IntUnaryOperator) op;
 		} else {
 			return v -> op.applyAsInt(Integer.valueOf(v));
+		}
+	}
+
+	public static IntSupplier asIntSupplier(Supplier<Integer> sup) {
+		if (sup instanceof IntSupplier) {
+			return (IntSupplier) sup;
+		} else {
+			return () -> sup.get().intValue();
+		}
+	}
+
+	public static IntBinaryOperator asIntBiOperator(BiFunction<Integer, Integer, Integer> func) {
+		if (func instanceof IntBinaryOperator) {
+			return (IntBinaryOperator) func;
+		} else {
+			return (a, b) -> func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();
+		}
+	}
+
+	public static IntBinaryOperator asIntBiOperator(BinaryOperator<Integer> func) {
+		if (func instanceof IntBinaryOperator) {
+			return (IntBinaryOperator) func;
+		} else {
+			return (a, b) -> func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();
 		}
 	}
 

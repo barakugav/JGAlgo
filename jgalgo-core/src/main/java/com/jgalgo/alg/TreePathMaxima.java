@@ -26,7 +26,7 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -374,7 +374,7 @@ public interface TreePathMaxima {
 			TreePathMaxima tpmAlgo) {
 		if (g instanceof IndexGraph) {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			IntCollection mstEdges0 = IntContainers.toIntCollection((Collection<Integer>) mstEdges);
+			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);
 
 		} else if (g instanceof IntGraph) {

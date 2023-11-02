@@ -33,7 +33,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -117,8 +117,8 @@ class MinimumCostFlows {
 				Collection<V> sources, Collection<V> sinks) {
 			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
 				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
-				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
-				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, sources0, sinks0);
 
 			} else if (g instanceof IntGraph) {
@@ -151,8 +151,8 @@ class MinimumCostFlows {
 				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) cost);
 				IWeightFunction lowerBound0 =
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) lowerBound);
-				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
-				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, sources0, sinks0);
 
 			} else if (g instanceof IntGraph) {

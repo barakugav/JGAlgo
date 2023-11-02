@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
@@ -162,14 +162,14 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt<Integer, I
 		long sum = 0;
 		IntGraph g0 = (IntGraph) g;
 		if (g0.isDirected()) {
-			for (int source : IntContainers.toIntIterable(sources)) {
+			for (int source : IntAdapters.asIntIterable(sources)) {
 				for (int e : g0.outEdges(source))
 					sum += getFlowInt(e);
 				for (int e : g0.inEdges(source))
 					sum -= getFlowInt(e);
 			}
 		} else {
-			for (int source : IntContainers.toIntIterable(sources)) {
+			for (int source : IntAdapters.asIntIterable(sources)) {
 				for (int e : g0.outEdges(source)) {
 					if (source != g0.edgeTarget(e)) {
 						sum += getFlowInt(e);
@@ -184,7 +184,7 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt<Integer, I
 
 	@Override
 	default double getCostSum(Iterable<Integer> edges, WeightFunction<Integer> cost) {
-		IntIterable edges0 = IntContainers.toIntIterable(edges);
+		IntIterable edges0 = IntAdapters.asIntIterable(edges);
 		IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);
 		if (cost0 instanceof IWeightFunctionInt) {
 			IWeightFunctionInt costInt = (IWeightFunctionInt) cost0;

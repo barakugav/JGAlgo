@@ -22,7 +22,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -129,7 +129,7 @@ public interface Matching<V, E> {
 		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			edges0 = IntContainers.toIntCollection((Collection<Integer>) edges);
+			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
 		} else {
 			ig = g.indexGraph();
 			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());

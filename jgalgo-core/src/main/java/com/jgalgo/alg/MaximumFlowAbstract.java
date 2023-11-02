@@ -26,7 +26,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
@@ -65,8 +65,8 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 	public <V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, Collection<V> sources,
 			Collection<V> sinks) {
 		if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
-			IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
-			IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+			IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
+			IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, sources0, sinks0);
 
 		} else if (g instanceof IntGraph) {

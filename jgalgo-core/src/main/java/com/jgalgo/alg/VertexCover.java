@@ -24,7 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -137,7 +137,7 @@ public interface VertexCover {
 		IntCollection vertices0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			vertices0 = IntContainers.toIntCollection((Collection<Integer>) vertices);
+			vertices0 = IntAdapters.asIntCollection((Collection<Integer>) vertices);
 		} else if (g instanceof IntGraph) {
 			ig = g.indexGraph();
 			vertices0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) vertices,

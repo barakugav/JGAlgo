@@ -29,7 +29,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -77,8 +77,8 @@ class MinimumCutSTUtils {
 				Collection<V> sources, Collection<V> sinks) {
 			if (g instanceof IndexGraph) {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				IntCollection sources0 = IntContainers.toIntCollection((Collection<Integer>) sources);
-				IntCollection sinks0 = IntContainers.toIntCollection((Collection<Integer>) sinks);
+				IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
+				IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);
 
 			} else if (g instanceof IntGraph) {
@@ -253,7 +253,8 @@ class MinimumCutSTUtils {
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
-					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
+					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w,
+							Integer.valueOf(source), Integer.valueOf(sink));
 					double cutWeight = w.weightSum(cut.crossEdges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;

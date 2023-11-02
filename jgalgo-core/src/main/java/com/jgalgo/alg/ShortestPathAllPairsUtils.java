@@ -29,7 +29,7 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -69,7 +69,7 @@ class ShortestPathAllPairsUtils {
 		public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
 				Collection<V> verticesSubset, WeightFunction<E> w) {
 			if (g instanceof IndexGraph) {
-				IntCollection verticesSubset0 = IntContainers.toIntCollection((Collection<Integer>) verticesSubset);
+				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (ShortestPathAllPairs.Result<V, E>) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0,
 						w0);
@@ -122,7 +122,7 @@ class ShortestPathAllPairsUtils {
 		public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetCardinalityShortestPaths(Graph<V, E> g,
 				Collection<V> verticesSubset) {
 			if (g instanceof IndexGraph) {
-				IntCollection verticesSubset0 = IntContainers.toIntCollection((Collection<Integer>) verticesSubset);
+				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
 				return (ShortestPathAllPairs.Result<V, E>) computeSubsetCardinalityShortestPaths((IndexGraph) g,
 						verticesSubset0);
 
