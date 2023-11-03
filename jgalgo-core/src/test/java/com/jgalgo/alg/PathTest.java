@@ -50,7 +50,7 @@ public class PathTest extends TestBase {
 			int target = vs[rand.nextInt(vs.length)];
 
 			IPath actual = IPath.findPath(g, source, target);
-			IPath expected = (IPath) validationAlgo.computeCardinalityShortestPaths(g, source).getPath(target);
+			IPath expected = (IPath) validationAlgo.computeShortestPaths(g, null, source).getPath(target);
 			if (expected == null) {
 				assertNull(actual, "found non existing path");
 			} else {

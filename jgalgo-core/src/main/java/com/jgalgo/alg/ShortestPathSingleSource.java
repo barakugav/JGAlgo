@@ -82,7 +82,8 @@ public interface ShortestPathSingleSource {
 	 * Compute the shortest paths from a source to any other vertex in a graph.
 	 * <p>
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
-	 * from a source vertex to some other vertex is the path with the minimum weight.
+	 * from a source vertex to some other vertex is the path with the minimum weight. For cardinality (non weighted)
+	 * shortest pass, pass {@code null} instead of the weight function {@code w}.
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -96,25 +97,6 @@ public interface ShortestPathSingleSource {
 	 */
 	public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 			V source);
-
-	/**
-	 * Compute the cardinality shortest paths from a source to any other vertex in a graph.
-	 * <p>
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * <p>
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned.
-	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  source a source vertex
-	 * @return        a result object containing the distances and cardinality shortest paths from the source to any
-	 *                other vertex
-	 */
-	default <V, E> ShortestPathSingleSource.Result<V, E> computeCardinalityShortestPaths(Graph<V, E> g, V source) {
-		return computeShortestPaths(g, WeightFunction.cardinalityWeightFunction(), source);
-	}
 
 	/**
 	 * A result object for the {@link ShortestPathSingleSource} problem.

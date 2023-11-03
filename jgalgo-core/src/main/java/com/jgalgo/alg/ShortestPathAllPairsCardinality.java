@@ -70,7 +70,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();
 			for (int source : verticesSubset)
 				ssspResults[vToResIdx[source]] =
-						(ShortestPathSingleSource.IResult) sssp.computeCardinalityShortestPaths(g, Integer.valueOf(source));
+						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, null, Integer.valueOf(source));
 
 		} else {
 			/* parallel */
@@ -79,8 +79,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newBuilder().setCardinality(true).build());
 			for (int source : verticesSubset) {
 				final int source0 = source;
-				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
-						(ShortestPathSingleSource.IResult) sssp.get().computeCardinalityShortestPaths(g, Integer.valueOf(source0))));
+				tasks.add(JGAlgoUtils
+						.recursiveAction(() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
+								.get().computeShortestPaths(g, null, Integer.valueOf(source0))));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);

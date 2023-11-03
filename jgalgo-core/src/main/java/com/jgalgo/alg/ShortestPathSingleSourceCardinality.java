@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.graph.IWeightFunction;
 
 /**
@@ -36,17 +37,6 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 */
 	ShortestPathSingleSourceCardinality() {}
 
-	@Override
-	ShortestPathSingleSource.IResult computeCardinalityShortestPaths(IndexGraph g, int source) {
-		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
-		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
-			int v = it.nextInt();
-			res.distances[v] = it.layer();
-			res.backtrack[v] = it.lastEdgeInt();
-		}
-		return res;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 *
@@ -55,9 +45,14 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 */
 	@Override
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
-			throw new IllegalArgumentException("only cardinality shortest paths are supported");
-		return computeCardinalityShortestPaths(g, source);
+		Assertions.Graphs.onlyCardinality(w);
+		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
+		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
+			int v = it.nextInt();
+			res.distances[v] = it.layer();
+			res.backtrack[v] = it.lastEdgeInt();
+		}
+		return res;
 	}
 
 }

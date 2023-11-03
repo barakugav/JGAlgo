@@ -65,36 +65,7 @@ class ShortestPathSingleSourceUtils {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathSingleSource.Result<V, E> computeCardinalityShortestPaths(Graph<V, E> g, V source) {
-			if (g instanceof IndexGraph) {
-				int source0 = ((Integer) source).intValue();
-				return (ShortestPathSingleSource.Result<V, E>) computeCardinalityShortestPaths((IndexGraph) g, source0);
-
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				int iSource = viMap.idToIndex(((Integer) source).intValue());
-				ShortestPathSingleSource.IResult indexResult = computeCardinalityShortestPaths(iGraph, iSource);
-				return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				int iSource = viMap.idToIndex(source);
-				ShortestPathSingleSource.IResult indexResult = computeCardinalityShortestPaths(iGraph, iSource);
-				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
-			}
-		}
-
 		abstract ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
-
-		ShortestPathSingleSource.IResult computeCardinalityShortestPaths(IndexGraph g, int source) {
-			return computeShortestPaths(g, IWeightFunction.CardinalityWeightFunction, source);
-		}
 
 	}
 
