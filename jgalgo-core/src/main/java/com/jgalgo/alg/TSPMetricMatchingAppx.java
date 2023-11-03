@@ -16,12 +16,9 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeights;
-import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -67,16 +64,24 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
-		IndexGraph mG = Graphs.newCompleteGraphUndirected(mGn);
-		IWeightsDouble mGWeightsNeg = IWeights.createExternalEdgesWeights(mG, double.class);
-		for (int m = mG.edges().size(), e = 0; e < m; e++) {
-			int u = mVtoV[mG.edgeSource(e)];
-			int v = mVtoV[mG.edgeTarget(e)];
-			mGWeightsNeg.set(e, w.weight(g.getEdge(u, v)));
-		}
+		IndexGraphBuilder mG0 = IndexGraphBuilder.newUndirected();
+		mG0.expectedVerticesNum(mGn);
+		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);
+		for (int v = 0; v < mGn; v++)
+			mG0.addVertex();
+		for (int v = 0; v < mGn; v++)
+			for (int u = v + 1; u < mGn; u++)
+				mG0.addEdge(v, u);
+		IndexGraph oddGraph = mG0.reIndexAndBuild(true, true).graph();
+		IWeightFunction mGWeights = e -> {
+			int u = mVtoV[oddGraph.edgeSource(e)];
+			int v = mVtoV[oddGraph.edgeTarget(e)];
+			return w.weight(g.getEdge(u, v));
+		};
+		IndexGraph mG = mG0.reIndexAndBuild(true, true).graph();
 
 		/* Calculate maximum matching between the odd vertices */
-		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeightsNeg);
+		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeights);
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();

@@ -21,9 +21,11 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.Graphs;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class TSPMetricTest extends TestBase {
@@ -54,7 +56,18 @@ public class TSPMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		IndexGraph g = Graphs.newCompleteGraphUndirected(n);
+		IndexGraphFactory gFactory = IndexGraphFactory.newUndirected();
+		gFactory.addHint(GraphFactory.Hint.FastEdgeLookup);
+		gFactory.addHint(GraphFactory.Hint.DenseGraph);
+		IndexGraphBuilder gBuilder = gFactory.newBuilder();
+		gBuilder.expectedVerticesNum(n);
+		gBuilder.expectedEdgesNum(n * (n - 1) / 2);
+		for (int v = 0; v < n; v++)
+			gBuilder.addVertex();
+		for (int u = 0; u < n; u++)
+			for (int v = u + 1; v < n; v++)
+				gBuilder.addEdge(u, v);
+		IndexGraph g = gBuilder.build();
 		IWeightFunction distances = e -> {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

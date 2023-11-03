@@ -135,6 +135,10 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		if (!canAddEdgeWithoutId())
 			throw new IllegalArgumentException(
 					"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
+		if (!vertices().contains(source))
+			throw new IllegalArgumentException("invalid vertex: " + source);
+		if (!vertices().contains(target))
+			throw new IllegalArgumentException("invalid vertex: " + target);
 		int e = m++;
 		int eFromEdgesSet = edges.newIdx();
 		assert e == eFromEdgesSet;
@@ -153,6 +157,10 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		if (!canAddEdgeWithId())
 			throw new IllegalArgumentException(
 					"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
+		if (!vertices().contains(source))
+			throw new IllegalArgumentException("invalid vertex: " + source);
+		if (!vertices().contains(target))
+			throw new IllegalArgumentException("invalid vertex: " + target);
 		int eIdx = m++;
 		while (eIdx >= edges.size())
 			edges.newIdx();

@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -54,23 +53,32 @@ class ChinesePostmanImpl implements ChinesePostman {
 		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later
 
 		/* Find all vertices with odd degree */
-		IntList oddVertices = new IntArrayList();
+		IntList oddVerticesList = new IntArrayList();
 		for (int n = g.vertices().size(), v = 0; v < n; v++)
 			if (nonSelfEdgesDegree(g, v) % 2 != 0)
-				oddVertices.add(v);
-		if (oddVertices.isEmpty())
+				oddVerticesList.add(v);
+		if (oddVerticesList.isEmpty())
 			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
 			return (IPath) eulerianTourAlgo.computeEulerianTour(g);
-		assert oddVertices.size() % 2 == 0;
+		int[] oddVertices = oddVerticesList.toIntArray();
+		assert oddVertices.length % 2 == 0;
 
 		/* Find the shortest path between each pair of odd degree vertices */
-		ShortestPathAllPairs.IResult allPairsRes =
-				(ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo.computeSubsetShortestPaths(g, oddVertices, w);
+		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo
+				.computeSubsetShortestPaths(g, oddVerticesList, w);
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
-		IndexGraph oddGraph = Graphs.newCompleteGraphUndirected(oddVertices.size());
+		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.newUndirected();
+		oddGraph0.expectedVerticesNum(oddVertices.length);
+		oddGraph0.expectedEdgesNum(oddVertices.length * (oddVertices.length - 1) / 2);
+		for (int n = oddVertices.length, v = 0; v < n; v++)
+			oddGraph0.addVertex();
+		for (int n = oddVertices.length, v = 0; v < n; v++)
+			for (int u = v + 1; u < n; u++)
+				oddGraph0.addEdge(v, u);
+		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();
 		IWeightFunction oddW = e -> {
-			int u = oddVertices.getInt(oddGraph.edgeSource(e));
-			int v = oddVertices.getInt(oddGraph.edgeTarget(e));
+			int u = oddVertices[oddGraph.edgeSource(e)];
+			int v = oddVertices[oddGraph.edgeTarget(e)];
 			return allPairsRes.distance(u, v);
 		};
 		/* Compute a minimum weighted perfected matching between the odd vertices */
@@ -86,8 +94,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 			b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 		final int originalEdgesThreshold = b.edges().size();
 		for (int e : oddMatching.edges()) {
-			int u = oddVertices.getInt(oddGraph.edgeSource(e));
-			int v = oddVertices.getInt(oddGraph.edgeTarget(e));
+			int u = oddVertices[oddGraph.edgeSource(e)];
+			int v = oddVertices[oddGraph.edgeTarget(e)];
 			b.addEdge(u, v);
 		}
 		/* The new graph is Eulerian */
