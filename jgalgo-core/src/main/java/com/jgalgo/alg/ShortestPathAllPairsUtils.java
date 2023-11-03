@@ -95,70 +95,10 @@ class ShortestPathAllPairsUtils {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathAllPairs.Result<V, E> computeAllCardinalityShortestPaths(Graph<V, E> g) {
-			if (g instanceof IndexGraph) {
-				return (ShortestPathAllPairs.Result<V, E>) computeAllCardinalityShortestPaths((IndexGraph) g);
-
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				ShortestPathAllPairs.IResult indexResult = computeAllCardinalityShortestPaths(iGraph);
-				return (ShortestPathAllPairs.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				ShortestPathAllPairs.IResult indexResult = computeAllCardinalityShortestPaths(iGraph);
-				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetCardinalityShortestPaths(Graph<V, E> g,
-				Collection<V> verticesSubset) {
-			if (g instanceof IndexGraph) {
-				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
-				return (ShortestPathAllPairs.Result<V, E>) computeSubsetCardinalityShortestPaths((IndexGraph) g,
-						verticesSubset0);
-
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IntCollection iVerticesSubset =
-						IndexIdMaps.idToIndexCollection((Collection<Integer>) verticesSubset, viMap);
-				ShortestPathAllPairs.IResult indexResult =
-						computeSubsetCardinalityShortestPaths(iGraph, iVerticesSubset);
-				return (ShortestPathAllPairs.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
-				ShortestPathAllPairs.IResult indexResult =
-						computeSubsetCardinalityShortestPaths(iGraph, iVerticesSubset);
-				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
-			}
-		}
-
 		abstract ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w);
 
 		abstract ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 				IWeightFunction w);
-
-		ShortestPathAllPairs.IResult computeAllCardinalityShortestPaths(IndexGraph g) {
-			return computeAllShortestPaths(g, IWeightFunction.CardinalityWeightFunction);
-		}
-
-		ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
-			return computeSubsetShortestPaths(g, verticesSubset, IWeightFunction.CardinalityWeightFunction);
-		}
 
 	}
 

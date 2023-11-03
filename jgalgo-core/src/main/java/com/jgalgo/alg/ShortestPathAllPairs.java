@@ -42,6 +42,9 @@ public interface ShortestPathAllPairs {
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight.
 	 * <p>
+	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
+	 * {@code w}.
+	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
@@ -55,6 +58,9 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
+	 * <p>
+	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
+	 * {@code w}.
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
@@ -71,46 +77,6 @@ public interface ShortestPathAllPairs {
 	 */
 	public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
 			Collection<V> verticesSubset, WeightFunction<E> w);
-
-	/**
-	 * Compute the cardinality shortest path between each pair of vertices in a graph.
-	 * <p>
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * <p>
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph
-	 * @return     a result object containing information on the cardinality shortest path between each pair of vertices
-	 */
-	default <V, E> ShortestPathAllPairs.Result<V, E> computeAllCardinalityShortestPaths(Graph<V, E> g) {
-		return computeAllShortestPaths(g, WeightFunction.cardinalityWeightFunction());
-	}
-
-	/**
-	 * Compute the cardinality shortest path between each pair of vertices in a given subset of the vertices of the
-	 * graph.
-	 * <p>
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * <p>
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
-	 * case, its better to pass a {@link IntCollection} as {@code verticesSubset} to avoid boxing/unboxing.
-	 *
-	 * @param  <V>            the vertices type
-	 * @param  <E>            the edges type
-	 * @param  g              a graph
-	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
-	 *                            of vertices from the subset
-	 * @return                a result object containing information on the cardinality shortest path between each pair
-	 *                        of vertices in the subset
-	 */
-	default <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetCardinalityShortestPaths(Graph<V, E> g,
-			Collection<V> verticesSubset) {
-		return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.cardinalityWeightFunction());
-	}
 
 	/**
 	 * A result object for an {@link ShortestPathAllPairs} algorithm.
@@ -256,7 +222,7 @@ public interface ShortestPathAllPairs {
 							WeightFunction<E> w) {
 						if (w == null || w == WeightFunction.CardinalityWeightFunction
 								|| w == IWeightFunction.CardinalityWeightFunction) {
-							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);
+							return cardinalityAlgo.computeAllShortestPaths(g, null);
 						} else {
 							return weightedAlgo.computeAllShortestPaths(g, w);
 						}
@@ -267,7 +233,7 @@ public interface ShortestPathAllPairs {
 							Collection<V> verticesSubset, WeightFunction<E> w) {
 						if (w == null || w == WeightFunction.CardinalityWeightFunction
 								|| w == IWeightFunction.CardinalityWeightFunction) {
-							return cardinalityAlgo.computeSubsetCardinalityShortestPaths(g, verticesSubset);
+							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);
 						} else {
 							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);
 						}

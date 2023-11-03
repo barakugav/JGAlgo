@@ -18,9 +18,10 @@ package com.jgalgo.alg;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -49,12 +50,15 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	ShortestPathAllPairsCardinality() {}
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllCardinalityShortestPaths(IndexGraph g) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+		Assertions.Graphs.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset) {
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			IWeightFunction w) {
+		Assertions.Graphs.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
 	}
 
@@ -94,33 +98,6 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		} else {
 			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
-	 */
-	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
-			throw new IllegalArgumentException("only cardinality shortest paths are supported");
-		return computeAllCardinalityShortestPaths(g);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
-	 */
-	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			IWeightFunction w) {
-		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))
-			throw new IllegalArgumentException("only cardinality shortest paths are supported");
-		return computeSubsetCardinalityShortestPaths(g, verticesSubset);
 	}
 
 }
