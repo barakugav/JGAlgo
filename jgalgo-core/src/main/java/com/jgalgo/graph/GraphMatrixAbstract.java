@@ -171,11 +171,7 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
 		int edge = edges.get(source).get(target);
-		if (edge == EdgeNone) {
-			return Edges.EmptyEdgeSet;
-		} else {
-			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
-		}
+		return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
 	}
 
 	@Override

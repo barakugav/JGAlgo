@@ -1149,11 +1149,9 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-			if (edge == EdgeNone)
-				return IEdgeIter.emptyIterator();
 			return new IEdgeIter() {
 
-				boolean beforeNext = true;
+				boolean beforeNext = edge != EdgeNone;
 
 				@Override
 				public boolean hasNext() {

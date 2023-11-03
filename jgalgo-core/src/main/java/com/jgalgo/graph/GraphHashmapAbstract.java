@@ -68,11 +68,7 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
 		int edge = getEdge(source, target);
-		if (edge == -1) {
-			return Edges.EmptyEdgeSet;
-		} else {
-			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
-		}
+		return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
 	}
 
 	@Override

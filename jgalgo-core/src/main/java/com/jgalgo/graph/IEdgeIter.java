@@ -90,12 +90,4 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 		return Integer.valueOf(targetInt());
 	}
 
-	/**
-	 * Get an empty edge iterator.
-	 *
-	 * @return an empty edge iterator
-	 */
-	static IEdgeIter emptyIterator() {
-		return Edges.EmptyEdgeIter.Instance;
-	}
 }
