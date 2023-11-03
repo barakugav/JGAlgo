@@ -16,14 +16,17 @@
 
 package com.jgalgo.bench.util;
 
-import java.util.BitSet;
 import java.util.Random;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.graph.IndexGraphBuilder;
+import java.util.concurrent.atomic.AtomicInteger;
+import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
+import com.jgalgo.gen.GnpGraphGenerator;
+import com.jgalgo.gen.RecursiveMatrixGraphGenerator;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {
@@ -94,173 +97,30 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {
-		final double p = 0.1;
-		return randomGraphGnp(n, p, directed, seed);
-	}
-
-	public static IntGraph randomGraphGnp(int n, double p, boolean directed, long seed) {
-		if (n < 0)
-			throw new IllegalArgumentException();
-		if (!(0 <= p && p <= 1))
-			throw new IllegalArgumentException();
-
-		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
-		builder.expectedVerticesNum(n);
-		for (int i = 0; i < n; i++)
-			builder.addVertex();
-		if (p > 0) {
-			Random rand = new Random(seed);
-			if (directed) {
-				for (int u = 0; u < n; u++)
-					for (int v = 0; v < n; v++)
-						if (u != v && rand.nextDouble() <= p)
-							builder.addEdge(u, v);
-			} else {
-				for (int u = 0; u < n; u++)
-					for (int v = u + 1; v < n; v++)
-						if (rand.nextDouble() <= p)
-							builder.addEdge(u, v);
-			}
-		}
-
-		return builder.reIndexAndBuild(true, true).graph();
+		GnpGraphGenerator<Integer, Integer> gen = GnpGraphGenerator.newIntInstance();
+		gen.setSeed(seed);
+		gen.setDirected(directed);
+		gen.setVertices(Range.of(n));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		return gen.generate().indexGraph();
 	}
 
 	public static IntGraph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
-		final int nInit = 20;
-		final int m = 10;
-		return randomGraphBarabasiAlbert(n, nInit, m, directed, seed);
-	}
-
-	public static IntGraph randomGraphBarabasiAlbert(int n, int nInit, int m, boolean directed, long seed) {
-		if (nInit <= 0 || nInit > n)
-			throw new IllegalArgumentException();
-		if (m > nInit)
-			throw new IllegalArgumentException();
-
-		int[] endpoints = new int[(nInit * (nInit - 1) / 2 + (n - nInit) * m) * 2];
-		int edgeNum = 0;
-
-		/* start with a complete graph of size nInit */
-		for (int u = 0; u < nInit; u++) {
-			for (int v = u + 1; v < nInit; v++) {
-				int e = edgeNum++;
-				endpoints[e * 2 + 0] = u;
-				endpoints[e * 2 + 1] = v;
-			}
-		}
-
-		/* add n-nInit vertices, each with m edges */
-		Random rand = new Random(seed);
-		for (int vNum = nInit; vNum < n; vNum++) {
-			final int edgeNumAtStart = edgeNum;
-			final int u = vNum;
-			for (int i = 0; i < m; i++) {
-				/* by sampling from the current endpoints, we sample a vertex with prob of its degree */
-				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];
-				int e = edgeNum++;
-				endpoints[e * 2 + 0] = u;
-				endpoints[e * 2 + 1] = v;
-			}
-		}
-
-		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
-		builder.expectedVerticesNum(n);
-		for (int i = 0; i < n; i++)
-			builder.addVertex();
-		for (int e = 0; e < edgeNum; e++) {
-			int u = endpoints[e * 2 + 0];
-			int v = endpoints[e * 2 + 1];
-			if (rand.nextBoolean()) {
-				int tmp = u;
-				u = v;
-				v = tmp;
-			}
-			builder.addEdge(u, v);
-		}
-		return builder.reIndexAndBuild(true, true).graph();
+		BarabasiAlbertGraphGenerator<Integer, Integer> gen = BarabasiAlbertGraphGenerator.newIntInstance();
+		gen.setSeed(seed);
+		gen.setDirected(directed);
+		gen.setVertices(Range.of(n));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		return gen.generate().indexGraph();
 	}
 
 	public static IntGraph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
-		if (directed) {
-			final double a = 0.57;
-			final double b = 0.21;
-			final double c = 0.17;
-			final double d = 0.05;
-			return randomGraphRecursiveMatrix(n, m, a, b, c, d, true, seed);
-		} else {
-			final double a = 0.57;
-			final double b = 0.19;
-			final double c = 0.19;
-			final double d = 0.05;
-			return randomGraphRecursiveMatrix(n, m, a, b, c, d, false, seed);
-		}
-	}
-
-	public static IntGraph randomGraphRecursiveMatrix(int n, int m, double a, double b, double c, double d,
-			boolean directed, long seed) {
-		if (n <= 0 || m < 0)
-			throw new IllegalArgumentException();
-		if (m > 0.75 * n * (n - 1))
-			throw new IllegalArgumentException(
-					"too many edges for random sampling (max=" + (int) (0.75 * n * (n - 1)) + ")");
-		if (a < 0 || b < 0 || c < 0 || d < 0)
-			throw new IllegalArgumentException();
-		if (a + b + c + d != 1)
-			throw new IllegalArgumentException();
-
-		final double p1 = a;
-		final double p2 = a + b;
-		final double p3 = a + b + c;
-		final double p4 = a + b + c + d;
-
-		final int depth = nextPowerOf2(n);
-		final int N = 1 << depth;
-		BitSet edges = new BitSet(N * N);
-
-		Random rand = new Random(seed);
-		for (int edgeNum = 0; edgeNum < m;) {
-			int u = 0, v = 0;
-			for (int s = depth; s > 0; s--) {
-				double p = rand.nextDouble();
-				if (p < p1) {
-				} else if (p < p2) {
-					v += 1 << (s - 1);
-				} else if (p < p3) {
-					u += 1 << (s - 1);
-				} else if (p < p4) {
-					u += 1 << (s - 1);
-					v += 1 << (s - 1);
-				} else {
-					throw new AssertionError();
-				}
-			}
-			if (edges.get(u * N + v))
-				continue;
-			edges.set(u * N + v);
-			edgeNum++;
-		}
-
-		IndexGraphBuilder builder = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
-		builder.expectedVerticesNum(n);
-		for (int i = 0; i < n; i++)
-			builder.addVertex();
-		if (directed) {
-			for (int u = 0; u < n; u++)
-				for (int v = 0; v < n; v++)
-					if (edges.get(u * N + v))
-						builder.addEdge(u, v);
-		} else {
-			for (int u = 0; u < n; u++)
-				for (int v = u; v < n; v++)
-					if (edges.get(u * N + v))
-						builder.addEdge(u, v);
-		}
-		return builder.reIndexAndBuild(true, true).graph();
-	}
-
-	private static int nextPowerOf2(int x) {
-		return x == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(x - 1);
+		RecursiveMatrixGraphGenerator<Integer, Integer> gen = RecursiveMatrixGraphGenerator.newIntInstance();
+		gen.setSeed(seed);
+		gen.setDirected(directed);
+		gen.setVertices(Range.of(n));
+		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+		return gen.generate().indexGraph();
 	}
 
 }
