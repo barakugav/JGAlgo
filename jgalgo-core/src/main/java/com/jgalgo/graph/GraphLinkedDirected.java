@@ -77,6 +77,23 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			addEdgeToLists(getEdge(e));
 	}
 
+	GraphLinkedDirected(IndexGraphBuilderImpl.Directed builder) {
+		super(Capabilities, builder);
+
+		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
+		addInternalVerticesContainer(edgesOutContainer);
+		addInternalVerticesContainer(edgesInContainer);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
+
+		final int m = builder.edges().size();
+		for (int e = 0; e < m; e++)
+			addEdgeToLists(getEdge(e));
+	}
+
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);

@@ -54,6 +54,17 @@ abstract class GraphHashmapAbstract extends GraphBaseIndexMutable implements Gra
 		}
 	}
 
+	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities, builder);
+		final int m = edges.size();
+		edgeEndpointsContainer =
+				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
+
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
+	}
+
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
 		int edge = getEdge(source, target);

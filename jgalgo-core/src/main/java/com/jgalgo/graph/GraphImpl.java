@@ -577,6 +577,13 @@ abstract class GraphImpl<V, E> implements Graph<V, E> {
 		}
 
 		@Override
+		public GraphBuilder<V, E> newBuilder() {
+			IndexGraphBuilder indexBuilder = factory.newBuilder();
+			return factory.directed ? new GraphBuilderImpl.Directed<>()
+					: new GraphBuilderImpl.Undirected<>(indexBuilder);
+		}
+
+		@Override
 		public GraphFactory<V, E> setDirected(boolean directed) {
 			factory.setDirected(directed);
 			return this;

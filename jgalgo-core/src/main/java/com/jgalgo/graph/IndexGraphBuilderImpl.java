@@ -40,11 +40,15 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
+	IndexGraphFactoryImpl.Impl mutableImpl;
+	IndexGraphFactoryImpl.Impl immutableImpl;
+
 	private IndexGraphBuilderImpl() {
 		vertices = new GraphElementSet.Default(0, false);
 		edges = new GraphElementSet.Default(0, true);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+		setDefaultImpls();
 	}
 
 	private IndexGraphBuilderImpl(IndexGraph g, boolean copyWeights) {
@@ -69,11 +73,27 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			for (String key : g.getEdgesWeightsKeys())
 				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));
 		}
+
+		setDefaultImpls();
 	}
 
 	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyWeights) {
 		return g.isDirected() ? new IndexGraphBuilderImpl.Directed(g, copyWeights)
 				: new IndexGraphBuilderImpl.Undirected(g, copyWeights);
+	}
+
+	private void setDefaultImpls() {
+		boolean directed = this instanceof IndexGraphBuilderImpl.Directed;
+		mutableImpl = new IndexGraphFactoryImpl(directed).mutableImpl();
+		immutableImpl = new IndexGraphFactoryImpl(directed).immutableImpl();
+	}
+
+	void setMutableImpl(IndexGraphFactoryImpl.Impl mutableImpl) {
+		this.mutableImpl = Objects.requireNonNull(mutableImpl);
+	}
+
+	void setImmutableImpl(IndexGraphFactoryImpl.Impl immutableImpl) {
+		this.immutableImpl = Objects.requireNonNull(immutableImpl);
 	}
 
 	@Override
@@ -248,12 +268,25 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key) {
+	public IndexGraph build() {
+		validateUserProvidedIdsBeforeBuild();
+		return immutableImpl.newFromBuilder(this);
+	}
+
+	@Override
+	public IndexGraph buildMutable() {
+		validateUserProvidedIdsBeforeBuild();
+		return mutableImpl.newFromBuilder(this);
+	}
+
+	@Override
+	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
+			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
@@ -267,12 +300,13 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
 		return edgesUserWeights.getWeights(key);
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
+			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
@@ -322,20 +356,6 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		}
 
 		@Override
-		public IndexGraph build() {
-			validateUserProvidedIdsBeforeBuild();
-			GraphCSRBase.BuilderProcessEdgesUndirected processEdges =
-					GraphCSRBase.BuilderProcessEdgesUndirected.valueOf(this);
-			return new GraphCSRUndirected(this, processEdges);
-		}
-
-		@Override
-		public IndexGraph buildMutable() {
-			validateUserProvidedIdsBeforeBuild();
-			return new GraphArrayUndirected(this);
-		}
-
-		@Override
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
 		}
@@ -354,20 +374,6 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		Directed(IndexGraph g, boolean copyWeights) {
 			super(g, copyWeights);
 			Assertions.Graphs.onlyDirected(g);
-		}
-
-		@Override
-		public IndexGraph build() {
-			validateUserProvidedIdsBeforeBuild();
-			GraphCSRBase.BuilderProcessEdgesDirected processEdges =
-					GraphCSRBase.BuilderProcessEdgesDirected.valueOf(this);
-			return new GraphCSRDirected(this, processEdges);
-		}
-
-		@Override
-		public IndexGraph buildMutable() {
-			validateUserProvidedIdsBeforeBuild();
-			return new GraphArrayDirected(this);
 		}
 
 		@Override

@@ -85,6 +85,50 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		}
 	}
 
+	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities, builder);
+
+		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
+		addInternalVerticesContainer(edges);
+		for (int n = builder.vertices().size(), u = 0; u < n; u++) {
+			DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
+			addInternalVerticesContainer(vEdges);
+			edges.set(u, vEdges);
+		}
+
+		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;
+		boolean directed = builder instanceof IndexGraphBuilderImpl.Directed;
+		if (directed) {
+			for (int m = builder.edges().size(), e = 0; e < m; e++) {
+				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
+				DataContainer.Int uEdges = edges.get(source);
+				int existingEdge = uEdges.get(target);
+				if (existingEdge != EdgeNone)
+					throw new IllegalArgumentException("parallel edges are not supported");
+				uEdges.set(target, e);
+			}
+
+		} else {
+			for (int m = builder.edges().size(), e = 0; e < m; e++) {
+				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
+				DataContainer.Int uEdges = edges.get(source);
+				DataContainer.Int vEdges = edges.get(target);
+				int existingEdge1 = uEdges.get(target);
+				int existingEdge2 = vEdges.get(source);
+				if (existingEdge1 != EdgeNone || existingEdge2 != EdgeNone)
+					throw new IllegalArgumentException("parallel edges are not supported");
+				uEdges.set(target, e);
+				uEdges.set(source, e);
+			}
+		}
+
+		edgeEndpointsContainer =
+				new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
+		for (int m = builder.edges().size(), e = 0; e < m; e++)
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
+	}
+
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();

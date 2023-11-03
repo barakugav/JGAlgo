@@ -52,7 +52,6 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 			edgesOutContainer = g0.edgesOutContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 			edgesInContainer = g0.edgesInContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-
 			addInternalVerticesContainer(edgesOutContainer);
 			addInternalVerticesContainer(edgesInContainer);
 
@@ -71,7 +70,6 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 					EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 			edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-
 			addInternalVerticesContainer(edgesOutContainer);
 			addInternalVerticesContainer(edgesInContainer);
 
@@ -91,6 +89,27 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 			}
+		}
+	}
+
+	GraphHashmapDirected(IndexGraphBuilderImpl.Directed builder) {
+		super(Capabilities, builder);
+		edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+		edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+				EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
+
+		addInternalVerticesContainer(edgesOutContainer);
+		addInternalVerticesContainer(edgesInContainer);
+
+		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
+			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);
+			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);
+			if (oldVal1 != -1)
+				throw new IllegalStateException("Parallel edge (idx=" + source + ",idx=" + target
+						+ ") already exists. Parallel edges are not allowed.");
+			assert oldVal2 == -1;
 		}
 	}
 

@@ -64,6 +64,19 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			addEdgeToLists(getEdge(e));
 	}
 
+	GraphLinkedUndirected(IndexGraphBuilderImpl.Undirected builder) {
+		super(Capabilities, builder);
+
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+		addInternalVerticesContainer(edgesContainer);
+		addInternalVerticesContainer(edgesNumContainer);
+
+		final int m = builder.edges().size();
+		for (int e = 0; e < m; e++)
+			addEdgeToLists(getEdge(e));
+	}
+
 	@Override
 	void removeVertexImpl(int vertex) {
 		super.removeVertexImpl(vertex);

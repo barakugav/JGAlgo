@@ -83,6 +83,18 @@ public interface GraphFactory<V, E> {
 	Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyWeights);
 
 	/**
+	 * Create a new graph builder with the factory parameters.
+	 * <p>
+	 * The created builder can be used to add vertices and edges, and then build a (mutable or immutable) non empty
+	 * graph, differing from the factory which only builds empty graphs. The capabilities such as un/directed, support
+	 * of self edges, support of parallel edges, and hints such as expected number of vertices and edges, other
+	 * {@linkplain GraphFactory.Hint hints}, etc. are copied from the factory to the builder.
+	 *
+	 * @return a new graph builder with the factory parameters
+	 */
+	GraphBuilder<V, E> newBuilder();
+
+	/**
 	 * Determine if graphs built by this factory should be directed or not.
 	 *
 	 * @param  directed if {@code true}, graphs built by this factory will be directed

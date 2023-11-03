@@ -710,6 +710,13 @@ abstract class IntGraphImpl extends IntGraphBase {
 		}
 
 		@Override
+		public IntGraphBuilder newBuilder() {
+			IndexGraphBuilder builder = factory.newBuilder();
+			return factory.directed ? new IntGraphBuilderImpl.Directed(builder)
+					: new IntGraphBuilderImpl.Undirected(builder);
+		}
+
+		@Override
 		public IntGraphFactory setDirected(boolean directed) {
 			factory.setDirected(directed);
 			return this;

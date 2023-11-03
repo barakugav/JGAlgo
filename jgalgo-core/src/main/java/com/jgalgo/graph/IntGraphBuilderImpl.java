@@ -51,6 +51,8 @@ class IntGraphBuilderImpl {
 		private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 
 		Abstract(IndexGraphBuilder ibuilder) {
+			assert ibuilder.vertices().isEmpty();
+			assert ibuilder.edges().isEmpty();
 			this.ibuilder = ibuilder;
 			vIdToIndex = new Int2IntOpenHashMap();
 			vIdToIndex.defaultReturnValue(-1);
@@ -303,8 +305,12 @@ class IntGraphBuilderImpl {
 
 	static class Undirected extends IntGraphBuilderImpl.Abstract {
 
+		Undirected(IndexGraphBuilder indexBuilder) {
+			super(indexBuilder);
+		}
+
 		Undirected() {
-			super(IndexGraphBuilder.newUndirected());
+			this(IndexGraphBuilder.newUndirected());
 		}
 
 		Undirected(IntGraph g, boolean copyWeights) {
@@ -337,8 +343,12 @@ class IntGraphBuilderImpl {
 
 	static class Directed extends IntGraphBuilderImpl.Abstract {
 
+		Directed(IndexGraphBuilder indexBuilder) {
+			super(indexBuilder);
+		}
+
 		Directed() {
-			super(IndexGraphBuilder.newDirected());
+			this(IndexGraphBuilder.newDirected());
 		}
 
 		Directed(IntGraph g, boolean copyWeights) {

@@ -39,6 +39,15 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
+	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities, builder);
+		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
+		addInternalEdgesContainer(edgesContainer);
+
+		for (int m = super.edges.size(), e = 0; e < m; e++)
+			edges[e] = allocEdge(e, builder.edgeSource(e), builder.edgeTarget(e));
+	}
+
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
 		Edge n = getEdge(edge);

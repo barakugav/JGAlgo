@@ -56,6 +56,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 
 	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
 		super(Capabilities, g, copyWeights);
+		assert g.isDirected();
 		if (g instanceof GraphMatrixDirected) {
 			GraphMatrixDirected g0 = (GraphMatrixDirected) g;
 			edgesOutNumContainer = g0.edgesOutNumContainer.copy(vertices, newArr -> edgesOutNum = newArr);
@@ -67,11 +68,24 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 			edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
 			addInternalVerticesContainer(edgesOutNumContainer);
 			addInternalVerticesContainer(edgesInNumContainer);
-			assert g.isDirected();
+
 			for (int n = g.vertices().size(), u = 0; u < n; u++) {
 				edgesOutNum[u] = g.outEdges(u).size();
 				edgesInNum[u] = g.inEdges(u).size();
 			}
+		}
+	}
+
+	GraphMatrixDirected(IndexGraphBuilderImpl.Directed builder) {
+		super(Capabilities, builder);
+		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
+		addInternalVerticesContainer(edgesOutNumContainer);
+		addInternalVerticesContainer(edgesInNumContainer);
+
+		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+			edgesOutNum[builder.edgeSource(e)]++;
+			edgesInNum[builder.edgeTarget(e)]++;
 		}
 	}
 

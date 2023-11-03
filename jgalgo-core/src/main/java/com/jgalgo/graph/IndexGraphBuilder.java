@@ -16,8 +16,6 @@
 package com.jgalgo.graph;
 
 import java.util.Optional;
-import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A builder for {@linkplain IndexGraph Index graphs}.
@@ -33,34 +31,31 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    IndexGraphFactory
  * @author Barak Ugav
  */
-public interface IndexGraphBuilder {
+public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
-	 * Get the set of vertices that were added to the graph.
-	 *
-	 * @return the graph vertices
-	 */
-	IntSet vertices();
-
-	/**
-	 * Get the set of edges that were added to the graph.
-	 *
-	 * @return the graph edges
-	 */
-	IntSet edges();
-
-	/**
-	 * Add a new vertex to the graph.
+	 * {@inheritDoc}
 	 * <p>
 	 * As the built graph is an Index graph, the vertices must be {@code 0,1,2,...,verticesNum-1} and user-chosen IDs
 	 * are not supported. A new vertex will be assigned ID of value {@code vertices().size()}.
-	 *
-	 * @return the identifier of the new vertex
 	 */
+	@Override
 	int addVertex();
 
 	/**
-	 * Add a new edge to the graph.
+	 * {@inheritDoc}
+	 *
+	 * @throws UnsupportedOperationException always
+	 */
+	@Deprecated
+	@Override
+	default void addVertex(int vertex) {
+		throw new UnsupportedOperationException(
+				"Index graph builder does not support adding vertices with user-chosen IDs");
+	}
+
+	/**
+	 * {@inheritDoc}
 	 * <p>
 	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. A new edge will be assigned
 	 * ID of value {@code edges().size()}.
@@ -68,177 +63,24 @@ public interface IndexGraphBuilder {
 	 * It is possible to construct a graph by inserting the edges in a different order than their indices (IDs), by
 	 * using {@link #addEdge(int, int, int)} in which the ID of the inserted edge is specified along with the source and
 	 * target vertices. If this method is used, the set of edges will be validated when a new graph is created, and it
-	 * must be equal {@code 0,1,2,...,edgesNum-1}. Only one of {@link #addEdge(int, int)} and
-	 * {@link #addEdge(int, int, int)} can be used during the construction of a graph.
-	 *
-	 * @param  source the source vertex of the new edge
-	 * @param  target the target vertex of the new edge
-	 * @return        the identifier of the new edge
+	 * must be equal {@code 0,1,2,...,edgesNum-1}.
 	 */
+	@Override
 	int addEdge(int source, int target);
 
 	/**
-	 * Add a new edge to the graph, with user-chosen identifier.
+	 * {@inheritDoc}
 	 * <p>
-	 * This function is similar to {@link #addEdge(int, int)}, but let the user to choose the identifier of the new
-	 * edge. As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. This constraint is
+	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. This constraint is
 	 * validated when the graph is actually created by the builder.
-	 * <p>
-	 * Instead of this method, {@link #addEdge(int, int)} can be used, letting the builder to choose the identifier of
-	 * the new edge.Only one of {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the
-	 * construction of a graph.
-	 *
-	 * @param source the source vertex of the new edge
-	 * @param target the target vertex of the new edge
-	 * @param edge   the identifier of the new edge
 	 */
+	@Override
 	void addEdge(int source, int target, int edge);
 
-	/**
-	 * Hint about the number of vertices expected to be added to the builder.
-	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
-	 *
-	 * @param verticesNum the expected number of vertices to be added to the builder
-	 */
-	void expectedVerticesNum(int verticesNum);
-
-	/**
-	 * Hint about the number of edges expected to be added to the builder.
-	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
-	 *
-	 * @param edgesNum the expected number of edges to be added to the builder
-	 */
-	void expectedEdgesNum(int edgesNum);
-
-	/**
-	 * Get the vertices weights of some key.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key        key of the weights
-	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <T>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getVerticesWeights(String key);
-
-	/**
-	 * Add a new weights container associated with the vertices of the built graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
-		return addVerticesWeights(key, type, null);
-	}
-
-	/**
-	 * Add a new weights container associated with the vertices of built graph with default value.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
-
-	/**
-	 * Get the keys of all the associated vertices weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated vertices weights
-	 */
-	Set<String> getVerticesWeightsKeys();
-
-	/**
-	 * Get the edges weights of some key.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key        key of the weights
-	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
-	 * @param  <T>        The weight data type
-	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT getEdgesWeights(String key);
-
-	/**
-	 * Add a new weights container associated with the edges of the built graph.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	default <T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
-		return addEdgesWeights(key, type, null);
-	}
-
-	/**
-	 * Add a new weights container associated with the edges of the built graph with default value.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key                      key of the weights
-	 * @param  type                     the type of the weights, used for primitive types weights
-	 * @param  defVal                   default value use for the weights container
-	 * @return                          a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 */
-	<T, WeightsT extends IWeights<T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
-
-	/**
-	 * Get the keys of all the associated edges weights.
-	 * <p>
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @return the keys of all the associated edges weights
-	 */
-	Set<String> getEdgesWeightsKeys();
-
-	/**
-	 * Clear the builder by removing all vertices and edges added to it.
-	 */
-	void clear();
-
-	/**
-	 * Build a new immutable index graph with the builder vertices and edges.
-	 *
-	 * @return a new immutable index graph with the vertices and edges that were added to the builder
-	 */
+	@Override
 	IndexGraph build();
 
-	/**
-	 * Build a new mutable index graph with the builder vertices and edges.
-	 *
-	 * @return a new mutable index graph with the vertices and edges that were added to the builder
-	 */
+	@Override
 	IndexGraph buildMutable();
 
 	/**

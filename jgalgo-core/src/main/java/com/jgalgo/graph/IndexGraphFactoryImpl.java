@@ -20,7 +20,7 @@ import java.util.List;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
-	private boolean directed;
+	boolean directed;
 	private boolean selfEdges;
 	private boolean parallelEdges;
 	int expectedVerticesNum;
@@ -41,24 +41,35 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraph newGraph() {
-		return chooseImpl().newGraph(expectedVerticesNum, expectedEdgesNum);
+		return mutableImpl().newGraph(expectedVerticesNum, expectedEdgesNum);
 	}
 
 	@Override
 	public IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyWeights) {
 		setDirected(g.isDirected());
-		return chooseImpl().newCopyOf((IndexGraph) g, copyWeights);
+		return mutableImpl().newCopyOf((IndexGraph) g, copyWeights);
 	}
 
-	private static interface Impl {
+	@Override
+	public IndexGraphBuilder newBuilder() {
+		IndexGraphBuilderImpl builder =
+				directed ? new IndexGraphBuilderImpl.Directed() : new IndexGraphBuilderImpl.Undirected();
+		builder.setMutableImpl(mutableImpl());
+		builder.setImmutableImpl(immutableImpl());
+		return builder;
+	}
+
+	static interface Impl {
 
 		IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum);
 
 		IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights);
 
+		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
+
 	}
 
-	private Impl chooseImpl() {
+	Impl mutableImpl() {
 		Impl arrayImpl = directed ? new Impl() {
 
 			@Override
@@ -70,6 +81,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphArrayDirected(graph, copyWeights);
 			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphArrayDirected((IndexGraphBuilderImpl.Directed) builder);
+			}
 		} : new Impl() {
 
 			@Override
@@ -80,6 +96,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphArrayUndirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphArrayUndirected((IndexGraphBuilderImpl.Undirected) builder);
 			}
 		};
 		Impl linkedImpl = directed ? new Impl() {
@@ -93,6 +114,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphLinkedDirected(graph, copyWeights);
 			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphLinkedDirected((IndexGraphBuilderImpl.Directed) builder);
+			}
 		} : new Impl() {
 
 			@Override
@@ -103,6 +129,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphLinkedUndirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphLinkedUndirected((IndexGraphBuilderImpl.Undirected) builder);
 			}
 		};
 		Impl hashtableImpl = directed ? new Impl() {
@@ -116,6 +147,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphHashmapDirected(graph, copyWeights);
 			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphHashmapDirected((IndexGraphBuilderImpl.Directed) builder);
+			}
 		} : new Impl() {
 
 			@Override
@@ -126,6 +162,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphHashmapUndirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphHashmapUndirected((IndexGraphBuilderImpl.Undirected) builder);
 			}
 		};
 		Impl matrixImpl = directed ? new Impl() {
@@ -139,6 +180,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphMatrixDirected(graph, copyWeights);
 			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphMatrixDirected((IndexGraphBuilderImpl.Directed) builder);
+			}
 		} : new Impl() {
 
 			@Override
@@ -149,6 +195,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
 				return new GraphMatrixUndirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphMatrixUndirected((IndexGraphBuilderImpl.Undirected) builder);
 			}
 		};
 
@@ -178,6 +229,44 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			return arrayImpl;
 		}
+	}
+
+	private static interface ImplImmutable extends Impl {
+		@Override
+		default IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	Impl immutableImpl() {
+		Impl csrImpl = directed ? new ImplImmutable() {
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
+				return new GraphCSRDirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				IndexGraphBuilderImpl.Directed builder0 = (IndexGraphBuilderImpl.Directed) builder;
+				GraphCSRBase.BuilderProcessEdgesDirected processEdges =
+						GraphCSRBase.BuilderProcessEdgesDirected.valueOf(builder0);
+				return new GraphCSRDirected(builder0, processEdges);
+			}
+		} : new ImplImmutable() {
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
+				return new GraphCSRUndirected(graph, copyWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				IndexGraphBuilderImpl.Undirected builder0 = (IndexGraphBuilderImpl.Undirected) builder;
+				GraphCSRBase.BuilderProcessEdgesUndirected processEdges =
+						GraphCSRBase.BuilderProcessEdgesUndirected.valueOf(builder0);
+				return new GraphCSRUndirected(builder0, processEdges);
+			}
+		};
+		return csrImpl;
 	}
 
 	@Override

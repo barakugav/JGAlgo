@@ -48,6 +48,9 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyWeights);
 
 	@Override
+	IndexGraphBuilder newBuilder();
+
+	@Override
 	IndexGraphFactory setDirected(boolean directed);
 
 	@Override

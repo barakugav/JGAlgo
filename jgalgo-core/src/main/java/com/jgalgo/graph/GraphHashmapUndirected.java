@@ -59,7 +59,6 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		} else {
 			edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
 					EMPTY_MAP_ARRAY, newArr -> edges = newArr);
-
 			addInternalVerticesContainer(edgesContainer);
 
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -73,6 +72,26 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 					int oldVal2 = ensureEdgesMapMutable(edges, v).put(u, e);
 					assert oldVal2 == -1;
 				}
+			}
+		}
+	}
+
+	GraphHashmapUndirected(IndexGraphBuilderImpl.Undirected builder) {
+		super(Capabilities, builder);
+		edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
+				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
+
+		addInternalVerticesContainer(edgesContainer);
+
+		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
+			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);
+			if (oldVal1 != -1)
+				throw new IllegalStateException("Parallel edge (idx=" + source + ",idx=" + target
+						+ ") already exists. Parallel edges are not allowed.");
+			if (source != target) {
+				int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);
+				assert oldVal2 == -1;
 			}
 		}
 	}
