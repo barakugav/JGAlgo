@@ -45,15 +45,6 @@ class ShortestPathSingleSourceUtils {
 				int source0 = ((Integer) source).intValue();
 				return (ShortestPathSingleSource.Result<V, E>) computeShortestPaths((IndexGraph) g, w0, source0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				int iSource = viMap.idToIndex(((Integer) source).intValue());
-				ShortestPathSingleSource.IResult indexResult = computeShortestPaths(iGraph, iw, iSource);
-				return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -61,7 +52,7 @@ class ShortestPathSingleSourceUtils {
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				int iSource = viMap.idToIndex(source);
 				ShortestPathSingleSource.IResult indexResult = computeShortestPaths(iGraph, iw, iSource);
-				return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -72,13 +63,13 @@ class ShortestPathSingleSourceUtils {
 	private static class ObjResultFromIndexResult<V, E> implements ShortestPathSingleSource.Result<V, E> {
 
 		private final ShortestPathSingleSource.IResult indexRes;
+		private final Graph<V, E> g;
 		private final IndexIdMap<V> viMap;
-		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(ShortestPathSingleSource.IResult indexRes, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, ShortestPathSingleSource.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = Objects.requireNonNull(g);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -88,7 +79,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public Path<V, E> getPath(V target) {
-			return PathImpl.objPathFromIndexPath(indexRes.getPath(viMap.idToIndex(target)), viMap, eiMap);
+			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
 
 		@Override
@@ -98,20 +89,20 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public Path<V, E> getNegativeCycle() {
-			return PathImpl.objPathFromIndexPath(indexRes.getNegativeCycle(), viMap, eiMap);
+			return PathImpl.objPathFromIndexPath(g, indexRes.getNegativeCycle());
 		}
 	}
 
 	private static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
 
 		private final ShortestPathSingleSource.IResult indexRes;
+		private final IntGraph g;
 		private final IndexIntIdMap viMap;
-		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(ShortestPathSingleSource.IResult indexRes, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = Objects.requireNonNull(g);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -121,7 +112,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public IPath getPath(int target) {
-			return PathImpl.intPathFromIndexPath(indexRes.getPath(viMap.idToIndex(target)), viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
 
 		@Override
@@ -131,7 +122,18 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public IPath getNegativeCycle() {
-			return PathImpl.intPathFromIndexPath(indexRes.getNegativeCycle(), viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(g, indexRes.getNegativeCycle());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> ShortestPathSingleSource.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			ShortestPathSingleSource.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

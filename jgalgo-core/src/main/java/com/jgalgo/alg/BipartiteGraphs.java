@@ -115,12 +115,8 @@ public class BipartiteGraphs {
 		VertexBiPartition<V, E> resultPartition;
 		if (g instanceof IndexGraph) {
 			resultPartition = (VertexBiPartition<V, E>) indexPartition;
-		} else if (g instanceof IntGraph) {
-			resultPartition =
-					(VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
-							indexPartition);
 		} else {
-			resultPartition = new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);
 		}
 		return Optional.of(resultPartition);
 	}
@@ -219,12 +215,8 @@ public class BipartiteGraphs {
 		VertexBiPartition<V, E> resultPartition;
 		if (g instanceof IndexGraph) {
 			resultPartition = (VertexBiPartition<V, E>) indexPartition;
-		} else if (g instanceof IntGraph) {
-			resultPartition =
-					(VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
-							indexPartition);
 		} else {
-			resultPartition = new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);
 		}
 		return Optional.of(resultPartition);
 	}

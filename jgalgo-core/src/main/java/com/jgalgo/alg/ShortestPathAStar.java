@@ -83,19 +83,6 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			IntToDoubleFunction vHeuristic1 = v -> vHeuristic0.applyAsDouble(Integer.valueOf(v));
 			return (Path<V, E>) computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);
 
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-			int iSource = viMap.idToIndex(((Integer) source).intValue());
-			int iTarget = viMap.idToIndex(((Integer) target).intValue());
-			ToDoubleFunction<Integer> vHeuristic0 = (ToDoubleFunction<Integer>) vHeuristic;
-			IntToDoubleFunction indexVHeuristic =
-					vIdx -> vHeuristic0.applyAsDouble(Integer.valueOf(viMap.indexToIdInt(vIdx)));
-			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
-			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -105,7 +92,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			int iTarget = viMap.idToIndex(target);
 			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToId(vIdx));
 			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
-			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+			return PathImpl.pathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -125,7 +112,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			int iTarget = viMap.idToIndex(target);
 			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
 			IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic);
-			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(g, indexPath);
 		}
 
 	}

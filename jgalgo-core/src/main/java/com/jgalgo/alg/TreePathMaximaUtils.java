@@ -46,29 +46,14 @@ class TreePathMaximaUtils {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				TreePathMaxima.IQueries queries0 = (TreePathMaxima.IQueries) queries;
 				return (TreePathMaxima.Result<V, E>) computeHeaviestEdgeInTreePaths((IndexGraph) tree, w0, queries0);
-			} else if (tree instanceof IntGraph) {
-				IndexGraph iGraph = tree.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) tree).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				TreePathMaxima.IQueries iQueries;
-				if (queries instanceof TreePathMaxima.IQueries) {
-					iQueries = new IndexQueriesFromIntQueries((TreePathMaxima.IQueries) queries, viMap);
-				} else {
-					iQueries =
-							new IndexQueriesFromObjQueries<>((TreePathMaxima.Queries<Integer, Integer>) queries, viMap);
-				}
-				TreePathMaxima.IResult indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
-				return (TreePathMaxima.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
 
 			} else {
 				IndexGraph iGraph = tree.indexGraph();
-				IndexIdMap<V> viMap = tree.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = tree.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				TreePathMaxima.IQueries iQueries = new IndexQueriesFromObjQueries<>(queries, viMap);
+				TreePathMaxima.IQueries iQueries = indexQueriesFromQueries(tree, queries);
 				TreePathMaxima.IResult indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
-				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+				return resultFromIndexResult(tree, indexResult);
 			}
 		}
 
@@ -168,9 +153,9 @@ class TreePathMaximaUtils {
 		private final TreePathMaxima.Queries<V, E> qs;
 		private final IndexIdMap<V> viMap;
 
-		IndexQueriesFromObjQueries(TreePathMaxima.Queries<V, E> qs, IndexIdMap<V> viMap) {
+		IndexQueriesFromObjQueries(Graph<V, E> g, TreePathMaxima.Queries<V, E> qs) {
 			this.qs = Objects.requireNonNull(qs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -203,9 +188,9 @@ class TreePathMaximaUtils {
 		private final TreePathMaxima.IQueries qs;
 		private final IndexIntIdMap viMap;
 
-		IndexQueriesFromIntQueries(TreePathMaxima.IQueries qs, IndexIntIdMap viMap) {
+		IndexQueriesFromIntQueries(IntGraph g, TreePathMaxima.IQueries qs) {
 			this.qs = Objects.requireNonNull(qs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -234,14 +219,24 @@ class TreePathMaximaUtils {
 		}
 	}
 
+	private static <V, E> TreePathMaxima.IQueries indexQueriesFromQueries(Graph<V, E> g,
+			TreePathMaxima.Queries<V, E> queries) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph && queries instanceof TreePathMaxima.IQueries) {
+			return new IndexQueriesFromIntQueries((IntGraph) g, (TreePathMaxima.IQueries) queries);
+		} else {
+			return new IndexQueriesFromObjQueries<>(g, queries);
+		}
+	}
+
 	private static class ObjResultFromIndexResult<V, E> implements TreePathMaxima.Result<V, E> {
 
 		private final TreePathMaxima.IResult indexRes;
 		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(TreePathMaxima.IResult indexRes, IndexIdMap<E> eiMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, TreePathMaxima.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -261,9 +256,9 @@ class TreePathMaximaUtils {
 		private final TreePathMaxima.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(TreePathMaxima.IResult indexRes, IndexIntIdMap eiMap) {
+		IntResultFromIndexResult(IntGraph g, TreePathMaxima.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -275,6 +270,17 @@ class TreePathMaximaUtils {
 		@Override
 		public int size() {
 			return indexRes.size();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> TreePathMaxima.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			TreePathMaxima.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (TreePathMaxima.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

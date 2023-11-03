@@ -20,8 +20,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
@@ -37,17 +35,6 @@ class ShortestPathSTs {
 				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();
 				return (Path<V, E>) computeShortestPath((IndexGraph) g, w0, source0, target0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				int iSource = viMap.idToIndex(((Integer) source).intValue());
-				int iTarget = viMap.idToIndex(((Integer) target).intValue());
-
-				IPath indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);
-				return (Path<V, E>) PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -56,8 +43,8 @@ class ShortestPathSTs {
 				int iSource = viMap.idToIndex(source);
 				int iTarget = viMap.idToIndex(target);
 
-				IPath indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);
-				return PathImpl.objPathFromIndexPath(indexResult, viMap, eiMap);
+				IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget);
+				return PathImpl.pathFromIndexPath(g, indexPath);
 			}
 		}
 

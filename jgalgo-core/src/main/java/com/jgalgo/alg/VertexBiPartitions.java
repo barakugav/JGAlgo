@@ -280,4 +280,15 @@ class VertexBiPartitions {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexBiPartition<V, E> partitionFromIndexPartition(Graph<V, E> g,
+			IVertexBiPartition indexPartition) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VertexBiPartition<V, E>) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);
+		} else {
+			return new ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+	}
+
 }

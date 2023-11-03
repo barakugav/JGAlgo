@@ -39,29 +39,13 @@ class LowestCommonAncestorOfflineUtils {
 				return (LowestCommonAncestorOffline.Result<V, E>) findLCAs((IndexGraph) tree,
 						((Integer) root).intValue(), (LowestCommonAncestorOffline.IQueries) queries);
 
-			} else if (tree instanceof IntGraph) {
-				IndexGraph iGraph = tree.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();
-				int iRoot = viMap.idToIndex(((Integer) root).intValue());
-
-				LowestCommonAncestorOffline.IQueries iQueries;
-				if (queries instanceof LowestCommonAncestorOffline.IQueries) {
-					iQueries = new IndexQueriesFromIntQueries((LowestCommonAncestorOffline.IQueries) queries, viMap);
-				} else {
-					iQueries = new IndexQueriesFromObjQueries<>(queries, tree.indexGraphVerticesMap());
-				}
-
-				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);
-				return (LowestCommonAncestorOffline.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
-
 			} else {
 				IndexGraph iGraph = tree.indexGraph();
 				IndexIdMap<V> viMap = tree.indexGraphVerticesMap();
 				int iRoot = viMap.idToIndex(root);
-				LowestCommonAncestorOffline.IQueries iQueries = new IndexQueriesFromObjQueries<>(queries, viMap);
-
+				LowestCommonAncestorOffline.IQueries iQueries = indexQueriesFromQueries(tree, queries);
 				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);
-				return new ObjResultFromIndexResult<>(indexResult, viMap);
+				return resultFromIndexResult(tree, indexResult);
 			}
 		}
 
@@ -141,9 +125,9 @@ class LowestCommonAncestorOfflineUtils {
 		private final LowestCommonAncestorOffline.Queries<V, E> qs;
 		private final IndexIdMap<V> viMap;
 
-		IndexQueriesFromObjQueries(LowestCommonAncestorOffline.Queries<V, E> qs, IndexIdMap<V> viMap) {
+		IndexQueriesFromObjQueries(Graph<V, E> g, LowestCommonAncestorOffline.Queries<V, E> qs) {
 			this.qs = Objects.requireNonNull(qs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -176,9 +160,9 @@ class LowestCommonAncestorOfflineUtils {
 		private final LowestCommonAncestorOffline.IQueries qs;
 		private final IndexIntIdMap viMap;
 
-		IndexQueriesFromIntQueries(LowestCommonAncestorOffline.IQueries qs, IndexIntIdMap viMap) {
+		IndexQueriesFromIntQueries(IntGraph g, LowestCommonAncestorOffline.IQueries qs) {
 			this.qs = Objects.requireNonNull(qs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -207,6 +191,17 @@ class LowestCommonAncestorOfflineUtils {
 		}
 	}
 
+	private static <V, E> LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph<V, E> g,
+			LowestCommonAncestorOffline.Queries<V, E> queries) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
+			return (LowestCommonAncestorOffline.IQueries) new IndexQueriesFromIntQueries((IntGraph) g,
+					(LowestCommonAncestorOffline.IQueries) queries);
+		} else {
+			return new IndexQueriesFromObjQueries<>(g, queries);
+		}
+	}
+
 	static class ResultImpl implements LowestCommonAncestorOffline.IResult {
 
 		private final int[] res;
@@ -232,9 +227,9 @@ class LowestCommonAncestorOfflineUtils {
 		private final LowestCommonAncestorOffline.IResult indexRes;
 		private final IndexIdMap<V> viMap;
 
-		ObjResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIdMap<V> viMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, LowestCommonAncestorOffline.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -254,9 +249,9 @@ class LowestCommonAncestorOfflineUtils {
 		private final LowestCommonAncestorOffline.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-		IntResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIntIdMap viMap) {
+		IntResultFromIndexResult(IntGraph g, LowestCommonAncestorOffline.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -268,6 +263,17 @@ class LowestCommonAncestorOfflineUtils {
 		@Override
 		public int size() {
 			return indexRes.size();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> LowestCommonAncestorOffline.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			LowestCommonAncestorOffline.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (LowestCommonAncestorOffline.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

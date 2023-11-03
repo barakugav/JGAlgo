@@ -21,11 +21,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
@@ -245,12 +247,23 @@ class PathImpl implements IPath {
 		return edges().toString();
 	}
 
-	static IPath intPathFromIndexPath(IPath indexPath, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-		return indexPath == null ? null : new IntPathFromIndexPath(indexPath, viMap, eiMap);
+	static IPath intPathFromIndexPath(IntGraph g, IPath indexPath) {
+		return indexPath == null ? null : new IntPathFromIndexPath(g, indexPath);
 	}
 
-	static <V, E> Path<V, E> objPathFromIndexPath(IPath indexPath, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
-		return indexPath == null ? null : new ObjPathFromIndexPath<>(indexPath, viMap, eiMap);
+	static <V, E> Path<V, E> objPathFromIndexPath(Graph<V, E> g, IPath indexPath) {
+		return indexPath == null ? null : new ObjPathFromIndexPath<>(g, indexPath);
+	}
+
+	@SuppressWarnings("unchecked")
+	static <V, E> Path<V, E> pathFromIndexPath(Graph<V, E> g, IPath indexPath) {
+		if (indexPath == null)
+			return null;
+		if (g instanceof IntGraph) {
+			return (Path<V, E>) new IntPathFromIndexPath((IntGraph) g, indexPath);
+		} else {
+			return new ObjPathFromIndexPath<>(g, indexPath);
+		}
 	}
 
 	static IPath findPath(IndexGraph g, final int source, final int target) {
@@ -317,13 +330,15 @@ class PathImpl implements IPath {
 	private static class ObjPathFromIndexPath<V, E> implements Path<V, E> {
 
 		private final IPath indexPath;
+		private final Graph<V, E> g;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjPathFromIndexPath(IPath indexPath, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjPathFromIndexPath(Graph<V, E> g, IPath indexPath) {
 			this.indexPath = Objects.requireNonNull(indexPath);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = g;
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -338,7 +353,7 @@ class PathImpl implements IPath {
 
 		@Override
 		public EdgeIter<V, E> edgeIter() {
-			return IndexIdMaps.indexToIdEdgeIter(indexPath.edgeIter(), viMap, eiMap);
+			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());
 		}
 
 		@Override
@@ -365,13 +380,15 @@ class PathImpl implements IPath {
 	private static class IntPathFromIndexPath implements IPath {
 
 		private final IPath indexPath;
+		private final IntGraph g;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntPathFromIndexPath(IPath indexPath, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntPathFromIndexPath(IntGraph g, IPath indexPath) {
 			this.indexPath = Objects.requireNonNull(indexPath);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = g;
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -386,7 +403,7 @@ class PathImpl implements IPath {
 
 		@Override
 		public IEdgeIter edgeIter() {
-			return IndexIdMaps.indexToIdEdgeIter(indexPath.edgeIter(), viMap, eiMap);
+			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());
 		}
 
 		@Override
@@ -413,13 +430,11 @@ class PathImpl implements IPath {
 	static class IntIterFromIndexIter implements Iterator<IPath> {
 
 		private final Iterator<IPath> indexIter;
-		private final IndexIntIdMap viMap;
-		private final IndexIntIdMap eiMap;
+		private final IntGraph g;
 
-		IntIterFromIndexIter(Iterator<IPath> indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntIterFromIndexIter(IntGraph g, Iterator<IPath> indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = Objects.requireNonNull(g);
 		}
 
 		@Override
@@ -429,20 +444,18 @@ class PathImpl implements IPath {
 
 		@Override
 		public IPath next() {
-			return intPathFromIndexPath(indexIter.next(), viMap, eiMap);
+			return intPathFromIndexPath(g, indexIter.next());
 		}
 	}
 
 	static class ObjIterFromIndexIter<V, E> implements Iterator<Path<V, E>> {
 
 		private final Iterator<IPath> indexIter;
-		private final IndexIdMap<V> viMap;
-		private final IndexIdMap<E> eiMap;
+		private final Graph<V, E> g;
 
-		ObjIterFromIndexIter(Iterator<IPath> indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjIterFromIndexIter(Graph<V, E> g, Iterator<IPath> indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.g = Objects.requireNonNull(g);
 		}
 
 		@Override
@@ -452,7 +465,17 @@ class PathImpl implements IPath {
 
 		@Override
 		public Path<V, E> next() {
-			return objPathFromIndexPath(indexIter.next(), viMap, eiMap);
+			return objPathFromIndexPath(g, indexIter.next());
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static <V, E> Iterator<Path<V, E>> iterFromIndexIter(Graph<V, E> g, Iterator<IPath> indexIter) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (Iterator) new IntIterFromIndexIter((IntGraph) g, indexIter);
+		} else {
+			return new ObjIterFromIndexIter<>(g, indexIter);
 		}
 	}
 

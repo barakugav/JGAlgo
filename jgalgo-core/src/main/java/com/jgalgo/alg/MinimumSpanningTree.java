@@ -123,9 +123,6 @@ public interface MinimumSpanningTree {
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
 			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
-		} else if (g instanceof IntGraph) {
-			ig = g.indexGraph();
-			edges0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) edges, ((IntGraph) g).indexGraphEdgesMap());
 		} else {
 			ig = g.indexGraph();
 			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());

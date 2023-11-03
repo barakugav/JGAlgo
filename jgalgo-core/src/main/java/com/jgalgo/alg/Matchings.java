@@ -168,21 +168,12 @@ class Matchings {
 				return (Matching<V, E>) computeMaximumWeightedMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IMatching indexMatch = computeMaximumWeightedMatching(iGraph, iw);
-				return (Matching<V, E>) new IntMatchingFromIndexMatching(indexMatch, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IMatching indexMatch = computeMaximumWeightedMatching(iGraph, iw);
-				return new ObjMatchingFromIndexMatching<>(indexMatch, viMap, eiMap);
+				return matchingFromIndexMatching(g, indexMatch);
 			}
 		}
 
@@ -193,21 +184,12 @@ class Matchings {
 				return (Matching<V, E>) computeMinimumWeightedMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IMatching indexMatch = computeMinimumWeightedMatching(iGraph, iw);
-				return (Matching<V, E>) new IntMatchingFromIndexMatching(indexMatch, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IMatching indexMatch = computeMinimumWeightedMatching(iGraph, iw);
-				return new ObjMatchingFromIndexMatching<>(indexMatch, viMap, eiMap);
+				return matchingFromIndexMatching(g, indexMatch);
 			}
 		}
 
@@ -218,21 +200,12 @@ class Matchings {
 				return (Matching<V, E>) computeMaximumWeightedPerfectMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IMatching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, iw);
-				return (Matching<V, E>) new IntMatchingFromIndexMatching(indexMatch, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IMatching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, iw);
-				return new ObjMatchingFromIndexMatching<>(indexMatch, viMap, eiMap);
+				return matchingFromIndexMatching(g, indexMatch);
 			}
 		}
 
@@ -243,21 +216,12 @@ class Matchings {
 				return (Matching<V, E>) computeMinimumWeightedPerfectMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IMatching indexMatch = computeMinimumWeightedPerfectMatching(iGraph, iw);
-				return (Matching<V, E>) new IntMatchingFromIndexMatching(indexMatch, viMap, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IMatching indexMatch = computeMinimumWeightedPerfectMatching(iGraph, iw);
-				return new ObjMatchingFromIndexMatching<>(indexMatch, viMap, eiMap);
+				return matchingFromIndexMatching(g, indexMatch);
 			}
 		}
 
@@ -426,10 +390,10 @@ class Matchings {
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjMatchingFromIndexMatching(IMatching match, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjMatchingFromIndexMatching(Graph<V, E> g, IMatching match) {
 			this.match = Objects.requireNonNull(match);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -480,10 +444,10 @@ class Matchings {
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntMatchingFromIndexMatching(IMatching match, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntMatchingFromIndexMatching(IntGraph g, IMatching match) {
 			this.match = Objects.requireNonNull(match);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -525,6 +489,16 @@ class Matchings {
 		@Override
 		public boolean isPerfect() {
 			return match.isPerfect();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> Matching<V, E> matchingFromIndexMatching(Graph<V, E> g, IMatching indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (Matching<V, E>) new IntMatchingFromIndexMatching((IntGraph) g, indexResult);
+		} else {
+			return new ObjMatchingFromIndexMatching<>(g, indexResult);
 		}
 	}
 

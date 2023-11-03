@@ -161,7 +161,7 @@ public interface Path<V, E> {
 		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
-		return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+		return PathImpl.objPathFromIndexPath(g, indexPath);
 	}
 
 	/**
@@ -225,12 +225,11 @@ public interface Path<V, E> {
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 
 		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
-		return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+		return PathImpl.objPathFromIndexPath(g, indexPath);
 	}
 
 }

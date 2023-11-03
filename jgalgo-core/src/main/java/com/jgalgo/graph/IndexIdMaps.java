@@ -210,21 +210,19 @@ public class IndexIdMaps {
 	 * Create an {@link IEdgeIter} that return IDs of vertices and edges from an {@link IEdgeIter} that return indices
 	 * of vertices and edges.
 	 *
-	 * @param  <V>         the vertices type
-	 * @param  <E>         the edges type
-	 * @param  indexIter   an {@link IEdgeIter} that return indices of vertices and edges
-	 * @param  verticesMap vertices index-id mapping
-	 * @param  edgesMap    edges index-id mapping
-	 * @return             {@link IEdgeIter} that return IDs of vertices and edges matching the indices of vertices and
-	 *                     edges returned by the original index-iterator
+	 * @param  <V>       the vertices type
+	 * @param  <E>       the edges type
+	 * @param  g         the graph
+	 * @param  indexIter an {@link IEdgeIter} that return indices of vertices and edges
+	 * @return           {@link IEdgeIter} that return IDs of vertices and edges matching the indices of vertices and
+	 *                   edges returned by the original index-iterator
 	 */
 	@SuppressWarnings("unchecked")
-	public static <V, E> EdgeIter<V, E> indexToIdEdgeIter(IEdgeIter indexIter, IndexIdMap<V> verticesMap,
-			IndexIdMap<E> edgesMap) {
-		if (verticesMap instanceof IndexIntIdMap && edgesMap instanceof IndexIntIdMap) {
-			return (EdgeIter<V, E>) indexToIdEdgeIter(indexIter, (IndexIntIdMap) verticesMap, (IndexIntIdMap) edgesMap);
+	public static <V, E> EdgeIter<V, E> indexToIdEdgeIter(Graph<V, E> g, IEdgeIter indexIter) {
+		if (g instanceof IntGraph) {
+			return (EdgeIter<V, E>) indexToIdEdgeIter((IntGraph) g, indexIter);
 		} else {
-			return new IndexToIdEdgeIter<>(indexIter, verticesMap, edgesMap);
+			return new IndexToIdEdgeIter<>(g, indexIter);
 		}
 	}
 
@@ -232,22 +230,21 @@ public class IndexIdMaps {
 	 * Create an {@link IEdgeIter} that return IDs of vertices and edges from an {@link IEdgeIter} that return indices
 	 * of vertices and edges.
 	 *
-	 * @param  indexIter   an {@link IEdgeIter} that return indices of vertices and edges
-	 * @param  verticesMap vertices index-id mapping
-	 * @param  edgesMap    edges index-id mapping
-	 * @return             {@link IEdgeIter} that return IDs of vertices and edges matching the indices of vertices and
-	 *                     edges returned by the original index-iterator
+	 * @param  g         the graph
+	 * @param  indexIter an {@link IEdgeIter} that return indices of vertices and edges
+	 * @return           {@link IEdgeIter} that return IDs of vertices and edges matching the indices of vertices and
+	 *                   edges returned by the original index-iterator
 	 */
-	public static IEdgeIter indexToIdEdgeIter(IEdgeIter indexIter, IndexIntIdMap verticesMap, IndexIntIdMap edgesMap) {
-		return new IndexToIntIdEdgeIter(indexIter, verticesMap, edgesMap);
+	public static IEdgeIter indexToIdEdgeIter(IntGraph g, IEdgeIter indexIter) {
+		return new IndexToIntIdEdgeIter(g, indexIter);
 	}
 
 	private static class IndexToIdEdgeIter<V, E> extends IndexToIdIterator<E> implements EdgeIter<V, E> {
 		private final IndexIdMap<V> viMap;
 
-		IndexToIdEdgeIter(IEdgeIter indexIt, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
-			super(indexIt, eiMap);
-			this.viMap = Objects.requireNonNull(viMap);
+		IndexToIdEdgeIter(Graph<V, E> g, IEdgeIter indexIt) {
+			super(indexIt, g.indexGraphEdgesMap());
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -278,9 +275,9 @@ public class IndexIdMaps {
 	private static class IndexToIntIdEdgeIter extends IndexToIntIdIterator implements IEdgeIter {
 		private final IndexIntIdMap viMap;
 
-		IndexToIntIdEdgeIter(IEdgeIter indexIt, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			super(indexIt, eiMap);
-			this.viMap = Objects.requireNonNull(viMap);
+		IndexToIntIdEdgeIter(IntGraph g, IEdgeIter indexIt) {
+			super(indexIt, g.indexGraphEdgesMap());
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -464,6 +461,12 @@ public class IndexIdMaps {
 		@Override
 		public boolean remove(int k) {
 			return ((IntSet) indexC).remove(map.idToIndex(k));
+		}
+
+		@Deprecated
+		@Override
+		public boolean rem(int key) {
+			return super.rem(key);
 		}
 	}
 

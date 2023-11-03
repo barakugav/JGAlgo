@@ -464,4 +464,14 @@ class VertexPartitions {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexPartition<V, E> partitionFromIndexPartition(Graph<V, E> g, IVertexPartition indexPartition) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VertexPartition<V, E>) new IntPartitionFromIndexPartition((IntGraph) g, indexPartition);
+		} else {
+			return new ObjPartitionFromIndexPartition<>(g, indexPartition);
+		}
+	}
+
 }

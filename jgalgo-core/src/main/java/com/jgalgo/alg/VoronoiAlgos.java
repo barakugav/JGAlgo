@@ -22,7 +22,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
@@ -44,15 +43,6 @@ class VoronoiAlgos {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (VoronoiAlgo.Result<V, E>) computeVoronoiCells((IndexGraph) g, sites0, w0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IntCollection iSites = IndexIdMaps.idToIndexCollection((Collection<Integer>) sites, viMap);
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
-				return (VoronoiAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -60,7 +50,7 @@ class VoronoiAlgos {
 				IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
-				return new ObjResultFromIndexResult<>(g, indexResult);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -149,7 +139,7 @@ class VoronoiAlgos {
 		@Override
 		public Path<V, E> getPath(V target) {
 			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+			return PathImpl.objPathFromIndexPath(graph(), indexPath);
 		}
 
 		@Override
@@ -184,7 +174,7 @@ class VoronoiAlgos {
 		@Override
 		public IPath getPath(int target) {
 			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+			return PathImpl.intPathFromIndexPath(graph(), indexPath);
 		}
 
 		@Override
@@ -197,6 +187,17 @@ class VoronoiAlgos {
 		public int vertexSite(int vertex) {
 			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
 			return site != -1 ? viMap.indexToIdInt(site) : -1;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> VoronoiAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			VoronoiAlgo.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VoronoiAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

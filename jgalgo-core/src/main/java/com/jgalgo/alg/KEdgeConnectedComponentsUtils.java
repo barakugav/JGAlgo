@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IntGraph;
 
 class KEdgeConnectedComponentsUtils {
 
@@ -29,16 +28,10 @@ class KEdgeConnectedComponentsUtils {
 			if (g instanceof IndexGraph) {
 				return (VertexPartition<V, E>) computeKEdgeConnectedComponents((IndexGraph) g, k);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph ig = g.indexGraph();
-				IVertexPartition indexPartition = computeKEdgeConnectedComponents(ig, k);
-				return (VertexPartition<V, E>) new VertexPartitions.IntPartitionFromIndexPartition((IntGraph) g,
-						indexPartition);
-
 			} else {
 				IndexGraph ig = g.indexGraph();
 				IVertexPartition indexPartition = computeKEdgeConnectedComponents(ig, k);
-				return new VertexPartitions.ObjPartitionFromIndexPartition<>(g, indexPartition);
+				return VertexPartitions.partitionFromIndexPartition(g, indexPartition);
 			}
 		}
 

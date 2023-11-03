@@ -103,7 +103,7 @@ public interface IPath extends Path<Integer, Integer> {
 		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
-		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+		return PathImpl.intPathFromIndexPath(g, indexPath);
 	}
 
 	/**
@@ -154,12 +154,11 @@ public interface IPath extends Path<Integer, Integer> {
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 
 		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
-		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
+		return PathImpl.intPathFromIndexPath(g, indexPath);
 	}
 
 }

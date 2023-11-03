@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
@@ -35,17 +36,10 @@ class MaximalCliquesUtils {
 			if (g instanceof IndexGraph) {
 				return (Iterator) iterateMaximalCliques((IndexGraph) g);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
-				return (Iterator) new IntResultFromIndexResult(indexResult, viMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
-				return new ObjResultFromIndexResult<>(indexResult, viMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -58,9 +52,9 @@ class MaximalCliquesUtils {
 		private final Iterator<IntSet> indexResult;
 		private final IndexIntIdMap viMap;
 
-		IntResultFromIndexResult(Iterator<IntSet> indexResult, IndexIntIdMap viMap) {
-			this.indexResult = indexResult;
-			this.viMap = viMap;
+		IntResultFromIndexResult(IntGraph g, Iterator<IntSet> indexResult) {
+			this.indexResult = Objects.requireNonNull(indexResult);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -74,14 +68,14 @@ class MaximalCliquesUtils {
 		}
 	}
 
-	private static class ObjResultFromIndexResult<V> implements Iterator<Set<V>> {
+	private static class ObjResultFromIndexResult<V, E> implements Iterator<Set<V>> {
 
 		private final Iterator<IntSet> indexResult;
 		private final IndexIdMap<V> viMap;
 
-		ObjResultFromIndexResult(Iterator<IntSet> indexResult, IndexIdMap<V> viMap) {
-			this.indexResult = indexResult;
-			this.viMap = viMap;
+		ObjResultFromIndexResult(Graph<V, E> g, Iterator<IntSet> indexResult) {
+			this.indexResult = Objects.requireNonNull(indexResult);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -92,6 +86,16 @@ class MaximalCliquesUtils {
 		@Override
 		public Set<V> next() {
 			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static <V, E> Iterator<Set<V>> resultFromIndexResult(Graph<V, E> g, Iterator<IntSet> indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (Iterator) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

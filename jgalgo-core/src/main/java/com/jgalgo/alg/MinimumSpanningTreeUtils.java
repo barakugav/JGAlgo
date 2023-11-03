@@ -43,19 +43,12 @@ class MinimumSpanningTreeUtils {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (MinimumSpanningTree.Result<V, E>) computeMinimumSpanningTree((IndexGraph) g, w0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);
-				return (MinimumSpanningTree.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);
-				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -74,25 +67,14 @@ class MinimumSpanningTreeUtils {
 				int root0 = ((Integer) root).intValue();
 				return (MinimumSpanningTree.Result<V, E>) computeMinimumDirectedSpanningTree((IndexGraph) g, w0, root0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				int iRoot = viMap.idToIndex(((Integer) root).intValue());
-
-				MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
-				return (MinimumSpanningTree.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				int iRoot = viMap.idToIndex(root);
-
 				MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);
-				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -131,9 +113,9 @@ class MinimumSpanningTreeUtils {
 		private final MinimumSpanningTree.IResult indexRes;
 		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(MinimumSpanningTree.IResult indexRes, IndexIdMap<E> eiMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, MinimumSpanningTree.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -147,14 +129,25 @@ class MinimumSpanningTreeUtils {
 		private final MinimumSpanningTree.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(MinimumSpanningTree.IResult indexRes, IndexIntIdMap eiMap) {
+		IntResultFromIndexResult(IntGraph g, MinimumSpanningTree.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
 		public IntCollection edges() {
 			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> MinimumSpanningTree.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			MinimumSpanningTree.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (MinimumSpanningTree.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

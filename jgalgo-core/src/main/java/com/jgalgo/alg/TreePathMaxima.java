@@ -22,7 +22,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
@@ -376,13 +375,6 @@ public interface TreePathMaxima {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);
-
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection((Collection<Integer>) mstEdges, eiMap);
-			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();

@@ -42,19 +42,12 @@ class VertexCoverUtils {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (VertexCover.Result<V, E>) computeMinimumVertexCover((IndexGraph) g, w0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, viMap);
-				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);
-				return (VertexCover.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);
-				return new ObjResultFromIndexResult<>(indexResult, viMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -104,9 +97,9 @@ class VertexCoverUtils {
 		private final VertexCover.IResult indexRes;
 		private final IndexIdMap<V> viMap;
 
-		ObjResultFromIndexResult(VertexCover.IResult indexRes, IndexIdMap<V> viMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, VertexCover.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -130,9 +123,9 @@ class VertexCoverUtils {
 		private final VertexCover.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-		IntResultFromIndexResult(VertexCover.IResult indexRes, IndexIntIdMap viMap) {
+		IntResultFromIndexResult(IntGraph g, VertexCover.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -148,6 +141,17 @@ class VertexCoverUtils {
 		@Override
 		public String toString() {
 			return vertices().toString();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> VertexCover.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			VertexCover.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VertexCover.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

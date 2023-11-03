@@ -42,19 +42,12 @@ class EdgeCovers {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (EdgeCover.Result<V, E>) computeMinimumEdgeCover((IndexGraph) g, w0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);
-				return (EdgeCover.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);
-				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -103,9 +96,9 @@ class EdgeCovers {
 		private final EdgeCover.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(EdgeCover.IResult indexRes, IndexIntIdMap eiMap) {
+		IntResultFromIndexResult(IntGraph g, EdgeCover.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -128,9 +121,9 @@ class EdgeCovers {
 		private final EdgeCover.IResult indexRes;
 		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(EdgeCover.IResult indexRes, IndexIdMap<E> eiMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, EdgeCover.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -146,6 +139,16 @@ class EdgeCovers {
 		@Override
 		public String toString() {
 			return edges().toString();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> EdgeCover.Result<V, E> resultFromIndexResult(Graph<V, E> g, EdgeCover.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (EdgeCover.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

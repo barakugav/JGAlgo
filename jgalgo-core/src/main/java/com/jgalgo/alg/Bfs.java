@@ -66,9 +66,8 @@ public interface Bfs {
 		if (g instanceof IntGraph)
 			return (Bfs.Iter<V, E>) newInstance((IntGraph) g, ((Integer) source).intValue());
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBFS);
 	}
 
 	/**
@@ -90,9 +89,8 @@ public interface Bfs {
 		if (g instanceof IntGraph)
 			return (Bfs.Iter<V, E>) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBFS);
 	}
 
 	/**
@@ -105,9 +103,9 @@ public interface Bfs {
 	public static Bfs.IntIter newInstance(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
 			return new BfsIterImpl.Forward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);
 	}
 
 	/**
@@ -123,9 +121,9 @@ public interface Bfs {
 	public static Bfs.IntIter newInstanceBackward(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
 			return new BfsIterImpl.Backward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);
 	}
 
 	/**

@@ -22,8 +22,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
@@ -129,22 +127,12 @@ class ChinesePostmanImpl implements ChinesePostman {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			return (Path<V, E>) computeShortestEdgeVisitorCircle((IndexGraph) g, w0);
 
-		} else if (g instanceof IntGraph) {
-			IntGraph g0 = (IntGraph) g;
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g0.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g0.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-			IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
-			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			IPath indexResult = computeShortestEdgeVisitorCircle(iGraph, iw);
-			return PathImpl.objPathFromIndexPath(indexResult, viMap, eiMap);
+			IPath indexPath = computeShortestEdgeVisitorCircle(iGraph, iw);
+			return PathImpl.pathFromIndexPath(g, indexPath);
 		}
 	}
 

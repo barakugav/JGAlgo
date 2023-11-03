@@ -84,9 +84,9 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mst);
 			if (g instanceof IntGraph) {
 				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTreeUtils.IntResultFromIndexResult(
-						indexRes, ((IntGraph) g).indexGraphEdgesMap());
+						(IntGraph) g, indexRes);
 			} else {
-				return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(indexRes, g.indexGraphEdgesMap());
+				return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(g, indexRes);
 			}
 		}
 	}

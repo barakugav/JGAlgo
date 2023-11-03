@@ -30,119 +30,119 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 	@SuppressWarnings("unchecked")
 	@Override
 	public <V, E> BiConnectedComponentsAlgo.Result<V, E> findBiConnectedComponents(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
+		if (g instanceof IndexGraph)
 			return (BiConnectedComponentsAlgo.Result<V, E>) findBiConnectedComponents((IndexGraph) g);
-		} else if (g instanceof IntGraph) {
-			IntGraph g0 = (IntGraph) g;
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = g0.indexGraphVerticesMap();
-			IndexIntIdMap eiMap = g0.indexGraphEdgesMap();
-			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
-			return (BiConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap, eiMap);
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
-			return new ObjResultFromIndexResult<>(indexResult, viMap, eiMap);
-		}
+
+		IndexGraph iGraph = g.indexGraph();
+		BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
+		return resultFromIndexResult(g, indexResult);
 	}
 
 	abstract BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g);
 
 	private static class IntResultFromIndexResult implements BiConnectedComponentsAlgo.IResult {
 
-		private final BiConnectedComponentsAlgo.IResult res;
+		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(BiConnectedComponentsAlgo.IResult res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.res = Objects.requireNonNull(res);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+		IntResultFromIndexResult(IntGraph g, BiConnectedComponentsAlgo.IResult indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
 		public IntSet getVertexBiCcs(int vertex) {
-			return res.getVertexBiCcs(viMap.idToIndex(vertex));
+			return indexRes.getVertexBiCcs(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public int getNumberOfBiCcs() {
-			return res.getNumberOfBiCcs();
+			return indexRes.getNumberOfBiCcs();
 		}
 
 		@Override
 		public IntSet getBiCcVertices(int biccIdx) {
-			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getBiCcVertices(biccIdx), viMap);
 		}
 
 		@Override
 		public IntSet getBiCcEdges(int biccIdx) {
-			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getBiCcEdges(biccIdx), eiMap);
 		}
 
 		@Override
 		public boolean isCutVertex(int vertex) {
-			return res.isCutVertex(viMap.idToIndex(vertex));
+			return indexRes.isCutVertex(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public IntSet getCutVertices() {
-			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getCutVertices(), viMap);
 		}
 
 		@Override
 		public IntGraph getBlockGraph() {
-			return res.getBlockGraph();
+			return indexRes.getBlockGraph();
 		}
 	}
 
 	private static class ObjResultFromIndexResult<V, E> implements BiConnectedComponentsAlgo.Result<V, E> {
 
-		private final BiConnectedComponentsAlgo.IResult res;
+		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(BiConnectedComponentsAlgo.IResult res, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
-			this.res = Objects.requireNonNull(res);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+		ObjResultFromIndexResult(Graph<V, E> g, BiConnectedComponentsAlgo.IResult indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
 		public IntSet getVertexBiCcs(V vertex) {
-			return res.getVertexBiCcs(viMap.idToIndex(vertex));
+			return indexRes.getVertexBiCcs(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public int getNumberOfBiCcs() {
-			return res.getNumberOfBiCcs();
+			return indexRes.getNumberOfBiCcs();
 		}
 
 		@Override
 		public Set<V> getBiCcVertices(int biccIdx) {
-			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getBiCcVertices(biccIdx), viMap);
 		}
 
 		@Override
 		public Set<E> getBiCcEdges(int biccIdx) {
-			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getBiCcEdges(biccIdx), eiMap);
 		}
 
 		@Override
 		public boolean isCutVertex(V vertex) {
-			return res.isCutVertex(viMap.idToIndex(vertex));
+			return indexRes.isCutVertex(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public Set<V> getCutVertices() {
-			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);
+			return IndexIdMaps.indexToIdSet(indexRes.getCutVertices(), viMap);
 		}
 
 		@Override
 		public IntGraph getBlockGraph() {
-			return res.getBlockGraph();
+			return indexRes.getBlockGraph();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> BiConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			BiConnectedComponentsAlgo.IResult indexRes) {
+		if (g instanceof IntGraph) {
+			return (BiConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexRes);
 		}
 	}
 

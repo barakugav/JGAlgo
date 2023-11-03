@@ -23,8 +23,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
@@ -48,17 +46,6 @@ class MinimumCutSTUtils {
 				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
 				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g, w0, source0, sink0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				int iSource = viMap.idToIndex(((Integer) source).intValue());
-				int iSink = viMap.idToIndex(((Integer) sink).intValue());
-				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-				return (VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
-						indexCut);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -67,7 +54,7 @@ class MinimumCutSTUtils {
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
 				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-				return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexCut);
+				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
 			}
 		}
 
@@ -81,17 +68,6 @@ class MinimumCutSTUtils {
 				IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IntCollection iSources = IndexIdMaps.idToIndexCollection((Collection<Integer>) sources, viMap);
-				IntCollection iSinks = IndexIdMaps.idToIndexCollection((Collection<Integer>) sinks, viMap);
-				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-				return (VertexBiPartition<V, E>) new VertexBiPartitions.IntBiPartitionFromIndexBiPartition((IntGraph) g,
-						indexCut);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -100,7 +76,7 @@ class MinimumCutSTUtils {
 				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-				return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexCut);
+				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
 			}
 		}
 

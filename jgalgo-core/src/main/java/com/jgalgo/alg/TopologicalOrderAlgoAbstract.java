@@ -33,17 +33,10 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 		if (g instanceof IndexGraph) {
 			return (TopologicalOrderAlgo.Result<V, E>) computeTopologicalSorting((IndexGraph) g);
 
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			TopologicalOrderAlgo.IResult indexResult = computeTopologicalSorting(iGraph);
-			return (TopologicalOrderAlgo.Result<V, E>) new IntResultFromIndexResult(indexResult, viMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			TopologicalOrderAlgo.IResult indexResult = computeTopologicalSorting(iGraph);
-			return new ObjResultFromIndexResult<>(indexResult, viMap);
+			return resultFromIndexResult(g, indexResult);
 		}
 	}
 
@@ -54,9 +47,9 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 		private final TopologicalOrderAlgo.IResult indexRes;
 		private final IndexIdMap<V> viMap;
 
-		ObjResultFromIndexResult(TopologicalOrderAlgo.IResult indexRes, IndexIdMap<V> viMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, TopologicalOrderAlgo.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -75,9 +68,9 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 		private final TopologicalOrderAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-		IntResultFromIndexResult(TopologicalOrderAlgo.IResult indexRes, IndexIntIdMap viMap) {
+		IntResultFromIndexResult(IntGraph g, TopologicalOrderAlgo.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -88,6 +81,17 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 		@Override
 		public int vertexOrderIndex(int vertex) {
 			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> TopologicalOrderAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			TopologicalOrderAlgo.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (TopologicalOrderAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

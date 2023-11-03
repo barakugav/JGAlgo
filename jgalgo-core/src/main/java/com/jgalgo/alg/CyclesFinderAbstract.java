@@ -18,9 +18,6 @@ package com.jgalgo.alg;
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 
 abstract class CyclesFinderAbstract implements CyclesFinder {
 
@@ -30,19 +27,10 @@ abstract class CyclesFinderAbstract implements CyclesFinder {
 		if (g instanceof IndexGraph) {
 			return (Iterator) findAllCycles((IndexGraph) g);
 
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			Iterator<IPath> indexResult = findAllCycles(iGraph);
-			return (Iterator) new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			Iterator<IPath> indexResult = findAllCycles(iGraph);
-			return new PathImpl.ObjIterFromIndexIter<>(indexResult, viMap, eiMap);
+			return PathImpl.iterFromIndexIter(g, indexResult);
 		}
 	}
 

@@ -18,11 +18,13 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -119,10 +121,10 @@ class DfsIterImpl implements Dfs.IntIter {
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntDfsFromIndexDfs(IntGraph g, Dfs.IntIter indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -147,10 +149,10 @@ class DfsIterImpl implements Dfs.IntIter {
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjDfsFromIndexDfs(Graph<V, E> g, Dfs.IntIter indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override

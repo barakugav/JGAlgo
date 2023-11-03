@@ -23,8 +23,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -32,22 +30,12 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implements MaximumFlow {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink) {
 		if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
 			int source0 = ((Integer) source).intValue();
 			int sink0 = ((Integer) sink).intValue();
 			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, source0, sink0);
-
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
-			int iSource = viMap.idToIndex(((Integer) source).intValue());
-			int iSink = viMap.idToIndex(((Integer) sink).intValue());
-			return computeMaximumFlow(iGraph, iNet, iSource, iSink);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
@@ -68,15 +56,6 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 			IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
 			IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
 			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, sources0, sinks0);
-
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet((FlowNetwork<Integer, Integer>) net, eiMap);
-			IntCollection iSources = IndexIdMaps.idToIndexCollection((Collection<Integer>) sources, viMap);
-			IntCollection iSinks = IndexIdMaps.idToIndexCollection((Collection<Integer>) sinks, viMap);
-			return computeMaximumFlow(iGraph, iNet, iSources, iSinks);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();

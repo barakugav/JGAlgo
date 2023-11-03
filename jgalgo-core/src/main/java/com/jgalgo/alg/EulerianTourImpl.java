@@ -20,9 +20,6 @@ import java.util.BitSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -195,19 +192,10 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		if (g instanceof IndexGraph) {
 			return (Path<V, E>) computeEulerianTour((IndexGraph) g);
 
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			IPath indexPath = computeEulerianTour(iGraph);
-			return (Path<V, E>) PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			IPath indexPath = computeEulerianTour(iGraph);
-			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);
+			return PathImpl.pathFromIndexPath(g, indexPath);
 		}
 	}
 

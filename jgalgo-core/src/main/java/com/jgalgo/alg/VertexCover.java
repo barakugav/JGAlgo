@@ -138,10 +138,6 @@ public interface VertexCover {
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
 			vertices0 = IntAdapters.asIntCollection((Collection<Integer>) vertices);
-		} else if (g instanceof IntGraph) {
-			ig = g.indexGraph();
-			vertices0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) vertices,
-					((IntGraph) g).indexGraphVerticesMap());
 		} else {
 			ig = g.indexGraph();
 			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());

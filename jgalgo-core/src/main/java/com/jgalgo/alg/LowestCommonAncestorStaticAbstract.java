@@ -31,19 +31,12 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 			return (LowestCommonAncestorStatic.DataStructure<V, E>) preProcessTree((IndexGraph) tree,
 					((Integer) root).intValue());
 
-		} else if (tree instanceof IntGraph) {
-			IndexGraph iGraph = tree.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();
-			int iRoot = viMap.idToIndex(((Integer) root).intValue());
-			LowestCommonAncestorStatic.IDataStructure indexResult = preProcessTree(iGraph, iRoot);
-			return (LowestCommonAncestorStatic.DataStructure<V, E>) new IntDsFromIndexDs(indexResult, viMap);
-
 		} else {
 			IndexGraph iGraph = tree.indexGraph();
 			IndexIdMap<V> viMap = tree.indexGraphVerticesMap();
 			int iRoot = viMap.idToIndex(root);
 			LowestCommonAncestorStatic.IDataStructure indexResult = preProcessTree(iGraph, iRoot);
-			return new ObjDsFromIndexDs<>(indexResult, viMap);
+			return dsFromIndexDs(tree, indexResult);
 		}
 	}
 
@@ -54,9 +47,9 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 		private final LowestCommonAncestorStatic.IDataStructure indexDs;
 		private final IndexIntIdMap viMap;
 
-		IntDsFromIndexDs(LowestCommonAncestorStatic.IDataStructure indexDs, IndexIntIdMap viMap) {
+		IntDsFromIndexDs(IntGraph g, LowestCommonAncestorStatic.IDataStructure indexDs) {
 			this.indexDs = Objects.requireNonNull(indexDs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -70,14 +63,25 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 		private final LowestCommonAncestorStatic.IDataStructure indexDs;
 		private final IndexIdMap<V> viMap;
 
-		ObjDsFromIndexDs(LowestCommonAncestorStatic.IDataStructure indexDs, IndexIdMap<V> viMap) {
+		ObjDsFromIndexDs(Graph<V, E> g, LowestCommonAncestorStatic.IDataStructure indexDs) {
 			this.indexDs = Objects.requireNonNull(indexDs);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
 		public V findLca(V u, V v) {
 			return viMap.indexToId(indexDs.findLca(viMap.idToIndex(u), viMap.idToIndex(v)));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> LowestCommonAncestorStatic.DataStructure<V, E> dsFromIndexDs(Graph<V, E> g,
+			LowestCommonAncestorStatic.IDataStructure indexDs) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (LowestCommonAncestorStatic.DataStructure<V, E>) new IntDsFromIndexDs((IntGraph) g, indexDs);
+		} else {
+			return new ObjDsFromIndexDs<>(g, indexDs);
 		}
 	}
 

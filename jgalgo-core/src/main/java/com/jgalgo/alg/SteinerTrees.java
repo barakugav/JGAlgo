@@ -47,16 +47,6 @@ class SteinerTrees {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				return (SteinerTreeAlgo.Result<V, E>) computeSteinerTree((IndexGraph) g, w0, terminals0);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction<Integer>) w, eiMap);
-				IntCollection iTerminals = IndexIdMaps.idToIndexCollection((Collection<Integer>) terminals, viMap);
-
-				SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);
-				return (SteinerTreeAlgo.Result<V, E>) new IntResultFromIndexResult(indexResult, eiMap);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
@@ -65,7 +55,7 @@ class SteinerTrees {
 				IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);
 
 				SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);
-				return new ObjResultFromIndexResult<>(indexResult, eiMap);
+				return resultFromIndexResult(g, indexResult);
 			}
 		}
 
@@ -103,9 +93,9 @@ class SteinerTrees {
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIdMap<E> eiMap;
 
-		ObjResultFromIndexResult(SteinerTreeAlgo.IResult res, IndexIdMap<E> eiMap) {
+		ObjResultFromIndexResult(Graph<V, E> g, SteinerTreeAlgo.IResult res) {
 			this.indexRes = Objects.requireNonNull(res);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -119,14 +109,25 @@ class SteinerTrees {
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-		IntResultFromIndexResult(SteinerTreeAlgo.IResult res, IndexIntIdMap eiMap) {
+		IntResultFromIndexResult(IntGraph g, SteinerTreeAlgo.IResult res) {
 			this.indexRes = Objects.requireNonNull(res);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
 		public IntSet edges() {
 			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> SteinerTreeAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			SteinerTreeAlgo.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (SteinerTreeAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

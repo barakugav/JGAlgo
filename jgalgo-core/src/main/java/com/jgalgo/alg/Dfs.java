@@ -67,11 +67,9 @@ public interface Dfs {
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-
 		int iSource = viMap.idToIndex(source);
 		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);
-		return new DfsIterImpl.ObjDfsFromIndexDfs<>(indexIter, viMap, eiMap);
+		return new DfsIterImpl.ObjDfsFromIndexDfs<>(g, indexIter);
 	}
 
 	/**
@@ -87,11 +85,9 @@ public interface Dfs {
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-
 		int iSource = viMap.idToIndex(source);
 		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);
-		return new DfsIterImpl.IntDfsFromIndexDfs(indexIter, viMap, eiMap);
+		return new DfsIterImpl.IntDfsFromIndexDfs(g, indexIter);
 	}
 
 	/**

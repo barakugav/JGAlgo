@@ -17,10 +17,12 @@ package com.jgalgo.alg;
 
 import java.util.BitSet;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -164,10 +166,10 @@ class BfsIterImpl {
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+		IntBfsFromIndexBfs(IntGraph g, Bfs.IntIter indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -198,10 +200,10 @@ class BfsIterImpl {
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjBfsFromIndexBfs(Bfs.IntIter indexIter, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+		ObjBfsFromIndexBfs(Graph<V, E> g, Bfs.IntIter indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
-			this.viMap = Objects.requireNonNull(viMap);
-			this.eiMap = Objects.requireNonNull(eiMap);
+			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override

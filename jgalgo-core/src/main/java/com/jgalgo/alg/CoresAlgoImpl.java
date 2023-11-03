@@ -269,17 +269,10 @@ class CoresAlgoImpl implements CoresAlgo {
 		if (g instanceof IndexGraph) {
 			return (CoresAlgo.Result<V, E>) computeCores((IndexGraph) g, degreeType);
 
-		} else if (g instanceof IntGraph) {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
-			return (CoresAlgo.Result<V, E>) new IntResultFromIndexResult(iResult, viMap);
-
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
-			return new ObjResultFromIndexResult<>(iResult, viMap);
+			return resultFromIndexResult(g, iResult);
 		}
 	}
 
@@ -288,9 +281,9 @@ class CoresAlgoImpl implements CoresAlgo {
 		private final CoresAlgo.IResult iResult;
 		private final IndexIntIdMap viMap;
 
-		public IntResultFromIndexResult(CoresAlgo.IResult iResult, IndexIntIdMap viMap) {
+		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {
 			this.iResult = Objects.requireNonNull(iResult);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -324,9 +317,9 @@ class CoresAlgoImpl implements CoresAlgo {
 		private final CoresAlgo.IResult iResult;
 		private final IndexIdMap<V> viMap;
 
-		public ObjResultFromIndexResult(CoresAlgo.IResult iResult, IndexIdMap<V> viMap) {
+		public ObjResultFromIndexResult(Graph<V, E> g, CoresAlgo.IResult iResult) {
 			this.iResult = Objects.requireNonNull(iResult);
-			this.viMap = Objects.requireNonNull(viMap);
+			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
@@ -352,6 +345,16 @@ class CoresAlgoImpl implements CoresAlgo {
 		@Override
 		public Set<V> coreCrust(int core) {
 			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> CoresAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g, CoresAlgo.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (CoresAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

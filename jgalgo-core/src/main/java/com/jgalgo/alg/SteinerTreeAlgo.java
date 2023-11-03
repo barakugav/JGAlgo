@@ -24,7 +24,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
@@ -127,13 +126,6 @@ public interface SteinerTreeAlgo {
 			ig = (IndexGraph) g;
 			terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
 			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
-
-		} else if (g instanceof IntGraph) {
-			ig = g.indexGraph();
-			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-			terminals0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) terminals, viMap);
-			edges0 = IndexIdMaps.idToIndexCollection((Collection<Integer>) edges, eiMap);
 
 		} else {
 			ig = g.indexGraph();

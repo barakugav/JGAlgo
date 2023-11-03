@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 
@@ -29,16 +28,10 @@ class ColoringUtils {
 			if (g instanceof IndexGraph) {
 				return (VertexPartition<V, E>) computeColoring((IndexGraph) g);
 
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IVertexPartition indexResult = computeColoring(iGraph);
-				return (VertexPartition<V, E>) new VertexPartitions.IntPartitionFromIndexPartition((IntGraph) g,
-						indexResult);
-
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IVertexPartition indexResult = computeColoring(iGraph);
-				return new VertexPartitions.ObjPartitionFromIndexPartition<>(g, indexResult);
+				return VertexPartitions.partitionFromIndexPartition(g, indexResult);
 			}
 		}
 
