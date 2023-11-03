@@ -58,7 +58,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	private static void testBipartiteAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
-		IMatching match = (IMatching) algo.computeMaximumCardinalityMatching(g);
+		IMatching match = (IMatching) algo.computeMaximumMatching(g, null);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 

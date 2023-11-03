@@ -29,7 +29,7 @@ public class MaximumMatchingExample {
 
 		/* Compute a maximum (cardinality) matching */
 		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
-		IMatching matching = (IMatching) matchingAlgo.computeMaximumCardinalityMatching(g);
+		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);
 
 		/* Validate the matching is valid */
 		for (int u : g.vertices()) {

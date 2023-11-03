@@ -463,7 +463,11 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				g.addVertex();
 			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);
 			IWeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
-			this.w = e -> wLocal.weight(edgeVal.get(e).e);
+			if (wLocal == null || wLocal == IWeightFunction.CardinalityWeightFunction) {
+				this.w = IWeightFunction.CardinalityWeightFunction;
+			} else {
+				this.w = e -> wLocal.weight(edgeVal.get(e).e);
+			}
 
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);

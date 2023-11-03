@@ -163,29 +163,7 @@ class Matchings {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> Matching<V, E> computeMaximumCardinalityMatching(Graph<V, E> g) {
-			if (g instanceof IndexGraph) {
-				return (Matching<V, E>) computeMaximumCardinalityMatching((IndexGraph) g);
-
-			} else if (g instanceof IntGraph) {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
-				IMatching indexMatch = computeMaximumCardinalityMatching(iGraph);
-				return (Matching<V, E>) new IntMatchingFromIndexMatching(indexMatch, viMap, eiMap);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IMatching indexMatch = computeMaximumCardinalityMatching(iGraph);
-				return new ObjMatchingFromIndexMatching<>(indexMatch, viMap, eiMap);
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> Matching<V, E> computeMaximumWeightedMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMaximumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			if (g instanceof IndexGraph) {
 				return (Matching<V, E>) computeMaximumWeightedMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
@@ -210,7 +188,7 @@ class Matchings {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> Matching<V, E> computeMinimumWeightedMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMinimumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			if (g instanceof IndexGraph) {
 				return (Matching<V, E>) computeMinimumWeightedMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
@@ -235,7 +213,7 @@ class Matchings {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> Matching<V, E> computeMaximumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMaximumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			if (g instanceof IndexGraph) {
 				return (Matching<V, E>) computeMaximumWeightedPerfectMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
@@ -260,7 +238,7 @@ class Matchings {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> Matching<V, E> computeMinimumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMinimumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			if (g instanceof IndexGraph) {
 				return (Matching<V, E>) computeMinimumWeightedPerfectMatching((IndexGraph) g,
 						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
@@ -283,8 +261,6 @@ class Matchings {
 			}
 		}
 
-		abstract IMatching computeMaximumCardinalityMatching(IndexGraph g);
-
 		abstract IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w);
 
 		abstract IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w);
@@ -296,6 +272,8 @@ class Matchings {
 	}
 
 	static abstract class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {
+
+		abstract IMatching computeMaximumCardinalityMatching(IndexGraph g);
 
 		@Override
 		IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
@@ -320,42 +298,38 @@ class Matchings {
 			Assertions.Graphs.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
-
 	}
 
-	static abstract class AbstractWeightedMatchingImpl extends AbstractMatchingImpl {
-
-		@Override
-		IMatching computeMaximumCardinalityMatching(IndexGraph g) {
-			return computeMaximumWeightedMatching(g, IWeightFunction.CardinalityWeightFunction);
-		}
-
+	static IWeightFunction negate(IWeightFunction w) {
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
+		IWeightFunction w0 = w;
+		return e -> -w0.weight(e);
 	}
 
-	static abstract class AbstractMaximumMatchingImpl extends AbstractWeightedMatchingImpl {
+	static abstract class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {
 
 		@Override
 		IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			return computeMaximumWeightedMatching(g, e -> -w.weight(e));
+			return computeMaximumWeightedMatching(g, negate(w));
 		}
 
 		@Override
 		IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			return computeMaximumWeightedPerfectMatching(g, e -> -w.weight(e));
+			return computeMaximumWeightedPerfectMatching(g, negate(w));
 		}
-
 	}
 
-	static abstract class AbstractMinimumMatchingImpl extends AbstractWeightedMatchingImpl {
+	static abstract class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {
 
 		@Override
 		IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			return computeMinimumWeightedMatching(g, e -> -w.weight(e));
+			return computeMinimumWeightedMatching(g, negate(w));
 		}
 
 		@Override
 		IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			return computeMinimumWeightedPerfectMatching(g, e -> -w.weight(e));
+			return computeMinimumWeightedPerfectMatching(g, negate(w));
 		}
 
 	}
@@ -376,72 +350,62 @@ class Matchings {
 		}
 
 		@Override
-		public <V, E> Matching<V, E> computeMaximumCardinalityMatching(Graph<V, E> g) {
-			boolean bipartite = isBipartite(g);
-			if (bipartite) {
-				return cardinalityBipartiteAlgo.computeMaximumCardinalityMatching(g);
-			} else {
-				return cardinalityGeneralAlgo.computeMaximumCardinalityMatching(g);
-			}
-		}
-
-		@Override
-		public <V, E> Matching<V, E> computeMaximumWeightedMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMaximumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMaximumWeightedMatching(g, w);
+				return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);
 			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMaximumWeightedMatching(g, w);
+				return cardinalityGeneralAlgo.computeMaximumMatching(g, w);
 			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMaximumWeightedMatching(g, w);
+				return weightedBipartiteAlgo.computeMaximumMatching(g, w);
 			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMaximumWeightedMatching(g, w);
+				return weightedGeneralAlgo.computeMaximumMatching(g, w);
 			throw new AssertionError();
 		}
 
 		@Override
-		public <V, E> Matching<V, E> computeMinimumWeightedMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMinimumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMinimumWeightedMatching(g, w);
+				return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);
 			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMinimumWeightedMatching(g, w);
+				return cardinalityGeneralAlgo.computeMinimumMatching(g, w);
 			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMinimumWeightedMatching(g, w);
+				return weightedBipartiteAlgo.computeMinimumMatching(g, w);
 			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMinimumWeightedMatching(g, w);
+				return weightedGeneralAlgo.computeMinimumMatching(g, w);
 			throw new AssertionError();
 		}
 
 		@Override
-		public <V, E> Matching<V, E> computeMaximumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMaximumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMaximumWeightedPerfectMatching(g, w);
+				return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);
 			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMaximumWeightedPerfectMatching(g, w);
+				return cardinalityGeneralAlgo.computeMaximumPerfectMatching(g, w);
 			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMaximumWeightedPerfectMatching(g, w);
+				return weightedBipartiteAlgo.computeMaximumPerfectMatching(g, w);
 			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMaximumWeightedPerfectMatching(g, w);
+				return weightedGeneralAlgo.computeMaximumPerfectMatching(g, w);
 			throw new AssertionError();
 		}
 
 		@Override
-		public <V, E> Matching<V, E> computeMinimumWeightedPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
+		public <V, E> Matching<V, E> computeMinimumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMinimumWeightedPerfectMatching(g, w);
+				return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);
 			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMinimumWeightedPerfectMatching(g, w);
+				return cardinalityGeneralAlgo.computeMinimumPerfectMatching(g, w);
 			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMinimumWeightedPerfectMatching(g, w);
+				return weightedBipartiteAlgo.computeMinimumPerfectMatching(g, w);
 			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMinimumWeightedPerfectMatching(g, w);
+				return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);
 			throw new AssertionError();
 		}
 

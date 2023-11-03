@@ -69,7 +69,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
-			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
+			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 			IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			unmatchedVerticesS.removeIf(v -> partition.get(v));
@@ -82,7 +82,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				int v = unmatchedVerticesT.getInt(i);
 				g.addEdge(u, v);
 			}
-			assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
+			assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			IWeightFunctionInt w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
@@ -116,11 +116,11 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	private static void testGraphWeighted(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationAlgo) {
-		IMatching actual = (IMatching) algo.computeMaximumWeightedMatching(g, w);
+		IMatching actual = (IMatching) algo.computeMaximumMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		double actualWeight = w.weightSum(actual.edges());
 
-		IMatching expected = (IMatching) validationAlgo.computeMaximumWeightedMatching(g, w);
+		IMatching expected = (IMatching) validationAlgo.computeMaximumMatching(g, w);
 		double expectedWeight = w.weightSum(expected.edges());
 
 		if (actualWeight > expectedWeight) {
@@ -145,7 +145,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				throw new IllegalArgumentException("there is no perfect matching");
 
 			MatchingAlgo cardinalityAlgo = new MatchingCardinalityGabow1976();
-			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
+			IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 			IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			assert unmatchedVertices.size() % 2 == 0;
 			IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));
@@ -154,7 +154,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				int v = unmatchedVertices.getInt(i * 2 + 1);
 				g.addEdge(u, v);
 			}
-			assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
+			assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			IWeightFunctionInt w =
@@ -170,12 +170,12 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 	static void testGraphWeightedPerfect(MatchingAlgo algo, IntGraph g, IWeightFunctionInt w,
 			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
-		IMatching actual = (IMatching) algo.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching actual = (IMatching) algo.computeMaximumPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		int actualSize = actual.edges().size();
 		double actualWeight = w.weightSum(actual.edges());
 
-		int expectedSize = validationUnweightedAlgo.computeMaximumCardinalityMatching(g).edges().size();
+		int expectedSize = validationUnweightedAlgo.computeMaximumMatching(g, null).edges().size();
 		if (actualSize > expectedSize) {
 			System.err.println(
 					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
@@ -183,7 +183,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		}
 		assertEquals(expectedSize, actualSize, "unexpected match size");
 
-		IMatching expected = (IMatching) validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w);
+		IMatching expected = (IMatching) validationWeightedAlgo.computeMaximumPerfectMatching(g, w);
 		double expectedWeight = w.weightSum(expected.edges());
 		if (actualWeight > expectedWeight) {
 			System.err.println(

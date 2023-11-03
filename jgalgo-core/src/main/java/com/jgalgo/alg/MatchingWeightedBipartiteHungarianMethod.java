@@ -112,7 +112,8 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 
 			this.g = g;
 			this.partition = partition;
-			this.w = WeightFunctions.localEdgeWeightFunction(g, w);
+			w = WeightFunctions.localEdgeWeightFunction(g, w);
+			this.w = w != null ? w : IWeightFunction.CardinalityWeightFunction;
 			int n = g.vertices().size();
 
 			inTree = new BitSet(n);

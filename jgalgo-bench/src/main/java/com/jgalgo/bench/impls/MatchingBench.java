@@ -83,7 +83,7 @@ public class MatchingBench {
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			IMatching matching = (IMatching) algo.computeMaximumCardinalityMatching(g);
+			IMatching matching = (IMatching) algo.computeMaximumMatching(g, null);
 			blackhole.consume(matching);
 		}
 
@@ -125,7 +125,7 @@ public class MatchingBench {
 
 		private void benchAlgo(MatchingAlgo algo, Blackhole blackhole) {
 			IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			IMatching matching = (IMatching) algo.computeMaximumCardinalityMatching(g);
+			IMatching matching = (IMatching) algo.computeMaximumMatching(g, null);
 			blackhole.consume(matching);
 		}
 
@@ -175,7 +175,7 @@ public class MatchingBench {
 			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			IntGraph g = gw.first();
 			IWeightFunction w = gw.second();
-			IMatching matching = (IMatching) algo.computeMaximumWeightedMatching(g, w);
+			IMatching matching = (IMatching) algo.computeMaximumMatching(g, w);
 			blackhole.consume(matching);
 		}
 
@@ -230,7 +230,7 @@ public class MatchingBench {
 			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			IntGraph g = gw.first();
 			IWeightFunction w = gw.second();
-			IMatching matching = (IMatching) algo.computeMaximumWeightedMatching(g, w);
+			IMatching matching = (IMatching) algo.computeMaximumMatching(g, w);
 			blackhole.consume(matching);
 		}
 
@@ -281,7 +281,7 @@ public class MatchingBench {
 					throw new IllegalArgumentException("there is no perfect matching");
 
 				MatchingAlgo cardinalityAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
-				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
+				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				assert unmatchedVertices.size() % 2 == 0;
 				IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));
@@ -290,7 +290,7 @@ public class MatchingBench {
 					int v = unmatchedVertices.getInt(i * 2 + 1);
 					g.addEdge(u, v);
 				}
-				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
+				assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
@@ -301,7 +301,7 @@ public class MatchingBench {
 			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			IntGraph g = gw.first();
 			IWeightFunction w = gw.second();
-			IMatching matching = (IMatching) algo.computeMinimumWeightedPerfectMatching(g, w);
+			IMatching matching = (IMatching) algo.computeMinimumPerfectMatching(g, w);
 			blackhole.consume(matching);
 		}
 
@@ -351,7 +351,7 @@ public class MatchingBench {
 
 				MatchingAlgo cardinalityAlgo =
 						MatchingAlgo.newBuilder().setCardinality(true).setBipartite(true).build();
-				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumCardinalityMatching(g);
+				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				unmatchedVerticesS.removeIf(v -> partition.get(v));
@@ -364,7 +364,7 @@ public class MatchingBench {
 					int v = unmatchedVerticesT.getInt(i);
 					g.addEdge(u, v);
 				}
-				assert cardinalityAlgo.computeMaximumCardinalityMatching(g).isPerfect();
+				assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
@@ -375,7 +375,7 @@ public class MatchingBench {
 			Pair<IntGraph, IWeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 			IntGraph g = gw.first();
 			IWeightFunction w = gw.second();
-			IMatching matching = (IMatching) algo.computeMinimumWeightedPerfectMatching(g, w);
+			IMatching matching = (IMatching) algo.computeMinimumPerfectMatching(g, w);
 			blackhole.consume(matching);
 		}
 

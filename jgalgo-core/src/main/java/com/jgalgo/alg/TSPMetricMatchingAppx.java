@@ -81,7 +81,7 @@ public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 		IndexGraph mG = mG0.reIndexAndBuild(true, true).graph();
 
 		/* Calculate maximum matching between the odd vertices */
-		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(mG, mGWeights);
+		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(mG, mGWeights);
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();

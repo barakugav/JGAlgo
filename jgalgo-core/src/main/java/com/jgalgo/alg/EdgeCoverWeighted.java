@@ -100,7 +100,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 			w2 = e -> e < vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 		}
 
-		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(g2, w2);
+		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);
 		BitSet cover = new BitSet(m);
 		for (int e = 0; e < m; e++)
 			if (matching.containsEdge(e * 2 + 0))

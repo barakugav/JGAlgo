@@ -82,7 +82,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 			return allPairsRes.distance(u, v);
 		};
 		/* Compute a minimum weighted perfected matching between the odd vertices */
-		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(oddGraph, oddW);
+		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(oddGraph, oddW);
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
 		IndexGraphBuilder b = IndexGraphBuilder.newUndirected();
