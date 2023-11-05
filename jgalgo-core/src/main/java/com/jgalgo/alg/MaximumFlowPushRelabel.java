@@ -1351,10 +1351,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int nextVertexToDischarge() {
-					for (; worker.maxLayerActive > 0; worker.maxLayerActive--)
+					for (;;) {
+						assert worker.maxLayerActive > 0 : "no active vertex to discharge";
 						if (worker.layersHeadActive[worker.maxLayerActive] != LinkedListFixedSize.None)
 							return worker.layersHeadActive[worker.maxLayerActive];
-					throw new IllegalStateException("no active vertex to discharge");
+						worker.maxLayerActive--;
+					}
 				}
 			}
 
@@ -1387,10 +1389,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int nextVertexToDischarge() {
-					for (; minLayerActive < worker.n; minLayerActive++)
+					for (;;) {
+						assert minLayerActive < worker.n : "no active vertex to discharge";
 						if (worker.layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 							return worker.layersHeadActive[minLayerActive];
-					throw new IllegalStateException("no active vertex to discharge");
+						minLayerActive++;
+					}
 				}
 			}
 
@@ -1447,11 +1451,13 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				int nextVertexToDischarge() {
-					int v;
-					while (listIter.hasNext())
-						if (worker.hasExcess(v = listIter.nextInt()))
+					for (;;) {
+						assert listIter.hasNext();
+						int v = listIter.nextInt();
+						if (worker.hasExcess(v))
 							return v;
-					throw new IllegalStateException("no active vertex to discharge");
+						listIter.nextInt();
+					}
 				}
 			}
 		}
