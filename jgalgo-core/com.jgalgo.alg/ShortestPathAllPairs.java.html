@@ -42,6 +42,9 @@ public interface ShortestPathAllPairs {
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight.
 	 * &lt;p&gt;
+	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
+	 * {@code w}.
+	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
@@ -55,6 +58,9 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
+	 * &lt;p&gt;
+	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
+	 * {@code w}.
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
@@ -71,46 +77,6 @@ public interface ShortestPathAllPairs {
 	 */
 	public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 			Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w);
-
-	/**
-	 * Compute the cardinality shortest path between each pair of vertices in a graph.
-	 * &lt;p&gt;
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * &lt;p&gt;
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @param  g   a graph
-	 * @return     a result object containing information on the cardinality shortest path between each pair of vertices
-	 */
-	default &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllCardinalityShortestPaths(Graph&lt;V, E&gt; g) {
-<span class="nc" id="L89">		return computeAllShortestPaths(g, WeightFunction.cardinalityWeightFunction());</span>
-	}
-
-	/**
-	 * Compute the cardinality shortest path between each pair of vertices in a given subset of the vertices of the
-	 * graph.
-	 * &lt;p&gt;
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * &lt;p&gt;
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
-	 * case, its better to pass a {@link IntCollection} as {@code verticesSubset} to avoid boxing/unboxing.
-	 *
-	 * @param  &lt;V&gt;            the vertices type
-	 * @param  &lt;E&gt;            the edges type
-	 * @param  g              a graph
-	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
-	 *                            of vertices from the subset
-	 * @return                a result object containing information on the cardinality shortest path between each pair
-	 *                        of vertices in the subset
-	 */
-	default &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetCardinalityShortestPaths(Graph&lt;V, E&gt; g,
-			Collection&lt;V&gt; verticesSubset) {
-<span class="nc" id="L112">		return computeSubsetShortestPaths(g, verticesSubset, WeightFunction.cardinalityWeightFunction());</span>
-	}
 
 	/**
 	 * A result object for an {@link ShortestPathAllPairs} algorithm.
@@ -183,7 +149,7 @@ public interface ShortestPathAllPairs {
 		@Deprecated
 		@Override
 		default double distance(Integer source, Integer target) {
-<span class="nc" id="L186">			return distance(source.intValue(), target.intValue());</span>
+<span class="fc" id="L152">			return distance(source.intValue(), target.intValue());</span>
 		}
 
 		/**
@@ -200,7 +166,7 @@ public interface ShortestPathAllPairs {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer source, Integer target) {
-<span class="nc" id="L203">			return getPath(source.intValue(), target.intValue());</span>
+<span class="fc" id="L169">			return getPath(source.intValue(), target.intValue());</span>
 		}
 
 		@Override
@@ -216,7 +182,7 @@ public interface ShortestPathAllPairs {
 	 * @return a default implementation of {@link ShortestPathAllPairs}
 	 */
 	static ShortestPathAllPairs newInstance() {
-<span class="fc" id="L219">		return newBuilder().build();</span>
+<span class="fc" id="L185">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -227,49 +193,49 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder newBuilder() {
-<span class="fc" id="L230">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="fc" id="L196">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
 			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L237" title="All 4 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L203" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;cardinality&quot;:
-<span class="nc" id="L239">							return new ShortestPathAllPairsCardinality();</span>
+<span class="nc" id="L205">							return new ShortestPathAllPairsCardinality();</span>
 						case &quot;floyd-warshall&quot;:
-<span class="nc" id="L241">							return new ShortestPathAllPairsFloydWarshall();</span>
+<span class="nc" id="L207">							return new ShortestPathAllPairsFloydWarshall();</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L243">							return new ShortestPathAllPairsJohnson();</span>
+<span class="nc" id="L209">							return new ShortestPathAllPairsJohnson();</span>
 						default:
-<span class="nc" id="L245">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L211">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L248">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
-<span class="nc" id="L250">					return cardinalityAlgo;</span>
-<span class="fc" id="L251">				return new ShortestPathAllPairs() {</span>
-<span class="fc" id="L252">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
+<span class="fc" id="L214">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
+<span class="nc" id="L216">					return cardinalityAlgo;</span>
+<span class="fc" id="L217">				return new ShortestPathAllPairs() {</span>
+<span class="fc" id="L218">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g,
 							WeightFunction&lt;E&gt; w) {
-<span class="nc bnc" id="L257" title="All 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
+<span class="nc bnc" id="L223" title="All 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
 								|| w == IWeightFunction.CardinalityWeightFunction) {
-<span class="nc" id="L259">							return cardinalityAlgo.computeAllCardinalityShortestPaths(g);</span>
+<span class="nc" id="L225">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
 						} else {
-<span class="nc" id="L261">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
+<span class="nc" id="L227">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
 						}
 					}
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 							Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L268" title="3 of 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
+<span class="pc bpc" id="L234" title="3 of 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
 								|| w == IWeightFunction.CardinalityWeightFunction) {
-<span class="nc" id="L270">							return cardinalityAlgo.computeSubsetCardinalityShortestPaths(g, verticesSubset);</span>
+<span class="nc" id="L236">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
 						} else {
-<span class="fc" id="L272">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
+<span class="fc" id="L238">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
 						}
 					}
 				};
@@ -277,20 +243,20 @@ public interface ShortestPathAllPairs {
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L280">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L281">				return this;</span>
+<span class="nc" id="L246">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L247">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathAllPairs.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L286" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L288">						impl = (String) value;</span>
-<span class="nc" id="L289">						break;</span>
+<span class="nc" id="L254">						impl = (String) value;</span>
+<span class="nc" id="L255">						break;</span>
 					default:
-<span class="nc" id="L291">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L257">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L293">				return this;</span>
+<span class="nc" id="L259">				return this;</span>
 			}
 		};
 	}
@@ -336,7 +302,7 @@ public interface ShortestPathAllPairs {
 		 * @return       this builder
 		 */
 		default ShortestPathAllPairs.Builder setOption(String key, Object value) {
-<span class="nc" id="L339">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L305">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

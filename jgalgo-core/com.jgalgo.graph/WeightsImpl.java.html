@@ -15,11 +15,13 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 interface WeightsImpl {
@@ -32,17 +34,17 @@ interface WeightsImpl {
 
 		final GraphElementSet elements;
 
-<span class="fc" id="L35">		IndexAbstract(GraphElementSet elements) {</span>
-<span class="fc" id="L36">			this.elements = elements;</span>
-<span class="fc" id="L37">		}</span>
+<span class="fc" id="L37">		IndexAbstract(GraphElementSet elements) {</span>
+<span class="fc" id="L38">			this.elements = elements;</span>
+<span class="fc" id="L39">		}</span>
 
 		public int size() {
-<span class="fc" id="L40">			return elements.size();</span>
+<span class="fc" id="L42">			return elements.size();</span>
 		}
 
 		void checkIdx(int idx) {
-<span class="fc" id="L44">			elements.checkIdx(idx);</span>
-<span class="fc" id="L45">		}</span>
+<span class="fc" id="L46">			elements.checkIdx(idx);</span>
+<span class="fc" id="L47">		}</span>
 
 	}
 
@@ -60,131 +62,131 @@ interface WeightsImpl {
 
 		static &lt;D&gt; WeightsImpl.IndexMutable&lt;D&gt; newInstance(GraphElementSet elements, Class&lt;? super D&gt; type, D defVal) {
 			IWeights&lt;?&gt; container;
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (type == byte.class) {</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;</span>
-<span class="fc" id="L65">				container = new WeightsImplByte.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (type == byte.class) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;</span>
+<span class="fc" id="L67">				container = new WeightsImplByte.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">			} else if (type == short.class) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;</span>
-<span class="fc" id="L69">				container = new WeightsImplShort.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			} else if (type == short.class) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;</span>
+<span class="fc" id="L71">				container = new WeightsImplShort.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			} else if (type == int.class) {</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;</span>
-<span class="fc" id="L73">				container = new WeightsImplInt.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			} else if (type == int.class) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;</span>
+<span class="fc" id="L75">				container = new WeightsImplInt.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			} else if (type == long.class) {</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;</span>
-<span class="fc" id="L77">				container = new WeightsImplLong.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			} else if (type == long.class) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;</span>
+<span class="fc" id="L79">				container = new WeightsImplLong.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L79" title="All 2 branches covered.">			} else if (type == float.class) {</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;</span>
-<span class="fc" id="L81">				container = new WeightsImplFloat.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			} else if (type == float.class) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;</span>
+<span class="fc" id="L83">				container = new WeightsImplFloat.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L83" title="All 2 branches covered.">			} else if (type == double.class) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;</span>
-<span class="fc" id="L85">				container = new WeightsImplDouble.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			} else if (type == double.class) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;</span>
+<span class="fc" id="L87">				container = new WeightsImplDouble.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			} else if (type == boolean.class) {</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;</span>
-<span class="fc" id="L89">				container = new WeightsImplBool.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			} else if (type == boolean.class) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;</span>
+<span class="fc" id="L91">				container = new WeightsImplBool.IndexMutable(elements, defVal0);</span>
 
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			} else if (type == char.class) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;</span>
-<span class="fc" id="L93">				container = new WeightsImplChar.IndexMutable(elements, defVal0);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			} else if (type == char.class) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;</span>
+<span class="fc" id="L95">				container = new WeightsImplChar.IndexMutable(elements, defVal0);</span>
 
-<span class="fc" id="L95">			} else {</span>
-<span class="fc" id="L96">				container = new WeightsImplObj.IndexMutable&lt;&gt;(elements, defVal);</span>
+<span class="fc" id="L97">			} else {</span>
+<span class="fc" id="L98">				container = new WeightsImplObj.IndexMutable&lt;&gt;(elements, defVal);</span>
 			}
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L99">			WeightsImpl.IndexMutable&lt;D&gt; container0 = (WeightsImpl.IndexMutable&lt;D&gt;) container;</span>
-<span class="fc" id="L100">			return container0;</span>
+<span class="fc" id="L101">			WeightsImpl.IndexMutable&lt;D&gt; container0 = (WeightsImpl.IndexMutable&lt;D&gt;) container;</span>
+<span class="fc" id="L102">			return container0;</span>
 		}
 
 		static WeightsImpl.IndexMutable&lt;?&gt; copyOf(IWeights&lt;?&gt; weights, GraphElementSet elements) {
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
-<span class="nc" id="L105">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
-<span class="fc" id="L107">				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
-<span class="fc" id="L109">				return new WeightsImplShort.IndexMutable((WeightsImplShort.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
-<span class="fc" id="L111">				return new WeightsImplInt.IndexMutable((WeightsImplInt.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
-<span class="fc" id="L113">				return new WeightsImplLong.IndexMutable((WeightsImplLong.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
-<span class="fc" id="L115">				return new WeightsImplFloat.IndexMutable((WeightsImplFloat.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
-<span class="fc" id="L117">				return new WeightsImplDouble.IndexMutable((WeightsImplDouble.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
-<span class="fc" id="L119">				return new WeightsImplBool.IndexMutable((WeightsImplBool.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
-<span class="fc" id="L121">				return new WeightsImplChar.IndexMutable((WeightsImplChar.IndexImpl) weights, elements);</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
-<span class="fc" id="L123">				return new WeightsImplObj.IndexMutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
+<span class="nc" id="L107">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
+<span class="fc" id="L109">				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
+<span class="fc" id="L111">				return new WeightsImplShort.IndexMutable((WeightsImplShort.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
+<span class="fc" id="L113">				return new WeightsImplInt.IndexMutable((WeightsImplInt.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
+<span class="fc" id="L115">				return new WeightsImplLong.IndexMutable((WeightsImplLong.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
+<span class="fc" id="L117">				return new WeightsImplFloat.IndexMutable((WeightsImplFloat.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
+<span class="fc" id="L119">				return new WeightsImplDouble.IndexMutable((WeightsImplDouble.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L121">				return new WeightsImplBool.IndexMutable((WeightsImplBool.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
+<span class="fc" id="L123">				return new WeightsImplChar.IndexMutable((WeightsImplChar.IndexImpl) weights, elements);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
+<span class="fc" id="L125">				return new WeightsImplObj.IndexMutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements);</span>
 			} else {
-<span class="nc" id="L125">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
+<span class="nc" id="L127">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
 			}
 		}
 
 		static class Manager {
 
-<span class="fc" id="L131">			final Map&lt;String, WeightsImpl.IndexMutable&lt;?&gt;&gt; weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L133">			final Map&lt;String, WeightsImpl.IndexMutable&lt;?&gt;&gt; weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
 			private int weightsCapacity;
 
-<span class="fc" id="L134">			Manager(int initCapacity) {</span>
-<span class="fc" id="L135">				weightsCapacity = initCapacity;</span>
-<span class="fc" id="L136">			}</span>
+<span class="fc" id="L136">			Manager(int initCapacity) {</span>
+<span class="fc" id="L137">				weightsCapacity = initCapacity;</span>
+<span class="fc" id="L138">			}</span>
 
 			Manager(Manager orig, GraphElementSet elements) {
-<span class="fc" id="L139">				this(elements.size());</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (var entry : orig.weights.entrySet())</span>
-<span class="fc" id="L141">					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), elements));</span>
-<span class="fc" id="L142">			}</span>
+<span class="fc" id="L141">				this(elements.size());</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (var entry : orig.weights.entrySet())</span>
+<span class="fc" id="L143">					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), elements));</span>
+<span class="fc" id="L144">			}</span>
 
 			void addWeights(String key, WeightsImpl.IndexMutable&lt;?&gt; weight) {
-<span class="fc" id="L145">				WeightsImpl.IndexMutable&lt;?&gt; oldContainer = weights.put(key, weight);</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (oldContainer != null)</span>
-<span class="nc" id="L147">					throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">				if (weightsCapacity &gt; weight.capacity())</span>
-<span class="fc" id="L149">					weight.expand(weightsCapacity);</span>
-<span class="fc" id="L150">			}</span>
+<span class="fc" id="L147">				WeightsImpl.IndexMutable&lt;?&gt; oldContainer = weights.put(key, weight);</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">				if (oldContainer != null)</span>
+<span class="nc" id="L149">					throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (weightsCapacity &gt; weight.capacity())</span>
+<span class="fc" id="L151">					weight.expand(weightsCapacity);</span>
+<span class="fc" id="L152">			}</span>
 
 			void removeWeights(String key) {
-<span class="fc" id="L153">				weights.remove(key);</span>
-<span class="fc" id="L154">			}</span>
+<span class="fc" id="L155">				weights.remove(key);</span>
+<span class="fc" id="L156">			}</span>
 
 			@SuppressWarnings(&quot;unchecked&quot;)
 			&lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getWeights(String key) {
-<span class="fc" id="L158">				return (WeightsT) weights.get(key);</span>
+<span class="fc" id="L160">				return (WeightsT) weights.get(key);</span>
 			}
 
 			Set&lt;String&gt; weightsKeys() {
-<span class="fc" id="L162">				return Collections.unmodifiableSet(weights.keySet());</span>
+<span class="fc" id="L164">				return Collections.unmodifiableSet(weights.keySet());</span>
 			}
 
 			void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (capacity &lt;= weightsCapacity)</span>
-<span class="fc" id="L167">					return;</span>
-<span class="fc" id="L168">				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
-<span class="fc" id="L170">					container.expand(newCapacity);</span>
-<span class="fc" id="L171">				weightsCapacity = newCapacity;</span>
-<span class="fc" id="L172">			}</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				if (capacity &lt;= weightsCapacity)</span>
+<span class="fc" id="L169">					return;</span>
+<span class="fc" id="L170">				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L172">					container.expand(newCapacity);</span>
+<span class="fc" id="L173">				weightsCapacity = newCapacity;</span>
+<span class="fc" id="L174">			}</span>
 
 			void swapElements(int idx1, int idx2) {
-<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
-<span class="fc" id="L176">					container.swap(idx1, idx2);</span>
-<span class="fc" id="L177">			}</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L178">					container.swap(idx1, idx2);</span>
+<span class="fc" id="L179">			}</span>
 
 			void clearElement(int idx) {
-<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
-<span class="fc" id="L181">					container.clear(idx);</span>
-<span class="fc" id="L182">			}</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L183">					container.clear(idx);</span>
+<span class="fc" id="L184">			}</span>
 
 			void clearContainers() {
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
-<span class="fc" id="L186">					container.clear();</span>
-<span class="fc" id="L187">			}</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				for (WeightsImpl.IndexMutable&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L188">					container.clear();</span>
+<span class="fc" id="L189">			}</span>
 		}
 
 	}
@@ -192,56 +194,56 @@ interface WeightsImpl {
 	static interface IndexImmutable&lt;T&gt; extends IWeights&lt;T&gt;, WeightsImpl {
 
 		static WeightsImpl.IndexImmutable&lt;?&gt; copyOf(IWeights&lt;?&gt; weights, GraphElementSet.FixedSize elements) {
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
-<span class="nc" id="L196">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
-<span class="fc" id="L198">				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
-<span class="fc" id="L200">				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
-<span class="fc" id="L202">				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
-<span class="fc" id="L204">				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
-<span class="fc" id="L206">				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
-<span class="fc" id="L208">				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
-<span class="fc" id="L210">				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements);</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
-<span class="fc" id="L212">				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements);</span>
-<span class="pc bpc" id="L213" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
-<span class="fc" id="L214">				return new WeightsImplObj.IndexImmutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
+<span class="nc" id="L198">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
+<span class="fc" id="L200">				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
+<span class="fc" id="L202">				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
+<span class="fc" id="L204">				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
+<span class="fc" id="L206">				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
+<span class="fc" id="L208">				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
+<span class="fc" id="L210">				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L212">				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
+<span class="fc" id="L214">				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
+<span class="fc" id="L216">				return new WeightsImplObj.IndexImmutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements);</span>
 			} else {
-<span class="nc" id="L216">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
+<span class="nc" id="L218">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
 			}
 		}
 
 		static WeightsImpl.IndexImmutable&lt;?&gt; copyOfReindexed(IWeights&lt;?&gt; weights, GraphElementSet.FixedSize elements,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="pc bpc" id="L222" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
-<span class="nc" id="L223">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
-<span class="fc" id="L225">				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
-<span class="fc" id="L227">				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
-<span class="fc" id="L229">				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
-<span class="fc" id="L231">				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
-<span class="fc" id="L233">				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
-<span class="fc" id="L235">				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements,</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.IntImmutableView&lt;?&gt;)</span>
+<span class="nc" id="L225">				weights = ((WeightsImpl.IntImmutableView&lt;?&gt;) weights).weights();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
+<span class="fc" id="L227">				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
+<span class="fc" id="L229">				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
+<span class="fc" id="L231">				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
+<span class="fc" id="L233">				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
+<span class="fc" id="L235">				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
+<span class="fc" id="L237">				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements,</span>
 						reIndexMap);
-<span class="fc bfc" id="L237" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
-<span class="fc" id="L238">				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
-<span class="fc" id="L240">				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, reIndexMap);</span>
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
-<span class="fc" id="L242">				return new WeightsImplObj.IndexImmutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L240">				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
+<span class="fc" id="L242">				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, reIndexMap);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsImplObj.IndexImpl) {</span>
+<span class="fc" id="L244">				return new WeightsImplObj.IndexImmutable&lt;&gt;((WeightsImplObj.IndexImpl&lt;?&gt;) weights, elements, reIndexMap);</span>
 			} else {
-<span class="nc" id="L244">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
+<span class="nc" id="L246">				throw new IllegalArgumentException(&quot;unknown weights implementation: &quot; + weights.getClass());</span>
 			}
 		}
 
@@ -250,27 +252,27 @@ interface WeightsImpl {
 			private final GraphElementSet.FixedSize elements;
 			private final Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; weights;
 
-<span class="fc" id="L253">			Builder(GraphElementSet.FixedSize elements) {</span>
-<span class="fc" id="L254">				this.elements = Objects.requireNonNull(elements);</span>
-<span class="fc" id="L255">				weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc" id="L256">			}</span>
+<span class="fc" id="L255">			Builder(GraphElementSet.FixedSize elements) {</span>
+<span class="fc" id="L256">				this.elements = Objects.requireNonNull(elements);</span>
+<span class="fc" id="L257">				weights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L258">			}</span>
 
 			void copyAndAddWeights(String key, IWeights&lt;?&gt; weights) {
-<span class="fc" id="L259">				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements));</span>
-<span class="pc bpc" id="L260" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
-<span class="nc" id="L261">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
-<span class="fc" id="L262">			}</span>
+<span class="fc" id="L261">				Object oldWeights = this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements));</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
+<span class="nc" id="L263">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
+<span class="fc" id="L264">			}</span>
 
 			void copyAndAddWeightsReindexed(String key, IWeights&lt;?&gt; weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L266">				Object oldWeights = this.weights.put(key,</span>
-<span class="fc" id="L267">						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, reIndexMap));</span>
-<span class="pc bpc" id="L268" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
-<span class="nc" id="L269">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
-<span class="fc" id="L270">			}</span>
+<span class="fc" id="L268">				Object oldWeights = this.weights.put(key,</span>
+<span class="fc" id="L269">						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, reIndexMap));</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
+<span class="nc" id="L271">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
+<span class="fc" id="L272">			}</span>
 
 			Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; build() {
-<span class="fc" id="L273">				return Map.copyOf(weights);</span>
+<span class="fc" id="L275">				return Map.copyOf(weights);</span>
 			}
 		}
 
@@ -281,35 +283,35 @@ interface WeightsImpl {
 		final WeightsImpl.IndexAbstract&lt;T&gt; weights;
 		final IndexIntIdMap indexMap;
 
-<span class="fc" id="L284">		IntMapped(WeightsImpl.Index&lt;T&gt; weights, IndexIntIdMap indexMap) {</span>
-<span class="fc" id="L285">			this.weights = (WeightsImpl.IndexAbstract&lt;T&gt;) Objects.requireNonNull(weights);</span>
-<span class="fc" id="L286">			this.indexMap = indexMap;</span>
-<span class="fc" id="L287">		}</span>
+<span class="fc" id="L286">		IntMapped(WeightsImpl.Index&lt;T&gt; weights, IndexIntIdMap indexMap) {</span>
+<span class="fc" id="L287">			this.weights = (WeightsImpl.IndexAbstract&lt;T&gt;) Objects.requireNonNull(weights);</span>
+<span class="fc" id="L288">			this.indexMap = indexMap;</span>
+<span class="fc" id="L289">		}</span>
 
 		WeightsImpl.IndexAbstract&lt;T&gt; weights() {
-<span class="fc" id="L290">			return weights;</span>
+<span class="fc" id="L292">			return weights;</span>
 		}
 
 		@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 		static WeightsImpl.IntMapped&lt;?&gt; newInstance(WeightsImpl.Index&lt;?&gt; weights, IndexIntIdMap indexMap) {
-<span class="fc bfc" id="L295" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
-<span class="fc" id="L296">				return new WeightsImplByte.IntMapped((WeightsImplByte.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
-<span class="fc" id="L298">				return new WeightsImplShort.IntMapped((WeightsImplShort.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
-<span class="fc" id="L300">				return new WeightsImplInt.IntMapped((WeightsImplInt.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
-<span class="fc" id="L302">				return new WeightsImplLong.IntMapped((WeightsImplLong.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
-<span class="fc" id="L304">				return new WeightsImplFloat.IntMapped((WeightsImplFloat.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
-<span class="fc" id="L306">				return new WeightsImplDouble.IntMapped((WeightsImplDouble.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
-<span class="fc" id="L308">				return new WeightsImplBool.IntMapped((WeightsImplBool.IndexImpl) weights, indexMap);</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
-<span class="fc" id="L310">				return new WeightsImplChar.IntMapped((WeightsImplChar.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
+<span class="fc" id="L298">				return new WeightsImplByte.IntMapped((WeightsImplByte.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
+<span class="fc" id="L300">				return new WeightsImplShort.IntMapped((WeightsImplShort.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
+<span class="fc" id="L302">				return new WeightsImplInt.IntMapped((WeightsImplInt.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
+<span class="fc" id="L304">				return new WeightsImplLong.IntMapped((WeightsImplLong.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
+<span class="fc" id="L306">				return new WeightsImplFloat.IntMapped((WeightsImplFloat.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
+<span class="fc" id="L308">				return new WeightsImplDouble.IntMapped((WeightsImplDouble.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L310">				return new WeightsImplBool.IntMapped((WeightsImplBool.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
+<span class="fc" id="L312">				return new WeightsImplChar.IntMapped((WeightsImplChar.IndexImpl) weights, indexMap);</span>
 			} else {
-<span class="fc" id="L312">				return new WeightsImplObj.IntMapped&lt;&gt;((WeightsImplObj.IndexImpl) weights, indexMap);</span>
+<span class="fc" id="L314">				return new WeightsImplObj.IntMapped&lt;&gt;((WeightsImplObj.IndexImpl) weights, indexMap);</span>
 			}
 		}
 
@@ -319,147 +321,237 @@ interface WeightsImpl {
 
 		private final Weights&lt;K, T&gt; weights;
 
-<span class="fc" id="L322">		ImmutableView(Weights&lt;K, T&gt; weights) {</span>
-<span class="fc" id="L323">			this.weights = Objects.requireNonNull(weights);</span>
-<span class="fc" id="L324">		}</span>
+<span class="fc" id="L324">		ImmutableView(Weights&lt;K, T&gt; weights) {</span>
+<span class="fc" id="L325">			this.weights = Objects.requireNonNull(weights);</span>
+<span class="fc" id="L326">		}</span>
 
 		Weights&lt;K, T&gt; weights() {
-<span class="fc" id="L327">			return weights;</span>
+<span class="fc" id="L329">			return weights;</span>
 		}
 	}
 
 	static abstract class IntImmutableView&lt;T&gt; extends ImmutableView&lt;Integer, T&gt; implements IWeights&lt;T&gt; {
 
 		IntImmutableView(IWeights&lt;T&gt; weights) {
-<span class="fc" id="L334">			super(weights);</span>
-<span class="fc" id="L335">		}</span>
+<span class="fc" id="L336">			super(weights);</span>
+<span class="fc" id="L337">		}</span>
 
 		@Override
 		IWeights&lt;T&gt; weights() {
-<span class="fc" id="L339">			return (IWeights&lt;T&gt;) super.weights();</span>
+<span class="fc" id="L341">			return (IWeights&lt;T&gt;) super.weights();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		static &lt;T&gt; IWeights&lt;T&gt; newInstance(IWeights&lt;T&gt; weights) {
-<span class="pc bpc" id="L344" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.ImmutableView)</span>
-<span class="nc" id="L345">				return weights;</span>
-<span class="fc bfc" id="L346" title="All 2 branches covered.">			if (weights instanceof IWeightsByte)</span>
-<span class="fc" id="L347">				return (IWeights&lt;T&gt;) new WeightsImplByte.IntImmutableView((IWeightsByte) weights);</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">			if (weights instanceof IWeightsShort)</span>
-<span class="fc" id="L349">				return (IWeights&lt;T&gt;) new WeightsImplShort.IntImmutableView((IWeightsShort) weights);</span>
-<span class="fc bfc" id="L350" title="All 2 branches covered.">			if (weights instanceof IWeightsInt)</span>
-<span class="fc" id="L351">				return (IWeights&lt;T&gt;) new WeightsImplInt.IntImmutableView((IWeightsInt) weights);</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">			if (weights instanceof IWeightsLong)</span>
-<span class="fc" id="L353">				return (IWeights&lt;T&gt;) new WeightsImplLong.IntImmutableView((IWeightsLong) weights);</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">			if (weights instanceof IWeightsFloat)</span>
-<span class="fc" id="L355">				return (IWeights&lt;T&gt;) new WeightsImplFloat.IntImmutableView((IWeightsFloat) weights);</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">			if (weights instanceof IWeightsDouble)</span>
-<span class="fc" id="L357">				return (IWeights&lt;T&gt;) new WeightsImplDouble.IntImmutableView((IWeightsDouble) weights);</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">			if (weights instanceof IWeightsBool)</span>
-<span class="fc" id="L359">				return (IWeights&lt;T&gt;) new WeightsImplBool.IntImmutableView((IWeightsBool) weights);</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">			if (weights instanceof IWeightsChar)</span>
-<span class="fc" id="L361">				return (IWeights&lt;T&gt;) new WeightsImplChar.IntImmutableView((IWeightsChar) weights);</span>
-<span class="pc bpc" id="L362" title="1 of 2 branches missed.">			if (weights instanceof IWeightsObj)</span>
-<span class="fc" id="L363">				return new WeightsImplObj.IntImmutableView&lt;&gt;((IWeightsObj&lt;T&gt;) weights);</span>
-<span class="nc" id="L364">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + weights.getClass());</span>
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">			if (weights instanceof WeightsImpl.ImmutableView)</span>
+<span class="nc" id="L347">				return weights;</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">			if (weights instanceof IWeightsByte)</span>
+<span class="fc" id="L349">				return (IWeights&lt;T&gt;) new WeightsImplByte.IntImmutableView((IWeightsByte) weights);</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">			if (weights instanceof IWeightsShort)</span>
+<span class="fc" id="L351">				return (IWeights&lt;T&gt;) new WeightsImplShort.IntImmutableView((IWeightsShort) weights);</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">			if (weights instanceof IWeightsInt)</span>
+<span class="fc" id="L353">				return (IWeights&lt;T&gt;) new WeightsImplInt.IntImmutableView((IWeightsInt) weights);</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">			if (weights instanceof IWeightsLong)</span>
+<span class="fc" id="L355">				return (IWeights&lt;T&gt;) new WeightsImplLong.IntImmutableView((IWeightsLong) weights);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">			if (weights instanceof IWeightsFloat)</span>
+<span class="fc" id="L357">				return (IWeights&lt;T&gt;) new WeightsImplFloat.IntImmutableView((IWeightsFloat) weights);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">			if (weights instanceof IWeightsDouble)</span>
+<span class="fc" id="L359">				return (IWeights&lt;T&gt;) new WeightsImplDouble.IntImmutableView((IWeightsDouble) weights);</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">			if (weights instanceof IWeightsBool)</span>
+<span class="fc" id="L361">				return (IWeights&lt;T&gt;) new WeightsImplBool.IntImmutableView((IWeightsBool) weights);</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">			if (weights instanceof IWeightsChar)</span>
+<span class="fc" id="L363">				return (IWeights&lt;T&gt;) new WeightsImplChar.IntImmutableView((IWeightsChar) weights);</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">			if (weights instanceof IWeightsObj)</span>
+<span class="fc" id="L365">				return new WeightsImplObj.IntImmutableView&lt;&gt;((IWeightsObj&lt;T&gt;) weights);</span>
+<span class="nc" id="L366">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + weights.getClass());</span>
 		}
 	}
 
 	static void checkSameSize(GraphElementSet i1, GraphElementSet i2) {
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">		if (i1.size() != i2.size())</span>
-<span class="nc" id="L370">			throw new IllegalArgumentException(&quot;Elements sets size mismatch: &quot; + i1.size() + &quot; != &quot; + i2.size());</span>
-<span class="fc" id="L371">	}</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">		if (i1.size() != i2.size())</span>
+<span class="nc" id="L372">			throw new IllegalArgumentException(&quot;Elements sets size mismatch: &quot; + i1.size() + &quot; != &quot; + i2.size());</span>
+<span class="fc" id="L373">	}</span>
 
-	static boolean isEqual(IntSet elementsSet, IWeights&lt;?&gt; w1, IWeights&lt;?&gt; w2) {
-<span class="fc bfc" id="L374" title="All 2 branches covered.">		if (w1 == w2)</span>
-<span class="fc" id="L375">			return true;</span>
-<span class="pc bpc" id="L376" title="1 of 4 branches missed.">		if (w1 instanceof IWeightsObj&lt;?&gt; &amp;&amp; w2 instanceof IWeightsObj&lt;?&gt;) {</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L378" title="1 of 2 branches missed.">				if (!Objects.equals(((IWeightsObj&lt;?&gt;) w1).get(elm), ((IWeightsObj&lt;?&gt;) w2).get(elm)))</span>
-<span class="nc" id="L379">					return false;</span>
-<span class="fc" id="L380">			return true;</span>
-<span class="pc bpc" id="L381" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsByte &amp;&amp; w2 instanceof IWeightsByte) {</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L383" title="1 of 2 branches missed.">				if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))</span>
-<span class="nc" id="L384">					return false;</span>
-<span class="fc" id="L385">			return true;</span>
-<span class="pc bpc" id="L386" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsShort &amp;&amp; w2 instanceof IWeightsShort) {</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L388" title="1 of 2 branches missed.">				if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))</span>
-<span class="nc" id="L389">					return false;</span>
-<span class="fc" id="L390">			return true;</span>
-<span class="pc bpc" id="L391" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsInt &amp;&amp; w2 instanceof IWeightsInt) {</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L393" title="1 of 2 branches missed.">				if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))</span>
-<span class="nc" id="L394">					return false;</span>
-<span class="fc" id="L395">			return true;</span>
-<span class="pc bpc" id="L396" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsLong &amp;&amp; w2 instanceof IWeightsLong) {</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L398" title="1 of 2 branches missed.">				if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))</span>
-<span class="nc" id="L399">					return false;</span>
-<span class="fc" id="L400">			return true;</span>
-<span class="pc bpc" id="L401" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsFloat &amp;&amp; w2 instanceof IWeightsFloat) {</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L403" title="1 of 2 branches missed.">				if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))</span>
-<span class="nc" id="L404">					return false;</span>
-<span class="fc" id="L405">			return true;</span>
-<span class="pc bpc" id="L406" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsDouble &amp;&amp; w2 instanceof IWeightsDouble) {</span>
-<span class="fc bfc" id="L407" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L408" title="1 of 2 branches missed.">				if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))</span>
-<span class="nc" id="L409">					return false;</span>
-<span class="fc" id="L410">			return true;</span>
-<span class="pc bpc" id="L411" title="1 of 4 branches missed.">		} else if (w1 instanceof IWeightsBool &amp;&amp; w2 instanceof IWeightsBool) {</span>
-<span class="fc bfc" id="L412" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L413" title="1 of 2 branches missed.">				if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))</span>
-<span class="nc" id="L414">					return false;</span>
-<span class="fc" id="L415">			return true;</span>
-<span class="pc bpc" id="L416" title="2 of 4 branches missed.">		} else if (w1 instanceof IWeightsChar &amp;&amp; w2 instanceof IWeightsChar) {</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">			for (int elm : elementsSet)</span>
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">				if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))</span>
-<span class="nc" id="L419">					return false;</span>
-<span class="fc" id="L420">			return true;</span>
-		} else {
-<span class="nc" id="L422">			return false;</span>
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;K&gt; boolean isEqual(Set&lt;K&gt; elementsSet, Weights&lt;K, ?&gt; w1, Weights&lt;K, ?&gt; w2) {
+<span class="fc bfc" id="L377" title="All 2 branches covered.">		if (w1 == w2)</span>
+<span class="fc" id="L378">			return true;</span>
+<span class="pc bpc" id="L379" title="1 of 4 branches missed.">		if (w1 instanceof IWeights &amp;&amp; w2 instanceof IWeights) {</span>
+<span class="fc" id="L380">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
+<span class="pc bpc" id="L381" title="1 of 4 branches missed.">			if (w1 instanceof IWeightsObj&lt;?&gt; &amp;&amp; w2 instanceof IWeightsObj&lt;?&gt;) {</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">					if (!Objects.equals(((IWeightsObj&lt;?&gt;) w1).get(elm), ((IWeightsObj&lt;?&gt;) w2).get(elm)))</span>
+<span class="nc" id="L384">						return false;</span>
+<span class="fc" id="L385">				return true;</span>
+<span class="pc bpc" id="L386" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsByte &amp;&amp; w2 instanceof IWeightsByte) {</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">					if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))</span>
+<span class="nc" id="L389">						return false;</span>
+<span class="fc" id="L390">				return true;</span>
+<span class="pc bpc" id="L391" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsShort &amp;&amp; w2 instanceof IWeightsShort) {</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">					if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))</span>
+<span class="nc" id="L394">						return false;</span>
+<span class="fc" id="L395">				return true;</span>
+<span class="pc bpc" id="L396" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsInt &amp;&amp; w2 instanceof IWeightsInt) {</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L398" title="1 of 2 branches missed.">					if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))</span>
+<span class="nc" id="L399">						return false;</span>
+<span class="fc" id="L400">				return true;</span>
+<span class="pc bpc" id="L401" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsLong &amp;&amp; w2 instanceof IWeightsLong) {</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">					if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))</span>
+<span class="nc" id="L404">						return false;</span>
+<span class="fc" id="L405">				return true;</span>
+<span class="pc bpc" id="L406" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsFloat &amp;&amp; w2 instanceof IWeightsFloat) {</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">					if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))</span>
+<span class="nc" id="L409">						return false;</span>
+<span class="fc" id="L410">				return true;</span>
+<span class="pc bpc" id="L411" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsDouble &amp;&amp; w2 instanceof IWeightsDouble) {</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L413" title="1 of 2 branches missed.">					if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))</span>
+<span class="nc" id="L414">						return false;</span>
+<span class="fc" id="L415">				return true;</span>
+<span class="pc bpc" id="L416" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsBool &amp;&amp; w2 instanceof IWeightsBool) {</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L418" title="1 of 2 branches missed.">					if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))</span>
+<span class="nc" id="L419">						return false;</span>
+<span class="fc" id="L420">				return true;</span>
+<span class="pc bpc" id="L421" title="2 of 4 branches missed.">			} else if (w1 instanceof IWeightsChar &amp;&amp; w2 instanceof IWeightsChar) {</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="pc bpc" id="L423" title="1 of 2 branches missed.">					if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))</span>
+<span class="nc" id="L424">						return false;</span>
+<span class="fc" id="L425">				return true;</span>
+			}
+<span class="nc" id="L427">		} else {</span>
+<span class="pc bpc" id="L428" title="1 of 4 branches missed.">			if (w1 instanceof WeightsObj &amp;&amp; w2 instanceof WeightsObj) {</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">					if (!Objects.equals(((WeightsObj&lt;K, ?&gt;) w1).get(elm), ((WeightsObj&lt;K, ?&gt;) w2).get(elm)))</span>
+<span class="nc" id="L431">						return false;</span>
+<span class="fc" id="L432">				return true;</span>
+<span class="pc bpc" id="L433" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsByte &amp;&amp; w2 instanceof WeightsByte) {</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L435" title="1 of 2 branches missed.">					if (((WeightsByte&lt;K&gt;) w1).get(elm) != ((WeightsByte&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L436">						return false;</span>
+<span class="fc" id="L437">				return true;</span>
+<span class="pc bpc" id="L438" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsShort &amp;&amp; w2 instanceof WeightsShort) {</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">					if (((WeightsShort&lt;K&gt;) w1).get(elm) != ((WeightsShort&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L441">						return false;</span>
+<span class="fc" id="L442">				return true;</span>
+<span class="pc bpc" id="L443" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsInt &amp;&amp; w2 instanceof WeightsInt) {</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L445" title="1 of 2 branches missed.">					if (((WeightsInt&lt;K&gt;) w1).get(elm) != ((WeightsInt&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L446">						return false;</span>
+<span class="fc" id="L447">				return true;</span>
+<span class="pc bpc" id="L448" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsLong &amp;&amp; w2 instanceof WeightsLong) {</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L450" title="1 of 2 branches missed.">					if (((WeightsLong&lt;K&gt;) w1).get(elm) != ((WeightsLong&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L451">						return false;</span>
+<span class="fc" id="L452">				return true;</span>
+<span class="pc bpc" id="L453" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsFloat &amp;&amp; w2 instanceof WeightsFloat) {</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L455" title="1 of 2 branches missed.">					if (((WeightsFloat&lt;K&gt;) w1).get(elm) != ((WeightsFloat&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L456">						return false;</span>
+<span class="fc" id="L457">				return true;</span>
+<span class="pc bpc" id="L458" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsDouble &amp;&amp; w2 instanceof WeightsDouble) {</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">					if (((WeightsDouble&lt;K&gt;) w1).get(elm) != ((WeightsDouble&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L461">						return false;</span>
+<span class="fc" id="L462">				return true;</span>
+<span class="pc bpc" id="L463" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsBool &amp;&amp; w2 instanceof WeightsBool) {</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">					if (((WeightsBool&lt;K&gt;) w1).get(elm) != ((WeightsBool&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L466">						return false;</span>
+<span class="fc" id="L467">				return true;</span>
+<span class="pc bpc" id="L468" title="2 of 4 branches missed.">			} else if (w1 instanceof WeightsChar &amp;&amp; w2 instanceof WeightsChar) {</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="pc bpc" id="L470" title="1 of 2 branches missed.">					if (((WeightsChar&lt;K&gt;) w1).get(elm) != ((WeightsChar&lt;K&gt;) w2).get(elm))</span>
+<span class="nc" id="L471">						return false;</span>
+<span class="fc" id="L472">				return true;</span>
+			}
 		}
+<span class="nc" id="L475">		return false;</span>
 	}
 
-	static int hashCode(IntSet elementsSet, IWeights&lt;?&gt; w) {
-<span class="nc" id="L427">		int h = 0;</span>
-<span class="nc bnc" id="L428" title="All 2 branches missed.">		if (w instanceof IWeightsObj&lt;?&gt;) {</span>
-<span class="nc bnc" id="L429" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L430">				h += Objects.hashCode(((IWeightsObj&lt;?&gt;) w).get(elm));</span>
-<span class="nc bnc" id="L431" title="All 2 branches missed.">		} else if (w instanceof IWeightsByte) {</span>
-<span class="nc bnc" id="L432" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L433">				h += ((IWeightsByte) w).get(elm);</span>
-<span class="nc bnc" id="L434" title="All 2 branches missed.">		} else if (w instanceof IWeightsShort) {</span>
-<span class="nc bnc" id="L435" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L436">				h += ((IWeightsShort) w).get(elm);</span>
-<span class="nc bnc" id="L437" title="All 2 branches missed.">		} else if (w instanceof IWeightsInt) {</span>
-<span class="nc bnc" id="L438" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L439">				h += ((IWeightsInt) w).get(elm);</span>
-<span class="nc bnc" id="L440" title="All 2 branches missed.">		} else if (w instanceof IWeightsLong) {</span>
-<span class="nc bnc" id="L441" title="All 2 branches missed.">			for (int elm : elementsSet) {</span>
-<span class="nc" id="L442">				long x = ((IWeightsLong) w).get(elm);</span>
-<span class="nc" id="L443">				h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L444">			}</span>
-<span class="nc bnc" id="L445" title="All 2 branches missed.">		} else if (w instanceof IWeightsFloat) {</span>
-<span class="nc bnc" id="L446" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L447">				h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));</span>
-<span class="nc bnc" id="L448" title="All 2 branches missed.">		} else if (w instanceof IWeightsDouble) {</span>
-<span class="nc bnc" id="L449" title="All 2 branches missed.">			for (int elm : elementsSet) {</span>
-<span class="nc" id="L450">				long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));</span>
-<span class="nc" id="L451">				h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L452">			}</span>
-<span class="nc bnc" id="L453" title="All 2 branches missed.">		} else if (w instanceof IWeightsBool) {</span>
-<span class="nc bnc" id="L454" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc bnc" id="L455" title="All 2 branches missed.">				h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;</span>
-<span class="nc bnc" id="L456" title="All 2 branches missed.">		} else if (w instanceof IWeightsChar) {</span>
-<span class="nc bnc" id="L457" title="All 2 branches missed.">			for (int elm : elementsSet)</span>
-<span class="nc" id="L458">				h += ((IWeightsChar) w).get(elm);</span>
-		} else {
-<span class="nc" id="L460">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + w.getClass());</span>
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;K&gt; int hashCode(Set&lt;K&gt; elementsSet, Weights&lt;K, ?&gt; w) {
+<span class="nc" id="L480">		int h = 0;</span>
+<span class="nc bnc" id="L481" title="All 2 branches missed.">		if (w instanceof IWeights) {</span>
+<span class="nc" id="L482">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">			if (w instanceof IWeightsObj) {</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L485">					h += Objects.hashCode(((IWeightsObj&lt;?&gt;) w).get(elm));</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">			} else if (w instanceof IWeightsByte) {</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L488">					h += ((IWeightsByte) w).get(elm);</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">			} else if (w instanceof IWeightsShort) {</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L491">					h += ((IWeightsShort) w).get(elm);</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">			} else if (w instanceof IWeightsInt) {</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L494">					h += ((IWeightsInt) w).get(elm);</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">			} else if (w instanceof IWeightsLong) {</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">				for (int elm : elements) {</span>
+<span class="nc" id="L497">					long x = ((IWeightsLong) w).get(elm);</span>
+<span class="nc" id="L498">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L499">				}</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">			} else if (w instanceof IWeightsFloat) {</span>
+<span class="nc bnc" id="L501" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L502">					h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));</span>
+<span class="nc bnc" id="L503" title="All 2 branches missed.">			} else if (w instanceof IWeightsDouble) {</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">				for (int elm : elements) {</span>
+<span class="nc" id="L505">					long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));</span>
+<span class="nc" id="L506">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L507">				}</span>
+<span class="nc bnc" id="L508" title="All 2 branches missed.">			} else if (w instanceof IWeightsBool) {</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc bnc" id="L510" title="All 2 branches missed.">					h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;</span>
+<span class="nc bnc" id="L511" title="All 2 branches missed.">			} else if (w instanceof IWeightsChar) {</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">				for (int elm : elements)</span>
+<span class="nc" id="L513">					h += ((IWeightsChar) w).get(elm);</span>
+			} else {
+<span class="nc" id="L515">				throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + w.getClass());</span>
+			}
+<span class="nc" id="L517">		} else {</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">			if (w instanceof WeightsObj) {</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L520">					h += Objects.hashCode(((WeightsObj&lt;K, ?&gt;) w).get(elm));</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">			} else if (w instanceof WeightsByte) {</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L523">					h += ((WeightsByte&lt;K&gt;) w).get(elm);</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">			} else if (w instanceof WeightsShort) {</span>
+<span class="nc bnc" id="L525" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L526">					h += ((WeightsShort&lt;K&gt;) w).get(elm);</span>
+<span class="nc bnc" id="L527" title="All 2 branches missed.">			} else if (w instanceof WeightsInt) {</span>
+<span class="nc bnc" id="L528" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L529">					h += ((WeightsInt&lt;K&gt;) w).get(elm);</span>
+<span class="nc bnc" id="L530" title="All 2 branches missed.">			} else if (w instanceof WeightsLong) {</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">				for (K elm : elementsSet) {</span>
+<span class="nc" id="L532">					long x = ((WeightsLong&lt;K&gt;) w).get(elm);</span>
+<span class="nc" id="L533">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L534">				}</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">			} else if (w instanceof WeightsFloat) {</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L537">					h += java.lang.Float.floatToRawIntBits(((WeightsFloat&lt;K&gt;) w).get(elm));</span>
+<span class="nc bnc" id="L538" title="All 2 branches missed.">			} else if (w instanceof WeightsDouble) {</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">				for (K elm : elementsSet) {</span>
+<span class="nc" id="L540">					long x = java.lang.Double.doubleToRawLongBits(((WeightsDouble&lt;K&gt;) w).get(elm));</span>
+<span class="nc" id="L541">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="nc" id="L542">				}</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">			} else if (w instanceof WeightsBool) {</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc bnc" id="L545" title="All 2 branches missed.">					h += ((WeightsBool&lt;K&gt;) w).get(elm) ? 1231 : 1237;</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">			} else if (w instanceof WeightsChar) {</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
+<span class="nc" id="L548">					h += ((WeightsChar&lt;K&gt;) w).get(elm);</span>
+			} else {
+<span class="nc" id="L550">				throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + w.getClass());</span>
+			}
 		}
-<span class="nc" id="L462">		return h;</span>
+
+<span class="nc" id="L554">		return h;</span>
 	}
 
 	static abstract class ObjMapped&lt;K, T&gt; implements Weights&lt;K, T&gt;, WeightsImpl {
@@ -467,35 +559,35 @@ interface WeightsImpl {
 		final WeightsImpl.IndexAbstract&lt;T&gt; weights;
 		final IndexIdMap&lt;K&gt; indexMap;
 
-<span class="nc" id="L470">		ObjMapped(WeightsImpl.Index&lt;T&gt; weights, IndexIdMap&lt;K&gt; indexMap) {</span>
-<span class="nc" id="L471">			this.weights = (WeightsImpl.IndexAbstract&lt;T&gt;) Objects.requireNonNull(weights);</span>
-<span class="nc" id="L472">			this.indexMap = indexMap;</span>
-<span class="nc" id="L473">		}</span>
+<span class="fc" id="L562">		ObjMapped(WeightsImpl.Index&lt;T&gt; weights, IndexIdMap&lt;K&gt; indexMap) {</span>
+<span class="fc" id="L563">			this.weights = (WeightsImpl.IndexAbstract&lt;T&gt;) Objects.requireNonNull(weights);</span>
+<span class="fc" id="L564">			this.indexMap = indexMap;</span>
+<span class="fc" id="L565">		}</span>
 
 		WeightsImpl.IndexAbstract&lt;T&gt; weights() {
-<span class="nc" id="L476">			return weights;</span>
+<span class="fc" id="L568">			return weights;</span>
 		}
 
 		@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 		static &lt;K&gt; WeightsImpl.ObjMapped&lt;K, ?&gt; newInstance(WeightsImpl.Index&lt;?&gt; weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="nc bnc" id="L481" title="All 2 branches missed.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
-<span class="nc" id="L482">				return new WeightsImplByte.ObjMapped((WeightsImplByte.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L483" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
-<span class="nc" id="L484">				return new WeightsImplShort.ObjMapped((WeightsImplShort.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L485" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
-<span class="nc" id="L486">				return new WeightsImplInt.ObjMapped((WeightsImplInt.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L487" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
-<span class="nc" id="L488">				return new WeightsImplLong.ObjMapped((WeightsImplLong.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L489" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
-<span class="nc" id="L490">				return new WeightsImplFloat.ObjMapped((WeightsImplFloat.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L491" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
-<span class="nc" id="L492">				return new WeightsImplDouble.ObjMapped((WeightsImplDouble.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L493" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
-<span class="nc" id="L494">				return new WeightsImplBool.ObjMapped((WeightsImplBool.IndexImpl) weights, indexMap);</span>
-<span class="nc bnc" id="L495" title="All 2 branches missed.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
-<span class="nc" id="L496">				return new WeightsImplChar.ObjMapped((WeightsImplChar.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L573" title="All 2 branches covered.">			if (weights instanceof WeightsImplByte.IndexImpl) {</span>
+<span class="fc" id="L574">				return new WeightsImplByte.ObjMapped((WeightsImplByte.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L575" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplShort.IndexImpl) {</span>
+<span class="fc" id="L576">				return new WeightsImplShort.ObjMapped((WeightsImplShort.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplInt.IndexImpl) {</span>
+<span class="fc" id="L578">				return new WeightsImplInt.ObjMapped((WeightsImplInt.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L579" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplLong.IndexImpl) {</span>
+<span class="fc" id="L580">				return new WeightsImplLong.ObjMapped((WeightsImplLong.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L581" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplFloat.IndexImpl) {</span>
+<span class="fc" id="L582">				return new WeightsImplFloat.ObjMapped((WeightsImplFloat.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L583" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplDouble.IndexImpl) {</span>
+<span class="fc" id="L584">				return new WeightsImplDouble.ObjMapped((WeightsImplDouble.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L585" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L586">				return new WeightsImplBool.ObjMapped((WeightsImplBool.IndexImpl) weights, indexMap);</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">			} else if (weights instanceof WeightsImplChar.IndexImpl) {</span>
+<span class="fc" id="L588">				return new WeightsImplChar.ObjMapped((WeightsImplChar.IndexImpl) weights, indexMap);</span>
 			} else {
-<span class="nc" id="L498">				return new WeightsImplObj.ObjMapped&lt;&gt;((WeightsImplObj.IndexImpl) weights, indexMap);</span>
+<span class="fc" id="L590">				return new WeightsImplObj.ObjMapped&lt;&gt;((WeightsImplObj.IndexImpl) weights, indexMap);</span>
 			}
 		}
 
@@ -504,32 +596,32 @@ interface WeightsImpl {
 	static abstract class ObjImmutableView&lt;K, T&gt; extends ImmutableView&lt;K, T&gt; implements Weights&lt;K, T&gt; {
 
 		ObjImmutableView(Weights&lt;K, T&gt; weights) {
-<span class="nc" id="L507">			super(weights);</span>
-<span class="nc" id="L508">		}</span>
+<span class="nc" id="L599">			super(weights);</span>
+<span class="nc" id="L600">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		static &lt;K, T&gt; Weights&lt;K, T&gt; newInstance(Weights&lt;K, T&gt; weights) {
-<span class="nc bnc" id="L512" title="All 2 branches missed.">			if (weights instanceof ImmutableView)</span>
-<span class="nc" id="L513">				return weights;</span>
-<span class="nc bnc" id="L514" title="All 2 branches missed.">			if (weights instanceof WeightsByte)</span>
-<span class="nc" id="L515">				return (Weights&lt;K, T&gt;) new WeightsImplByte.ObjImmutableView&lt;&gt;((WeightsByte&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L516" title="All 2 branches missed.">			if (weights instanceof WeightsShort)</span>
-<span class="nc" id="L517">				return (Weights&lt;K, T&gt;) new WeightsImplShort.ObjImmutableView&lt;&gt;((WeightsShort&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L518" title="All 2 branches missed.">			if (weights instanceof WeightsInt)</span>
-<span class="nc" id="L519">				return (Weights&lt;K, T&gt;) new WeightsImplInt.ObjImmutableView&lt;&gt;((WeightsInt&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L520" title="All 2 branches missed.">			if (weights instanceof WeightsLong)</span>
-<span class="nc" id="L521">				return (Weights&lt;K, T&gt;) new WeightsImplLong.ObjImmutableView&lt;&gt;((WeightsLong&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L522" title="All 2 branches missed.">			if (weights instanceof WeightsFloat)</span>
-<span class="nc" id="L523">				return (Weights&lt;K, T&gt;) new WeightsImplFloat.ObjImmutableView&lt;&gt;((WeightsFloat&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L524" title="All 2 branches missed.">			if (weights instanceof WeightsDouble)</span>
-<span class="nc" id="L525">				return (Weights&lt;K, T&gt;) new WeightsImplDouble.ObjImmutableView&lt;&gt;((WeightsDouble&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L526" title="All 2 branches missed.">			if (weights instanceof WeightsBool)</span>
-<span class="nc" id="L527">				return (Weights&lt;K, T&gt;) new WeightsImplBool.ObjImmutableView&lt;&gt;((WeightsBool&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L528" title="All 2 branches missed.">			if (weights instanceof WeightsChar)</span>
-<span class="nc" id="L529">				return (Weights&lt;K, T&gt;) new WeightsImplChar.ObjImmutableView&lt;&gt;((WeightsChar&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L530" title="All 2 branches missed.">			if (weights instanceof WeightsObj)</span>
-<span class="nc" id="L531">				return new WeightsImplObj.ObjImmutableView&lt;&gt;((WeightsObj&lt;K, T&gt;) weights);</span>
-<span class="nc" id="L532">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + weights.getClass());</span>
+<span class="nc bnc" id="L604" title="All 2 branches missed.">			if (weights instanceof ImmutableView)</span>
+<span class="nc" id="L605">				return weights;</span>
+<span class="nc bnc" id="L606" title="All 2 branches missed.">			if (weights instanceof WeightsByte)</span>
+<span class="nc" id="L607">				return (Weights&lt;K, T&gt;) new WeightsImplByte.ObjImmutableView&lt;&gt;((WeightsByte&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L608" title="All 2 branches missed.">			if (weights instanceof WeightsShort)</span>
+<span class="nc" id="L609">				return (Weights&lt;K, T&gt;) new WeightsImplShort.ObjImmutableView&lt;&gt;((WeightsShort&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L610" title="All 2 branches missed.">			if (weights instanceof WeightsInt)</span>
+<span class="nc" id="L611">				return (Weights&lt;K, T&gt;) new WeightsImplInt.ObjImmutableView&lt;&gt;((WeightsInt&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L612" title="All 2 branches missed.">			if (weights instanceof WeightsLong)</span>
+<span class="nc" id="L613">				return (Weights&lt;K, T&gt;) new WeightsImplLong.ObjImmutableView&lt;&gt;((WeightsLong&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">			if (weights instanceof WeightsFloat)</span>
+<span class="nc" id="L615">				return (Weights&lt;K, T&gt;) new WeightsImplFloat.ObjImmutableView&lt;&gt;((WeightsFloat&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L616" title="All 2 branches missed.">			if (weights instanceof WeightsDouble)</span>
+<span class="nc" id="L617">				return (Weights&lt;K, T&gt;) new WeightsImplDouble.ObjImmutableView&lt;&gt;((WeightsDouble&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">			if (weights instanceof WeightsBool)</span>
+<span class="nc" id="L619">				return (Weights&lt;K, T&gt;) new WeightsImplBool.ObjImmutableView&lt;&gt;((WeightsBool&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">			if (weights instanceof WeightsChar)</span>
+<span class="nc" id="L621">				return (Weights&lt;K, T&gt;) new WeightsImplChar.ObjImmutableView&lt;&gt;((WeightsChar&lt;K&gt;) weights);</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">			if (weights instanceof WeightsObj)</span>
+<span class="nc" id="L623">				return new WeightsImplObj.ObjImmutableView&lt;&gt;((WeightsObj&lt;K, T&gt;) weights);</span>
+<span class="nc" id="L624">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + weights.getClass());</span>
 		}
 	}
 

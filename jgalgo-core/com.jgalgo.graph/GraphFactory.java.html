@@ -83,6 +83,18 @@ public interface GraphFactory&lt;V, E&gt; {
 	Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyWeights);
 
 	/**
+	 * Create a new graph builder with the factory parameters.
+	 * &lt;p&gt;
+	 * The created builder can be used to add vertices and edges, and then build a (mutable or immutable) non empty
+	 * graph, differing from the factory which only builds empty graphs. The capabilities such as un/directed, support
+	 * of self edges, support of parallel edges, and hints such as expected number of vertices and edges, other
+	 * {@linkplain GraphFactory.Hint hints}, etc. are copied from the factory to the builder.
+	 *
+	 * @return a new graph builder with the factory parameters
+	 */
+	GraphBuilder&lt;V, E&gt; newBuilder();
+
+	/**
 	 * Determine if graphs built by this factory should be directed or not.
 	 *
 	 * @param  directed if {@code true}, graphs built by this factory will be directed
@@ -149,16 +161,16 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L152">	static enum Hint {</span>
+<span class="fc" id="L164">	static enum Hint {</span>
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)} */
-<span class="fc" id="L154">		FastEdgeRemoval,</span>
+<span class="fc" id="L166">		FastEdgeRemoval,</span>
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
 		 * {@link Graph#getEdges(Object, Object)}
 		 */
-<span class="fc" id="L159">		FastEdgeLookup,</span>
+<span class="fc" id="L171">		FastEdgeLookup,</span>
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
-<span class="fc" id="L161">		DenseGraph,</span>
+<span class="fc" id="L173">		DenseGraph,</span>
 	}
 
 	/**
@@ -169,7 +181,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newUndirected() {
-<span class="nc" id="L172">		return new GraphImpl.Factory&lt;&gt;(false);</span>
+<span class="fc" id="L184">		return new GraphImpl.Factory&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -180,7 +192,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newDirected() {
-<span class="nc" id="L183">		return new GraphImpl.Factory&lt;&gt;(true);</span>
+<span class="fc" id="L195">		return new GraphImpl.Factory&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -196,7 +208,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="nc" id="L199">		return new GraphImpl.Factory&lt;&gt;(g);</span>
+<span class="fc" id="L211">		return new GraphImpl.Factory&lt;&gt;(g);</span>
 	}
 
 	/**
@@ -213,7 +225,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="nc" id="L216">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L228">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

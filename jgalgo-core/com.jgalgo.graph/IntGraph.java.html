@@ -154,8 +154,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addVertex(Integer vertex) {
-<span class="nc" id="L157">		addVertex(vertex.intValue());</span>
-<span class="nc" id="L158">	}</span>
+<span class="fc" id="L157">		addVertex(vertex.intValue());</span>
+<span class="fc" id="L158">	}</span>
 
 	/**
 	 * Remove a vertex and all its edges from the graph.
@@ -168,8 +168,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeVertex(Integer vertex) {
-<span class="nc" id="L171">		removeVertex(vertex.intValue());</span>
-<span class="nc" id="L172">	}</span>
+<span class="fc" id="L171">		removeVertex(vertex.intValue());</span>
+<span class="fc" id="L172">	}</span>
 
 	/**
 	 * Get the edges whose source is {@code source}.
@@ -208,7 +208,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default EdgeSet&lt;Integer, Integer&gt; inEdges(Integer target) {
-<span class="nc" id="L211">		return inEdges(target.intValue());</span>
+<span class="fc" id="L211">		return inEdges(target.intValue());</span>
 	}
 
 	/**
@@ -237,8 +237,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer getEdge(Integer source, Integer target) {
-<span class="nc" id="L240">		int e = getEdge(source.intValue(), target.intValue());</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">		return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc" id="L240">		int e = getEdge(source.intValue(), target.intValue());</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">		return e == -1 ? null : Integer.valueOf(e);</span>
 	}
 
 	/**
@@ -254,7 +254,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default EdgeSet&lt;Integer, Integer&gt; getEdges(Integer source, Integer target) {
-<span class="nc" id="L257">		return getEdges(source.intValue(), target.intValue());</span>
+<span class="fc" id="L257">		return getEdges(source.intValue(), target.intValue());</span>
 	}
 
 	/**
@@ -288,8 +288,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
-<span class="nc" id="L291">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
-<span class="nc" id="L292">	}</span>
+<span class="fc" id="L291">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
+<span class="fc" id="L292">	}</span>
 
 	/**
 	 * Remove an edge from the graph.
@@ -302,8 +302,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeEdge(Integer edge) {
-<span class="nc" id="L305">		removeEdge(edge.intValue());</span>
-<span class="nc" id="L306">	}</span>
+<span class="fc" id="L305">		removeEdge(edge.intValue());</span>
+<span class="fc" id="L306">	}</span>
 
 	/**
 	 * Remove all the edges of a vertex.
@@ -319,8 +319,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeEdgesOf(Integer vertex) {
-<span class="nc" id="L322">		removeEdgesOf(vertex.intValue());</span>
-<span class="nc" id="L323">	}</span>
+<span class="fc" id="L322">		removeEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L323">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -338,8 +338,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeOutEdgesOf(Integer vertex) {
-<span class="nc" id="L341">		removeOutEdgesOf(vertex.intValue());</span>
-<span class="nc" id="L342">	}</span>
+<span class="fc" id="L341">		removeOutEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L342">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -357,8 +357,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeInEdgesOf(Integer vertex) {
-<span class="nc" id="L360">		removeInEdgesOf(vertex.intValue());</span>
-<span class="nc" id="L361">	}</span>
+<span class="fc" id="L360">		removeInEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L361">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -373,8 +373,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void reverseEdge(Integer edge) {
-<span class="nc" id="L376">		reverseEdge(edge.intValue());</span>
-<span class="nc" id="L377">	}</span>
+<span class="fc" id="L376">		reverseEdge(edge.intValue());</span>
+<span class="fc" id="L377">	}</span>
 
 	/**
 	 * Get the source vertex of an edge.
@@ -391,7 +391,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeSource(Integer edge) {
-<span class="nc" id="L394">		return Integer.valueOf(edgeSource(edge.intValue()));</span>
+<span class="fc" id="L394">		return Integer.valueOf(edgeSource(edge.intValue()));</span>
 	}
 
 	/**
@@ -409,7 +409,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeTarget(Integer edge) {
-<span class="nc" id="L412">		return Integer.valueOf(edgeTarget(edge.intValue()));</span>
+<span class="fc" id="L412">		return Integer.valueOf(edgeTarget(edge.intValue()));</span>
 	}
 
 	/**
@@ -441,7 +441,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeEndpoint(Integer edge, Integer endpoint) {
-<span class="nc" id="L444">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
+<span class="fc" id="L444">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
 	}
 
 	// TODO

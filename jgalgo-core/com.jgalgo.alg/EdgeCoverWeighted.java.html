@@ -100,7 +100,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 <span class="nc bnc" id="L100" title="All 2 branches missed.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 		}
 
-<span class="fc" id="L103">		IMatching matching = (IMatching) matchingAlgo.computeMinimumWeightedPerfectMatching(g2, w2);</span>
+<span class="fc" id="L103">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>
 <span class="fc" id="L104">		BitSet cover = new BitSet(m);</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>

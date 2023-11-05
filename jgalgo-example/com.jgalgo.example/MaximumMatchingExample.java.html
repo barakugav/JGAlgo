@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		/* Compute a maximum (cardinality) matching */
 <span class="fc" id="L31">		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
-<span class="fc" id="L32">		IMatching matching = (IMatching) matchingAlgo.computeMaximumCardinalityMatching(g);</span>
+<span class="fc" id="L32">		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);</span>
 
 		/* Validate the matching is valid */
 <span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>

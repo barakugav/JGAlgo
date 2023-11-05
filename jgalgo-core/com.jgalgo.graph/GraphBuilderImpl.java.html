@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="nc" id="L33">				: new GraphBuilderImpl.Undirected&lt;&gt;(g, copyWeights);</span>
 	}
 
-<span class="nc" id="L36">	private static abstract class Abstract&lt;V, E&gt; implements GraphBuilder&lt;V, E&gt; {</span>
+<span class="fc" id="L36">	private static abstract class Abstract&lt;V, E&gt; implements GraphBuilder&lt;V, E&gt; {</span>
 
 		final IndexGraphBuilder ibuilder;
 		private final Object2IntOpenHashMap&lt;V&gt; vIdToIndex;
@@ -44,194 +44,196 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 		private final Set&lt;E&gt; edges;
 		final IndexIdMapImpl&lt;V&gt; viMap;
 		final IndexIdMapImpl&lt;E&gt; eiMap;
-<span class="nc" id="L47">		private final Map&lt;WeightsImpl.Index&lt;?&gt;, WeightsImpl.ObjMapped&lt;V, ?&gt;&gt; verticesWeights = new IdentityHashMap&lt;&gt;();</span>
-<span class="nc" id="L48">		private final Map&lt;WeightsImpl.Index&lt;?&gt;, WeightsImpl.ObjMapped&lt;E, ?&gt;&gt; edgesWeights = new IdentityHashMap&lt;&gt;();</span>
+<span class="pc" id="L47">		private final Map&lt;WeightsImpl.Index&lt;?&gt;, WeightsImpl.ObjMapped&lt;V, ?&gt;&gt; verticesWeights = new IdentityHashMap&lt;&gt;();</span>
+<span class="pc" id="L48">		private final Map&lt;WeightsImpl.Index&lt;?&gt;, WeightsImpl.ObjMapped&lt;E, ?&gt;&gt; edgesWeights = new IdentityHashMap&lt;&gt;();</span>
 
-<span class="nc" id="L50">		Abstract(IndexGraphBuilder ibuilder) {</span>
-<span class="nc" id="L51">			this.ibuilder = ibuilder;</span>
-<span class="nc" id="L52">			vIdToIndex = new Object2IntOpenHashMap&lt;&gt;();</span>
-<span class="nc" id="L53">			vIdToIndex.defaultReturnValue(-1);</span>
-<span class="nc" id="L54">			vIndexToId = new ObjectArrayList&lt;&gt;();</span>
-<span class="nc" id="L55">			vertices = ObjectSets.unmodifiable(vIdToIndex.keySet());</span>
-<span class="nc" id="L56">			eIdToIndex = new Object2IntOpenHashMap&lt;&gt;();</span>
-<span class="nc" id="L57">			eIdToIndex.defaultReturnValue(-1);</span>
-<span class="nc" id="L58">			eIndexToId = new ObjectArrayList&lt;&gt;();</span>
-<span class="nc" id="L59">			edges = ObjectSets.unmodifiable(eIdToIndex.keySet());</span>
-<span class="nc" id="L60">			viMap = new IndexIdMapImpl&lt;&gt;(vIdToIndex, vIndexToId, false);</span>
-<span class="nc" id="L61">			eiMap = new IndexIdMapImpl&lt;&gt;(eIdToIndex, eIndexToId, true);</span>
-<span class="nc" id="L62">		}</span>
+<span class="fc" id="L50">		Abstract(IndexGraphBuilder ibuilder) {</span>
+<span class="pc bnc" id="L51" title="All 2 branches missed.">			assert ibuilder.vertices().isEmpty();</span>
+<span class="pc bnc" id="L52" title="All 2 branches missed.">			assert ibuilder.edges().isEmpty();</span>
+<span class="fc" id="L53">			this.ibuilder = ibuilder;</span>
+<span class="fc" id="L54">			vIdToIndex = new Object2IntOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L55">			vIdToIndex.defaultReturnValue(-1);</span>
+<span class="fc" id="L56">			vIndexToId = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L57">			vertices = ObjectSets.unmodifiable(vIdToIndex.keySet());</span>
+<span class="fc" id="L58">			eIdToIndex = new Object2IntOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L59">			eIdToIndex.defaultReturnValue(-1);</span>
+<span class="fc" id="L60">			eIndexToId = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L61">			edges = ObjectSets.unmodifiable(eIdToIndex.keySet());</span>
+<span class="fc" id="L62">			viMap = new IndexIdMapImpl&lt;&gt;(vIdToIndex, vIndexToId, false);</span>
+<span class="fc" id="L63">			eiMap = new IndexIdMapImpl&lt;&gt;(eIdToIndex, eIndexToId, true);</span>
+<span class="fc" id="L64">		}</span>
 
-<span class="nc" id="L64">		Abstract(Graph&lt;V, E&gt; g, boolean copyWeights) {</span>
-<span class="nc" id="L65">			final int n = g.vertices().size();</span>
-<span class="nc" id="L66">			final int m = g.edges().size();</span>
-<span class="nc" id="L67">			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);</span>
-<span class="nc" id="L68">			vIdToIndex = new Object2IntOpenHashMap&lt;&gt;(n);</span>
-<span class="nc" id="L69">			vIdToIndex.defaultReturnValue(-1);</span>
-<span class="nc" id="L70">			vIndexToId = new ObjectArrayList&lt;&gt;(n);</span>
-<span class="nc" id="L71">			vertices = ObjectSets.unmodifiable(vIdToIndex.keySet());</span>
-<span class="nc" id="L72">			eIdToIndex = new Object2IntOpenHashMap&lt;&gt;(m);</span>
-<span class="nc" id="L73">			eIdToIndex.defaultReturnValue(-1);</span>
-<span class="nc" id="L74">			eIndexToId = new ObjectArrayList&lt;&gt;(m);</span>
-<span class="nc" id="L75">			edges = ObjectSets.unmodifiable(eIdToIndex.keySet());</span>
-<span class="nc" id="L76">			viMap = new IndexIdMapImpl&lt;&gt;(vIdToIndex, vIndexToId, false);</span>
-<span class="nc" id="L77">			eiMap = new IndexIdMapImpl&lt;&gt;(eIdToIndex, eIndexToId, true);</span>
+<span class="nc" id="L66">		Abstract(Graph&lt;V, E&gt; g, boolean copyWeights) {</span>
+<span class="nc" id="L67">			final int n = g.vertices().size();</span>
+<span class="nc" id="L68">			final int m = g.edges().size();</span>
+<span class="nc" id="L69">			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);</span>
+<span class="nc" id="L70">			vIdToIndex = new Object2IntOpenHashMap&lt;&gt;(n);</span>
+<span class="nc" id="L71">			vIdToIndex.defaultReturnValue(-1);</span>
+<span class="nc" id="L72">			vIndexToId = new ObjectArrayList&lt;&gt;(n);</span>
+<span class="nc" id="L73">			vertices = ObjectSets.unmodifiable(vIdToIndex.keySet());</span>
+<span class="nc" id="L74">			eIdToIndex = new Object2IntOpenHashMap&lt;&gt;(m);</span>
+<span class="nc" id="L75">			eIdToIndex.defaultReturnValue(-1);</span>
+<span class="nc" id="L76">			eIndexToId = new ObjectArrayList&lt;&gt;(m);</span>
+<span class="nc" id="L77">			edges = ObjectSets.unmodifiable(eIdToIndex.keySet());</span>
+<span class="nc" id="L78">			viMap = new IndexIdMapImpl&lt;&gt;(vIdToIndex, vIndexToId, false);</span>
+<span class="nc" id="L79">			eiMap = new IndexIdMapImpl&lt;&gt;(eIdToIndex, eIndexToId, true);</span>
 
-<span class="nc" id="L79">			IndexIdMap&lt;V&gt; gViMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L80">			IndexIdMap&lt;E&gt; gEiMap = g.indexGraphEdgesMap();</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">			for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
-<span class="nc" id="L82">				V v = gViMap.indexToId(vIdx);</span>
-<span class="nc" id="L83">				vIndexToId.add(v);</span>
-<span class="nc" id="L84">				vIdToIndex.put(v, vIdx);</span>
+<span class="nc" id="L81">			IndexIdMap&lt;V&gt; gViMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L82">			IndexIdMap&lt;E&gt; gEiMap = g.indexGraphEdgesMap();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">			for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
+<span class="nc" id="L84">				V v = gViMap.indexToId(vIdx);</span>
+<span class="nc" id="L85">				vIndexToId.add(v);</span>
+<span class="nc" id="L86">				vIdToIndex.put(v, vIdx);</span>
 			}
-<span class="nc bnc" id="L86" title="All 2 branches missed.">			for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
-<span class="nc" id="L87">				E e = gEiMap.indexToId(eIdx);</span>
-<span class="nc" id="L88">				eIndexToId.add(e);</span>
-<span class="nc" id="L89">				eIdToIndex.put(e, eIdx);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">			for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
+<span class="nc" id="L89">				E e = gEiMap.indexToId(eIdx);</span>
+<span class="nc" id="L90">				eIndexToId.add(e);</span>
+<span class="nc" id="L91">				eIdToIndex.put(e, eIdx);</span>
 			}
-<span class="nc" id="L91">		}</span>
+<span class="nc" id="L93">		}</span>
 
 		@Override
 		public Set&lt;V&gt; vertices() {
-<span class="nc" id="L95">			return vertices;</span>
+<span class="nc" id="L97">			return vertices;</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="nc" id="L100">			return edges;</span>
+<span class="fc" id="L102">			return edges;</span>
 		}
 
 		@Override
 		public void addVertex(V vertex) {
-<span class="nc" id="L105">			int vIndex = ibuilder.addVertex();</span>
-<span class="nc" id="L106">			V vId = vertex;</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">			assert vIndex == vIndexToId.size();</span>
-<span class="nc" id="L108">			vIndexToId.add(vId);</span>
-<span class="nc" id="L109">			int oldVal = vIdToIndex.put(vId, vIndex);</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">			if (oldVal != vIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L111">				throw new IllegalArgumentException(&quot;duplicate vertex: &quot; + vId);</span>
-<span class="nc" id="L112">		}</span>
+<span class="fc" id="L107">			int vIndex = ibuilder.addVertex();</span>
+<span class="fc" id="L108">			V vId = vertex;</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">			assert vIndex == vIndexToId.size();</span>
+<span class="fc" id="L110">			vIndexToId.add(vId);</span>
+<span class="fc" id="L111">			int oldVal = vIdToIndex.put(vId, vIndex);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (oldVal != vIdToIndex.defaultReturnValue())</span>
+<span class="nc" id="L113">				throw new IllegalArgumentException(&quot;duplicate vertex: &quot; + vId);</span>
+<span class="fc" id="L114">		}</span>
 
 		@Override
 		public void addEdge(V source, V target, E edge) {
-<span class="nc" id="L116">			int sourceIdx = vIdToIndex.getInt(source);</span>
-<span class="nc" id="L117">			int targetIdx = vIdToIndex.getInt(target);</span>
-<span class="nc bnc" id="L118" title="All 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L119">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + target);</span>
-<span class="nc bnc" id="L120" title="All 2 branches missed.">			if (sourceIdx == vIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L121">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + source);</span>
+<span class="fc" id="L118">			int sourceIdx = vIdToIndex.getInt(source);</span>
+<span class="fc" id="L119">			int targetIdx = vIdToIndex.getInt(target);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
+<span class="nc" id="L121">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + target);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			if (sourceIdx == vIdToIndex.defaultReturnValue())</span>
+<span class="nc" id="L123">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + source);</span>
 
-<span class="nc" id="L123">			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);</span>
-<span class="nc" id="L124">			E eId = edge;</span>
-<span class="nc bnc" id="L125" title="All 2 branches missed.">			assert eIndex == eIndexToId.size();</span>
-<span class="nc" id="L126">			eIndexToId.add(eId);</span>
-<span class="nc" id="L127">			int oldVal = eIdToIndex.put(eId, eIndex);</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">			if (oldVal != eIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L129">				throw new IllegalArgumentException(&quot;duplicate edge: &quot; + edge);</span>
-<span class="nc" id="L130">		}</span>
+<span class="fc" id="L125">			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);</span>
+<span class="fc" id="L126">			E eId = edge;</span>
+<span class="pc bnc" id="L127" title="All 2 branches missed.">			assert eIndex == eIndexToId.size();</span>
+<span class="fc" id="L128">			eIndexToId.add(eId);</span>
+<span class="fc" id="L129">			int oldVal = eIdToIndex.put(eId, eIndex);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (oldVal != eIdToIndex.defaultReturnValue())</span>
+<span class="nc" id="L131">				throw new IllegalArgumentException(&quot;duplicate edge: &quot; + edge);</span>
+<span class="fc" id="L132">		}</span>
 
 		@Override
 		public void expectedVerticesNum(int verticesNum) {
-<span class="nc" id="L134">			ibuilder.expectedVerticesNum(verticesNum);</span>
-<span class="nc" id="L135">			vIdToIndex.ensureCapacity(verticesNum);</span>
-<span class="nc" id="L136">			vIndexToId.ensureCapacity(verticesNum);</span>
-<span class="nc" id="L137">		}</span>
+<span class="fc" id="L136">			ibuilder.expectedVerticesNum(verticesNum);</span>
+<span class="fc" id="L137">			vIdToIndex.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L138">			vIndexToId.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L139">		}</span>
 
 		@Override
 		public void expectedEdgesNum(int edgesNum) {
-<span class="nc" id="L141">			ibuilder.expectedEdgesNum(edgesNum);</span>
-<span class="nc" id="L142">			eIdToIndex.ensureCapacity(edgesNum);</span>
-<span class="nc" id="L143">			eIndexToId.ensureCapacity(edgesNum);</span>
-<span class="nc" id="L144">		}</span>
+<span class="fc" id="L143">			ibuilder.expectedEdgesNum(edgesNum);</span>
+<span class="fc" id="L144">			eIdToIndex.ensureCapacity(edgesNum);</span>
+<span class="fc" id="L145">			eIndexToId.ensureCapacity(edgesNum);</span>
+<span class="fc" id="L146">		}</span>
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="nc" id="L149">			WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
-<span class="nc bnc" id="L150" title="All 2 branches missed.">			if (indexWeights == null)</span>
-<span class="nc" id="L151">				return null;</span>
-<span class="nc" id="L152">			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
-<span class="nc" id="L153">					iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, viMap));</span>
+<span class="fc" id="L151">			WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">			if (indexWeights == null)</span>
+<span class="nc" id="L153">				return null;</span>
+<span class="fc" id="L154">			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
+<span class="fc" id="L155">					iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, viMap));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L159">			ibuilder.addVerticesWeights(key, type, defVal);</span>
-<span class="nc" id="L160">			return getVerticesWeights(key);</span>
+<span class="fc" id="L161">			ibuilder.addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L162">			return getVerticesWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="nc" id="L165">			return ibuilder.getVerticesWeightsKeys();</span>
+<span class="nc" id="L167">			return ibuilder.getVerticesWeightsKeys();</span>
 		}
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="nc" id="L171">			WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
-<span class="nc bnc" id="L172" title="All 2 branches missed.">			if (indexWeights == null)</span>
-<span class="nc" id="L173">				return null;</span>
-<span class="nc" id="L174">			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
-<span class="nc" id="L175">					iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, eiMap));</span>
+<span class="fc" id="L173">			WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">			if (indexWeights == null)</span>
+<span class="nc" id="L175">				return null;</span>
+<span class="fc" id="L176">			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
+<span class="fc" id="L177">					iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, eiMap));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L181">			ibuilder.addEdgesWeights(key, type, defVal);</span>
-<span class="nc" id="L182">			return getEdgesWeights(key);</span>
+<span class="fc" id="L183">			ibuilder.addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L184">			return getEdgesWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L187">			return ibuilder.getEdgesWeightsKeys();</span>
+<span class="nc" id="L189">			return ibuilder.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L192">			ibuilder.clear();</span>
-<span class="nc" id="L193">			vIdToIndex.clear();</span>
-<span class="nc" id="L194">			vIndexToId.clear();</span>
-<span class="nc" id="L195">			eIdToIndex.clear();</span>
-<span class="nc" id="L196">			eIndexToId.clear();</span>
-<span class="nc" id="L197">		}</span>
+<span class="nc" id="L194">			ibuilder.clear();</span>
+<span class="nc" id="L195">			vIdToIndex.clear();</span>
+<span class="nc" id="L196">			vIndexToId.clear();</span>
+<span class="nc" id="L197">			eIdToIndex.clear();</span>
+<span class="nc" id="L198">			eIndexToId.clear();</span>
+<span class="nc" id="L199">		}</span>
 
 		private static class IndexIdMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {
 			private final Object2IntMap&lt;K&gt; idToIndex;
 			private final ObjectList&lt;K&gt; indexToId;
 			private final boolean isEdges;
 
-<span class="nc" id="L204">			IndexIdMapImpl(Object2IntMap&lt;K&gt; idToIndex, ObjectList&lt;K&gt; indexToId, boolean isEdges) {</span>
-<span class="nc" id="L205">				this.idToIndex = idToIndex;</span>
-<span class="nc" id="L206">				this.indexToId = indexToId;</span>
-<span class="nc" id="L207">				this.isEdges = isEdges;</span>
-<span class="nc" id="L208">			}</span>
+<span class="fc" id="L206">			IndexIdMapImpl(Object2IntMap&lt;K&gt; idToIndex, ObjectList&lt;K&gt; indexToId, boolean isEdges) {</span>
+<span class="fc" id="L207">				this.idToIndex = idToIndex;</span>
+<span class="fc" id="L208">				this.indexToId = indexToId;</span>
+<span class="fc" id="L209">				this.isEdges = isEdges;</span>
+<span class="fc" id="L210">			}</span>
 
 			@Override
 			public K indexToId(int index) {
-<span class="nc" id="L212">				return indexToId.get(index);</span>
+<span class="fc" id="L214">				return indexToId.get(index);</span>
 			}
 
 			@Override
 			public int idToIndex(K id) {
-<span class="nc" id="L217">				int idx = idToIndex.getInt(id);</span>
-<span class="nc bnc" id="L218" title="All 2 branches missed.">				if (idx &lt; 0)</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">					throw new IndexOutOfBoundsException(&quot;No such &quot; + (isEdges ? &quot;edge&quot; : &quot;vertex&quot;) + &quot;: &quot; + id);</span>
-<span class="nc" id="L220">				return idx;</span>
+<span class="fc" id="L219">				int idx = idToIndex.getInt(id);</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">				if (idx &lt; 0)</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">					throw new IndexOutOfBoundsException(&quot;No such &quot; + (isEdges ? &quot;edge&quot; : &quot;vertex&quot;) + &quot;: &quot; + id);</span>
+<span class="fc" id="L222">				return idx;</span>
 			}
 		}
 
 		static &lt;K&gt; IndexIdMap&lt;K&gt; reIndexedIdMap(IndexIdMap&lt;K&gt; iMapOrig, IndexGraphBuilder.ReIndexingMap indexingMap) {
-<span class="nc" id="L225">			return new IndexIdMap&lt;&gt;() {</span>
+<span class="fc" id="L227">			return new IndexIdMap&lt;&gt;() {</span>
 
 				@Override
 				public K indexToId(int index) {
-<span class="nc" id="L229">					return iMapOrig.indexToId(indexingMap.reIndexedToOrig(index));</span>
+<span class="fc" id="L231">					return iMapOrig.indexToId(indexingMap.reIndexedToOrig(index));</span>
 				}
 
 				@Override
 				public int idToIndex(K id) {
-<span class="nc" id="L234">					return indexingMap.origToReIndexed(iMapOrig.idToIndex(id));</span>
+<span class="nc" id="L236">					return indexingMap.origToReIndexed(iMapOrig.idToIndex(id));</span>
 				}
 			};
 		}
@@ -239,69 +241,77 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 	static class Undirected&lt;V, E&gt; extends GraphBuilderImpl.Abstract&lt;V, E&gt; {
 
+		Undirected(IndexGraphBuilder indexBuilder) {
+<span class="fc" id="L245">			super(indexBuilder);</span>
+<span class="fc" id="L246">		}</span>
+
 		Undirected() {
-<span class="nc" id="L243">			super(IndexGraphBuilder.newUndirected());</span>
-<span class="nc" id="L244">		}</span>
+<span class="fc" id="L249">			this(IndexGraphBuilder.newUndirected());</span>
+<span class="fc" id="L250">		}</span>
 
 		Undirected(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L247">			super(g, copyWeights);</span>
-<span class="nc" id="L248">			Assertions.Graphs.onlyUndirected(g);</span>
-<span class="nc" id="L249">		}</span>
+<span class="nc" id="L253">			super(g, copyWeights);</span>
+<span class="nc" id="L254">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="nc" id="L255">		}</span>
 
 		@Override
 		public Graph&lt;V, E&gt; build() {
-<span class="nc" id="L253">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);</span>
-<span class="nc" id="L254">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L255">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L256">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc bnc" id="L257" title="All 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
-<span class="nc bnc" id="L258" title="All 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
-<span class="nc" id="L259">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L259">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);</span>
+<span class="fc" id="L260">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L261">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L262">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
+<span class="fc" id="L265">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; buildMutable() {
-<span class="nc" id="L264">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);</span>
-<span class="nc" id="L265">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L266">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L267">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc bnc" id="L268" title="All 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
-<span class="nc bnc" id="L269" title="All 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
-<span class="nc" id="L270">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L270">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);</span>
+<span class="fc" id="L271">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L272">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L273">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
+<span class="fc" id="L276">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
 		}
 	}
 
 	static class Directed&lt;V, E&gt; extends GraphBuilderImpl.Abstract&lt;V, E&gt; {
 
+		Directed(IndexGraphBuilder indexBuilder) {
+<span class="fc" id="L283">			super(indexBuilder);</span>
+<span class="fc" id="L284">		}</span>
+
 		Directed() {
-<span class="nc" id="L277">			super(IndexGraphBuilder.newDirected());</span>
-<span class="nc" id="L278">		}</span>
+<span class="fc" id="L287">			this(IndexGraphBuilder.newDirected());</span>
+<span class="fc" id="L288">		}</span>
 
 		Directed(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L281">			super(g, copyWeights);</span>
-<span class="nc" id="L282">			Assertions.Graphs.onlyDirected(g);</span>
-<span class="nc" id="L283">		}</span>
+<span class="nc" id="L291">			super(g, copyWeights);</span>
+<span class="nc" id="L292">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="nc" id="L293">		}</span>
 
 		@Override
 		public Graph&lt;V, E&gt; build() {
-<span class="nc" id="L287">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);</span>
-<span class="nc" id="L288">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L289">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L290">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc bnc" id="L291" title="All 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
-<span class="nc bnc" id="L292" title="All 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
-<span class="nc" id="L293">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L297">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);</span>
+<span class="fc" id="L298">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L299">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L300">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
+<span class="fc" id="L303">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; buildMutable() {
-<span class="nc" id="L298">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);</span>
-<span class="nc" id="L299">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L300">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L301">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc bnc" id="L302" title="All 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
-<span class="nc bnc" id="L303" title="All 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
-<span class="nc" id="L304">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L308">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);</span>
+<span class="fc" id="L309">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L310">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L311">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">			IndexIdMap&lt;V&gt; viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">			IndexIdMap&lt;E&gt; eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());</span>
+<span class="fc" id="L314">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
 		}
 	}
 

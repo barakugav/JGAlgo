@@ -30,119 +30,119 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; BiConnectedComponentsAlgo.Result&lt;V, E&gt; findBiConnectedComponents(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
 <span class="nc" id="L34">			return (BiConnectedComponentsAlgo.Result&lt;V, E&gt;) findBiConnectedComponents((IndexGraph) g);</span>
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L36">			IntGraph g0 = (IntGraph) g;</span>
-<span class="fc" id="L37">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L38">			IndexIntIdMap viMap = g0.indexGraphVerticesMap();</span>
-<span class="fc" id="L39">			IndexIntIdMap eiMap = g0.indexGraphEdgesMap();</span>
-<span class="fc" id="L40">			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);</span>
-<span class="fc" id="L41">			return (BiConnectedComponentsAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult(indexResult, viMap, eiMap);</span>
-		} else {
-<span class="nc" id="L43">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L44">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L45">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L46">			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);</span>
-<span class="nc" id="L47">			return new ObjResultFromIndexResult&lt;&gt;(indexResult, viMap, eiMap);</span>
-		}
+
+<span class="fc" id="L36">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L37">		BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);</span>
+<span class="fc" id="L38">		return resultFromIndexResult(g, indexResult);</span>
 	}
 
 	abstract BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g);
 
 	private static class IntResultFromIndexResult implements BiConnectedComponentsAlgo.IResult {
 
-		private final BiConnectedComponentsAlgo.IResult res;
+		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L59">		IntResultFromIndexResult(BiConnectedComponentsAlgo.IResult res, IndexIntIdMap viMap, IndexIntIdMap eiMap) {</span>
-<span class="fc" id="L60">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L61">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L62">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L63">		}</span>
+<span class="fc" id="L49">		IntResultFromIndexResult(IntGraph g, BiConnectedComponentsAlgo.IResult indexRes) {</span>
+<span class="fc" id="L50">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L51">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L52">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L53">		}</span>
 
 		@Override
 		public IntSet getVertexBiCcs(int vertex) {
-<span class="fc" id="L67">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L57">			return indexRes.getVertexBiCcs(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public int getNumberOfBiCcs() {
-<span class="fc" id="L72">			return res.getNumberOfBiCcs();</span>
+<span class="fc" id="L62">			return indexRes.getNumberOfBiCcs();</span>
 		}
 
 		@Override
 		public IntSet getBiCcVertices(int biccIdx) {
-<span class="fc" id="L77">			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);</span>
+<span class="fc" id="L67">			return IndexIdMaps.indexToIdSet(indexRes.getBiCcVertices(biccIdx), viMap);</span>
 		}
 
 		@Override
 		public IntSet getBiCcEdges(int biccIdx) {
-<span class="fc" id="L82">			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);</span>
+<span class="fc" id="L72">			return IndexIdMaps.indexToIdSet(indexRes.getBiCcEdges(biccIdx), eiMap);</span>
 		}
 
 		@Override
 		public boolean isCutVertex(int vertex) {
-<span class="fc" id="L87">			return res.isCutVertex(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L77">			return indexRes.isCutVertex(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IntSet getCutVertices() {
-<span class="fc" id="L92">			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);</span>
+<span class="fc" id="L82">			return IndexIdMaps.indexToIdSet(indexRes.getCutVertices(), viMap);</span>
 		}
 
 		@Override
 		public IntGraph getBlockGraph() {
-<span class="fc" id="L97">			return res.getBlockGraph();</span>
+<span class="fc" id="L87">			return indexRes.getBlockGraph();</span>
 		}
 	}
 
 	private static class ObjResultFromIndexResult&lt;V, E&gt; implements BiConnectedComponentsAlgo.Result&lt;V, E&gt; {
 
-		private final BiConnectedComponentsAlgo.IResult res;
+		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="nc" id="L107">		ObjResultFromIndexResult(BiConnectedComponentsAlgo.IResult res, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap) {</span>
-<span class="nc" id="L108">			this.res = Objects.requireNonNull(res);</span>
-<span class="nc" id="L109">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L110">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="nc" id="L111">		}</span>
+<span class="fc" id="L97">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, BiConnectedComponentsAlgo.IResult indexRes) {</span>
+<span class="fc" id="L98">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L99">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L100">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L101">		}</span>
 
 		@Override
 		public IntSet getVertexBiCcs(V vertex) {
-<span class="nc" id="L115">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L105">			return indexRes.getVertexBiCcs(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public int getNumberOfBiCcs() {
-<span class="nc" id="L120">			return res.getNumberOfBiCcs();</span>
+<span class="fc" id="L110">			return indexRes.getNumberOfBiCcs();</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; getBiCcVertices(int biccIdx) {
-<span class="nc" id="L125">			return IndexIdMaps.indexToIdSet(res.getBiCcVertices(biccIdx), viMap);</span>
+<span class="fc" id="L115">			return IndexIdMaps.indexToIdSet(indexRes.getBiCcVertices(biccIdx), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; getBiCcEdges(int biccIdx) {
-<span class="nc" id="L130">			return IndexIdMaps.indexToIdSet(res.getBiCcEdges(biccIdx), eiMap);</span>
+<span class="fc" id="L120">			return IndexIdMaps.indexToIdSet(indexRes.getBiCcEdges(biccIdx), eiMap);</span>
 		}
 
 		@Override
 		public boolean isCutVertex(V vertex) {
-<span class="nc" id="L135">			return res.isCutVertex(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L125">			return indexRes.isCutVertex(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; getCutVertices() {
-<span class="nc" id="L140">			return IndexIdMaps.indexToIdSet(res.getCutVertices(), viMap);</span>
+<span class="fc" id="L130">			return IndexIdMaps.indexToIdSet(indexRes.getCutVertices(), viMap);</span>
 		}
 
 		@Override
 		public IntGraph getBlockGraph() {
-<span class="nc" id="L145">			return res.getBlockGraph();</span>
+<span class="fc" id="L135">			return indexRes.getBlockGraph();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; BiConnectedComponentsAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			BiConnectedComponentsAlgo.IResult indexRes) {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L143">			return (BiConnectedComponentsAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexRes);</span>
+		} else {
+<span class="fc" id="L145">			return new ObjResultFromIndexResult&lt;&gt;(g, indexRes);</span>
 		}
 	}
 

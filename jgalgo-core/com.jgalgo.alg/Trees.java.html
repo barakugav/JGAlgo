@@ -24,10 +24,8 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -56,8 +54,8 @@ public class Trees {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static &lt;V, E&gt; boolean isTree(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L59">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());</span>
+<span class="fc" id="L57">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());</span>
 	}
 
 	/**
@@ -76,7 +74,7 @@ public class Trees {
 	 * @return      {@code true} if the graph is a tree rooted at {@code root}, else {@code false}.
 	 */
 	public static &lt;V, E&gt; boolean isTree(Graph&lt;V, E&gt; g, V root) {
-<span class="fc" id="L79">		return isForest(g, ObjectIterators.singleton(root));</span>
+<span class="fc" id="L77">		return isForest(g, ObjectIterators.singleton(root));</span>
 	}
 
 	/**
@@ -92,7 +90,7 @@ public class Trees {
 	 * @return     {@code true} if the graph is a forest, else {@code false}
 	 */
 	public static &lt;V, E&gt; boolean isForest(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L95">		return isForest(g, g.vertices().iterator(), true);</span>
+<span class="fc" id="L93">		return isForest(g, g.vertices().iterator(), true);</span>
 	}
 
 	/**
@@ -111,72 +109,66 @@ public class Trees {
 	 * @return       true if the graph is a forest rooted at the given roots.
 	 */
 	private static &lt;V, E&gt; boolean isForest(Graph&lt;V, E&gt; g, Iterator&lt;V&gt; roots) {
-<span class="fc" id="L114">		return isForest(g, roots, false);</span>
+<span class="fc" id="L112">		return isForest(g, roots, false);</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; boolean isForest(Graph&lt;V, E&gt; g, Iterator&lt;V&gt; roots, boolean allowVisitedRoot) {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L120">			IntIterator roots0 = IntContainers.toIntIterator((Iterator&lt;Integer&gt;) roots);</span>
-<span class="fc" id="L121">			return isForest((IndexGraph) g, roots0, allowVisitedRoot);</span>
-
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L124">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L125">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L126">			IntIterator roots0 = IndexIdMaps.idToIndexIterator((Iterator&lt;Integer&gt;) roots, viMap);</span>
-<span class="fc" id="L127">			return isForest(iGraph, roots0, allowVisitedRoot);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L118">			IntIterator roots0 = IntAdapters.asIntIterator((Iterator&lt;Integer&gt;) roots);</span>
+<span class="fc" id="L119">			return isForest((IndexGraph) g, roots0, allowVisitedRoot);</span>
 
 		} else {
-<span class="nc" id="L130">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L131">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L132">			IntIterator roots0 = IndexIdMaps.idToIndexIterator(roots, viMap);</span>
-<span class="nc" id="L133">			return isForest(iGraph, roots0, allowVisitedRoot);</span>
+<span class="fc" id="L122">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L123">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L124">			IntIterator roots0 = IndexIdMaps.idToIndexIterator(roots, viMap);</span>
+<span class="fc" id="L125">			return isForest(iGraph, roots0, allowVisitedRoot);</span>
 		}
 	}
 
 	private static boolean isForest(IndexGraph g, IntIterator roots, boolean allowVisitedRoot) {
-<span class="fc" id="L138">		int n = g.vertices().size();</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L140">			return true;</span>
-<span class="fc" id="L141">		boolean directed = g.isDirected();</span>
+<span class="fc" id="L130">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L132">			return true;</span>
+<span class="fc" id="L133">		boolean directed = g.isDirected();</span>
 
-<span class="fc" id="L143">		BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L144">		int[] parent = new int[n];</span>
-<span class="fc" id="L145">		Arrays.fill(parent, -1);</span>
+<span class="fc" id="L135">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L136">		int[] parent = new int[n];</span>
+<span class="fc" id="L137">		Arrays.fill(parent, -1);</span>
 
-<span class="fc" id="L147">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L148">		int visitedCount = 0;</span>
+<span class="fc" id="L139">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L140">		int visitedCount = 0;</span>
 
-<span class="fc bfc" id="L150" title="All 2 branches covered.">		while (roots.hasNext()) {</span>
-<span class="fc" id="L151">			int root = roots.nextInt();</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (visited.get(root)) {</span>
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
-<span class="fc" id="L154">					continue;</span>
-<span class="nc" id="L155">				return false;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		while (roots.hasNext()) {</span>
+<span class="fc" id="L143">			int root = roots.nextInt();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (visited.get(root)) {</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
+<span class="fc" id="L146">					continue;</span>
+<span class="nc" id="L147">				return false;</span>
 			}
 
-<span class="fc" id="L158">			stack.push(root);</span>
-<span class="fc" id="L159">			visited.set(root);</span>
+<span class="fc" id="L150">			stack.push(root);</span>
+<span class="fc" id="L151">			visited.set(root);</span>
 
-<span class="fc bfc" id="L161" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L162">				int u = stack.popInt();</span>
-<span class="fc" id="L163">				visitedCount++;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L154">				int u = stack.popInt();</span>
+<span class="fc" id="L155">				visitedCount++;</span>
 
-<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L166">					eit.nextInt();</span>
-<span class="fc" id="L167">					int v = eit.targetInt();</span>
-<span class="pc bpc" id="L168" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
-<span class="fc" id="L169">						continue;</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L171">						return false;</span>
-<span class="fc" id="L172">					visited.set(v);</span>
-<span class="fc" id="L173">					stack.push(v);</span>
-<span class="fc" id="L174">					parent[v] = u;</span>
-<span class="fc" id="L175">				}</span>
-<span class="fc" id="L176">			}</span>
-<span class="fc" id="L177">		}</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L158">					eit.nextInt();</span>
+<span class="fc" id="L159">					int v = eit.targetInt();</span>
+<span class="pc bpc" id="L160" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
+<span class="fc" id="L161">						continue;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L163">						return false;</span>
+<span class="fc" id="L164">					visited.set(v);</span>
+<span class="fc" id="L165">					stack.push(v);</span>
+<span class="fc" id="L166">					parent[v] = u;</span>
+<span class="fc" id="L167">				}</span>
+<span class="fc" id="L168">			}</span>
+<span class="fc" id="L169">		}</span>
 
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		return visitedCount == n;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		return visitedCount == n;</span>
 	}
 
 }

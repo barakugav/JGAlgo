@@ -31,19 +31,12 @@ import com.jgalgo.graph.IntGraph;
 <span class="fc" id="L31">			return (LowestCommonAncestorStatic.DataStructure&lt;V, E&gt;) preProcessTree((IndexGraph) tree,</span>
 <span class="fc" id="L32">					((Integer) root).intValue());</span>
 
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		} else if (tree instanceof IntGraph) {</span>
-<span class="fc" id="L35">			IndexGraph iGraph = tree.indexGraph();</span>
-<span class="fc" id="L36">			IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();</span>
-<span class="fc" id="L37">			int iRoot = viMap.idToIndex(((Integer) root).intValue());</span>
-<span class="fc" id="L38">			LowestCommonAncestorStatic.IDataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
-<span class="fc" id="L39">			return (LowestCommonAncestorStatic.DataStructure&lt;V, E&gt;) new IntDsFromIndexDs(indexResult, viMap);</span>
-
 		} else {
-<span class="nc" id="L42">			IndexGraph iGraph = tree.indexGraph();</span>
-<span class="nc" id="L43">			IndexIdMap&lt;V&gt; viMap = tree.indexGraphVerticesMap();</span>
-<span class="nc" id="L44">			int iRoot = viMap.idToIndex(root);</span>
-<span class="nc" id="L45">			LowestCommonAncestorStatic.IDataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
-<span class="nc" id="L46">			return new ObjDsFromIndexDs&lt;&gt;(indexResult, viMap);</span>
+<span class="fc" id="L35">			IndexGraph iGraph = tree.indexGraph();</span>
+<span class="fc" id="L36">			IndexIdMap&lt;V&gt; viMap = tree.indexGraphVerticesMap();</span>
+<span class="fc" id="L37">			int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L38">			LowestCommonAncestorStatic.IDataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
+<span class="fc" id="L39">			return dsFromIndexDs(tree, indexResult);</span>
 		}
 	}
 
@@ -54,14 +47,14 @@ import com.jgalgo.graph.IntGraph;
 		private final LowestCommonAncestorStatic.IDataStructure indexDs;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L57">		IntDsFromIndexDs(LowestCommonAncestorStatic.IDataStructure indexDs, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L58">			this.indexDs = Objects.requireNonNull(indexDs);</span>
-<span class="fc" id="L59">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L60">		}</span>
+<span class="fc" id="L50">		IntDsFromIndexDs(IntGraph g, LowestCommonAncestorStatic.IDataStructure indexDs) {</span>
+<span class="fc" id="L51">			this.indexDs = Objects.requireNonNull(indexDs);</span>
+<span class="fc" id="L52">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L53">		}</span>
 
 		@Override
 		public int findLca(int u, int v) {
-<span class="fc" id="L64">			return viMap.indexToIdInt(indexDs.findLca(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
+<span class="fc" id="L57">			return viMap.indexToIdInt(indexDs.findLca(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
 		}
 	}
 
@@ -70,14 +63,25 @@ import com.jgalgo.graph.IntGraph;
 		private final LowestCommonAncestorStatic.IDataStructure indexDs;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L73">		ObjDsFromIndexDs(LowestCommonAncestorStatic.IDataStructure indexDs, IndexIdMap&lt;V&gt; viMap) {</span>
-<span class="nc" id="L74">			this.indexDs = Objects.requireNonNull(indexDs);</span>
-<span class="nc" id="L75">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L76">		}</span>
+<span class="fc" id="L66">		ObjDsFromIndexDs(Graph&lt;V, E&gt; g, LowestCommonAncestorStatic.IDataStructure indexDs) {</span>
+<span class="fc" id="L67">			this.indexDs = Objects.requireNonNull(indexDs);</span>
+<span class="fc" id="L68">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L69">		}</span>
 
 		@Override
 		public V findLca(V u, V v) {
-<span class="nc" id="L80">			return viMap.indexToId(indexDs.findLca(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
+<span class="fc" id="L73">			return viMap.indexToId(indexDs.findLca(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; LowestCommonAncestorStatic.DataStructure&lt;V, E&gt; dsFromIndexDs(Graph&lt;V, E&gt; g,
+			LowestCommonAncestorStatic.IDataStructure indexDs) {
+<span class="pc bnc" id="L80" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L82">			return (LowestCommonAncestorStatic.DataStructure&lt;V, E&gt;) new IntDsFromIndexDs((IntGraph) g, indexDs);</span>
+		} else {
+<span class="fc" id="L84">			return new ObjDsFromIndexDs&lt;&gt;(g, indexDs);</span>
 		}
 	}
 

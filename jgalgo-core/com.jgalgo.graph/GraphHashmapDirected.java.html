@@ -52,327 +52,346 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 <span class="fc" id="L53">			edgesOutContainer = g0.edgesOutContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
 <span class="fc" id="L54">			edgesInContainer = g0.edgesInContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L55">			addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L56">			addInternalVerticesContainer(edgesInContainer);</span>
 
-<span class="fc" id="L56">			addInternalVerticesContainer(edgesOutContainer);</span>
-<span class="fc" id="L57">			addInternalVerticesContainer(edgesInContainer);</span>
-
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (!edgesOut[v].isEmpty()) {</span>
-<span class="fc" id="L61">					edgesOut[v] = new Int2IntOpenHashMap(edgesOut[v]);</span>
-<span class="fc" id="L62">					edgesOut[v].defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				if (!edgesOut[v].isEmpty()) {</span>
+<span class="fc" id="L60">					edgesOut[v] = new Int2IntOpenHashMap(edgesOut[v]);</span>
+<span class="fc" id="L61">					edgesOut[v].defaultReturnValue(-1);</span>
 				}
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				if (!edgesIn[v].isEmpty()) {</span>
-<span class="fc" id="L65">					edgesIn[v] = new Int2IntOpenHashMap(edgesIn[v]);</span>
-<span class="fc" id="L66">					edgesIn[v].defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">				if (!edgesIn[v].isEmpty()) {</span>
+<span class="fc" id="L64">					edgesIn[v] = new Int2IntOpenHashMap(edgesIn[v]);</span>
+<span class="fc" id="L65">					edgesIn[v].defaultReturnValue(-1);</span>
 				}
 			}
-<span class="fc" id="L69">		} else {</span>
-<span class="fc" id="L70">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="fc" id="L71">					EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="fc" id="L72">			edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="fc" id="L73">					EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L68">		} else {</span>
+<span class="fc" id="L69">			edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L70">					EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L71">			edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L72">					EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L73">			addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L74">			addInternalVerticesContainer(edgesInContainer);</span>
 
-<span class="fc" id="L75">			addInternalVerticesContainer(edgesOutContainer);</span>
-<span class="fc" id="L76">			addInternalVerticesContainer(edgesInContainer);</span>
-
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L80">					int e = eit.nextInt();</span>
-<span class="fc" id="L81">					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
-<span class="nc" id="L83">						throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + v + &quot;,idx=&quot; + eit.targetInt()</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L78">					int e = eit.nextInt();</span>
+<span class="fc" id="L79">					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
+<span class="nc" id="L81">						throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + v + &quot;,idx=&quot; + eit.targetInt()</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="fc" id="L85">				}</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L87">					int e = eit.nextInt();</span>
-<span class="fc" id="L88">					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.sourceInt(), e);</span>
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
-<span class="nc" id="L90">						throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + eit.sourceInt() + &quot;,idx=&quot; + v</span>
+<span class="fc" id="L83">				}</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L85">					int e = eit.nextInt();</span>
+<span class="fc" id="L86">					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.sourceInt(), e);</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">					if (oldVal != -1)</span>
+<span class="nc" id="L88">						throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + eit.sourceInt() + &quot;,idx=&quot; + v</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="fc" id="L92">				}</span>
+<span class="fc" id="L90">				}</span>
 			}
 		}
-<span class="fc" id="L95">	}</span>
+<span class="fc" id="L93">	}</span>
+
+	GraphHashmapDirected(IndexGraphBuilderImpl.Directed builder) {
+<span class="nc" id="L96">		super(Capabilities, builder);</span>
+<span class="nc" id="L97">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="nc" id="L98">				EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
+<span class="nc" id="L99">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="nc" id="L100">				EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+
+<span class="nc" id="L102">		addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="nc" id="L103">		addInternalVerticesContainer(edgesInContainer);</span>
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L106">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
+<span class="nc" id="L107">			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);</span>
+<span class="nc" id="L108">			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">			if (oldVal1 != -1)</span>
+<span class="nc" id="L110">				throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
+						+ &quot;) already exists. Parallel edges are not allowed.&quot;);
+<span class="nc bnc" id="L112" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+		}
+<span class="nc" id="L114">	}</span>
 
 	@Override
 	void removeVertexImpl(int vertex) {
-<span class="fc" id="L99">		super.removeVertexImpl(vertex);</span>
-<span class="fc" id="L100">		edgesOut[vertex].clear();</span>
-<span class="fc" id="L101">		edgesIn[vertex].clear();</span>
+<span class="fc" id="L118">		super.removeVertexImpl(vertex);</span>
+<span class="fc" id="L119">		edgesOut[vertex].clear();</span>
+<span class="fc" id="L120">		edgesIn[vertex].clear();</span>
 		// Reuse allocated edges arrays for v
 		// edgesOutContainer.clear(v);
 		// edgesInContainer.clear(v);
-<span class="fc" id="L105">	}</span>
+<span class="fc" id="L124">	}</span>
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="pc bnc" id="L109" title="All 2 branches missed.">		assert v1 != v2;</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">		assert v1 != v2;</span>
 
 		/* we handle self edges of v1,v2 and edges between v1 and v2 separately */
-<span class="fc" id="L112">		int v1v1 = edgesOut[v1].remove(v1);</span>
-<span class="fc" id="L113">		int v1v2 = edgesOut[v1].remove(v2);</span>
-<span class="fc" id="L114">		int v2v1 = edgesOut[v2].remove(v1);</span>
-<span class="fc" id="L115">		int v2v2 = edgesOut[v2].remove(v2);</span>
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
-<span class="nc" id="L117">			int oldVal = edgesIn[v1].remove(v1);</span>
-<span class="nc bnc" id="L118" title="All 2 branches missed.">			assert oldVal == v1v1;</span>
+<span class="fc" id="L131">		int v1v1 = edgesOut[v1].remove(v1);</span>
+<span class="fc" id="L132">		int v1v2 = edgesOut[v1].remove(v2);</span>
+<span class="fc" id="L133">		int v2v1 = edgesOut[v2].remove(v1);</span>
+<span class="fc" id="L134">		int v2v2 = edgesOut[v2].remove(v2);</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
+<span class="nc" id="L136">			int oldVal = edgesIn[v1].remove(v1);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">			assert oldVal == v1v1;</span>
 		}
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (v1v2 != -1) {</span>
-<span class="nc" id="L121">			int oldVal = edgesIn[v2].remove(v1);</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">			assert oldVal == v1v2;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">		if (v1v2 != -1) {</span>
+<span class="nc" id="L140">			int oldVal = edgesIn[v2].remove(v1);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">			assert oldVal == v1v2;</span>
 		}
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (v2v1 != -1) {</span>
-<span class="nc" id="L125">			int oldVal = edgesIn[v1].remove(v2);</span>
-<span class="nc bnc" id="L126" title="All 2 branches missed.">			assert oldVal == v2v1;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">		if (v2v1 != -1) {</span>
+<span class="nc" id="L144">			int oldVal = edgesIn[v1].remove(v2);</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">			assert oldVal == v2v1;</span>
 		}
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
-<span class="fc" id="L129">			int oldVal = edgesIn[v2].remove(v2);</span>
-<span class="pc bnc" id="L130" title="All 2 branches missed.">			assert oldVal == v2v2;</span>
-		}
-
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesOut[v1]); eit.hasNext();) {</span>
-<span class="nc" id="L134">			Int2IntMap.Entry entry = eit.next();</span>
-<span class="nc" id="L135">			int target = entry.getIntKey();</span>
-<span class="nc" id="L136">			int e = entry.getIntValue();</span>
-
-<span class="nc" id="L138">			replaceEdgeSource(e, v2);</span>
-<span class="nc" id="L139">			int oldVal1 = edgesIn[target].remove(v1);</span>
-<span class="nc" id="L140">			int oldVal2 = edgesIn[target].put(v2, e);</span>
-<span class="nc bnc" id="L141" title="All 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="nc bnc" id="L142" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-<span class="nc" id="L143">		}</span>
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesIn[v1]); eit.hasNext();) {</span>
-<span class="nc" id="L145">			Int2IntMap.Entry entry = eit.next();</span>
-<span class="nc" id="L146">			int source = entry.getIntKey();</span>
-<span class="nc" id="L147">			int e = entry.getIntValue();</span>
-
-<span class="nc" id="L149">			replaceEdgeTarget(e, v2);</span>
-<span class="nc" id="L150">			int oldVal1 = edgesOut[source].remove(v1);</span>
-<span class="nc" id="L151">			int oldVal2 = edgesOut[source].put(v2, e);</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-<span class="nc" id="L154">		}</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesOut[v2]); eit.hasNext();) {</span>
-<span class="fc" id="L156">			Int2IntMap.Entry entry = eit.next();</span>
-<span class="fc" id="L157">			int target = entry.getIntKey();</span>
-<span class="fc" id="L158">			int e = entry.getIntValue();</span>
-
-<span class="fc" id="L160">			replaceEdgeSource(e, v1);</span>
-<span class="fc" id="L161">			int oldVal1 = edgesIn[target].remove(v2);</span>
-<span class="fc" id="L162">			int oldVal2 = edgesIn[target].put(v1, e);</span>
-<span class="pc bnc" id="L163" title="All 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="pc bnc" id="L164" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-<span class="fc" id="L165">		}</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesIn[v2]); eit.hasNext();) {</span>
-<span class="fc" id="L167">			Int2IntMap.Entry entry = eit.next();</span>
-<span class="fc" id="L168">			int source = entry.getIntKey();</span>
-<span class="fc" id="L169">			int e = entry.getIntValue();</span>
-
-<span class="fc" id="L171">			replaceEdgeTarget(e, v1);</span>
-<span class="fc" id="L172">			int oldVal1 = edgesOut[source].remove(v2);</span>
-<span class="fc" id="L173">			int oldVal2 = edgesOut[source].put(v1, e);</span>
-<span class="pc bnc" id="L174" title="All 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="pc bnc" id="L175" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-<span class="fc" id="L176">		}</span>
-
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
-<span class="nc" id="L179">			setEndpoints(v1v1, v2, v2);</span>
-<span class="nc" id="L180">			int oldVal1 = edgesOut[v1].put(v2, v1v1);</span>
-<span class="nc" id="L181">			int oldVal2 = edgesIn[v1].put(v2, v1v1);</span>
-<span class="nc bnc" id="L182" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="nc bnc" id="L183" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-		}
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">		if (v1v2 != -1) {</span>
-<span class="nc" id="L186">			setEndpoints(v1v2, v2, v1);</span>
-<span class="nc" id="L187">			int oldVal1 = edgesOut[v1].put(v1, v1v2);</span>
-<span class="nc" id="L188">			int oldVal2 = edgesIn[v1].put(v1, v1v2);</span>
-<span class="nc bnc" id="L189" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="nc bnc" id="L190" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-		}
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">		if (v2v1 != -1) {</span>
-<span class="nc" id="L193">			setEndpoints(v2v1, v1, v2);</span>
-<span class="nc" id="L194">			int oldVal1 = edgesOut[v2].put(v2, v2v1);</span>
-<span class="nc" id="L195">			int oldVal2 = edgesIn[v2].put(v2, v2v1);</span>
-<span class="nc bnc" id="L196" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
-		}
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
-<span class="fc" id="L200">			setEndpoints(v2v2, v1, v1);</span>
-<span class="fc" id="L201">			int oldVal1 = edgesOut[v2].put(v1, v2v2);</span>
-<span class="fc" id="L202">			int oldVal2 = edgesIn[v2].put(v1, v2v2);</span>
-<span class="pc bnc" id="L203" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="pc bnc" id="L204" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
+<span class="fc" id="L148">			int oldVal = edgesIn[v2].remove(v2);</span>
+<span class="pc bnc" id="L149" title="All 2 branches missed.">			assert oldVal == v2v2;</span>
 		}
 
-<span class="fc" id="L207">		edgesOutContainer.swap(edgesOut, v1, v2);</span>
-<span class="fc" id="L208">		edgesInContainer.swap(edgesIn, v1, v2);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesOut[v1]); eit.hasNext();) {</span>
+<span class="nc" id="L153">			Int2IntMap.Entry entry = eit.next();</span>
+<span class="nc" id="L154">			int target = entry.getIntKey();</span>
+<span class="nc" id="L155">			int e = entry.getIntValue();</span>
 
-<span class="fc" id="L210">		super.vertexSwap(v1, v2);</span>
-<span class="fc" id="L211">	}</span>
+<span class="nc" id="L157">			replaceEdgeSource(e, v2);</span>
+<span class="nc" id="L158">			int oldVal1 = edgesIn[target].remove(v1);</span>
+<span class="nc" id="L159">			int oldVal2 = edgesIn[target].put(v2, e);</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="nc" id="L162">		}</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesIn[v1]); eit.hasNext();) {</span>
+<span class="nc" id="L164">			Int2IntMap.Entry entry = eit.next();</span>
+<span class="nc" id="L165">			int source = entry.getIntKey();</span>
+<span class="nc" id="L166">			int e = entry.getIntValue();</span>
+
+<span class="nc" id="L168">			replaceEdgeTarget(e, v2);</span>
+<span class="nc" id="L169">			int oldVal1 = edgesOut[source].remove(v1);</span>
+<span class="nc" id="L170">			int oldVal2 = edgesOut[source].put(v2, e);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="nc" id="L173">		}</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesOut[v2]); eit.hasNext();) {</span>
+<span class="fc" id="L175">			Int2IntMap.Entry entry = eit.next();</span>
+<span class="fc" id="L176">			int target = entry.getIntKey();</span>
+<span class="fc" id="L177">			int e = entry.getIntValue();</span>
+
+<span class="fc" id="L179">			replaceEdgeSource(e, v1);</span>
+<span class="fc" id="L180">			int oldVal1 = edgesIn[target].remove(v2);</span>
+<span class="fc" id="L181">			int oldVal2 = edgesIn[target].put(v1, e);</span>
+<span class="pc bnc" id="L182" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="pc bnc" id="L183" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="fc" id="L184">		}</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (Iterator&lt;Int2IntMap.Entry&gt; eit = Int2IntMaps.fastIterator(edgesIn[v2]); eit.hasNext();) {</span>
+<span class="fc" id="L186">			Int2IntMap.Entry entry = eit.next();</span>
+<span class="fc" id="L187">			int source = entry.getIntKey();</span>
+<span class="fc" id="L188">			int e = entry.getIntValue();</span>
+
+<span class="fc" id="L190">			replaceEdgeTarget(e, v1);</span>
+<span class="fc" id="L191">			int oldVal1 = edgesOut[source].remove(v2);</span>
+<span class="fc" id="L192">			int oldVal2 = edgesOut[source].put(v1, e);</span>
+<span class="pc bnc" id="L193" title="All 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="pc bnc" id="L194" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="fc" id="L195">		}</span>
+
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">		if (v1v1 != -1) {</span>
+<span class="nc" id="L198">			setEndpoints(v1v1, v2, v2);</span>
+<span class="nc" id="L199">			int oldVal1 = edgesOut[v1].put(v2, v1v1);</span>
+<span class="nc" id="L200">			int oldVal2 = edgesIn[v1].put(v2, v1v1);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+		}
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		if (v1v2 != -1) {</span>
+<span class="nc" id="L205">			setEndpoints(v1v2, v2, v1);</span>
+<span class="nc" id="L206">			int oldVal1 = edgesOut[v1].put(v1, v1v2);</span>
+<span class="nc" id="L207">			int oldVal2 = edgesIn[v1].put(v1, v1v2);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+		}
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">		if (v2v1 != -1) {</span>
+<span class="nc" id="L212">			setEndpoints(v2v1, v1, v2);</span>
+<span class="nc" id="L213">			int oldVal1 = edgesOut[v2].put(v2, v2v1);</span>
+<span class="nc" id="L214">			int oldVal2 = edgesIn[v2].put(v2, v2v1);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+		}
+<span class="fc bfc" id="L218" title="All 2 branches covered.">		if (v2v2 != -1) {</span>
+<span class="fc" id="L219">			setEndpoints(v2v2, v1, v1);</span>
+<span class="fc" id="L220">			int oldVal1 = edgesOut[v2].put(v1, v2v2);</span>
+<span class="fc" id="L221">			int oldVal2 = edgesIn[v2].put(v1, v2v2);</span>
+<span class="pc bnc" id="L222" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
+<span class="pc bnc" id="L223" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+		}
+
+<span class="fc" id="L226">		edgesOutContainer.swap(edgesOut, v1, v2);</span>
+<span class="fc" id="L227">		edgesInContainer.swap(edgesIn, v1, v2);</span>
+
+<span class="fc" id="L229">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L230">	}</span>
 
 	@Override
 	public int getEdge(int source, int target) {
-<span class="fc" id="L215">		checkVertex(source);</span>
-<span class="fc" id="L216">		checkVertex(target);</span>
-<span class="fc" id="L217">		return edgesOut[source].get(target);</span>
+<span class="fc" id="L234">		checkVertex(source);</span>
+<span class="fc" id="L235">		checkVertex(target);</span>
+<span class="fc" id="L236">		return edgesOut[source].get(target);</span>
 	}
 
 	@Override
 	public IEdgeSet outEdges(int source) {
-<span class="fc" id="L222">		checkVertex(source);</span>
-<span class="fc" id="L223">		return new EdgeSetOut(source, edgesOut);</span>
+<span class="fc" id="L241">		checkVertex(source);</span>
+<span class="fc" id="L242">		return new EdgeSetOut(source, edgesOut);</span>
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-<span class="fc" id="L228">		checkVertex(target);</span>
-<span class="fc" id="L229">		return new EdgeSetIn(target, edgesIn);</span>
+<span class="fc" id="L247">		checkVertex(target);</span>
+<span class="fc" id="L248">		return new EdgeSetIn(target, edgesIn);</span>
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">		if (getEdge(source, target) != -1)</span>
-<span class="nc" id="L235">			throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">		if (getEdge(source, target) != -1)</span>
+<span class="nc" id="L254">			throw new IllegalArgumentException(</span>
 					&quot;Edge (idx=&quot; + source + &quot;,idx=&quot; + target + &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="fc" id="L237">		int edge = super.addEdge(source, target);</span>
+<span class="fc" id="L256">		int edge = super.addEdge(source, target);</span>
 
-<span class="fc" id="L239">		ensureEdgesMapMutable(edgesOut, source).put(target, edge);</span>
-<span class="fc" id="L240">		ensureEdgesMapMutable(edgesIn, target).put(source, edge);</span>
+<span class="fc" id="L258">		ensureEdgesMapMutable(edgesOut, source).put(target, edge);</span>
+<span class="fc" id="L259">		ensureEdgesMapMutable(edgesIn, target).put(source, edge);</span>
 
-<span class="fc" id="L242">		return edge;</span>
+<span class="fc" id="L261">		return edge;</span>
 	}
 
 	@Override
 	void removeEdgeImpl(int edge) {
-<span class="fc" id="L247">		int source = edgeSource(edge), target = edgeTarget(edge);</span>
-<span class="fc" id="L248">		int oldVal1 = edgesOut[source].remove(target);</span>
-<span class="fc" id="L249">		int oldVal2 = edgesIn[target].remove(source);</span>
-<span class="pc bnc" id="L250" title="All 2 branches missed.">		assert edge == oldVal1;</span>
-<span class="pc bnc" id="L251" title="All 2 branches missed.">		assert edge == oldVal2;</span>
-<span class="fc" id="L252">		super.removeEdgeImpl(edge);</span>
-<span class="fc" id="L253">	}</span>
+<span class="fc" id="L266">		int source = edgeSource(edge), target = edgeTarget(edge);</span>
+<span class="fc" id="L267">		int oldVal1 = edgesOut[source].remove(target);</span>
+<span class="fc" id="L268">		int oldVal2 = edgesIn[target].remove(source);</span>
+<span class="pc bnc" id="L269" title="All 2 branches missed.">		assert edge == oldVal1;</span>
+<span class="pc bnc" id="L270" title="All 2 branches missed.">		assert edge == oldVal2;</span>
+<span class="fc" id="L271">		super.removeEdgeImpl(edge);</span>
+<span class="fc" id="L272">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="pc bnc" id="L257" title="All 2 branches missed.">		assert e1 != e2;</span>
-<span class="fc" id="L258">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
-<span class="fc" id="L259">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="pc bnc" id="L260" title="All 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bnc" id="L261" title="All 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bnc" id="L262" title="All 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="pc bnc" id="L263" title="All 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
-<span class="fc" id="L264">		int oldVal1 = edgesOut[u1].put(v1, e2);</span>
-<span class="fc" id="L265">		int oldVal2 = edgesIn[v1].put(u1, e2);</span>
-<span class="fc" id="L266">		int oldVal3 = edgesOut[u2].put(v2, e1);</span>
-<span class="fc" id="L267">		int oldVal4 = edgesIn[v2].put(u2, e1);</span>
-<span class="pc bnc" id="L268" title="All 2 branches missed.">		assert oldVal1 == e1;</span>
-<span class="pc bnc" id="L269" title="All 2 branches missed.">		assert oldVal2 == e1;</span>
-<span class="pc bnc" id="L270" title="All 2 branches missed.">		assert oldVal3 == e2;</span>
-<span class="pc bnc" id="L271" title="All 2 branches missed.">		assert oldVal4 == e2;</span>
-<span class="fc" id="L272">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L273">	}</span>
+<span class="pc bnc" id="L276" title="All 2 branches missed.">		assert e1 != e2;</span>
+<span class="fc" id="L277">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L278">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="pc bnc" id="L279" title="All 2 branches missed.">		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L280" title="All 2 branches missed.">		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L281" title="All 2 branches missed.">		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="pc bnc" id="L282" title="All 2 branches missed.">		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;</span>
+<span class="fc" id="L283">		int oldVal1 = edgesOut[u1].put(v1, e2);</span>
+<span class="fc" id="L284">		int oldVal2 = edgesIn[v1].put(u1, e2);</span>
+<span class="fc" id="L285">		int oldVal3 = edgesOut[u2].put(v2, e1);</span>
+<span class="fc" id="L286">		int oldVal4 = edgesIn[v2].put(u2, e1);</span>
+<span class="pc bnc" id="L287" title="All 2 branches missed.">		assert oldVal1 == e1;</span>
+<span class="pc bnc" id="L288" title="All 2 branches missed.">		assert oldVal2 == e1;</span>
+<span class="pc bnc" id="L289" title="All 2 branches missed.">		assert oldVal3 == e2;</span>
+<span class="pc bnc" id="L290" title="All 2 branches missed.">		assert oldVal4 == e2;</span>
+<span class="fc" id="L291">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L292">	}</span>
 
 	@Override
 	public void removeOutEdgesOf(int source) {
-<span class="fc" id="L277">		checkVertex(source);</span>
-<span class="fc" id="L278">		IntCollection edges = edgesOut[source].values();</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">		while (!edges.isEmpty())</span>
-<span class="fc" id="L280">			removeEdge(edges.iterator().nextInt());</span>
-<span class="fc" id="L281">	}</span>
+<span class="fc" id="L296">		checkVertex(source);</span>
+<span class="fc" id="L297">		IntCollection edges = edgesOut[source].values();</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">		while (!edges.isEmpty())</span>
+<span class="fc" id="L299">			removeEdge(edges.iterator().nextInt());</span>
+<span class="fc" id="L300">	}</span>
 
 	@Override
 	public void removeInEdgesOf(int target) {
-<span class="fc" id="L285">		checkVertex(target);</span>
-<span class="fc" id="L286">		IntCollection edges = edgesIn[target].values();</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">		while (!edges.isEmpty())</span>
-<span class="fc" id="L288">			removeEdge(edges.iterator().nextInt());</span>
-<span class="fc" id="L289">	}</span>
+<span class="fc" id="L304">		checkVertex(target);</span>
+<span class="fc" id="L305">		IntCollection edges = edgesIn[target].values();</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		while (!edges.isEmpty())</span>
+<span class="fc" id="L307">			removeEdge(edges.iterator().nextInt());</span>
+<span class="fc" id="L308">	}</span>
 
 	@Override
 	public void reverseEdge(int edge) {
-<span class="fc" id="L293">		int source = edgeSource(edge), target = edgeTarget(edge);</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L295">			return;</span>
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">		if (getEdge(target, source) != -1)</span>
-<span class="nc" id="L297">			throw new IllegalArgumentException(</span>
+<span class="fc" id="L312">		int source = edgeSource(edge), target = edgeTarget(edge);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L314">			return;</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">		if (getEdge(target, source) != -1)</span>
+<span class="nc" id="L316">			throw new IllegalArgumentException(</span>
 					&quot;Edge (idx=&quot; + target + &quot;,idx=&quot; + source + &quot;) already exists. Parallel edges are not allowed.&quot;);
 
-<span class="fc" id="L300">		int oldVal1 = edgesOut[source].remove(target);</span>
-<span class="fc" id="L301">		int oldVal2 = edgesIn[target].remove(source);</span>
-<span class="pc bnc" id="L302" title="All 2 branches missed.">		assert edge == oldVal1;</span>
-<span class="pc bnc" id="L303" title="All 2 branches missed.">		assert edge == oldVal2;</span>
+<span class="fc" id="L319">		int oldVal1 = edgesOut[source].remove(target);</span>
+<span class="fc" id="L320">		int oldVal2 = edgesIn[target].remove(source);</span>
+<span class="pc bnc" id="L321" title="All 2 branches missed.">		assert edge == oldVal1;</span>
+<span class="pc bnc" id="L322" title="All 2 branches missed.">		assert edge == oldVal2;</span>
 
-<span class="fc" id="L305">		int oldVal4 = ensureEdgesMapMutable(edgesOut, target).put(source, edge);</span>
-<span class="fc" id="L306">		int oldVal3 = ensureEdgesMapMutable(edgesIn, source).put(target, edge);</span>
-<span class="pc bnc" id="L307" title="All 2 branches missed.">		assert -1 == oldVal3;</span>
-<span class="pc bnc" id="L308" title="All 2 branches missed.">		assert -1 == oldVal4;</span>
+<span class="fc" id="L324">		int oldVal4 = ensureEdgesMapMutable(edgesOut, target).put(source, edge);</span>
+<span class="fc" id="L325">		int oldVal3 = ensureEdgesMapMutable(edgesIn, source).put(target, edge);</span>
+<span class="pc bnc" id="L326" title="All 2 branches missed.">		assert -1 == oldVal3;</span>
+<span class="pc bnc" id="L327" title="All 2 branches missed.">		assert -1 == oldVal4;</span>
 
-<span class="fc" id="L310">		super.reverseEdge0(edge);</span>
-<span class="fc" id="L311">	}</span>
+<span class="fc" id="L329">		super.reverseEdge0(edge);</span>
+<span class="fc" id="L330">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L315">		final int n = vertices().size();</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L317">			edgesOut[v].clear();</span>
-<span class="fc" id="L318">			edgesIn[v].clear();</span>
+<span class="fc" id="L334">		final int n = vertices().size();</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L336">			edgesOut[v].clear();</span>
+<span class="fc" id="L337">			edgesIn[v].clear();</span>
 		}
-<span class="fc" id="L320">		super.clearEdges();</span>
-<span class="fc" id="L321">	}</span>
+<span class="fc" id="L339">		super.clearEdges();</span>
+<span class="fc" id="L340">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L325">		super.clear();</span>
+<span class="fc" id="L344">		super.clear();</span>
 		// Don't clear allocated edges arrays
 		// edgesOut.clear();
 		// edgesIn.clear();
-<span class="fc" id="L329">	}</span>
+<span class="fc" id="L348">	}</span>
 
 	class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
 		private final Int2IntMap edges;
 
-<span class="fc" id="L334">		EdgeSetOut(int source, Int2IntMap[] edges) {</span>
-<span class="fc" id="L335">			super(source);</span>
-<span class="fc" id="L336">			this.edges = edges[source];</span>
-<span class="fc" id="L337">		}</span>
+<span class="fc" id="L353">		EdgeSetOut(int source, Int2IntMap[] edges) {</span>
+<span class="fc" id="L354">			super(source);</span>
+<span class="fc" id="L355">			this.edges = edges[source];</span>
+<span class="fc" id="L356">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L341">			return edges.size();</span>
+<span class="fc" id="L360">			return edges.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L346">			return edges.isEmpty();</span>
+<span class="nc" id="L365">			return edges.isEmpty();</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L351">			return new EdgeIterOut(source, edges);</span>
+<span class="fc" id="L370">			return new EdgeIterOut(source, edges);</span>
 		}
 	}
 
 	class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
 		private final Int2IntMap edges;
 
-<span class="fc" id="L358">		EdgeSetIn(int target, Int2IntMap[] edges) {</span>
-<span class="fc" id="L359">			super(target);</span>
-<span class="fc" id="L360">			this.edges = edges[target];</span>
-<span class="fc" id="L361">		}</span>
+<span class="fc" id="L377">		EdgeSetIn(int target, Int2IntMap[] edges) {</span>
+<span class="fc" id="L378">			super(target);</span>
+<span class="fc" id="L379">			this.edges = edges[target];</span>
+<span class="fc" id="L380">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L365">			return edges.size();</span>
+<span class="fc" id="L384">			return edges.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L370">			return edges.isEmpty();</span>
+<span class="nc" id="L389">			return edges.isEmpty();</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L375">			return new EdgeIterIn(target, edges);</span>
+<span class="fc" id="L394">			return new EdgeIterIn(target, edges);</span>
 		}
 	}
 

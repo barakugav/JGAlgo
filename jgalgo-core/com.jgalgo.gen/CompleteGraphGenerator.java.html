@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompleteGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">CompleteGraphGenerator.java</span></div><h1>CompleteGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * Generates a complete graph.
+ * &lt;p&gt;
+ * A complete graph is a graph in which each pair of graph vertices is connected by an edge. If the graph is directed,
+ * then there are two edges between two pair of vertices, one in each direction. Self loops are optional, but are
+ * disabled by default. Parallel edges are never created.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+
+	private final boolean intGraph;
+	private Collection&lt;V&gt; vertices;
+	private BiFunction&lt;V, V, E&gt; edgeBuilder;
+<span class="nc" id="L49">	private boolean directed = false;</span>
+<span class="nc" id="L50">	private boolean selfEdges = false;</span>
+
+<span class="nc" id="L52">	private CompleteGraphGenerator(boolean intGraph) {</span>
+<span class="nc" id="L53">		this.intGraph = intGraph;</span>
+<span class="nc" id="L54">	}</span>
+
+	/**
+	 * Creates a new complete graph generator.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new complete graph generator
+	 */
+	public static &lt;V, E&gt; CompleteGraphGenerator&lt;V, E&gt; newInstance() {
+<span class="nc" id="L64">		return new CompleteGraphGenerator&lt;&gt;(false);</span>
+	}
+
+	/**
+	 * Creates a new complete graph generator for {@link IntGraph}.
+	 *
+	 * @return a new complete graph generator for {@link IntGraph}
+	 */
+	public static CompleteGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
+<span class="nc" id="L73">		return new CompleteGraphGenerator&lt;&gt;(true);</span>
+	}
+
+	/**
+	 * Set the vertices of the generated graph(s).
+	 * &lt;p&gt;
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
+	 *
+	 * @param vertices the vertices of the generated graph(s)
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(Collection&lt;V&gt; vertices) {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (intGraph) {</span>
+<span class="nc" id="L86">			this.vertices =</span>
+<span class="nc" id="L87">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+		} else {
+<span class="nc" id="L89">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+		}
+<span class="nc" id="L91">	}</span>
+
+	/**
+	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * &lt;p&gt;
+	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
+	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 *
+	 * @param verticesNum    the number of vertices
+	 * @param vertexSupplier the supplier of vertices
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">		if (intGraph) {</span>
+<span class="nc" id="L105">			IntList vertices = new IntArrayList(verticesNum);</span>
+<span class="nc" id="L106">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="nc" id="L108">				vertices.add(vSupplier.getAsInt());</span>
+<span class="nc" id="L109">			this.vertices = (Collection&lt;V&gt;) vertices;</span>
+<span class="nc" id="L110">		} else {</span>
+<span class="nc" id="L111">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="nc" id="L113">				vertices.add(vertexSupplier.get());</span>
+<span class="nc" id="L114">			this.vertices = vertices;</span>
+		}
+<span class="nc" id="L116">	}</span>
+
+	/**
+	 * Set the edge supplier of the generated graph(s).
+	 * &lt;p&gt;
+	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
+	 * any generated graph.
+	 *
+	 * @param edgeSupplier the edge supplier
+	 */
+	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
+<span class="nc" id="L128">		Objects.requireNonNull(edgeSupplier);</span>
+<span class="nc" id="L129">		this.edgeBuilder = (u, v) -&gt; edgeSupplier.get();</span>
+<span class="nc" id="L130">	}</span>
+
+	/**
+	 * Set the edge builder function of the generated graph(s).
+	 * &lt;p&gt;
+	 * The function will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
+	 * any generated graph.
+	 *
+	 * @param edgeBuilder the edge builder function
+	 */
+	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
+<span class="nc" id="L142">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="nc" id="L143">	}</span>
+
+	/**
+	 * Determine if the generated graph(s) is directed or undirected.
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 */
+	public void setDirected(boolean directed) {
+<span class="nc" id="L153">		this.directed = directed;</span>
+<span class="nc" id="L154">	}</span>
+
+	/**
+	 * Determine if the generated graph(s) will contain self-loops.
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) will not contain self-loops. If this option is turn on, each vertex in a
+	 * generated will have exactly one self edge connected to itself.
+	 *
+	 * @param selfEdges {@code true} if the generated graph(s) will contain self-loops, {@code false} otherwise
+	 */
+	public void setSelfEdges(boolean selfEdges) {
+<span class="nc" id="L165">		this.selfEdges = selfEdges;</span>
+<span class="nc" id="L166">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="nc bnc" id="L171" title="All 2 branches missed.">		if (vertices == null)</span>
+<span class="nc" id="L172">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		if (edgeBuilder == null)</span>
+<span class="nc" id="L174">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
+
+<span class="nc" id="L176">		final int n = vertices.size();</span>
+<span class="nc" id="L177">		int m = n * (n - 1);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">		if (!directed)</span>
+<span class="nc" id="L179">			m /= 2;</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">		if (selfEdges)</span>
+<span class="nc" id="L181">			m += n;</span>
+
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		if (intGraph) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="nc" id="L185">			g.expectedVerticesNum(n);</span>
+<span class="nc" id="L186">			g.expectedEdgesNum(m);</span>
+<span class="nc" id="L187">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">			for (int v : vertices)</span>
+<span class="nc" id="L189">				g.addVertex(v);</span>
+<span class="nc" id="L190">			IntBinaryOperator edgeBuilder =</span>
+<span class="nc" id="L191">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="nc" id="L193">				int u = vertices[uIdx];</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">				if (directed) {</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="nc" id="L196">						int v = vertices[vIdx];</span>
+<span class="nc" id="L197">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+					}
+				}
+<span class="nc bnc" id="L200" title="All 2 branches missed.">				if (selfEdges)</span>
+<span class="nc" id="L201">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
+<span class="nc" id="L203">					int v = vertices[vIdx];</span>
+<span class="nc" id="L204">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+				}
+			}
+<span class="nc" id="L207">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+
+		} else {
+<span class="nc bnc" id="L210" title="All 2 branches missed.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="nc" id="L211">			g.expectedVerticesNum(n);</span>
+<span class="nc" id="L212">			g.expectedEdgesNum(m);</span>
+<span class="nc" id="L213">			final V[] vertices = (V[]) this.vertices.toArray();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">			for (V v : vertices)</span>
+<span class="nc" id="L215">				g.addVertex(v);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="nc" id="L217">				V u = vertices[uIdx];</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">				if (directed) {</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="nc" id="L220">						V v = vertices[vIdx];</span>
+<span class="nc" id="L221">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+					}
+				}
+<span class="nc bnc" id="L224" title="All 2 branches missed.">				if (selfEdges)</span>
+<span class="nc" id="L225">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
+<span class="nc" id="L227">					V v = vertices[vIdx];</span>
+<span class="nc" id="L228">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+				}
+			}
+<span class="nc" id="L231">			return g;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

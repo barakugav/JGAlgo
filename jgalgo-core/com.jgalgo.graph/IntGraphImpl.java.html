@@ -710,51 +710,58 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 		}
 
 		@Override
+		public IntGraphBuilder newBuilder() {
+<span class="nc" id="L714">			IndexGraphBuilder builder = factory.newBuilder();</span>
+<span class="nc bnc" id="L715" title="All 2 branches missed.">			return factory.directed ? new IntGraphBuilderImpl.Directed(builder)</span>
+<span class="nc" id="L716">					: new IntGraphBuilderImpl.Undirected(builder);</span>
+		}
+
+		@Override
 		public IntGraphFactory setDirected(boolean directed) {
-<span class="fc" id="L714">			factory.setDirected(directed);</span>
-<span class="fc" id="L715">			return this;</span>
+<span class="fc" id="L721">			factory.setDirected(directed);</span>
+<span class="fc" id="L722">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="nc" id="L720">			factory.allowSelfEdges(selfEdges);</span>
-<span class="nc" id="L721">			return this;</span>
+<span class="nc" id="L727">			factory.allowSelfEdges(selfEdges);</span>
+<span class="nc" id="L728">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="nc" id="L726">			factory.allowParallelEdges(parallelEdges);</span>
-<span class="nc" id="L727">			return this;</span>
+<span class="nc" id="L733">			factory.allowParallelEdges(parallelEdges);</span>
+<span class="nc" id="L734">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="fc" id="L732">			factory.expectedVerticesNum(expectedVerticesNum);</span>
-<span class="fc" id="L733">			return this;</span>
+<span class="fc" id="L739">			factory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="fc" id="L740">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="fc" id="L738">			factory.expectedEdgesNum(expectedEdgesNum);</span>
-<span class="fc" id="L739">			return this;</span>
+<span class="fc" id="L745">			factory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="fc" id="L746">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="nc" id="L744">			factory.addHint(hint);</span>
-<span class="nc" id="L745">			return this;</span>
+<span class="nc" id="L751">			factory.addHint(hint);</span>
+<span class="nc" id="L752">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L750">			factory.removeHint(hint);</span>
-<span class="nc" id="L751">			return this;</span>
+<span class="nc" id="L757">			factory.removeHint(hint);</span>
+<span class="nc" id="L758">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory setOption(String key, Object value) {
-<span class="fc" id="L756">			factory.setOption(key, value);</span>
-<span class="fc" id="L757">			return this;</span>
+<span class="fc" id="L763">			factory.setOption(key, value);</span>
+<span class="fc" id="L764">			return this;</span>
 		}
 	}
 

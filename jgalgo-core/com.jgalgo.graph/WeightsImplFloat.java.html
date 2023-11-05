@@ -153,27 +153,27 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 
 	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Float&gt; implements WeightsFloat&lt;K &gt; {
 		ObjMapped(WeightsImplFloat.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="nc" id="L156">			super(weights, indexMap);</span>
-<span class="nc" id="L157">		}</span>
+<span class="fc" id="L156">			super(weights, indexMap);</span>
+<span class="fc" id="L157">		}</span>
 
 		@Override
 		public WeightsImplFloat.IndexImpl  weights() {
-<span class="nc" id="L161">			return (WeightsImplFloat.IndexImpl ) super.weights();</span>
+<span class="fc" id="L161">			return (WeightsImplFloat.IndexImpl ) super.weights();</span>
 		}
 
 		@Override
 		public float get(K id) {
-<span class="nc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(K id, float weight) {
-<span class="nc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="nc" id="L172">		}</span>
+<span class="fc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L172">		}</span>
 
 		@Override
 		public float defaultWeight() {
-<span class="nc" id="L176">			return weights().defaultWeight();</span>
+<span class="fc" id="L176">			return weights().defaultWeight();</span>
 		}
 	}
 

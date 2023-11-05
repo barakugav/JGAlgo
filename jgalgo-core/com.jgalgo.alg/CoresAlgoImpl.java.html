@@ -269,17 +269,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="pc bpc" id="L269" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
 <span class="nc" id="L270">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
 
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L273">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L274">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L275">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
-<span class="fc" id="L276">			return (CoresAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult(iResult, viMap);</span>
-
 		} else {
-<span class="nc" id="L279">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L280">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L281">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
-<span class="nc" id="L282">			return new ObjResultFromIndexResult&lt;&gt;(iResult, viMap);</span>
+<span class="fc" id="L273">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L274">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
+<span class="fc" id="L275">			return resultFromIndexResult(g, iResult);</span>
 		}
 	}
 
@@ -288,34 +281,34 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final CoresAlgo.IResult iResult;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L291">		public IntResultFromIndexResult(CoresAlgo.IResult iResult, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L292">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="fc" id="L293">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L294">		}</span>
+<span class="fc" id="L284">		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {</span>
+<span class="fc" id="L285">			this.iResult = Objects.requireNonNull(iResult);</span>
+<span class="fc" id="L286">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L287">		}</span>
 
 		@Override
 		public int vertexCoreNum(int v) {
-<span class="fc" id="L298">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
+<span class="fc" id="L291">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
 		}
 
 		@Override
 		public int maxCore() {
-<span class="fc" id="L303">			return iResult.maxCore();</span>
+<span class="fc" id="L296">			return iResult.maxCore();</span>
 		}
 
 		@Override
 		public IntSet coreVertices(int core) {
-<span class="fc" id="L308">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
+<span class="fc" id="L301">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
 		}
 
 		@Override
 		public IntSet coreShell(int core) {
-<span class="fc" id="L313">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
+<span class="fc" id="L306">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
 		}
 
 		@Override
 		public IntSet coreCrust(int core) {
-<span class="fc" id="L318">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
+<span class="fc" id="L311">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
 		}
 	}
 
@@ -324,34 +317,44 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final CoresAlgo.IResult iResult;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L327">		public ObjResultFromIndexResult(CoresAlgo.IResult iResult, IndexIdMap&lt;V&gt; viMap) {</span>
-<span class="nc" id="L328">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="nc" id="L329">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L330">		}</span>
+<span class="fc" id="L320">		public ObjResultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult iResult) {</span>
+<span class="fc" id="L321">			this.iResult = Objects.requireNonNull(iResult);</span>
+<span class="fc" id="L322">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L323">		}</span>
 
 		@Override
 		public int vertexCoreNum(V v) {
-<span class="nc" id="L334">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
+<span class="fc" id="L327">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
 		}
 
 		@Override
 		public int maxCore() {
-<span class="nc" id="L339">			return iResult.maxCore();</span>
+<span class="fc" id="L332">			return iResult.maxCore();</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreVertices(int core) {
-<span class="nc" id="L344">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
+<span class="fc" id="L337">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreShell(int core) {
-<span class="nc" id="L349">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
+<span class="fc" id="L342">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreCrust(int core) {
-<span class="nc" id="L354">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
+<span class="fc" id="L347">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult indexResult) {
+<span class="pc bnc" id="L353" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L355">			return (CoresAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L357">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

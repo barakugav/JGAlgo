@@ -206,7 +206,7 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexIntIdMap indexGraphVerticesMap() {
-<span class="fc" id="L209">		return Graphs.IndexIdMapIdentify;</span>
+<span class="nc" id="L209">		return Graphs.IndexIdMapIdentify;</span>
 	}
 
 	/**
@@ -227,7 +227,7 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph copy(boolean copyWeights) {
-<span class="fc" id="L230">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="nc" id="L230">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	@Override

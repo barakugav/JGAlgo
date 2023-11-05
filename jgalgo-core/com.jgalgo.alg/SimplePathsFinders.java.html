@@ -19,37 +19,25 @@ import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 
-<span class="nc" id="L25">class SimplePathsFinders {</span>
+<span class="nc" id="L23">class SimplePathsFinders {</span>
 
-<span class="fc" id="L27">	static abstract class AbstractImpl implements SimplePathsFinder {</span>
+<span class="fc" id="L25">	static abstract class AbstractImpl implements SimplePathsFinder {</span>
 
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		@Override
 		public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; findAllSimplePaths(Graph&lt;V, E&gt; g, V source, V target) {
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L33">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
-<span class="nc" id="L34">				return (Iterator) findAllSimplePaths((IndexGraph) g, source0, target0);</span>
-
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L37">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L38">				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L39">				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
-<span class="fc" id="L40">				int iSource = viMap.idToIndex(((Integer) source).intValue());</span>
-<span class="fc" id="L41">				int iTarget = viMap.idToIndex(((Integer) target).intValue());</span>
-<span class="fc" id="L42">				Iterator&lt;IPath&gt; indexResult = findAllSimplePaths(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L43">				return (Iterator) new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L31">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
+<span class="nc" id="L32">				return (Iterator) findAllSimplePaths((IndexGraph) g, source0, target0);</span>
 
 			} else {
-<span class="nc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L47">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L48">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L49">				int iSource = viMap.idToIndex(source);</span>
-<span class="nc" id="L50">				int iTarget = viMap.idToIndex(target);</span>
-<span class="nc" id="L51">				Iterator&lt;IPath&gt; indexResult = findAllSimplePaths(iGraph, iSource, iTarget);</span>
-<span class="nc" id="L52">				return new PathImpl.ObjIterFromIndexIter&lt;&gt;(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L35">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L36">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L37">				int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L38">				int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L39">				Iterator&lt;IPath&gt; indexResult = findAllSimplePaths(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L40">				return PathImpl.iterFromIndexIter(g, indexResult);</span>
 			}
 		}
 

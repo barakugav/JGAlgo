@@ -24,7 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -108,7 +108,7 @@ public interface EdgeCover {
 		@Deprecated
 		@Override
 		default boolean isInCover(Integer edge) {
-<span class="nc" id="L111">			return isInCover(edge.intValue());</span>
+<span class="fc" id="L111">			return isInCover(edge.intValue());</span>
 		}
 	}
 
@@ -130,7 +130,7 @@ public interface EdgeCover {
 		IntCollection edges0;
 <span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
 <span class="nc" id="L132">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L133">			edges0 = IntContainers.toIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="nc" id="L133">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 		} else {
 <span class="fc" id="L135">			ig = g.indexGraph();</span>
 <span class="fc" id="L136">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>

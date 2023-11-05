@@ -34,13 +34,13 @@ public interface IWeightsInt  extends IWeights&lt;Integer&gt;, WeightsInt&lt;Int
 	@Deprecated
 	@Override
 	default int get(Integer element) {
-<span class="nc" id="L37">		return get(element.intValue());</span>
+<span class="fc" id="L37">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default Integer getAsObj(int element) {
-<span class="fc" id="L43">		return Integer.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Integer.valueOf(get(element));</span>
 	}
 
 	/**
@@ -54,8 +54,8 @@ public interface IWeightsInt  extends IWeights&lt;Integer&gt;, WeightsInt&lt;Int
 	@Deprecated
 	@Override
 	default void set(Integer element, int weight) {
-<span class="nc" id="L57">		set(element.intValue(), weight);</span>
-<span class="nc" id="L58">	}</span>
+<span class="fc" id="L57">		set(element.intValue(), weight);</span>
+<span class="fc" id="L58">	}</span>
 
 	@Deprecated
 	@Override
@@ -66,14 +66,14 @@ public interface IWeightsInt  extends IWeights&lt;Integer&gt;, WeightsInt&lt;Int
 	@Deprecated
 	@Override
 	default Integer getAsObj(Integer element) {
-<span class="nc" id="L69">		return Integer.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Integer.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Integer weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.intValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.intValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 	/**
@@ -94,7 +94,7 @@ public interface IWeightsInt  extends IWeights&lt;Integer&gt;, WeightsInt&lt;Int
 	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
-<span class="nc" id="L97">		return get(element.intValue());</span>
+<span class="fc" id="L97">		return get(element.intValue());</span>
 	}
 
 	@Deprecated

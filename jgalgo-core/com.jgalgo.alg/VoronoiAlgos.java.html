@@ -22,45 +22,35 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-<span class="nc" id="L34">class VoronoiAlgos {</span>
+<span class="pc" id="L33">class VoronoiAlgos {</span>
 
-<span class="fc" id="L36">	static abstract class AbstractImpl implements VoronoiAlgo {</span>
+<span class="fc" id="L35">	static abstract class AbstractImpl implements VoronoiAlgo {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; computeVoronoiCells(Graph&lt;V, E&gt; g, Collection&lt;V&gt; sites,
 				WeightFunction&lt;E&gt; w) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L43">				IntCollection sites0 = IntContainers.toIntCollection((Collection&lt;Integer&gt;) sites);</span>
-<span class="fc" id="L44">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L45">				return (VoronoiAlgo.Result&lt;V, E&gt;) computeVoronoiCells((IndexGraph) g, sites0, w0);</span>
-
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L48">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L49">				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L50">				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
-<span class="fc" id="L51">				IntCollection iSites = IndexIdMaps.idToIndexCollection((Collection&lt;Integer&gt;) sites, viMap);</span>
-<span class="fc" id="L52">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
-<span class="fc" id="L53">				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);</span>
-<span class="fc" id="L54">				return (VoronoiAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L42">				IntCollection sites0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sites);</span>
+<span class="fc" id="L43">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L44">				return (VoronoiAlgo.Result&lt;V, E&gt;) computeVoronoiCells((IndexGraph) g, sites0, w0);</span>
 
 			} else {
-<span class="nc" id="L57">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L58">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L59">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L60">				IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);</span>
-<span class="nc" id="L61">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="nc" id="L62">				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);</span>
-<span class="nc" id="L63">				return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L47">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L48">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L49">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L50">				IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);</span>
+<span class="fc" id="L51">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L52">				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);</span>
+<span class="fc" id="L53">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}
 
@@ -75,24 +65,34 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		private final int[] sites;
 
 		ResultImpl(IndexGraph g, int blockNum, int[] vertexToBlock, double[] distance, int[] backtrack, int[] sites) {
-<span class="fc" id="L78">			super(g, blockNum, vertexToBlock);</span>
-<span class="fc" id="L79">			this.distance = Objects.requireNonNull(distance);</span>
-<span class="fc" id="L80">			this.backtrack = Objects.requireNonNull(backtrack);</span>
-<span class="fc" id="L81">			this.sites = Objects.requireNonNull(sites);</span>
-<span class="fc" id="L82">		}</span>
+<span class="fc" id="L68">			super(g, blockNum, vertexToBlock);</span>
+<span class="fc" id="L69">			this.distance = Objects.requireNonNull(distance);</span>
+<span class="fc" id="L70">			this.backtrack = Objects.requireNonNull(backtrack);</span>
+<span class="fc" id="L71">			this.sites = Objects.requireNonNull(sites);</span>
+<span class="fc" id="L72">		}</span>
 
 		@Override
 		public double distance(int vertex) {
-<span class="fc" id="L86">			return distance[vertex];</span>
+<span class="fc" id="L76">			return distance[vertex];</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (distance[target] == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L92">				return null;</span>
-<span class="fc" id="L93">			IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (distance[target] == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L82">				return null;</span>
+<span class="fc" id="L83">			IntArrayList path = new IntArrayList();</span>
 			int site;
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L86">				for (int v = target;;) {</span>
+<span class="fc" id="L87">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="fc" id="L89">						site = v;</span>
+<span class="fc" id="L90">						break;</span>
+					}
+<span class="fc" id="L92">					path.add(e);</span>
+<span class="fc" id="L93">					v = g.edgeSource(e);</span>
+<span class="fc" id="L94">				}</span>
+			} else {
 <span class="fc" id="L96">				for (int v = target;;) {</span>
 <span class="fc" id="L97">					int e = backtrack[v];</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">					if (e == -1) {</span>
@@ -100,32 +100,22 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L100">						break;</span>
 					}
 <span class="fc" id="L102">					path.add(e);</span>
-<span class="fc" id="L103">					v = g.edgeSource(e);</span>
+<span class="fc" id="L103">					v = g.edgeEndpoint(e, v);</span>
 <span class="fc" id="L104">				}</span>
-			} else {
-<span class="fc" id="L106">				for (int v = target;;) {</span>
-<span class="fc" id="L107">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="fc" id="L109">						site = v;</span>
-<span class="fc" id="L110">						break;</span>
-					}
-<span class="fc" id="L112">					path.add(e);</span>
-<span class="fc" id="L113">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L114">				}</span>
 			}
-<span class="fc" id="L116">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L117">			return new PathImpl(g, site, target, path);</span>
+<span class="fc" id="L106">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L107">			return new PathImpl(g, site, target, path);</span>
 		}
 
 		@Override
 		public int blockSiteInt(int block) {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			return block &lt; sites.length ? sites[block] : -1;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			return block &lt; sites.length ? sites[block] : -1;</span>
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
-<span class="fc" id="L127">			int siteIdx = vertexBlock(vertex);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			return siteIdx &lt; sites.length ? sites[siteIdx] : -1;</span>
+<span class="fc" id="L117">			int siteIdx = vertexBlock(vertex);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			return siteIdx &lt; sites.length ? sites[siteIdx] : -1;</span>
 		}
 
 	}
@@ -134,34 +124,34 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 			implements VoronoiAlgo.Result&lt;V, E&gt; {
 
 		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, VoronoiAlgo.IResult indexRes) {
-<span class="nc" id="L137">			super(g, indexRes);</span>
-<span class="nc" id="L138">		}</span>
+<span class="fc" id="L127">			super(g, indexRes);</span>
+<span class="fc" id="L128">		}</span>
 
 		VoronoiAlgo.IResult indexRes() {
-<span class="nc" id="L141">			return (VoronoiAlgo.IResult) super.indexPartition;</span>
+<span class="fc" id="L131">			return (VoronoiAlgo.IResult) super.indexPartition;</span>
 		}
 
 		@Override
 		public double distance(V vertex) {
-<span class="nc" id="L146">			return indexRes().distance(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L136">			return indexRes().distance(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; getPath(V target) {
-<span class="nc" id="L151">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
-<span class="nc" id="L152">			return PathImpl.objPathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="fc" id="L141">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
+<span class="fc" id="L142">			return PathImpl.objPathFromIndexPath(graph(), indexPath);</span>
 		}
 
 		@Override
 		public V blockSite(int block) {
-<span class="nc" id="L157">			int site = indexRes().blockSiteInt(block);</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">			return site != -1 ? viMap.indexToId(site) : null;</span>
+<span class="fc" id="L147">			int site = indexRes().blockSiteInt(block);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			return site != -1 ? viMap.indexToId(site) : null;</span>
 		}
 
 		@Override
 		public V vertexSite(V vertex) {
-<span class="nc" id="L163">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
-<span class="nc bnc" id="L164" title="All 2 branches missed.">			return site != -1 ? viMap.indexToId(site) : null;</span>
+<span class="fc" id="L153">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			return site != -1 ? viMap.indexToId(site) : null;</span>
 		}
 	}
 
@@ -169,34 +159,45 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 			implements VoronoiAlgo.IResult {
 
 		IntResultFromIndexResult(IntGraph g, VoronoiAlgo.IResult indexRes) {
-<span class="fc" id="L172">			super(g, indexRes);</span>
-<span class="fc" id="L173">		}</span>
+<span class="fc" id="L162">			super(g, indexRes);</span>
+<span class="fc" id="L163">		}</span>
 
 		VoronoiAlgo.IResult indexRes() {
-<span class="fc" id="L176">			return (VoronoiAlgo.IResult) super.indexPartition;</span>
+<span class="fc" id="L166">			return (VoronoiAlgo.IResult) super.indexPartition;</span>
 		}
 
 		@Override
 		public double distance(int vertex) {
-<span class="fc" id="L181">			return indexRes().distance(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L171">			return indexRes().distance(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc" id="L186">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
-<span class="fc" id="L187">			return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="fc" id="L176">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
+<span class="fc" id="L177">			return PathImpl.intPathFromIndexPath(graph(), indexPath);</span>
 		}
 
 		@Override
 		public int blockSiteInt(int block) {
-<span class="fc" id="L192">			int site = indexRes().blockSiteInt(block);</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
+<span class="fc" id="L182">			int site = indexRes().blockSiteInt(block);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
-<span class="fc" id="L198">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
+<span class="fc" id="L188">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			VoronoiAlgo.IResult indexResult) {
+<span class="pc bnc" id="L196" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L198">			return (VoronoiAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L200">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

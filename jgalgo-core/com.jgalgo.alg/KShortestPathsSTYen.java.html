@@ -177,11 +177,11 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L177">			heapS.clear();</span>
 <span class="fc" id="L178">			heapT.clear();</span>
 <span class="fc" id="L179">			final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">			if (toClearS.size() &lt; n / 64) {</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">				for (int v : toClearS) {</span>
-<span class="nc" id="L182">					visitedS.clear(v);</span>
-<span class="nc" id="L183">					heapPtrsS[v] = null;</span>
-<span class="nc" id="L184">				}</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (toClearS.size() &lt; n / 64) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">				for (int v : toClearS) {</span>
+<span class="fc" id="L182">					visitedS.clear(v);</span>
+<span class="fc" id="L183">					heapPtrsS[v] = null;</span>
+<span class="fc" id="L184">				}</span>
 <span class="fc bfc" id="L185" title="All 2 branches covered.">			} else if (toClearS.size() &lt; 8) {</span>
 <span class="fc" id="L186">				visitedS.clear();</span>
 <span class="fc bfc" id="L187" title="All 2 branches covered.">				for (int v : toClearS)</span>
@@ -190,11 +190,11 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L190">				visitedS.clear();</span>
 <span class="fc" id="L191">				Arrays.fill(heapPtrsS, null);</span>
 			}
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">			if (toClearT.size() &lt; n / 64) {</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">				for (int v : toClearT) {</span>
-<span class="nc" id="L195">					visitedT.clear(v);</span>
-<span class="nc" id="L196">					heapPtrsT[v] = null;</span>
-<span class="nc" id="L197">				}</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">			if (toClearT.size() &lt; n / 64) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				for (int v : toClearT) {</span>
+<span class="fc" id="L195">					visitedT.clear(v);</span>
+<span class="fc" id="L196">					heapPtrsT[v] = null;</span>
+<span class="fc" id="L197">				}</span>
 <span class="fc bfc" id="L198" title="All 2 branches covered.">			} else if (toClearT.size() &lt; 8) {</span>
 <span class="fc" id="L199">				visitedT.clear();</span>
 <span class="fc bfc" id="L200" title="All 2 branches covered.">				for (int v : toClearT)</span>

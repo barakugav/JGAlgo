@@ -18,31 +18,19 @@ package com.jgalgo.alg;
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 
-<span class="fc" id="L25">abstract class CyclesFinderAbstract implements CyclesFinder {</span>
+<span class="fc" id="L22">abstract class CyclesFinderAbstract implements CyclesFinder {</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; findAllCycles(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L30" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L31">			return (Iterator) findAllCycles((IndexGraph) g);</span>
-
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L34">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L35">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L36">			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
-<span class="fc" id="L37">			Iterator&lt;IPath&gt; indexResult = findAllCycles(iGraph);</span>
-<span class="fc" id="L38">			return (Iterator) new PathImpl.IntIterFromIndexIter(indexResult, viMap, eiMap);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L28">			return (Iterator) findAllCycles((IndexGraph) g);</span>
 
 		} else {
-<span class="nc" id="L41">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L42">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L43">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L44">			Iterator&lt;IPath&gt; indexResult = findAllCycles(iGraph);</span>
-<span class="nc" id="L45">			return new PathImpl.ObjIterFromIndexIter&lt;&gt;(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L31">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L32">			Iterator&lt;IPath&gt; indexResult = findAllCycles(iGraph);</span>
+<span class="fc" id="L33">			return PathImpl.iterFromIndexIter(g, indexResult);</span>
 		}
 	}
 

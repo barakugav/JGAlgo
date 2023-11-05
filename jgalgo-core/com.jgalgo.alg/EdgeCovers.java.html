@@ -31,7 +31,7 @@ import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L34">class EdgeCovers {</span>
+<span class="pc" id="L34">class EdgeCovers {</span>
 
 <span class="fc" id="L36">	static abstract class AbstractImpl implements EdgeCover {</span>
 
@@ -42,19 +42,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L42">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
 <span class="nc" id="L43">				return (EdgeCover.Result&lt;V, E&gt;) computeMinimumEdgeCover((IndexGraph) g, w0);</span>
 
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L47">				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
-<span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
-<span class="fc" id="L49">				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
-<span class="fc" id="L50">				return (EdgeCover.Result&lt;V, E&gt;) new IntResultFromIndexResult(indexResult, eiMap);</span>
-
 			} else {
-<span class="nc" id="L53">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L54">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L55">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="nc" id="L56">				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
-<span class="nc" id="L57">				return new ObjResultFromIndexResult&lt;&gt;(indexResult, eiMap);</span>
+<span class="fc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L47">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L49">				EdgeCover.IResult indexResult = computeMinimumEdgeCover(iGraph, iw);</span>
+<span class="fc" id="L50">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}
 
@@ -68,34 +61,34 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final BitSet cover;
 		private IntSet edges;
 
-<span class="fc" id="L71">		ResultImpl(IndexGraph g, BitSet cover) {</span>
-<span class="fc" id="L72">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L73">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L64">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L65">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L66">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L67">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (edges == null) {</span>
-<span class="fc" id="L79">				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (edges == null) {</span>
+<span class="fc" id="L72">				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
 					@Override
 					public boolean contains(int e) {
-<span class="nc bnc" id="L82" title="All 6 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; g.edges().size() &amp;&amp; cover.get(e);</span>
+<span class="nc bnc" id="L75" title="All 6 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; g.edges().size() &amp;&amp; cover.get(e);</span>
 					}
 				};
 			}
-<span class="fc" id="L86">			return edges;</span>
+<span class="fc" id="L79">			return edges;</span>
 		}
 
 		@Override
 		public boolean isInCover(int edge) {
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">			if (!g.edges().contains(edge))</span>
-<span class="nc" id="L92">				throw new IndexOutOfBoundsException(edge);</span>
-<span class="fc" id="L93">			return cover.get(edge);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (!g.edges().contains(edge))</span>
+<span class="nc" id="L85">				throw new IndexOutOfBoundsException(edge);</span>
+<span class="fc" id="L86">			return cover.get(edge);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L98">			return edges().toString();</span>
+<span class="nc" id="L91">			return edges().toString();</span>
 		}
 	}
 	private static class IntResultFromIndexResult implements EdgeCover.IResult {
@@ -103,24 +96,24 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final EdgeCover.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L106">		IntResultFromIndexResult(EdgeCover.IResult indexRes, IndexIntIdMap eiMap) {</span>
-<span class="fc" id="L107">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L108">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L109">		}</span>
+<span class="fc" id="L99">		IntResultFromIndexResult(IntGraph g, EdgeCover.IResult indexRes) {</span>
+<span class="fc" id="L100">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L101">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L102">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L113">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+<span class="fc" id="L106">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int edge) {
-<span class="fc" id="L118">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L111">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L123">			return edges().toString();</span>
+<span class="nc" id="L116">			return edges().toString();</span>
 		}
 	}
 	private static class ObjResultFromIndexResult&lt;V, E&gt; implements EdgeCover.Result&lt;V, E&gt; {
@@ -128,24 +121,34 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final EdgeCover.IResult indexRes;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="nc" id="L131">		ObjResultFromIndexResult(EdgeCover.IResult indexRes, IndexIdMap&lt;E&gt; eiMap) {</span>
-<span class="nc" id="L132">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="nc" id="L133">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="nc" id="L134">		}</span>
+<span class="fc" id="L124">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, EdgeCover.IResult indexRes) {</span>
+<span class="fc" id="L125">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L126">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L127">		}</span>
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="nc" id="L138">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+<span class="fc" id="L131">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(E edge) {
-<span class="nc" id="L143">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L136">			return indexRes.isInCover(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L148">			return edges().toString();</span>
+<span class="nc" id="L141">			return edges().toString();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; EdgeCover.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, EdgeCover.IResult indexResult) {
+<span class="pc bnc" id="L147" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L149">			return (EdgeCover.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L151">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

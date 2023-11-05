@@ -73,7 +73,7 @@ public interface LowestCommonAncestorOffline {
 		 * @return     a new queries container
 		 */
 		static &lt;V, E&gt; LowestCommonAncestorOffline.Queries&lt;V, E&gt; newInstance() {
-<span class="nc" id="L76">			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl&lt;&gt;();</span>
+<span class="fc" id="L76">			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl&lt;&gt;();</span>
 		}
 
 		/**
@@ -134,7 +134,7 @@ public interface LowestCommonAncestorOffline {
 		 * @return a new queries container
 		 */
 		static LowestCommonAncestorOffline.IQueries newInstance() {
-<span class="fc" id="L137">			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();</span>
+<span class="nc" id="L137">			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();</span>
 		}
 
 		/**
@@ -245,7 +245,7 @@ public interface LowestCommonAncestorOffline {
 		@Deprecated
 		@Override
 		default Integer getLca(int queryIdx) {
-<span class="nc" id="L248">			return Integer.valueOf(getLcaInt(queryIdx));</span>
+<span class="fc" id="L248">			return Integer.valueOf(getLcaInt(queryIdx));</span>
 		}
 	}
 

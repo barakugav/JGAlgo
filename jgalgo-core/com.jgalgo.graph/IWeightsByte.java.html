@@ -40,7 +40,7 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	@Deprecated
 	@Override
 	default Byte getAsObj(int element) {
-<span class="fc" id="L43">		return Byte.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Byte.valueOf(get(element));</span>
 	}
 
 	/**
@@ -66,14 +66,14 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	@Deprecated
 	@Override
 	default Byte getAsObj(Integer element) {
-<span class="nc" id="L69">		return Byte.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Byte.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Byte weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.byteValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.byteValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 	/**

@@ -48,6 +48,9 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights);
 
 	@Override
+	IndexGraphBuilder newBuilder();
+
+	@Override
 	IndexGraphFactory setDirected(boolean directed);
 
 	@Override
@@ -74,7 +77,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build undirected index graphs
 	 */
 	public static IndexGraphFactory newUndirected() {
-<span class="fc" id="L77">		return new IndexGraphFactoryImpl(false);</span>
+<span class="fc" id="L80">		return new IndexGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -83,7 +86,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build directed index graphs
 	 */
 	public static IndexGraphFactory newDirected() {
-<span class="fc" id="L86">		return new IndexGraphFactoryImpl(true);</span>
+<span class="fc" id="L89">		return new IndexGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -97,12 +100,12 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return   a new graph factory that will create graphs with the same capabilities of the given graph
 	 */
 	public static IndexGraphFactory newFrom(IndexGraph g) {
-<span class="fc" id="L100">		return new IndexGraphFactoryImpl(g);</span>
+<span class="fc" id="L103">		return new IndexGraphFactoryImpl(g);</span>
 	}
 
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L105">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L108">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

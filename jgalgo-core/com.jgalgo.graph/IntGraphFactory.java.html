@@ -48,6 +48,9 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights);
 
 	@Override
+	IntGraphBuilder newBuilder();
+
+	@Override
 	IntGraphFactory setDirected(boolean directed);
 
 	@Override
@@ -74,7 +77,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory newUndirected() {
-<span class="fc" id="L77">		return new IntGraphImpl.Factory(false);</span>
+<span class="fc" id="L80">		return new IntGraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -83,7 +86,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory newDirected() {
-<span class="fc" id="L86">		return new IntGraphImpl.Factory(true);</span>
+<span class="fc" id="L89">		return new IntGraphImpl.Factory(true);</span>
 	}
 
 	/**
@@ -97,12 +100,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static IntGraphFactory newFrom(IntGraph g) {
-<span class="fc" id="L100">		return new IntGraphImpl.Factory(g);</span>
+<span class="fc" id="L103">		return new IntGraphImpl.Factory(g);</span>
 	}
 
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L105">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L108">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

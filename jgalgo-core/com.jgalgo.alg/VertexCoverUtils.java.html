@@ -31,7 +31,7 @@ import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L34">class VertexCoverUtils {</span>
+<span class="pc" id="L34">class VertexCoverUtils {</span>
 
 <span class="fc" id="L36">	static abstract class AbstractImpl implements VertexCover {</span>
 
@@ -42,19 +42,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L42">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
 <span class="nc" id="L43">				return (VertexCover.Result&lt;V, E&gt;) computeMinimumVertexCover((IndexGraph) g, w0);</span>
 
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L47">				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, viMap);</span>
-<span class="fc" id="L49">				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);</span>
-<span class="fc" id="L50">				return (VertexCover.Result&lt;V, E&gt;) new IntResultFromIndexResult(indexResult, viMap);</span>
-
 			} else {
-<span class="nc" id="L53">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L54">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L55">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="nc" id="L56">				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);</span>
-<span class="nc" id="L57">				return new ObjResultFromIndexResult&lt;&gt;(indexResult, viMap);</span>
+<span class="fc" id="L46">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L47">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L49">				VertexCover.IResult indexResult = computeMinimumVertexCover(iGraph, iw);</span>
+<span class="fc" id="L50">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}
 
@@ -68,34 +61,34 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final BitSet cover;
 		private IntSet vertices;
 
-<span class="fc" id="L71">		ResultImpl(IndexGraph g, BitSet cover) {</span>
-<span class="fc" id="L72">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L73">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L64">		ResultImpl(IndexGraph g, BitSet cover) {</span>
+<span class="fc" id="L65">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L66">			this.cover = Objects.requireNonNull(cover);</span>
+<span class="fc" id="L67">		}</span>
 
 		@Override
 		public IntSet vertices() {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (vertices == null) {</span>
-<span class="fc" id="L79">				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (vertices == null) {</span>
+<span class="fc" id="L72">				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {</span>
 					@Override
 					public boolean contains(int v) {
-<span class="nc bnc" id="L82" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; g.vertices().size() &amp;&amp; cover.get(v);</span>
+<span class="nc bnc" id="L75" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; g.vertices().size() &amp;&amp; cover.get(v);</span>
 					}
 				};
 			}
-<span class="fc" id="L86">			return vertices;</span>
+<span class="fc" id="L79">			return vertices;</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">			if (!g.vertices().contains(vertex))</span>
-<span class="nc" id="L92">				throw new IndexOutOfBoundsException(vertex);</span>
-<span class="fc" id="L93">			return cover.get(vertex);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (!g.vertices().contains(vertex))</span>
+<span class="nc" id="L85">				throw new IndexOutOfBoundsException(vertex);</span>
+<span class="fc" id="L86">			return cover.get(vertex);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L98">			return vertices().toString();</span>
+<span class="nc" id="L91">			return vertices().toString();</span>
 		}
 	}
 
@@ -104,24 +97,24 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final VertexCover.IResult indexRes;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L107">		ObjResultFromIndexResult(VertexCover.IResult indexRes, IndexIdMap&lt;V&gt; viMap) {</span>
-<span class="nc" id="L108">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="nc" id="L109">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L110">		}</span>
+<span class="nc" id="L100">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, VertexCover.IResult indexRes) {</span>
+<span class="nc" id="L101">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="nc" id="L102">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L103">		}</span>
 
 		@Override
 		public Set&lt;V&gt; vertices() {
-<span class="nc" id="L114">			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);</span>
+<span class="nc" id="L107">			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(V vertex) {
-<span class="nc" id="L119">			return indexRes.isInCover(viMap.idToIndex(vertex));</span>
+<span class="nc" id="L112">			return indexRes.isInCover(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L124">			return vertices().toString();</span>
+<span class="nc" id="L117">			return vertices().toString();</span>
 		}
 	}
 
@@ -130,24 +123,35 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final VertexCover.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L133">		IntResultFromIndexResult(VertexCover.IResult indexRes, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L134">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L135">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L136">		}</span>
+<span class="fc" id="L126">		IntResultFromIndexResult(IntGraph g, VertexCover.IResult indexRes) {</span>
+<span class="fc" id="L127">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L128">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L129">		}</span>
 
 		@Override
 		public IntSet vertices() {
-<span class="fc" id="L140">			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);</span>
+<span class="fc" id="L133">			return IndexIdMaps.indexToIdSet(indexRes.vertices(), viMap);</span>
 		}
 
 		@Override
 		public boolean isInCover(int vertex) {
-<span class="fc" id="L145">			return indexRes.isInCover(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L138">			return indexRes.isInCover(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L150">			return vertices().toString();</span>
+<span class="nc" id="L143">			return vertices().toString();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; VertexCover.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			VertexCover.IResult indexResult) {
+<span class="pc bnc" id="L150" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L152">			return (VertexCover.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="nc" id="L154">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

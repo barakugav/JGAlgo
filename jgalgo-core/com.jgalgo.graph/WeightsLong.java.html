@@ -34,7 +34,7 @@ public interface WeightsLong&lt;K &gt; extends Weights&lt;K, Long&gt; , WeightFu
 	@Deprecated
 	@Override
 	default Long getAsObj(K element) {
-<span class="nc" id="L37">		return Long.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Long.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsLong&lt;K &gt; extends Weights&lt;K, Long&gt; , WeightFu
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Long weight) {
-<span class="nc" id="L51">		set(element, weight.longValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.longValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.

@@ -24,7 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -115,7 +115,7 @@ public interface VertexCover {
 		@Deprecated
 		@Override
 		default boolean isInCover(Integer vertex) {
-<span class="nc" id="L118">			return isInCover(vertex.intValue());</span>
+<span class="fc" id="L118">			return isInCover(vertex.intValue());</span>
 		}
 	}
 
@@ -137,30 +137,26 @@ public interface VertexCover {
 		IntCollection vertices0;
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
 <span class="nc" id="L139">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L140">			vertices0 = IntContainers.toIntCollection((Collection&lt;Integer&gt;) vertices);</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L142">			ig = g.indexGraph();</span>
-<span class="fc" id="L143">			vertices0 = IndexIdMaps.idToIndexCollection((Collection&lt;Integer&gt;) vertices,</span>
-<span class="fc" id="L144">					((IntGraph) g).indexGraphVerticesMap());</span>
+<span class="nc" id="L140">			vertices0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="nc" id="L146">			ig = g.indexGraph();</span>
-<span class="nc" id="L147">			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L142">			ig = g.indexGraph();</span>
+<span class="fc" id="L143">			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L149">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L150">		final int m = ig.edges().size();</span>
-<span class="fc" id="L151">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">		for (int v : vertices0) {</span>
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
-<span class="nc" id="L154">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">			if (visited.get(v))</span>
-<span class="nc" id="L156">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L145">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L146">		final int m = ig.edges().size();</span>
+<span class="fc" id="L147">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int v : vertices0) {</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
+<span class="nc" id="L150">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">			if (visited.get(v))</span>
+<span class="nc" id="L152">				throw new IllegalArgumentException(</span>
 						&quot;vertex with index &quot; + v + &quot; is included more than once in the cover&quot;);
-<span class="fc" id="L158">			visited.set(v);</span>
-<span class="fc" id="L159">		}</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L161" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
-<span class="nc" id="L162">				return false;</span>
-<span class="fc" id="L163">		return true;</span>
+<span class="fc" id="L154">			visited.set(v);</span>
+<span class="fc" id="L155">		}</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L157" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
+<span class="nc" id="L158">				return false;</span>
+<span class="fc" id="L159">		return true;</span>
 	}
 
 	/**
@@ -172,7 +168,7 @@ public interface VertexCover {
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-<span class="nc" id="L175">		return newBuilder().build();</span>
+<span class="nc" id="L171">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -183,7 +179,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L186">		return VertexCoverBarYehuda::new;</span>
+<span class="nc" id="L182">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
@@ -215,7 +211,7 @@ public interface VertexCover {
 		 * @return       this builder
 		 */
 		default VertexCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L218">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L214">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

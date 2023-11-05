@@ -47,7 +47,7 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer source() {
-<span class="nc" id="L50">		return Integer.valueOf(sourceInt());</span>
+<span class="fc" id="L50">		return Integer.valueOf(sourceInt());</span>
 	}
 
 	/**
@@ -62,7 +62,7 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer target() {
-<span class="nc" id="L65">		return Integer.valueOf(targetInt());</span>
+<span class="fc" id="L65">		return Integer.valueOf(targetInt());</span>
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 <span class="fc" id="L103">		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
 
 <span class="fc" id="L105">		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);</span>
-<span class="fc" id="L106">		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="fc" id="L106">		return PathImpl.intPathFromIndexPath(g, indexPath);</span>
 	}
 
 	/**
@@ -154,12 +154,11 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 
 <span class="fc" id="L155">		IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L156">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L157">		IndexIntIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L158">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L159">		int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L157">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L158">		int iTarget = viMap.idToIndex(target);</span>
 
-<span class="fc" id="L161">		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L162">		return PathImpl.intPathFromIndexPath(indexPath, viMap, eiMap);</span>
+<span class="fc" id="L160">		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L161">		return PathImpl.intPathFromIndexPath(g, indexPath);</span>
 	}
 
 }

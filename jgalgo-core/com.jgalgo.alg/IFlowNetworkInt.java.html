@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 
 /**
@@ -56,13 +56,13 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	@Deprecated
 	@Override
 	default int getCapacityInt(Integer edge) {
-<span class="nc" id="L59">		return getCapacityInt(edge.intValue());</span>
+<span class="fc" id="L59">		return getCapacityInt(edge.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default double getCapacity(Integer edge) {
-<span class="nc" id="L65">		return getCapacityInt(edge.intValue());</span>
+<span class="fc" id="L65">		return getCapacityInt(edge.intValue());</span>
 	}
 
 	/**
@@ -84,8 +84,8 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	@Deprecated
 	@Override
 	default void setCapacity(Integer edge, int capacity) {
-<span class="nc" id="L87">		setCapacity(edge.intValue(), capacity);</span>
-<span class="nc" id="L88">	}</span>
+<span class="fc" id="L87">		setCapacity(edge.intValue(), capacity);</span>
+<span class="fc" id="L88">	}</span>
 
 	@Deprecated
 	@Override
@@ -119,13 +119,13 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	@Deprecated
 	@Override
 	default int getFlowInt(Integer edge) {
-<span class="nc" id="L122">		return getFlowInt(edge.intValue());</span>
+<span class="fc" id="L122">		return getFlowInt(edge.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default double getFlow(Integer edge) {
-<span class="nc" id="L128">		return getFlowInt(edge.intValue());</span>
+<span class="fc" id="L128">		return getFlowInt(edge.intValue());</span>
 	}
 
 	/**
@@ -146,8 +146,8 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	@Deprecated
 	@Override
 	default void setFlow(Integer edge, int flow) {
-<span class="nc" id="L149">		setFlow(edge.intValue(), flow);</span>
-<span class="nc" id="L150">	}</span>
+<span class="fc" id="L149">		setFlow(edge.intValue(), flow);</span>
+<span class="fc" id="L150">	}</span>
 
 	@Deprecated
 	@Override
@@ -162,14 +162,14 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 <span class="fc" id="L162">		long sum = 0;</span>
 <span class="fc" id="L163">		IntGraph g0 = (IntGraph) g;</span>
 <span class="pc bpc" id="L164" title="1 of 2 branches missed.">		if (g0.isDirected()) {</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int source : IntAdapters.asIntIterable(sources)) {</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">				for (int e : g0.outEdges(source))</span>
 <span class="fc" id="L167">					sum += getFlowInt(e);</span>
 <span class="fc bfc" id="L168" title="All 2 branches covered.">				for (int e : g0.inEdges(source))</span>
 <span class="fc" id="L169">					sum -= getFlowInt(e);</span>
 <span class="fc" id="L170">			}</span>
 		} else {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			for (int source : IntAdapters.asIntIterable(sources)) {</span>
 <span class="nc bnc" id="L173" title="All 2 branches missed.">				for (int e : g0.outEdges(source)) {</span>
 <span class="nc bnc" id="L174" title="All 2 branches missed.">					if (source != g0.edgeTarget(e)) {</span>
 <span class="nc" id="L175">						sum += getFlowInt(e);</span>
@@ -184,7 +184,7 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 
 	@Override
 	default double getCostSum(Iterable&lt;Integer&gt; edges, WeightFunction&lt;Integer&gt; cost) {
-<span class="nc" id="L187">		IntIterable edges0 = IntContainers.toIntIterable(edges);</span>
+<span class="nc" id="L187">		IntIterable edges0 = IntAdapters.asIntIterable(edges);</span>
 <span class="nc" id="L188">		IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);</span>
 <span class="nc bnc" id="L189" title="All 2 branches missed.">		if (cost0 instanceof IWeightFunctionInt) {</span>
 <span class="nc" id="L190">			IWeightFunctionInt costInt = (IWeightFunctionInt) cost0;</span>
@@ -216,9 +216,9 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
 	static IFlowNetworkInt createFromEdgeWeights(IntGraph g) {
-<span class="fc" id="L219">		IWeightsInt capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
-<span class="fc" id="L220">		IWeightsInt flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
-<span class="fc" id="L221">		return createFromEdgeWeights(capacities, flows);</span>
+<span class="nc" id="L219">		IWeightsInt capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
+<span class="nc" id="L220">		IWeightsInt flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
+<span class="nc" id="L221">		return createFromEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
@@ -233,7 +233,7 @@ public interface IFlowNetworkInt extends IFlowNetwork, FlowNetworkInt&lt;Integer
 	 * @return            a flow network implemented as external edge weights containers
 	 */
 	static IFlowNetworkInt createFromEdgeWeights(IWeightsInt capacities, IWeightsInt flows) {
-<span class="fc" id="L236">		return new FlowNetworks.NetImplEdgeIWeightsInt(capacities, flows);</span>
+<span class="nc" id="L236">		return new FlowNetworks.NetImplEdgeIWeightsInt(capacities, flows);</span>
 	}
 
 }

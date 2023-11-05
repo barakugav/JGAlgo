@@ -16,40 +16,67 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 
-<span class="nc" id="L21">class VertexScoringImpl {</span>
+<span class="pc" id="L24">class VertexScoringImpl {</span>
 
-	static class ResultImpl implements VertexScoring {
+	static class ResultImpl implements IVertexScoring {
 
 		private final double[] scores;
 
-<span class="fc" id="L27">		ResultImpl(double[] scores) {</span>
-<span class="fc" id="L28">			this.scores = scores;</span>
-<span class="fc" id="L29">		}</span>
+<span class="fc" id="L30">		ResultImpl(double[] scores) {</span>
+<span class="fc" id="L31">			this.scores = scores;</span>
+<span class="fc" id="L32">		}</span>
 
 		@Override
 		public double vertexScore(int vertex) {
-<span class="fc" id="L33">			return scores[vertex];</span>
+<span class="fc" id="L36">			return scores[vertex];</span>
 		}
-
 	}
 
-	static class ResultFromIndexResult implements VertexScoring {
+	static class ObjResultFromIndexResult&lt;V, E&gt; implements VertexScoring&lt;V, E&gt; {
 
-		private final VertexScoring res;
+		private final IVertexScoring indexRes;
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="nc" id="L45">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, IVertexScoring indexRes) {</span>
+<span class="nc" id="L46">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="nc" id="L47">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L48">		}</span>
+
+		@Override
+		public double vertexScore(V vertex) {
+<span class="nc" id="L52">			return indexRes.vertexScore(viMap.idToIndex(vertex));</span>
+		}
+	}
+
+	static class IntResultFromIndexResult implements IVertexScoring {
+
+		private final IVertexScoring indexRes;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L43">		ResultFromIndexResult(VertexScoring res, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L44">			this.res = Objects.requireNonNull(res);</span>
-<span class="fc" id="L45">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L46">		}</span>
+<span class="fc" id="L61">		IntResultFromIndexResult(IntGraph g, IVertexScoring indexRes) {</span>
+<span class="fc" id="L62">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L63">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L64">		}</span>
 
 		@Override
 		public double vertexScore(int vertex) {
-<span class="fc" id="L50">			return res.vertexScore(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L68">			return indexRes.vertexScore(viMap.idToIndex(vertex));</span>
 		}
+	}
 
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; VertexScoring&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, IVertexScoring indexRes) {
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !(g instanceof IndexIdMap);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L76">			return (VertexScoring&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexRes);</span>
+		} else {
+<span class="nc" id="L78">			return new ObjResultFromIndexResult&lt;&gt;(g, indexRes);</span>
+		}
 	}
 
 }

@@ -40,7 +40,7 @@ public interface IWeightsLong  extends IWeights&lt;Long&gt;, WeightsLong&lt;Inte
 	@Deprecated
 	@Override
 	default Long getAsObj(int element) {
-<span class="fc" id="L43">		return Long.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Long.valueOf(get(element));</span>
 	}
 
 	/**
@@ -66,14 +66,14 @@ public interface IWeightsLong  extends IWeights&lt;Long&gt;, WeightsLong&lt;Inte
 	@Deprecated
 	@Override
 	default Long getAsObj(Integer element) {
-<span class="nc" id="L69">		return Long.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Long.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Long weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.longValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.longValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 	/**

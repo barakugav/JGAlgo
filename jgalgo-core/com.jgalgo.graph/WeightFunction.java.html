@@ -94,10 +94,10 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return          the sum of the weights of the elements
 	 */
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="nc" id="L97">		double sum = 0;</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">		for (K e : elements)</span>
-<span class="nc" id="L99">			sum += weight(e);</span>
-<span class="nc" id="L100">		return sum;</span>
+<span class="fc" id="L97">		double sum = 0;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L99">			sum += weight(e);</span>
+<span class="fc" id="L100">		return sum;</span>
 	}
 
 	/**
@@ -112,10 +112,10 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            the sum of the weights of the elements
 	 */
 	static &lt;K&gt; double weightSum(WeightFunction&lt;K&gt; weightFunc, Iterable&lt;K&gt; elements) {
-<span class="nc bnc" id="L115" title="All 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+<span class="pc bpc" id="L115" title="2 of 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
-<span class="nc bnc" id="L117" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="nc" id="L118">				return ((Collection&lt;?&gt;) elements).size();</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="fc" id="L118">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {
 <span class="nc" id="L120">				int s = 0;</span>
 				for (@SuppressWarnings(&quot;unused&quot;)
@@ -124,7 +124,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 <span class="nc" id="L124">				return s;</span>
 			}
 		} else {
-<span class="nc" id="L127">			return weightFunc.weightSum(elements);</span>
+<span class="fc" id="L127">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 

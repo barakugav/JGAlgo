@@ -22,14 +22,14 @@ import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L25">abstract class IntGraphBase implements IntGraph {</span>
+<span class="fc" id="L25">abstract class IntGraphBase extends GraphBase&lt;Integer, Integer&gt; implements IntGraph {</span>
 
 	@Override
 	public boolean equals(Object other) {
 <span class="fc bfc" id="L29" title="All 2 branches covered.">		if (other == this)</span>
 <span class="fc" id="L30">			return true;</span>
 <span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (!(other instanceof IntGraph))</span>
-<span class="nc" id="L32">			return false;</span>
+<span class="nc" id="L32">			return super.equals(other);</span>
 <span class="fc" id="L33">		IntGraph o = (IntGraph) other;</span>
 
 <span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (isDirected() != o.isDirected())</span>
@@ -103,7 +103,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="nc bnc" id="L103" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
 <span class="nc" id="L104">			edgesWeights.add(getEdgesIWeights(key));</span>
 
-<span class="nc" id="L106">		ObjIntConsumer&lt;Collection&lt;IWeights&lt;?&gt;&gt;&gt; appendWeights = (weights, key) -&gt; {</span>
+<span class="nc" id="L106">		ObjIntConsumer&lt;Collection&lt;IWeights&lt;?&gt;&gt;&gt; appendWeights = (weights, elm) -&gt; {</span>
 <span class="nc" id="L107">			s.append('[');</span>
 <span class="nc" id="L108">			boolean firstData = true;</span>
 <span class="nc bnc" id="L109" title="All 2 branches missed.">			for (IWeights&lt;?&gt; weight : weights) {</span>
@@ -112,7 +112,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 				} else {
 <span class="nc" id="L113">					s.append(&quot;, &quot;);</span>
 				}
-<span class="nc" id="L115">				s.append(weight.getAsObj(key));</span>
+<span class="nc" id="L115">				s.append(weight.getAsObj(elm));</span>
 <span class="nc" id="L116">			}</span>
 <span class="nc" id="L117">			s.append(']');</span>
 <span class="nc" id="L118">		};</span>

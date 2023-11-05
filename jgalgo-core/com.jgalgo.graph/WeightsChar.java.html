@@ -34,7 +34,7 @@ public interface WeightsChar&lt;K &gt; extends Weights&lt;K, Character&gt;  {
 	@Deprecated
 	@Override
 	default Character getAsObj(K element) {
-<span class="nc" id="L37">		return Character.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Character.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsChar&lt;K &gt; extends Weights&lt;K, Character&gt;  {
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Character weight) {
-<span class="nc" id="L51">		set(element, weight.charValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.charValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.

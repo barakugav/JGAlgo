@@ -63,12 +63,11 @@ public interface Bfs {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; Bfs.Iter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source) {
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="nc" id="L67">			return (Bfs.Iter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
-<span class="nc" id="L68">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L69">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L70">		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="nc" id="L71">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(indexBFS, viMap, eiMap);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L67">			return (Bfs.Iter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="fc" id="L68">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L69">		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L70">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBFS);</span>
 	}
 
 	/**
@@ -87,12 +86,11 @@ public interface Bfs {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; Bfs.Iter&lt;V, E&gt; newInstanceBackward(Graph&lt;V, E&gt; g, V source) {
-<span class="nc bnc" id="L90" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="nc" id="L91">			return (Bfs.Iter&lt;V, E&gt;) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());</span>
-<span class="nc" id="L92">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L93">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L94">		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="nc" id="L95">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(indexBFS, viMap, eiMap);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
+<span class="nc" id="L90">			return (Bfs.Iter&lt;V, E&gt;) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="nc" id="L91">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L92">		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="nc" id="L93">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBFS);</span>
 	}
 
 	/**
@@ -103,11 +101,11 @@ public interface Bfs {
 	 * @return        a BFS iterator that iterate over the vertices of the graph
 	 */
 	public static Bfs.IntIter newInstance(IntGraph g, int source) {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L107">			return new BfsIterImpl.Forward((IndexGraph) g, source);</span>
-<span class="fc" id="L108">		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L109">		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="fc" id="L110">		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L105">			return new BfsIterImpl.Forward((IndexGraph) g, source);</span>
+<span class="fc" id="L106">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L107">		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L108">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);</span>
 	}
 
 	/**
@@ -121,11 +119,11 @@ public interface Bfs {
 	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
 	 */
 	public static Bfs.IntIter newInstanceBackward(IntGraph g, int source) {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L125">			return new BfsIterImpl.Backward((IndexGraph) g, source);</span>
-<span class="nc" id="L126">		IndexIntIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L127">		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="nc" id="L128">		return new BfsIterImpl.IntBfsFromIndexBfs(indexBFS, viMap, eiMap);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L123">			return new BfsIterImpl.Backward((IndexGraph) g, source);</span>
+<span class="nc" id="L124">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L125">		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="nc" id="L126">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);</span>
 	}
 
 	/**
@@ -192,7 +190,7 @@ public interface Bfs {
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="nc" id="L195">			return IntIterator.super.next();</span>
+<span class="fc" id="L193">			return IntIterator.super.next();</span>
 		}
 
 		/**
@@ -207,7 +205,8 @@ public interface Bfs {
 		@Deprecated
 		@Override
 		default Integer lastEdge() {
-<span class="nc" id="L210">			return Integer.valueOf(lastEdgeInt());</span>
+<span class="fc" id="L208">			int e = lastEdgeInt();</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
 		}
 	}
 

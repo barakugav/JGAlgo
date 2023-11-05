@@ -97,7 +97,7 @@ public interface MinimumCutST {
 	 * @return a default implementation of {@link MinimumCutST}
 	 */
 	static MinimumCutST newInstance() {
-<span class="nc" id="L100">		return newBuilder().build();</span>
+<span class="fc" id="L100">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -108,7 +108,7 @@ public interface MinimumCutST {
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-<span class="nc" id="L111">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
+<span class="fc" id="L111">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
 	}
 
 	/**

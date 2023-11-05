@@ -15,47 +15,40 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 
-<span class="nc" id="L22">class ConnectedComponentsUtils {</span>
+<span class="nc" id="L21">class ConnectedComponentsUtils {</span>
 
-<span class="fc" id="L24">	static abstract class AbstractStronglyConnectedComponentsAlgo implements StronglyConnectedComponentsAlgo {</span>
+<span class="fc" id="L23">	static abstract class AbstractStronglyConnectedComponentsAlgo implements StronglyConnectedComponentsAlgo {</span>
 
-<span class="fc" id="L26">		private final WeaklyConnectedComponentsAlgo weaklyConnectedComponentsAlgo =</span>
-<span class="fc" id="L27">				WeaklyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L25">		private final WeaklyConnectedComponentsAlgo weaklyConnectedComponentsAlgo =</span>
+<span class="fc" id="L26">				WeaklyConnectedComponentsAlgo.newInstance();</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; VertexPartition&lt;V, E&gt; findStronglyConnectedComponents(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L33">				return (VertexPartition&lt;V, E&gt;) findStronglyConnectedComponents((IndexGraph) g);</span>
-
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L36">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L37">				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);</span>
-<span class="fc" id="L38">				return (VertexPartition&lt;V, E&gt;) new VertexPartitions.IntPartitionFromIndexPartition((IntGraph) g,</span>
-						indexResult);
+<span class="fc bfc" id="L31" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L32">				return (VertexPartition&lt;V, E&gt;) findStronglyConnectedComponents((IndexGraph) g);</span>
 
 			} else {
-<span class="nc" id="L42">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L43">				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);</span>
-<span class="nc" id="L44">				return new VertexPartitions.ObjPartitionFromIndexPartition&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L35">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L36">				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);</span>
+<span class="fc" id="L37">				return VertexPartitions.partitionFromIndexPartition(g, indexResult);</span>
 			}
 		}
 
 		IVertexPartition findStronglyConnectedComponents(IndexGraph g) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L50">				return findStronglyConnectedComponentsDirected(g);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L43">				return findStronglyConnectedComponentsDirected(g);</span>
 			} else {
-<span class="fc" id="L52">				return (IVertexPartition) weaklyConnectedComponentsAlgo.findWeaklyConnectedComponents(g);</span>
+<span class="fc" id="L45">				return (IVertexPartition) weaklyConnectedComponentsAlgo.findWeaklyConnectedComponents(g);</span>
 			}
 		}
 
 		@Override
 		public &lt;V, E&gt; boolean isStronglyConnected(Graph&lt;V, E&gt; g) {
-<span class="nc bnc" id="L58" title="All 2 branches missed.">			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());</span>
 		}
 
 		abstract IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g);
@@ -64,30 +57,24 @@ import com.jgalgo.graph.IndexGraph;
 
 	}
 
-<span class="fc" id="L67">	static abstract class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {</span>
+<span class="fc" id="L60">	static abstract class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; VertexPartition&lt;V, E&gt; findWeaklyConnectedComponents(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L73">				return (VertexPartition&lt;V, E&gt;) findWeaklyConnectedComponents((IndexGraph) g);</span>
-
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L76">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L77">				IVertexPartition indexResult = findWeaklyConnectedComponents(iGraph);</span>
-<span class="fc" id="L78">				return (VertexPartition&lt;V, E&gt;) new VertexPartitions.IntPartitionFromIndexPartition((IntGraph) g,</span>
-						indexResult);
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L66">				return (VertexPartition&lt;V, E&gt;) findWeaklyConnectedComponents((IndexGraph) g);</span>
 
 			} else {
-<span class="nc" id="L82">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L83">				IVertexPartition indexResult = findWeaklyConnectedComponents(iGraph);</span>
-<span class="nc" id="L84">				return new VertexPartitions.ObjPartitionFromIndexPartition&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L69">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L70">				IVertexPartition indexResult = findWeaklyConnectedComponents(iGraph);</span>
+<span class="fc" id="L71">				return VertexPartitions.partitionFromIndexPartition(g, indexResult);</span>
 			}
 		}
 
 		@Override
 		public &lt;V, E&gt; boolean isWeaklyConnected(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">			return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
 		}
 
 		abstract IVertexPartition findWeaklyConnectedComponents(IndexGraph g);

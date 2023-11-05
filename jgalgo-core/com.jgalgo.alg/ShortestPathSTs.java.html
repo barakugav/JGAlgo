@@ -20,44 +20,31 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
-<span class="nc" id="L28">class ShortestPathSTs {</span>
+<span class="nc" id="L26">class ShortestPathSTs {</span>
 
-<span class="fc" id="L30">	static abstract class AbstractImpl implements ShortestPathST {</span>
+<span class="fc" id="L28">	static abstract class AbstractImpl implements ShortestPathST {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L36">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L37">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
-<span class="nc" id="L38">				return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0);</span>
-
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">			} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L41">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L42">				IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc" id="L43">				IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
-<span class="fc" id="L44">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
-<span class="fc" id="L45">				int iSource = viMap.idToIndex(((Integer) source).intValue());</span>
-<span class="fc" id="L46">				int iTarget = viMap.idToIndex(((Integer) target).intValue());</span>
-
-<span class="fc" id="L48">				IPath indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);</span>
-<span class="fc" id="L49">				return (Path&lt;V, E&gt;) PathImpl.intPathFromIndexPath(indexResult, viMap, eiMap);</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L34">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L35">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
+<span class="nc" id="L36">				return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0);</span>
 
 			} else {
-<span class="nc" id="L52">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L53">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L54">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L55">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="nc" id="L56">				int iSource = viMap.idToIndex(source);</span>
-<span class="nc" id="L57">				int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L39">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L41">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L42">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L43">				int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L44">				int iTarget = viMap.idToIndex(target);</span>
 
-<span class="nc" id="L59">				IPath indexResult = computeShortestPath(iGraph, iw, iSource, iTarget);</span>
-<span class="nc" id="L60">				return PathImpl.objPathFromIndexPath(indexResult, viMap, eiMap);</span>
+<span class="fc" id="L46">				IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget);</span>
+<span class="fc" id="L47">				return PathImpl.pathFromIndexPath(g, indexPath);</span>
 			}
 		}
 

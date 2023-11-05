@@ -40,7 +40,7 @@ public interface IWeightsShort  extends IWeights&lt;Short&gt;, WeightsShort&lt;I
 	@Deprecated
 	@Override
 	default Short getAsObj(int element) {
-<span class="fc" id="L43">		return Short.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Short.valueOf(get(element));</span>
 	}
 
 	/**
@@ -66,14 +66,14 @@ public interface IWeightsShort  extends IWeights&lt;Short&gt;, WeightsShort&lt;I
 	@Deprecated
 	@Override
 	default Short getAsObj(Integer element) {
-<span class="nc" id="L69">		return Short.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Short.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Short weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.shortValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.shortValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 	/**

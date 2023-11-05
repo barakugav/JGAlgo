@@ -68,7 +68,7 @@ public interface WeightFunctionInt&lt;K&gt; extends WeightFunction&lt;K&gt; {
 	@Deprecated
 	@Override
 	default double weight(K element) {
-<span class="nc" id="L71">		return weightInt(element);</span>
+<span class="fc" id="L71">		return weightInt(element);</span>
 	}
 
 	@Override
@@ -78,10 +78,10 @@ public interface WeightFunctionInt&lt;K&gt; extends WeightFunction&lt;K&gt; {
 
 	@Override
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="nc" id="L81">		long sum = 0;</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">		for (K e : elements)</span>
-<span class="nc" id="L83">			sum += weightInt(e);</span>
-<span class="nc" id="L84">		return sum;</span>
+<span class="fc" id="L81">		long sum = 0;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L83">			sum += weightInt(e);</span>
+<span class="fc" id="L84">		return sum;</span>
 	}
 
 }

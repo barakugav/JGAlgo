@@ -34,7 +34,7 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 	@Deprecated
 	@Override
 	default Boolean getAsObj(K element) {
-<span class="nc" id="L37">		return Boolean.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Boolean weight) {
-<span class="nc" id="L51">		set(element, weight.booleanValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.booleanValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.

@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
@@ -103,15 +103,15 @@ public interface ColoringAlgo {
 <span class="fc" id="L103">		int maxColor = -1;</span>
 <span class="pc bpc" id="L104" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
 <span class="nc" id="L105">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L106">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc" id="L106">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
 <span class="nc bnc" id="L107" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="nc" id="L108">				vertexToColor[v] = mapping0.applyAsInt(v);</span>
 <span class="nc" id="L109">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
 			}
 
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		} else if (g instanceof IntGraph) {</span>
+<span class="pc bfc" id="L112" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
 <span class="fc" id="L113">			ig = g.indexGraph();</span>
-<span class="fc" id="L114">			IntUnaryOperator mapping0 = IntContainers.toIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L114">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
 <span class="fc" id="L115">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L117">				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));</span>
@@ -119,11 +119,11 @@ public interface ColoringAlgo {
 			}
 
 <span class="fc" id="L121">		} else {</span>
-<span class="nc" id="L122">			ig = g.indexGraph();</span>
-<span class="nc" id="L123">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L125">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
-<span class="nc" id="L126">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L122">			ig = g.indexGraph();</span>
+<span class="fc" id="L123">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L125">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="fc" id="L126">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
 			}
 		}
 <span class="fc" id="L129">		final int colorNum = maxColor + 1;</span>

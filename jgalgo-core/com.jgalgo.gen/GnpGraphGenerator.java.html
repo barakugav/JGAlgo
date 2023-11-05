@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GnpGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">GnpGraphGenerator.java</span></div><h1>GnpGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * Generates a random graph using the G(n,p) model.
+ * &lt;p&gt;
+ * The G(n,p) model generates a graph by connecting nodes randomly. Each edge is included in the graph with probability
+ * \(p\) independent from every other edge. The model has only two parameters: the vertices set and the probability
+ * \(p\). The generated graphs may be either directed or undirected, and may or may not allow self-loops. Parallel edges
+ * are never created.
+ * &lt;p&gt;
+ * By default, the value of \(p\) is \(0.1\) and the graph is undirected and does not generate self-loops.
+ * &lt;p&gt;
+ * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * &lt;p&gt;
+ * Based on 'On random graphs' by Erdős and Rényi.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+
+	private final boolean intGraph;
+	private Collection&lt;V&gt; vertices;
+	private BiFunction&lt;V, V, E&gt; edgeBuilder;
+<span class="fc" id="L57">	private boolean directed = false;</span>
+<span class="fc" id="L58">	private boolean selfEdges = false;</span>
+<span class="fc" id="L59">	private double p = 0.1;</span>
+<span class="fc" id="L60">	private Random rand = new Random();</span>
+
+<span class="fc" id="L62">	private GnpGraphGenerator(boolean intGraph) {</span>
+<span class="fc" id="L63">		this.intGraph = intGraph;</span>
+<span class="fc" id="L64">	}</span>
+
+	/**
+	 * Creates a new G(n,p) generator.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new G(n,p) generator
+	 */
+	public static &lt;V, E&gt; GnpGraphGenerator&lt;V, E&gt; newInstance() {
+<span class="fc" id="L74">		return new GnpGraphGenerator&lt;&gt;(false);</span>
+	}
+
+	/**
+	 * Creates a new G(n,p) generator for {@link IntGraph}.
+	 *
+	 * @return a new G(n,p) generator for {@link IntGraph}
+	 */
+	public static GnpGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
+<span class="fc" id="L83">		return new GnpGraphGenerator&lt;&gt;(true);</span>
+	}
+
+	/**
+	 * Set the vertices set of the generated graph(s).
+	 * &lt;p&gt;
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
+	 *
+	 * @param vertices the vertices set
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(Collection&lt;V&gt; vertices) {
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (intGraph) {</span>
+<span class="nc" id="L96">			this.vertices =</span>
+<span class="nc" id="L97">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+		} else {
+<span class="fc" id="L99">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+		}
+<span class="fc" id="L101">	}</span>
+
+	/**
+	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * &lt;p&gt;
+	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
+	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 *
+	 * @param verticesNum    the number of vertices
+	 * @param vertexSupplier the supplier of vertices
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L115">			IntList vertices = new IntArrayList(verticesNum);</span>
+<span class="fc" id="L116">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="fc" id="L118">				vertices.add(vSupplier.getAsInt());</span>
+<span class="fc" id="L119">			this.vertices = (Collection&lt;V&gt;) vertices;</span>
+<span class="fc" id="L120">		} else {</span>
+<span class="fc" id="L121">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="fc" id="L123">				vertices.add(vertexSupplier.get());</span>
+<span class="fc" id="L124">			this.vertices = vertices;</span>
+		}
+<span class="fc" id="L126">	}</span>
+
+	/**
+	 * Set the edge supplier of the generated graph(s).
+	 * &lt;p&gt;
+	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
+	 * any generated graph.
+	 *
+	 * @param edgeSupplier the edge supplier
+	 */
+	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
+<span class="fc" id="L138">		Objects.requireNonNull(edgeSupplier);</span>
+<span class="fc" id="L139">		this.edgeBuilder = (u, v) -&gt; edgeSupplier.get();</span>
+<span class="fc" id="L140">	}</span>
+
+	/**
+	 * Set the edge builder function of the generated graph(s).
+	 * &lt;p&gt;
+	 * The function will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
+	 * any generated graph.
+	 *
+	 * @param edgeBuilder the edge builder function
+	 */
+	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
+<span class="nc" id="L152">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="nc" id="L153">	}</span>
+
+	/**
+	 * Determine if the generated graph(s) is directed or undirected.
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 */
+	public void setDirected(boolean directed) {
+<span class="fc" id="L163">		this.directed = directed;</span>
+<span class="fc" id="L164">	}</span>
+
+	/**
+	 * Determine if the generated graph(s) will contain self-loops.
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) will not contain self-loops.
+	 *
+	 * @param selfEdges {@code true} if the generated graph(s) will contain self-loops, {@code false} otherwise
+	 */
+	public void setSelfEdges(boolean selfEdges) {
+<span class="fc" id="L174">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L175">	}</span>
+
+	/**
+	 * Set the probability each edge will exists in the generated graph(s).
+	 * &lt;p&gt;
+	 * First the set of vertices is determined. Then, for each pair of vertices, an edge is created with probability
+	 * \(p\). If the graph is directed, both directions of the edge are created or not created independently with
+	 * probability \(p\). If the graph allows self-loops, each vertex is connected to itself with probability \(p\).
+	 * &lt;p&gt;
+	 * By default, the probability is \(0.1\).
+	 *
+	 * @param p the probability each edge will exists in the generated graph(s)
+	 */
+	public void setEdgeProbability(double p) {
+<span class="fc bfc" id="L189" title="All 4 branches covered.">		if (!(0 &lt;= p &amp;&amp; p &lt;= 1))</span>
+<span class="fc" id="L190">			throw new IllegalArgumentException(&quot;edge probability must be in [0,1]&quot;);</span>
+<span class="fc" id="L191">		this.p = p;</span>
+<span class="fc" id="L192">	}</span>
+
+	/**
+	 * Set the seed of the random number generator used to generate the graph(s).
+	 * &lt;p&gt;
+	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
+	 *
+	 * @param seed the seed of the random number generator
+	 */
+	public void setSeed(long seed) {
+<span class="fc" id="L202">		rand = new Random(seed);</span>
+<span class="fc" id="L203">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">		if (vertices == null)</span>
+<span class="nc" id="L209">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (edgeBuilder == null)</span>
+<span class="nc" id="L211">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
+
+<span class="fc" id="L213">		final int n = vertices.size();</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L217">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L218">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (int v : vertices)</span>
+<span class="fc" id="L220">				g.addVertex(v);</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (p &gt; 0) {</span>
+<span class="fc" id="L222">				IntBinaryOperator edgeBuilder =</span>
+<span class="fc" id="L223">						IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L225">					int u = vertices[uIdx];</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">					if (directed) {</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">						for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="nc" id="L228">							int v = vertices[vIdx];</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">							if (rand.nextDouble() &lt;= p)</span>
+<span class="nc" id="L230">								g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+						}
+					}
+<span class="pc bpc" id="L233" title="1 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L234">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
+<span class="fc" id="L236">						int v = vertices[vIdx];</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L238">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+					}
+				}
+			}
+<span class="fc" id="L242">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+
+		} else {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L246">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L247">			final V[] vertices = (V[]) this.vertices.toArray();</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">			for (V v : vertices)</span>
+<span class="fc" id="L249">				g.addVertex(v);</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">			if (p &gt; 0) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L252">					V u = vertices[uIdx];</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">					if (directed) {</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">						for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="fc" id="L255">							V v = vertices[vIdx];</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L257">								g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+						}
+					}
+<span class="pc bpc" id="L260" title="3 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="nc" id="L261">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
+<span class="fc" id="L263">						V v = vertices[vIdx];</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L265">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+					}
+				}
+
+			}
+<span class="fc" id="L270">			return g;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

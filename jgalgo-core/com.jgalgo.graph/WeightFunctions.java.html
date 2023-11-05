@@ -45,7 +45,7 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
-<span class="pc bpc" id="L48" title="1 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
+<span class="fc bfc" id="L48" title="All 4 branches covered.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
 <span class="fc" id="L49">			return w;</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
 <span class="fc" id="L51">			return w;</span>

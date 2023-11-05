@@ -57,7 +57,7 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	@Deprecated
 	@Override
 	default Integer peekNext() {
-<span class="nc" id="L60">		return Integer.valueOf(peekNextInt());</span>
+<span class="fc" id="L60">		return Integer.valueOf(peekNextInt());</span>
 	}
 
 	/**
@@ -72,7 +72,7 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	@Deprecated
 	@Override
 	default Integer source() {
-<span class="nc" id="L75">		return Integer.valueOf(sourceInt());</span>
+<span class="fc" id="L75">		return Integer.valueOf(sourceInt());</span>
 	}
 
 	/**
@@ -90,13 +90,5 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 <span class="fc" id="L90">		return Integer.valueOf(targetInt());</span>
 	}
 
-	/**
-	 * Get an empty edge iterator.
-	 *
-	 * @return an empty edge iterator
-	 */
-	static IEdgeIter emptyIterator() {
-<span class="nc" id="L99">		return Edges.EmptyEdgeIter.Instance;</span>
-	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

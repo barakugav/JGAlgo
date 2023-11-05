@@ -40,7 +40,7 @@ public interface IWeightsFloat  extends IWeights&lt;Float&gt;, WeightsFloat&lt;I
 	@Deprecated
 	@Override
 	default Float getAsObj(int element) {
-<span class="fc" id="L43">		return Float.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Float.valueOf(get(element));</span>
 	}
 
 	/**
@@ -66,14 +66,14 @@ public interface IWeightsFloat  extends IWeights&lt;Float&gt;, WeightsFloat&lt;I
 	@Deprecated
 	@Override
 	default Float getAsObj(Integer element) {
-<span class="nc" id="L69">		return Float.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Float.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Float weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.floatValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.floatValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 	/**

@@ -34,7 +34,7 @@ public interface WeightsShort&lt;K &gt; extends Weights&lt;K, Short&gt; , Weight
 	@Deprecated
 	@Override
 	default Short getAsObj(K element) {
-<span class="nc" id="L37">		return Short.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Short.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsShort&lt;K &gt; extends Weights&lt;K, Short&gt; , Weight
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Short weight) {
-<span class="nc" id="L51">		set(element, weight.shortValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.shortValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.

@@ -32,7 +32,11 @@ import com.jgalgo.graph.WeightFunction;
  * The most basic single source shortest path (SSSP) algorithms work on graphs with non negative weights, and they are
  * the most efficient, such as Dijkstra algorithm. Negative weights are supported by some implementations of SSSP, and
  * the 'shortest path' is well defined as long as there are no negative cycle in the graph as a path can loop in the
- * cycle and achieve arbitrary small 'length'. See {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
+ * cycle and achieve arbitrary small 'length'. When negative cycles exists, algorithms will either find the shortest
+ * path to any other vertex, or will find a negative cycle, see
+ * {@link ShortestPathSingleSource.Result#getNegativeCycle()}. Note that if a negative cycle exists, but it is not
+ * reachable from the source, the algorithm may or may not find it, depending on the implementation. To get an algorithm
+ * instance that support negative weights, use {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
  * &lt;p&gt;
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
  * linear time for any weights types by calculating the topological order of the vertices (see
@@ -82,7 +86,8 @@ public interface ShortestPathSingleSource {
 	 * Compute the shortest paths from a source to any other vertex in a graph.
 	 * &lt;p&gt;
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
-	 * from a source vertex to some other vertex is the path with the minimum weight.
+	 * from a source vertex to some other vertex is the path with the minimum weight. For cardinality (non weighted)
+	 * shortest pass, pass {@code null} instead of the weight function {@code w}.
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -96,25 +101,6 @@ public interface ShortestPathSingleSource {
 	 */
 	public &lt;V, E&gt; ShortestPathSingleSource.Result&lt;V, E&gt; computeShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
 			V source);
-
-	/**
-	 * Compute the cardinality shortest paths from a source to any other vertex in a graph.
-	 * &lt;p&gt;
-	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
-	 * to some other vertex is the path with the minimum number of edges.
-	 * &lt;p&gt;
-	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned.
-	 *
-	 * @param  &lt;V&gt;    the vertices type
-	 * @param  &lt;E&gt;    the edges type
-	 * @param  g      a graph
-	 * @param  source a source vertex
-	 * @return        a result object containing the distances and cardinality shortest paths from the source to any
-	 *                other vertex
-	 */
-	default &lt;V, E&gt; ShortestPathSingleSource.Result&lt;V, E&gt; computeCardinalityShortestPaths(Graph&lt;V, E&gt; g, V source) {
-<span class="nc" id="L116">		return computeShortestPaths(g, WeightFunction.cardinalityWeightFunction(), source);</span>
-	}
 
 	/**
 	 * A result object for the {@link ShortestPathSingleSource} problem.
@@ -188,7 +174,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default double distance(Integer target) {
-<span class="nc" id="L191">			return distance(target.intValue());</span>
+<span class="fc" id="L177">			return distance(target.intValue());</span>
 		}
 
 		/**
@@ -205,7 +191,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L208">			return getPath(target.intValue());</span>
+<span class="fc" id="L194">			return getPath(target.intValue());</span>
 		}
 
 		@Override
@@ -221,7 +207,7 @@ public interface ShortestPathSingleSource {
 	 * @return a default implementation of {@link ShortestPathSingleSource}
 	 */
 	static ShortestPathSingleSource newInstance() {
-<span class="fc" id="L224">		return newBuilder().build();</span>
+<span class="fc" id="L210">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -232,7 +218,7 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder newBuilder() {
-<span class="fc" id="L235">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
+<span class="fc" id="L221">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
 	}
 
 	/**
@@ -322,7 +308,7 @@ public interface ShortestPathSingleSource {
 		 * @return       this builder
 		 */
 		default ShortestPathSingleSource.Builder setOption(String key, Object value) {
-<span class="nc" id="L325">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L311">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

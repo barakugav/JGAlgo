@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntAdapters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">IntAdapters.java</span></div><h1>IntAdapters.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.util;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.IntSupplier;
+import java.util.function.IntUnaryOperator;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+public class IntAdapters {
+
+	private IntAdapters() {}
+
+	public static IntIterator asIntIterator(Iterator&lt;Integer&gt; it) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (it instanceof IntIterator) {</span>
+<span class="fc" id="L39">			return (IntIterator) it;</span>
+		} else {
+<span class="fc" id="L41">			return new IntIteratorWrapper(it);</span>
+		}
+	}
+
+	public static IntIterable asIntIterable(Iterable&lt;Integer&gt; it) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (it instanceof IntIterable) {</span>
+<span class="fc" id="L47">			return (IntIterable) it;</span>
+		} else {
+<span class="fc" id="L49">			return new IntIterableWrapper(it);</span>
+		}
+	}
+
+	public static IntCollection asIntCollection(Collection&lt;Integer&gt; c) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (c instanceof IntCollection) {</span>
+<span class="fc" id="L55">			return (IntCollection) c;</span>
+		} else {
+<span class="fc" id="L57">			return new IntCollectionWrapper(c);</span>
+		}
+	}
+
+	private static class IntIteratorWrapper implements IntIterator {
+		private final Iterator&lt;Integer&gt; it;
+
+<span class="fc" id="L64">		public IntIteratorWrapper(Iterator&lt;Integer&gt; it) {</span>
+<span class="fc" id="L65">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L66">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L70">			return it.hasNext();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L75">			return it.next().intValue();</span>
+		}
+	}
+
+	private static class IntIterableWrapper implements IntIterable {
+		private final Iterable&lt;Integer&gt; it;
+
+<span class="fc" id="L82">		public IntIterableWrapper(Iterable&lt;Integer&gt; it) {</span>
+<span class="fc" id="L83">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L84">		}</span>
+
+		@Override
+		public IntIterator iterator() {
+<span class="fc" id="L88">			return new IntIteratorWrapper(it.iterator());</span>
+		}
+	}
+
+	private static class IntCollectionWrapper extends AbstractIntCollection {
+		private final Collection&lt;Integer&gt; c;
+
+<span class="fc" id="L95">		public IntCollectionWrapper(Collection&lt;Integer&gt; c) {</span>
+<span class="fc" id="L96">			this.c = Objects.requireNonNull(c);</span>
+<span class="fc" id="L97">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L101">			return c.size();</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc" id="L106">			return c.isEmpty();</span>
+		}
+
+		@Override
+		public Object[] toArray() {
+<span class="nc" id="L111">			return c.toArray();</span>
+		}
+
+		@Override
+		public &lt;T&gt; T[] toArray(T[] a) {
+<span class="nc" id="L116">			return c.toArray(a);</span>
+		}
+
+		@Override
+		public boolean containsAll(Collection&lt;?&gt; c2) {
+<span class="nc" id="L121">			return c.containsAll(c2);</span>
+		}
+
+		@Override
+		public boolean addAll(Collection&lt;? extends Integer&gt; c2) {
+<span class="nc" id="L126">			return c.addAll(c2);</span>
+		}
+
+		@Override
+		public boolean removeAll(Collection&lt;?&gt; c2) {
+<span class="nc" id="L131">			return c.removeAll(c2);</span>
+		}
+
+		@Override
+		public boolean retainAll(Collection&lt;?&gt; c2) {
+<span class="nc" id="L136">			return c.retainAll(c2);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="nc" id="L141">			c.clear();</span>
+<span class="nc" id="L142">		}</span>
+
+		@Override
+		public IntIterator iterator() {
+<span class="fc" id="L146">			return asIntIterator(c.iterator());</span>
+		}
+
+		@Override
+		public boolean add(int key) {
+<span class="nc" id="L151">			return c.add(Integer.valueOf(key));</span>
+		}
+
+		@Override
+		public boolean contains(int key) {
+<span class="nc" id="L156">			return c.contains(Integer.valueOf(key));</span>
+		}
+
+		@Override
+		public boolean rem(int key) {
+<span class="nc" id="L161">			return c.remove(Integer.valueOf(key));</span>
+		}
+
+		@Override
+		public boolean addAll(IntCollection c2) {
+<span class="nc" id="L166">			return c.addAll(c2);</span>
+		}
+
+		@Override
+		public boolean containsAll(IntCollection c2) {
+<span class="nc" id="L171">			return c.containsAll(c2);</span>
+		}
+
+		@Override
+		public boolean removeAll(IntCollection c2) {
+<span class="nc" id="L176">			return c.removeAll(c2);</span>
+		}
+
+		@Override
+		public boolean retainAll(IntCollection c2) {
+<span class="nc" id="L181">			return c.retainAll(c2);</span>
+		}
+
+	}
+
+	public static IntUnaryOperator asIntUnaryOperator(ToIntFunction&lt;Integer&gt; op) {
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">		if (op instanceof IntUnaryOperator) {</span>
+<span class="nc" id="L188">			return (IntUnaryOperator) op;</span>
+		} else {
+<span class="fc" id="L190">			return v -&gt; op.applyAsInt(Integer.valueOf(v));</span>
+		}
+	}
+
+	public static IntSupplier asIntSupplier(Supplier&lt;Integer&gt; sup) {
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">		if (sup instanceof IntSupplier) {</span>
+<span class="nc" id="L196">			return (IntSupplier) sup;</span>
+		} else {
+<span class="fc" id="L198">			return () -&gt; sup.get().intValue();</span>
+		}
+	}
+
+	public static IntBinaryOperator asIntBiOperator(BiFunction&lt;Integer, Integer, Integer&gt; func) {
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		if (func instanceof IntBinaryOperator) {</span>
+<span class="nc" id="L204">			return (IntBinaryOperator) func;</span>
+		} else {
+<span class="fc" id="L206">			return (a, b) -&gt; func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();</span>
+		}
+	}
+
+	public static IntBinaryOperator asIntBiOperator(BinaryOperator&lt;Integer&gt; func) {
+<span class="nc bnc" id="L211" title="All 2 branches missed.">		if (func instanceof IntBinaryOperator) {</span>
+<span class="nc" id="L212">			return (IntBinaryOperator) func;</span>
+		} else {
+<span class="nc" id="L214">			return (a, b) -&gt; func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

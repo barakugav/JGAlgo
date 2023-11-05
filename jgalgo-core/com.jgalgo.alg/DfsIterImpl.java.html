@@ -18,11 +18,13 @@ package com.jgalgo.alg;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -30,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L33">class DfsIterImpl implements Dfs.IntIter {</span>
+<span class="fc" id="L35">class DfsIterImpl implements Dfs.IntIter {</span>
 
 	private final IndexGraph g;
 	private final BitSet visited;
@@ -38,8 +40,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	private final IntArrayList nextEdgePath;
 	private final IntArrayList edgePath;
 	private final IntList edgePathView;
-<span class="fc" id="L41">	private int nextV = -1;</span>
-<span class="fc" id="L42">	private int edgePathAndNextEdgePathCommonElmsNum = 0;</span>
+<span class="fc" id="L43">	private int nextV = -1;</span>
+<span class="fc" id="L44">	private int edgePathAndNextEdgePathCommonElmsNum = 0;</span>
 
 	/**
 	 * Create a DFS iterator rooted at some source vertex.
@@ -47,70 +49,70 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from
 	 */
-<span class="fc" id="L50">	public DfsIterImpl(IndexGraph g, int source) {</span>
-<span class="fc" id="L51">		int n = g.vertices().size();</span>
-<span class="fc" id="L52">		this.g = g;</span>
-<span class="fc" id="L53">		visited = new BitSet(n);</span>
-<span class="fc" id="L54">		edgeIters = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L55">		nextEdgePath = new IntArrayList();</span>
-<span class="fc" id="L56">		edgePath = new IntArrayList();</span>
-<span class="fc" id="L57">		edgePathView = IntLists.unmodifiable(edgePath);</span>
+<span class="fc" id="L52">	public DfsIterImpl(IndexGraph g, int source) {</span>
+<span class="fc" id="L53">		int n = g.vertices().size();</span>
+<span class="fc" id="L54">		this.g = g;</span>
+<span class="fc" id="L55">		visited = new BitSet(n);</span>
+<span class="fc" id="L56">		edgeIters = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L57">		nextEdgePath = new IntArrayList();</span>
+<span class="fc" id="L58">		edgePath = new IntArrayList();</span>
+<span class="fc" id="L59">		edgePathView = IntLists.unmodifiable(edgePath);</span>
 
-<span class="fc" id="L59">		visited.set(source);</span>
-<span class="fc" id="L60">		edgeIters.push(g.outEdges(source).iterator());</span>
-<span class="fc" id="L61">		nextV = source;</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc" id="L61">		visited.set(source);</span>
+<span class="fc" id="L62">		edgeIters.push(g.outEdges(source).iterator());</span>
+<span class="fc" id="L63">		nextV = source;</span>
+<span class="fc" id="L64">	}</span>
 
 	@Override
 	public boolean hasNext() {
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		return nextV != -1;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		return nextV != -1;</span>
 	}
 
 	@Override
 	public int nextInt() {
-<span class="fc" id="L71">		Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L73">		Assertions.Iters.hasNext(this);</span>
 
-<span class="fc" id="L73">		int ret = nextV;</span>
+<span class="fc" id="L75">		int ret = nextV;</span>
 		/* sync edgePath to naxEdgePath */
-<span class="fc" id="L75">		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());</span>
-<span class="fc" id="L76">		edgePath.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,</span>
-<span class="fc" id="L77">				nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);</span>
-<span class="pc bnc" id="L78" title="All 2 branches missed.">		assert edgePath.equals(nextEdgePath);</span>
-<span class="fc" id="L79">		edgePathAndNextEdgePathCommonElmsNum = edgePath.size();</span>
+<span class="fc" id="L77">		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());</span>
+<span class="fc" id="L78">		edgePath.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,</span>
+<span class="fc" id="L79">				nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);</span>
+<span class="pc bnc" id="L80" title="All 2 branches missed.">		assert edgePath.equals(nextEdgePath);</span>
+<span class="fc" id="L81">		edgePathAndNextEdgePathCommonElmsNum = edgePath.size();</span>
 
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">		if (edgeIters.isEmpty()) {</span>
-<span class="nc" id="L82">			nextV = -1;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (edgeIters.isEmpty()) {</span>
+<span class="nc" id="L84">			nextV = -1;</span>
 		} else {
 			advance: for (;;) {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {</span>
-<span class="fc" id="L86">					int e = eit.nextInt();</span>
-<span class="fc" id="L87">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L89">						continue;</span>
-<span class="fc" id="L90">					visited.set(v);</span>
-<span class="fc" id="L91">					edgeIters.push(g.outEdges(v).iterator());</span>
-<span class="fc" id="L92">					nextEdgePath.add(e);</span>
-<span class="fc" id="L93">					nextV = v;</span>
-<span class="fc" id="L94">					break advance;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {</span>
+<span class="fc" id="L88">					int e = eit.nextInt();</span>
+<span class="fc" id="L89">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L91">						continue;</span>
+<span class="fc" id="L92">					visited.set(v);</span>
+<span class="fc" id="L93">					edgeIters.push(g.outEdges(v).iterator());</span>
+<span class="fc" id="L94">					nextEdgePath.add(e);</span>
+<span class="fc" id="L95">					nextV = v;</span>
+<span class="fc" id="L96">					break advance;</span>
 				}
-<span class="fc" id="L96">				edgeIters.pop();</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">				if (edgeIters.isEmpty()) {</span>
-<span class="pc bnc" id="L98" title="All 2 branches missed.">					assert nextEdgePath.isEmpty();</span>
-<span class="fc" id="L99">					nextV = -1;</span>
-<span class="fc" id="L100">					break advance;</span>
+<span class="fc" id="L98">				edgeIters.pop();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (edgeIters.isEmpty()) {</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">					assert nextEdgePath.isEmpty();</span>
+<span class="fc" id="L101">					nextV = -1;</span>
+<span class="fc" id="L102">					break advance;</span>
 				}
-<span class="fc" id="L102">				nextEdgePath.popInt();</span>
-<span class="fc" id="L103">				edgePathAndNextEdgePathCommonElmsNum =</span>
-<span class="fc" id="L104">						Math.min(edgePathAndNextEdgePathCommonElmsNum, nextEdgePath.size());</span>
+<span class="fc" id="L104">				nextEdgePath.popInt();</span>
+<span class="fc" id="L105">				edgePathAndNextEdgePathCommonElmsNum =</span>
+<span class="fc" id="L106">						Math.min(edgePathAndNextEdgePathCommonElmsNum, nextEdgePath.size());</span>
 			}
 		}
 
-<span class="fc" id="L108">		return ret;</span>
+<span class="fc" id="L110">		return ret;</span>
 	}
 
 	@Override
 	public IntList edgePath() {
-<span class="fc" id="L113">		return edgePathView;</span>
+<span class="fc" id="L115">		return edgePathView;</span>
 	}
 
 	static class IntDfsFromIndexDfs implements Dfs.IntIter {
@@ -119,25 +121,25 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L122">		IntDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {</span>
-<span class="fc" id="L123">			this.indexIter = Objects.requireNonNull(indexIter);</span>
-<span class="fc" id="L124">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L125">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="fc" id="L126">		}</span>
+<span class="fc" id="L124">		IntDfsFromIndexDfs(IntGraph g, Dfs.IntIter indexIter) {</span>
+<span class="fc" id="L125">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="fc" id="L126">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L127">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L128">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L130">			return indexIter.hasNext();</span>
+<span class="fc" id="L132">			return indexIter.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L135">			return viMap.indexToIdInt(indexIter.nextInt());</span>
+<span class="fc" id="L137">			return viMap.indexToIdInt(indexIter.nextInt());</span>
 		}
 
 		@Override
 		public IntList edgePath() {
-<span class="fc" id="L140">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
+<span class="fc" id="L142">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
 		}
 	}
 
@@ -147,25 +149,25 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="nc" id="L150">		ObjDfsFromIndexDfs(Dfs.IntIter indexIter, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap) {</span>
-<span class="nc" id="L151">			this.indexIter = Objects.requireNonNull(indexIter);</span>
-<span class="nc" id="L152">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L153">			this.eiMap = Objects.requireNonNull(eiMap);</span>
-<span class="nc" id="L154">		}</span>
+<span class="fc" id="L152">		ObjDfsFromIndexDfs(Graph&lt;V, E&gt; g, Dfs.IntIter indexIter) {</span>
+<span class="fc" id="L153">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="fc" id="L154">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L155">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L156">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc" id="L158">			return indexIter.hasNext();</span>
+<span class="fc" id="L160">			return indexIter.hasNext();</span>
 		}
 
 		@Override
 		public V next() {
-<span class="nc" id="L163">			return viMap.indexToId(indexIter.nextInt());</span>
+<span class="fc" id="L165">			return viMap.indexToId(indexIter.nextInt());</span>
 		}
 
 		@Override
 		public List&lt;E&gt; edgePath() {
-<span class="nc" id="L168">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
+<span class="fc" id="L170">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
 		}
 	}
 

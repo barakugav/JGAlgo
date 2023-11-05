@@ -112,7 +112,7 @@ public interface VoronoiAlgo {
 		 * {@code [0, numberOfBlocks())}.
 		 * &lt;p&gt;
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
-		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code -1} for this block.
+		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code null} for this block.
 		 *
 		 * @param  block index of a block
 		 * @return       the site vertex of the block, or {@code null} if the block is the unreachable block
@@ -157,7 +157,7 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default double distance(Integer vertex) {
-<span class="nc" id="L160">			return distance(vertex.intValue());</span>
+<span class="fc" id="L160">			return distance(vertex.intValue());</span>
 		}
 
 		/**
@@ -175,7 +175,7 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="nc" id="L178">			return getPath(target.intValue());</span>
+<span class="fc" id="L178">			return getPath(target.intValue());</span>
 		}
 
 		/**
@@ -196,7 +196,8 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer blockSite(int block) {
-<span class="nc" id="L199">			return Integer.valueOf(blockSiteInt(block));</span>
+<span class="fc" id="L199">			int site = blockSiteInt(block);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 
 		/**
@@ -214,7 +215,8 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {
-<span class="nc" id="L217">			return Integer.valueOf(vertexSite(vertex.intValue()));</span>
+<span class="fc" id="L218">			int site = vertexSite(vertex.intValue());</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 	}
 
@@ -227,7 +229,7 @@ public interface VoronoiAlgo {
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-<span class="fc" id="L230">		return newBuilder().build();</span>
+<span class="fc" id="L232">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -238,7 +240,7 @@ public interface VoronoiAlgo {
 	 * @return a new builder that can build {@link VoronoiAlgo} objects
 	 */
 	static VoronoiAlgo.Builder newBuilder() {
-<span class="fc" id="L241">		return VoronoiAlgoDijkstra::new;</span>
+<span class="fc" id="L243">		return VoronoiAlgoDijkstra::new;</span>
 	}
 
 	/**
@@ -270,7 +272,7 @@ public interface VoronoiAlgo {
 		 * @return       this builder
 		 */
 		default VoronoiAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L273">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L275">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

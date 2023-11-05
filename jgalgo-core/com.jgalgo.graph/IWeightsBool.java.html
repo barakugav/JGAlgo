@@ -34,13 +34,13 @@ public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;I
 	@Deprecated
 	@Override
 	default boolean get(Integer element) {
-<span class="nc" id="L37">		return get(element.intValue());</span>
+<span class="fc" id="L37">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default Boolean getAsObj(int element) {
-<span class="fc" id="L43">		return Boolean.valueOf(get(element));</span>
+<span class="nc" id="L43">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
@@ -54,8 +54,8 @@ public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;I
 	@Deprecated
 	@Override
 	default void set(Integer element, boolean weight) {
-<span class="nc" id="L57">		set(element.intValue(), weight);</span>
-<span class="nc" id="L58">	}</span>
+<span class="fc" id="L57">		set(element.intValue(), weight);</span>
+<span class="fc" id="L58">	}</span>
 
 	@Deprecated
 	@Override
@@ -66,14 +66,14 @@ public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;I
 	@Deprecated
 	@Override
 	default Boolean getAsObj(Integer element) {
-<span class="nc" id="L69">		return Boolean.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L69">		return Boolean.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Boolean weight) {
-<span class="nc" id="L75">		set(element.intValue(), weight.booleanValue());</span>
-<span class="nc" id="L76">	}</span>
+<span class="fc" id="L75">		set(element.intValue(), weight.booleanValue());</span>
+<span class="fc" id="L76">	}</span>
 
 	
 

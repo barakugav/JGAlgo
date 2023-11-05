@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.graph.IWeightFunction;
 
 /**
@@ -34,18 +35,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	/**
 	 * Construct a new cardinality SSSP algorithm.
 	 */
-<span class="fc" id="L37">	ShortestPathSingleSourceCardinality() {}</span>
-
-	@Override
-	ShortestPathSingleSource.IResult computeCardinalityShortestPaths(IndexGraph g, int source) {
-<span class="fc" id="L41">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {</span>
-<span class="fc" id="L43">			int v = it.nextInt();</span>
-<span class="fc" id="L44">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L45">			res.backtrack[v] = it.lastEdgeInt();</span>
-<span class="fc" id="L46">		}</span>
-<span class="fc" id="L47">		return res;</span>
-	}
+<span class="fc" id="L38">	ShortestPathSingleSourceCardinality() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -55,9 +45,14 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 */
 	@Override
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="pc bpc" id="L58" title="3 of 4 branches missed.">		if (!(w == null || w == IWeightFunction.CardinalityWeightFunction))</span>
-<span class="nc" id="L59">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
-<span class="fc" id="L60">		return computeCardinalityShortestPaths(g, source);</span>
+<span class="fc" id="L48">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L49">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {</span>
+<span class="fc" id="L51">			int v = it.nextInt();</span>
+<span class="fc" id="L52">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L53">			res.backtrack[v] = it.lastEdgeInt();</span>
+<span class="fc" id="L54">		}</span>
+<span class="fc" id="L55">		return res;</span>
 	}
 
 }

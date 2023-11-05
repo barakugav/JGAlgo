@@ -673,7 +673,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                     graph weights
 	 */
 	default Graph&lt;V, E&gt; copy(boolean copyWeights) {
-<span class="nc" id="L676">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="fc" id="L676">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	/**
@@ -801,7 +801,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="nc" id="L804">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
+<span class="fc" id="L804">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -815,7 +815,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="nc" id="L818">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
+<span class="fc" id="L818">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
 	}
 
 }

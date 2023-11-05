@@ -16,99 +16,103 @@
 package com.jgalgo.alg;
 
 import java.util.function.DoubleSupplier;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
-<span class="fc" id="L26">class PageRank {</span>
+<span class="fc" id="L28">class PageRank {</span>
 
-<span class="fc" id="L28">	private int iterations = 100;</span>
-<span class="fc" id="L29">	private double tolerance = 0.0001;</span>
-<span class="fc" id="L30">	private double dampingFactor = 0.85;</span>
+<span class="fc" id="L30">	private int iterations = 100;</span>
+<span class="fc" id="L31">	private double tolerance = 0.0001;</span>
+<span class="fc" id="L32">	private double dampingFactor = 0.85;</span>
 
-	VertexScoring computeScores(IntGraph g, IWeightFunction w) {
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L34">			return computeScores((IndexGraph) g, w);</span>
+	@SuppressWarnings(&quot;unchecked&quot;)
+	&lt;V, E&gt; VertexScoring&lt;V, E&gt; computeScores(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L37">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L38">			return (VertexScoring&lt;V, E&gt;) computeScores((IndexGraph) g, w0);</span>
 
-<span class="fc" id="L36">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L37">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L38">		IndexIntIdMap eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L39">		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-
-<span class="fc" id="L41">		VertexScoring indexResult = computeScores(iGraph, iw);</span>
-<span class="fc" id="L42">		return new VertexScoringImpl.ResultFromIndexResult(indexResult, viMap);</span>
+		} else {
+<span class="fc" id="L41">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L42">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L43">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L44">			IVertexScoring indexResult = computeScores(iGraph, iw);</span>
+<span class="fc" id="L45">			return VertexScoringImpl.resultFromIndexResult(g, indexResult);</span>
+		}
 	}
 
-	VertexScoring computeScores(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L46">		final int n = g.vertices().size();</span>
+	private IVertexScoring computeScores(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L50">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L48">		int[] outDegree = new int[n];</span>
-<span class="fc" id="L49">		double[] scores = new double[n];</span>
-<span class="fc" id="L50">		double[] transferredScores = new double[n];</span>
-<span class="fc" id="L51">		Predecessors ng = new Predecessors(g, w);</span>
+<span class="fc" id="L52">		int[] outDegree = new int[n];</span>
+<span class="fc" id="L53">		double[] scores = new double[n];</span>
+<span class="fc" id="L54">		double[] transferredScores = new double[n];</span>
+<span class="fc" id="L55">		Predecessors ng = new Predecessors(g, w);</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L54">			outDegree[v] = g.outEdges(v).size();</span>
-<span class="fc" id="L55">			scores[v] = 1.0 / n;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L58">			outDegree[v] = g.outEdges(v).size();</span>
+<span class="fc" id="L59">			scores[v] = 1.0 / n;</span>
 		}
 
-<span class="fc" id="L58">		DoubleSupplier randomFactor = () -&gt; {</span>
-<span class="fc" id="L59">			double rFactor = 0;</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">				rFactor += outDegree[v] &gt; 0 ? (1 - dampingFactor) * scores[v] : scores[v];</span>
-<span class="fc" id="L62">			return rFactor / n;</span>
+<span class="fc" id="L62">		DoubleSupplier randomFactor = () -&gt; {</span>
+<span class="fc" id="L63">			double rFactor = 0;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				rFactor += outDegree[v] &gt; 0 ? (1 - dampingFactor) * scores[v] : scores[v];</span>
+<span class="fc" id="L66">			return rFactor / n;</span>
 		};
 
-<span class="pc bpc" id="L65" title="2 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
-<span class="nc" id="L67">				double rFactor = randomFactor.getAsDouble();</span>
+<span class="pc bpc" id="L69" title="2 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
+<span class="nc" id="L71">				double rFactor = randomFactor.getAsDouble();</span>
 
-<span class="nc bnc" id="L69" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L70">					transferredScores[v] = scores[v] / outDegree[v];</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="nc" id="L74">					transferredScores[v] = scores[v] / outDegree[v];</span>
 
-<span class="nc" id="L72">				double maxChange = 0;</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L74">					double score = 0;</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
-<span class="nc" id="L76">						score += transferredScores[ng.predecessor(v, eIdx)];</span>
-<span class="nc" id="L77">					score = rFactor + dampingFactor * score;</span>
-<span class="nc" id="L78">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
-<span class="nc" id="L79">					scores[v] = score;</span>
+<span class="nc" id="L76">				double maxChange = 0;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">				for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc" id="L78">					double score = 0;</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
+<span class="nc" id="L80">						score += transferredScores[ng.predecessor(v, eIdx)];</span>
+<span class="nc" id="L81">					score = rFactor + dampingFactor * score;</span>
+<span class="nc" id="L82">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
+<span class="nc" id="L83">					scores[v] = score;</span>
 				}
-<span class="nc bnc" id="L81" title="All 2 branches missed.">				if (maxChange &lt; tolerance)</span>
-<span class="nc" id="L82">					break;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">				if (maxChange &lt; tolerance)</span>
+<span class="nc" id="L86">					break;</span>
 			}
 
 		} else {
-<span class="fc" id="L86">			double[] weightSum = new double[n];</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L88">				weightSum[u] = w.weightSum(g.outEdges(u));</span>
+<span class="fc" id="L90">			double[] weightSum = new double[n];</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L92">				weightSum[u] = w.weightSum(g.outEdges(u));</span>
 
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
-<span class="fc" id="L91">				double rFactor = randomFactor.getAsDouble();</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
+<span class="fc" id="L95">				double rFactor = randomFactor.getAsDouble();</span>
 
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L94">					transferredScores[v] = scores[v] / weightSum[v];</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L98">					transferredScores[v] = scores[v] / weightSum[v];</span>
 
-<span class="fc" id="L96">				double maxChange = 0;</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L98">					double score = 0;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
-<span class="fc" id="L100">						score += transferredScores[ng.predecessor(v, eIdx)] * ng.edgeWeight(v, eIdx);</span>
-<span class="fc" id="L101">					score = rFactor + dampingFactor * score;</span>
-<span class="fc" id="L102">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
-<span class="fc" id="L103">					scores[v] = score;</span>
+<span class="fc" id="L100">				double maxChange = 0;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L102">					double score = 0;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">					for (int num = outDegree[v], eIdx = 0; eIdx &lt; num; eIdx++)</span>
+<span class="fc" id="L104">						score += transferredScores[ng.predecessor(v, eIdx)] * ng.edgeWeight(v, eIdx);</span>
+<span class="fc" id="L105">					score = rFactor + dampingFactor * score;</span>
+<span class="fc" id="L106">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
+<span class="fc" id="L107">					scores[v] = score;</span>
 				}
-<span class="fc bfc" id="L105" title="All 2 branches covered.">				if (maxChange &lt; tolerance)</span>
-<span class="fc" id="L106">					break;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (maxChange &lt; tolerance)</span>
+<span class="fc" id="L110">					break;</span>
 			}
 
 		}
 
-<span class="fc" id="L111">		return new VertexScoringImpl.ResultImpl(scores);</span>
+<span class="fc" id="L115">		return new VertexScoringImpl.ResultImpl(scores);</span>
 	}
 
 	private static class Predecessors {
@@ -117,50 +121,50 @@ import com.jgalgo.graph.IWeightFunction;
 		private final int[] neighborsBegin;
 		private final double[] weights;
 
-<span class="fc" id="L120">		Predecessors(IndexGraph g, IWeightFunction w) {</span>
-<span class="fc" id="L121">			final int n = g.vertices().size();</span>
-<span class="fc" id="L122">			final int m = g.edges().size();</span>
-<span class="fc" id="L123">			neighborsBegin = new int[n + 1];</span>
+<span class="fc" id="L124">		Predecessors(IndexGraph g, IWeightFunction w) {</span>
+<span class="fc" id="L125">			final int n = g.vertices().size();</span>
+<span class="fc" id="L126">			final int m = g.edges().size();</span>
+<span class="fc" id="L127">			neighborsBegin = new int[n + 1];</span>
 
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			if (g.isDirected()) {</span>
-<span class="nc" id="L126">				neighbors = new int[m];</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">			if (g.isDirected()) {</span>
+<span class="nc" id="L130">				neighbors = new int[m];</span>
 			} else {
-<span class="fc" id="L128">				int outDegreeSum = 0;</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L130">					outDegreeSum += g.outEdges(u).size();</span>
-<span class="fc" id="L131">				neighbors = new int[outDegreeSum];</span>
+<span class="fc" id="L132">				int outDegreeSum = 0;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L134">					outDegreeSum += g.outEdges(u).size();</span>
+<span class="fc" id="L135">				neighbors = new int[outDegreeSum];</span>
 			}
 
-<span class="pc bpc" id="L134" title="2 of 4 branches missed.">			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
-<span class="nc" id="L135">				weights = null;</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">				for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
-<span class="nc" id="L137">					neighborsBegin[u] = eIdx;</span>
-<span class="nc bnc" id="L138" title="All 2 branches missed.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L139">						eit.nextInt();</span>
-<span class="nc" id="L140">						neighbors[eIdx++] = eit.targetInt();</span>
+<span class="pc bpc" id="L138" title="2 of 4 branches missed.">			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
+<span class="nc" id="L139">				weights = null;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">				for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
+<span class="nc" id="L141">					neighborsBegin[u] = eIdx;</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L143">						eit.nextInt();</span>
+<span class="nc" id="L144">						neighbors[eIdx++] = eit.targetInt();</span>
 					}
 				}
 			} else {
-<span class="fc" id="L144">				weights = new double[neighbors.length];</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L146">					neighborsBegin[u] = eIdx;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L148">						int e = eit.nextInt();</span>
-<span class="fc" id="L149">						neighbors[eIdx] = eit.targetInt();</span>
-<span class="fc" id="L150">						weights[eIdx] = w.weight(e);</span>
-<span class="fc" id="L151">						eIdx++;</span>
-<span class="fc" id="L152">					}</span>
+<span class="fc" id="L148">				weights = new double[neighbors.length];</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">				for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L150">					neighborsBegin[u] = eIdx;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L152">						int e = eit.nextInt();</span>
+<span class="fc" id="L153">						neighbors[eIdx] = eit.targetInt();</span>
+<span class="fc" id="L154">						weights[eIdx] = w.weight(e);</span>
+<span class="fc" id="L155">						eIdx++;</span>
+<span class="fc" id="L156">					}</span>
 				}
 			}
-<span class="fc" id="L155">			neighborsBegin[n] = neighbors.length;</span>
-<span class="fc" id="L156">		}</span>
+<span class="fc" id="L159">			neighborsBegin[n] = neighbors.length;</span>
+<span class="fc" id="L160">		}</span>
 
 		int predecessor(int source, int edgeIdx) {
-<span class="fc" id="L159">			return neighbors[neighborsBegin[source] + edgeIdx];</span>
+<span class="fc" id="L163">			return neighbors[neighborsBegin[source] + edgeIdx];</span>
 		}
 
 		double edgeWeight(int source, int edgeIdx) {
-<span class="fc" id="L163">			return weights[neighborsBegin[source] + edgeIdx];</span>
+<span class="fc" id="L167">			return weights[neighborsBegin[source] + edgeIdx];</span>
 		}
 
 	}

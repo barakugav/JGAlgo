@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphBase.java</span></div><h1>GraphBase.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="fc" id="L23">abstract class GraphBase&lt;V, E&gt; implements Graph&lt;V, E&gt; {</span>
+
+	@Override
+	public boolean equals(Object other) {
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">		if (other == this)</span>
+<span class="nc" id="L28">			return true;</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (!(other instanceof Graph))</span>
+<span class="nc" id="L30">			return false;</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L32">		Graph&lt;V, E&gt; o = (Graph&lt;V, E&gt;) other;</span>
+
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (isDirected() != o.isDirected())</span>
+<span class="nc" id="L35">			return false;</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!vertices().equals(o.vertices()))</span>
+<span class="nc" id="L37">			return false;</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (!edges().equals(o.edges()))</span>
+<span class="nc" id="L39">			return false;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">			for (E e : edges())</span>
+<span class="pc bpc" id="L42" title="2 of 4 branches missed.">				if (!edgeSource(e).equals(o.edgeSource(e)) || !edgeTarget(e).equals(o.edgeTarget(e)))</span>
+<span class="nc" id="L43">					return false;</span>
+		} else {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			for (E e : edges()) {</span>
+<span class="fc" id="L46">				V s1 = edgeSource(e), t1 = edgeTarget(e);</span>
+<span class="fc" id="L47">				V s2 = o.edgeSource(e), t2 = o.edgeTarget(e);</span>
+<span class="pc bpc" id="L48" title="6 of 8 branches missed.">				if (!(s1.equals(s2) &amp;&amp; t1.equals(t2)) &amp;&amp; !(s1.equals(t2) &amp;&amp; t1.equals(s2)))</span>
+<span class="nc" id="L49">					return false;</span>
+<span class="fc" id="L50">			}</span>
+		}
+
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))</span>
+<span class="nc" id="L54">			return false;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (String key : getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L56">			Weights&lt;V, ?&gt; w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			if (!WeightsImpl.isEqual(vertices(), w1, w2))</span>
+<span class="nc" id="L58">				return false;</span>
+<span class="fc" id="L59">		}</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))</span>
+<span class="nc" id="L61">			return false;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (String key : getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L63">			Weights&lt;E, ?&gt; w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (!WeightsImpl.isEqual(edges(), w1, w2))</span>
+<span class="nc" id="L65">				return false;</span>
+<span class="fc" id="L66">		}</span>
+
+<span class="fc" id="L68">		return true;</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L73">		int h = Boolean.hashCode(isDirected());</span>
+<span class="nc" id="L74">		h += vertices().hashCode();</span>
+<span class="nc" id="L75">		h += edges().hashCode();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (isDirected()) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			for (E e : edges())</span>
+<span class="nc" id="L78">				h += edgeSource(e).hashCode() + 31 * edgeTarget(e).hashCode();</span>
+		} else {
+<span class="nc bnc" id="L80" title="All 2 branches missed.">			for (E e : edges())</span>
+<span class="nc" id="L81">				h += edgeSource(e).hashCode() + edgeTarget(e).hashCode();</span>
+		}
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		for (String key : getVerticesWeightsKeys())</span>
+<span class="nc" id="L84">			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">		for (String key : getEdgesWeightsKeys())</span>
+<span class="nc" id="L86">			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));</span>
+<span class="nc" id="L87">		return h;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L92">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L93">		s.append('{');</span>
+
+<span class="nc" id="L95">		Set&lt;String&gt; verticesWeightsKeys = getVerticesWeightsKeys();</span>
+<span class="nc" id="L96">		Collection&lt;Weights&lt;V, ?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">		for (String key : verticesWeightsKeys)</span>
+<span class="nc" id="L98">			verticesWeights.add(getVerticesWeights(key));</span>
+
+<span class="nc" id="L100">		Set&lt;String&gt; edgesWeightsKeys = getEdgesWeightsKeys();</span>
+<span class="nc" id="L101">		Collection&lt;Weights&lt;E, ?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
+<span class="nc" id="L103">			edgesWeights.add(getEdgesWeights(key));</span>
+
+<span class="nc" id="L105">		BiConsumer&lt;Collection&lt;Weights&lt;V, ?&gt;&gt;, V&gt; appendVertexWeights = (weights, vertex) -&gt; {</span>
+<span class="nc" id="L106">			s.append('[');</span>
+<span class="nc" id="L107">			boolean firstData = true;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			for (Weights&lt;V, ?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L110">					firstData = false;</span>
+				} else {
+<span class="nc" id="L112">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L114">				s.append(weight.getAsObj(vertex));</span>
+<span class="nc" id="L115">			}</span>
+<span class="nc" id="L116">			s.append(']');</span>
+<span class="nc" id="L117">		};</span>
+<span class="nc" id="L118">		BiConsumer&lt;Collection&lt;Weights&lt;E, ?&gt;&gt;, E&gt; appendEdgeWeights = (weights, edge) -&gt; {</span>
+<span class="nc" id="L119">			s.append('[');</span>
+<span class="nc" id="L120">			boolean firstData = true;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">			for (Weights&lt;E, ?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L123">					firstData = false;</span>
+				} else {
+<span class="nc" id="L125">					s.append(&quot;, &quot;);</span>
+				}
+<span class="nc" id="L127">				s.append(weight.getAsObj(edge));</span>
+<span class="nc" id="L128">			}</span>
+<span class="nc" id="L129">			s.append(']');</span>
+<span class="nc" id="L130">		};</span>
+
+<span class="nc" id="L132">		boolean firstVertex = true;</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">		for (V u : vertices()) {</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">			if (firstVertex) {</span>
+<span class="nc" id="L135">				firstVertex = false;</span>
+			} else {
+<span class="nc" id="L137">				s.append(&quot;, &quot;);</span>
+			}
+<span class="nc" id="L139">			s.append('v').append(u);</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
+<span class="nc" id="L141">				appendVertexWeights.accept(verticesWeights, u);</span>
+
+<span class="nc" id="L143">			s.append(&quot;: [&quot;);</span>
+<span class="nc" id="L144">			boolean firstEdge = true;</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">			for (EdgeIter&lt;V, E&gt; eit = outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L146">				E e = eit.next();</span>
+<span class="nc" id="L147">				V v = eit.target();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">				if (firstEdge)</span>
+<span class="nc" id="L149">					firstEdge = false;</span>
+				else
+<span class="nc" id="L151">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L152">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
+<span class="nc" id="L154">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L155">					appendEdgeWeights.accept(edgesWeights, e);</span>
+				}
+<span class="nc" id="L157">				s.append(')');</span>
+<span class="nc" id="L158">			}</span>
+<span class="nc" id="L159">			s.append(']');</span>
+<span class="nc" id="L160">		}</span>
+<span class="nc" id="L161">		s.append('}');</span>
+<span class="nc" id="L162">		return s.toString();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

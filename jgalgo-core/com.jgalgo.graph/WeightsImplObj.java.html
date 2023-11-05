@@ -153,27 +153,27 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 	static class ObjMapped&lt;K , T&gt; extends WeightsImpl.ObjMapped&lt;K, T&gt; implements WeightsObj&lt;K , T&gt; {
 		ObjMapped(WeightsImplObj.IndexImpl &lt;T&gt; weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="nc" id="L156">			super(weights, indexMap);</span>
-<span class="nc" id="L157">		}</span>
+<span class="fc" id="L156">			super(weights, indexMap);</span>
+<span class="fc" id="L157">		}</span>
 
 		@Override
 		public WeightsImplObj.IndexImpl &lt;T&gt; weights() {
-<span class="nc" id="L161">			return (WeightsImplObj.IndexImpl &lt;T&gt;) super.weights();</span>
+<span class="fc" id="L161">			return (WeightsImplObj.IndexImpl &lt;T&gt;) super.weights();</span>
 		}
 
 		@Override
 		public T get(K id) {
-<span class="nc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(K id, T weight) {
-<span class="nc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="nc" id="L172">		}</span>
+<span class="fc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L172">		}</span>
 
 		@Override
 		public T defaultWeight() {
-<span class="nc" id="L176">			return weights().defaultWeight();</span>
+<span class="fc" id="L176">			return weights().defaultWeight();</span>
 		}
 	}
 

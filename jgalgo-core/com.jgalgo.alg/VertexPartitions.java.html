@@ -376,7 +376,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 		@Override
 		public IntGraph graph() {
-<span class="nc" id="L379">			return g;</span>
+<span class="fc" id="L379">			return g;</span>
 		}
 
 		@Override
@@ -399,68 +399,78 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 		}
 	}
 
-<span class="nc" id="L402">	static class ObjPartitionFromIndexPartition&lt;V, E&gt; implements VertexPartition&lt;V, E&gt; {</span>
+<span class="fc" id="L402">	static class ObjPartitionFromIndexPartition&lt;V, E&gt; implements VertexPartition&lt;V, E&gt; {</span>
 
 		private final Graph&lt;V, E&gt; g;
 		final IVertexPartition indexPartition;
 		final IndexIdMap&lt;V&gt; viMap;
 		final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="nc" id="L409">		ObjPartitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {</span>
-<span class="nc" id="L410">			this.g = Objects.requireNonNull(g);</span>
-<span class="nc bnc" id="L411" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
-<span class="nc" id="L412">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
-<span class="nc" id="L413">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L414">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L415">		}</span>
+<span class="fc" id="L409">		ObjPartitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {</span>
+<span class="fc" id="L410">			this.g = Objects.requireNonNull(g);</span>
+<span class="pc bnc" id="L411" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
+<span class="fc" id="L412">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
+<span class="fc" id="L413">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L414">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L415">		}</span>
 
 		@Override
 		public int numberOfBlocks() {
-<span class="nc" id="L419">			return indexPartition.numberOfBlocks();</span>
+<span class="fc" id="L419">			return indexPartition.numberOfBlocks();</span>
 		}
 
 		@Override
 		public int vertexBlock(V vertex) {
-<span class="nc" id="L424">			return indexPartition.vertexBlock(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L424">			return indexPartition.vertexBlock(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; blockVertices(int block) {
-<span class="nc" id="L429">			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);</span>
+<span class="fc" id="L429">			return IndexIdMaps.indexToIdSet(indexPartition.blockVertices(block), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; blockEdges(int block) {
-<span class="nc" id="L434">			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);</span>
+<span class="fc" id="L434">			return IndexIdMaps.indexToIdSet(indexPartition.blockEdges(block), eiMap);</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; crossEdges(int block1, int block2) {
-<span class="nc" id="L439">			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);</span>
+<span class="fc" id="L439">			return IndexIdMaps.indexToIdSet(indexPartition.crossEdges(block1, block2), eiMap);</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; graph() {
-<span class="nc" id="L444">			return g;</span>
+<span class="fc" id="L444">			return g;</span>
 		}
 
 		@Override
 		public Graph&lt;Integer, E&gt; blocksGraph(boolean parallelEdges, boolean selfEdges) {
-<span class="nc" id="L449">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
-<span class="nc bnc" id="L450" title="All 2 branches missed.">			GraphBuilder&lt;Integer, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
-<span class="nc" id="L451">			gb.expectedVerticesNum(ig.vertices().size());</span>
-<span class="nc" id="L452">			gb.expectedEdgesNum(ig.edges().size());</span>
-<span class="nc bnc" id="L453" title="All 2 branches missed.">			for (int b : ig.vertices())</span>
-<span class="nc" id="L454">				gb.addVertex(Integer.valueOf(b));</span>
-<span class="nc bnc" id="L455" title="All 2 branches missed.">			for (int e : ig.edges())</span>
-<span class="nc" id="L456">				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));</span>
-<span class="nc" id="L457">			return gb.build();</span>
+<span class="fc" id="L449">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">			GraphBuilder&lt;Integer, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L451">			gb.expectedVerticesNum(ig.vertices().size());</span>
+<span class="fc" id="L452">			gb.expectedEdgesNum(ig.edges().size());</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">			for (int b : ig.vertices())</span>
+<span class="fc" id="L454">				gb.addVertex(Integer.valueOf(b));</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">			for (int e : ig.edges())</span>
+<span class="fc" id="L456">				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));</span>
+<span class="fc" id="L457">			return gb.build();</span>
 		}
 
 		@Override
 		public String toString() {
 <span class="nc" id="L462">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
 <span class="nc" id="L463">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; VertexPartition&lt;V, E&gt; partitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {
+<span class="pc bnc" id="L469" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L471">			return (VertexPartition&lt;V, E&gt;) new IntPartitionFromIndexPartition((IntGraph) g, indexPartition);</span>
+		} else {
+<span class="fc" id="L473">			return new ObjPartitionFromIndexPartition&lt;&gt;(g, indexPartition);</span>
 		}
 	}
 

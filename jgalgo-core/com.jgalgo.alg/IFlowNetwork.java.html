@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.IntContainers;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -51,7 +51,7 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default double getCapacity(Integer edge) {
-<span class="nc" id="L54">		return getCapacity(edge.intValue());</span>
+<span class="fc" id="L54">		return getCapacity(edge.intValue());</span>
 	}
 
 	/**
@@ -67,8 +67,8 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void setCapacity(Integer edge, double capacity) {
-<span class="nc" id="L70">		setCapacity(edge.intValue(), capacity);</span>
-<span class="nc" id="L71">	}</span>
+<span class="fc" id="L70">		setCapacity(edge.intValue(), capacity);</span>
+<span class="fc" id="L71">	}</span>
 
 	/**
 	 * Get the amount of flow units going along an edge.
@@ -90,7 +90,7 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default double getFlow(Integer edge) {
-<span class="nc" id="L93">		return getFlow(edge.intValue());</span>
+<span class="fc" id="L93">		return getFlow(edge.intValue());</span>
 	}
 
 	/**
@@ -105,8 +105,8 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void setFlow(Integer edge, double flow) {
-<span class="nc" id="L108">		setFlow(edge.intValue(), flow);</span>
-<span class="nc" id="L109">	}</span>
+<span class="fc" id="L108">		setFlow(edge.intValue(), flow);</span>
+<span class="fc" id="L109">	}</span>
 
 	/**
 	 * Get the sum of flow units going out of a source vertex.
@@ -116,13 +116,13 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	 * @return        the sum of flow units going out of {@code source}
 	 */
 	default double getFlowSum(IntGraph g, int source) {
-<span class="fc" id="L119">		return getFlowSum(g, IntList.of(source));</span>
+<span class="nc" id="L119">		return getFlowSum(g, IntList.of(source));</span>
 	}
 
 	@Deprecated
 	@Override
 	default double getFlowSum(Graph&lt;Integer, Integer&gt; g, Integer source) {
-<span class="nc" id="L125">		return getFlowSum(g, IntList.of(source.intValue()));</span>
+<span class="fc" id="L125">		return getFlowSum(g, IntList.of(source.intValue()));</span>
 	}
 
 	@Override
@@ -132,14 +132,14 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 <span class="fc" id="L132">		double sum = 0;</span>
 <span class="fc" id="L133">		IntGraph g0 = (IntGraph) g;</span>
 <span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (g0.isDirected()) {</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int source : IntAdapters.asIntIterable(sources)) {</span>
 <span class="fc bfc" id="L136" title="All 2 branches covered.">				for (int e : g0.outEdges(source))</span>
 <span class="fc" id="L137">					sum += getFlow(e);</span>
 <span class="fc bfc" id="L138" title="All 2 branches covered.">				for (int e : g0.inEdges(source))</span>
 <span class="fc" id="L139">					sum -= getFlow(e);</span>
 <span class="fc" id="L140">			}</span>
 		} else {
-<span class="nc bnc" id="L142" title="All 2 branches missed.">			for (int source : IntContainers.toIntIterable(sources)) {</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">			for (int source : IntAdapters.asIntIterable(sources)) {</span>
 <span class="nc bnc" id="L143" title="All 2 branches missed.">				for (int e : g0.outEdges(source)) {</span>
 <span class="nc bnc" id="L144" title="All 2 branches missed.">					if (source != g0.edgeTarget(e)) {</span>
 <span class="nc" id="L145">						sum += getFlow(e);</span>
@@ -154,7 +154,7 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 
 	@Override
 	default double getCostSum(Iterable&lt;Integer&gt; edges, WeightFunction&lt;Integer&gt; cost) {
-<span class="nc" id="L157">		IntIterable edges0 = IntContainers.toIntIterable(edges);</span>
+<span class="nc" id="L157">		IntIterable edges0 = IntAdapters.asIntIterable(edges);</span>
 <span class="nc" id="L158">		IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);</span>
 <span class="nc" id="L159">		double sum = 0;</span>
 <span class="nc bnc" id="L160" title="All 2 branches missed.">		if (cost0 instanceof IWeightFunctionInt) {</span>
@@ -184,9 +184,9 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	 * @return   a flow network implemented as edge weights containers added to the graph
 	 */
 	static IFlowNetwork createFromEdgeWeights(IntGraph g) {
-<span class="fc" id="L187">		IWeightsDouble capacities = g.addEdgesWeights(&quot;_capacity&quot;, double.class);</span>
-<span class="fc" id="L188">		IWeightsDouble flows = g.addEdgesWeights(&quot;_flow&quot;, double.class);</span>
-<span class="fc" id="L189">		return createFromEdgeWeights(capacities, flows);</span>
+<span class="nc" id="L187">		IWeightsDouble capacities = g.addEdgesWeights(&quot;_capacity&quot;, double.class);</span>
+<span class="nc" id="L188">		IWeightsDouble flows = g.addEdgesWeights(&quot;_flow&quot;, double.class);</span>
+<span class="nc" id="L189">		return createFromEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
@@ -201,7 +201,7 @@ public interface IFlowNetwork extends FlowNetwork&lt;Integer, Integer&gt; {
 	 * @return            a flow network implemented as external edge weights containers
 	 */
 	static IFlowNetwork createFromEdgeWeights(IWeightsDouble capacities, IWeightsDouble flows) {
-<span class="fc" id="L204">		return new FlowNetworks.NetImplEdgeIWeights(capacities, flows);</span>
+<span class="nc" id="L204">		return new FlowNetworks.NetImplEdgeIWeights(capacities, flows);</span>
 	}
 
 }

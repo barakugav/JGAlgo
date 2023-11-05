@@ -50,7 +50,7 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	@Deprecated
 	@Override
 	default int vertexBlock(Integer vertex) {
-<span class="nc" id="L53">		return vertexBlock(vertex.intValue());</span>
+<span class="fc" id="L53">		return vertexBlock(vertex.intValue());</span>
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	 * @return     a new vertex partition
 	 */
 	static IVertexPartition fromMap(IntGraph g, Int2IntMap map) {
-<span class="fc" id="L97">		return fromMapping(g, map::get);</span>
+<span class="nc" id="L97">		return fromMapping(g, map::get);</span>
 	}
 
 	/**

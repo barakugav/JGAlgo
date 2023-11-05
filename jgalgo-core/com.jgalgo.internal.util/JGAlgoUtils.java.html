@@ -536,7 +536,7 @@ public class JGAlgoUtils {
 	}
 
 	public static &lt;Exec extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(Exec exec) {
-<span class="nc" id="L539">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="fc" id="L539">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	public static &lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(Exec exec) {
@@ -547,14 +547,14 @@ public class JGAlgoUtils {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L550">		RecursiveActionFromRunnable(Exec exec) {</span>
-<span class="nc" id="L551">			this.exec = exec;</span>
-<span class="nc" id="L552">		}</span>
+<span class="fc" id="L550">		RecursiveActionFromRunnable(Exec exec) {</span>
+<span class="fc" id="L551">			this.exec = exec;</span>
+<span class="fc" id="L552">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="nc" id="L556">			exec.run();</span>
-<span class="nc" id="L557">		}</span>
+<span class="fc" id="L556">			exec.run();</span>
+<span class="fc" id="L557">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;

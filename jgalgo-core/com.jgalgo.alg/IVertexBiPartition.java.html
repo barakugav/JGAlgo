@@ -49,7 +49,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
 	 */
 	default boolean isRight(int vertex) {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		return !isLeft(vertex);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		return !isLeft(vertex);</span>
 	}
 
 	@Deprecated

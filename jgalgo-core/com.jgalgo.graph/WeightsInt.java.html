@@ -34,7 +34,7 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default Integer getAsObj(K element) {
-<span class="nc" id="L37">		return Integer.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Integer.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Integer weight) {
-<span class="nc" id="L51">		set(element, weight.intValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.intValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -75,7 +75,7 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="nc" id="L78">		return get(element);</span>
+<span class="fc" id="L78">		return get(element);</span>
 	}
 
 

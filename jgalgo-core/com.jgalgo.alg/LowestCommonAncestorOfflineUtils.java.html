@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
-<span class="nc" id="L30">class LowestCommonAncestorOfflineUtils {</span>
+<span class="pc" id="L30">class LowestCommonAncestorOfflineUtils {</span>
 
 <span class="fc" id="L32">	static abstract class AbstractImpl implements LowestCommonAncestorOffline {</span>
 
@@ -39,29 +39,13 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="nc" id="L39">				return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) findLCAs((IndexGraph) tree,</span>
 <span class="nc" id="L40">						((Integer) root).intValue(), (LowestCommonAncestorOffline.IQueries) queries);</span>
 
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">			} else if (tree instanceof IntGraph) {</span>
-<span class="fc" id="L43">				IndexGraph iGraph = tree.indexGraph();</span>
-<span class="fc" id="L44">				IndexIntIdMap viMap = ((IntGraph) tree).indexGraphVerticesMap();</span>
-<span class="fc" id="L45">				int iRoot = viMap.idToIndex(((Integer) root).intValue());</span>
-
-				LowestCommonAncestorOffline.IQueries iQueries;
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">				if (queries instanceof LowestCommonAncestorOffline.IQueries) {</span>
-<span class="fc" id="L49">					iQueries = new IndexQueriesFromIntQueries((LowestCommonAncestorOffline.IQueries) queries, viMap);</span>
-				} else {
-<span class="nc" id="L51">					iQueries = new IndexQueriesFromObjQueries&lt;&gt;(queries, tree.indexGraphVerticesMap());</span>
-				}
-
-<span class="fc" id="L54">				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);</span>
-<span class="fc" id="L55">				return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) new IntResultFromIndexResult(indexResult, viMap);</span>
-
 			} else {
-<span class="nc" id="L58">				IndexGraph iGraph = tree.indexGraph();</span>
-<span class="nc" id="L59">				IndexIdMap&lt;V&gt; viMap = tree.indexGraphVerticesMap();</span>
-<span class="nc" id="L60">				int iRoot = viMap.idToIndex(root);</span>
-<span class="nc" id="L61">				LowestCommonAncestorOffline.IQueries iQueries = new IndexQueriesFromObjQueries&lt;&gt;(queries, viMap);</span>
-
-<span class="nc" id="L63">				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);</span>
-<span class="nc" id="L64">				return new ObjResultFromIndexResult&lt;&gt;(indexResult, viMap);</span>
+<span class="fc" id="L43">				IndexGraph iGraph = tree.indexGraph();</span>
+<span class="fc" id="L44">				IndexIdMap&lt;V&gt; viMap = tree.indexGraphVerticesMap();</span>
+<span class="fc" id="L45">				int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L46">				LowestCommonAncestorOffline.IQueries iQueries = indexQueriesFromQueries(tree, queries);</span>
+<span class="fc" id="L47">				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);</span>
+<span class="fc" id="L48">				return resultFromIndexResult(tree, indexResult);</span>
 			}
 		}
 
@@ -73,156 +57,166 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 	static class ObjQueriesImpl&lt;V, E&gt; implements LowestCommonAncestorOffline.Queries&lt;V, E&gt; {
 		private final ObjectList&lt;V&gt; qs;
 
-<span class="nc" id="L76">		ObjQueriesImpl() {</span>
-<span class="nc" id="L77">			qs = new ObjectArrayList&lt;&gt;();</span>
-<span class="nc" id="L78">		}</span>
+<span class="fc" id="L60">		ObjQueriesImpl() {</span>
+<span class="fc" id="L61">			qs = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L62">		}</span>
 
 		@Override
 		public void addQuery(V u, V v) {
-<span class="nc" id="L82">			qs.add(u);</span>
-<span class="nc" id="L83">			qs.add(v);</span>
-<span class="nc" id="L84">		}</span>
+<span class="fc" id="L66">			qs.add(u);</span>
+<span class="fc" id="L67">			qs.add(v);</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		public V getQuerySource(int idx) {
-<span class="nc" id="L88">			return qs.get(idx * 2 + 0);</span>
+<span class="fc" id="L72">			return qs.get(idx * 2 + 0);</span>
 		}
 
 		@Override
 		public V getQueryTarget(int idx) {
-<span class="nc" id="L93">			return qs.get(idx * 2 + 1);</span>
+<span class="fc" id="L77">			return qs.get(idx * 2 + 1);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L98">			return qs.size() / 2;</span>
+<span class="fc" id="L82">			return qs.size() / 2;</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L103">			qs.clear();</span>
-<span class="nc" id="L104">		}</span>
+<span class="nc" id="L87">			qs.clear();</span>
+<span class="nc" id="L88">		}</span>
 	}
 
 	static class IntQueriesImpl implements LowestCommonAncestorOffline.IQueries {
 		private final LongList qs;
 
-<span class="fc" id="L110">		IntQueriesImpl() {</span>
-<span class="fc" id="L111">			qs = new LongArrayList();</span>
-<span class="fc" id="L112">		}</span>
+<span class="nc" id="L94">		IntQueriesImpl() {</span>
+<span class="nc" id="L95">			qs = new LongArrayList();</span>
+<span class="nc" id="L96">		}</span>
 
 		@Override
 		public void addQuery(int u, int v) {
-<span class="fc" id="L116">			qs.add(JGAlgoUtils.longPack(u, v));</span>
-<span class="fc" id="L117">		}</span>
+<span class="nc" id="L100">			qs.add(JGAlgoUtils.longPack(u, v));</span>
+<span class="nc" id="L101">		}</span>
 
 		@Override
 		public int getQuerySourceInt(int idx) {
-<span class="fc" id="L121">			return JGAlgoUtils.long2low(qs.getLong(idx));</span>
+<span class="nc" id="L105">			return JGAlgoUtils.long2low(qs.getLong(idx));</span>
 		}
 
 		@Override
 		public int getQueryTargetInt(int idx) {
-<span class="fc" id="L126">			return JGAlgoUtils.long2high(qs.getLong(idx));</span>
+<span class="nc" id="L110">			return JGAlgoUtils.long2high(qs.getLong(idx));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L131">			return qs.size();</span>
+<span class="nc" id="L115">			return qs.size();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L136">			qs.clear();</span>
-<span class="nc" id="L137">		}</span>
+<span class="nc" id="L120">			qs.clear();</span>
+<span class="nc" id="L121">		}</span>
 	}
 
 	static class IndexQueriesFromObjQueries&lt;V, E&gt; implements LowestCommonAncestorOffline.IQueries {
 		private final LowestCommonAncestorOffline.Queries&lt;V, E&gt; qs;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L144">		IndexQueriesFromObjQueries(LowestCommonAncestorOffline.Queries&lt;V, E&gt; qs, IndexIdMap&lt;V&gt; viMap) {</span>
-<span class="nc" id="L145">			this.qs = Objects.requireNonNull(qs);</span>
-<span class="nc" id="L146">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L147">		}</span>
+<span class="fc" id="L128">		IndexQueriesFromObjQueries(Graph&lt;V, E&gt; g, LowestCommonAncestorOffline.Queries&lt;V, E&gt; qs) {</span>
+<span class="fc" id="L129">			this.qs = Objects.requireNonNull(qs);</span>
+<span class="fc" id="L130">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L131">		}</span>
 
 		@Override
 		public void addQuery(int u, int v) {
-<span class="nc" id="L151">			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));</span>
-<span class="nc" id="L152">		}</span>
+<span class="nc" id="L135">			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));</span>
+<span class="nc" id="L136">		}</span>
 
 		@Override
 		public int getQuerySourceInt(int idx) {
-<span class="nc" id="L156">			return viMap.idToIndex(qs.getQuerySource(idx));</span>
+<span class="fc" id="L140">			return viMap.idToIndex(qs.getQuerySource(idx));</span>
 		}
 
 		@Override
 		public int getQueryTargetInt(int idx) {
-<span class="nc" id="L161">			return viMap.idToIndex(qs.getQueryTarget(idx));</span>
+<span class="fc" id="L145">			return viMap.idToIndex(qs.getQueryTarget(idx));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L166">			return qs.size();</span>
+<span class="fc" id="L150">			return qs.size();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L171">			qs.clear();</span>
-<span class="nc" id="L172">		}</span>
+<span class="nc" id="L155">			qs.clear();</span>
+<span class="nc" id="L156">		}</span>
 	}
 
 	static class IndexQueriesFromIntQueries implements LowestCommonAncestorOffline.IQueries {
 		private final LowestCommonAncestorOffline.IQueries qs;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L179">		IndexQueriesFromIntQueries(LowestCommonAncestorOffline.IQueries qs, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L180">			this.qs = Objects.requireNonNull(qs);</span>
-<span class="fc" id="L181">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L182">		}</span>
+<span class="nc" id="L163">		IndexQueriesFromIntQueries(IntGraph g, LowestCommonAncestorOffline.IQueries qs) {</span>
+<span class="nc" id="L164">			this.qs = Objects.requireNonNull(qs);</span>
+<span class="nc" id="L165">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L166">		}</span>
 
 		@Override
 		public void addQuery(int u, int v) {
-<span class="nc" id="L186">			qs.addQuery(viMap.indexToIdInt(u), viMap.indexToIdInt(v));</span>
-<span class="nc" id="L187">		}</span>
+<span class="nc" id="L170">			qs.addQuery(viMap.indexToIdInt(u), viMap.indexToIdInt(v));</span>
+<span class="nc" id="L171">		}</span>
 
 		@Override
 		public int getQuerySourceInt(int idx) {
-<span class="fc" id="L191">			return viMap.idToIndex(qs.getQuerySourceInt(idx));</span>
+<span class="nc" id="L175">			return viMap.idToIndex(qs.getQuerySourceInt(idx));</span>
 		}
 
 		@Override
 		public int getQueryTargetInt(int idx) {
-<span class="fc" id="L196">			return viMap.idToIndex(qs.getQueryTargetInt(idx));</span>
+<span class="nc" id="L180">			return viMap.idToIndex(qs.getQueryTargetInt(idx));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L201">			return qs.size();</span>
+<span class="nc" id="L185">			return qs.size();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L206">			qs.clear();</span>
-<span class="nc" id="L207">		}</span>
+<span class="nc" id="L190">			qs.clear();</span>
+<span class="nc" id="L191">		}</span>
+	}
+
+	private static &lt;V, E&gt; LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g,
+			LowestCommonAncestorOffline.Queries&lt;V, E&gt; queries) {
+<span class="pc bnc" id="L196" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L197" title="1 of 4 branches missed.">		if (g instanceof IntGraph &amp;&amp; queries instanceof LowestCommonAncestorOffline.IQueries) {</span>
+<span class="nc" id="L198">			return new IndexQueriesFromIntQueries((IntGraph) g, (LowestCommonAncestorOffline.IQueries) queries);</span>
+		} else {
+<span class="fc" id="L200">			return new IndexQueriesFromObjQueries&lt;&gt;(g, queries);</span>
+		}
 	}
 
 	static class ResultImpl implements LowestCommonAncestorOffline.IResult {
 
 		private final int[] res;
 
-<span class="fc" id="L214">		ResultImpl(int[] res) {</span>
-<span class="fc" id="L215">			this.res = res;</span>
-<span class="fc" id="L216">		}</span>
+<span class="fc" id="L208">		ResultImpl(int[] res) {</span>
+<span class="fc" id="L209">			this.res = res;</span>
+<span class="fc" id="L210">		}</span>
 
 		@Override
 		public int getLcaInt(int queryIdx) {
-<span class="fc" id="L220">			return res[queryIdx];</span>
+<span class="fc" id="L214">			return res[queryIdx];</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L225">			return res.length;</span>
+<span class="nc" id="L219">			return res.length;</span>
 		}
 
 	}
@@ -232,20 +226,20 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		private final LowestCommonAncestorOffline.IResult indexRes;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L235">		ObjResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIdMap&lt;V&gt; viMap) {</span>
-<span class="nc" id="L236">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="nc" id="L237">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="nc" id="L238">		}</span>
+<span class="fc" id="L229">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, LowestCommonAncestorOffline.IResult indexRes) {</span>
+<span class="fc" id="L230">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L231">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L232">		}</span>
 
 		@Override
 		public V getLca(int queryIdx) {
-<span class="nc" id="L242">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">			return vIdx == -1 ? null : viMap.indexToId(vIdx);</span>
+<span class="fc" id="L236">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">			return vIdx == -1 ? null : viMap.indexToId(vIdx);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L248">			return indexRes.size();</span>
+<span class="nc" id="L242">			return indexRes.size();</span>
 		}
 	}
 
@@ -254,20 +248,31 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		private final LowestCommonAncestorOffline.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L257">		IntResultFromIndexResult(LowestCommonAncestorOffline.IResult indexRes, IndexIntIdMap viMap) {</span>
-<span class="fc" id="L258">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L259">			this.viMap = Objects.requireNonNull(viMap);</span>
-<span class="fc" id="L260">		}</span>
+<span class="fc" id="L251">		IntResultFromIndexResult(IntGraph g, LowestCommonAncestorOffline.IResult indexRes) {</span>
+<span class="fc" id="L252">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L253">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L254">		}</span>
 
 		@Override
 		public int getLcaInt(int queryIdx) {
-<span class="fc" id="L264">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">			return vIdx == -1 ? -1 : viMap.indexToIdInt(vIdx);</span>
+<span class="fc" id="L258">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">			return vIdx == -1 ? -1 : viMap.indexToIdInt(vIdx);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L270">			return indexRes.size();</span>
+<span class="nc" id="L264">			return indexRes.size();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; LowestCommonAncestorOffline.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			LowestCommonAncestorOffline.IResult indexResult) {
+<span class="pc bnc" id="L271" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L273">			return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L275">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

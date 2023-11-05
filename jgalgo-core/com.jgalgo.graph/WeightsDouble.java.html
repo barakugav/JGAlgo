@@ -34,7 +34,7 @@ public interface WeightsDouble&lt;K &gt; extends Weights&lt;K, Double&gt; , Weig
 	@Deprecated
 	@Override
 	default Double getAsObj(K element) {
-<span class="nc" id="L37">		return Double.valueOf(get(element));</span>
+<span class="fc" id="L37">		return Double.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +48,8 @@ public interface WeightsDouble&lt;K &gt; extends Weights&lt;K, Double&gt; , Weig
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Double weight) {
-<span class="nc" id="L51">		set(element, weight.doubleValue());</span>
-<span class="nc" id="L52">	}</span>
+<span class="fc" id="L51">		set(element, weight.doubleValue());</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -75,7 +75,7 @@ public interface WeightsDouble&lt;K &gt; extends Weights&lt;K, Double&gt; , Weig
 	 */
 	@Override
 	default double weight(K element) {
-<span class="nc" id="L78">		return get(element);</span>
+<span class="fc" id="L78">		return get(element);</span>
 	}
 
 

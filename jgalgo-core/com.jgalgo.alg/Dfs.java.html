@@ -62,16 +62,14 @@ public interface Dfs {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Dfs.Iter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source) {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="nc" id="L66">			return (Dfs.Iter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L66">			return (Dfs.Iter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
 
-<span class="nc" id="L68">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L69">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L70">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-
-<span class="nc" id="L72">		int iSource = viMap.idToIndex(source);</span>
-<span class="nc" id="L73">		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);</span>
-<span class="nc" id="L74">		return new DfsIterImpl.ObjDfsFromIndexDfs&lt;&gt;(indexIter, viMap, eiMap);</span>
+<span class="fc" id="L68">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L69">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L70">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L71">		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);</span>
+<span class="fc" id="L72">		return new DfsIterImpl.ObjDfsFromIndexDfs&lt;&gt;(g, indexIter);</span>
 	}
 
 	/**
@@ -82,16 +80,14 @@ public interface Dfs {
 	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
 	static Dfs.IntIter newInstance(IntGraph g, int source) {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L86">			return new DfsIterImpl((IndexGraph) g, source);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L84">			return new DfsIterImpl((IndexGraph) g, source);</span>
 
-<span class="fc" id="L88">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L89">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L90">		IndexIntIdMap eiMap = g.indexGraphEdgesMap();</span>
-
-<span class="fc" id="L92">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L93">		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);</span>
-<span class="fc" id="L94">		return new DfsIterImpl.IntDfsFromIndexDfs(indexIter, viMap, eiMap);</span>
+<span class="fc" id="L86">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L87">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L88">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L89">		Dfs.IntIter indexIter = new DfsIterImpl(iGraph, iSource);</span>
+<span class="fc" id="L90">		return new DfsIterImpl.IntDfsFromIndexDfs(g, indexIter);</span>
 	}
 
 	/**
@@ -142,7 +138,7 @@ public interface Dfs {
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="nc" id="L145">			return Integer.valueOf(nextInt());</span>
+<span class="fc" id="L141">			return Integer.valueOf(nextInt());</span>
 		}
 
 		@Override

@@ -122,18 +122,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L123">		} else {</span>
 			/* parallel */
-<span class="nc" id="L125">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
-<span class="nc" id="L126">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="nc" id="L127">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">			for (int source : verticesSubset) {</span>
-<span class="nc" id="L129">				final int source0 = source;</span>
-<span class="nc" id="L130">				tasks.add(JGAlgoUtils.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] =</span>
-<span class="nc" id="L131">						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
-<span class="nc" id="L132">			}</span>
-<span class="nc bnc" id="L133" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L134">				pool.execute(task);</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
-<span class="nc" id="L136">				task.join();</span>
+<span class="fc" id="L125">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
+<span class="fc" id="L126">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="fc" id="L127">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
+<span class="fc" id="L129">				final int source0 = source;</span>
+<span class="fc" id="L130">				tasks.add(JGAlgoUtils.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] =</span>
+<span class="fc" id="L131">						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
+<span class="fc" id="L132">			}</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
+<span class="fc" id="L134">				pool.execute(task);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
+<span class="fc" id="L136">				task.join();</span>
 		}
 
 <span class="fc bfc" id="L139" title="All 2 branches covered.">		if (allVertices) {</span>
