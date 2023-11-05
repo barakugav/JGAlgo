@@ -36,16 +36,6 @@ public class Graphs {
 	private Graphs() {}
 
 	/**
-	 * An undirected graphs with no vertices and no edges
-	 */
-	public static final IndexGraph EmptyGraphUndirected = IndexGraphBuilder.newUndirected().build();
-
-	/**
-	 * A directed graphs with no vertices and no edges
-	 */
-	public static final IndexGraph EmptyGraphDirected = IndexGraphBuilder.newDirected().build();
-
-	/**
 	 * Tag interface for graphs that can not be muted/changed/altered
 	 *
 	 * @author Barak Ugav
