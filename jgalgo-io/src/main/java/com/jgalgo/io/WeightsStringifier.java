@@ -26,15 +26,15 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 
-interface WeightsStringer {
+interface WeightsStringifier {
 
 	String getWeightAsString(int id);
 
-	static WeightsStringer newInstance(IWeights<?> weights) {
+	static WeightsStringifier newInstance(IWeights<?> weights) {
 		return newInstance(weights, null, null);
 	}
 
-	static WeightsStringer newInstance(IWeights<?> weights, String nonNumberPrefix, String nonNumberSuffix) {
+	static WeightsStringifier newInstance(IWeights<?> weights, String nonNumberPrefix, String nonNumberSuffix) {
 		boolean nonNumberEnclosing = false;
 		if (nonNumberPrefix != null || nonNumberSuffix != null) {
 			if (nonNumberPrefix == null)

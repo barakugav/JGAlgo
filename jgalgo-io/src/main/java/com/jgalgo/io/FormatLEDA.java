@@ -136,7 +136,7 @@ class FormatLEDA implements GraphFormat {
 					for (int vertex = 1; vertex <= numVertices; vertex++)
 						writer.append("|{}|").append(System.lineSeparator());
 				} else {
-					WeightsStringer weightsStringer = WeightsStringer.newInstance(w_vertices);
+					WeightsStringifier weightsStringer = WeightsStringifier.newInstance(w_vertices);
 					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						String weightStr = weightsStringer.getWeightAsString(vertex);
 						writer.append("|{").append(weightStr).append("}|").append(System.lineSeparator());
@@ -146,7 +146,7 @@ class FormatLEDA implements GraphFormat {
 				writer.append("# section edges").append(System.lineSeparator());
 				writer.append(Integer.toString(numEdges)).append(System.lineSeparator());
 				// write all edges info
-				WeightsStringer weightsStringer = w_edges != null ? WeightsStringer.newInstance(w_edges) : null;
+				WeightsStringifier weightsStringer = w_edges != null ? WeightsStringifier.newInstance(w_edges) : null;
 				for (int edge = 1; edge <= numEdges; edge++) {
 					int source_vertex = graph.edgeSource(edge);
 					int target_vertex = graph.edgeTarget(edge);

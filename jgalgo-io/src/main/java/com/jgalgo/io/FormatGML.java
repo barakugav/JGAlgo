@@ -74,24 +74,24 @@ class FormatGML implements GraphFormat {
 				throw new IllegalArgumentException("GML format support undirected graphs only");
 
 			try {
-				List<Pair<String, WeightsStringer>> vWeights = new ArrayList<>();
-				List<Pair<String, WeightsStringer>> eWeights = new ArrayList<>();
+				List<Pair<String, WeightsStringifier>> vWeights = new ArrayList<>();
+				List<Pair<String, WeightsStringifier>> eWeights = new ArrayList<>();
 				for (String key : graph.getVerticesWeightsKeys()) {
 					IWeights<?> w = graph.getVerticesIWeights(key);
 					checkValidWeightsKey(key);
-					vWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
+					vWeights.add(Pair.of(key, WeightsStringifier.newInstance(w, "\"", "\"")));
 				}
 				for (String key : graph.getEdgesWeightsKeys()) {
 					IWeights<?> w = graph.getEdgesIWeights(key);
 					checkValidWeightsKey(key);
-					eWeights.add(Pair.of(key, WeightsStringer.newInstance(w, "\"", "\"")));
+					eWeights.add(Pair.of(key, WeightsStringifier.newInstance(w, "\"", "\"")));
 				}
 
 				writer.append("graph [").append(System.lineSeparator());
 				for (int v : graph.vertices()) {
 					writer.append("\tnode [").append(System.lineSeparator());
 					writer.append("\t\tid ").append(Integer.toString(v)).append(System.lineSeparator());
-					for (Pair<String, WeightsStringer> weights : vWeights) {
+					for (Pair<String, WeightsStringifier> weights : vWeights) {
 						writer.append("\t\t");
 						String key = weights.first();
 						String weightStr = weights.right().getWeightAsString(v);
@@ -107,7 +107,7 @@ class FormatGML implements GraphFormat {
 							.append(System.lineSeparator());
 					writer.append("\t\ttarget ").append(Integer.toString(graph.edgeTarget(e)))
 							.append(System.lineSeparator());
-					for (Pair<String, WeightsStringer> weights : eWeights) {
+					for (Pair<String, WeightsStringifier> weights : eWeights) {
 						writer.append("\t\t");
 						String key = weights.first();
 						String weightStr = weights.right().getWeightAsString(e);
