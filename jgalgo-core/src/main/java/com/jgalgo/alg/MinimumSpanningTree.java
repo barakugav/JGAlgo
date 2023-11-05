@@ -176,28 +176,33 @@ public interface MinimumSpanningTree {
 	 * of vertices in the graph and \(c\) denote the number of connected components in the graph. The edge set should
 	 * not contain any duplicate edges.
 	 *
+	 * @param  <V>   the vertices type
+	 * @param  <E>   the edges type
 	 * @param  g     a graph
 	 * @param  edges a set of edges that should form a spanning forest
 	 * @return       {@code true} if the given set of edges is a spanning forest of the given graph, {@code false}
 	 *               otherwise
 	 */
-	static boolean isSpanningForest(IntGraph g, IntCollection edges) {
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isSpanningForest(Graph<V, E> g, Collection<E> edges) {
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraph ig;
+		IntCollection edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
+			edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
 		} else {
 			ig = g.indexGraph();
-			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
+			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());
 		}
 		final int m = ig.edges().size();
 		final int n = ig.vertices().size();
 		if (n == 0) {
 			assert m == 0;
-			return edges.isEmpty();
+			return edges0.isEmpty();
 		}
 		BitSet edgesBitmap = new BitSet(m);
-		for (int e : edges) {
+		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);
 			if (edgesBitmap.get(e))

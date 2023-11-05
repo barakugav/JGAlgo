@@ -26,66 +26,68 @@ public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
+	public static Boolean2ObjectFunction<Graph<Integer, Integer>> defaultGraphImpl() {
 		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
 	}
 
-	public static IntGraph randTree(int n, long seed) {
+	public static Graph<Integer, Integer> randTree(int n, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
 				.build();
 	}
 
-	public static IntGraph randForest(int n, int m, long seed) {
+	public static Graph<Integer, Integer> randForest(int n, int m, long seed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
 				.build();
 	}
 
-	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {
+	public static <V, E> WeightsDouble<E> assignRandWeights(Graph<V, E> g, long seed) {
 		return assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	public static IWeightsDouble assignRandWeights(IntGraph g, double minWeight, double maxWeight, long seed) {
+	public static <V, E> WeightsDouble<E> assignRandWeights(Graph<V, E> g, double minWeight, double maxWeight,
+			long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(seed);
-		IWeightsDouble weight = g.addEdgesWeights("weight", double.class);
-		for (int e : g.edges())
+		WeightsDouble<E> weight = g.addEdgesWeights("weight", double.class);
+		for (E e : g.edges())
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 		return weight;
 	}
 
-	public static IWeightsInt assignRandWeightsIntPos(IntGraph g, long seed) {
+	public static <V, E> WeightsInt<E> assignRandWeightsIntPos(Graph<V, E> g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	public static IWeightsInt assignRandWeightsIntNeg(IntGraph g, long seed) {
+	public static <V, E> WeightsInt<E> assignRandWeightsIntNeg(Graph<V, E> g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	public static IWeightsInt assignRandWeightsInt(IntGraph g, int minWeight, int maxWeight, long seed) {
+	public static <V, E> WeightsInt<E> assignRandWeightsInt(Graph<V, E> g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
-		IWeightsInt weight = g.addEdgesWeights("weight", int.class);
-		for (int e : g.edges())
+		WeightsInt<E> weight = g.addEdgesWeights("weight", int.class);
+		for (E e : g.edges())
 			weight.set(e, rand.next());
 		return weight;
 	}
 
-	public static IntGraph randGraph(int n, int m, long seed) {
+	public static Graph<Integer, Integer> randGraph(int n, int m, long seed) {
 		return randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static IntGraph randGraph(int n, int m, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	public static Graph<Integer, Integer> randGraph(int n, int m,
+			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
 				.selfEdges(true).cycles(true).connected(false).build();
 	}

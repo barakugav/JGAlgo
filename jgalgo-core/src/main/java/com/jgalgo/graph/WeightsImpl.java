@@ -15,11 +15,13 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 interface WeightsImpl {
@@ -370,95 +372,185 @@ interface WeightsImpl {
 			throw new IllegalArgumentException("Elements sets size mismatch: " + i1.size() + " != " + i2.size());
 	}
 
-	static boolean isEqual(IntSet elementsSet, IWeights<?> w1, IWeights<?> w2) {
+	@SuppressWarnings("unchecked")
+	static <K> boolean isEqual(Set<K> elementsSet, Weights<K, ?> w1, Weights<K, ?> w2) {
 		if (w1 == w2)
 			return true;
-		if (w1 instanceof IWeightsObj<?> && w2 instanceof IWeightsObj<?>) {
-			for (int elm : elementsSet)
-				if (!Objects.equals(((IWeightsObj<?>) w1).get(elm), ((IWeightsObj<?>) w2).get(elm)))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsByte && w2 instanceof IWeightsByte) {
-			for (int elm : elementsSet)
-				if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsShort && w2 instanceof IWeightsShort) {
-			for (int elm : elementsSet)
-				if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsInt && w2 instanceof IWeightsInt) {
-			for (int elm : elementsSet)
-				if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsLong && w2 instanceof IWeightsLong) {
-			for (int elm : elementsSet)
-				if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsFloat && w2 instanceof IWeightsFloat) {
-			for (int elm : elementsSet)
-				if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsDouble && w2 instanceof IWeightsDouble) {
-			for (int elm : elementsSet)
-				if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsBool && w2 instanceof IWeightsBool) {
-			for (int elm : elementsSet)
-				if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))
-					return false;
-			return true;
-		} else if (w1 instanceof IWeightsChar && w2 instanceof IWeightsChar) {
-			for (int elm : elementsSet)
-				if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))
-					return false;
-			return true;
+		if (w1 instanceof IWeights && w2 instanceof IWeights) {
+			IntCollection elements = IntAdapters.asIntCollection((Collection<Integer>) elementsSet);
+			if (w1 instanceof IWeightsObj<?> && w2 instanceof IWeightsObj<?>) {
+				for (int elm : elements)
+					if (!Objects.equals(((IWeightsObj<?>) w1).get(elm), ((IWeightsObj<?>) w2).get(elm)))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsByte && w2 instanceof IWeightsByte) {
+				for (int elm : elements)
+					if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsShort && w2 instanceof IWeightsShort) {
+				for (int elm : elements)
+					if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsInt && w2 instanceof IWeightsInt) {
+				for (int elm : elements)
+					if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsLong && w2 instanceof IWeightsLong) {
+				for (int elm : elements)
+					if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsFloat && w2 instanceof IWeightsFloat) {
+				for (int elm : elements)
+					if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsDouble && w2 instanceof IWeightsDouble) {
+				for (int elm : elements)
+					if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsBool && w2 instanceof IWeightsBool) {
+				for (int elm : elements)
+					if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof IWeightsChar && w2 instanceof IWeightsChar) {
+				for (int elm : elements)
+					if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))
+						return false;
+				return true;
+			}
 		} else {
-			return false;
+			if (w1 instanceof WeightsObj && w2 instanceof WeightsObj) {
+				for (K elm : elementsSet)
+					if (!Objects.equals(((WeightsObj<K, ?>) w1).get(elm), ((WeightsObj<K, ?>) w2).get(elm)))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsByte && w2 instanceof WeightsByte) {
+				for (K elm : elementsSet)
+					if (((WeightsByte<K>) w1).get(elm) != ((WeightsByte<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsShort && w2 instanceof WeightsShort) {
+				for (K elm : elementsSet)
+					if (((WeightsShort<K>) w1).get(elm) != ((WeightsShort<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsInt && w2 instanceof WeightsInt) {
+				for (K elm : elementsSet)
+					if (((WeightsInt<K>) w1).get(elm) != ((WeightsInt<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsLong && w2 instanceof WeightsLong) {
+				for (K elm : elementsSet)
+					if (((WeightsLong<K>) w1).get(elm) != ((WeightsLong<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsFloat && w2 instanceof WeightsFloat) {
+				for (K elm : elementsSet)
+					if (((WeightsFloat<K>) w1).get(elm) != ((WeightsFloat<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsDouble && w2 instanceof WeightsDouble) {
+				for (K elm : elementsSet)
+					if (((WeightsDouble<K>) w1).get(elm) != ((WeightsDouble<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsBool && w2 instanceof WeightsBool) {
+				for (K elm : elementsSet)
+					if (((WeightsBool<K>) w1).get(elm) != ((WeightsBool<K>) w2).get(elm))
+						return false;
+				return true;
+			} else if (w1 instanceof WeightsChar && w2 instanceof WeightsChar) {
+				for (K elm : elementsSet)
+					if (((WeightsChar<K>) w1).get(elm) != ((WeightsChar<K>) w2).get(elm))
+						return false;
+				return true;
+			}
 		}
+		return false;
 	}
 
-	static int hashCode(IntSet elementsSet, IWeights<?> w) {
+	@SuppressWarnings("unchecked")
+	static <K> int hashCode(Set<K> elementsSet, Weights<K, ?> w) {
 		int h = 0;
-		if (w instanceof IWeightsObj<?>) {
-			for (int elm : elementsSet)
-				h += Objects.hashCode(((IWeightsObj<?>) w).get(elm));
-		} else if (w instanceof IWeightsByte) {
-			for (int elm : elementsSet)
-				h += ((IWeightsByte) w).get(elm);
-		} else if (w instanceof IWeightsShort) {
-			for (int elm : elementsSet)
-				h += ((IWeightsShort) w).get(elm);
-		} else if (w instanceof IWeightsInt) {
-			for (int elm : elementsSet)
-				h += ((IWeightsInt) w).get(elm);
-		} else if (w instanceof IWeightsLong) {
-			for (int elm : elementsSet) {
-				long x = ((IWeightsLong) w).get(elm);
-				h += (int) (x ^ (x >>> 32));
+		if (w instanceof IWeights) {
+			IntCollection elements = IntAdapters.asIntCollection((Collection<Integer>) elementsSet);
+			if (w instanceof IWeightsObj) {
+				for (int elm : elements)
+					h += Objects.hashCode(((IWeightsObj<?>) w).get(elm));
+			} else if (w instanceof IWeightsByte) {
+				for (int elm : elements)
+					h += ((IWeightsByte) w).get(elm);
+			} else if (w instanceof IWeightsShort) {
+				for (int elm : elements)
+					h += ((IWeightsShort) w).get(elm);
+			} else if (w instanceof IWeightsInt) {
+				for (int elm : elements)
+					h += ((IWeightsInt) w).get(elm);
+			} else if (w instanceof IWeightsLong) {
+				for (int elm : elements) {
+					long x = ((IWeightsLong) w).get(elm);
+					h += (int) (x ^ (x >>> 32));
+				}
+			} else if (w instanceof IWeightsFloat) {
+				for (int elm : elements)
+					h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));
+			} else if (w instanceof IWeightsDouble) {
+				for (int elm : elements) {
+					long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));
+					h += (int) (x ^ (x >>> 32));
+				}
+			} else if (w instanceof IWeightsBool) {
+				for (int elm : elements)
+					h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;
+			} else if (w instanceof IWeightsChar) {
+				for (int elm : elements)
+					h += ((IWeightsChar) w).get(elm);
+			} else {
+				throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
 			}
-		} else if (w instanceof IWeightsFloat) {
-			for (int elm : elementsSet)
-				h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));
-		} else if (w instanceof IWeightsDouble) {
-			for (int elm : elementsSet) {
-				long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));
-				h += (int) (x ^ (x >>> 32));
-			}
-		} else if (w instanceof IWeightsBool) {
-			for (int elm : elementsSet)
-				h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;
-		} else if (w instanceof IWeightsChar) {
-			for (int elm : elementsSet)
-				h += ((IWeightsChar) w).get(elm);
 		} else {
-			throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
+			if (w instanceof WeightsObj) {
+				for (K elm : elementsSet)
+					h += Objects.hashCode(((WeightsObj<K, ?>) w).get(elm));
+			} else if (w instanceof WeightsByte) {
+				for (K elm : elementsSet)
+					h += ((WeightsByte<K>) w).get(elm);
+			} else if (w instanceof WeightsShort) {
+				for (K elm : elementsSet)
+					h += ((WeightsShort<K>) w).get(elm);
+			} else if (w instanceof WeightsInt) {
+				for (K elm : elementsSet)
+					h += ((WeightsInt<K>) w).get(elm);
+			} else if (w instanceof WeightsLong) {
+				for (K elm : elementsSet) {
+					long x = ((WeightsLong<K>) w).get(elm);
+					h += (int) (x ^ (x >>> 32));
+				}
+			} else if (w instanceof WeightsFloat) {
+				for (K elm : elementsSet)
+					h += java.lang.Float.floatToRawIntBits(((WeightsFloat<K>) w).get(elm));
+			} else if (w instanceof WeightsDouble) {
+				for (K elm : elementsSet) {
+					long x = java.lang.Double.doubleToRawLongBits(((WeightsDouble<K>) w).get(elm));
+					h += (int) (x ^ (x >>> 32));
+				}
+			} else if (w instanceof WeightsBool) {
+				for (K elm : elementsSet)
+					h += ((WeightsBool<K>) w).get(elm) ? 1231 : 1237;
+			} else if (w instanceof WeightsChar) {
+				for (K elm : elementsSet)
+					h += ((WeightsChar<K>) w).get(elm);
+			} else {
+				throw new IllegalArgumentException("Unsupported weights type: " + w.getClass());
+			}
 		}
+
 		return h;
 	}
 

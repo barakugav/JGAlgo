@@ -195,8 +195,7 @@ class LowestCommonAncestorOfflineUtils {
 			LowestCommonAncestorOffline.Queries<V, E> queries) {
 		assert !(g instanceof IndexGraph);
 		if (g instanceof IntGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
-			return (LowestCommonAncestorOffline.IQueries) new IndexQueriesFromIntQueries((IntGraph) g,
-					(LowestCommonAncestorOffline.IQueries) queries);
+			return new IndexQueriesFromIntQueries((IntGraph) g, (LowestCommonAncestorOffline.IQueries) queries);
 		} else {
 			return new IndexQueriesFromObjQueries<>(g, queries);
 		}

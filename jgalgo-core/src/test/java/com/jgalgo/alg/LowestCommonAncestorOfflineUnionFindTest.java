@@ -18,25 +18,26 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.alg.LowestCommonAncestorStaticRMQTest.Query;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestUtils.PhasedTester;
 import com.jgalgo.internal.util.TestUtils.SeedGenerator;
 
 public class LowestCommonAncestorOfflineUnionFindTest {
 
-	private static void testLCA(IntGraph g, Supplier<? extends LowestCommonAncestorOffline> builder, int[][] queries) {
+	private static <V, E> void testLCA(Graph<V, E> g, V root, Supplier<? extends LowestCommonAncestorOffline> builder,
+			Query<V>[] queries) {
 		LowestCommonAncestorOffline lca = builder.get();
-		LowestCommonAncestorOffline.IQueries qs = LowestCommonAncestorOffline.IQueries.newInstance();
+		LowestCommonAncestorOffline.Queries<V, E> qs = LowestCommonAncestorOffline.Queries.newInstance();
 		for (int q = 0; q < queries.length; q++)
-			qs.addQuery(queries[q][0], queries[q][1]);
-		LowestCommonAncestorOffline.IResult lcaDS =
-				(LowestCommonAncestorOffline.IResult) lca.findLCAs(g, Integer.valueOf(g.vertices().iterator().nextInt()), qs);
+			qs.addQuery(queries[q].u, queries[q].v);
+		LowestCommonAncestorOffline.Result<V, E> lcaDS = lca.findLCAs(g, root, qs);
 
 		for (int q = 0; q < queries.length; q++) {
-			int expected = queries[q][2];
-			int actual = lcaDS.getLcaInt(q);
-			assertEquals(expected, actual, "<- [" + queries[q][0] + "," + queries[q][1] + "]");
+			V expected = queries[q].lca;
+			V actual = lcaDS.getLca(q);
+			assertEquals(expected, actual, "<- [" + queries[q].u + "," + queries[q].v + "]");
 		}
 	}
 
@@ -51,10 +52,10 @@ public class LowestCommonAncestorOfflineUnionFindTest {
 		tester.addPhase().withArgs(4096, 4096).repeat(4);
 		tester.addPhase().withArgs(16384, 16384).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			int root = g.vertices().iterator().nextInt();
-			int[][] queries = LowestCommonAncestorStaticRMQTest.randLcaQueries(g, root, m, seedGen.nextSeed());
-			testLCA(g, LowestCommonAncestorOfflineUnionFind::new, queries);
+			Graph<Integer, Integer> g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			Integer root = g.vertices().iterator().next();
+			Query<Integer>[] queries = LowestCommonAncestorStaticRMQTest.randLcaQueries(g, root, m, seedGen.nextSeed());
+			testLCA(g, root, LowestCommonAncestorOfflineUnionFind::new, queries);
 		});
 	}
 

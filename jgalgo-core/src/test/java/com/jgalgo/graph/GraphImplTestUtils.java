@@ -22,11 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MatchingBipartiteTestUtils;
@@ -41,13 +45,9 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -58,23 +58,27 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 class GraphImplTestUtils extends TestUtils {
 
-	static IntSet intSetOf(int... elms) {
-		IntSet set = new IntOpenHashSet();
-		for (int e : elms)
+	@SafeVarargs
+	static <K> Set<K> setOf(K... elms) {
+		ObjectSet<K> set = new ObjectOpenHashSet<>();
+		for (K e : elms)
 			set.add(e);
-		return IntSets.unmodifiable(set);
+		return ObjectSets.unmodifiable(set);
 	}
 
-	static void testVertexAdd(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testVertexAdd(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
 			for (int i = 0; i < n; i++) {
-				int v = g.addVertex();
+				int v = i + 1;
+				g.addVertex(Integer.valueOf(v));
 				verticesSet.add(v);
 			}
 			assertEquals(verticesSet, g.vertices());
@@ -82,21 +86,23 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testAddEdge(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	@SuppressWarnings("boxing")
+	static void testAddEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(Integer.valueOf(i + 1));
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
-					int e = g.addEdge(u, v);
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
+					Integer e = Integer.valueOf(g.edges().size() + 1);
+					g.addEdge(u, v, e);
 					assertEndpoints(g, e, u, v);
-					edges.put(e, new int[] { e, u, v });
+					edges.put(e.intValue(), new int[] { e, u, v });
 				}
 			}
 			assertEquals(edges.keySet(), g.edges());
@@ -107,45 +113,46 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	private static void assertEndpoints(IntGraph g, int e, int source, int target) {
+	private static <V, E> void assertEndpoints(Graph<V, E> g, E e, V source, V target) {
 		if (g.isDirected()) {
 			assertEquals(source, g.edgeSource(e));
 			assertEquals(target, g.edgeTarget(e));
 		} else {
-			assertEquals(intSetOf(source, target), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
+			assertEquals(setOf(source, target), setOf(g.edgeSource(e), g.edgeTarget(e)));
 		}
 		assertEquals(source, g.edgeEndpoint(e, target));
 		assertEquals(target, g.edgeEndpoint(e, source));
 	}
 
-	static void testGetEdge(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testGetEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(Integer.valueOf(i + 1));
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
-			Object2IntMap<IntCollection> edges = new Object2IntOpenHashMap<>();
+			Object2ObjectMap<Collection<Integer>, Integer> edges = new Object2ObjectOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					if (uIdx == vIdx && !g.isAllowSelfEdges())
 						continue;
-					int u = vs[uIdx], v = vs[vIdx];
-					int e = g.addEdge(u, v);
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
+					Integer e = Integer.valueOf(g.edges().size() + 1);
+					g.addEdge(u, v, e);
 					assertEndpoints(g, e, u, v);
 					if (directed) {
-						edges.put(IntList.of(u, v), e);
+						edges.put(List.of(u, v), e);
 					} else {
-						edges.put(intSetOf(u, v), e);
+						edges.put(setOf(u, v), e);
 					}
 				}
 			}
-			for (Object2IntMap.Entry<IntCollection> edge : edges.object2IntEntrySet()) {
-				IntCollection endpoints = edge.getKey();
-				IntIterator endpointsIt = endpoints.iterator();
-				int u = endpointsIt.nextInt(), v = endpointsIt.hasNext() ? endpointsIt.nextInt() : u;
-				int e = edge.getIntValue();
+			for (Object2ObjectMap.Entry<Collection<Integer>, Integer> edge : edges.object2ObjectEntrySet()) {
+				Collection<Integer> endpoints = edge.getKey();
+				Iterator<Integer> endpointsIt = endpoints.iterator();
+				Integer u = endpointsIt.next(), v = endpointsIt.hasNext() ? endpointsIt.next() : u;
+				Integer e = edge.getValue();
 				assertEquals(e, g.getEdge(u, v));
 			}
 		}
@@ -153,22 +160,23 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static void testGetEdgesOutIn(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(i + 1);
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
-			Int2ObjectMap<IntSet> outEdges = new Int2ObjectOpenHashMap<>();
-			Int2ObjectMap<IntSet> inEdges = new Int2ObjectOpenHashMap<>();
+			Object2ObjectMap<Integer, Set<Integer>> outEdges = new Object2ObjectOpenHashMap<>();
+			Object2ObjectMap<Integer, Set<Integer>> inEdges = new Object2ObjectOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
+					int u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
 						continue;
-					int e = g.addEdge(u, v);
+					Integer e = g.edges().size() + 1;
+					g.addEdge(u, v, e);
 					if (directed) {
 						outEdges.computeIfAbsent(u, w -> new IntOpenHashSet()).add(e);
 						inEdges.computeIfAbsent(v, w -> new IntOpenHashSet()).add(e);
@@ -192,21 +200,21 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			if (directed) {
-				for (int u : g.vertices()) {
-					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
-						assertEquals(u, eit.sourceInt());
-						assertEquals(g.edgeEndpoint(e, u), eit.targetInt());
+				for (Integer u : g.vertices()) {
+					for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						Integer e = eit.next();
+						assertEquals(u, eit.source());
+						assertEquals(g.edgeEndpoint(e, u), eit.target());
 					}
 					assertEquals(outEdges.get(u), g.outEdges(u));
 					assertEquals(outEdges.get(u), g.outEdges(u));
 				}
-				for (int v : g.vertices()) {
-					IntSet vEdges = new IntOpenHashSet();
-					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
-						assertEquals(v, eit.targetInt());
-						assertEquals(g.edgeEndpoint(e, v), eit.sourceInt());
+				for (Integer v : g.vertices()) {
+					Set<Integer> vEdges = new ObjectOpenHashSet<>();
+					for (EdgeIter<Integer, Integer> eit = g.inEdges(v).iterator(); eit.hasNext();) {
+						Integer e = eit.next();
+						assertEquals(v, eit.target());
+						assertEquals(g.edgeEndpoint(e, v), eit.source());
 						vEdges.add(e);
 					}
 					assertEquals(inEdges.get(v), vEdges);
@@ -215,122 +223,124 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(Integer.valueOf(i + 1));
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
-			Object2ObjectMap<IntCollection, IntSet> edges = new Object2ObjectOpenHashMap<>();
+			Object2ObjectMap<Collection<Integer>, Set<Integer>> edges = new Object2ObjectOpenHashMap<>();
 			final int edgeRepeat = g.isAllowParallelEdges() ? 3 : 1;
 			for (int repeat = 0; repeat < edgeRepeat; repeat++) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-						int u = vs[uIdx], v = vs[vIdx];
+						Integer u = vs.get(uIdx), v = vs.get(vIdx);
 						if (u == v && !g.isAllowSelfEdges())
 							continue;
-						int e = g.addEdge(u, v);
-						IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
-						edges.computeIfAbsent(key, w -> new IntOpenHashSet()).add(e);
+						Integer e = Integer.valueOf(g.edges().size() + 1);
+						g.addEdge(u, v, e);
+						Collection<Integer> key = directed ? List.of(u, v) : setOf(u, v);
+						edges.computeIfAbsent(key, w -> new ObjectOpenHashSet<>()).add(e);
 					}
 				}
 			}
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
 						continue;
-					IntCollection key = directed ? IntList.of(u, v) : intSetOf(u, v);
+					Collection<Integer> key = directed ? List.of(u, v) : setOf(u, v);
 					assertEquals(edges.get(key), g.getEdges(u, v));
 				}
 			}
 		}
 	}
 
-	static void testEdgeIter(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testEdgeIter(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(Integer.valueOf(i + 1));
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
-			Int2ObjectMap<IntCollection> edges = new Int2ObjectOpenHashMap<>();
+			Object2ObjectMap<Integer, Collection<Integer>> edges = new Object2ObjectOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
 						continue;
-					int e = g.addEdge(u, v);
+					Integer e = Integer.valueOf(g.edges().size() + 1);
+					g.addEdge(u, v, e);
 					assertEndpoints(g, e, u, v);
 					if (directed) {
-						edges.put(e, IntList.of(u, v));
+						edges.put(e, List.of(u, v));
 					} else {
-						edges.put(e, intSetOf(u, v));
+						edges.put(e, setOf(u, v));
 					}
 				}
 			}
 
 			/* outEdges */
-			for (int u : g.vertices()) {
-				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					int peekNext = eit.peekNextInt();
-					int e = eit.nextInt();
+			for (Integer u : g.vertices()) {
+				for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					Integer peekNext = eit.peekNext();
+					Integer e = eit.next();
 					assertEquals(e, peekNext);
 
-					int v = eit.targetInt();
+					Integer v = eit.target();
 					if (directed) {
-						assertEquals(edges.get(e), IntList.of(eit.sourceInt(), eit.targetInt()));
+						assertEquals(edges.get(e), List.of(eit.source(), eit.target()));
 					} else {
-						assertEquals(edges.get(e), intSetOf(eit.sourceInt(), eit.targetInt()));
+						assertEquals(edges.get(e), setOf(eit.source(), eit.target()));
 					}
-					assertEquals(u, eit.sourceInt());
+					assertEquals(u, eit.source());
 					assertEquals(v, g.edgeEndpoint(e, u));
 					if (directed) {
-						assertEquals(g.edgeSource(e), eit.sourceInt());
-						assertEquals(g.edgeTarget(e), eit.targetInt());
+						assertEquals(g.edgeSource(e), eit.source());
+						assertEquals(g.edgeTarget(e), eit.target());
 					}
 				}
 
 				/* do not call hasNext() */
-				IEdgeIter eit = g.outEdges(u).iterator();
+				EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator();
 				for (int s = g.outEdges(u).size(); s-- > 0;) {
-					int e = eit.nextInt();
-					assertEquals(u, eit.sourceInt());
-					assertEquals(g.edgeEndpoint(e, u), eit.targetInt());
+					Integer e = eit.next();
+					assertEquals(u, eit.source());
+					assertEquals(g.edgeEndpoint(e, u), eit.target());
 				}
 				assert !eit.hasNext();
 			}
 
 			/* inEdges */
-			for (int v : g.vertices()) {
-				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-					int peekNext = eit.peekNextInt();
-					int e = eit.nextInt();
+			for (Integer v : g.vertices()) {
+				for (EdgeIter<Integer, Integer> eit = g.inEdges(v).iterator(); eit.hasNext();) {
+					Integer peekNext = eit.peekNext();
+					Integer e = eit.next();
 					assertEquals(e, peekNext);
 
-					int u = eit.sourceInt();
+					Integer u = eit.source();
 					if (directed) {
-						assertEquals(edges.get(e), IntList.of(eit.sourceInt(), eit.targetInt()));
+						assertEquals(edges.get(e), List.of(eit.source(), eit.target()));
 					} else {
-						assertEquals(edges.get(e), intSetOf(eit.sourceInt(), eit.targetInt()));
+						assertEquals(edges.get(e), setOf(eit.source(), eit.target()));
 					}
-					assertEquals(v, eit.targetInt());
+					assertEquals(v, eit.target());
 					assertEquals(v, g.edgeEndpoint(e, u));
 					if (directed) {
-						assertEquals(g.edgeSource(e), eit.sourceInt());
-						assertEquals(g.edgeTarget(e), eit.targetInt());
+						assertEquals(g.edgeSource(e), eit.source());
+						assertEquals(g.edgeTarget(e), eit.target());
 					}
 				}
 
 				/* do not call hasNext() */
-				IEdgeIter eit = g.inEdges(v).iterator();
+				EdgeIter<Integer, Integer> eit = g.inEdges(v).iterator();
 				for (int s = g.inEdges(v).size(); s-- > 0;) {
-					int e = eit.nextInt();
-					assertEquals(v, eit.targetInt());
-					assertEquals(g.edgeEndpoint(e, v), eit.sourceInt());
+					Integer e = eit.next();
+					assertEquals(v, eit.target());
+					assertEquals(g.edgeEndpoint(e, v), eit.source());
 				}
 				assert !eit.hasNext();
 			}
@@ -338,20 +348,20 @@ class GraphImplTestUtils extends TestUtils {
 			/* getEdges */
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
 						continue;
-					for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNextInt();
-						int e = eit.nextInt();
+					for (EdgeIter<Integer, Integer> eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
+						Integer peekNext = eit.peekNext();
+						Integer e = eit.next();
 						assertEquals(e, peekNext);
 
-						assertEquals(u, eit.sourceInt());
-						assertEquals(v, eit.targetInt());
+						assertEquals(u, eit.source());
+						assertEquals(v, eit.target());
 						if (directed) {
-							assertEquals(edges.get(e), IntList.of(eit.sourceInt(), eit.targetInt()));
+							assertEquals(edges.get(e), List.of(eit.source(), eit.target()));
 						} else {
-							assertEquals(edges.get(e), intSetOf(eit.sourceInt(), eit.targetInt()));
+							assertEquals(edges.get(e), setOf(eit.source(), eit.target()));
 						}
 					}
 				}
@@ -359,42 +369,42 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDegree(Boolean2ObjectFunction<IntGraph> graphImpl) {
+	static void testDegree(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
-				g.addVertex();
-			int[] vs = g.vertices().toIntArray();
+				g.addVertex(Integer.valueOf(i + 1));
+			List<Integer> vs = new ArrayList<>(g.vertices());
 
-			Int2IntMap degreeOut = new Int2IntOpenHashMap();
-			Int2IntMap degreeIn = new Int2IntOpenHashMap();
+			Object2IntMap<Integer> degreeOut = new Object2IntOpenHashMap<>();
+			Object2IntMap<Integer> degreeIn = new Object2IntOpenHashMap<>();
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
-					int u = vs[uIdx], v = vs[vIdx];
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
 						continue;
-					g.addEdge(u, v);
+					g.addEdge(u, v, Integer.valueOf(g.edges().size() + 1));
 
-					degreeOut.put(u, degreeOut.get(u) + 1);
-					degreeIn.put(v, degreeIn.get(v) + 1);
+					degreeOut.put(u, degreeOut.getInt(u) + 1);
+					degreeIn.put(v, degreeIn.getInt(v) + 1);
 					if (!directed && u != v) {
-						degreeOut.put(v, degreeOut.get(v) + 1);
-						degreeIn.put(u, degreeIn.get(u) + 1);
+						degreeOut.put(v, degreeOut.getInt(v) + 1);
+						degreeIn.put(u, degreeIn.getInt(u) + 1);
 					}
 				}
 			}
-			for (int u : g.vertices()) {
-				assertEquals(degreeOut.get(u), g.outEdges(u).size(), "u=" + u);
-				assertEquals(degreeIn.get(u), g.inEdges(u).size(), "u=" + u);
+			for (Integer u : g.vertices()) {
+				assertEquals(degreeOut.getInt(u), g.outEdges(u).size(), "u=" + u);
+				assertEquals(degreeIn.getInt(u), g.inEdges(u).size(), "u=" + u);
 			}
 		}
 	}
 
-	static void testClear(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testClear(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
@@ -406,28 +416,28 @@ class GraphImplTestUtils extends TestUtils {
 				int expectedM = 0;
 
 				for (int i = 0; i < 2; i++) {
-					g.addVertex();
+					g.addVertex(Integer.valueOf(i + 1));
 					expectedN++;
 				}
 				opsLoop: while (ops-- > 0) {
 					if (rand.nextInt(5) == 0) {
-						g.addVertex();
+						g.addVertex(Integer.valueOf(g.vertices().size() + 1));
 						expectedN++;
 					} else {
-						int u, v;
-						int[] vs = g.vertices().toIntArray();
+						Integer u, v;
+						List<Integer> vs = new ArrayList<>(g.vertices());
 						for (int retry = 20;;) {
 							if (retry-- > 0)
 								continue opsLoop;
-							u = vs[rand.nextInt(vs.length)];
-							v = vs[rand.nextInt(vs.length)];
+							u = vs.get(rand.nextInt(vs.size()));
+							v = vs.get(rand.nextInt(vs.size()));
 							if (u == v)
 								continue;
-							if (!parallelEdges && g.getEdge(u, v) != -1)
+							if (!parallelEdges && g.getEdge(u, v) != null)
 								continue;
 							break;
 						}
-						g.addEdge(u, v);
+						g.addEdge(u, v, Integer.valueOf(g.edges().size() + 1));
 						expectedM++;
 					}
 					assertEquals(expectedN, g.vertices().size());
@@ -440,10 +450,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testClearEdges(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testClearEdges(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
-			IntGraph g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.get(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
@@ -455,28 +465,28 @@ class GraphImplTestUtils extends TestUtils {
 				int expectedM = 0;
 
 				for (int i = 0; i < 2; i++) {
-					g.addVertex();
+					g.addVertex(Integer.valueOf(g.vertices().size() + 1));
 					expectedN++;
 				}
 				opsLoop: while (ops-- > 0) {
 					if (rand.nextInt(5) == 0) {
-						g.addVertex();
+						g.addVertex(Integer.valueOf(g.vertices().size() + 1));
 						expectedN++;
 					} else {
-						int u, v;
-						int[] vs = g.vertices().toIntArray();
+						Integer u, v;
+						List<Integer> vs = new ArrayList<>(g.vertices());
 						for (int retry = 20;;) {
 							if (retry-- > 0)
 								continue opsLoop;
-							u = vs[rand.nextInt(vs.length)];
-							v = vs[rand.nextInt(vs.length)];
+							u = vs.get(rand.nextInt(vs.size()));
+							v = vs.get(rand.nextInt(vs.size()));
 							if (u == v)
 								continue;
-							if (!parallelEdges && g.getEdge(u, v) != -1)
+							if (!parallelEdges && g.getEdge(u, v) != null)
 								continue;
 							break;
 						}
-						g.addEdge(u, v);
+						g.addEdge(u, v, Integer.valueOf(g.edges().size() + 1));
 						expectedM++;
 					}
 					assertEquals(expectedN, g.vertices().size());
@@ -489,20 +499,20 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testCopy(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		for (String copyType : List.of("origImpl", "array", "linked-list", "hashtable", "matrix")) {
 			for (boolean directed : new boolean[] { true, false }) {
 				/* Create a random graph g */
-				IntGraph g =
+				Graph<Integer, Integer> g =
 						new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
 								.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 				/* assign some weights to the vertices of g */
 				final String gVDataKey = "vData";
-				IWeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
-				Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
-				for (int u : g.vertices()) {
+				WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+				Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+				for (Integer u : g.vertices()) {
 					Object data = JGAlgoUtils.labeledObj("data" + u);
 					gVData.set(u, data);
 					gVDataMap.put(u, data);
@@ -510,20 +520,20 @@ class GraphImplTestUtils extends TestUtils {
 
 				/* assign some weights to the edges of g */
 				final String gEDataKey = "eData";
-				IWeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
-				Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
-				for (int e : g.edges()) {
+				WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+				Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+				for (Integer e : g.edges()) {
 					Object data = JGAlgoUtils.labeledObj("data" + e);
 					gEData.set(e, data);
 					gEDataMap.put(e, data);
 				}
 
 				/* Copy g */
-				IntGraph copy;
+				Graph<Integer, Integer> copy;
 				if (copyType.equals("origImpl")) {
 					copy = g.copy();
 				} else {
-					copy = IntGraphFactory.newFrom(g).setOption("impl", copyType).newCopyOf(g);
+					copy = GraphFactory.newFrom(g).setOption("impl", copyType).newCopyOf(g);
 				}
 
 				/* Assert vertices and edges are the same */
@@ -531,7 +541,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(g.vertices(), copy.vertices());
 				assertEquals(g.edges().size(), copy.edges().size());
 				assertEquals(g.edges(), copy.edges());
-				for (int u : g.vertices()) {
+				for (Integer u : g.vertices()) {
 					assertEquals(g.outEdges(u), copy.outEdges(u));
 					assertEquals(g.inEdges(u), copy.inEdges(u));
 				}
@@ -548,19 +558,19 @@ class GraphImplTestUtils extends TestUtils {
 
 	}
 
-	static void testCopyWithWeights(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		for (boolean directed : new boolean[] { true, false }) {
 			/* Create a random graph g */
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
-			IWeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
-			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
-			for (int u : g.vertices()) {
+			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
@@ -568,97 +578,97 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final String gEDataKey = "eData";
-			IWeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
-			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
-			for (int e : g.edges()) {
+			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
 
 			/* Copy g */
-			IntGraph copy = g.copy(true);
+			Graph<Integer, Integer> copy = g.copy(true);
 
 			/* Assert vertices and edges are the same */
 			assertEquals(g.vertices().size(), copy.vertices().size());
 			assertEquals(g.vertices(), copy.vertices());
 			assertEquals(g.edges().size(), copy.edges().size());
 			assertEquals(g.edges(), copy.edges());
-			for (int u : g.vertices()) {
+			for (Integer u : g.vertices()) {
 				assertEquals(g.outEdges(u), copy.outEdges(u));
 				assertEquals(g.inEdges(u), copy.inEdges(u));
 			}
 
 			/* Assert weights were copied */
-			IWeightsObj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			IWeightsObj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Integer, Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			WeightsObj<Integer, Object> copyEData = copy.getEdgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
-			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
-			Int2ObjectMap<Object> copyEDataMap = new Int2ObjectOpenHashMap<>(gEDataMap);
-			for (int u : g.vertices()) {
+			Object2ObjectMap<Integer, Object> copyVDataMap = new Object2ObjectOpenHashMap<>(gVDataMap);
+			Object2ObjectMap<Integer, Object> copyEDataMap = new Object2ObjectOpenHashMap<>(gEDataMap);
+			for (Integer u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (int e : g.edges()) {
+			for (Integer e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 
 			/* Reassign some weights to both g and copy, and assert they are updated independently */
-			int[] vs = g.vertices().toIntArray();
+			List<Integer> vs = new ArrayList<>(g.vertices());
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
-				int u = vs[rand.nextInt(vs.length)];
+				Integer u = vs.get(rand.nextInt(vs.size()));
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				g.<Object, IWeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
-			int[] copyVs = copy.vertices().toIntArray();
+			List<Integer> copyVs = new ArrayList<>(copy.vertices());
 			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
-				int u = copyVs[rand.nextInt(vs.length)];
+				Integer u = copyVs.get(rand.nextInt(vs.size()));
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				copy.<Object, IWeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				copy.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				copyVDataMap.put(u, data);
 			}
-			int[] gEdges = g.edges().toIntArray();
+			List<Integer> gEdges = new ArrayList<>(g.edges());
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
-				int e = gEdges[rand.nextInt(g.edges().size())];
+				Integer e = gEdges.get(rand.nextInt(g.edges().size()));
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				g.<Object, IWeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
-			int[] copyEdges = copy.edges().toIntArray();
+			List<Integer> copyEdges = new ArrayList<>(copy.edges());
 			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
-				int e = copyEdges[rand.nextInt(copy.edges().size())];
+				Integer e = copyEdges.get(rand.nextInt(copy.edges().size()));
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				copy.<Object, IWeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				copy.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				copyEDataMap.put(e, data);
 			}
 
 			/* Assert the weights were updated independently */
-			for (int u : g.vertices()) {
+			for (Integer u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (int e : g.edges()) {
+			for (Integer e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 		}
 	}
 
-	static void testImmutableCopy(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testImmutableCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		for (boolean directed : new boolean[] { true, false }) {
 			/* Create a random graph g */
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
-			IWeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
-			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
-			for (int u : g.vertices()) {
+			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
@@ -666,23 +676,23 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final String gEDataKey = "eData";
-			IWeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
-			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
-			for (int e : g.edges()) {
+			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
 
 			/* Copy g */
-			IntGraph copy = g.immutableCopy();
+			Graph<Integer, Integer> copy = g.immutableCopy();
 
 			/* Assert vertices and edges are the same */
 			assertEquals(g.vertices().size(), copy.vertices().size());
 			assertEquals(g.vertices(), copy.vertices());
 			assertEquals(g.edges().size(), copy.edges().size());
 			assertEquals(g.edges(), copy.edges());
-			for (int u : g.vertices()) {
+			for (Integer u : g.vertices()) {
 				assertEquals(g.outEdges(u), copy.outEdges(u));
 				assertEquals(g.inEdges(u), copy.inEdges(u));
 			}
@@ -697,19 +707,19 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testImmutableCopyWithWeights(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testImmutableCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		for (boolean directed : new boolean[] { true, false }) {
 			/* Create a random graph g */
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
-			IWeightsObj<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
-			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
-			for (int u : g.vertices()) {
+			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer u : g.vertices()) {
 				Object data = JGAlgoUtils.labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
@@ -717,94 +727,95 @@ class GraphImplTestUtils extends TestUtils {
 
 			/* assign some weights to the edges of g */
 			final String gEDataKey = "eData";
-			IWeightsObj<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
-			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
-			for (int e : g.edges()) {
+			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer e : g.edges()) {
 				Object data = JGAlgoUtils.labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
 
 			/* Copy g */
-			IntGraph copy = g.immutableCopy(true);
+			Graph<Integer, Integer> copy = g.immutableCopy(true);
 
 			/* Assert vertices and edges are the same */
 			assertEquals(g.vertices().size(), copy.vertices().size());
 			assertEquals(g.vertices(), copy.vertices());
 			assertEquals(g.edges().size(), copy.edges().size());
 			assertEquals(g.edges(), copy.edges());
-			for (int u : g.vertices()) {
+			for (Integer u : g.vertices()) {
 				assertEquals(g.outEdges(u), copy.outEdges(u));
 				assertEquals(g.inEdges(u), copy.inEdges(u));
 			}
 
 			/* Assert weights were copied */
-			IWeightsObj<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			IWeightsObj<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Integer, Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			WeightsObj<Integer, Object> copyEData = copy.getEdgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
-			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
-			Int2ObjectMap<Object> copyEDataMap = new Int2ObjectOpenHashMap<>(gEDataMap);
-			for (int u : g.vertices()) {
+			Object2ObjectMap<Integer, Object> copyVDataMap = new Object2ObjectOpenHashMap<>(gVDataMap);
+			Object2ObjectMap<Integer, Object> copyEDataMap = new Object2ObjectOpenHashMap<>(gEDataMap);
+			for (Integer u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (int e : g.edges()) {
+			for (Integer e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 
 			/* Reassign some weights to g, and assert they are updated independently */
-			int[] vs = g.vertices().toIntArray();
+			List<Integer> vs = new ArrayList<>(g.vertices());
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
-				int u = vs[rand.nextInt(vs.length)];
+				Integer u = vs.get(rand.nextInt(vs.size()));
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
-				g.<Object, IWeightsObj<Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
-			int[] gEdges = g.edges().toIntArray();
+			List<Integer> gEdges = new ArrayList<>(g.edges());
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
-				int e = gEdges[rand.nextInt(g.edges().size())];
+				Integer e = gEdges.get(rand.nextInt(g.edges().size()));
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
-				g.<Object, IWeightsObj<Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 
 			/* Assert the weights were updated independently */
-			for (int u : g.vertices()) {
+			for (Integer u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (int e : g.edges()) {
+			for (Integer e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 		}
 	}
 
-	static void testUndirectedMST(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testUndirectedMST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newInstance(), graphImpl, seed);
 	}
 
-	static void testDirectedMDST(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testDirectedMDST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newInstance(), graphImpl, seed);
 	}
 
-	static void testDirectedMaxFlow(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testDirectedMaxFlow(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		MaximumFlowTestUtils.testRandGraphs(MaximumFlow.newInstance(), graphImpl, seed, /* directed= */ true);
 	}
 
-	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(
 				MatchingAlgo.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
 	}
 
-	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
+			long seed) {
 		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgo.newBuilder().setBipartite(true).build(),
 				graphImpl, seed);
 	}
 
-	static void testRandOps(Boolean2ObjectFunction<IntGraph> graphImpl, boolean directed, long seed) {
+	static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 6).repeat(2056);
@@ -820,11 +831,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testRandOps(Boolean2ObjectFunction<IntGraph> graphImpl, boolean directed, int n, int m,
-			long seed) {
+	private static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, int n,
+			int m, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-				.selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+		Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+				.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
 		final int opsNum = 128;
 		testRandOps(g, opsNum, seedGen.nextSeed());
 	}
@@ -863,7 +874,7 @@ class GraphImplTestUtils extends TestUtils {
 		private final String dataKey;
 		private final boolean debugPrints = false;
 
-		GraphTracker(IntGraph g, String dataKey) {
+		GraphTracker(Graph<Integer, Integer> g, String dataKey) {
 			this.directed = g.isDirected();
 			this.dataKey = dataKey;
 
@@ -997,15 +1008,15 @@ class GraphImplTestUtils extends TestUtils {
 			edges.clear();
 		}
 
-		void checkEdgesEqual(IntGraph g) {
+		void checkEdgesEqual(Graph<Integer, Integer> g) {
 			assertEquals(edgesNum(), g.edges().size());
-			IWeightsInt edgeData = g.getEdgesWeights(dataKey);
+			WeightsInt<Integer> edgeData = g.getEdgesWeights(dataKey);
 
 			List<IntList> actual = new ObjectArrayList<>();
 			List<IntList> expected = new ObjectArrayList<>();
 
-			for (int e : g.edges()) {
-				int u = g.edgeSource(e), v = g.edgeTarget(e);
+			for (Integer e : g.edges()) {
+				int u = g.edgeSource(e).intValue(), v = g.edgeTarget(e).intValue();
 				if (!directed && u > v) {
 					int temp = u;
 					u = v;
@@ -1117,7 +1128,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	private static void testRandOps(IntGraph g, int opsNum, long seed) {
+	private static void testRandOps(Graph<Integer, Integer> g, int opsNum, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
@@ -1149,7 +1160,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		final String dataKey = "data";
-		IWeightsInt edgeData = g.addEdgesWeights(dataKey, int.class);
+		WeightsInt<Integer> edgeData = g.addEdgesWeights(dataKey, int.class);
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 
 		GraphTracker tracker = new GraphTracker(g, dataKey);
@@ -1158,19 +1169,29 @@ class GraphImplTestUtils extends TestUtils {
 			// edgeData.set(e, data);
 			tracker.addVertex(v);
 		}
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
+		for (Integer e : g.edges()) {
+			Integer u = g.edgeSource(e), v = g.edgeTarget(e);
 			final int data = dataGen.next();
 			edgeData.set(e, data);
-			tracker.addEdge(tracker.getVertex(u), tracker.getVertex(v), data);
+			tracker.addEdge(tracker.getVertex(u.intValue()), tracker.getVertex(v.intValue()), data);
 		}
 
+		ToIntFunction<Set<Integer>> idSupplier = ids -> {
+			for (;;) {
+				int e = rand.nextInt();
+				if (e >= 1 && !ids.contains(Integer.valueOf(e)))
+					return e;
+			}
+		};
+		Supplier<Integer> vertexSupplier = () -> Integer.valueOf(idSupplier.applyAsInt(g.vertices()));
+		Supplier<Integer> edgeSupplier = () -> Integer.valueOf(idSupplier.applyAsInt(g.edges()));
 		ToIntFunction<GraphTracker.Edge> getEdge = edge -> {
 			int e = -1;
-			for (IEdgeIter eit = g.getEdges(edge.u.id, edge.v.id).iterator(); eit.hasNext();) {
-				int e0 = eit.nextInt();
+			for (EdgeIter<Integer, Integer> eit =
+					g.getEdges(Integer.valueOf(edge.u.id), Integer.valueOf(edge.v.id)).iterator(); eit.hasNext();) {
+				Integer e0 = eit.next();
 				if (edge.data == edgeData.get(e0)) {
-					e = e0;
+					e = e0.intValue();
 					break;
 				}
 			}
@@ -1199,7 +1220,8 @@ class GraphImplTestUtils extends TestUtils {
 					}
 
 					final int data = dataGen.next();
-					int e = g.addEdge(u.id, v.id);
+					Integer e = edgeSupplier.get();
+					g.addEdge(Integer.valueOf(u.id), Integer.valueOf(v.id), e);
 					edgeData.set(e, data);
 					tracker.addEdge(u, v, data);
 					break;
@@ -1210,7 +1232,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					int e = getEdge.applyAsInt(edge);
 
-					g.removeEdge(e);
+					g.removeEdge(Integer.valueOf(e));
 					tracker.removeEdge(edge);
 					break;
 				}
@@ -1221,7 +1243,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex source = edge.u;
 
 					Set<GraphTracker.Edge> iterationExpected = new ObjectOpenHashSet<>();
-					for (int eOther : g.outEdges(source.id)) {
+					for (Integer eOther : g.outEdges(Integer.valueOf(source.id))) {
 						if (edgeData.get(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.get(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);
@@ -1230,8 +1252,9 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					boolean removed = false;
 					Set<GraphTracker.Edge> iterationActual = new ObjectOpenHashSet<>();
-					for (IEdgeIter it = g.outEdges(source.id).iterator(); it.hasNext();) {
-						int eOther = it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.outEdges(Integer.valueOf(source.id)).iterator(); it
+							.hasNext();) {
+						Integer eOther = it.next();
 						if (edgeData.get(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.get(eOther));
 							boolean duplication = !iterationActual.add(edgeOther);
@@ -1252,9 +1275,9 @@ class GraphImplTestUtils extends TestUtils {
 						continue;
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					GraphTracker.Vertex source = edge.u;
-					int e = getEdge.applyAsInt(edge);
+					Integer e = Integer.valueOf(getEdge.applyAsInt(edge));
 
-					IEdgeSet edgeSet = g.outEdges(source.id);
+					EdgeSet<Integer, Integer> edgeSet = g.outEdges(Integer.valueOf(source.id));
 					assertTrue(edgeSet.contains(e));
 
 					boolean removed = edgeSet.remove(e);
@@ -1268,9 +1291,9 @@ class GraphImplTestUtils extends TestUtils {
 						continue;
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					GraphTracker.Vertex target = edge.v;
-					int e = getEdge.applyAsInt(edge);
+					Integer e = Integer.valueOf(getEdge.applyAsInt(edge));
 
-					IEdgeSet edgeSet = g.inEdges(target.id);
+					EdgeSet<Integer, Integer> edgeSet = g.inEdges(Integer.valueOf(target.id));
 					assertTrue(edgeSet.contains(e));
 
 					boolean removed = edgeSet.remove(e);
@@ -1285,9 +1308,10 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					GraphTracker.Vertex source = edge.u;
 					GraphTracker.Vertex target = edge.v;
-					int e = getEdge.applyAsInt(edge);
+					Integer e = Integer.valueOf(getEdge.applyAsInt(edge));
 
-					IEdgeSet edgeSet = g.getEdges(source.id, target.id);
+					EdgeSet<Integer, Integer> edgeSet =
+							g.getEdges(Integer.valueOf(source.id), Integer.valueOf(target.id));
 					assertTrue(edgeSet.contains(e));
 
 					boolean removed = edgeSet.remove(e);
@@ -1303,7 +1327,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex target = edge.v;
 
 					Set<GraphTracker.Edge> iterationExpected = new ObjectOpenHashSet<>();
-					for (int eOther : g.inEdges(target.id)) {
+					for (Integer eOther : g.inEdges(Integer.valueOf(target.id))) {
 						if (edgeData.get(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.get(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);
@@ -1312,8 +1336,9 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					boolean removed = false;
 					Set<GraphTracker.Edge> iterationActual = new ObjectOpenHashSet<>();
-					for (IEdgeIter it = g.inEdges(target.id).iterator(); it.hasNext();) {
-						int eOther = it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.inEdges(Integer.valueOf(target.id)).iterator(); it
+							.hasNext();) {
+						Integer eOther = it.next();
 						if (edgeData.get(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.get(eOther));
 							boolean duplication = !iterationActual.add(edgeOther);
@@ -1333,7 +1358,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesOf(u.id);
+					g.removeEdgesOf(Integer.valueOf(u.id));
 					tracker.removeEdgesOf(u);
 					break;
 				}
@@ -1341,10 +1366,10 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.outEdges(u.id).clear();
-					assertTrue(g.outEdges(u.id).isEmpty());
-					g.inEdges(u.id).clear();
-					assertTrue(g.inEdges(u.id).isEmpty());
+					g.outEdges(Integer.valueOf(u.id)).clear();
+					assertTrue(g.outEdges(Integer.valueOf(u.id)).isEmpty());
+					g.inEdges(Integer.valueOf(u.id)).clear();
+					assertTrue(g.inEdges(Integer.valueOf(u.id)).isEmpty());
 					tracker.removeEdgesOf(u);
 					break;
 				}
@@ -1352,12 +1377,12 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (IEdgeIter it = g.outEdges(u.id).iterator(); it.hasNext();) {
-						it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.outEdges(Integer.valueOf(u.id)).iterator(); it.hasNext();) {
+						it.next();
 						it.remove();
 					}
-					for (IEdgeIter it = g.inEdges(u.id).iterator(); it.hasNext();) {
-						it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.inEdges(Integer.valueOf(u.id)).iterator(); it.hasNext();) {
+						it.next();
 						it.remove();
 					}
 					tracker.removeEdgesOf(u);
@@ -1367,7 +1392,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeInEdgesOf(u.id);
+					g.removeInEdgesOf(Integer.valueOf(u.id));
 					tracker.removeInEdgesOf(u);
 					break;
 				}
@@ -1375,8 +1400,8 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.inEdges(u.id).clear();
-					assertTrue(g.inEdges(u.id).isEmpty());
+					g.inEdges(Integer.valueOf(u.id)).clear();
+					assertTrue(g.inEdges(Integer.valueOf(u.id)).isEmpty());
 					tracker.removeInEdgesOf(u);
 					break;
 				}
@@ -1384,8 +1409,8 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (IEdgeIter it = g.inEdges(u.id).iterator(); it.hasNext();) {
-						it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.inEdges(Integer.valueOf(u.id)).iterator(); it.hasNext();) {
+						it.next();
 						it.remove();
 					}
 					tracker.removeInEdgesOf(u);
@@ -1395,7 +1420,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeOutEdgesOf(u.id);
+					g.removeOutEdgesOf(Integer.valueOf(u.id));
 					tracker.removeOutEdgesOf(u);
 					break;
 				}
@@ -1403,8 +1428,8 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.outEdges(u.id).clear();
-					assertTrue(g.outEdges(u.id).isEmpty());
+					g.outEdges(Integer.valueOf(u.id)).clear();
+					assertTrue(g.outEdges(Integer.valueOf(u.id)).isEmpty());
 					tracker.removeOutEdgesOf(u);
 					break;
 				}
@@ -1412,8 +1437,8 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (IEdgeIter it = g.outEdges(u.id).iterator(); it.hasNext();) {
-						it.nextInt();
+					for (EdgeIter<Integer, Integer> it = g.outEdges(Integer.valueOf(u.id)).iterator(); it.hasNext();) {
+						it.next();
 						it.remove();
 					}
 					tracker.removeOutEdgesOf(u);
@@ -1423,11 +1448,12 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.edgesNum() == 0)
 						continue;
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
-					if (edge.u != edge.v && g.getEdge(edge.v.id, edge.u.id) != -1 && !g.isAllowParallelEdges())
+					if (edge.u != edge.v && g.getEdge(Integer.valueOf(edge.v.id), Integer.valueOf(edge.u.id)) != null
+							&& !g.isAllowParallelEdges())
 						continue;
 					int e = getEdge.applyAsInt(edge);
 
-					g.reverseEdge(e);
+					g.reverseEdge(Integer.valueOf(e));
 					tracker.reverseEdge(edge);
 					break;
 				}
@@ -1439,15 +1465,16 @@ class GraphImplTestUtils extends TestUtils {
 				// break;
 
 				case AddVertex: {
-					int v = g.addVertex();
-					tracker.addVertex(v);
+					Integer v = vertexSupplier.get();
+					g.addVertex(v);
+					tracker.addVertex(v.intValue());
 					break;
 				}
 				case RemoveVertex:
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex v = tracker.getRandVertex(rand);
-					g.removeVertex(v.id);
+					g.removeVertex(Integer.valueOf(v.id));
 					tracker.removeVertex(v);
 					break;
 				// case RemoveVertices: {

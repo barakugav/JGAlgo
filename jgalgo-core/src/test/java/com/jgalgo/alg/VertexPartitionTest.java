@@ -19,17 +19,19 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class VertexPartitionTest extends TestBase {
 
@@ -49,14 +51,14 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
 						final int b0 = b;
-						IntSet expected = new IntOpenHashSet(
-								g.vertices().intStream().filter(v -> partition.vertexBlock(v) == b0).toArray());
-						IntSet actual = partition.blockVertices(b);
+						Set<Integer> expected = g.vertices().stream().filter(v -> partition.vertexBlock(v) == b0)
+								.collect(Collectors.toSet());
+						Set<Integer> actual = partition.blockVertices(b);
 						assertEquals(expected, actual);
 					}
 				}
@@ -80,15 +82,17 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
 					for (int b = 0; b < k; b++) {
 						final int b0 = b;
-						IntSet expected = new IntOpenHashSet(
-								g.edges().intStream().filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
-										&& partition.vertexBlock(g.edgeTarget(e)) == b0).toArray());
-						IntSet actual = partition.blockEdges(b);
+						Set<Integer> expected =
+								g.edges().stream()
+										.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
+												&& partition.vertexBlock(g.edgeTarget(e)) == b0)
+										.collect(Collectors.toSet());
+						Set<Integer> actual = partition.blockEdges(b);
 						assertEquals(expected, actual);
 					}
 				}
@@ -111,35 +115,33 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					IVertexPartition partition = randPartition(g, k, seedGen.nextSeed());
+					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
-					IntGraph blocksGraph = partition.blocksGraph(true, true);
+					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
 
 					for (int b1 = 0; b1 < k; b1++) {
 						for (int b2 = 0; b2 < k; b2++) {
 							final int b10 = b1;
 							final int b20 = b2;
-							IntSet expected;
+							Set<Integer> expected;
 							if (directed) {
-								expected =
-										new IntOpenHashSet(
-												g.edges().intStream()
-														.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
-																&& partition.vertexBlock(g.edgeTarget(e)) == b20)
-														.toArray());
+								expected = g.edges().stream()
+										.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
+												&& partition.vertexBlock(g.edgeTarget(e)) == b20)
+										.collect(Collectors.toSet());
 							} else {
-								expected = new IntOpenHashSet(g.edges().intStream()
+								expected = g.edges().stream()
 										.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b10
 												&& partition.vertexBlock(g.edgeTarget(e)) == b20)
 												|| (partition.vertexBlock(g.edgeSource(e)) == b20
 														&& partition.vertexBlock(g.edgeTarget(e)) == b10))
-										.toArray());
+										.collect(Collectors.toSet());
 							}
-							IntSet actual = partition.crossEdges(b1, b2);
+							Set<Integer> actual = partition.crossEdges(b1, b2);
 							assertEquals(expected, actual);
 
-							assertEquals(expected, blocksGraph.getEdges(b1, b2));
+							assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)));
 						}
 					}
 				}
@@ -164,50 +166,50 @@ public class VertexPartitionTest extends TestBase {
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
-					IntGraph g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					int[] vs = g.vertices().toIntArray();
+					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+					List<Integer> vs = new ArrayList<>(g.vertices());
 
-					Int2IntMap partition1 = randPartitionMap(g, k, seedGen.nextSeed());
-					assertTrue(IVertexPartition.isPartition(g, partition1::get));
+					Object2IntMap<Integer> partition1 = randPartitionMap(g, k, seedGen.nextSeed());
+					assertTrue(VertexPartition.isPartition(g, partition1::getInt));
 
-					Int2IntMap partition2 = new Int2IntOpenHashMap(partition1);
-					partition2.put(vs[rand.nextInt(n)], -1 - rand.nextInt(5));
-					assertFalse(IVertexPartition.isPartition(g, partition2::get));
+					Object2IntMap<Integer> partition2 = new Object2IntOpenHashMap<>(partition1);
+					partition2.put(vs.get(rand.nextInt(n)), -1 - rand.nextInt(5));
+					assertFalse(VertexPartition.isPartition(g, partition2::getInt));
 
-					Int2IntMap partition3 = new Int2IntOpenHashMap(partition1);
+					Object2IntMap<Integer> partition3 = new Object2IntOpenHashMap<>(partition1);
 					int block = rand.nextInt(k);
 					partition3.replaceAll((v, b) -> b != block ? b : k);
-					assertFalse(IVertexPartition.isPartition(g, partition3::get));
+					assertFalse(VertexPartition.isPartition(g, partition3::getInt));
 				}
 			}
 		});
 	}
 
-	private static IVertexPartition randPartition(IntGraph g, int k, long seed) {
-		return IVertexPartition.fromMap(g, randPartitionMap(g, k, seed));
+	private static <V, E> VertexPartition<V, E> randPartition(Graph<V, E> g, int k, long seed) {
+		return VertexPartition.fromMap(g, randPartitionMap(g, k, seed));
 	}
 
-	private static Int2IntMap randPartitionMap(IntGraph g, int k, long seed) {
+	private static <V, E> Object2IntMap<V> randPartitionMap(Graph<V, E> g, int k, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		final int n = g.vertices().size();
 		if (k > n)
 			throw new IllegalArgumentException();
-		Int2IntMap partition = new Int2IntOpenHashMap();
+		Object2IntMap<V> partition = new Object2IntOpenHashMap<>();
 
-		int[] vs = g.vertices().toIntArray();
-		IntArrays.shuffle(vs, rand);
+		List<V> vs = new ArrayList<>(g.vertices());
+		Collections.shuffle(vs, rand);
 		int idx = 0;
 		for (; idx < k; idx++)
-			partition.put(vs[idx], idx);
+			partition.put(vs.get(idx), idx);
 		for (; idx < n; idx++)
-			partition.put(vs[idx], rand.nextInt(k));
+			partition.put(vs.get(idx), rand.nextInt(k));
 		return partition;
 	}
 
-	private static IntGraph randGraph(int n, int m, boolean directed, boolean index, long seed) {
-		IntGraph g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true).selfEdges(true)
-				.cycles(true).connected(false).build();
+	private static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean index, long seed) {
+		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true)
+				.selfEdges(true).cycles(true).connected(false).build();
 		return index ? g.indexGraph() : g;
 	}
 

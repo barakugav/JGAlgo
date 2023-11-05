@@ -32,7 +32,11 @@ import com.jgalgo.graph.WeightFunction;
  * The most basic single source shortest path (SSSP) algorithms work on graphs with non negative weights, and they are
  * the most efficient, such as Dijkstra algorithm. Negative weights are supported by some implementations of SSSP, and
  * the 'shortest path' is well defined as long as there are no negative cycle in the graph as a path can loop in the
- * cycle and achieve arbitrary small 'length'. See {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
+ * cycle and achieve arbitrary small 'length'. When negative cycles exists, algorithms will either find the shortest
+ * path to any other vertex, or will find a negative cycle, see
+ * {@link ShortestPathSingleSource.Result#getNegativeCycle()}. Note that if a negative cycle exists, but it is not
+ * reachable from the source, the algorithm may or may not find it, depending on the implementation. To get an algorithm
+ * instance that support negative weights, use {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
  * <p>
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
  * linear time for any weights types by calculating the topological order of the vertices (see

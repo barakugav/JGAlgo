@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import java.util.Set;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MatchingUnweightedTestUtils extends TestUtils {
 
@@ -47,41 +47,41 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256, 512).repeat(4);
 		tester.addPhase().withArgs(1000, 2500).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			int expeced = calcExpectedMaxMatching(g);
-			testAlgo(algo, g, expeced);
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			int expected = calcExpectedMaxMatching(g);
+			testAlgo(algo, g, expected);
 		});
 	}
 
-	private static void testAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
-		IMatching match = (IMatching) algo.computeMaximumMatching(g, null);
+	private static <V, E> void testAlgo(MatchingAlgo algo, Graph<V, E> g, int expectedMatchSize) {
+		Matching<V, E> match = algo.computeMaximumMatching(g, null);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	static void validateMatching(IntGraph g, IMatching matching) {
-		IntSet matched = new IntOpenHashSet();
-		for (int e : matching.edges()) {
-			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
+	static <V, E> void validateMatching(Graph<V, E> g, Matching<V, E> matching) {
+		Set<V> matched = new ObjectOpenHashSet<>();
+		for (E e : matching.edges()) {
+			for (V v : List.of(g.edgeSource(e), g.edgeTarget(e))) {
 				if (!matched.add(v))
 					fail("Invalid matching, clash: " + v + " " + e);
 			}
 		}
-		assertTrue(IMatching.isMatching(g, matching.edges()));
+		assertTrue(Matching.isMatching(g, matching.edges()));
 	}
 
 	/* implementation of general graphs maximum matching from the Internet */
 
-	private static int calcExpectedMaxMatching(IntGraph g) {
+	private static <V, E> int calcExpectedMaxMatching(Graph<V, E> g) {
 		int n = g.vertices().size();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
-		IndexIntIdMap vToIdx = g.indexGraphVerticesMap();
-		for (int u : g.vertices()) {
+		IndexIdMap<V> vToIdx = g.indexGraphVerticesMap();
+		for (V u : g.vertices()) {
 			graph[vToIdx.idToIndex(u)] = new ObjectArrayList<>();
-			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.targetInt();
+			for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				eit.next();
+				V v = eit.target();
 				graph[vToIdx.idToIndex(u)].add(Integer.valueOf(vToIdx.idToIndex(v)));
 			}
 		}

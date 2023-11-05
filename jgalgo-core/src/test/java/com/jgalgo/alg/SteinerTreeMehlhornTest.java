@@ -17,20 +17,23 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class SteinerTreeMehlhornTest extends TestBase {
 
@@ -48,47 +51,55 @@ public class SteinerTreeMehlhornTest extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 23).repeat(8);
 		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
 		tester.run((n, m, k) -> {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Supplier<Integer> edgeSupplier = () -> {
+				for (;;) {
+					Integer e = Integer.valueOf(rand.nextInt());
+					if (e.intValue() > 0 && !g.edges().contains(e))
+						return e;
+				}
+			};
 
 			/* choose random terminals */
-			int[] vs = g.vertices().toIntArray();
-			IntSet terminals = new IntOpenHashSet();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Set<Integer> terminals = new IntOpenHashSet();
 			while (terminals.size() < k)
-				terminals.add(vs[rand.nextInt(vs.length)]);
+				terminals.add(vs.get(rand.nextInt(vs.size())));
 
 			/* make sure the terminals are connected */
 			connectLoop: for (WeaklyConnectedComponentsAlgo ccAlgo = WeaklyConnectedComponentsAlgo.newInstance();;) {
-				IVertexPartition cc = (IVertexPartition) ccAlgo.findWeaklyConnectedComponents(g);
-				int[] terminalsArr = terminals.toIntArray();
-				IntArrays.shuffle(terminalsArr, rand);
-				int t1 = terminalsArr[0];
-				for (int t2Idx = 1; t2Idx < terminalsArr.length; t2Idx++) {
-					int t2 = terminalsArr[t2Idx];
+				VertexPartition<Integer, Integer> cc = ccAlgo.findWeaklyConnectedComponents(g);
+				List<Integer> terminalsArr = new ArrayList<>(terminals);
+				Collections.shuffle(terminalsArr, rand);
+				Integer t1 = terminalsArr.get(0);
+				for (int t2Idx = 1; t2Idx < terminalsArr.size(); t2Idx++) {
+					Integer t2 = terminalsArr.get(t2Idx);
 					if (cc.vertexBlock(t1) != cc.vertexBlock(t2)) {
-						int[] t1Vs = cc.blockVertices(cc.vertexBlock(t1)).toIntArray();
-						int[] t2Vs = cc.blockVertices(cc.vertexBlock(t2)).toIntArray();
-						g.addEdge(t1Vs[rand.nextInt(t1Vs.length)], t2Vs[rand.nextInt(t2Vs.length)]);
+						List<Integer> t1Vs = new ArrayList<>(cc.blockVertices(cc.vertexBlock(t1)));
+						List<Integer> t2Vs = new ArrayList<>(cc.blockVertices(cc.vertexBlock(t2)));
+						g.addEdge(t1Vs.get(rand.nextInt(t1Vs.size())), t2Vs.get(rand.nextInt(t2Vs.size())),
+								edgeSupplier.get());
 						continue connectLoop;
 					}
 				}
 				break;
 			}
 
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			double appxFactor = 2 * (1 - 1.0 / k);
 			testSteinerTree(g, w, terminals, algo, appxFactor);
 		});
 	}
 
-	private static void testSteinerTree(IntGraph g, IWeightFunctionInt w, IntCollection terminals, SteinerTreeAlgo algo,
-			double appxFactor) {
-		SteinerTreeAlgo.IResult steinerEdges = (SteinerTreeAlgo.IResult) algo.computeSteinerTree(g, w, terminals);
-		IntGraph treeRes = g.subGraphCopy(null, steinerEdges.edges());
+	private static <V, E> void testSteinerTree(Graph<V, E> g, WeightFunctionInt<E> w, Collection<V> terminals,
+			SteinerTreeAlgo algo, double appxFactor) {
+		SteinerTreeAlgo.Result<V, E> steinerEdges = algo.computeSteinerTree(g, w, terminals);
+		Graph<V, E> treeRes = g.subGraphCopy(null, steinerEdges.edges());
 
 		assertTrue(treeRes.vertices().containsAll(terminals));
 		assertTrue(Trees.isTree(treeRes));
-		for (int v : treeRes.vertices())
+		for (V v : treeRes.vertices())
 			if (treeRes.outEdges(v).size() <= 1)
 				assertTrue(terminals.contains(v));
 
@@ -96,27 +107,27 @@ public class SteinerTreeMehlhornTest extends TestBase {
 
 		final int m = g.edges().size();
 		if (m <= 16) { /* check all trees */
-			IntSet bestTree = null;
-			IntList edges = new IntArrayList(g.edges());
-			IntSet tree = new IntOpenHashSet(m);
-			ToDoubleFunction<IntSet> treeWeight = t -> IWeightFunction.weightSum(w, t);
+			Set<E> bestTree = null;
+			List<E> edges = new ObjectArrayList<>(g.edges());
+			Set<E> tree = new ObjectOpenHashSet<>(m);
+			ToDoubleFunction<Set<E>> treeWeight = t -> WeightFunction.weightSum(w, t);
 			treeLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 				tree.clear();
 				assert tree.isEmpty();
 				for (int i = 0; i < m; i++)
 					if ((bitmap & (1 << i)) != 0)
-						tree.add(edges.getInt(i));
-				IntGraph treeGraph = g.subGraphCopy(null, tree);
+						tree.add(edges.get(i));
+				Graph<V, E> treeGraph = g.subGraphCopy(null, tree);
 				if (!Trees.isTree(treeGraph))
 					continue treeLoop; /* not a tree */
 				if (!treeGraph.vertices().containsAll(terminals))
 					continue treeLoop; /* doesn't cover all terminals */
 				if (bestTree == null || treeWeight.applyAsDouble(bestTree) > treeWeight.applyAsDouble(tree))
-					bestTree = new IntOpenHashSet(tree);
+					bestTree = new ObjectOpenHashSet<>(tree);
 			}
 
 			assertNotNull(bestTree);
-			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= IWeightFunction.weightSum(w,
+			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= WeightFunction.weightSum(w,
 					steinerEdges.edges()));
 
 		}

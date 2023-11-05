@@ -18,64 +18,67 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.BitSet;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.Pair;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class ConnectedComponentsTestUtils {
 
-	static Pair<Integer, Int2IntMap> calcUndirectedConnectivity(IntGraph g) {
+	static <V, E> IntObjectPair<Object2IntMap<V>> calcUndirectedConnectivity(Graph<V, E> g) {
 		int n = g.vertices().size();
 		int ccNum = 0;
-		Int2IntMap vertexToCC = new Int2IntOpenHashMap(n);
+		Object2IntMap<V> vertexToCC = new Object2IntOpenHashMap<>(n);
 		vertexToCC.defaultReturnValue(-1);
 
-		for (int start : g.vertices()) {
-			if (vertexToCC.get(start) != -1)
+		for (V start : g.vertices()) {
+			if (vertexToCC.getInt(start) != -1)
 				continue;
 			int ccIdx = ccNum++;
-			for (Bfs.IntIter it = Bfs.newInstance(g, start); it.hasNext();)
-				vertexToCC.put(it.nextInt(), ccIdx);
+			for (Bfs.Iter<V, E> it = Bfs.newInstance(g, start); it.hasNext();)
+				vertexToCC.put(it.next(), ccIdx);
 		}
-		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
+		return IntObjectPair.of(ccNum, vertexToCC);
 	}
 
-	static Pair<Integer, Int2IntMap> calcDirectedConnectivity(IntGraph g) {
+	static <V, E> IntObjectPair<Object2IntMap<V>> calcDirectedConnectivity(Graph<V, E> g) {
 		int n = g.vertices().size();
-		Int2ObjectMap<IntSet> reach = new Int2ObjectOpenHashMap<>();
-		for (int start : g.vertices()) {
-			IntSet vReach = new IntOpenHashSet();
-			for (Bfs.IntIter it = Bfs.newInstance(g, start); it.hasNext();)
-				vReach.add(it.nextInt());
+		Object2ObjectMap<V, Set<V>> reach = new Object2ObjectOpenHashMap<>();
+		for (V start : g.vertices()) {
+			Set<V> vReach = new ObjectOpenHashSet<>();
+			for (Bfs.Iter<V, E> it = Bfs.newInstance(g, start); it.hasNext();)
+				vReach.add(it.next());
 			reach.put(start, vReach);
 		}
 
 		int ccNum = 0;
-		Int2IntMap vertexToCC = new Int2IntOpenHashMap(n);
+		Object2IntMap<V> vertexToCC = new Object2IntOpenHashMap<>(n);
 		vertexToCC.defaultReturnValue(-1);
 
-		for (int u : g.vertices()) {
-			if (vertexToCC.get(u) != -1)
+		for (V u : g.vertices()) {
+			if (vertexToCC.getInt(u) != -1)
 				continue;
 			int ccIdx = ccNum++;
 			vertexToCC.put(u, ccIdx);
-			for (int v : reach.get(u))
+			for (V v : reach.get(u))
 				if (reach.get(v).contains(u))
 					vertexToCC.put(v, ccIdx);
 		}
-		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
+		return IntObjectPair.of(ccNum, vertexToCC);
 	}
 
-	static void assertConnectivityResultsEqual(IntGraph g, Pair<Integer, Int2IntMap> r1, IVertexPartition r2) {
-		assertEquals(r1.first(), r2.numberOfBlocks());
+	static <V, E> void assertConnectivityResultsEqual(Graph<V, E> g, IntObjectPair<Object2IntMap<V>> r1,
+			VertexPartition<V, E> r2) {
+		assertEquals(r1.firstInt(), r2.numberOfBlocks());
 		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.numberOfBlocks());
-		for (int u : g.vertices()) {
-			int cc1 = r1.second().get(u);
+		for (V u : g.vertices()) {
+			int cc1 = r1.second().getInt(u);
 			int cc2 = r2.vertexBlock(u);
 			if (cc1To2Map.containsKey(cc1)) {
 				int cc1Mapped = cc1To2Map.get(cc1);
@@ -86,9 +89,9 @@ class ConnectedComponentsTestUtils {
 		}
 	}
 
-	static void validateConnectivityResult(IntGraph g, IVertexPartition res) {
+	static <V, E> void validateConnectivityResult(Graph<V, E> g, VertexPartition<V, E> res) {
 		BitSet ccs = new BitSet();
-		for (int v : g.vertices())
+		for (V v : g.vertices())
 			ccs.set(res.vertexBlock(v));
 		assertEquals(ccs.cardinality(), res.numberOfBlocks());
 		for (int cc = 0; cc < res.numberOfBlocks(); cc++)

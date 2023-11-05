@@ -28,7 +28,7 @@ import com.jgalgo.graph.WeightsDouble;
  * Flow on graph edges, with capacities and flows values.
  * <p>
  * A flow network on graph edges is defined as two functions: the capacity function \(C:E \rightarrow R\) and flow
- * function \( F:E \rightarrow R\). The capacity function define how many units of flow an edge can transfer from its
+ * function \(F:E \rightarrow R\). The capacity function define how many units of flow an edge can transfer from its
  * source to its target. The flow function define the number of units of flow that are currently transferred along each
  * edge. The capacity of any edge must be non negative, and the edge's flow must be smaller or equal to its capacity.
  * <p>

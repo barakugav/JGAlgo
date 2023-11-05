@@ -18,9 +18,11 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
@@ -36,8 +38,8 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 
 			assertTrue(Trees.isTree(g));
 		});
@@ -54,10 +56,10 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
-			int[] edges = g.edges().toIntArray();
-			int e = edges[rand.nextInt(edges.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			List<Integer> edges = new ArrayList<>(g.edges());
+			Integer e = edges.get(rand.nextInt(edges.size()));
 			g.removeEdge(e);
 
 			assertFalse(Trees.isTree(g));
@@ -75,15 +77,17 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
-			int u, v;
-			int[] vs = g.vertices().toIntArray();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+
+			Integer u, v, e;
+			List<Integer> vs = new ArrayList<>(g.vertices());
 			do {
-				u = vs[rand.nextInt(n)];
-				v = vs[rand.nextInt(n)];
-			} while (u == v);
-			g.addEdge(u, v);
+				u = vs.get(rand.nextInt(n));
+				v = vs.get(rand.nextInt(n));
+				e = Integer.valueOf(rand.nextInt());
+			} while (u.equals(v) || e.intValue() <= 0 || g.edges().contains(e));
+			g.addEdge(u, v, e);
 
 			assertFalse(Trees.isTree(g));
 		});
@@ -100,12 +104,12 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
-			int[] vs = g.vertices().toIntArray();
-			int root = vs[rand.nextInt(n)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer root = vs.get(rand.nextInt(n));
 
-			assertTrue(Trees.isTree(g, Integer.valueOf(root)));
+			assertTrue(Trees.isTree(g, root));
 		});
 	}
 
@@ -120,15 +124,15 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
-			int[] vs = g.vertices().toIntArray();
-			int root = vs[rand.nextInt(n)];
-			int[] edges = g.edges().toIntArray();
-			int e = edges[rand.nextInt(edges.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer root = vs.get(rand.nextInt(n));
+			List<Integer> edges = new ArrayList<>(g.edges());
+			Integer e = edges.get(rand.nextInt(edges.size()));
 			g.removeEdge(e);
 
-			assertFalse(Trees.isTree(g, Integer.valueOf(root)));
+			assertFalse(Trees.isTree(g, root));
 		});
 	}
 
@@ -143,18 +147,20 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
-			int[] vs = g.vertices().toIntArray();
-			int root = vs[rand.nextInt(n)];
-			int u, v;
-			do {
-				u = vs[rand.nextInt(n)];
-				v = vs[rand.nextInt(n)];
-			} while (u == v);
-			g.addEdge(u, v);
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer root = vs.get(rand.nextInt(n));
 
-			assertFalse(Trees.isTree(g, Integer.valueOf(root)));
+			Integer u, v, e;
+			do {
+				u = vs.get(rand.nextInt(n));
+				v = vs.get(rand.nextInt(n));
+				e = Integer.valueOf(rand.nextInt());
+			} while (u.equals(v) || e.intValue() <= 0 || g.edges().contains(e));
+			g.addEdge(u, v, e);
+
+			assertFalse(Trees.isTree(g, root));
 		});
 	}
 
@@ -169,12 +175,12 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++) {
-				int[] edges = g.edges().toIntArray();
-				int e = edges[rand.nextInt(edges.length)];
+				List<Integer> edges = new ArrayList<>(g.edges());
+				Integer e = edges.get(rand.nextInt(edges.size()));
 				g.removeEdge(e);
 			}
 			assertTrue(Trees.isForest(g));
@@ -192,20 +198,24 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
-					.selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++) {
-				int[] edges = g.edges().toIntArray();
-				int e = edges[rand.nextInt(edges.length)];
+				List<Integer> edges = new ArrayList<>(g.edges());
+				Integer e = edges.get(rand.nextInt(edges.size()));
 				g.removeEdge(e);
 			}
 			// close a random cycle
-			for (int[] vs = g.vertices().toIntArray();;) {
-				int u = vs[rand.nextInt(n)];
-				int v = vs[rand.nextInt(n)];
-				if (u != v && IPath.findPath(g, u, v) != null) {
-					g.addEdge(u, v);
+			for (List<Integer> vs = new ArrayList<>(g.vertices());;) {
+				Integer u = vs.get(rand.nextInt(n));
+				Integer v = vs.get(rand.nextInt(n));
+				if (!u.equals(v) && Path.findPath(g, u, v) != null) {
+					int e;
+					do {
+						e = rand.nextInt();
+					} while (e <= 0 || g.edges().contains(Integer.valueOf(e)));
+					g.addEdge(u, v, Integer.valueOf(e));
 					break;
 				}
 			}

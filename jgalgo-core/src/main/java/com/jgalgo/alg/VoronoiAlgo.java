@@ -112,7 +112,7 @@ public interface VoronoiAlgo {
 		 * {@code [0, numberOfBlocks())}.
 		 * <p>
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
-		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code -1} for this block.
+		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code null} for this block.
 		 *
 		 * @param  block index of a block
 		 * @return       the site vertex of the block, or {@code null} if the block is the unreachable block
@@ -196,7 +196,8 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer blockSite(int block) {
-			return Integer.valueOf(blockSiteInt(block));
+			int site = blockSiteInt(block);
+			return site == -1 ? null : Integer.valueOf(site);
 		}
 
 		/**
@@ -214,7 +215,8 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {
-			return Integer.valueOf(vertexSite(vertex.intValue()));
+			int site = vertexSite(vertex.intValue());
+			return site == -1 ? null : Integer.valueOf(site);
 		}
 	}
 

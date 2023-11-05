@@ -17,14 +17,14 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Iterator;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class TopologicalOrderTest extends TestBase {
 
@@ -47,19 +47,18 @@ public class TopologicalOrderTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(false).cycles(false).connected(connected).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
 
-			IntIterator topolSort =
-					((TopologicalOrderAlgo.IResult) new TopologicalOrderAlgoImpl().computeTopologicalSorting(g))
-							.orderedVertices().iterator();
+			Iterator<Integer> topolSort =
+					new TopologicalOrderAlgoImpl().computeTopologicalSorting(g).orderedVertices().iterator();
 
-			IntSet seenVertices = new IntOpenHashSet(n);
+			Set<Integer> seenVertices = new ObjectOpenHashSet<>(n);
 			while (topolSort.hasNext()) {
-				int u = topolSort.nextInt();
-				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.targetInt();
+				Integer u = topolSort.next();
+				for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					eit.next();
+					Integer v = eit.target();
 					assertFalse(seenVertices.contains(v));
 				}
 				seenVertices.add(u);

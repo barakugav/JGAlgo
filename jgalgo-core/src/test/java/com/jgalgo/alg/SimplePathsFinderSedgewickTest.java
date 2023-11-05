@@ -18,15 +18,16 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SimplePathsFinderSedgewickTest extends TestBase {
 
@@ -50,31 +51,30 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		tester.addPhase().withArgs(23, 40).repeat(128);
 		tester.addPhase().withArgs(23, 55).repeat(128);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-			int target = vs[rand.nextInt(vs.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer source = vs.get(rand.nextInt(vs.size()));
+			Integer target = vs.get(rand.nextInt(vs.size()));
 
 			testSimplePaths(g, source, target, algo);
 		});
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void testSimplePaths(IntGraph g, int source, int target, SimplePathsFinder algo) {
+	private static <V, E> void testSimplePaths(Graph<V, E> g, V source, V target, SimplePathsFinder algo) {
 		final int limit = 20;
-		Set<IntList> paths = new HashSet<>();
+		Set<List<E>> paths = new HashSet<>();
 
-		Iterator<IPath> pit = (Iterator) algo.findAllSimplePaths(g, Integer.valueOf(source), Integer.valueOf(target));
+		Iterator<Path<V, E>> pit = algo.findAllSimplePaths(g, source, target);
 		if (!pit.hasNext())
-			assertNull(IPath.findPath(g, source, target));
+			assertNull(Path.findPath(g, source, target));
 		for (; pit.hasNext();) {
-			IPath p = pit.next();
-			assertEquals(source, p.sourceInt());
-			assertEquals(target, p.targetInt());
+			Path<V, E> p = pit.next();
+			assertEquals(source, p.source());
+			assertEquals(target, p.target());
 			assertTrue(p.isSimple());
-			assertTrue(IPath.isPath(g, source, target, p.edges()));
-			assertTrue(p.vertices().intStream().distinct().count() == p.vertices().size());
+			assertTrue(Path.isPath(g, source, target, p.edges()));
+			assertTrue(p.vertices().stream().distinct().count() == p.vertices().size());
 			assertTrue(paths.add(p.edges()));
 			if (paths.size() >= limit)
 				break;

@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
@@ -38,9 +39,9 @@ class ColoringTestUtils extends TestUtils {
 		tester.addPhase().withArgs(200, 1000).repeat(32);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(false).cycles(true).connected(false).build();
-			IVertexPartition coloring = (IVertexPartition) algo.computeColoring(g);
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
+			VertexPartition<Integer, Integer> coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}
@@ -68,15 +69,15 @@ class ColoringTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.computeColoring(g));
 	}
 
-	static void validateColoring(IntGraph g, IVertexPartition coloring) {
-		assertTrue(ColoringAlgo.isColoring(g, v -> coloring.vertexBlock(v.intValue())));
+	static <V, E> void validateColoring(Graph<V, E> g, VertexPartition<V, E> coloring) {
+		assertTrue(ColoringAlgo.isColoring(g, v -> coloring.vertexBlock(v)));
 
 		int n = g.vertices().size();
 		if (n == 0)
 			return;
 
 		IntSet seenColors = new IntOpenHashSet();
-		for (int v : g.vertices())
+		for (V v : g.vertices())
 			seenColors.add(coloring.vertexBlock(v));
 		int[] seenColorsArr = seenColors.toIntArray();
 		IntArrays.parallelQuickSort(seenColorsArr);
@@ -87,9 +88,9 @@ class ColoringTestUtils extends TestUtils {
 
 		assertEquals(seenColorsArr.length, coloring.numberOfBlocks(), "wrong colors num");
 
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
+		for (E e : g.edges()) {
+			V u = g.edgeSource(e);
+			V v = g.edgeTarget(e);
 			int c1 = coloring.vertexBlock(u);
 			int c2 = coloring.vertexBlock(v);
 			assertNotEquals(c1, c2, "neighbor vertices " + u + "," + v + " have the same color: " + c1);

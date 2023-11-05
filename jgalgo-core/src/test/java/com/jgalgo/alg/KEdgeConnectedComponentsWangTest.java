@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -54,8 +53,8 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		tester.addPhase().withArgs(64, 256, 4).repeat(12);
 		tester.addPhase().withArgs(100, 4096, 5).repeat(1);
 		tester.run((n, m, k) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 			validateKEdgeConnectedComponents(g, k, algo);
 		});
 	}

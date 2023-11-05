@@ -17,9 +17,9 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
@@ -45,10 +45,10 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(false).cycles(false).connected(connected).build();
-			IWeightFunction w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int source = g.vertices().iterator().nextInt();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Integer source = g.vertices().iterator().next();
 
 			ShortestPathSingleSourceTestUtils.testAlgo(g, w, source, ssspAlgo, new ShortestPathSingleSourceDijkstra());
 		});
@@ -74,9 +74,9 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(false).cycles(false).connected(connected).build();
-			int source = g.vertices().iterator().nextInt();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			Integer source = g.vertices().iterator().next();
 
 			ShortestPathSingleSourceTestUtils.testAlgo(g, null, source, ssspAlgo,
 					new ShortestPathSingleSourceDijkstra());

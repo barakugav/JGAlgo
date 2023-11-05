@@ -18,14 +18,15 @@ package com.jgalgo.internal.util;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IWeightsBool;
-import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.ds.UnionFind;
-import com.jgalgo.internal.util.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -38,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class RandomGraphBuilder {
 
-	private final SeedGenerator seedGen;
+	private final Random rand;
 	private int n;
 	private int sn;
 	private int tn;
@@ -49,16 +50,22 @@ public class RandomGraphBuilder {
 	private boolean selfEdges;
 	private boolean cycles;
 	private boolean connected;
-	private Boolean2ObjectFunction<IntGraph> impl = GraphsTestUtils.defaultGraphImpl();
+	private Boolean2ObjectFunction<Graph<Integer, Integer>> impl;
 
 	public RandomGraphBuilder(long seed) {
-		seedGen = new SeedGenerator(seed);
+		rand = new Random(seed);
 		n = sn = tn = m = 0;
 		bipartite = false;
 		parallelEdges = false;
 		selfEdges = false;
 		cycles = false;
 		connected = false;
+
+		if (rand.nextBoolean()) {
+			impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+		} else {
+			impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
+		}
 	}
 
 	public RandomGraphBuilder n(int n) {
@@ -111,21 +118,24 @@ public class RandomGraphBuilder {
 		return this;
 	}
 
-	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<IntGraph> impl) {
+	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<Graph<Integer, Integer>> impl) {
 		this.impl = impl;
 		return this;
 	}
 
-	public IntGraph build() {
+	public Graph<Integer, Integer> build() {
 		IntList vertices = new IntArrayList();
-		final IntGraph g;
+		final Graph<Integer, Integer> g;
 		IWeightsBool partition = null;
 		if (!bipartite) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
 			g = impl.get(directed);
-			for (int i = 0; i < n; i++)
-				vertices.add(g.addVertex());
+			for (int i = 0; i < n; i++) {
+				int v = i + 1;
+				g.addVertex(Integer.valueOf(v));
+				vertices.add(v);
+			}
 		} else {
 			if (sn < 0 || tn < 0)
 				throw new IllegalStateException();
@@ -133,8 +143,11 @@ public class RandomGraphBuilder {
 				throw new IllegalStateException();
 			n = sn + tn;
 			g = impl.get(directed);
-			for (int i = 0; i < n; i++)
-				vertices.add(g.addVertex());
+			for (int i = 0; i < n; i++) {
+				int v = i + 1;
+				g.addVertex(Integer.valueOf(v));
+				vertices.add(v);
+			}
 			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 
 			IntIterator vit = vertices.iterator();
@@ -161,19 +174,18 @@ public class RandomGraphBuilder {
 
 		Set<IntList> existingEdges = new ObjectOpenHashSet<>();
 		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
-		IWeightsInt vertexToUf = IWeights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
-		for (int v : g.vertices()) {
+		WeightsInt<Integer> vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
+		for (Integer v : g.vertices()) {
 			int ufIdx = uf.make();
 			vertexToUf.set(v, ufIdx);
 		}
 		int componentsNum = n;
-		Random rand = new Random(seedGen.nextSeed());
-		IWeightsBool reachableFromRoot = IWeights.createExternalVerticesWeights(g, boolean.class);
-		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
+		WeightsBool<Integer> reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
+		reachableFromRoot.set(g.vertices().iterator().next(), true);
 		int reachableFromRootCount = 1;
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
-		int dagRoot = g.vertices().iterator().nextInt();
+		int dagRoot = g.vertices().iterator().next().intValue();
 		IntList dagOrder = new IntArrayList(g.vertices());
 		dagOrder.rem(dagRoot);
 		IntLists.shuffle(dagOrder, rand);
@@ -235,8 +247,8 @@ public class RandomGraphBuilder {
 			// keep track of number of connected components
 			if (!cycles || connected) {
 				if (!directed) {
-					int uComp = uf.find(vertexToUf.get(u));
-					int vComp = uf.find(vertexToUf.get(v));
+					int uComp = uf.find(vertexToUf.get(Integer.valueOf(u)));
+					int vComp = uf.find(vertexToUf.get(Integer.valueOf(v)));
 
 					// avoid cycles
 					if (!cycles && uComp == vComp)
@@ -246,29 +258,29 @@ public class RandomGraphBuilder {
 						componentsNum--;
 					uf.union(uComp, vComp);
 				} else if (connected) {
-					if (reachableFromRoot.get(u) && !reachableFromRoot.get(v)) {
-						reachableFromRoot.set(v, true);
+					if (reachableFromRoot.get(Integer.valueOf(u)) && !reachableFromRoot.get(Integer.valueOf(v))) {
+						reachableFromRoot.set(Integer.valueOf(v), true);
 						reachableFromRootCount++;
 
 						queue.enqueue(v);
 						while (!queue.isEmpty()) {
 							int p = queue.dequeueInt();
 
-							for (IEdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {
-								eit.nextInt();
-								int pv = eit.targetInt();
+							for (EdgeIter<Integer, Integer> eit = g.outEdges(Integer.valueOf(p)).iterator(); eit.hasNext();) {
+								eit.next();
+								Integer pv = eit.target();
 								if (reachableFromRoot.get(pv))
 									continue;
 								reachableFromRoot.set(pv, true);
 								reachableFromRootCount++;
-								queue.enqueue(pv);
+								queue.enqueue(pv.intValue());
 							}
 						}
 
 					}
 				}
 			}
-			g.addEdge(u, v);
+			g.addEdge(Integer.valueOf(u), Integer.valueOf(v), Integer.valueOf(g.edges().size() + 1));
 		}
 		return g;
 	}

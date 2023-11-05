@@ -18,21 +18,22 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Objects;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static IntGraph randGraphBipartite(int sn, int tn, int m, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	static Graph<Integer, Integer> randGraphBipartite(int sn, int tn, int m,
+			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
@@ -41,7 +42,8 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 4, 4).repeat(128);
@@ -50,15 +52,15 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 512).repeat(8);
 		tester.addPhase().withArgs(300, 300, 1100).repeat(1);
 		tester.run((sn, tn, m) -> {
-			IntGraph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			Graph<Integer, Integer> g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			int expected = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expected);
 		});
 	}
 
-	private static void testBipartiteAlgo(MatchingAlgo algo, IntGraph g, int expectedMatchSize) {
-		IMatching match = (IMatching) algo.computeMaximumMatching(g, null);
+	private static <V, E> void testBipartiteAlgo(MatchingAlgo algo, Graph<V, E> g, int expectedMatchSize) {
+		Matching<V, E> match = algo.computeMaximumMatching(g, null);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 
@@ -70,14 +72,14 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	private static int calcExpectedMaxMatching(IntGraph g) {
-		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+	private static <V, E> int calcExpectedMaxMatching(Graph<V, E> g) {
+		WeightsBool<V> partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight" + BipartiteGraphs.VertexBiPartitionWeightKey);
 
-		Int2IntMap S = new Int2IntOpenHashMap();
-		Int2IntMap T = new Int2IntOpenHashMap();
-		for (int u : g.vertices()) {
+		Object2IntMap<V> S = new Object2IntOpenHashMap<>();
+		Object2IntMap<V> T = new Object2IntOpenHashMap<>();
+		for (V u : g.vertices()) {
 			if (partition.get(u)) {
 				S.put(u, S.size());
 			} else {
@@ -86,11 +88,11 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		}
 
 		boolean[][] m = new boolean[S.size()][T.size()];
-		for (int u : S.keySet()) {
-			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.targetInt();
-				m[S.get(u)][T.get(v)] = true;
+		for (V u : S.keySet()) {
+			for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				eit.next();
+				V v = eit.target();
+				m[S.getInt(u)][T.getInt(v)] = true;
 			}
 		}
 		return maxBPM(m);

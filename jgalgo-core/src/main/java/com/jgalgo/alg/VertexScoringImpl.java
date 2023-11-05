@@ -16,12 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 
 class VertexScoringImpl {
 
-	static class ResultImpl implements VertexScoring {
+	static class ResultImpl implements IVertexScoring {
 
 		private final double[] scores;
 
@@ -33,24 +35,48 @@ class VertexScoringImpl {
 		public double vertexScore(int vertex) {
 			return scores[vertex];
 		}
-
 	}
 
-	static class ResultFromIndexResult implements VertexScoring {
+	static class ObjResultFromIndexResult<V, E> implements VertexScoring<V, E> {
 
-		private final VertexScoring res;
+		private final IVertexScoring indexRes;
+		private final IndexIdMap<V> viMap;
+
+		ObjResultFromIndexResult(Graph<V, E> g, IVertexScoring indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.viMap = g.indexGraphVerticesMap();
+		}
+
+		@Override
+		public double vertexScore(V vertex) {
+			return indexRes.vertexScore(viMap.idToIndex(vertex));
+		}
+	}
+
+	static class IntResultFromIndexResult implements IVertexScoring {
+
+		private final IVertexScoring indexRes;
 		private final IndexIntIdMap viMap;
 
-		ResultFromIndexResult(IntGraph g, VertexScoring res) {
-			this.res = Objects.requireNonNull(res);
+		IntResultFromIndexResult(IntGraph g, IVertexScoring indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
 			this.viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
 		public double vertexScore(int vertex) {
-			return res.vertexScore(viMap.idToIndex(vertex));
+			return indexRes.vertexScore(viMap.idToIndex(vertex));
 		}
+	}
 
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexScoring<V, E> resultFromIndexResult(Graph<V, E> g, IVertexScoring indexRes) {
+		assert !(g instanceof IndexIdMap);
+		if (g instanceof IntGraph) {
+			return (VertexScoring<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexRes);
+		}
 	}
 
 }

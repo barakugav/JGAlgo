@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
-abstract class GraphImpl<V, E> implements Graph<V, E> {
+abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	final IndexGraphImpl indexGraph;
 	final IdIdxMapImpl<V> viMap;

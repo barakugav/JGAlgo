@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -24,9 +25,9 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
@@ -45,33 +46,32 @@ class KShortestPathsSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 4096, 21).repeat(8);
 		tester.addPhase().withArgs(4096, 16384, 23).repeat(1);
 		tester.run((n, m, k) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-			int target = vs[rand.nextInt(vs.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer source = vs.get(rand.nextInt(vs.size()));
+			Integer target = vs.get(rand.nextInt(vs.size()));
 
 			validateKShortestPath(g, w, source, target, k, algo);
 		});
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void validateKShortestPath(IntGraph g, IWeightFunctionInt w, int source, int target, int k,
+	private static <V, E> void validateKShortestPath(Graph<V, E> g, WeightFunctionInt<E> w, V source, V target, int k,
 			KShortestPathsST algo) {
-		List<IPath> pathsActual = (List) algo.computeKShortestPaths(g, w, Integer.valueOf(source), Integer.valueOf(target), k);
-		for (IPath p : pathsActual) {
-			assertEquals(source, p.sourceInt());
-			assertEquals(target, p.targetInt());
+		List<Path<V, E>> pathsActual = algo.computeKShortestPaths(g, w, source, target, k);
+		for (Path<V, E> p : pathsActual) {
+			assertEquals(source, p.source());
+			assertEquals(target, p.target());
 			assertTrue(p.isSimple());
-			assertTrue(IPath.isPath(g, source, target, p.edges()));
-			assertTrue(p.vertices().intStream().distinct().count() == p.vertices().size());
+			assertTrue(Path.isPath(g, source, target, p.edges()));
+			assertTrue(p.vertices().stream().distinct().count() == p.vertices().size());
 		}
 
 		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
-			Iterator<IPath> simplePathsIter =
-					(Iterator) SimplePathsFinder.newInstance().findAllSimplePaths(g, Integer.valueOf(source), Integer.valueOf(target));
-			List<IPath> pathsExpected = StreamSupport
+			Iterator<Path<V, E>> simplePathsIter =
+					SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
+			List<Path<V, E>> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
 					.map(p -> ObjectDoublePair.of(p, w.weightSum(p.edges())))
 					.sorted((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble())).limit(k)

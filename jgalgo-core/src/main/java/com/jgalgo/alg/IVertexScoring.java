@@ -15,13 +15,14 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunction;
+interface IVertexScoring extends VertexScoring<Integer, Integer> {
 
-interface FlowCirculation {
+	double vertexScore(int vertex);
 
-	<V, E> void computeCirculation(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply);
-
-	// void computeCirculation(Graph g, FlowNetwork net, WeightFunction lowerBound, WeightFunction supply);
+	@Deprecated
+	@Override
+	default double vertexScore(Integer vertex) {
+		return vertexScore(vertex.intValue());
+	}
 
 }

@@ -22,14 +22,14 @@ import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-abstract class IntGraphBase implements IntGraph {
+abstract class IntGraphBase extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	public boolean equals(Object other) {
 		if (other == this)
 			return true;
 		if (!(other instanceof IntGraph))
-			return false;
+			return super.equals(other);
 		IntGraph o = (IntGraph) other;
 
 		if (isDirected() != o.isDirected())
@@ -103,7 +103,7 @@ abstract class IntGraphBase implements IntGraph {
 		for (String key : edgesWeightsKeys)
 			edgesWeights.add(getEdgesIWeights(key));
 
-		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, key) -> {
+		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, elm) -> {
 			s.append('[');
 			boolean firstData = true;
 			for (IWeights<?> weight : weights) {
@@ -112,7 +112,7 @@ abstract class IntGraphBase implements IntGraph {
 				} else {
 					s.append(", ");
 				}
-				s.append(weight.getAsObj(key));
+				s.append(weight.getAsObj(elm));
 			}
 			s.append(']');
 		};

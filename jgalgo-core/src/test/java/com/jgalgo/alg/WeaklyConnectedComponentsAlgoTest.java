@@ -16,14 +16,13 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 
@@ -37,24 +36,25 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 
-			IVertexPartition actual =
-					(IVertexPartition) WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
+			VertexPartition<Integer, Integer> actual =
+					WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
-			IntGraphBuilder gb = IntGraphBuilder.newUndirected();
-			for (int u : g.vertices())
+			GraphBuilder<Integer, Integer> gb = GraphBuilder.newUndirected();
+			for (Integer u : g.vertices())
 				gb.addVertex(u);
-			for (int e : g.edges())
+			for (Integer e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
-			IVertexPartition expected = (IVertexPartition) WeaklyConnectedComponentsAlgo.newInstance()
-					.findWeaklyConnectedComponents(gb.build());
-			Int2IntMap expectedMap = new Int2IntOpenHashMap(n);
-			for (int v : g.vertices())
+			VertexPartition<Integer, Integer> expected =
+					WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(gb.build());
+			Object2IntMap<Integer> expectedMap = new Object2IntOpenHashMap<>(n);
+			for (Integer v : g.vertices())
 				expectedMap.put(v, expected.vertexBlock(v));
-			Pair<Integer, Int2IntMap> expectedPair = IntObjectPair.of(expected.numberOfBlocks(), expectedMap);
+			IntObjectPair<Object2IntMap<Integer>> expectedPair =
+					IntObjectPair.of(expected.numberOfBlocks(), expectedMap);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expectedPair, actual);
 		});
 	}

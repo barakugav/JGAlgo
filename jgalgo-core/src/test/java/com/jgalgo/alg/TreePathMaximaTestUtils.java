@@ -19,74 +19,90 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public class TreePathMaximaTestUtils extends TestUtils {
 
 	private TreePathMaximaTestUtils() {}
 
-	private static int[] calcExpectedTPM(IntGraph t, IWeightFunction w, TreePathMaxima.IQueries queries) {
+	private static <V, E> List<E> calcExpectedTPM(Graph<V, E> t, WeightFunction<E> w,
+			TreePathMaxima.Queries<V, E> queries) {
 		int queriesNum = queries.size();
-		int[] res = new int[queriesNum];
+		List<E> res = new ArrayList<>(queriesNum);
 		for (int q = 0; q < queriesNum; q++) {
-			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
+			V u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 
-			IPath path = IPath.findPath(t, u, v);
+			Path<V, E> path = Path.findPath(t, u, v);
 
-			int maxEdge = -1;
+			E maxEdge = null;
 			double maxEdgeWeight = 0;
-			for (int e : path.edges()) {
-				if (maxEdge == -1 || w.weight(e) > maxEdgeWeight) {
+			for (E e : path.edges()) {
+				if (maxEdge == null || w.weight(e) > maxEdgeWeight) {
 					maxEdge = e;
 					maxEdgeWeight = w.weight(e);
 				}
 			}
-			res[q] = maxEdge;
+			res.add(maxEdge);
 		}
 		return res;
 	}
 
-	public static TreePathMaxima.IQueries generateAllPossibleQueries(IntGraph tree) {
-		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
-		int[] vs = tree.vertices().toIntArray();
-		for (int i = 0; i < vs.length; i++)
-			for (int j = i + 1; j < vs.length; j++)
-				queries.addQuery(vs[i], vs[j]);
+	@SuppressWarnings("unchecked")
+	public static <V, E> TreePathMaxima.Queries<V, E> generateAllPossibleQueries(Graph<V, E> tree) {
+		TreePathMaxima.Queries<V, E> queries;
+		if (tree instanceof IntGraph) {
+			queries = TreePathMaxima.Queries.newInstance();
+		} else {
+			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
+		}
+		List<V> vs = new ArrayList<>(tree.vertices());
+		for (int i = 0; i < vs.size(); i++)
+			for (int j = i + 1; j < vs.size(); j++)
+				queries.addQuery(vs.get(i), vs.get(j));
 		return queries;
 	}
 
-	private static TreePathMaxima.IQueries generateRandQueries(IntGraph tree, int m, long seed) {
+	@SuppressWarnings("unchecked")
+	private static <V, E> TreePathMaxima.Queries<V, E> generateRandQueries(Graph<V, E> tree, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
-		int[] vs = tree.vertices().toIntArray();
+		TreePathMaxima.Queries<V, E> queries;
+		if (tree instanceof IntGraph) {
+			queries = TreePathMaxima.Queries.newInstance();
+		} else {
+			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
+		}
+		List<V> vs = new ArrayList<>(tree.vertices());
 		for (int q = 0; q < m; q++) {
 			int i, j;
 			do {
-				i = rand.nextInt(vs.length);
-				j = rand.nextInt(vs.length);
+				i = rand.nextInt(vs.size());
+				j = rand.nextInt(vs.size());
 			} while (i == j);
-			queries.addQuery(vs[i], vs[j]);
+			queries.addQuery(vs.get(i), vs.get(j));
 		}
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(TreePathMaxima.IQueries queries, TreePathMaxima.IResult actual,
-			int[] expected, IWeightFunction w) {
-		assertEquals(expected.length, actual.size(), "Unexpected result size");
+	static <V, E> void compareActualToExpectedResults(TreePathMaxima.Queries<V, E> queries,
+			TreePathMaxima.Result<V, E> actual, List<E> expected, WeightFunction<E> w) {
+		assertEquals(expected.size(), actual.size(), "Unexpected result size");
 		for (int i = 0; i < actual.size(); i++) {
-			int u = queries.getQuerySourceInt(i), v = queries.getQueryTargetInt(i);
-			double aw = actual.getHeaviestEdgeInt(i) != -1 ? w.weight(actual.getHeaviestEdgeInt(i)) : Double.MIN_VALUE;
-			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdgeInt(i)
-					+ " != " + expected[i]);
+			V u = queries.getQuerySource(i), v = queries.getQueryTarget(i);
+			double aw = actual.getHeaviestEdge(i) != null ? w.weight(actual.getHeaviestEdge(i)) : Double.MIN_VALUE;
+			double ew = expected.get(i) != null ? w.weight(expected.get(i)) : Double.MIN_VALUE;
+			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdge(i)
+					+ " != " + expected.get(i));
 		}
 	}
 
@@ -107,13 +123,13 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	private static void testTPM(TreePathMaxima algo, int n, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		IntGraph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-		IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
+		Graph<Integer, Integer> tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+		WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
 
-		TreePathMaxima.IQueries queries = n <= 32 ? generateAllPossibleQueries(tree)
+		TreePathMaxima.Queries<Integer, Integer> queries = n <= 32 ? generateAllPossibleQueries(tree)
 				: generateRandQueries(tree, Math.min(n * 16, 1000), seedGen.nextSeed());
-		TreePathMaxima.IResult actual = (TreePathMaxima.IResult) algo.computeHeaviestEdgeInTreePaths(tree, w, queries);
-		int[] expected = calcExpectedTPM(tree, w, queries);
+		TreePathMaxima.Result<Integer, Integer> actual = algo.computeHeaviestEdgeInTreePaths(tree, w, queries);
+		List<Integer> expected = calcExpectedTPM(tree, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
@@ -127,12 +143,10 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.addPhase().withArgs(2048, 4096).repeat(8);
 		tester.addPhase().withArgs(8192, 16384).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(true).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			IntCollection mstEdges =
-					((MinimumSpanningTree.IResult) new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w))
-							.edges();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Collection<Integer> mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);
@@ -149,33 +163,33 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.addPhase().withArgs(2048, 4096).repeat(8);
 		tester.addPhase().withArgs(8192, 16384).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(true).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mstEdges =
+			Collection<Integer> mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
-			IntGraph mst = IntGraph.newUndirected();
-			for (int v : g.vertices())
+			Graph<Integer, Integer> mst = Graph.newUndirected();
+			for (Integer v : g.vertices())
 				mst.addVertex(v);
-			for (int e : mstEdges)
+			for (Integer e : mstEdges)
 				mst.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 
 			Random rand = new Random(seedGen.nextSeed());
-			for (int[] edges = g.edges().toIntArray();;) {
-				int badEdge = edges[rand.nextInt(edges.length)];
+			for (List<Integer> edges = new ArrayList<>(g.edges());;) {
+				Integer badEdge = edges.get(rand.nextInt(edges.size()));
 				if (mstEdges.contains(badEdge))
 					continue;
-				int badEdgeSource = g.edgeSource(badEdge);
-				int badEdgeTarget = g.edgeTarget(badEdge);
-				if (badEdgeSource == badEdgeTarget)
+				Integer badEdgeSource = g.edgeSource(badEdge);
+				Integer badEdgeTarget = g.edgeTarget(badEdge);
+				if (badEdgeSource.equals(badEdgeTarget))
 					continue;
 
-				IPath mstPath = IPath.findPath(mst, badEdgeSource, badEdgeTarget);
-				int goodEdge = mstPath.edges().getInt(rand.nextInt(mstPath.edges().size()));
+				Path<Integer, Integer> mstPath = Path.findPath(mst, badEdgeSource, badEdgeTarget);
+				Integer goodEdge = mstPath.edges().get(rand.nextInt(mstPath.edges().size()));
 
 				if (w.weightInt(goodEdge) < w.weightInt(badEdge)) {
-					mstEdges.rem(goodEdge);
+					mstEdges.remove(goodEdge);
 					mstEdges.add(badEdge);
 					break;
 				}

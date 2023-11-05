@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntSupplier;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 class CyclesFinderTestUtils extends TestUtils {
 
@@ -43,14 +44,13 @@ class CyclesFinderTestUtils extends TestUtils {
 		int e2 = g.addEdge(v2, v1);
 		int e3 = g.addEdge(v2, v0);
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		Iterator<IPath> actual = (Iterator) cyclesFinder.findAllCycles(g);
+		Iterator<Path<Integer, Integer>> actual = cyclesFinder.findAllCycles(g);
 
 		IPath c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
 		IPath c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
-		List<IPath> expected = List.of(c1, c2);
+		List<Path<Integer, Integer>> expected = List.of(c1, c2);
 
-		assertEquals(transformCyclesToCanonical(expected.iterator()), transformCyclesToCanonical(actual));
+		assertEquals(transformCyclesToCanonical(g, expected.iterator()), transformCyclesToCanonical(g, actual));
 	}
 
 	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
@@ -63,28 +63,26 @@ class CyclesFinderTestUtils extends TestUtils {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(64, 64).repeat(64);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 			testGraph(g, cyclesFinder);
 		});
 	}
 
-	private static void testGraph(IntGraph g, CyclesFinder cyclesFinder) {
+	private static <V, E> void testGraph(Graph<V, E> g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		Iterator<IPath> actual = (Iterator) cyclesFinder.findAllCycles(g);
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		Iterator<IPath> expected = (Iterator) validationAlgo.findAllCycles(g);
-		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
+		Iterator<Path<V, E>> actual = cyclesFinder.findAllCycles(g);
+		Iterator<Path<V, E>> expected = validationAlgo.findAllCycles(g);
+		assertEquals(transformCyclesToCanonical(g, expected), transformCyclesToCanonical(g, actual));
 	}
 
-	private static Set<IntList> transformCyclesToCanonical(Iterator<IPath> cycles) {
+	private static <V, E> Set<List<E>> transformCyclesToCanonical(Graph<V, E> g, Iterator<Path<V, E>> cycles) {
 		int expectedCount = 0;
-		Set<IntList> cycles0 = new TreeSet<>();
-		for (IPath cycle : JGAlgoUtils.iterable(cycles)) {
-			IntArrayList cycle0 = new IntArrayList(cycle.edges());
-			transformCycleToCanonical(cycle0);
+		Set<List<E>> cycles0 = new TreeSet<>();
+		for (Path<V, E> cycle : JGAlgoUtils.iterable(cycles)) {
+			ObjectArrayList<E> cycle0 = new ObjectArrayList<>(cycle.edges());
+			transformCycleToCanonical(g, cycle0);
 			cycles0.add(cycle0);
 			expectedCount++;
 		}
@@ -93,15 +91,17 @@ class CyclesFinderTestUtils extends TestUtils {
 		return cycles0;
 	}
 
-	private static void transformCycleToCanonical(IntArrayList c) {
+	private static <V, E> void transformCycleToCanonical(Graph<V, E> g, ObjectArrayList<E> c) {
 		final int s = c.size();
+		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		IntSupplier findMinIdx = () -> {
 			int minIdx = -1, min = Integer.MAX_VALUE;
 			for (int i = 0; i < s; i++) {
-				int elm = c.getInt(i);
-				if (minIdx == -1 || min > elm) {
+				E elm = c.get(i);
+				int elmIdx = eiMap.idToIndex(elm);
+				if (minIdx == -1 || min > elmIdx) {
 					minIdx = i;
-					min = elm;
+					min = elmIdx;
 				}
 			}
 			return minIdx;
@@ -109,10 +109,10 @@ class CyclesFinderTestUtils extends TestUtils {
 
 		/* reverse */
 		int minIdx = findMinIdx.getAsInt();
-		int next = c.getInt((minIdx + 1) % s);
-		int prev = c.getInt((minIdx - 1 + s) % s);
-		if (next > prev) {
-			IntArrays.reverse(c.elements(), 0, s);
+		E next = c.get((minIdx + 1) % s);
+		E prev = c.get((minIdx - 1 + s) % s);
+		if (eiMap.idToIndex(next) > eiMap.idToIndex(prev)) {
+			ObjectArrays.reverse(c.elements(), 0, s);
 			minIdx = s - minIdx - 1;
 			assert minIdx == findMinIdx.getAsInt();
 		}
@@ -121,13 +121,14 @@ class CyclesFinderTestUtils extends TestUtils {
 		rotate(c, minIdx);
 	}
 
-	private static void rotate(IntList l, int idx) {
+	@SuppressWarnings("unchecked")
+	private static <K> void rotate(List<K> l, int idx) {
 		if (l.isEmpty() || idx == 0)
 			return;
 		int s = l.size();
-		int[] temp = l.toIntArray();
+		Object[] temp = l.toArray();
 		for (int i = 0; i < s; i++)
-			l.set(i, temp[(i + idx) % s]);
+			l.set(i, (K) temp[(i + idx) % s]);
 	}
 
 }

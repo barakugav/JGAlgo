@@ -17,19 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Random;
-import java.util.function.Function;
-import java.util.function.IntToDoubleFunction;
+import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class ShortestPathAStarTest extends TestBase {
 
@@ -84,49 +80,58 @@ public class ShortestPathAStarTest extends TestBase {
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic() {
-		return AStarAsSSSP(params -> (v -> 0));
+		return AStarAsSSSP(new HeuristicBuilder() {
+			@Override
+			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
+				return v -> 0;
+			}
+		});
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic() {
-		return AStarAsSSSP(params -> {
-			IntGraph g = params.g;
-			IWeightFunction w = params.w;
-			if (params.g.isDirected())
-				g = g.reverseView();
-			ShortestPathSingleSource.IResult ssspRes =
-					(ShortestPathSingleSource.IResult) new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w,
-							Integer.valueOf(params.target));
-			return v -> ssspRes.distance(v);
+		return AStarAsSSSP(new HeuristicBuilder() {
+			@Override
+			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
+				Graph<V, E> g = params.g;
+				WeightFunction<E> w = params.w;
+				if (params.g.isDirected())
+					g = g.reverseView();
+				ShortestPathSingleSource.Result<V, E> ssspRes =
+						new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
+				return v -> ssspRes.distance(v);
+			}
 		});
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
 		Random rand = new Random(seed);
-		return AStarAsSSSP(params -> {
-			IntGraph g = params.g;
-			IWeightFunction w = params.w;
-			if (params.g.isDirected())
-				g = g.reverseView();
+		return AStarAsSSSP(new HeuristicBuilder() {
+			@Override
+			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
+				Graph<V, E> g = params.g;
+				WeightFunction<E> w = params.w;
+				if (params.g.isDirected())
+					g = g.reverseView();
 
-			Int2DoubleMap w0 = new Int2DoubleOpenHashMap(g.edges().size());
-			for (int e : g.edges())
-				w0.put(e, w.weight(e) * rand.nextDouble());
+				Object2DoubleMap<E> w0 = new Object2DoubleOpenHashMap<>(g.edges().size());
+				for (E e : g.edges())
+					w0.put(e, w.weight(e) * rand.nextDouble());
 
-			IWeightFunction w1 = e -> w0.get(e);
-			ShortestPathSingleSource.IResult ssspRes =
-					(ShortestPathSingleSource.IResult) new ShortestPathSingleSourceDijkstra().computeShortestPaths(g,
-							w1, Integer.valueOf(params.target));
-			return v -> ssspRes.distance(v);
+				WeightFunction<E> w1 = e -> w0.getDouble(e);
+				ShortestPathSingleSource.Result<V, E> ssspRes =
+						new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w1, params.target);
+				return v -> ssspRes.distance(v);
+			}
 		});
 	}
 
-	private static class HeuristicParams {
-		final IntGraph g;
-		final IWeightFunction w;
+	private static class HeuristicParams<V, E> {
+		final Graph<V, E> g;
+		final WeightFunction<E> w;
 		@SuppressWarnings("unused")
-		final int source, target;
+		final V source, target;
 
-		HeuristicParams(IntGraph g, IWeightFunction w, int source, int target) {
+		HeuristicParams(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
 			this.g = g;
 			this.w = w;
 			this.source = source;
@@ -134,43 +139,43 @@ public class ShortestPathAStarTest extends TestBase {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static ShortestPathSingleSource AStarAsSSSP(
-			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
+	@FunctionalInterface
+	private static interface HeuristicBuilder {
+
+		<V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params);
+
+	}
+
+	private static ShortestPathSingleSource AStarAsSSSP(HeuristicBuilder vHeuristicBuilder) {
 		return new ShortestPathSingleSource() {
 			@Override
 			public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 					V source) {
-				if (!(g instanceof IntGraph))
-					throw new IllegalArgumentException("non int graphs are not supported");
-				IntGraph g0 = (IntGraph) g;
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				int source0 = ((Integer) source).intValue();
 				final int n = g.vertices().size();
-				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(n);
-				Int2DoubleMap distances = new Int2DoubleOpenHashMap(n);
+				Object2ObjectMap<V, Path<V, E>> paths = new Object2ObjectOpenHashMap<>(n);
+				Object2DoubleMap<V> distances = new Object2DoubleOpenHashMap<>(n);
 				distances.defaultReturnValue(Double.POSITIVE_INFINITY);
 
 				ShortestPathAStar aStar = new ShortestPathAStar();
-				for (int target : g0.vertices()) {
-					IntToDoubleFunction vHeuristic =
-							vHeuristicBuilder.apply(new HeuristicParams(g0, w0, source0, target));
-					IPath path = aStar.computeShortestPath(g0, w0, source0, target, vHeuristic);
+				for (V target : g.vertices()) {
+					ToDoubleFunction<V> vHeuristic =
+							vHeuristicBuilder.buildHeuristic(new HeuristicParams<>(g, w, source, target));
+					Path<V, E> path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
 						paths.put(target, path);
-						distances.put(target, w0.weightSum(path.edges()));
+						distances.put(target, w.weightSum(path.edges()));
 					}
 				}
 
-				return (ShortestPathSingleSource.Result<V, E>) new ShortestPathSingleSource.IResult() {
+				return new ShortestPathSingleSource.Result<>() {
 
 					@Override
-					public double distance(int target) {
-						return distances.get(target);
+					public double distance(V target) {
+						return distances.getDouble(target);
 					}
 
 					@Override
-					public IPath getPath(int target) {
+					public Path<V, E> getPath(V target) {
 						return paths.get(target);
 					}
 
@@ -180,7 +185,7 @@ public class ShortestPathAStarTest extends TestBase {
 					}
 
 					@Override
-					public IPath getNegativeCycle() {
+					public Path<V, E> getNegativeCycle() {
 						throw new IllegalStateException("no negative cycle found");
 					}
 				};

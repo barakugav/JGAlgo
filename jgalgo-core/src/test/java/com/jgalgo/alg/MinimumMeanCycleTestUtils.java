@@ -22,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
 import java.util.Random;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -43,9 +43,9 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
 		});
@@ -59,9 +59,9 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IWeightFunction w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
 		});
@@ -76,14 +76,18 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			IWeightsDouble w = g.addEdgesWeights("weights", double.class);
-			for (int e : new IntArrayList(g.edges())) {
-				int u = g.edgeSource(e), v = g.edgeTarget(e);
+			WeightsDouble<Integer> w = g.addEdgesWeights("weights", double.class);
+			for (Integer e : new IntArrayList(g.edges())) {
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
 				double ew = rand.nextInt(1024) - 256;
-				int eTwin = g.addEdge(v, u);
+				Integer eTwin;
+				do {
+					eTwin = Integer.valueOf(rand.nextInt());
+				} while (eTwin.intValue() <= 0 || g.edges().contains(eTwin));
+				g.addEdge(v, u, eTwin);
 				w.set(e, ew);
 				w.set(eTwin, -ew);
 			}
@@ -92,33 +96,31 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		});
 	}
 
-	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, IntGraph g, IWeightFunction w) {
-		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);
+	private static <V, E> void verifyMinimumMeanCycle(MinimumMeanCycle algo, Graph<V, E> g, WeightFunction<E> w) {
+		Path<V, E> cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			Iterator<IPath> cycles = (Iterator) new CyclesFinderTarjan().findAllCycles(g);
-			IPath missedCycle = cycles.hasNext() ? cycles.next() : null;
+			Iterator<Path<V, E>> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			Path<V, E> missedCycle = cycles.hasNext() ? cycles.next() : null;
 			assertNull(missedCycle, "failed to find a cycle");
 			return;
 		}
 		double cycleMeanWeight = getMeanWeight(cycle, w);
 
 		if (g.vertices().size() <= 32 && g.edges().size() <= 32) {
-			@SuppressWarnings({ "rawtypes", "unchecked" })
-			Iterator<IPath> cycles = (Iterator) new CyclesFinderTarjan().findAllCycles(g);
-			assertEquals(cycle.sourceInt(), cycle.targetInt());
-			int prevV = cycle.sourceInt();
-			for (IEdgeIter eit = cycle.edgeIter();;) {
-				int e = eit.nextInt();
+			Iterator<Path<V, E>> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			assertEquals(cycle.source(), cycle.target());
+			V prevV = cycle.source();
+			for (EdgeIter<V, E> eit = cycle.edgeIter();;) {
+				E e = eit.next();
 				assertEquals(prevV, g.edgeSource(e));
 				prevV = g.edgeTarget(e);
 				if (!eit.hasNext()) {
-					assertEquals(cycle.targetInt(), prevV);
+					assertEquals(cycle.target(), prevV);
 					break;
 				}
 			}
 
-			for (IPath c : JGAlgoUtils.iterable(cycles)) {
+			for (Path<V, E> c : JGAlgoUtils.iterable(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
 				final double EPS = 0.0001;
 				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
@@ -126,7 +128,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		} else {
 			MinimumMeanCycle validationAlgo = algo instanceof MinimumMeanCycleHoward ? new MinimumMeanCycleDasdanGupta()
 					: new MinimumMeanCycleHoward();
-			IPath expectedCycle = (IPath) validationAlgo.computeMinimumMeanCycle(g, w);
+			Path<V, E> expectedCycle = validationAlgo.computeMinimumMeanCycle(g, w);
 			assertNotNull(expectedCycle, "validation algo failed to find a cycle");
 			double expectedWeight = getMeanWeight(expectedCycle, w);
 
@@ -134,7 +136,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		}
 	}
 
-	private static double getMeanWeight(IPath cycle, IWeightFunction w) {
+	private static <V, E> double getMeanWeight(Path<V, E> cycle, WeightFunction<E> w) {
 		return w.weightSum(cycle.edges()) / cycle.edges().size();
 	}
 

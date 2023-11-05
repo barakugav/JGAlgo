@@ -22,9 +22,8 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphArrayTest extends TestBase {
 
-	private static Boolean2ObjectFunction<IntGraph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "array").setDirected(directed)
-				.newGraph();
+	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl() {
+		return directed -> IntGraphFactory.newUndirected().setOption("impl", "array").setDirected(directed).newGraph();
 	}
 
 	@Test

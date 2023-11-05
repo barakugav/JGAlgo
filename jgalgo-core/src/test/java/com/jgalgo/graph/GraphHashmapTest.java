@@ -22,8 +22,8 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphHashmapTest extends TestBase {
 
-	private static Boolean2ObjectFunction<IntGraph> graphImpl() {
-		return directed -> IndexGraphFactory.newUndirected().setOption("impl", "hashtable").setDirected(directed)
+	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl() {
+		return directed -> IntGraphFactory.newUndirected().setOption("impl", "hashtable").setDirected(directed)
 				.newGraph();
 	}
 

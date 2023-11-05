@@ -205,7 +205,8 @@ public interface Bfs {
 		@Deprecated
 		@Override
 		default Integer lastEdge() {
-			return Integer.valueOf(lastEdgeInt());
+			int e = lastEdgeInt();
+			return e == -1 ? null : Integer.valueOf(e);
 		}
 	}
 

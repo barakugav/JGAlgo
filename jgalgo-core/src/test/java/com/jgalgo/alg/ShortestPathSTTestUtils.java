@@ -16,40 +16,31 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 class ShortestPathSTTestUtils {
 
-	@SuppressWarnings("unchecked")
 	static ShortestPathSingleSource ssspFromSpst(ShortestPathST spst) {
 		return new ShortestPathSingleSource() {
 
 			@Override
 			public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 					V source) {
-				if (!(g instanceof IntGraph))
-					throw new IllegalArgumentException("only int graphs are supported");
-				IntGraph g0 = (IntGraph) g;
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				int source0 = ((Integer) source).intValue();
-				Int2ObjectMap<IPath> paths = new Int2ObjectOpenHashMap<>(g.vertices().size());
-				for (int v : g0.vertices())
-					paths.put(v, (IPath) spst.computeShortestPath(g0, w0, Integer.valueOf(source0), Integer.valueOf(v)));
-				return (ShortestPathSingleSource.Result<V, E>) new ShortestPathSingleSource.IResult() {
+				Object2ObjectMap<V, Path<V, E>> paths = new Object2ObjectOpenHashMap<>(g.vertices().size());
+				for (V target : g.vertices())
+					paths.put(target, spst.computeShortestPath(g, w, source, target));
+				return new ShortestPathSingleSource.Result<>() {
 
 					@Override
-					public double distance(int target) {
-						IPath path = getPath(target);
-						return path == null ? Double.POSITIVE_INFINITY : IWeightFunction.weightSum(w0, path.edges());
+					public double distance(V target) {
+						Path<V, E> path = getPath(target);
+						return path == null ? Double.POSITIVE_INFINITY : WeightFunction.weightSum(w, path.edges());
 					}
 
 					@Override
-					public IPath getPath(int target) {
+					public Path<V, E> getPath(V target) {
 						return paths.get(target);
 					}
 
@@ -59,7 +50,7 @@ class ShortestPathSTTestUtils {
 					}
 
 					@Override
-					public IPath getNegativeCycle() {
+					public Path<V, E> getNegativeCycle() {
 						throw new IllegalStateException();
 					}
 				};

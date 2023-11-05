@@ -17,17 +17,19 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ChinesePostmanTest extends TestBase {
 
@@ -52,19 +54,19 @@ public class ChinesePostmanTest extends TestBase {
 		tester.addPhase().withArgs(8, 32).repeat(16);
 		tester.addPhase().withArgs(16, 32).repeat(16);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(selfEdges).cycles(true).connected(true).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(selfEdges).cycles(true).connected(true).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testGraph(g, w, algo);
 		});
 	}
 
-	private static void testGraph(IntGraph g, IWeightFunctionInt w, ChinesePostman algo) {
-		IPath chinesePostmanTour = (IPath) algo.computeShortestEdgeVisitorCircle(g, w);
+	private static <V, E> void testGraph(Graph<V, E> g, WeightFunctionInt<E> w, ChinesePostman algo) {
+		Path<V, E> chinesePostmanTour = algo.computeShortestEdgeVisitorCircle(g, w);
 
 		/* Asserts all edges are traversed by the tour */
-		IntSet tourEdges = new IntOpenHashSet();
-		for (int e : chinesePostmanTour.edges())
+		Set<E> tourEdges = new ObjectOpenHashSet<>();
+		for (E e : chinesePostmanTour.edges())
 			tourEdges.add(e);
 		assertEquals(g.edges(), tourEdges);
 
@@ -74,27 +76,33 @@ public class ChinesePostmanTest extends TestBase {
 			return;
 
 		double bestWeight = Double.POSITIVE_INFINITY;
-		int[] es = g.edges().toIntArray();
+		List<E> es = new ArrayList<>(g.edges());
 		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
-			IntGraphBuilder b = IntGraphBuilder.newFrom(g);
-			IWeightsInt bWeights = b.addEdgesWeights("weights", int.class);
-			for (int e : g.edges())
-				bWeights.set(e, w.weightInt(e));
+			GraphBuilder<V, Integer> b = GraphBuilder.newUndirected();
+			for (V v : g.vertices())
+				b.addVertex(v);
+			WeightsInt<Integer> bWeights = b.addEdgesWeights("weights", int.class);
+			for (E e : es) {
+				Integer newEdge = Integer.valueOf(b.edges().size());
+				b.addEdge(g.edgeSource(e), g.edgeTarget(e), newEdge);
+				bWeights.set(newEdge, w.weightInt(e));
+			}
 
 			for (int i = 0; i < m; i++) {
 				if ((bitmap & (1 << i)) == 0)
 					continue;
-				int origEdge = es[i];
-				int u = g.edgeSource(origEdge);
-				int v = g.edgeTarget(origEdge);
-				int duplicatedEdge = b.addEdge(v, u);
-				bWeights.set(duplicatedEdge, bWeights.weightInt(origEdge));
+				E origEdge = es.get(i);
+				V u = g.edgeSource(origEdge);
+				V v = g.edgeTarget(origEdge);
+				Integer duplicatedEdge = Integer.valueOf(b.edges().size());
+				b.addEdge(v, u, duplicatedEdge);
+				bWeights.set(duplicatedEdge, bWeights.weightInt(Integer.valueOf(i)));
 			}
-			IntGraph eulerianGraph = b.build();
-			if (eulerianGraph.vertices().intStream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
+			Graph<V, Integer> eulerianGraph = b.build();
+			if (eulerianGraph.vertices().stream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
 				continue;
 
-			IPath eulerianTour = (IPath) EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
+			Path<V, Integer> eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
 			double eulerianTourWeight = bWeights.weightSum(eulerianTour.edges());
 			if (bestWeight > eulerianTourWeight)
 				bestWeight = eulerianTourWeight;
@@ -104,11 +112,11 @@ public class ChinesePostmanTest extends TestBase {
 		assertEquals(bestWeight, chinesePostmanTourWeight, 1e-6);
 	}
 
-	private static int nonSelfEdgesDegree(IntGraph g, int v) {
+	private static <V, E> int nonSelfEdgesDegree(Graph<V, E> g, V v) {
 		int nonSelfEdgesCount = 0;
-		for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
-			eit.nextInt();
-			if (eit.targetInt() != v)
+		for (EdgeIter<V, E> eit = g.outEdges(v).iterator(); eit.hasNext();) {
+			eit.next();
+			if (!eit.target().equals(v))
 				nonSelfEdgesCount++;
 		}
 		return nonSelfEdgesCount;

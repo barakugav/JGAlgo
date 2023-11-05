@@ -16,26 +16,27 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeights;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IWeightsInt;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
-import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class FlowCirculationTestUtils extends TestUtils {
 
@@ -49,19 +50,19 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			IFlowNetworkInt net = randNetworkInt(g, rand);
-			IWeightFunctionInt supply = randSupplyInt(g, net, rand);
+			FlowNetworkInt<Integer, Integer> net = randNetworkInt(g, rand);
+			WeightFunctionInt<Integer> supply = randSupplyInt(g, net, rand);
 
 			testRandCirculationInt(g, net, supply, algo);
 		});
 	}
 
-	private static void testRandCirculationInt(IntGraph g, IFlowNetworkInt net, IWeightFunctionInt supply,
-			FlowCirculation algo) {
-		for (int e : g.edges())
+	private static <V, E> void testRandCirculationInt(Graph<V, E> g, FlowNetworkInt<V, E> net,
+			WeightFunctionInt<V> supply, FlowCirculation algo) {
+		for (E e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeCirculation(g, net, supply);
 
@@ -80,19 +81,19 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			IFlowNetwork net = randNetwork(g, rand);
-			IWeightFunction supply = randSupply(g, net, rand);
+			FlowNetwork<Integer, Integer> net = randNetwork(g, rand);
+			WeightFunction<Integer> supply = randSupply(g, net, rand);
 
 			testRandCirculation(g, net, supply, algo);
 		});
 	}
 
-	private static void testRandCirculation(IntGraph g, IFlowNetwork net, IWeightFunction supply,
+	private static <V, E> void testRandCirculation(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply,
 			FlowCirculation algo) {
-		for (int e : g.edges())
+		for (E e : g.edges())
 			net.setFlow(e, 0);
 		algo.computeCirculation(g, net, supply);
 
@@ -101,54 +102,54 @@ class FlowCirculationTestUtils extends TestUtils {
 		assertSupplySatisfied(g, net, supply);
 	}
 
-	private static IFlowNetworkInt randNetworkInt(IntGraph g, Random rand) {
-		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(g);
-		for (int e : g.edges())
+	private static <V, E> FlowNetworkInt<V, E> randNetworkInt(Graph<V, E> g, Random rand) {
+		FlowNetworkInt<V, E> net = FlowNetworkInt.createFromEdgeWeights(g);
+		for (E e : g.edges())
 			net.setCapacity(e, 400 + rand.nextInt(1024));
 		return net;
 	}
 
-	private static IFlowNetwork randNetwork(IntGraph g, Random rand) {
-		IFlowNetwork net = IFlowNetwork.createFromEdgeWeights(g);
-		for (int e : g.edges())
+	private static <V, E> FlowNetwork<V, E> randNetwork(Graph<V, E> g, Random rand) {
+		FlowNetwork<V, E> net = FlowNetwork.createFromEdgeWeights(g);
+		for (E e : g.edges())
 			net.setCapacity(e, 400 + rand.nextDouble() * 1024);
 		return net;
 	}
 
-	static IWeightFunctionInt randSupplyInt(IntGraph g, IFlowNetworkInt net, Random rand) {
+	static <V, E> WeightFunctionInt<V> randSupplyInt(Graph<V, E> g, FlowNetworkInt<V, E> net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
-		IntList suppliers = new IntArrayList();
-		IntList demanders = new IntArrayList();
-		int[] vertices = g.vertices().toIntArray();
-		IntArrays.shuffle(vertices, rand);
-		assert vertices.length >= 2;
-		suppliers.add(vertices[0]);
-		demanders.add(vertices[1]);
-		for (int i = 2; i < vertices.length; i++) {
+		List<V> suppliers = new ArrayList<>();
+		List<V> demanders = new ArrayList<>();
+		List<V> vertices = new ArrayList<>(g.vertices());
+		Collections.shuffle(vertices, rand);
+		assert vertices.size() >= 2;
+		suppliers.add(vertices.get(0));
+		demanders.add(vertices.get(1));
+		for (int i = 2; i < vertices.size(); i++) {
 			int r = rand.nextInt(3);
 			if (r == 0) {
-				suppliers.add(vertices[i]);
+				suppliers.add(vertices.get(i));
 			} else if (r == 1) {
-				demanders.add(vertices[i]);
+				demanders.add(vertices.get(i));
 			} else {
 				/* do nothing */
 			}
 		}
 
-		Int2IntMap capacity = new Int2IntOpenHashMap();
-		for (int e : g.edges())
+		Object2IntMap<E> capacity = new Object2IntOpenHashMap<>();
+		for (E e : g.edges())
 			capacity.put(e, net.getCapacityInt(e));
 
-		IntSet demandersSet = new IntOpenHashSet(demanders);
-		IntList suppliersList = new IntArrayList(suppliers);
+		Set<V> demandersSet = new ObjectOpenHashSet<>(demanders);
+		List<V> suppliersList = new ArrayList<>(suppliers);
 
-		IWeightsInt supply = IWeights.createExternalVerticesWeights(g, int.class);
-		IntArrayList path = new IntArrayList();
-		IntSet visited = new IntOpenHashSet();
+		WeightsInt<V> supply = Weights.createExternalVerticesWeights(g, int.class);
+		ObjectArrayList<E> path = new ObjectArrayList<>();
+		Set<V> visited = new ObjectOpenHashSet<>();
 		suppliersLoop: for (;;) {
 			if (suppliersList.isEmpty()) {
-				assert g.vertices().intStream().map(supply::weightInt).sum() == 0;
+				assert g.vertices().stream().mapToInt(supply::weightInt).sum() == 0;
 				return supply;
 			}
 
@@ -156,18 +157,18 @@ class FlowCirculationTestUtils extends TestUtils {
 			visited.clear();
 
 			int supplierIdx = rand.nextInt(suppliersList.size());
-			int supplier = suppliersList.getInt(supplierIdx);
+			V supplier = suppliersList.get(supplierIdx);
 			visited.add(supplier);
-			dfs: for (int u = supplier;;) {
+			dfs: for (V u = supplier;;) {
 
 				/* Find a random edge to deepen the DFS */
-				int[] es = g.outEdges(u).toIntArray();
-				IntArrays.shuffle(es, rand);
-				for (int e : es) {
-					if (capacity.get(e) == 0)
+				List<E> es = new ArrayList<>(g.outEdges(u));
+				Collections.shuffle(es, rand);
+				for (E e : es) {
+					if (capacity.getInt(e) == 0)
 						continue;
-					assert u == g.edgeSource(e);
-					int v = g.edgeTarget(e);
+					assert u.equals(g.edgeSource(e));
+					V v = g.edgeTarget(e);
 					if (visited.contains(v))
 						continue;
 					path.add(e);
@@ -185,26 +186,26 @@ class FlowCirculationTestUtils extends TestUtils {
 				/* No more edges to explore */
 				if (path.isEmpty()) {
 					/* No more residual paths from supplier to any demander, remove supplier from suppliers list */
-					suppliersList.set(supplierIdx, suppliersList.getInt(suppliersList.size() - 1));
-					suppliersList.removeInt(suppliersList.size() - 1);
+					suppliersList.set(supplierIdx, suppliersList.get(suppliersList.size() - 1));
+					suppliersList.remove(suppliersList.size() - 1);
 					continue suppliersLoop;
 				}
 
 				/* Back up in the DFS path one vertex */
-				int lastEdge = path.popInt();
-				assert u == g.edgeTarget(lastEdge);
+				E lastEdge = path.pop();
+				assert u.equals(g.edgeTarget(lastEdge));
 				u = g.edgeSource(lastEdge);
 			}
 
 			/* Found a residual path from a supplier to a demander */
-			int delta = path.intStream().map(capacity::get).min().getAsInt();
+			int delta = path.stream().mapToInt(capacity::getInt).min().getAsInt();
 			assert delta > 0;
-			for (int e : path)
-				capacity.put(e, capacity.get(e) - delta);
+			for (E e : path)
+				capacity.put(e, capacity.getInt(e) - delta);
 
 			/* Add lower bounds to some of the edges */
-			int source = g.edgeSource(path.getInt(0));
-			int sink = g.edgeTarget(path.getInt(path.size() - 1));
+			V source = g.edgeSource(path.get(0));
+			V sink = g.edgeTarget(path.get(path.size() - 1));
 			if (rand.nextBoolean()) {
 				int s = rand.nextInt((delta + 1) / 2);
 				supply.set(source, supply.weightInt(source) + s);
@@ -213,40 +214,40 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	private static IWeightFunction randSupply(IntGraph g, IFlowNetwork net, Random rand) {
+	private static <V, E> WeightFunction<V> randSupply(Graph<V, E> g, FlowNetwork<V, E> net, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
-		IntList suppliers = new IntArrayList();
-		IntList demanders = new IntArrayList();
-		int[] vertices = g.vertices().toIntArray();
-		IntArrays.shuffle(vertices, rand);
-		assert vertices.length >= 2;
-		suppliers.add(vertices[0]);
-		demanders.add(vertices[1]);
-		for (int i = 2; i < vertices.length; i++) {
+		List<V> suppliers = new ArrayList<>();
+		List<V> demanders = new ArrayList<>();
+		List<V> vertices = new ArrayList<>(g.vertices());
+		Collections.shuffle(vertices, rand);
+		assert vertices.size() >= 2;
+		suppliers.add(vertices.get(0));
+		demanders.add(vertices.get(1));
+		for (int i = 2; i < vertices.size(); i++) {
 			int r = rand.nextInt(3);
 			if (r == 0) {
-				suppliers.add(vertices[i]);
+				suppliers.add(vertices.get(i));
 			} else if (r == 1) {
-				demanders.add(vertices[i]);
+				demanders.add(vertices.get(i));
 			} else {
 				/* do nothing */
 			}
 		}
 
-		Int2DoubleMap capacity = new Int2DoubleOpenHashMap();
-		for (int e : g.edges())
+		Object2DoubleMap<E> capacity = new Object2DoubleOpenHashMap<>();
+		for (E e : g.edges())
 			capacity.put(e, net.getCapacity(e));
 
-		IntSet demandersSet = new IntOpenHashSet(demanders);
-		IntList suppliersList = new IntArrayList(suppliers);
+		Set<V> demandersSet = new ObjectOpenHashSet<>(demanders);
+		List<V> suppliersList = new ArrayList<>(suppliers);
 
-		IWeightsDouble supply = IWeights.createExternalVerticesWeights(g, double.class);
-		IntArrayList path = new IntArrayList();
-		IntSet visited = new IntOpenHashSet();
+		WeightsDouble<V> supply = Weights.createExternalVerticesWeights(g, double.class);
+		ObjectArrayList<E> path = new ObjectArrayList<>();
+		Set<V> visited = new ObjectOpenHashSet<>();
 		suppliersLoop: for (;;) {
 			if (suppliersList.isEmpty()) {
-				assert Math.abs(g.vertices().intStream().mapToDouble(supply::weight).sum()) < 1e-3;
+				assert Math.abs(g.vertices().stream().mapToDouble(supply::weight).sum()) < 1e-3;
 				return supply;
 			}
 
@@ -254,18 +255,18 @@ class FlowCirculationTestUtils extends TestUtils {
 			visited.clear();
 
 			int supplierIdx = rand.nextInt(suppliersList.size());
-			int supplier = suppliersList.getInt(supplierIdx);
+			V supplier = suppliersList.get(supplierIdx);
 			visited.add(supplier);
-			dfs: for (int u = supplier;;) {
+			dfs: for (V u = supplier;;) {
 
 				/* Find a random edge to deepen the DFS */
-				int[] es = g.outEdges(u).toIntArray();
-				IntArrays.shuffle(es, rand);
-				for (int e : es) {
-					if (capacity.get(e) == 0)
+				List<E> es = new ArrayList<>(g.outEdges(u));
+				Collections.shuffle(es, rand);
+				for (E e : es) {
+					if (capacity.getDouble(e) == 0)
 						continue;
-					assert u == g.edgeSource(e);
-					int v = g.edgeTarget(e);
+					assert u.equals(g.edgeSource(e));
+					V v = g.edgeTarget(e);
 					if (visited.contains(v))
 						continue;
 					path.add(e);
@@ -283,26 +284,26 @@ class FlowCirculationTestUtils extends TestUtils {
 				/* No more edges to explore */
 				if (path.isEmpty()) {
 					/* No more residual paths from supplier to any demander, remove supplier from suppliers list */
-					suppliersList.set(supplierIdx, suppliersList.getInt(suppliersList.size() - 1));
-					suppliersList.removeInt(suppliersList.size() - 1);
+					suppliersList.set(supplierIdx, suppliersList.get(suppliersList.size() - 1));
+					suppliersList.remove(suppliersList.size() - 1);
 					continue suppliersLoop;
 				}
 
 				/* Back up in the DFS path one vertex */
-				int lastEdge = path.popInt();
-				assert u == g.edgeTarget(lastEdge);
+				E lastEdge = path.pop();
+				assert u.equals(g.edgeTarget(lastEdge));
 				u = g.edgeSource(lastEdge);
 			}
 
 			/* Found a residual path from a supplier to a demander */
-			double delta = path.intStream().mapToDouble(capacity::get).min().getAsDouble();
+			double delta = path.stream().mapToDouble(capacity::getDouble).min().getAsDouble();
 			assert delta > 0;
-			for (int e : path)
-				capacity.put(e, capacity.get(e) - delta);
+			for (E e : path)
+				capacity.put(e, capacity.getDouble(e) - delta);
 
 			/* Add lower bounds to some of the edges */
-			int source = g.edgeSource(path.getInt(0));
-			int sink = g.edgeTarget(path.getInt(path.size() - 1));
+			V source = g.edgeSource(path.get(0));
+			V sink = g.edgeTarget(path.get(path.size() - 1));
 			if (rand.nextBoolean()) {
 				double s = rand.nextDouble() * ((delta + 1) / 2);
 				supply.set(source, supply.weight(source) + s);
@@ -311,28 +312,28 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	static void assertSupplySatisfied(IntGraph g, IFlowNetwork net, IWeightFunction supply) {
-		for (int v : g.vertices()) {
+	static <V, E> void assertSupplySatisfied(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply) {
+		for (V v : g.vertices()) {
 			double supplySum = 0;
-			for (int e : g.outEdges(v))
+			for (E e : g.outEdges(v))
 				supplySum += net.getFlow(e);
-			for (int e : g.inEdges(v))
+			for (E e : g.inEdges(v))
 				supplySum -= net.getFlow(e);
 			assertEquals(supply.weight(v), supplySum, 1e-9);
 		}
 	}
 
-	static IntSet verticesWithPositiveSupply(IntCollection vertices, IWeightFunction supply) {
-		IntSet sources = new IntOpenHashSet();
-		for (int v : vertices)
+	static <V> Set<V> verticesWithPositiveSupply(Collection<V> vertices, WeightFunction<V> supply) {
+		Set<V> sources = new ObjectOpenHashSet<>();
+		for (V v : vertices)
 			if (supply.weight(v) > 0)
 				sources.add(v);
 		return sources;
 	}
 
-	static IntSet verticesWithNegativeSupply(IntCollection vertices, IWeightFunction supply) {
-		IntSet sources = new IntOpenHashSet();
-		for (int v : vertices)
+	static <V> Set<V> verticesWithNegativeSupply(Collection<V> vertices, WeightFunction<V> supply) {
+		Set<V> sources = new ObjectOpenHashSet<>();
+		for (V v : vertices)
 			if (supply.weight(v) < 0)
 				sources.add(v);
 		return sources;

@@ -18,15 +18,16 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import com.jgalgo.graph.IntGraph;
+import java.util.Comparator;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
-import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
-import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 
 public class MinimumSpanningTreeTestUtils extends TestUtils {
 
@@ -36,7 +37,8 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	public static void testRandGraph(MinimumSpanningTree algo, Boolean2ObjectFunction<IntGraph> graphImpl, long seed) {
+	public static void testRandGraph(MinimumSpanningTree algo,
+			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -45,28 +47,29 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);
+			MinimumSpanningTree.Result<Integer, Integer> mst = algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
 		});
 	}
 
-	private static class MSTEdgeComparator implements IntComparator {
+	private static class MSTEdgeComparator<V, E> implements Comparator<E> {
 
-		private final IntGraph g;
-		private final IWeightFunction w;
+		private final Graph<V, E> g;
+		private final WeightFunction<E> w;
 
-		MSTEdgeComparator(IntGraph g, IWeightFunction w) {
+		MSTEdgeComparator(Graph<V, E> g, WeightFunction<E> w) {
 			this.g = g;
 			this.w = w;
 		}
 
 		@Override
-		public int compare(int e1, int e2) {
-			int u1 = g.edgeSource(e1), v1 = g.edgeTarget(e1);
-			int u2 = g.edgeSource(e2), v2 = g.edgeTarget(e2);
+		public int compare(E e1, E e2) {
+			IndexIdMap<V> vIdMap = g.indexGraphVerticesMap();
+			int u1 = vIdMap.idToIndex(g.edgeSource(e1)), v1 = vIdMap.idToIndex(g.edgeTarget(e1));
+			int u2 = vIdMap.idToIndex(g.edgeSource(e2)), v2 = vIdMap.idToIndex(g.edgeTarget(e2));
 			if (v1 > u1) {
 				int temp = u1;
 				u1 = v1;
@@ -86,7 +89,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(IntGraph g, IWeightFunction w, MinimumSpanningTree.IResult mst) {
+	private static <V, E> void verifyMST(Graph<V, E> g, WeightFunction<E> w, MinimumSpanningTree.Result<V, E> mst) {
 		assertTrue(MinimumSpanningTree.isSpanningForest(g, mst.edges()));
 		if (WeaklyConnectedComponentsAlgo.newInstance().isWeaklyConnected(g))
 			assertTrue(MinimumSpanningTree.isSpanningTree(g, mst.edges()));
@@ -95,16 +98,15 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
 		 * correct
 		 */
-		MinimumSpanningTree.IResult expected =
-				(MinimumSpanningTree.IResult) new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w);
+		MinimumSpanningTree.Result<V, E> expected = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w);
 
-		IntComparator c = new MSTEdgeComparator(g, w);
-		IntSet actualSet = new IntAVLTreeSet(c);
+		Comparator<E> c = new MSTEdgeComparator<>(g, w);
+		Set<E> actualSet = new ObjectAVLTreeSet<>(c);
 		actualSet.addAll(mst.edges());
 
 		assertEquals(mst.edges().size(), actualSet.size(), "MST contains duplications");
 		assertEquals(expected.edges().size(), actualSet.size(), "unexpected MST size");
-		for (int e : expected.edges())
+		for (E e : expected.edges())
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
 	}
 

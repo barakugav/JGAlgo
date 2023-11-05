@@ -15,8 +15,9 @@
  */
 package com.jgalgo.alg;
 
-interface VertexScoring {
+@SuppressWarnings("unused")
+interface VertexScoring<V, E> {
 
-	double vertexScore(int vertex);
+	double vertexScore(V vertex);
 
 }

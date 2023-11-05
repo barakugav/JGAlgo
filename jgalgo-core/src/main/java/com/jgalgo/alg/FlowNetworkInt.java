@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
@@ -179,8 +180,14 @@ public interface FlowNetworkInt<V, E> extends FlowNetwork<V, E> {
 	 * @param  flows      a weight container that will contain the flow values of the edges
 	 * @return            a flow network implemented as external edge weights containers
 	 */
+	@SuppressWarnings("unchecked")
 	static <V, E> FlowNetworkInt<V, E> createFromEdgeWeights(WeightsInt<E> capacities, WeightsInt<E> flows) {
-		return new FlowNetworks.NetImplEdgeWeightsInt<>(capacities, flows);
+		if (capacities instanceof IWeightsInt && flows instanceof IWeightsInt) {
+			return (FlowNetworkInt<V, E>) new FlowNetworks.NetImplEdgeIWeightsInt((IWeightsInt) capacities,
+					(IWeightsInt) flows);
+		} else {
+			return new FlowNetworks.NetImplEdgeWeightsInt<>(capacities, flows);
+		}
 	}
 
 }

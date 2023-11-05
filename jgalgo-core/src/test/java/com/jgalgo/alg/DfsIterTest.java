@@ -18,14 +18,15 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class DfsIterTest extends TestBase {
 
@@ -33,45 +34,49 @@ public class DfsIterTest extends TestBase {
 	public void testDfsConnected() {
 		final long seed = 0x77678e2ce068199cL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 8).repeat(256);
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(true).build();
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-
-			IntSet visited = new IntOpenHashSet();
-			for (Dfs.IntIter it = Dfs.newInstance(g, source); it.hasNext();) {
-				int v = it.nextInt();
-				IntList pathFromSource = it.edgePath();
-				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				assertFalse(visited.contains(v), "already visited vertex " + v);
-				if (v != source)
-					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
-				visited.add(v);
-			}
-
-			for (int v : g.vertices())
-				assertTrue(visited.contains(v));
-
-			/* run DFS again without calling .hasNext() */
-			IntSet visited2 = new IntOpenHashSet();
-			Dfs.IntIter it = Dfs.newInstance(g, source);
-			for (int s = visited.size(); s-- > 0;) {
-				int v = it.nextInt();
-				IntList pathFromSource = it.edgePath();
-				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				assertFalse(visited2.contains(v), "already visited vertex " + v);
-				if (v != source)
-					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
-				visited2.add(v);
-			}
-			assert !it.hasNext();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			testDfsConnected(g, seedGen.nextSeed());
 		});
+	}
+
+	private static <V, E> void testDfsConnected(Graph<V, E> g, long seed) {
+		Random rand = new Random(seed);
+		List<V> vs = new ArrayList<>(g.vertices());
+		V source = vs.get(rand.nextInt(vs.size()));
+
+		Set<V> visited = new ObjectOpenHashSet<>();
+		for (Dfs.Iter<V, E> it = Dfs.newInstance(g, source); it.hasNext();) {
+			V v = it.next();
+			List<E> pathFromSource = it.edgePath();
+			E e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
+			assertFalse(visited.contains(v), "already visited vertex " + v);
+			if (!v.equals(source))
+				assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)).equals(v), "v is not an endpoint of inEdge");
+			visited.add(v);
+		}
+
+		for (V v : g.vertices())
+			assertTrue(visited.contains(v));
+
+		/* run DFS again without calling .hasNext() */
+		Set<V> visited2 = new ObjectOpenHashSet<>();
+		Dfs.Iter<V, E> it = Dfs.newInstance(g, source);
+		for (int s = visited.size(); s-- > 0;) {
+			V v = it.next();
+			List<E> pathFromSource = it.edgePath();
+			E e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
+			assertFalse(visited2.contains(v), "already visited vertex " + v);
+			if (!v.equals(source))
+				assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)).equals(v), "v is not an endpoint of inEdge");
+			visited2.add(v);
+		}
+		assert !it.hasNext();
 	}
 
 }

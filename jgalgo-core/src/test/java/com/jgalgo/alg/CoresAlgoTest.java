@@ -16,16 +16,17 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class CoresAlgoTest extends TestBase {
 
@@ -73,58 +74,58 @@ public class CoresAlgoTest extends TestBase {
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 
 			CoresAlgo algo = new CoresAlgoImpl();
 			testCoresAlgo(g, algo, degreeType);
 		});
 	}
 
-	private static void testCoresAlgo(IntGraph g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
-		CoresAlgo.IResult res;
+	private static <V, E> void testCoresAlgo(Graph<V, E> g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
+		CoresAlgo.Result<V, E> res;
 		if (degreeType == CoresAlgo.DegreeType.OutAndInDegree) {
-			res = (CoresAlgo.IResult) algo.computeCores(g);
+			res = algo.computeCores(g);
 		} else {
-			res = (CoresAlgo.IResult) algo.computeCores(g, degreeType);
+			res = algo.computeCores(g, degreeType);
 		}
 
 		final boolean directed = g.isDirected();
-		Int2IntMap vertex2core = new Int2IntOpenHashMap();
+		Object2IntMap<V> vertex2core = new Object2IntOpenHashMap<>();
 		int maxCoreExpected = 0;
 		coreComputation: for (int k = 0;; k++) {
-			IntSet vs = new IntOpenHashSet(g.vertices());
+			Set<V> vs = new ObjectOpenHashSet<>(g.vertices());
 			for (;;) {
 				if (vs.isEmpty()) {
 					maxCoreExpected = k - 1;
 					break coreComputation;
 				}
 				boolean improve = false;
-				for (IntIterator vit = vs.iterator(); vit.hasNext();) {
-					int u = vit.nextInt();
+				for (Iterator<V> vit = vs.iterator(); vit.hasNext();) {
+					V u = vit.next();
 					int degree = 0;
 					if (!directed || degreeType == CoresAlgo.DegreeType.OutDegree) {
-						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-							eit.nextInt();
-							if (vs.contains(eit.targetInt()))
+						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							eit.next();
+							if (vs.contains(eit.target()))
 								degree++;
 						}
 					} else if (degreeType == CoresAlgo.DegreeType.InDegree) {
-						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
-							eit.nextInt();
-							if (vs.contains(eit.sourceInt()))
+						for (EdgeIter<V, E> eit = g.inEdges(u).iterator(); eit.hasNext();) {
+							eit.next();
+							if (vs.contains(eit.source()))
 								degree++;
 						}
 					} else {
 						assert degreeType == CoresAlgo.DegreeType.OutAndInDegree;
-						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-							eit.nextInt();
-							if (vs.contains(eit.targetInt()))
+						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+							eit.next();
+							if (vs.contains(eit.target()))
 								degree++;
 						}
-						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
-							eit.nextInt();
-							if (vs.contains(eit.sourceInt()))
+						for (EdgeIter<V, E> eit = g.inEdges(u).iterator(); eit.hasNext();) {
+							eit.next();
+							if (vs.contains(eit.source()))
 								degree++;
 						}
 					}
@@ -136,24 +137,24 @@ public class CoresAlgoTest extends TestBase {
 				if (!improve)
 					break;
 			}
-			for (int v : vs)
+			for (V v : vs)
 				vertex2core.put(v, k);
 		}
 
 		assertEquals(maxCoreExpected, res.maxCore());
-		for (int v : g.vertices())
-			assertEquals(vertex2core.get(v), res.vertexCoreNum(v));
+		for (V v : g.vertices())
+			assertEquals(vertex2core.getInt(v), res.vertexCoreNum(v));
 		for (int k0 = 0; k0 <= maxCoreExpected; k0++) {
 			final int k = k0;
-			assertEquals(res.coreVertices(k).size(), res.coreVertices(k).intStream().distinct().count());
-			assertEquals(res.coreShell(k).size(), res.coreShell(k).intStream().distinct().count());
-			assertEquals(res.coreCrust(k).size(), res.coreCrust(k).intStream().distinct().count());
-			IntSet expectedCore = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() >= k)
-					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
-			IntSet expectedShell = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() == k)
-					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
-			IntSet expectedCrust = vertex2core.int2IntEntrySet().stream().filter(e -> e.getIntValue() < k)
-					.mapToInt(e -> e.getIntKey()).collect(IntOpenHashSet::new, IntSet::add, IntSet::addAll);
+			assertEquals(res.coreVertices(k).size(), res.coreVertices(k).stream().distinct().count());
+			assertEquals(res.coreShell(k).size(), res.coreShell(k).stream().distinct().count());
+			assertEquals(res.coreCrust(k).size(), res.coreCrust(k).stream().distinct().count());
+			Set<V> expectedCore = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() >= k)
+					.map(e -> e.getKey()).collect(Collectors.toSet());
+			Set<V> expectedShell = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() == k)
+					.map(e -> e.getKey()).collect(Collectors.toSet());
+			Set<V> expectedCrust = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() < k)
+					.map(e -> e.getKey()).collect(Collectors.toSet());
 			assertEquals(expectedCore, res.coreVertices(k));
 			assertEquals(expectedShell, res.coreShell(k));
 			assertEquals(expectedCrust, res.coreCrust(k));

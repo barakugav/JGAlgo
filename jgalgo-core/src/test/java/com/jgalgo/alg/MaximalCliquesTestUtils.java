@@ -17,18 +17,16 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MaximalCliquesTestUtils extends TestUtils {
 
@@ -40,71 +38,70 @@ class MaximalCliquesTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 256).repeat(12);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			testAlgo(g, algo);
 		});
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void testAlgo(IntGraph g, MaximalCliques algo) {
+	private static <V, E> void testAlgo(Graph<V, E> g, MaximalCliques algo) {
 		final int n = g.vertices().size();
-		Collection<IntSet> cliques = (Collection) algo.findAllMaximalCliques(g);
+		Collection<Set<V>> cliques = algo.findAllMaximalCliques(g);
 
-		Set<IntIntPair> edges = new HashSet<>();
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
-			edges.add(IntIntPair.of(u, v));
-			edges.add(IntIntPair.of(v, u));
+		Set<Pair<V, V>> edges = new HashSet<>();
+		for (E e : g.edges()) {
+			V u = g.edgeSource(e);
+			V v = g.edgeTarget(e);
+			edges.add(Pair.of(u, v));
+			edges.add(Pair.of(v, u));
 		}
 
 		/* assert the returned cliques are actual maximal cliques */
-		for (IntCollection clique : cliques)
-			assertTrue(isMaximalClique(g, new IntArrayList(clique), edges));
+		for (Collection<V> clique : cliques)
+			assertTrue(isMaximalClique(g, new ArrayList<>(clique), edges));
 
 		if (n <= 24) {
 			/* test all possible sub sets of vertices */
-			Set<IntSet> cliquesExpected = new HashSet<>();
-			int[] vertices = g.vertices().toIntArray();
+			Set<Set<V>> cliquesExpected = new HashSet<>();
+			List<V> vertices = new ArrayList<>(g.vertices());
 			for (int bitmap = 1; bitmap < (1 << n); bitmap++) {
-				IntList tempClique = new IntArrayList();
+				List<V> tempClique = new ArrayList<>();
 				for (int vIdx = 0; vIdx < n; vIdx++)
 					if ((bitmap & (1 << vIdx)) != 0)
-						tempClique.add(vertices[vIdx]);
+						tempClique.add(vertices.get(vIdx));
 
 				if (isClique(tempClique, edges) && isMaximalClique(g, tempClique, edges))
-					cliquesExpected.add(new IntOpenHashSet(tempClique));
+					cliquesExpected.add(new ObjectOpenHashSet<>(tempClique));
 			}
 
-			Set<IntSet> cliquesActual = new HashSet<>();
-			for (IntCollection clique : cliques)
-				cliquesActual.add(new IntOpenHashSet(clique));
+			Set<Set<V>> cliquesActual = new HashSet<>();
+			for (Collection<V> clique : cliques)
+				cliquesActual.add(new ObjectOpenHashSet<>(clique));
 
 			assertEquals(cliquesExpected, cliquesActual);
 		}
 	}
 
-	private static boolean isClique(IntList clique, Set<IntIntPair> edges) {
+	private static <V> boolean isClique(List<V> clique, Set<Pair<V, V>> edges) {
 		for (int s = clique.size(), i = 0; i < s; i++) {
-			int u = clique.getInt(i);
+			V u = clique.get(i);
 			for (int j = i + 1; j < s; j++) {
-				int v = clique.getInt(j);
-				if (!edges.contains(IntIntPair.of(u, v)))
+				V v = clique.get(j);
+				if (!edges.contains(Pair.of(u, v)))
 					return false;
 			}
 		}
 		return true;
 	};
 
-	private static boolean isMaximalClique(IntGraph g, IntList clique, Set<IntIntPair> edges) {
+	private static <V, E> boolean isMaximalClique(Graph<V, E> g, List<V> clique, Set<Pair<V, V>> edges) {
 		if (!isClique(clique, edges))
 			return false;
-		IntSet cliqueSet = new IntOpenHashSet(clique);
-		cliqueAppendLoop: for (int u : g.vertices()) {
+		Set<V> cliqueSet = new ObjectOpenHashSet<>(clique);
+		cliqueAppendLoop: for (V u : g.vertices()) {
 			if (cliqueSet.contains(u))
 				continue;
-			for (int v : clique)
-				if (!edges.contains(IntIntPair.of(u, v)))
+			for (V v : clique)
+				if (!edges.contains(Pair.of(u, v)))
 					continue cliqueAppendLoop;
 			return false;
 		}

@@ -21,8 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -30,7 +33,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class PathTest extends TestBase {
 
-	@SuppressWarnings("boxing")
 	@Test
 	public void testFindPath() {
 		final long seed = 0x03afc698ec4c71ccL;
@@ -43,28 +45,32 @@ public class PathTest extends TestBase {
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(true).build();
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
-			int target = vs[rand.nextInt(vs.length)];
-
-			IPath actual = IPath.findPath(g, source, target);
-			IPath expected = (IPath) validationAlgo.computeShortestPaths(g, null, source).getPath(target);
-			if (expected == null) {
-				assertNull(actual, "found non existing path");
-			} else {
-				assertNotNull(actual, "failed to found a path");
-				assertEquals(expected.edges().size(), actual.edges().size(), "failed to find shortest path");
-
-				assertEquals(source, actual.sourceInt());
-				assertEquals(target, actual.targetInt());
-				assertTrue(IPath.isPath(g, source, target, actual.edges()));
-
-				boolean isSimpleExpected = actual.vertices().intStream().distinct().count() == actual.vertices().size();
-				assertEquals(isSimpleExpected, actual.isSimple());
-			}
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			testFindPath(g, validationAlgo, rand);
 		});
+	}
+
+	private static <V, E> void testFindPath(Graph<V, E> g, ShortestPathSingleSource validationAlgo, Random rand) {
+		List<V> vs = new ArrayList<>(g.vertices());
+		V source = vs.get(rand.nextInt(vs.size()));
+		V target = vs.get(rand.nextInt(vs.size()));
+
+		Path<V, E> actual = Path.findPath(g, source, target);
+		Path<V, E> expected = validationAlgo.computeShortestPaths(g, null, source).getPath(target);
+		if (expected == null) {
+			assertNull(actual, "found non existing path");
+		} else {
+			assertNotNull(actual, "failed to found a path");
+			assertEquals(expected.edges().size(), actual.edges().size(), "failed to find shortest path");
+
+			assertEquals(source, actual.source());
+			assertEquals(target, actual.target());
+			assertTrue(Path.isPath(g, source, target, actual.edges()));
+
+			boolean isSimpleExpected = actual.vertices().stream().distinct().count() == actual.vertices().size();
+			assertEquals(Boolean.valueOf(isSimpleExpected), Boolean.valueOf(actual.isSimple()));
+		}
 	}
 
 	@Test

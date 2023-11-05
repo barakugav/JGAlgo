@@ -16,11 +16,11 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 public class StronglyConnectedComponentsAlgoTest extends TestBase {
 
@@ -33,12 +33,12 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IVertexPartition actual =
-					(IVertexPartition) new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			VertexPartition<Integer, Integer> actual =
+					new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
-			Pair<Integer, Int2IntMap> expected = ConnectedComponentsTestUtils.calcUndirectedConnectivity(g);
+			IntObjectPair<Object2IntMap<Integer>> expected = ConnectedComponentsTestUtils.calcUndirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);
 		});
 	}
@@ -53,13 +53,13 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 
-			IVertexPartition actual =
-					(IVertexPartition) new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			VertexPartition<Integer, Integer> actual =
+					new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
-			Pair<Integer, Int2IntMap> expected = ConnectedComponentsTestUtils.calcDirectedConnectivity(g);
+			IntObjectPair<Object2IntMap<Integer>> expected = ConnectedComponentsTestUtils.calcDirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);
 		});
 	}

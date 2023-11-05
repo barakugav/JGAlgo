@@ -53,7 +53,7 @@ public class Graphs {
 	static interface ImmutableGraph {
 	}
 
-	private static class ImmutableGraphView<V, E> implements Graph<V, E>, ImmutableGraph {
+	private static class ImmutableGraphView<V, E> extends GraphBase<V, E> implements ImmutableGraph {
 
 		private final Graph<V, E> graph;
 
@@ -554,7 +554,7 @@ public class Graphs {
 		return g instanceof ImmutableGraph ? g : new ImmutableGraphView<>(g);
 	}
 
-	private static class ReverseGraph<V, E> implements Graph<V, E> {
+	private static class ReverseGraph<V, E> extends GraphBase<V, E> {
 
 		private final Graph<V, E> graph;
 

@@ -19,11 +19,13 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 
@@ -53,11 +55,11 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer source = vs.get(rand.nextInt(vs.size()));
 
 			ShortestPathSingleSource validationAlgo =
 					algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial()
@@ -75,11 +77,11 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(3542, 25436).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			IWeightFunction w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer source = vs.get(rand.nextInt(vs.size()));
 
 			ShortestPathSingleSource validationAlgo = new ShortestPathSingleSourceDijkstra();
 			testAlgo(g, w, source, algo, validationAlgo);
@@ -95,10 +97,10 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(1);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			List<Integer> vs = new ArrayList<>(g.vertices());
+			Integer source = vs.get(rand.nextInt(vs.size()));
 
 			ShortestPathSingleSource validationAlgo =
 					algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial()
@@ -116,10 +118,10 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(true).build();
-			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			int source = g.vertices().iterator().nextInt();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			Integer source = g.vertices().iterator().next();
 
 			ShortestPathSingleSource validationAlgo =
 					algo instanceof ShortestPathSingleSourceBellmanFord ? new ShortestPathSingleSourceGoldberg()
@@ -128,20 +130,18 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		});
 	}
 
-	static void testAlgo(IntGraph g, IWeightFunction w, int source, ShortestPathSingleSource algo,
+	static <V, E> void testAlgo(Graph<V, E> g, WeightFunction<E> w, V source, ShortestPathSingleSource algo,
 			ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.IResult result =
-				(ShortestPathSingleSource.IResult) algo.computeShortestPaths(g, w, Integer.valueOf(source));
+		ShortestPathSingleSource.Result<V, E> result = algo.computeShortestPaths(g, w, source);
 		validateResult(g, w, source, result, validationAlgo);
 	}
 
-	static void validateResult(IntGraph g, IWeightFunction w, int source, ShortestPathSingleSource.IResult result,
-			ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.IResult expectedRes =
-				(ShortestPathSingleSource.IResult) validationAlgo.computeShortestPaths(g, w, Integer.valueOf(source));
+	static <V, E> void validateResult(Graph<V, E> g, WeightFunction<E> w, V source,
+			ShortestPathSingleSource.Result<V, E> result, ShortestPathSingleSource validationAlgo) {
+		ShortestPathSingleSource.Result<V, E> expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 		if (result.foundNegativeCycle()) {
-			IPath cycle = null;
+			Path<V, E> cycle = null;
 			try {
 				cycle = result.getNegativeCycle();
 			} catch (UnsupportedOperationException e) {
@@ -157,15 +157,16 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			}
 			return;
 		}
-		assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
+		assertFalse(expectedRes.foundNegativeCycle(),
+				() -> "failed to find negative cycle: " + expectedRes.getNegativeCycle());
 
-		for (int v : g.vertices()) {
+		for (V v : g.vertices()) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			IPath path = result.getPath(v);
+			Path<V, E> path = result.getPath(v);
 			if (path != null) {
-				double pathWeight = IWeightFunction.weightSum(w, path.edges());
+				double pathWeight = WeightFunction.weightSum(w, path.edges());
 				assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("
 						+ actualDistance + " != " + pathWeight + "): " + path);
 			} else {

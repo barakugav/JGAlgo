@@ -16,12 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.function.DoubleSupplier;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 
 class PageRank {
 
@@ -29,19 +31,22 @@ class PageRank {
 	private double tolerance = 0.0001;
 	private double dampingFactor = 0.85;
 
-	VertexScoring computeScores(IntGraph g, IWeightFunction w) {
-		if (g instanceof IndexGraph)
-			return computeScores((IndexGraph) g, w);
+	@SuppressWarnings("unchecked")
+	<V, E> VertexScoring<V, E> computeScores(Graph<V, E> g, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (VertexScoring<V, E>) computeScores((IndexGraph) g, w0);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-
-		VertexScoring indexResult = computeScores(iGraph, iw);
-		return new VertexScoringImpl.ResultFromIndexResult(g, indexResult);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IVertexScoring indexResult = computeScores(iGraph, iw);
+			return VertexScoringImpl.resultFromIndexResult(g, indexResult);
+		}
 	}
 
-	VertexScoring computeScores(IndexGraph g, IWeightFunction w) {
+	private IVertexScoring computeScores(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 
 		int[] outDegree = new int[n];

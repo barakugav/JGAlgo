@@ -17,18 +17,18 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class VertexCoverBarYehudaTest extends TestBase {
 
@@ -45,22 +45,22 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		tester.addPhase().withArgs(1024, 2048).repeat(16);
 		tester.addPhase().withArgs(8096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 
 			RandomIntUnique rand = new RandomIntUnique(0, 163454, seedGen.nextSeed());
-			IWeightsInt weight = g.addVerticesWeights("weight", int.class);
-			for (int e : g.vertices())
-				weight.set(e, rand.next());
+			WeightsInt<Integer> weight = g.addVerticesWeights("weight", int.class);
+			for (Integer v : g.vertices())
+				weight.set(v, rand.next());
 
 			testVC(g, weight, algo, appxFactor);
 		});
 	}
 
-	private static void testVC(IntGraph g, IWeightFunctionInt w, VertexCover algo, double appxFactor) {
-		VertexCover.IResult vc = (VertexCover.IResult) algo.computeMinimumVertexCover(g, w);
+	private static <V, E> void testVC(Graph<V, E> g, WeightFunctionInt<V> w, VertexCover algo, double appxFactor) {
+		VertexCover.Result<V, E> vc = algo.computeMinimumVertexCover(g, w);
 
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
+		for (E e : g.edges()) {
+			V u = g.edgeSource(e), v = g.edgeTarget(e);
 			assertTrue(vc.isInCover(u) || vc.isInCover(v), "edge is not covered: " + e);
 		}
 
@@ -70,21 +70,21 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		if (n < 16) {
 
 			/* check all covers */
-			IntSet bestCover = null;
-			IntList vertices = new IntArrayList(g.vertices());
-			IntSet cover = new IntOpenHashSet(n);
-			ToDoubleFunction<IntSet> coverWeight = c -> w.weightSum(c);
+			Set<V> bestCover = null;
+			List<V> vertices = new ArrayList<>(g.vertices());
+			Set<V> cover = new ObjectOpenHashSet<>(n);
+			ToDoubleFunction<Set<V>> coverWeight = c -> w.weightSum(c);
 			coverLoop: for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
 				cover.clear();
 				assert cover.isEmpty();
 				for (int i = 0; i < n; i++)
 					if ((bitmap & (1 << i)) != 0)
-						cover.add(vertices.getInt(i));
-				for (int e : g.edges())
+						cover.add(vertices.get(i));
+				for (E e : g.edges())
 					if (!cover.contains(g.edgeSource(e)) && !cover.contains(g.edgeTarget(e)))
 						continue coverLoop; /* don't cover all edges */
 				if (bestCover == null || coverWeight.applyAsDouble(bestCover) > coverWeight.applyAsDouble(cover))
-					bestCover = new IntOpenHashSet(cover);
+					bestCover = new ObjectOpenHashSet<>(cover);
 			}
 
 			assertNotNull(bestCover);
