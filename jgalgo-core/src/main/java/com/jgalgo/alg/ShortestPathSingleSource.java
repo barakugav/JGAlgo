@@ -87,7 +87,7 @@ public interface ShortestPathSingleSource {
 	 * <p>
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight. For cardinality (non weighted)
-	 * shortest pass, pass {@code null} instead of the weight function {@code w}.
+	 * shortest path, pass {@code null} instead of the weight function {@code w}.
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.

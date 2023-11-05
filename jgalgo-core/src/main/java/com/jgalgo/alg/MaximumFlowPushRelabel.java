@@ -1715,8 +1715,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		abstract boolean isTwinResidualUndirected(int e);
 
-		abstract boolean isSaturated(int e);
-
 		abstract boolean hasFlow(int e);
 
 		abstract boolean hasNegativeFlow(int e);
@@ -1929,11 +1927,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		double getTwinResidualCapacity(int e) {
 			assert !directed;
 			return 2 * capacity[e] - residualCapacity[e];
-		}
-
-		@Override
-		boolean isSaturated(int e) {
-			return getResidualCapacity(e) <= EPS;
 		}
 
 		@Override
@@ -2153,11 +2146,6 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		int getTwinResidualCapacity(int e) {
 			assert !directed;
 			return 2 * capacity[e] - residualCapacity[e];
-		}
-
-		@Override
-		boolean isSaturated(int e) {
-			return getResidualCapacity(e) == 0;
 		}
 
 		@Override
