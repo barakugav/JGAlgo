@@ -534,6 +534,11 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		abstract EdgeEvent extractNextBlossomEvent();
 
 		private IMatching computeMaxMatching(boolean perfect) {
+			if (perfect) {
+				/* delta3 is lower than delta in some updates when we try to compute perfect matching */
+				throw new UnsupportedOperationException("there is a bug in the perfect matching implementation");
+			}
+
 			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2

@@ -33,11 +33,11 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MatchingWeightedGabow1990(), seed);
 	}
 
-	@Test
-	public void testRandBipartiteGraphsWeightedPerfect() {
-		final long seed = 0xf5c0a210842d9f5eL;
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MatchingWeightedGabow1990(), seed);
-	}
+	// @Test
+	// public void testRandBipartiteGraphsWeightedPerfect() {
+	// final long seed = 0xf5c0a210842d9f5eL;
+	// MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MatchingWeightedGabow1990(), seed);
+	// }
 
 	@Test
 	public void testRandGraphsWeight1() {
@@ -51,10 +51,10 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 		MatchingWeightedTestUtils.randGraphsWeighted(new MatchingWeightedGabow1990(), seed);
 	}
 
-	@Test
-	public void testRandGraphsWeightedPerfect() {
-		final long seed = 0x625606329a1eb13cL;
-		MatchingWeightedTestUtils.randGraphsWeightedPerfect(new MatchingWeightedGabow1990(), seed);
-	}
+	// @Test
+	// public void testRandGraphsWeightedPerfect() {
+	// final long seed = 0x625606329a1eb13cL;
+	// MatchingWeightedTestUtils.randGraphsWeightedPerfect(new MatchingWeightedGabow1990(), seed);
+	// }
 
 }

@@ -89,7 +89,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
 			MatchingAlgo validationWeightedAlgo =
-					algo instanceof MatchingWeightedBipartiteHungarianMethod ? new MatchingWeightedGabow1990()
+					algo instanceof MatchingWeightedBipartiteHungarianMethod ? new MatchingWeightedBlossomV()
 							: new MatchingWeightedBipartiteHungarianMethod();
 			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
@@ -161,9 +161,10 @@ public class MatchingWeightedTestUtils extends TestUtils {
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityGabow1976();
-			MatchingAlgo validationWeightedAlgo =
-					algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
-							: new MatchingWeightedGabow1990();
+			// MatchingAlgo validationWeightedAlgo =
+			// algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
+			// : new MatchingWeightedGabow1990();
+			MatchingAlgo validationWeightedAlgo = new MatchingWeightedBlossomV();
 			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
