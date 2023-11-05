@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -28,6 +27,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
@@ -135,7 +135,7 @@ public interface MinimumSpanningTree {
 		}
 		if (edges0.size() != n - 1)
 			return false;
-		BitSet edgesBitmap = new BitSet(m);
+		Bitmap edgesBitmap = new Bitmap(m);
 		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);
@@ -146,7 +146,7 @@ public interface MinimumSpanningTree {
 		}
 
 		/* perform a BFS from some vertex using only the spanning tree edges */
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 		visited.set(0);
 		queue.enqueue(0);
@@ -201,7 +201,7 @@ public interface MinimumSpanningTree {
 			assert m == 0;
 			return edges0.isEmpty();
 		}
-		BitSet edgesBitmap = new BitSet(m);
+		Bitmap edgesBitmap = new Bitmap(m);
 		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);

@@ -16,15 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -62,10 +62,10 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		Arrays.fill(depths, -1);
 
 		var biccVerticesFromBiccEdgesState = new Object() {
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 		};
 		Function<int[], int[]> biccVerticesFromBiccEdges = biccsEdges -> {
-			BitSet visited = biccVerticesFromBiccEdgesState.visited;
+			Bitmap visited = biccVerticesFromBiccEdgesState.visited;
 			assert visited.isEmpty();
 			int biccVerticesCount = 0;
 			for (int e : biccsEdges) {
@@ -95,7 +95,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			return biccVertices;
 		};
 
-		// BitSet separatingVertex = new BitSet(n);
+		// Bitmap separatingVertex = new Bitmap(n);
 		List<Pair<int[], int[]>> biccs = new ObjectArrayList<>();
 		IntList biccEdgesTemp = new IntArrayList();
 
@@ -188,7 +188,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		private final int[][] biccsEdgesFromAlgo;
 		private IntSet[] biccsEdges;
 		private IntSet[] vertexBiCcs;
-		private BitSet cutVerticesBitmap;
+		private Bitmap cutVerticesBitmap;
 		private IntSet cutVertices;
 		private IntGraph blockGraph;
 
@@ -388,7 +388,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		public boolean isCutVertex(int vertex) {
 			final int n = g.vertices().size();
 			if (cutVerticesBitmap == null) {
-				cutVerticesBitmap = new BitSet(n);
+				cutVerticesBitmap = new Bitmap(n);
 				for (int v = 0; v < n; v++)
 					if (getVertexBiCcs(v).size() > 1)
 						cutVerticesBitmap.set(v);

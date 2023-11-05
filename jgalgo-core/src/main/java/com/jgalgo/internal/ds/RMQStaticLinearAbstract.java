@@ -16,7 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.BitSet;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.bytes.Byte2IntMap;
 import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -94,7 +94,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
 				}
 				final int innerBlockNum = tables.size();
-				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
 				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
 				for (int b = 0; b < blockNum; b++) {
 					byte key = (byte) blockToInnerIdx[b];
@@ -116,7 +116,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
 				}
 				final int innerBlockNum = tables.size();
-				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
 				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
 				for (int b = 0; b < blockNum; b++) {
 					short key = (short) blockToInnerIdx[b];
@@ -138,7 +138,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
 				}
 				final int innerBlockNum = tables.size();
-				BitSet builtInnerBlocks = new BitSet(innerBlockNum);
+				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
 				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
 				for (int b = 0; b < blockNum; b++) {
 					int key = blockToInnerIdx[b];

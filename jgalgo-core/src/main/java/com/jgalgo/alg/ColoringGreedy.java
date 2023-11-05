@@ -82,8 +82,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl {
 				if (c != -1)
 					usedColors.set(c);
 			}
-			int color = usedColors.nextClearBit(0);
-			colors[u] = color;
+			int color = colors[u] = usedColors.nextClearBit(0);
 			colorsNum = Math.max(colorsNum, color + 1);
 		}
 		return new VertexPartitions.Impl(g, colorsNum, colors);

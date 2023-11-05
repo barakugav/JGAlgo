@@ -16,12 +16,12 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -58,7 +58,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 
 			int startV;
 			StronglyConnectedComponent scc;
-			final BitSet isBlocked;
+			final Bitmap isBlocked;
 			final IntSet[] blockingSet;
 			final IntStack unblockStack = new IntArrayList();
 			final IntArrayList path = new IntArrayList();
@@ -74,7 +74,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 			IPath nextCycle;
 
 			{
-				isBlocked = new BitSet(n);
+				isBlocked = new Bitmap(n);
 				blockingSet = new IntSet[n];
 				for (int u = 0; u < n; u++)
 					blockingSet[u] = new IntOpenHashSet();

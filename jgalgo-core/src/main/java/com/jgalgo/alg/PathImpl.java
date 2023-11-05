@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +28,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -126,7 +126,7 @@ class PathImpl implements IPath {
 				isSimple = false; /* path with length greater than the vertices num */
 
 			} else if (vs.size() * 4 > n / 8) {
-				BitSet visited = new BitSet(n);
+				Bitmap visited = new Bitmap(n);
 				isSimple = true;
 				for (int v : vs) {
 					if (visited.get(v)) {

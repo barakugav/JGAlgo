@@ -15,13 +15,13 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -140,8 +140,8 @@ public interface Matching<V, E> {
 			return false;
 
 		if (edges0.size() * 4 > n / 8) {
-			/* matching is big, use BitSet */
-			BitSet matched = new BitSet(n);
+			/* matching is big, use Bitmap */
+			Bitmap matched = new Bitmap(n);
 			for (int e : edges0) {
 				int u = ig.edgeSource(e), v = ig.edgeTarget(e);
 				if (matched.get(u))

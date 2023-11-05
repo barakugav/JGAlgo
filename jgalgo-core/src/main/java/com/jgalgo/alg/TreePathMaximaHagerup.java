@@ -17,12 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
@@ -453,7 +453,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 			/* Start traversing the full branching tree from the leaves upwards */
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-			BitSet queued = new BitSet(n);
+			Bitmap queued = new Bitmap(n);
 			for (int u = 0; u < n; u++) {
 				if (depths[u] == treeHeight - 1) {
 					queue.enqueue(u);

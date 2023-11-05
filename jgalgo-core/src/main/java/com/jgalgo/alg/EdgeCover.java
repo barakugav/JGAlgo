@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -24,6 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -137,7 +137,7 @@ public interface EdgeCover {
 		}
 		final int n = ig.vertices().size();
 		final int m = ig.edges().size();
-		BitSet coverEdges = new BitSet(m);
+		Bitmap coverEdges = new Bitmap(m);
 		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);

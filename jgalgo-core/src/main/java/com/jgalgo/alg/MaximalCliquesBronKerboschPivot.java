@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -44,7 +44,7 @@ class MaximalCliquesBronKerboschPivot extends MaximalCliquesUtils.AbstractImpl {
 		return new Iterator<>() {
 
 			final int n = g.vertices().size();
-			final BitSet edges;
+			final Bitmap edges;
 
 			final IntList currentClique = new IntArrayList();
 			final Stack<IntList> potentialStack = new ObjectArrayList<>();
@@ -53,7 +53,7 @@ class MaximalCliquesBronKerboschPivot extends MaximalCliquesUtils.AbstractImpl {
 			boolean hasNextClique;
 
 			{
-				edges = new BitSet(n * n);
+				edges = new Bitmap(n * n);
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);

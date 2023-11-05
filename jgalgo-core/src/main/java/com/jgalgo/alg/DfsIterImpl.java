@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
@@ -26,6 +25,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class DfsIterImpl implements Dfs.IntIter {
 
 	private final IndexGraph g;
-	private final BitSet visited;
+	private final Bitmap visited;
 	private final Stack<IEdgeIter> edgeIters;
 	private final IntArrayList nextEdgePath;
 	private final IntArrayList edgePath;
@@ -52,7 +52,7 @@ class DfsIterImpl implements Dfs.IntIter {
 	public DfsIterImpl(IndexGraph g, int source) {
 		int n = g.vertices().size();
 		this.g = g;
-		visited = new BitSet(n);
+		visited = new Bitmap(n);
 		edgeIters = new ObjectArrayList<>();
 		nextEdgePath = new IntArrayList();
 		edgePath = new IntArrayList();

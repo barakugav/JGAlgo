@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeSet;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 
 class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 
@@ -31,7 +31,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 		final int m = g.edges().size();
 
 		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);
-		BitSet cover = new BitSet(m);
+		Bitmap cover = new Bitmap(m);
 
 		/* add more edges greedily to complete the cover */
 		if (g.isDirected()) {

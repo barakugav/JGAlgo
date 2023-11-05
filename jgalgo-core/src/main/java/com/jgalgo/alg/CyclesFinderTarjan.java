@@ -16,11 +16,11 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -51,7 +51,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 			int startV = 0;
 			final IntArrayList path = new IntArrayList();
 			final IntArrayList markedStack = new IntArrayList();
-			final BitSet isMarked = new BitSet(n);
+			final Bitmap isMarked = new Bitmap(n);
 			final Stack<IEdgeIter> edgeIterStack = new ObjectArrayList<>();
 			/**
 			 * In the paper, there is a boolean flag 'f' in each recursive call of the backtrack function. The flag is

@@ -17,13 +17,13 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -196,7 +196,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		final IEdgeIter[] outEdgeIters;
 		final IEdgeIter[] inEdgeIters;
 
-		private final BitSet relabelVisited;
+		private final Bitmap relabelVisited;
 		private final IntPriorityQueue relabelQueue;
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
@@ -221,7 +221,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			outEdgeIters = new IEdgeIter[n];
 			inEdgeIters = directed ? new IEdgeIter[n] : null;
 
-			relabelVisited = new BitSet(n);
+			relabelVisited = new Bitmap(n);
 			relabelQueue = new FIFOQueueIntNoReduce();
 			labelsReComputeThreshold = n;
 
@@ -246,7 +246,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			maxLayerActive = 0;
 			maxLayerInactive = 0;
 
-			BitSet visited = relabelVisited;
+			Bitmap visited = relabelVisited;
 			IntPriorityQueue queue = relabelQueue;
 			assert visited.isEmpty();
 			assert queue.isEmpty();
@@ -1653,7 +1653,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			// no need for second phase
 			// find the unreachable vertices from sink
 
-			BitSet visited = relabelVisited;
+			Bitmap visited = relabelVisited;
 			IntPriorityQueue queue = relabelQueue;
 			assert visited.isEmpty();
 			assert queue.isEmpty();
@@ -1707,12 +1707,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				}
 			}
 			assert !visited.get(source);
-			BitSet cut = new BitSet(n);
+			Bitmap cut = new Bitmap(n);
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				if (!visited.get(u))
 					cut.set(u);
 			visited.clear();
-			return new VertexBiPartitions.FromBitSet(g, cut);
+			return new VertexBiPartitions.FromBitmap(g, cut);
 		}
 
 		abstract boolean hasExcess(int u);

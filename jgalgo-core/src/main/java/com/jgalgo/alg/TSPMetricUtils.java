@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -25,6 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -46,7 +46,7 @@ class TSPMetricUtils {
 		/* Use shortcuts to convert to a Hamiltonian cycle */
 		IntList cycle = new IntArrayList(n);
 		int firstVertex = -1, lastVertex = -1;
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		for (IEdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e0 = it.nextInt();
 			int e = edgeRef[e0];
@@ -85,7 +85,7 @@ class TSPMetricUtils {
 
 	private static boolean isPathVisitEvery(IndexGraph g, IPath path) {
 		final int n = g.vertices().size();
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		for (int e : path.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			visited.set(u);

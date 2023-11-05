@@ -17,10 +17,10 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -78,7 +78,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 
 		double computeMaximumFlow() {
 			Assertions.Graphs.onlyDirected(g);
-			BitSet residual = new BitSet(g.edges().size());
+			Bitmap residual = new Bitmap(g.edges().size());
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];

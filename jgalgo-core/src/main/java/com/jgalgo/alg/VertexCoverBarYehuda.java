@@ -15,9 +15,9 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Bitmap;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -37,7 +37,7 @@ class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 		for (int v = 0; v < n; v++)
 			sw[v] = w.weight(v);
 
-		BitSet cover = new BitSet(n);
+		Bitmap cover = new Bitmap(n);
 
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u, v;

@@ -16,16 +16,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.function.IntConsumer;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -57,7 +56,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		if (terminals.isEmpty())
 			throw new IllegalArgumentException("no terminals provided");
 		final int terminalNum = terminals.size();
-		BitSet isTerminal = new BitSet(n);
+		Bitmap isTerminal = new Bitmap(n);
 		for (int t : terminals) {
 			if (isTerminal.get(t))
 				throw new IllegalArgumentException("Duplicate terminal: " + t);
@@ -125,7 +124,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		g3Builder.expectedVerticesNum(n);
 		for (int v = 0; v < n; v++)
 			g3Builder.addVertex();
-		BitSet g3Edges = new BitSet(g.edges().size());
+		Bitmap g3Edges = new Bitmap(g.edges().size());
 		IntArrayList g3EdgeRef0 = new IntArrayList();
 		DoubleArrayList g3EdgeWeight0 = g1EdgeWeight0;
 		g3EdgeWeight0.clear();
@@ -184,7 +183,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		for (int v = 0; v < n; v++)
 			if (g5Degree[v] == 1 && !isTerminal.get(v))
 				queue.enqueue(v);
-		BitSet g5Edges = new BitSet(g4Edges.length);
+		Bitmap g5Edges = new Bitmap(g4Edges.length);
 		for (int e4 : g4)
 			g5Edges.set(e4);
 		while (!queue.isEmpty()) {
@@ -209,7 +208,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		}
 		int[] g5 = new int[g5Edges.cardinality()];
 		int g5EdgeIdx = 0;
-		for (int e3 : JGAlgoUtils.iterable(g5Edges))
+		for (int e3 : g5Edges)
 			g5[g5EdgeIdx++] = g3EdgeRef[e3];
 
 		return new SteinerTrees.ResultImpl(ImmutableIntArraySet.withNaiveContains(g5));

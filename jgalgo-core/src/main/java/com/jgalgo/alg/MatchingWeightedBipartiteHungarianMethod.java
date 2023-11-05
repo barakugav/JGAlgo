@@ -17,15 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
@@ -96,7 +96,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		private final IWeightsBool partition;
 		private final IWeightFunction w;
 
-		private final BitSet inTree;
+		private final Bitmap inTree;
 
 		private final IntComparator edgeSlackComparator;
 		private final HeapReferenceable<Integer, Void> nextTightEdge;
@@ -116,7 +116,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 			this.w = w != null ? w : IWeightFunction.CardinalityWeightFunction;
 			int n = g.vertices().size();
 
-			inTree = new BitSet(n);
+			inTree = new Bitmap(n);
 
 			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
 			nextTightEdge = heapBuilder.build(edgeSlackComparator);

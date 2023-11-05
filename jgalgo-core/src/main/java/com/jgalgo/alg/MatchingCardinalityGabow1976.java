@@ -17,11 +17,11 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -54,7 +54,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 		int[] root = new int[n];
-		BitSet isEven = new BitSet(n);
+		Bitmap isEven = new Bitmap(n);
 
 		final int EdgeNone = -1;
 		int[] matched = new int[n];
@@ -63,7 +63,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 		int[] parent = new int[n]; // vertex -> edge
 
 		int[] augPath = new int[n];
-		BitSet setmatch = new BitSet(n);
+		Bitmap setmatch = new Bitmap(n);
 
 		int[] blossomBaseSearchNotes = new int[n];
 		int blossomBaseSearchNotesIndex = 0;
@@ -200,7 +200,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 		return new Matchings.MatchingImpl(g, matched);
 	}
 
-	private static int findPath(IndexGraph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
+	private static int findPath(IndexGraph g, int s, int t, Bitmap isEven, int[] match, int[] parent, int[] bridge,
 			int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;

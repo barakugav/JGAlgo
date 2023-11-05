@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -27,6 +26,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -99,7 +99,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w, Integer.valueOf(source));
+			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w,
+					Integer.valueOf(source));
 
 		/* calculate a potential function (or find a negative cycle) */
 		Pair<int[], IPath> p = calcPotential(g, w, minWeight);
@@ -111,8 +112,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		IWeightFunctionInt pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
-		ShortestPathSingleSource.IResult res =
-				(ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, pw, Integer.valueOf(source));
+		ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) positiveSsspAlgo
+				.computeShortestPaths(g, pw, Integer.valueOf(source));
 		return Result.ofSuccess(source, potential, res);
 	}
 
@@ -123,7 +124,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		w0 = WeightFunctions.localEdgeWeightFunction(g, w0);
 		int[] potential = new int[n];
 
-		BitSet connected = new BitSet(n);
+		Bitmap connected = new Bitmap(n);
 		int[] layerSize = new int[n + 1];
 
 		/* updated weight function including the potential */
@@ -210,8 +211,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				int fakeS1 = G.addVertex();
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
-				ShortestPathSingleSource.IResult ssspRes =
-						(ShortestPathSingleSource.IResult) dagSssp.computeShortestPaths(G, GWeights, Integer.valueOf(fakeS1));
+				ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) dagSssp
+						.computeShortestPaths(G, GWeights, Integer.valueOf(fakeS1));
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;

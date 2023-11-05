@@ -15,17 +15,15 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.Range;
-
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexBiPartitions {
@@ -216,11 +214,11 @@ class VertexBiPartitions {
 		}
 	}
 
-	static class FromBitSet extends Impl {
+	static class FromBitmap extends Impl {
 
-		private final BitSet bitSet;
+		private final Bitmap bitSet;
 
-		FromBitSet(IndexGraph g, BitSet bitSet) {
+		FromBitmap(IndexGraph g, Bitmap bitSet) {
 			super(g);
 			this.bitSet = Objects.requireNonNull(bitSet);
 		}

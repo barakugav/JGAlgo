@@ -16,10 +16,10 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -59,7 +59,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		if (end == -1)
 			end = 0;
 
-		BitSet usedEdges = new BitSet(m);
+		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();
@@ -145,7 +145,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		if (end == -1)
 			end = 0;
 
-		BitSet usedEdges = new BitSet(m);
+		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.outEdges(u).iterator();

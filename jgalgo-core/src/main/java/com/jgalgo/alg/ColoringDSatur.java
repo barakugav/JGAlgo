@@ -95,10 +95,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		while (!heap.isEmpty()) {
 			int u = heap.extractMin().value().intValue();
 
-			int color = 0;
-			while (neighborColors[u].get(color))
-				color++;
-			colors[u] = color;
+			int color = colors[u] = neighborColors[u].nextClearBit(0);
 			colorsNum = Math.max(colorsNum, color + 1);
 
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {

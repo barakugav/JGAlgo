@@ -16,11 +16,11 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Bitmap;
 
 class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 
@@ -101,7 +101,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		}
 
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);
-		BitSet cover = new BitSet(m);
+		Bitmap cover = new Bitmap(m);
 		for (int e = 0; e < m; e++)
 			if (matching.containsEdge(e * 2 + 0))
 				cover.set(e);

@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -24,6 +23,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -35,7 +35,7 @@ class BfsIterImpl {
 	private static abstract class Abstract implements Bfs.IntIter {
 
 		final IndexGraph g;
-		final BitSet visited;
+		final Bitmap visited;
 		final LongPriorityQueue queue;
 		int inEdge;
 		int layer;
@@ -44,7 +44,7 @@ class BfsIterImpl {
 		private Abstract(IndexGraph g, IntIterator sources) {
 			this.g = g;
 			int n = g.vertices().size();
-			visited = new BitSet(n);
+			visited = new Bitmap(n);
 			queue = new FIFOQueueLongNoReduce();
 			inEdge = -1;
 			layer = -1;

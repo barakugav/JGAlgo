@@ -17,15 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -87,7 +87,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
@@ -144,7 +144,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
 		@SuppressWarnings("unchecked")
 		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {

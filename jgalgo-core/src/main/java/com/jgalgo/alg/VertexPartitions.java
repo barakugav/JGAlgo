@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
@@ -310,7 +310,7 @@ class VertexPartitions {
 				}
 			}
 		} else {
-			BitSet seen = new BitSet(numberOfBlocks);
+			Bitmap seen = new Bitmap(numberOfBlocks);
 			IntList seenList = new IntArrayList();
 			for (int b1 = 0; b1 < numberOfBlocks; b1++) {
 				for (int u : partition.blockVertices(b1)) {

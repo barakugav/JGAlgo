@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -27,8 +26,8 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexCoverUtils {
@@ -58,10 +57,10 @@ class VertexCoverUtils {
 	static class ResultImpl implements VertexCover.IResult {
 
 		private final IndexGraph g;
-		private final BitSet cover;
+		private final Bitmap cover;
 		private IntSet vertices;
 
-		ResultImpl(IndexGraph g, BitSet cover) {
+		ResultImpl(IndexGraph g, Bitmap cover) {
 			this.g = Objects.requireNonNull(g);
 			this.cover = Objects.requireNonNull(cover);
 		}
@@ -69,7 +68,7 @@ class VertexCoverUtils {
 		@Override
 		public IntSet vertices() {
 			if (vertices == null) {
-				vertices = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {
+				vertices = new ImmutableIntArraySet(cover.toArray()) {
 					@Override
 					public boolean contains(int v) {
 						return 0 <= v && v < g.vertices().size() && cover.get(v);

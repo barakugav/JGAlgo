@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 
 /**
  * Compute the minimum-cost (max) flow in a flow network using cycle canceling.
@@ -110,7 +110,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		 * 'removed', namely saturated edges.
 		 */
 
-		BitSet saturated = new BitSet(g.edges().size());
+		Bitmap saturated = new Bitmap(g.edges().size());
 		final double saturatedCost = hugeCost(gOrig, cost);
 
 		/* Init costs for edges */

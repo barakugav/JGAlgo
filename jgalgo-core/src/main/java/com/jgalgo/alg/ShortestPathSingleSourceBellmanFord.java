@@ -16,12 +16,12 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -76,7 +76,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		res.distances[source] = 0;
 
 		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();
-		BitSet isModified = new BitSet(n);
+		Bitmap isModified = new Bitmap(n);
 		isModified.set(source);
 		modified.enqueue(source);
 		for (int nextOptRound = 0, nextOptGap = 1, round = 0; round < n; round++) {
@@ -177,7 +177,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 			if (d < res.distances[v]) {
 				/* negative cycle found */
 
-				BitSet visited = new BitSet(n);
+				Bitmap visited = new Bitmap(n);
 				visited.set(v);
 				while (!visited.get(u)) {
 					visited.set(u);

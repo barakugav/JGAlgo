@@ -16,9 +16,9 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -61,7 +61,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 		void computeMaxFlow0() {
 			final int n = g.vertices().size();
 			int[] backtrack = new int[n];
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 			// perform BFS and find a path of non saturated edges from source to sink

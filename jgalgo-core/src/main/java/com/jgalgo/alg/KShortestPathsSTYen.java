@@ -17,15 +17,15 @@ package com.jgalgo.alg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -58,8 +58,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		final int m = g.edges().size();
 		HeapReferenceable<Double, ObjectIntPair<IPath>> heap = HeapReferenceable.newBuilder()
 				.keysTypePrimitive(double.class).<ObjectIntPair<IPath>>valuesTypeObj().build();
-		BitSet verticesMask = new BitSet(n);
-		BitSet edgesMask = new BitSet(m);
+		Bitmap verticesMask = new Bitmap(n);
+		Bitmap edgesMask = new Bitmap(m);
 		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
 
 		/* compute the shortest path from source to target */
@@ -118,8 +118,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		private final IndexGraph g;
 		private final IWeightFunction w;
 		private final int target;
-		private final BitSet verticesMask;
-		private final BitSet edgesMask;
+		private final Bitmap verticesMask;
+		private final Bitmap edgesMask;
 
 		private final HeapReferenceable<Double, Integer> heapS;
 		private final HeapReferenceable<Double, Integer> heapT;
@@ -138,14 +138,14 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		private final double[] distanceT;
 		private final HeapReference<Double, Integer>[] heapPtrsS;
 		private final HeapReference<Double, Integer>[] heapPtrsT;
-		private final BitSet visitedS;
-		private final BitSet visitedT;
+		private final Bitmap visitedS;
+		private final Bitmap visitedT;
 
 		private final IntList toClearS = new IntArrayList();
 		private final IntList toClearT = new IntArrayList();
 
 		@SuppressWarnings("unchecked")
-		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, BitSet verticesMask, BitSet edgesMask) {
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap verticesMask, Bitmap edgesMask) {
 			this.g = g;
 			this.w = w;
 			this.target = target;
@@ -168,8 +168,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			// Arrays.fill(distanceT, Double.POSITIVE_INFINITY);
 			heapPtrsS = new HeapReference[n];
 			heapPtrsT = new HeapReference[n];
-			visitedS = new BitSet(n);
-			visitedT = new BitSet(n);
+			visitedS = new Bitmap(n);
+			visitedT = new Bitmap(n);
 		}
 
 		ObjectDoublePair<IPath> computeShortestPath(int source) {

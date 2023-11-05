@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -25,6 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -132,7 +132,7 @@ public class Trees {
 			return true;
 		boolean directed = g.isDirected();
 
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 

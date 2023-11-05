@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.function.IntFunction;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -84,7 +84,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			ufRoot[v] = v;
 		}
 
-		BitSet mark = new BitSet(queries.size());
+		Bitmap mark = new Bitmap(queries.size());
 
 		IntStack stack = new IntArrayList();
 		IntStack parentEdgeStack = new IntArrayList();

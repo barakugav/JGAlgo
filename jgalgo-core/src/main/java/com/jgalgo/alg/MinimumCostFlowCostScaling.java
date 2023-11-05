@@ -16,14 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.alg.FlowNetworks.ResidualGraph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -78,7 +78,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* DFS path used during partial-augmentation during discharge */
 		private final IntArrayList path;
 		/* Bitmap of the vertices on the path, for fast cycle detection */
-		private final BitSet onPath;
+		private final Bitmap onPath;
 		/* Per vertex iterator, corresponding to 'current edge' in the paper */
 		private final IEdgeIter[] edgeIter;
 
@@ -147,7 +147,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 			activeQueue = new FIFOQueueIntNoReduce(n);
 			path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);
-			onPath = new BitSet(n);
+			onPath = new Bitmap(n);
 			edgeIter = new IEdgeIter[n];
 
 			globalUpdateThreshold = n;
@@ -542,8 +542,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* returns true if a full topological order was computed in the admissible network */
 		private boolean computeTopologicalOrder() {
 			final int n = g.vertices().size();
-			BitSet visited = new BitSet(n);
-			BitSet processed = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
+			Bitmap processed = new Bitmap(n);
 			int[] backtrack = new int[n];
 
 			for (int v = 0; v < n; v++)

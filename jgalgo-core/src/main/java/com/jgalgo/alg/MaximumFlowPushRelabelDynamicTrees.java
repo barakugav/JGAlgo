@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DynamicTree;
@@ -24,6 +23,7 @@ import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.ds.QueueFixSize;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -120,7 +120,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			// perform backward BFS from sink on edges with flow < capacity (residual)
 			// perform another one from source to init unreachable vertices
 
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 			assert visited.isEmpty();
 			assert queue.isEmpty();

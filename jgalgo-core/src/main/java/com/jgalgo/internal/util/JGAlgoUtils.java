@@ -18,7 +18,6 @@ package com.jgalgo.internal.util;
 
 import java.io.Serializable;
 import java.util.AbstractList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -35,9 +34,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -463,43 +462,6 @@ public class JGAlgoUtils {
 			return new NullList<>(toIndex - fromIndex);
 		}
 
-	}
-
-	public static IntIterator bitSetIterator(BitSet bitSet) {
-		return new IntIterator() {
-
-			int bit = bitSet.nextSetBit(0);
-
-			@Override
-			public boolean hasNext() {
-				return bit != -1;
-			}
-
-			@Override
-			public int nextInt() {
-				Assertions.Iters.hasNext(this);
-				int ret = bit;
-				bit = bitSet.nextSetBit(bit + 1);
-				return ret;
-			}
-		};
-	}
-
-	public static IntIterable iterable(BitSet bitSet) {
-		return new IntIterable() {
-			@Override
-			public IntIterator iterator() {
-				return bitSetIterator(bitSet);
-			}
-		};
-	}
-
-	public static int[] toArray(BitSet bitSet) {
-		int[] arr = new int[bitSet.cardinality()];
-		int i = 0;
-		for (int b : iterable(bitSet))
-			arr[i++] = b;
-		return arr;
 	}
 
 	@FunctionalInterface

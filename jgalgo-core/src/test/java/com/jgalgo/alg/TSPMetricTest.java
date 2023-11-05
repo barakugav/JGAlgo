@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.TestBase;
 
 public class TSPMetricTest extends TestBase {
@@ -80,7 +80,7 @@ public class TSPMetricTest extends TestBase {
 		IPath appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
 
 		Predicate<IPath> isPathVisitAllVertices = path -> {
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 			for (int u : path.vertices())
 				visited.set(u);
 			for (int u = 0; u < n; u++)

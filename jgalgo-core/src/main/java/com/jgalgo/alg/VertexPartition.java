@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
@@ -23,6 +22,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
@@ -248,7 +248,7 @@ public interface VertexPartition<V, E> {
 		final int blockNum = maxBlock + 1;
 		if (maxBlock > n)
 			return false;
-		BitSet seenBlocks = new BitSet(blockNum);
+		Bitmap seenBlocks = new Bitmap(blockNum);
 		for (int b : vertexToBlock) {
 			if (b < 0)
 				return false;

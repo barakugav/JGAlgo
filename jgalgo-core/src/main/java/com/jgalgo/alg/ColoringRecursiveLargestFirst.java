@@ -17,11 +17,10 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.Bitmap;
 
 /**
  * The Recursive Largest First coloring algorithm.
@@ -61,8 +60,8 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 		for (int u = 0; u < n; u++)
 			degree[u] = g.outEdges(u).size();
 
-		BitSet S = new BitSet(n);
-		BitSet isAdjacentToS = new BitSet(n);
+		Bitmap S = new Bitmap(n);
+		Bitmap isAdjacentToS = new Bitmap(n);
 
 		for (int color = 0;; color++) {
 			S.clear();
@@ -118,7 +117,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 				u = nextU;
 			}
 
-			for (int u : JGAlgoUtils.iterable(S)) {
+			for (int u : S) {
 				colors[u] = color;
 
 				// update degree to include only vertices without color

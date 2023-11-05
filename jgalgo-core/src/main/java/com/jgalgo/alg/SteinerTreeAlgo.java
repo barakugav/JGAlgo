@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -27,6 +26,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -144,7 +144,7 @@ public interface SteinerTreeAlgo {
 		if (terminals0.isEmpty() || terminals0.size() == 1)
 			return edges0.isEmpty();
 
-		BitSet edgesBitmap = new BitSet(m);
+		Bitmap edgesBitmap = new Bitmap(m);
 		for (int e : edges0) {
 			if (!ig.edges().contains(e))
 				throw new IllegalArgumentException("invalid edge index " + e);
@@ -153,7 +153,7 @@ public interface SteinerTreeAlgo {
 			edgesBitmap.set(e);
 		}
 
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
 		int root = terminals0.iterator().nextInt();
 		visited.set(root);
@@ -178,7 +178,7 @@ public interface SteinerTreeAlgo {
 				return false; /* not all terminals are connected */
 
 		/* check for non-terminal leaves */
-		BitSet isTerminal = visited;
+		Bitmap isTerminal = visited;
 		isTerminal.clear();
 		for (int t : terminals0) {
 			if (isTerminal.get(t))

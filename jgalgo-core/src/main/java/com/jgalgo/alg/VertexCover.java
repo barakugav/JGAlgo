@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -24,6 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -144,7 +144,7 @@ public interface VertexCover {
 		}
 		final int n = ig.vertices().size();
 		final int m = ig.edges().size();
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		for (int v : vertices0) {
 			if (!ig.vertices().contains(v))
 				throw new IllegalArgumentException("invalid vertex index " + v);

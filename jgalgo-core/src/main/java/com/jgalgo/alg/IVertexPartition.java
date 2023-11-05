@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -159,7 +159,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 		final int blockNum = maxBlock + 1;
 		if (maxBlock > n)
 			return false;
-		BitSet seenBlocks = new BitSet(blockNum);
+		Bitmap seenBlocks = new Bitmap(blockNum);
 		for (int b : vertexToBlock) {
 			if (b < 0)
 				return false;

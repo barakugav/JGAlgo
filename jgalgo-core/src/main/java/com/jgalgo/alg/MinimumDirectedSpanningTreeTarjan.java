@@ -17,13 +17,13 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
@@ -192,7 +192,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		Arrays.fill(brother, -1);
 		int[] inEdge = new int[VMaxNum];
 
-		BitSet onPath = new BitSet(VMaxNum);
+		Bitmap onPath = new Bitmap(VMaxNum);
 		final int startVertex = 0;
 		onPath.set(startVertex);
 

@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -42,7 +42,7 @@ class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
 		return new Iterator<>() {
 
 			final int n = g.vertices().size();
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 			IEdgeIter[] edgeIter = new IEdgeIter[n];
 			IntArrayList path = new IntArrayList();
 			int depth = 0;

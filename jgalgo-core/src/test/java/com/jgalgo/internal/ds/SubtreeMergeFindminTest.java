@@ -18,13 +18,13 @@ package com.jgalgo.internal.ds;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -161,7 +161,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 				}
 				case findMinNonTreeEdge: {
 					int[] min = null;
-					BitSet visited = new BitSet(nodes.size());
+					Bitmap visited = new Bitmap(nodes.size());
 					for (int v = 0; v < nodes.size(); v++) {
 						int V = uf.find(v);
 						if (visited.get(V))

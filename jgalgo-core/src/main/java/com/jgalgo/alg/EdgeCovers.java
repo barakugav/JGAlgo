@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -27,8 +26,8 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCovers {
@@ -58,10 +57,10 @@ class EdgeCovers {
 	static class ResultImpl implements EdgeCover.IResult {
 
 		private final IndexGraph g;
-		private final BitSet cover;
+		private final Bitmap cover;
 		private IntSet edges;
 
-		ResultImpl(IndexGraph g, BitSet cover) {
+		ResultImpl(IndexGraph g, Bitmap cover) {
 			this.g = Objects.requireNonNull(g);
 			this.cover = Objects.requireNonNull(cover);
 		}
@@ -69,7 +68,7 @@ class EdgeCovers {
 		@Override
 		public IntSet edges() {
 			if (edges == null) {
-				edges = new ImmutableIntArraySet(JGAlgoUtils.toArray(cover)) {
+				edges = new ImmutableIntArraySet(cover.toArray()) {
 					@Override
 					public boolean contains(int e) {
 						return 0 <= e && e < g.edges().size() && cover.get(e);

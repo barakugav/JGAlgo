@@ -15,13 +15,13 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -46,14 +46,14 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
 
 		ContractableGraph cg = new ContractableGraph(g);
-		BitSet cut = new BitSet(n);
+		Bitmap cut = new Bitmap(n);
 
 		HeapReferenceable<Double, Integer> heap =
 				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] vRefs = new HeapReference[n];
 
-		BitSet minimumCut = new BitSet(n);
+		Bitmap minimumCut = new Bitmap(n);
 		double minimumCutWeight = Double.MAX_VALUE;
 
 		while (cg.numberOfSuperVertices() > 1) {
@@ -130,7 +130,7 @@ class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 			cg.contract(S, T);
 		}
 
-		return new VertexBiPartitions.FromBitSet(g, minimumCut);
+		return new VertexBiPartitions.FromBitmap(g, minimumCut);
 	}
 
 }

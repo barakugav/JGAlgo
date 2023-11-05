@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -23,6 +22,7 @@ import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -103,7 +103,7 @@ public class BipartiteGraphs {
 	public static <V, E> Optional<VertexBiPartition<V, E>> findPartition(Graph<V, E> g, boolean addPartitionWeight) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
 
-		BitSet partition0 = findBipartitePartition0(ig);
+		Bitmap partition0 = findBipartitePartition0(ig);
 		if (partition0 == null)
 			return Optional.empty();
 
@@ -121,12 +121,12 @@ public class BipartiteGraphs {
 		return Optional.of(resultPartition);
 	}
 
-	private static BitSet findBipartitePartition0(IndexGraph g) {
+	private static Bitmap findBipartitePartition0(IndexGraph g) {
 		final int n = g.vertices().size();
-		BitSet partition = new BitSet(n);
+		Bitmap partition = new Bitmap(n);
 		if (n > 0) {
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-			BitSet visited = new BitSet(n);
+			Bitmap visited = new Bitmap(n);
 			for (int start = 0; start < n; start++) {
 				if (visited.get(start))
 					continue;

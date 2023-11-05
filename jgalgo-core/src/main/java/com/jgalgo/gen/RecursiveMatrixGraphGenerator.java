@@ -15,7 +15,6 @@
  */
 package com.jgalgo.gen;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,7 @@ import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
@@ -259,7 +259,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 		final int depth = nextPowerOf2(n);
 		final int N = 1 << depth;
-		BitSet edges = new BitSet(N * N);
+		Bitmap edges = new Bitmap(N * N);
 
 		for (int edgeNum = 0; edgeNum < m;) {
 			int u = 0, v = 0;

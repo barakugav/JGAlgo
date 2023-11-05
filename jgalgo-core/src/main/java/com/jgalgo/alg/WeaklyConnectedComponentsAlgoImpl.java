@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
@@ -75,7 +75,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 	boolean isWeaklyConnected(IndexGraph g) {
 		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		int visitedCount = 0;
 
 		IntStack stack = new IntArrayList();

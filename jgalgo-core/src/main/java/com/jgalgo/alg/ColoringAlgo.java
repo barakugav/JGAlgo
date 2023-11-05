@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Random;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
@@ -25,6 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 
 /**
@@ -129,7 +129,7 @@ public interface ColoringAlgo {
 		final int colorNum = maxColor + 1;
 		if (maxColor > n)
 			return false;
-		BitSet seenColors = new BitSet(colorNum);
+		Bitmap seenColors = new Bitmap(colorNum);
 		for (int b : vertexToColor) {
 			if (b < 0)
 				return false;

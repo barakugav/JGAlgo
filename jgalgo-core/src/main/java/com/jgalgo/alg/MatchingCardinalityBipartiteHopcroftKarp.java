@@ -17,12 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -65,7 +65,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 		IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 
 		/* DFS */
-		BitSet visited = new BitSet(n);
+		Bitmap visited = new Bitmap(n);
 		IEdgeIter[] edges = new IEdgeIter[n / 2 + 1];
 		int[] dfsPath = new int[(n - 1) / 2 + 1];
 
@@ -73,7 +73,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
 
-		BitSet es = new BitSet(g.edges().size());
+		Bitmap es = new Bitmap(g.edges().size());
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */
