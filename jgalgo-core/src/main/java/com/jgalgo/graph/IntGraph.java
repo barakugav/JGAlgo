@@ -469,7 +469,18 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));
 	}
 
-	// TODO
+	/**
+	 * Get the vertices weights of some key.
+	 *
+	 * <p>
+	 * See {@link IWeights} for a complete documentation of the weights containers.
+	 *
+	 * @param  key        key of the weights
+	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
+	 * @param  <T>        The weight data type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
+	 */
 	<T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key);
 
 	@Override
@@ -477,7 +488,18 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		return getVerticesIWeights(key);
 	}
 
-	// TODO
+	/**
+	 * Get the edges weights of some key.
+	 *
+	 * <p>
+	 * See {@link IWeights} for a complete documentation of the weights containers.
+	 *
+	 * @param  <T>        The weight data type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
+	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
+	 * @param  key        key of the weights
+	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
+	 */
 	<T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key);
 
 	@Override
