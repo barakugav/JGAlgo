@@ -2,12 +2,17 @@ import os
 import sys
 import shutil
 import subprocess
+import functools
+import json
+
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
 SOURCE_DIR = os.path.join(TOP_DIR, "src", "main", "java")
 PACKAGE_DIR = os.path.join(SOURCE_DIR, "com", "jgalgo")
 TYPE_ALL = ["Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"]
+
+HASHES_FILENAME = os.path.join(TOP_DIR, ".gen", "hashes.json")
 
 
 def find_eclipse():
@@ -415,16 +420,6 @@ def all_generated_filenames():
     return generated_filenames
 
 
-def generate_all():
-    for type in TYPE_ALL:
-        generate_weights(type)
-    for type in TYPE_ALL:
-        generate_iweights(type)
-    for type in TYPE_ALL:
-        generate_weights_impl(type)
-    format_sourcefiles(all_generated_filenames())
-
-
 def clean():
     for filename in all_generated_filenames():
         if os.path.exists(filename):
@@ -432,9 +427,80 @@ def clean():
             os.remove(filename)
 
 
+def compute_template_hash(template_filename):
+    import hashlib
+
+    with open(template_filename, "rb") as template_file:
+        template_content = template_file.read()
+    h = hashlib.md5(template_content)
+    return hashlib.md5(template_content).hexdigest()
+
+
+def read_last_generated_templates_hashes():
+    hashes = {}
+    if os.path.exists(HASHES_FILENAME):
+        with open(HASHES_FILENAME) as hashes_file:
+            hashes = json.load(hashes_file)
+
+    def is_template_changed(template_filename):
+        template_filename = os.path.join(TEMPLATE_DIR, template_filename)
+        template_hash = compute_template_hash(template_filename)
+        return (
+            template_filename not in hashes
+            or hashes[template_filename] != template_hash
+        )
+
+    class Object:
+        pass
+
+    ret = Object()
+    ret.is_template_changed = is_template_changed
+    return ret
+
+
+def write_generated_templates():
+    templates = [
+        os.path.join(TEMPLATE_DIR, temp)
+        for temp in (
+            "Weights.java.template",
+            "IWeights.java.template",
+            "WeightsImpl.java.template",
+        )
+    ]
+    hashes = json.dumps({temp: compute_template_hash(temp) for temp in templates})
+
+    os.makedirs(os.path.dirname(os.path.realpath(HASHES_FILENAME)), exist_ok=True)
+    with open(HASHES_FILENAME, "w") as hashes_file:
+        hashes_file.write(hashes)
+
+
 def main():
-    clean()
-    generate_all()
+    # clean()
+
+    hashes = read_last_generated_templates_hashes()
+    # collect all sources to generate
+    generators = {}
+    if hashes.is_template_changed("Weights.java.template"):
+        for type in TYPE_ALL:
+            gen = functools.partial(generate_weights, type)
+            generators[weights_filename(type)] = gen
+    if hashes.is_template_changed("IWeights.java.template"):
+        for type in TYPE_ALL:
+            gen = functools.partial(generate_iweights, type)
+            generators[iweights_filename(type)] = gen
+    if hashes.is_template_changed("WeightsImpl.java.template"):
+        for type in TYPE_ALL:
+            gen = functools.partial(generate_weights_impl, type)
+            generators[weights_impl_filename(type)] = gen
+    if not generators:
+        print("No template changed, nothing to do.")
+        return
+
+    for _filename, generator in generators.items():
+        generator()
+    format_sourcefiles(generators.keys())
+
+    write_generated_templates()
 
 
 if __name__ == "__main__":

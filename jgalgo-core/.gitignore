@@ -25,3 +25,4 @@ src/main/java/com/jgalgo/graph/WeightsImplFloat.java
 src/main/java/com/jgalgo/graph/WeightsImplDouble.java
 src/main/java/com/jgalgo/graph/WeightsImplBool.java
 src/main/java/com/jgalgo/graph/WeightsImplChar.java
+.gen/
