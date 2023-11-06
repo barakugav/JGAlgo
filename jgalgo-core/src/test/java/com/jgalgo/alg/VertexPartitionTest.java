@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,6 +87,9 @@ public class VertexPartitionTest extends TestBase {
 					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
+					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
+					Graph<Integer, Integer> blocksGraphNonSelf = partition.blocksGraph(true, false);
+
 					for (int b = 0; b < k; b++) {
 						final int b0 = b;
 						Set<Integer> expected =
@@ -95,6 +99,10 @@ public class VertexPartitionTest extends TestBase {
 										.collect(Collectors.toSet());
 						Set<Integer> actual = partition.blockEdges(b);
 						assertEquals(expected, actual);
+
+						assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b), Integer.valueOf(b)));
+						assertNull(blocksGraphNonSelf.getEdge(Integer.valueOf(b), Integer.valueOf(b)));
+						assertEquals(0, blocksGraphNonSelf.getEdges(Integer.valueOf(b), Integer.valueOf(b)).size());
 					}
 				}
 			}
@@ -111,8 +119,10 @@ public class VertexPartitionTest extends TestBase {
 		tester.addPhase().withArgs(16, 32, 6).repeat(128);
 		tester.addPhase().withArgs(64, 256, 7).repeat(64);
 		tester.addPhase().withArgs(64, 256, 28).repeat(64);
+		tester.addPhase().withArgs(64, 256, 60).repeat(64);
 		tester.addPhase().withArgs(512, 1024, 5).repeat(8);
 		tester.addPhase().withArgs(512, 1024, 30).repeat(8);
+		tester.addPhase().withArgs(512, 1024, 460).repeat(8);
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
@@ -120,6 +130,7 @@ public class VertexPartitionTest extends TestBase {
 					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
 					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
+					Graph<Integer, Integer> blocksGraphNonParallel = partition.blocksGraph(false, true);
 
 					for (int b1 = 0; b1 < k; b1++) {
 						for (int b2 = 0; b2 < k; b2++) {
@@ -143,6 +154,12 @@ public class VertexPartitionTest extends TestBase {
 							assertEquals(expected, actual);
 
 							assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)));
+							if (expected.isEmpty()) {
+								assertNull(blocksGraphNonParallel.getEdge(Integer.valueOf(b1), Integer.valueOf(b2)));
+							} else {
+								assertEquals(1, blocksGraphNonParallel
+										.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)).size());
+							}
 						}
 					}
 				}
