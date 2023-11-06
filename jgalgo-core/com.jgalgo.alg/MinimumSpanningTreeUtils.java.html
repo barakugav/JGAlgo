@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 
 <span class="pc" id="L35">class MinimumSpanningTreeUtils {</span>
 
-<span class="fc" id="L37">	static abstract class AbstractUndirected implements MinimumSpanningTree {</span>
+<span class="fc" id="L37">	abstract static class AbstractUndirected implements MinimumSpanningTree {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L60">	static abstract class AbstractDirected implements MinimumDirectedSpanningTree {</span>
+<span class="fc" id="L60">	abstract static class AbstractDirected implements MinimumDirectedSpanningTree {</span>
 
 		@Override
 		public &lt;V, E&gt; MinimumSpanningTree.Result&lt;V, E&gt; computeMinimumDirectedSpanningTree(Graph&lt;V, E&gt; g,

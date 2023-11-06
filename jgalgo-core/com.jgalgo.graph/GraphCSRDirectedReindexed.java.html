@@ -150,7 +150,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 	}
 
-	private static abstract class EdgeIterOutAbstract implements IEdgeIter {
+	private abstract static class EdgeIterOutAbstract implements IEdgeIter {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;

@@ -17,10 +17,12 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@link Graph} objects.
+ *
  * &lt;p&gt;
  * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
  * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
  * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ *
  * &lt;p&gt;
  * Both the graph factory and {@link GraphBuilder} are used to create new graphs. The difference is that vertices and
  * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
@@ -45,9 +47,11 @@ public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, without copying weights.
+	 *
 	 * &lt;p&gt;
 	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 *
 	 * &lt;p&gt;
 	 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
@@ -60,14 +64,16 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *           weights
 	 */
 	default Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L63">		return newCopyOf(g, false);</span>
+<span class="fc" id="L67">		return newCopyOf(g, false);</span>
 	}
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, with/without copying weights.
+	 *
 	 * &lt;p&gt;
 	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 *
 	 * &lt;p&gt;
 	 * Differing from {@link Graph#copy(boolean)}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
@@ -84,6 +90,7 @@ public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Create a new graph builder with the factory parameters.
+	 *
 	 * &lt;p&gt;
 	 * The created builder can be used to add vertices and edges, and then build a (mutable or immutable) non empty
 	 * graph, differing from the factory which only builds empty graphs. The capabilities such as un/directed, support
@@ -136,6 +143,7 @@ public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Add a hint to this factory.
+	 *
 	 * &lt;p&gt;
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
@@ -146,6 +154,7 @@ public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Remove a hint from this factory.
+	 *
 	 * &lt;p&gt;
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
@@ -156,21 +165,25 @@ public interface GraphFactory&lt;V, E&gt; {
 
 	/**
 	 * Hints for a graph factory.
+	 *
 	 * &lt;p&gt;
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L164">	static enum Hint {</span>
-		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)} */
-<span class="fc" id="L166">		FastEdgeRemoval,</span>
+<span class="fc" id="L174">	static enum Hint {</span>
+
+		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
+<span class="fc" id="L177">		FastEdgeRemoval,</span>
+
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
-		 * {@link Graph#getEdges(Object, Object)}
+		 * {@link Graph#getEdges(Object, Object)}.
 		 */
-<span class="fc" id="L171">		FastEdgeLookup,</span>
-		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
-<span class="fc" id="L173">		DenseGraph,</span>
+<span class="fc" id="L183">		FastEdgeLookup,</span>
+
+		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
+<span class="fc" id="L186">		DenseGraph,</span>
 	}
 
 	/**
@@ -181,7 +194,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L184">		return new GraphImpl.Factory&lt;&gt;(false);</span>
+<span class="fc" id="L197">		return new GraphImpl.Factory&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -192,11 +205,12 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newDirected() {
-<span class="fc" id="L195">		return new GraphImpl.Factory&lt;&gt;(true);</span>
+<span class="fc" id="L208">		return new GraphImpl.Factory&lt;&gt;(true);</span>
 	}
 
 	/**
 	 * Create a new graph factory based on a given implementation.
+	 *
 	 * &lt;p&gt;
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
@@ -208,15 +222,17 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L211">		return new GraphImpl.Factory&lt;&gt;(g);</span>
+<span class="fc" id="L225">		return new GraphImpl.Factory&lt;&gt;(g);</span>
 	}
 
 	/**
 	 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+	 *
 	 * &lt;p&gt;
 	 * The builder might support different options to customize its implementation. These options never change the
 	 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 	 * because they are not part of the API and may change in the future.
+	 *
 	 * &lt;p&gt;
 	 * These options are mainly for debug and benchmark purposes.
 	 *
@@ -225,7 +241,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="nc" id="L228">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L244">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

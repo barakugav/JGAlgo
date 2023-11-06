@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightsStringer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">WeightsStringer.java</span></div><h1>WeightsStringer.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightsStringifier.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">WeightsStringifier.java</span></div><h1>WeightsStringifier.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -26,15 +26,15 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 
-interface WeightsStringer {
+interface WeightsStringifier {
 
 	String getWeightAsString(int id);
 
-	static WeightsStringer newInstance(IWeights&lt;?&gt; weights) {
+	static WeightsStringifier newInstance(IWeights&lt;?&gt; weights) {
 <span class="fc" id="L34">		return newInstance(weights, null, null);</span>
 	}
 
-	static WeightsStringer newInstance(IWeights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
+	static WeightsStringifier newInstance(IWeights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
 <span class="fc" id="L38">		boolean nonNumberEnclosing = false;</span>
 <span class="pc bpc" id="L39" title="1 of 4 branches missed.">		if (nonNumberPrefix != null || nonNumberSuffix != null) {</span>
 <span class="pc bpc" id="L40" title="1 of 2 branches missed.">			if (nonNumberPrefix == null)</span>

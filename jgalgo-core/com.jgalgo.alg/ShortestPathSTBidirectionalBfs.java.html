@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 <span class="fc" id="L55">		int mu = Integer.MAX_VALUE;</span>
 <span class="fc" id="L56">		int middle = -1;</span>
-<span class="fc bfc" id="L57" title="All 4 branches covered.">		for (; !queueS.isEmpty() &amp;&amp; !queueT.isEmpty();) {</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">		while (!queueS.isEmpty() &amp;&amp; !queueT.isEmpty()) {</span>
 
 <span class="fc" id="L59">			int uS = queueS.dequeueInt();</span>
 <span class="fc" id="L60">			int uT = queueT.dequeueInt();</span>

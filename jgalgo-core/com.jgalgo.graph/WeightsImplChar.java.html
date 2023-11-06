@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.chars.CharArrays;
 
 <span class="nc" id="L22">class WeightsImplChar {</span>
 
-	static abstract class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Character&gt; implements IWeightsChar  {
+	abstract static class IndexImpl  extends WeightsImpl.IndexAbstract&lt;Character&gt; implements IWeightsChar  {
 
 		char[] weights;
 		final char defaultWeight;
@@ -39,193 +39,194 @@ import it.unimi.dsi.fastutil.chars.CharArrays;
 <span class="fc" id="L39">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
 <span class="fc" id="L40">		}</span>
 
-		IndexImpl(WeightsImplChar.IndexImpl  orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L43">			this(elements, orig.defaultWeight);</span>
-<span class="fc" id="L44">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
-<span class="fc" id="L45">			weights = Arrays.copyOf(weights, elements.size());</span>
-<span class="fc" id="L46">			final int s = elements.size();</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int i = 0; i &lt; s; i++)</span>
-<span class="fc" id="L48">				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];</span>
-<span class="fc" id="L49">		}</span>
+		IndexImpl(WeightsImplChar.IndexImpl  orig, GraphElementSet elements,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L44">			this(elements, orig.defaultWeight);</span>
+<span class="fc" id="L45">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
+<span class="fc" id="L46">			weights = Arrays.copyOf(weights, elements.size());</span>
+<span class="fc" id="L47">			final int s = elements.size();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			for (int i = 0; i &lt; s; i++)</span>
+<span class="fc" id="L49">				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];</span>
+<span class="fc" id="L50">		}</span>
 
 		
 		@Override
 		public char get(int idx) {
-<span class="fc" id="L54">			checkIdx(idx);</span>
-<span class="fc" id="L55">			return  weights[idx];</span>
+<span class="fc" id="L55">			checkIdx(idx);</span>
+<span class="fc" id="L56">			return  weights[idx];</span>
 		}
 
 		@Override
 		public char defaultWeight() {
-<span class="fc" id="L60">			return defaultWeight;</span>
+<span class="fc" id="L61">			return defaultWeight;</span>
 		}
 	}
 
 	static class IndexImmutable  extends WeightsImplChar.IndexImpl  implements WeightsImpl.IndexImmutable&lt;Character&gt; {
 
 		IndexImmutable(WeightsImplChar.IndexImpl  orig, GraphElementSet.FixedSize elements) {
-<span class="fc" id="L67">			super(orig, elements);</span>
-<span class="fc" id="L68">		}</span>
+<span class="fc" id="L68">			super(orig, elements);</span>
+<span class="fc" id="L69">		}</span>
 
 		IndexImmutable(WeightsImplChar.IndexImpl  orig, GraphElementSet.FixedSize elements,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L72">			super(orig, elements, reIndexMap);</span>
-<span class="fc" id="L73">		}</span>
+<span class="fc" id="L73">			super(orig, elements, reIndexMap);</span>
+<span class="fc" id="L74">		}</span>
 
 		@Override
 		public void set(int idx, char weight) {
-<span class="fc" id="L77">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L78">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 	}
 
-<span class="fc" id="L81">	static class IndexMutable  extends WeightsImplChar.IndexImpl  implements WeightsImpl.IndexMutable&lt;Character&gt; {</span>
+<span class="fc" id="L82">	static class IndexMutable  extends WeightsImplChar.IndexImpl  implements WeightsImpl.IndexMutable&lt;Character&gt; {</span>
 
 		IndexMutable(GraphElementSet elements, char defVal) {
-<span class="fc" id="L84">			super(elements, defVal);</span>
-<span class="fc" id="L85">		}</span>
+<span class="fc" id="L85">			super(elements, defVal);</span>
+<span class="fc" id="L86">		}</span>
 
 		IndexMutable(WeightsImplChar.IndexImpl  orig, GraphElementSet elements) {
-<span class="fc" id="L88">			super(orig, elements);</span>
-<span class="fc" id="L89">		}</span>
+<span class="fc" id="L89">			super(orig, elements);</span>
+<span class="fc" id="L90">		}</span>
 
 		@Override
 		public void set(int idx, char weight) {
-<span class="fc" id="L93">			checkIdx(idx);</span>
-<span class="fc" id="L94">			weights[idx] = weight;</span>
-<span class="fc" id="L95">		}</span>
+<span class="fc" id="L94">			checkIdx(idx);</span>
+<span class="fc" id="L95">			weights[idx] = weight;</span>
+<span class="fc" id="L96">		}</span>
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L99">			return weights.length;</span>
+<span class="fc" id="L100">			return weights.length;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L104">			int oldCapacity = weights.length;</span>
-<span class="pc bnc" id="L105" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L106">			weights = Arrays.copyOf(weights, newCapacity);</span>
-<span class="fc" id="L107">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
-<span class="fc" id="L108">		}</span>
+<span class="fc" id="L105">			int oldCapacity = weights.length;</span>
+<span class="pc bnc" id="L106" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L107">			weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L108">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L109">		}</span>
 
 		@Override
 		public void swap(int idx1, int idx2) {
-<span class="fc" id="L112">			checkIdx(idx1);</span>
-<span class="fc" id="L113">			checkIdx(idx2);</span>
-<span class="fc" id="L114">			CharArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L113">			checkIdx(idx1);</span>
+<span class="fc" id="L114">			checkIdx(idx2);</span>
+<span class="fc" id="L115">			CharArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L116">		}</span>
 
 		@Override
 		public void clear(int idx) {
-<span class="fc" id="L119">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L120">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L121">		}</span>
 
 		@Override
 		public void clear() {
-<span class="nc" id="L124">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="nc" id="L125">		}</span>
+<span class="nc" id="L125">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L126">		}</span>
 	}
 
 	static class IntMapped  extends WeightsImpl.IntMapped&lt;Character&gt; implements IWeightsChar  {
 		IntMapped(WeightsImplChar.IndexImpl  weights, IndexIntIdMap indexMap) {
-<span class="fc" id="L130">			super(weights, indexMap);</span>
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L131">			super(weights, indexMap);</span>
+<span class="fc" id="L132">		}</span>
 
 		@Override
 		public WeightsImplChar.IndexImpl  weights() {
-<span class="fc" id="L135">			return (WeightsImplChar.IndexImpl ) super.weights();</span>
+<span class="fc" id="L136">			return (WeightsImplChar.IndexImpl ) super.weights();</span>
 		}
 
 		@Override
 		public char get(int id) {
-<span class="fc" id="L140">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L141">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(int id, char weight) {
-<span class="fc" id="L145">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L146">		}</span>
+<span class="fc" id="L146">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L147">		}</span>
 
 		@Override
 		public char defaultWeight() {
-<span class="fc" id="L150">			return weights().defaultWeight();</span>
+<span class="fc" id="L151">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Character&gt; implements WeightsChar&lt;K &gt; {
 		ObjMapped(WeightsImplChar.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="fc" id="L156">			super(weights, indexMap);</span>
-<span class="fc" id="L157">		}</span>
+<span class="fc" id="L157">			super(weights, indexMap);</span>
+<span class="fc" id="L158">		}</span>
 
 		@Override
 		public WeightsImplChar.IndexImpl  weights() {
-<span class="fc" id="L161">			return (WeightsImplChar.IndexImpl ) super.weights();</span>
+<span class="fc" id="L162">			return (WeightsImplChar.IndexImpl ) super.weights();</span>
 		}
 
 		@Override
 		public char get(K id) {
-<span class="fc" id="L166">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L167">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(K id, char weight) {
-<span class="fc" id="L171">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L172">		}</span>
+<span class="fc" id="L172">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L173">		}</span>
 
 		@Override
 		public char defaultWeight() {
-<span class="fc" id="L176">			return weights().defaultWeight();</span>
+<span class="fc" id="L177">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class IntImmutableView  extends WeightsImpl.IntImmutableView&lt;Character&gt; implements IWeightsChar  {
 		IntImmutableView(IWeightsChar  w) {
-<span class="fc" id="L182">			super(w);</span>
-<span class="fc" id="L183">		}</span>
+<span class="fc" id="L183">			super(w);</span>
+<span class="fc" id="L184">		}</span>
 
 		@Override
 		IWeightsChar  weights() {
-<span class="fc" id="L187">			return (IWeightsChar ) super.weights();</span>
+<span class="fc" id="L188">			return (IWeightsChar ) super.weights();</span>
 		}
 
 		@Override
 		public char get(int id) {
-<span class="fc" id="L192">			return weights().get(id);</span>
+<span class="fc" id="L193">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(int id, char weight) {
-<span class="fc" id="L197">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L198">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public char defaultWeight() {
-<span class="fc" id="L202">			return weights().defaultWeight();</span>
+<span class="fc" id="L203">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Character&gt; implements WeightsChar &lt;K &gt; {
 		ObjImmutableView(WeightsChar &lt;K &gt; w) {
-<span class="nc" id="L208">			super(w);</span>
-<span class="nc" id="L209">		}</span>
+<span class="nc" id="L209">			super(w);</span>
+<span class="nc" id="L210">		}</span>
 
 		@Override
 		WeightsChar &lt;K &gt; weights() {
-<span class="nc" id="L213">			return (WeightsChar &lt;K &gt;) super.weights();</span>
+<span class="nc" id="L214">			return (WeightsChar &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public char get(K id) {
-<span class="nc" id="L218">			return weights().get(id);</span>
+<span class="nc" id="L219">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, char weight) {
-<span class="nc" id="L223">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="nc" id="L224">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public char defaultWeight() {
-<span class="nc" id="L228">			return weights().defaultWeight();</span>
+<span class="nc" id="L229">			return weights().defaultWeight();</span>
 		}
 	}
 

@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -25,6 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		/* Use shortcuts to convert to a Hamiltonian cycle */
 <span class="fc" id="L47">		IntList cycle = new IntArrayList(n);</span>
 <span class="fc" id="L48">		int firstVertex = -1, lastVertex = -1;</span>
-<span class="fc" id="L49">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L49">		Bitmap visited = new Bitmap(n);</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		for (IEdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
 <span class="fc" id="L51">			int e0 = it.nextInt();</span>
 <span class="fc" id="L52">			int e = edgeRef[e0];</span>
@@ -85,7 +85,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	private static boolean isPathVisitEvery(IndexGraph g, IPath path) {
 <span class="nc" id="L87">		final int n = g.vertices().size();</span>
-<span class="nc" id="L88">		BitSet visited = new BitSet(n);</span>
+<span class="nc" id="L88">		Bitmap visited = new Bitmap(n);</span>
 <span class="nc bnc" id="L89" title="All 2 branches missed.">		for (int e : path.edges()) {</span>
 <span class="nc" id="L90">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="nc" id="L91">			visited.set(u);</span>
@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L97">		return true;</span>
 	}
 
-<span class="fc" id="L100">	static abstract class AbstractImpl implements TSPMetric {</span>
+<span class="fc" id="L100">	abstract static class AbstractImpl implements TSPMetric {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override

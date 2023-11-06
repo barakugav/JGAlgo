@@ -20,6 +20,7 @@ import com.jgalgo.graph.GraphBuilder;
 
 /**
  * A generator of graphs.
+ *
  * &lt;p&gt;
  * The generator can be used to generate with different distributions and structures. A generator may be used to
  * generate only trees, only bipartite graphs, dense or sparse graphs, etc.
@@ -32,28 +33,31 @@ public interface GraphGenerator&lt;V, E&gt; {
 
 	/**
 	 * Generates an immutable graph.
+	 *
 	 * &lt;p&gt;
 	 * For mutable graphs use {@link #generateMutable()}.
 	 *
 	 * @return a new immutable graph generated with the generator parameters
 	 */
 	default Graph&lt;V, E&gt; generate() {
-<span class="fc" id="L41">		return generateIntoBuilder().build();</span>
+<span class="fc" id="L43">		return generateIntoBuilder().build();</span>
 	}
 
 	/**
 	 * Generates a mutable graph.
+	 *
 	 * &lt;p&gt;
 	 * For immutable graphs use {@link #generate()}.
 	 *
 	 * @return a new mutable graph generated with the generator parameters
 	 */
 	default Graph&lt;V, E&gt; generateMutable() {
-<span class="nc" id="L52">		return generateIntoBuilder().buildMutable();</span>
+<span class="nc" id="L55">		return generateIntoBuilder().buildMutable();</span>
 	}
 
 	/**
 	 * Generates a graph into a builder.
+	 *
 	 * &lt;p&gt;
 	 * This is the a more flexible way to generate a graph. The builder can be used to generate a mutable or immutable
 	 * graph, or to add additional vertices or edges on top of the generated ones.

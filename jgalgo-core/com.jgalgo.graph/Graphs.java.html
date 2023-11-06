@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -36,17 +37,7 @@ public class Graphs {
 	private Graphs() {}
 
 	/**
-	 * An undirected graphs with no vertices and no edges
-	 */
-<span class="fc" id="L41">	public static final IndexGraph EmptyGraphUndirected = IndexGraphBuilder.newUndirected().build();</span>
-
-	/**
-	 * A directed graphs with no vertices and no edges
-	 */
-<span class="fc" id="L46">	public static final IndexGraph EmptyGraphDirected = IndexGraphBuilder.newDirected().build();</span>
-
-	/**
-	 * Tag interface for graphs that can not be muted/changed/altered
+	 * Tag interface for graphs that can not be muted/changed/altered.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -57,152 +48,152 @@ public class Graphs {
 
 		private final Graph&lt;V, E&gt; graph;
 
-<span class="nc" id="L60">		ImmutableGraphView(Graph&lt;V, E&gt; g) {</span>
-<span class="nc" id="L61">			this.graph = Objects.requireNonNull(g);</span>
-<span class="nc" id="L62">		}</span>
+<span class="nc" id="L51">		ImmutableGraphView(Graph&lt;V, E&gt; g) {</span>
+<span class="nc" id="L52">			this.graph = Objects.requireNonNull(g);</span>
+<span class="nc" id="L53">		}</span>
 
 		@Override
 		public Set&lt;V&gt; vertices() {
-<span class="nc" id="L66">			return graph.vertices();</span>
+<span class="nc" id="L57">			return graph.vertices();</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="nc" id="L71">			return graph.edges();</span>
+<span class="nc" id="L62">			return graph.edges();</span>
 		}
 
 		@Override
 		public void addVertex(V vertex) {
-<span class="nc" id="L76">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+<span class="nc" id="L67">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
 		}
 
 		@Override
 		public void removeVertex(V vertex) {
-<span class="nc" id="L81">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+<span class="nc" id="L72">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
 		}
 
 		@Override
 		public EdgeSet&lt;V, E&gt; outEdges(V source) {
-<span class="nc" id="L86">			return new ImmutableEdgeSet&lt;&gt;(graph.outEdges(source));</span>
+<span class="nc" id="L77">			return new ImmutableEdgeSet&lt;&gt;(graph.outEdges(source));</span>
 		}
 
 		@Override
 		public EdgeSet&lt;V, E&gt; inEdges(V target) {
-<span class="nc" id="L91">			return new ImmutableEdgeSet&lt;&gt;(graph.inEdges(target));</span>
+<span class="nc" id="L82">			return new ImmutableEdgeSet&lt;&gt;(graph.inEdges(target));</span>
 		}
 
 		@Override
 		public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
-<span class="nc" id="L96">			return new ImmutableEdgeSet&lt;&gt;(graph.getEdges(source, target));</span>
+<span class="nc" id="L87">			return new ImmutableEdgeSet&lt;&gt;(graph.getEdges(source, target));</span>
 		}
 
 		@Override
 		public void addEdge(V source, V target, E edge) {
-<span class="nc" id="L101">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+<span class="nc" id="L92">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
 		}
 
 		@Override
 		public void removeEdge(E edge) {
-<span class="nc" id="L106">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+<span class="nc" id="L97">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
 		}
 
 		@Override
 		public void reverseEdge(E edge) {
-<span class="nc" id="L111">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot reverse edges&quot;);</span>
+<span class="nc" id="L102">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot reverse edges&quot;);</span>
 		}
 
 		@Override
 		public V edgeSource(E edge) {
-<span class="nc" id="L116">			return graph.edgeSource(edge);</span>
+<span class="nc" id="L107">			return graph.edgeSource(edge);</span>
 		}
 
 		@Override
 		public V edgeTarget(E edge) {
-<span class="nc" id="L121">			return graph.edgeTarget(edge);</span>
+<span class="nc" id="L112">			return graph.edgeTarget(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L126">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
+<span class="nc" id="L117">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
 		}
 
 		@Override
 		public void clearEdges() {
-<span class="nc" id="L131">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+<span class="nc" id="L122">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="nc" id="L137">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getVerticesWeights(key));</span>
+<span class="nc" id="L128">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getVerticesWeights(key));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L143">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
+<span class="nc" id="L134">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(String key) {
-<span class="nc" id="L148">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
+<span class="nc" id="L139">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="nc" id="L153">			return graph.getVerticesWeightsKeys();</span>
+<span class="nc" id="L144">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="nc" id="L159">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getEdgesWeights(key));</span>
+<span class="nc" id="L150">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getEdgesWeights(key));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L165">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
+<span class="nc" id="L156">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(String key) {
-<span class="nc" id="L170">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
+<span class="nc" id="L161">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L175">			return graph.getEdgesWeightsKeys();</span>
+<span class="nc" id="L166">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public boolean isDirected() {
-<span class="nc" id="L180">			return graph.isDirected();</span>
+<span class="nc" id="L171">			return graph.isDirected();</span>
 		}
 
 		@Override
 		public boolean isAllowSelfEdges() {
-<span class="nc" id="L185">			return graph.isAllowSelfEdges();</span>
+<span class="nc" id="L176">			return graph.isAllowSelfEdges();</span>
 		}
 
 		@Override
 		public boolean isAllowParallelEdges() {
-<span class="nc" id="L190">			return graph.isAllowParallelEdges();</span>
+<span class="nc" id="L181">			return graph.isAllowParallelEdges();</span>
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-<span class="nc bnc" id="L195" title="All 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());</span>
 		}
 
 		@Override
 		public IndexIdMap&lt;V&gt; indexGraphVerticesMap() {
-<span class="nc" id="L200">			return graph.indexGraphVerticesMap();</span>
+<span class="nc" id="L191">			return graph.indexGraphVerticesMap();</span>
 		}
 
 		@Override
 		public IndexIdMap&lt;E&gt; indexGraphEdgesMap() {
-<span class="nc" id="L205">			return graph.indexGraphEdgesMap();</span>
+<span class="nc" id="L196">			return graph.indexGraphEdgesMap();</span>
 		}
 
 	}
@@ -211,213 +202,213 @@ public class Graphs {
 
 		private final IntGraph graph;
 
-<span class="fc" id="L214">		ImmutableIntGraphView(IntGraph g) {</span>
-<span class="fc" id="L215">			this.graph = Objects.requireNonNull(g);</span>
-<span class="fc" id="L216">		}</span>
+<span class="fc" id="L205">		ImmutableIntGraphView(IntGraph g) {</span>
+<span class="fc" id="L206">			this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L207">		}</span>
 
 		@Override
 		public IntSet vertices() {
-<span class="fc" id="L220">			return graph.vertices();</span>
+<span class="fc" id="L211">			return graph.vertices();</span>
 		}
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L225">			return graph.edges();</span>
+<span class="fc" id="L216">			return graph.edges();</span>
 		}
 
 		@Override
 		public int addVertex() {
-<span class="fc" id="L230">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+<span class="fc" id="L221">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
 		}
 
 		@Override
 		public void addVertex(int vertex) {
-<span class="fc" id="L235">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+<span class="fc" id="L226">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
-<span class="fc" id="L240">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+<span class="fc" id="L231">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
 		}
 
 		@Override
 		public IEdgeSet outEdges(int source) {
-<span class="fc" id="L245">			return new ImmutableIEdgeSet(graph.outEdges(source));</span>
+<span class="fc" id="L236">			return new ImmutableIEdgeSet(graph.outEdges(source));</span>
 		}
 
 		@Override
 		public IEdgeSet inEdges(int target) {
-<span class="fc" id="L250">			return new ImmutableIEdgeSet(graph.inEdges(target));</span>
+<span class="fc" id="L241">			return new ImmutableIEdgeSet(graph.inEdges(target));</span>
 		}
 
 		@Override
 		public IEdgeSet getEdges(int source, int target) {
-<span class="fc" id="L255">			return new ImmutableIEdgeSet(graph.getEdges(source, target));</span>
+<span class="fc" id="L246">			return new ImmutableIEdgeSet(graph.getEdges(source, target));</span>
 		}
 
 		@Override
 		public int addEdge(int source, int target) {
-<span class="fc" id="L260">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+<span class="fc" id="L251">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
 		}
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-<span class="fc" id="L265">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+<span class="fc" id="L256">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-<span class="fc" id="L270">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+<span class="fc" id="L261">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="fc" id="L275">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot reverse edges&quot;);</span>
+<span class="fc" id="L266">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot reverse edges&quot;);</span>
 		}
 
 		@Override
 		public int edgeSource(int edge) {
-<span class="fc" id="L280">			return graph.edgeSource(edge);</span>
+<span class="fc" id="L271">			return graph.edgeSource(edge);</span>
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-<span class="fc" id="L285">			return graph.edgeTarget(edge);</span>
+<span class="fc" id="L276">			return graph.edgeTarget(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L290">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
+<span class="fc" id="L281">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
 		}
 
 		@Override
 		public void clearEdges() {
-<span class="fc" id="L295">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+<span class="fc" id="L286">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesIWeights(String key) {
-<span class="fc" id="L301">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesIWeights(key));</span>
+<span class="fc" id="L292">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesIWeights(key));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="fc" id="L307">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
+<span class="fc" id="L298">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(String key) {
-<span class="fc" id="L312">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
+<span class="fc" id="L303">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L317">			return graph.getVerticesWeightsKeys();</span>
+<span class="fc" id="L308">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesIWeights(String key) {
-<span class="fc" id="L323">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesIWeights(key));</span>
+<span class="fc" id="L314">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesIWeights(key));</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="fc" id="L329">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
+<span class="fc" id="L320">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(String key) {
-<span class="fc" id="L334">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
+<span class="fc" id="L325">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L339">			return graph.getEdgesWeightsKeys();</span>
+<span class="fc" id="L330">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public boolean isDirected() {
-<span class="fc" id="L344">			return graph.isDirected();</span>
+<span class="fc" id="L335">			return graph.isDirected();</span>
 		}
 
 		@Override
 		public boolean isAllowSelfEdges() {
-<span class="fc" id="L349">			return graph.isAllowSelfEdges();</span>
+<span class="fc" id="L340">			return graph.isAllowSelfEdges();</span>
 		}
 
 		@Override
 		public boolean isAllowParallelEdges() {
-<span class="fc" id="L354">			return graph.isAllowParallelEdges();</span>
+<span class="fc" id="L345">			return graph.isAllowParallelEdges();</span>
 		}
 
 		@Override
 		public IntGraph copy() {
-<span class="nc" id="L359">			return graph.copy();</span>
+<span class="nc" id="L350">			return graph.copy();</span>
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-<span class="pc bpc" id="L364" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());</span>
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
-<span class="nc" id="L369">			return graph.indexGraphVerticesMap();</span>
+<span class="nc" id="L360">			return graph.indexGraphVerticesMap();</span>
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
-<span class="nc" id="L374">			return graph.indexGraphEdgesMap();</span>
+<span class="nc" id="L365">			return graph.indexGraphEdgesMap();</span>
 		}
 
 		IntGraph graph() {
-<span class="fc" id="L378">			return graph;</span>
+<span class="fc" id="L369">			return graph;</span>
 		}
 	}
 
 	private static class ImmutableIndexGraphView extends ImmutableIntGraphView implements IndexGraphImpl {
 
 		ImmutableIndexGraphView(IndexGraph g) {
-<span class="fc" id="L385">			super(g);</span>
-<span class="pc bpc" id="L386" title="1 of 2 branches missed.">			if (!(g instanceof IndexGraphImpl))</span>
-<span class="nc" id="L387">				throw new IllegalArgumentException(&quot;unknown graph implementation&quot;);</span>
-<span class="fc" id="L388">		}</span>
+<span class="fc" id="L376">			super(g);</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">			if (!(g instanceof IndexGraphImpl))</span>
+<span class="nc" id="L378">				throw new IllegalArgumentException(&quot;unknown graph implementation&quot;);</span>
+<span class="fc" id="L379">		}</span>
 
 		@Override
 		IndexGraphImpl graph() {
-<span class="fc" id="L392">			return (IndexGraphImpl) super.graph();</span>
+<span class="fc" id="L383">			return (IndexGraphImpl) super.graph();</span>
 		}
 
 		@Override
 		public IndexGraph copy() {
-<span class="nc" id="L397">			return graph().copy();</span>
+<span class="nc" id="L388">			return graph().copy();</span>
 		}
 
 		@Override
 		public GraphElementSet vertices() {
-<span class="fc" id="L402">			return graph().vertices();</span>
+<span class="fc" id="L393">			return graph().vertices();</span>
 		}
 
 		@Override
 		public GraphElementSet edges() {
-<span class="fc" id="L407">			return graph().edges();</span>
+<span class="fc" id="L398">			return graph().edges();</span>
 		}
 
 		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-<span class="nc" id="L413">			IndexGraphImpl.super.addVertex(vertex);</span>
-<span class="nc" id="L414">		}</span>
+<span class="nc" id="L404">			IndexGraphImpl.super.addVertex(vertex);</span>
+<span class="nc" id="L405">		}</span>
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-<span class="nc" id="L419">			IndexGraphImpl.super.addEdge(source, target, edge);</span>
-<span class="nc" id="L420">		}</span>
+<span class="nc" id="L410">			IndexGraphImpl.super.addEdge(source, target, edge);</span>
+<span class="nc" id="L411">		}</span>
 
 	}
 
@@ -425,23 +416,23 @@ public class Graphs {
 
 		private final EdgeSet&lt;V, E&gt; set;
 
-<span class="nc" id="L428">		ImmutableEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
-<span class="nc" id="L429">			this.set = Objects.requireNonNull(set);</span>
-<span class="nc" id="L430">		}</span>
+<span class="nc" id="L419">		ImmutableEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
+<span class="nc" id="L420">			this.set = Objects.requireNonNull(set);</span>
+<span class="nc" id="L421">		}</span>
 
 		@Override
 		public boolean contains(Object edge) {
-<span class="nc" id="L434">			return set.contains(edge);</span>
+<span class="nc" id="L425">			return set.contains(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L439">			return set.size();</span>
+<span class="nc" id="L430">			return set.size();</span>
 		}
 
 		@Override
 		public EdgeIter&lt;V, E&gt; iterator() {
-<span class="nc" id="L444">			return new ImmutableEdgeIter&lt;&gt;(set.iterator());</span>
+<span class="nc" id="L435">			return new ImmutableEdgeIter&lt;&gt;(set.iterator());</span>
 		}
 	}
 
@@ -449,259 +440,259 @@ public class Graphs {
 
 		private final IEdgeSet set;
 
-<span class="fc" id="L452">		ImmutableIEdgeSet(IEdgeSet set) {</span>
-<span class="fc" id="L453">			this.set = Objects.requireNonNull(set);</span>
-<span class="fc" id="L454">		}</span>
+<span class="fc" id="L443">		ImmutableIEdgeSet(IEdgeSet set) {</span>
+<span class="fc" id="L444">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L445">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="fc" id="L458">			return set.contains(edge);</span>
+<span class="fc" id="L449">			return set.contains(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L463">			return set.size();</span>
+<span class="fc" id="L454">			return set.size();</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L468">			return new ImmutableIEdgeIter(set.iterator());</span>
+<span class="fc" id="L459">			return new ImmutableIEdgeIter(set.iterator());</span>
 		}
 	}
 
 	private static class ImmutableEdgeIter&lt;V, E&gt; implements EdgeIter&lt;V, E&gt; {
 		private final EdgeIter&lt;V, E&gt; it;
 
-<span class="nc" id="L475">		ImmutableEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
-<span class="nc" id="L476">			this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L477">		}</span>
+<span class="nc" id="L466">		ImmutableEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
+<span class="nc" id="L467">			this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L468">		}</span>
 
 		@Override
 		public V source() {
-<span class="nc" id="L481">			return it.source();</span>
+<span class="nc" id="L472">			return it.source();</span>
 		}
 
 		@Override
 		public V target() {
-<span class="nc" id="L486">			return it.target();</span>
+<span class="nc" id="L477">			return it.target();</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc" id="L491">			return it.next();</span>
+<span class="nc" id="L482">			return it.next();</span>
 		}
 
 		@Override
 		public boolean hasNext() {
-<span class="nc" id="L496">			return it.hasNext();</span>
+<span class="nc" id="L487">			return it.hasNext();</span>
 		}
 
 		@Override
 		public E peekNext() {
-<span class="nc" id="L501">			return it.peekNext();</span>
+<span class="nc" id="L492">			return it.peekNext();</span>
 		}
 	}
 
 	private static class ImmutableIEdgeIter implements IEdgeIter {
 		private final IEdgeIter it;
 
-<span class="fc" id="L508">		ImmutableIEdgeIter(IEdgeIter it) {</span>
-<span class="fc" id="L509">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L510">		}</span>
+<span class="fc" id="L499">		ImmutableIEdgeIter(IEdgeIter it) {</span>
+<span class="fc" id="L500">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L501">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L514">			return it.sourceInt();</span>
+<span class="fc" id="L505">			return it.sourceInt();</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L519">			return it.targetInt();</span>
+<span class="fc" id="L510">			return it.targetInt();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L524">			return it.nextInt();</span>
+<span class="fc" id="L515">			return it.nextInt();</span>
 		}
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L529">			return it.hasNext();</span>
+<span class="fc" id="L520">			return it.hasNext();</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L534">			return it.peekNextInt();</span>
+<span class="fc" id="L525">			return it.peekNextInt();</span>
 		}
 	}
 
 	static IndexGraph immutableView(IndexGraph g) {
-<span class="fc bfc" id="L539" title="All 2 branches covered.">		return g instanceof ImmutableGraph ? g : new ImmutableIndexGraphView(g);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">		return g instanceof ImmutableGraph ? g : new ImmutableIndexGraphView(g);</span>
 	}
 
 	static IntGraph immutableView(IntGraph g) {
-<span class="pc bpc" id="L543" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L544">			return immutableView((IndexGraph) g);</span>
-<span class="fc bfc" id="L545" title="All 2 branches covered.">		return g instanceof ImmutableGraph ? g : new ImmutableIntGraphView(g);</span>
+<span class="pc bpc" id="L534" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L535">			return immutableView((IndexGraph) g);</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">		return g instanceof ImmutableGraph ? g : new ImmutableIntGraphView(g);</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Graph&lt;V, E&gt; immutableView(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L550" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L551">			return (Graph&lt;V, E&gt;) immutableView((IndexGraph) g);</span>
-<span class="pc bpc" id="L552" title="1 of 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L553">			return (Graph&lt;V, E&gt;) immutableView((IntGraph) g);</span>
-<span class="nc bnc" id="L554" title="All 2 branches missed.">		return g instanceof ImmutableGraph ? g : new ImmutableGraphView&lt;&gt;(g);</span>
+<span class="pc bpc" id="L541" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L542">			return (Graph&lt;V, E&gt;) immutableView((IndexGraph) g);</span>
+<span class="pc bpc" id="L543" title="1 of 2 branches missed.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L544">			return (Graph&lt;V, E&gt;) immutableView((IntGraph) g);</span>
+<span class="nc bnc" id="L545" title="All 2 branches missed.">		return g instanceof ImmutableGraph ? g : new ImmutableGraphView&lt;&gt;(g);</span>
 	}
 
 	private static class ReverseGraph&lt;V, E&gt; extends GraphBase&lt;V, E&gt; {
 
 		private final Graph&lt;V, E&gt; graph;
 
-<span class="fc" id="L561">		ReverseGraph(Graph&lt;V, E&gt; g) {</span>
-<span class="fc" id="L562">			this.graph = Objects.requireNonNull(g);</span>
-<span class="fc" id="L563">		}</span>
+<span class="fc" id="L552">		ReverseGraph(Graph&lt;V, E&gt; g) {</span>
+<span class="fc" id="L553">			this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L554">		}</span>
 
 		@Override
 		public Set&lt;V&gt; vertices() {
-<span class="nc" id="L567">			return graph.vertices();</span>
+<span class="nc" id="L558">			return graph.vertices();</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="fc" id="L572">			return graph.edges();</span>
+<span class="fc" id="L563">			return graph.edges();</span>
 		}
 
 		@Override
 		public void addVertex(V vertex) {
-<span class="nc" id="L577">			graph.addVertex(vertex);</span>
-<span class="nc" id="L578">		}</span>
+<span class="nc" id="L568">			graph.addVertex(vertex);</span>
+<span class="nc" id="L569">		}</span>
 
 		@Override
 		public void removeVertex(V vertex) {
-<span class="nc" id="L582">			graph.removeVertex(vertex);</span>
-<span class="nc" id="L583">		}</span>
+<span class="nc" id="L573">			graph.removeVertex(vertex);</span>
+<span class="nc" id="L574">		}</span>
 
 		@Override
 		public EdgeSet&lt;V, E&gt; outEdges(V source) {
-<span class="nc" id="L587">			return new ReversedEdgeSet&lt;&gt;(graph.inEdges(source));</span>
+<span class="nc" id="L578">			return new ReversedEdgeSet&lt;&gt;(graph.inEdges(source));</span>
 		}
 
 		@Override
 		public EdgeSet&lt;V, E&gt; inEdges(V target) {
-<span class="nc" id="L592">			return new ReversedEdgeSet&lt;&gt;(graph.outEdges(target));</span>
+<span class="nc" id="L583">			return new ReversedEdgeSet&lt;&gt;(graph.outEdges(target));</span>
 		}
 
 		@Override
 		public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
-<span class="nc" id="L597">			return new ReversedEdgeSet&lt;&gt;(graph.getEdges(target, source));</span>
+<span class="nc" id="L588">			return new ReversedEdgeSet&lt;&gt;(graph.getEdges(target, source));</span>
 		}
 
 		@Override
 		public void addEdge(V source, V target, E edge) {
-<span class="nc" id="L602">			graph.addEdge(target, source, edge);</span>
-<span class="nc" id="L603">		}</span>
+<span class="nc" id="L593">			graph.addEdge(target, source, edge);</span>
+<span class="nc" id="L594">		}</span>
 
 		@Override
 		public void removeEdge(E edge) {
-<span class="nc" id="L607">			graph.removeEdge(edge);</span>
-<span class="nc" id="L608">		}</span>
+<span class="nc" id="L598">			graph.removeEdge(edge);</span>
+<span class="nc" id="L599">		}</span>
 
 		@Override
 		public void reverseEdge(E edge) {
-<span class="nc" id="L612">			graph.reverseEdge(edge);</span>
-<span class="nc" id="L613">		}</span>
+<span class="nc" id="L603">			graph.reverseEdge(edge);</span>
+<span class="nc" id="L604">		}</span>
 
 		@Override
 		public V edgeSource(E edge) {
-<span class="nc" id="L617">			return graph.edgeTarget(edge);</span>
+<span class="nc" id="L608">			return graph.edgeTarget(edge);</span>
 		}
 
 		@Override
 		public V edgeTarget(E edge) {
-<span class="nc" id="L622">			return graph.edgeSource(edge);</span>
+<span class="nc" id="L613">			return graph.edgeSource(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L627">			graph.clear();</span>
-<span class="nc" id="L628">		}</span>
+<span class="nc" id="L618">			graph.clear();</span>
+<span class="nc" id="L619">		}</span>
 
 		@Override
 		public void clearEdges() {
-<span class="nc" id="L632">			graph.clearEdges();</span>
-<span class="nc" id="L633">		}</span>
+<span class="nc" id="L623">			graph.clearEdges();</span>
+<span class="nc" id="L624">		}</span>
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="nc" id="L637">			return graph.getVerticesWeights(key);</span>
+<span class="nc" id="L628">			return graph.getVerticesWeights(key);</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L643">			return graph.addVerticesWeights(key, type, defVal);</span>
+<span class="nc" id="L634">			return graph.addVerticesWeights(key, type, defVal);</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(String key) {
-<span class="nc" id="L648">			graph.removeVerticesWeights(key);</span>
-<span class="nc" id="L649">		}</span>
+<span class="nc" id="L639">			graph.removeVerticesWeights(key);</span>
+<span class="nc" id="L640">		}</span>
 
 		@Override
 		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="nc" id="L653">			return graph.getVerticesWeightsKeys();</span>
+<span class="nc" id="L644">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="nc" id="L658">			return graph.getEdgesWeights(key);</span>
+<span class="nc" id="L649">			return graph.getEdgesWeights(key);</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="nc" id="L664">			return graph.addEdgesWeights(key, type, defVal);</span>
+<span class="nc" id="L655">			return graph.addEdgesWeights(key, type, defVal);</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(String key) {
-<span class="nc" id="L669">			graph.removeEdgesWeights(key);</span>
-<span class="nc" id="L670">		}</span>
+<span class="nc" id="L660">			graph.removeEdgesWeights(key);</span>
+<span class="nc" id="L661">		}</span>
 
 		@Override
 		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L674">			return graph.getEdgesWeightsKeys();</span>
+<span class="nc" id="L665">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public boolean isDirected() {
-<span class="nc" id="L679">			return graph.isDirected();</span>
+<span class="nc" id="L670">			return graph.isDirected();</span>
 		}
 
 		@Override
 		public boolean isAllowSelfEdges() {
-<span class="nc" id="L684">			return graph.isAllowSelfEdges();</span>
+<span class="nc" id="L675">			return graph.isAllowSelfEdges();</span>
 		}
 
 		@Override
 		public boolean isAllowParallelEdges() {
-<span class="nc" id="L689">			return graph.isAllowParallelEdges();</span>
+<span class="nc" id="L680">			return graph.isAllowParallelEdges();</span>
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-<span class="pc bpc" id="L694" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());</span>
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());</span>
 		}
 
 		@Override
 		public IndexIdMap&lt;V&gt; indexGraphVerticesMap() {
-<span class="fc" id="L699">			return graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L690">			return graph.indexGraphVerticesMap();</span>
 		}
 
 		@Override
 		public IndexIdMap&lt;E&gt; indexGraphEdgesMap() {
-<span class="fc" id="L704">			return graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L695">			return graph.indexGraphEdgesMap();</span>
 		}
 
 	}
@@ -710,164 +701,164 @@ public class Graphs {
 
 		private final IntGraph graph;
 
-<span class="fc" id="L713">		ReverseIntGraph(IntGraph g) {</span>
-<span class="fc" id="L714">			this.graph = Objects.requireNonNull(g);</span>
-<span class="fc" id="L715">		}</span>
+<span class="fc" id="L704">		ReverseIntGraph(IntGraph g) {</span>
+<span class="fc" id="L705">			this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L706">		}</span>
 
 		IntGraph graph() {
-<span class="fc" id="L718">			return graph;</span>
+<span class="fc" id="L709">			return graph;</span>
 		}
 
 		@Override
 		public IntSet vertices() {
-<span class="fc" id="L723">			return graph.vertices();</span>
+<span class="fc" id="L714">			return graph.vertices();</span>
 		}
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L728">			return graph.edges();</span>
+<span class="fc" id="L719">			return graph.edges();</span>
 		}
 
 		@Override
 		public int addVertex() {
-<span class="fc" id="L733">			return graph.addVertex();</span>
+<span class="fc" id="L724">			return graph.addVertex();</span>
 		}
 
 		@Override
 		public void addVertex(int vertex) {
-<span class="fc" id="L738">			graph.addVertex(vertex);</span>
-<span class="fc" id="L739">		}</span>
+<span class="fc" id="L729">			graph.addVertex(vertex);</span>
+<span class="fc" id="L730">		}</span>
 
 		@Override
 		public void removeVertex(int vertex) {
-<span class="fc" id="L743">			graph.removeVertex(vertex);</span>
-<span class="fc" id="L744">		}</span>
+<span class="fc" id="L734">			graph.removeVertex(vertex);</span>
+<span class="fc" id="L735">		}</span>
 
 		@Override
 		public IEdgeSet outEdges(int source) {
-<span class="fc" id="L748">			return new ReversedIEdgeSet(graph.inEdges(source));</span>
+<span class="fc" id="L739">			return new ReversedIEdgeSet(graph.inEdges(source));</span>
 		}
 
 		@Override
 		public IEdgeSet inEdges(int target) {
-<span class="fc" id="L753">			return new ReversedIEdgeSet(graph.outEdges(target));</span>
+<span class="fc" id="L744">			return new ReversedIEdgeSet(graph.outEdges(target));</span>
 		}
 
 		@Override
 		public IEdgeSet getEdges(int source, int target) {
-<span class="fc" id="L758">			return new ReversedIEdgeSet(graph.getEdges(target, source));</span>
+<span class="fc" id="L749">			return new ReversedIEdgeSet(graph.getEdges(target, source));</span>
 		}
 
 		@Override
 		public int addEdge(int source, int target) {
-<span class="fc" id="L763">			return graph.addEdge(target, source);</span>
+<span class="fc" id="L754">			return graph.addEdge(target, source);</span>
 		}
 
 		@Override
 		public void addEdge(int source, int target, int edge) {
-<span class="fc" id="L768">			graph.addEdge(target, source, edge);</span>
-<span class="fc" id="L769">		}</span>
+<span class="fc" id="L759">			graph.addEdge(target, source, edge);</span>
+<span class="fc" id="L760">		}</span>
 
 		@Override
 		public void removeEdge(int edge) {
-<span class="fc" id="L773">			graph.removeEdge(edge);</span>
-<span class="fc" id="L774">		}</span>
+<span class="fc" id="L764">			graph.removeEdge(edge);</span>
+<span class="fc" id="L765">		}</span>
 
 		@Override
 		public int edgeSource(int edge) {
-<span class="fc" id="L778">			return graph.edgeTarget(edge);</span>
+<span class="fc" id="L769">			return graph.edgeTarget(edge);</span>
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-<span class="fc" id="L783">			return graph.edgeSource(edge);</span>
+<span class="fc" id="L774">			return graph.edgeSource(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L788">			graph.clear();</span>
-<span class="fc" id="L789">		}</span>
+<span class="fc" id="L779">			graph.clear();</span>
+<span class="fc" id="L780">		}</span>
 
 		@Override
 		public void clearEdges() {
-<span class="fc" id="L793">			graph.clearEdges();</span>
-<span class="fc" id="L794">		}</span>
+<span class="fc" id="L784">			graph.clearEdges();</span>
+<span class="fc" id="L785">		}</span>
 
 		@Override
 		public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesIWeights(String key) {
-<span class="fc" id="L798">			return graph.getVerticesWeights(key);</span>
+<span class="fc" id="L789">			return graph.getVerticesWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L803">			return graph.getVerticesWeightsKeys();</span>
+<span class="fc" id="L794">			return graph.getVerticesWeightsKeys();</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(String key) {
-<span class="fc" id="L808">			graph.removeVerticesWeights(key);</span>
-<span class="fc" id="L809">		}</span>
+<span class="fc" id="L799">			graph.removeVerticesWeights(key);</span>
+<span class="fc" id="L800">		}</span>
 
 		@Override
 		public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesIWeights(String key) {
-<span class="fc" id="L813">			return graph.getEdgesWeights(key);</span>
+<span class="fc" id="L804">			return graph.getEdgesWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L818">			return graph.getEdgesWeightsKeys();</span>
+<span class="fc" id="L809">			return graph.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(String key) {
-<span class="fc" id="L823">			graph.removeEdgesWeights(key);</span>
-<span class="fc" id="L824">		}</span>
+<span class="fc" id="L814">			graph.removeEdgesWeights(key);</span>
+<span class="fc" id="L815">		}</span>
 
 		@Override
 		public boolean isDirected() {
-<span class="fc" id="L828">			return graph.isDirected();</span>
+<span class="fc" id="L819">			return graph.isDirected();</span>
 		}
 
 		@Override
 		public boolean isAllowSelfEdges() {
-<span class="fc" id="L833">			return graph.isAllowSelfEdges();</span>
+<span class="fc" id="L824">			return graph.isAllowSelfEdges();</span>
 		}
 
 		@Override
 		public boolean isAllowParallelEdges() {
-<span class="fc" id="L838">			return graph.isAllowParallelEdges();</span>
+<span class="fc" id="L829">			return graph.isAllowParallelEdges();</span>
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="fc" id="L843">			graph.reverseEdge(edge);</span>
-<span class="fc" id="L844">		}</span>
+<span class="fc" id="L834">			graph.reverseEdge(edge);</span>
+<span class="fc" id="L835">		}</span>
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="fc" id="L849">			return graph.addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L840">			return graph.addVerticesWeights(key, type, defVal);</span>
 		}
 
 		@Override
 		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 				T defVal) {
-<span class="fc" id="L855">			return graph.addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L846">			return graph.addEdgesWeights(key, type, defVal);</span>
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-<span class="pc bpc" id="L860" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());</span>
+<span class="pc bpc" id="L851" title="1 of 2 branches missed.">			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());</span>
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
-<span class="fc" id="L865">			return graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L856">			return graph.indexGraphVerticesMap();</span>
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
-<span class="fc" id="L870">			return graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L861">			return graph.indexGraphEdgesMap();</span>
 		}
 
 	}
@@ -875,37 +866,37 @@ public class Graphs {
 	private static class ReverseIndexGraph extends ReverseIntGraph implements IndexGraphImpl {
 
 		ReverseIndexGraph(IndexGraph g) {
-<span class="fc" id="L878">			super(g);</span>
-<span class="pc bpc" id="L879" title="1 of 2 branches missed.">			if (!(g instanceof IndexGraphImpl))</span>
-<span class="nc" id="L880">				throw new IllegalArgumentException(&quot;unknown graph implementation&quot;);</span>
-<span class="fc" id="L881">		}</span>
+<span class="fc" id="L869">			super(g);</span>
+<span class="pc bpc" id="L870" title="1 of 2 branches missed.">			if (!(g instanceof IndexGraphImpl))</span>
+<span class="nc" id="L871">				throw new IllegalArgumentException(&quot;unknown graph implementation&quot;);</span>
+<span class="fc" id="L872">		}</span>
 
 		@Override
 		IndexGraphImpl graph() {
-<span class="fc" id="L885">			return (IndexGraphImpl) super.graph();</span>
+<span class="fc" id="L876">			return (IndexGraphImpl) super.graph();</span>
 		}
 
 		@Override
 		public GraphElementSet vertices() {
-<span class="fc" id="L890">			return graph().vertices();</span>
+<span class="fc" id="L881">			return graph().vertices();</span>
 		}
 
 		@Override
 		public GraphElementSet edges() {
-<span class="fc" id="L895">			return graph().edges();</span>
+<span class="fc" id="L886">			return graph().edges();</span>
 		}
 
 		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-<span class="nc" id="L901">			IndexGraphImpl.super.addVertex(vertex);</span>
-<span class="nc" id="L902">		}</span>
+<span class="nc" id="L892">			IndexGraphImpl.super.addVertex(vertex);</span>
+<span class="nc" id="L893">		}</span>
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-<span class="nc" id="L907">			IndexGraphImpl.super.addEdge(source, target, edge);</span>
-<span class="nc" id="L908">		}</span>
+<span class="nc" id="L898">			IndexGraphImpl.super.addEdge(source, target, edge);</span>
+<span class="nc" id="L899">		}</span>
 
 	}
 
@@ -913,33 +904,33 @@ public class Graphs {
 
 		private final EdgeSet&lt;V, E&gt; set;
 
-<span class="nc" id="L916">		ReversedEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
-<span class="nc" id="L917">			this.set = Objects.requireNonNull(set);</span>
-<span class="nc" id="L918">		}</span>
+<span class="nc" id="L907">		ReversedEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
+<span class="nc" id="L908">			this.set = Objects.requireNonNull(set);</span>
+<span class="nc" id="L909">		}</span>
 
 		@Override
 		public boolean contains(Object edge) {
-<span class="nc" id="L922">			return set.contains(edge);</span>
+<span class="nc" id="L913">			return set.contains(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L927">			return set.size();</span>
+<span class="nc" id="L918">			return set.size();</span>
 		}
 
 		@Override
 		public boolean remove(Object edge) {
-<span class="nc" id="L932">			return set.remove(edge);</span>
+<span class="nc" id="L923">			return set.remove(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L937">			set.clear();</span>
-<span class="nc" id="L938">		}</span>
+<span class="nc" id="L928">			set.clear();</span>
+<span class="nc" id="L929">		}</span>
 
 		@Override
 		public EdgeIter&lt;V, E&gt; iterator() {
-<span class="nc" id="L942">			return new ReversedEdgeIter&lt;&gt;(set.iterator());</span>
+<span class="nc" id="L933">			return new ReversedEdgeIter&lt;&gt;(set.iterator());</span>
 		}
 	}
 
@@ -947,162 +938,162 @@ public class Graphs {
 
 		private final IEdgeSet set;
 
-<span class="fc" id="L950">		ReversedIEdgeSet(IEdgeSet set) {</span>
-<span class="fc" id="L951">			this.set = Objects.requireNonNull(set);</span>
-<span class="fc" id="L952">		}</span>
+<span class="fc" id="L941">		ReversedIEdgeSet(IEdgeSet set) {</span>
+<span class="fc" id="L942">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L943">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="fc" id="L956">			return set.contains(edge);</span>
+<span class="fc" id="L947">			return set.contains(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L961">			return set.size();</span>
+<span class="fc" id="L952">			return set.size();</span>
 		}
 
 		@Override
 		public boolean remove(int edge) {
-<span class="nc" id="L966">			return set.remove(edge);</span>
+<span class="nc" id="L957">			return set.remove(edge);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L971">			set.clear();</span>
-<span class="nc" id="L972">		}</span>
+<span class="nc" id="L962">			set.clear();</span>
+<span class="nc" id="L963">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L976">			return new ReversedIEdgeIter(set.iterator());</span>
+<span class="fc" id="L967">			return new ReversedIEdgeIter(set.iterator());</span>
 		}
 	}
 
 	private static class ReversedEdgeIter&lt;V, E&gt; implements EdgeIter&lt;V, E&gt; {
 		final EdgeIter&lt;V, E&gt; it;
 
-<span class="nc" id="L983">		ReversedEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
-<span class="nc" id="L984">			this.it = it;</span>
-<span class="nc" id="L985">		}</span>
+<span class="nc" id="L974">		ReversedEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
+<span class="nc" id="L975">			this.it = it;</span>
+<span class="nc" id="L976">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc" id="L989">			return it.hasNext();</span>
+<span class="nc" id="L980">			return it.hasNext();</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc" id="L994">			return it.next();</span>
+<span class="nc" id="L985">			return it.next();</span>
 		}
 
 		@Override
 		public E peekNext() {
-<span class="nc" id="L999">			return it.peekNext();</span>
+<span class="nc" id="L990">			return it.peekNext();</span>
 		}
 
 		@Override
 		public V source() {
-<span class="nc" id="L1004">			return it.target();</span>
+<span class="nc" id="L995">			return it.target();</span>
 		}
 
 		@Override
 		public V target() {
-<span class="nc" id="L1009">			return it.source();</span>
+<span class="nc" id="L1000">			return it.source();</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="nc" id="L1014">			it.remove();</span>
-<span class="nc" id="L1015">		}</span>
+<span class="nc" id="L1005">			it.remove();</span>
+<span class="nc" id="L1006">		}</span>
 	}
 
 	private static class ReversedIEdgeIter implements IEdgeIter {
 		final IEdgeIter it;
 
-<span class="fc" id="L1021">		ReversedIEdgeIter(IEdgeIter it) {</span>
-<span class="fc" id="L1022">			this.it = it;</span>
-<span class="fc" id="L1023">		}</span>
+<span class="fc" id="L1012">		ReversedIEdgeIter(IEdgeIter it) {</span>
+<span class="fc" id="L1013">			this.it = it;</span>
+<span class="fc" id="L1014">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L1027">			return it.hasNext();</span>
+<span class="fc" id="L1018">			return it.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L1032">			return it.nextInt();</span>
+<span class="fc" id="L1023">			return it.nextInt();</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L1037">			return it.peekNextInt();</span>
+<span class="fc" id="L1028">			return it.peekNextInt();</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L1042">			return it.targetInt();</span>
+<span class="fc" id="L1033">			return it.targetInt();</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L1047">			return it.sourceInt();</span>
+<span class="fc" id="L1038">			return it.sourceInt();</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L1052">			it.remove();</span>
-<span class="fc" id="L1053">		}</span>
+<span class="fc" id="L1043">			it.remove();</span>
+<span class="fc" id="L1044">		}</span>
 	}
 
 	static IndexGraph reverseView(IndexGraph g) {
-<span class="pc bpc" id="L1057" title="1 of 2 branches missed.">		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);</span>
+<span class="pc bpc" id="L1048" title="1 of 2 branches missed.">		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);</span>
 	}
 
 	static IntGraph reverseView(IntGraph g) {
-<span class="pc bpc" id="L1061" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L1062">			return reverseView((IndexGraph) g);</span>
-<span class="pc bpc" id="L1063" title="1 of 2 branches missed.">		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph : new ReverseIntGraph(g);</span>
+<span class="pc bpc" id="L1052" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L1053">			return reverseView((IndexGraph) g);</span>
+<span class="pc bpc" id="L1054" title="1 of 2 branches missed.">		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph : new ReverseIntGraph(g);</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Graph&lt;V, E&gt; reverseView(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L1068" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L1069">			return (Graph&lt;V, E&gt;) reverseView((IndexGraph) g);</span>
-<span class="fc bfc" id="L1070" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L1071">			return (Graph&lt;V, E&gt;) reverseView((IntGraph) g);</span>
-<span class="pc bpc" id="L1072" title="1 of 2 branches missed.">		return g instanceof ReverseGraph ? ((ReverseGraph&lt;V, E&gt;) g).graph : new ReverseGraph&lt;&gt;(g);</span>
+<span class="pc bpc" id="L1059" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L1060">			return (Graph&lt;V, E&gt;) reverseView((IndexGraph) g);</span>
+<span class="fc bfc" id="L1061" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L1062">			return (Graph&lt;V, E&gt;) reverseView((IntGraph) g);</span>
+<span class="pc bpc" id="L1063" title="1 of 2 branches missed.">		return g instanceof ReverseGraph ? ((ReverseGraph&lt;V, E&gt;) g).graph : new ReverseGraph&lt;&gt;(g);</span>
 	}
 
 	static String getIndexGraphImpl(IndexGraph g) {
 		for (;;) {
-<span class="fc" id="L1077">			IndexGraph g0 = g;</span>
-<span class="pc bpc" id="L1078" title="1 of 2 branches missed.">			if (g instanceof ReverseIndexGraph)</span>
-<span class="nc" id="L1079">				g = ((ReverseIndexGraph) g).graph();</span>
-<span class="pc bpc" id="L1080" title="1 of 2 branches missed.">			if (g instanceof ImmutableIndexGraphView)</span>
-<span class="nc" id="L1081">				g = ((ImmutableIndexGraphView) g).graph();</span>
-<span class="fc bfc" id="L1082" title="All 2 branches covered.">			if (g instanceof GraphArrayAbstract)</span>
-<span class="fc" id="L1083">				return &quot;array&quot;;</span>
-<span class="fc bfc" id="L1084" title="All 2 branches covered.">			if (g instanceof GraphLinkedAbstract)</span>
-<span class="fc" id="L1085">				return &quot;linked-list&quot;;</span>
-<span class="fc bfc" id="L1086" title="All 2 branches covered.">			if (g instanceof GraphHashmapAbstract)</span>
-<span class="fc" id="L1087">				return &quot;hashtable&quot;;</span>
-<span class="fc bfc" id="L1088" title="All 2 branches covered.">			if (g instanceof GraphMatrixAbstract)</span>
-<span class="fc" id="L1089">				return &quot;matrix&quot;;</span>
-<span class="pc bpc" id="L1090" title="1 of 2 branches missed.">			if (g == g0)</span>
-<span class="fc" id="L1091">				return null;</span>
-<span class="nc" id="L1092">		}</span>
+<span class="fc" id="L1068">			IndexGraph g0 = g;</span>
+<span class="pc bpc" id="L1069" title="1 of 2 branches missed.">			if (g instanceof ReverseIndexGraph)</span>
+<span class="nc" id="L1070">				g = ((ReverseIndexGraph) g).graph();</span>
+<span class="pc bpc" id="L1071" title="1 of 2 branches missed.">			if (g instanceof ImmutableIndexGraphView)</span>
+<span class="nc" id="L1072">				g = ((ImmutableIndexGraphView) g).graph();</span>
+<span class="fc bfc" id="L1073" title="All 2 branches covered.">			if (g instanceof GraphArrayAbstract)</span>
+<span class="fc" id="L1074">				return &quot;array&quot;;</span>
+<span class="fc bfc" id="L1075" title="All 2 branches covered.">			if (g instanceof GraphLinkedAbstract)</span>
+<span class="fc" id="L1076">				return &quot;linked-list&quot;;</span>
+<span class="fc bfc" id="L1077" title="All 2 branches covered.">			if (g instanceof GraphHashmapAbstract)</span>
+<span class="fc" id="L1078">				return &quot;hashtable&quot;;</span>
+<span class="pc bpc" id="L1079" title="1 of 2 branches missed.">			if (g instanceof GraphMatrixAbstract)</span>
+<span class="fc" id="L1080">				return &quot;matrix&quot;;</span>
+<span class="nc bnc" id="L1081" title="All 2 branches missed.">			if (g == g0)</span>
+<span class="nc" id="L1082">				return null;</span>
+<span class="nc" id="L1083">		}</span>
 	}
 
-<span class="fc" id="L1095">	static final IndexIntIdMap IndexIdMapIdentify = new IndexGraphMapIdentify();</span>
+<span class="fc" id="L1086">	static final IndexIntIdMap IndexIdMapIdentify = new IndexGraphMapIdentify();</span>
 
 	private static class IndexGraphMapIdentify implements IndexIntIdMap {
 		@Override
 		public int indexToIdInt(int index) {
-<span class="nc" id="L1100">			return index;</span>
+<span class="fc" id="L1091">			return index;</span>
 		}
 
 		@Override
 		public int idToIndex(int id) {
-<span class="fc" id="L1105">			return id;</span>
+<span class="fc" id="L1096">			return id;</span>
 		}
 	}
 
@@ -1113,95 +1104,100 @@ public class Graphs {
 		private int edge;
 		private static final int EdgeNone = -1;
 
-<span class="fc" id="L1116">		EdgeSetSourceTargetSingleton(IntGraph g, int source, int target, int edge) {</span>
-<span class="fc" id="L1117">			this.g = g;</span>
-<span class="fc" id="L1118">			this.source = source;</span>
-<span class="fc" id="L1119">			this.target = target;</span>
-<span class="fc" id="L1120">			this.edge = edge;</span>
-<span class="fc" id="L1121">		}</span>
+<span class="fc" id="L1107">		EdgeSetSourceTargetSingleton(IntGraph g, int source, int target, int edge) {</span>
+<span class="fc" id="L1108">			this.g = g;</span>
+<span class="fc" id="L1109">			this.source = source;</span>
+<span class="fc" id="L1110">			this.target = target;</span>
+<span class="fc" id="L1111">			this.edge = edge;</span>
+<span class="fc" id="L1112">		}</span>
 
 		@Override
 		public boolean remove(int edge) {
-<span class="pc bpc" id="L1125" title="1 of 2 branches missed.">			if (this.edge != edge)</span>
-<span class="nc" id="L1126">				return false;</span>
-<span class="fc" id="L1127">			g.removeEdge(edge);</span>
-<span class="fc" id="L1128">			this.edge = EdgeNone;</span>
-<span class="fc" id="L1129">			return true;</span>
+<span class="pc bpc" id="L1116" title="1 of 2 branches missed.">			if (this.edge != edge)</span>
+<span class="nc" id="L1117">				return false;</span>
+<span class="fc" id="L1118">			g.removeEdge(edge);</span>
+<span class="fc" id="L1119">			this.edge = EdgeNone;</span>
+<span class="fc" id="L1120">			return true;</span>
 		}
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L1134" title="2 of 4 branches missed.">			return this.edge != EdgeNone &amp;&amp; this.edge == edge;</span>
+<span class="pc bpc" id="L1125" title="2 of 4 branches missed.">			return this.edge != EdgeNone &amp;&amp; this.edge == edge;</span>
 		}
 
 		@Override
 		public int size() {
-<span class="pc bpc" id="L1139" title="1 of 2 branches missed.">			return edge != EdgeNone ? 1 : 0;</span>
+<span class="pc bpc" id="L1130" title="1 of 2 branches missed.">			return edge != EdgeNone ? 1 : 0;</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc bnc" id="L1144" title="All 2 branches missed.">			if (edge != EdgeNone) {</span>
-<span class="nc" id="L1145">				g.removeEdge(edge);</span>
-<span class="nc" id="L1146">				edge = EdgeNone;</span>
+<span class="nc bnc" id="L1135" title="All 2 branches missed.">			if (edge != EdgeNone) {</span>
+<span class="nc" id="L1136">				g.removeEdge(edge);</span>
+<span class="nc" id="L1137">				edge = EdgeNone;</span>
 			}
-<span class="nc" id="L1148">		}</span>
+<span class="nc" id="L1139">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L1152">			return new IEdgeIter() {</span>
+<span class="fc" id="L1143">			return new IEdgeIter() {</span>
 
-<span class="pc bpc" id="L1154" title="1 of 2 branches missed.">				boolean beforeNext = edge != EdgeNone;</span>
+<span class="pc bpc" id="L1145" title="1 of 2 branches missed.">				boolean beforeNext = edge != EdgeNone;</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc" id="L1158">					return beforeNext;</span>
+<span class="fc" id="L1149">					return beforeNext;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L1163">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L1164">					beforeNext = false;</span>
-<span class="fc" id="L1165">					return edge;</span>
+<span class="fc" id="L1154">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1155">					beforeNext = false;</span>
+<span class="fc" id="L1156">					return edge;</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="fc" id="L1170">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L1171">					return edge;</span>
+<span class="fc" id="L1161">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1162">					return edge;</span>
 				}
 
 				@Override
 				public int sourceInt() {
-<span class="fc" id="L1176">					return source;</span>
+<span class="fc" id="L1167">					return source;</span>
 				}
 
 				@Override
 				public int targetInt() {
-<span class="fc" id="L1181">					return target;</span>
+<span class="fc" id="L1172">					return target;</span>
 				}
 
 				@Override
 				public void remove() {
-<span class="nc bnc" id="L1186" title="All 2 branches missed.">					if (beforeNext)</span>
-<span class="nc" id="L1187">						throw new IllegalStateException();</span>
-<span class="nc" id="L1188">					g.removeEdge(edge);</span>
-<span class="nc" id="L1189">					edge = EdgeNone;</span>
-<span class="nc" id="L1190">				}</span>
+<span class="nc bnc" id="L1177" title="All 2 branches missed.">					if (beforeNext)</span>
+<span class="nc" id="L1178">						throw new IllegalStateException();</span>
+<span class="nc" id="L1179">					g.removeEdge(edge);</span>
+<span class="nc" id="L1180">					edge = EdgeNone;</span>
+<span class="nc" id="L1181">				}</span>
 			};
 		}
 	}
 
 	/**
 	 * Create a new graph that is an induced subgraph of the given graph.
+	 *
 	 * &lt;p&gt;
 	 * An induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The created graph will have the same type (directed/undirected) as
 	 * the given graph. The vertices and edges of the created graph will be a subset of the vertices and edges of the
 	 * given graph.
+	 *
 	 * &lt;p&gt;
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
 	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  &lt;V&gt;      the vertices type
 	 * @param  &lt;E&gt;      the edges type
@@ -1210,25 +1206,32 @@ public class Graphs {
 	 * @return          a new graph that is an induced subgraph of the given graph
 	 */
 	public static &lt;V, E&gt; Graph&lt;V, E&gt; subGraph(Graph&lt;V, E&gt; g, Collection&lt;V&gt; vertices) {
-<span class="nc" id="L1213">		return subGraph(g, Objects.requireNonNull(vertices), null);</span>
+<span class="nc" id="L1209">		return subGraph(g, Objects.requireNonNull(vertices), null);</span>
 	}
 
 	/**
 	 * Create a new graph that is a subgraph of the given graph.
+	 *
 	 * &lt;p&gt;
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
 	 * {@code vertices} must not be {@code null} in this case.
+	 *
 	 * &lt;p&gt;
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
 	 * &lt;p&gt;
 	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
 	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
 	 * &lt;p&gt;
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
 	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  &lt;V&gt;                  the vertices type
 	 * @param  &lt;E&gt;                  the edges type
@@ -1242,27 +1245,34 @@ public class Graphs {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	public static &lt;V, E&gt; Graph&lt;V, E&gt; subGraph(Graph&lt;V, E&gt; g, Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="fc" id="L1245">		return subGraph(g, vertices, edges, false, false);</span>
+<span class="fc" id="L1248">		return subGraph(g, vertices, edges, false, false);</span>
 	}
 
 	/**
 	 * Create a new graph that is a subgraph of the given graph, with option to copy weights.
+	 *
 	 * &lt;p&gt;
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
 	 * {@code vertices} must not be {@code null} in this case.
+	 *
 	 * &lt;p&gt;
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
 	 * &lt;p&gt;
 	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
 	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
 	 * &lt;p&gt;
 	 * An additional parameter options for copying the weights of the vertices and edges of the given graph to the new
 	 * sub graph are provided. If {@code copyVerticesWeights} is {@code true}, then all the vertices weights of the
 	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
 	 * weights of the given graph will be copied to the new sub graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  &lt;V&gt;                  the vertices type
 	 * @param  &lt;E&gt;                  the edges type
@@ -1282,235 +1292,316 @@ public class Graphs {
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot;, &quot;cast&quot; })
 	public static &lt;V, E&gt; Graph&lt;V, E&gt; subGraph(Graph&lt;V, E&gt; g, Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="pc bpc" id="L1285" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
-<span class="pc bpc" id="L1286" title="1 of 2 branches missed.">			IntCollection vs = vertices == null ? null</span>
-<span class="nc bnc" id="L1287" title="All 2 branches missed.">					: (vertices instanceof IntCollection ? (IntCollection) vertices</span>
-<span class="pc" id="L1288">							: new IntArrayList((Collection&lt;Integer&gt;) vertices));</span>
-<span class="pc bpc" id="L1289" title="1 of 2 branches missed.">			IntCollection es = edges == null ? null</span>
-<span class="fc bfc" id="L1290" title="All 2 branches covered.">					: (edges instanceof IntCollection ? (IntCollection) edges</span>
-<span class="fc" id="L1291">							: new IntArrayList((Collection&lt;Integer&gt;) edges));</span>
-<span class="fc" id="L1292">			return (Graph&lt;V, E&gt;) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="pc bpc" id="L1295" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="pc bpc" id="L1296" title="1 of 2 branches missed.">			IntCollection vs = vertices == null ? null</span>
+<span class="nc bnc" id="L1297" title="All 2 branches missed.">					: (vertices instanceof IntCollection ? (IntCollection) vertices</span>
+<span class="pc" id="L1298">							: new IntArrayList((Collection&lt;Integer&gt;) vertices));</span>
+<span class="pc bpc" id="L1299" title="1 of 2 branches missed.">			IntCollection es = edges == null ? null</span>
+<span class="fc bfc" id="L1300" title="All 2 branches covered.">					: (edges instanceof IntCollection ? (IntCollection) edges</span>
+<span class="fc" id="L1301">							: new IntArrayList((Collection&lt;Integer&gt;) edges));</span>
+<span class="fc" id="L1302">			return (Graph&lt;V, E&gt;) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);</span>
 		}
 
-<span class="nc bnc" id="L1295" title="All 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
-<span class="nc" id="L1296">			throw new NullPointerException();</span>
-<span class="nc bnc" id="L1297" title="All 2 branches missed.">		GraphBuilder&lt;V, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="nc bnc" id="L1305" title="All 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
+<span class="nc" id="L1306">			throw new NullPointerException();</span>
+<span class="nc bnc" id="L1307" title="All 2 branches missed.">		GraphBuilder&lt;V, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
 
-<span class="nc bnc" id="L1299" title="All 2 branches missed.">		if (vertices == null) {</span>
-<span class="nc" id="L1300">			vertices = new ObjectOpenHashSet();</span>
-<span class="nc bnc" id="L1301" title="All 2 branches missed.">			for (E e : edges) {</span>
-<span class="nc" id="L1302">				vertices.add(g.edgeSource(e));</span>
-<span class="nc" id="L1303">				vertices.add(g.edgeTarget(e));</span>
-<span class="nc" id="L1304">			}</span>
+<span class="nc bnc" id="L1309" title="All 2 branches missed.">		if (vertices == null) {</span>
+<span class="nc" id="L1310">			vertices = new ObjectOpenHashSet();</span>
+<span class="nc bnc" id="L1311" title="All 2 branches missed.">			for (E e : edges) {</span>
+<span class="nc" id="L1312">				vertices.add(g.edgeSource(e));</span>
+<span class="nc" id="L1313">				vertices.add(g.edgeTarget(e));</span>
+<span class="nc" id="L1314">			}</span>
 		}
-<span class="nc" id="L1306">		gb.expectedVerticesNum(vertices.size());</span>
-<span class="nc bnc" id="L1307" title="All 2 branches missed.">		for (V v : vertices)</span>
-<span class="nc" id="L1308">			gb.addVertex(v);</span>
+<span class="nc" id="L1316">		gb.expectedVerticesNum(vertices.size());</span>
+<span class="nc bnc" id="L1317" title="All 2 branches missed.">		for (V v : vertices)</span>
+<span class="nc" id="L1318">			gb.addVertex(v);</span>
 
-<span class="nc bnc" id="L1310" title="All 2 branches missed.">		if (edges == null) {</span>
-<span class="nc bnc" id="L1311" title="All 2 branches missed.">			for (E e : g.edges()) {</span>
-<span class="nc" id="L1312">				V u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="nc bnc" id="L1313" title="All 4 branches missed.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
-<span class="nc" id="L1314">					gb.addEdge(u, v, e);</span>
-<span class="nc" id="L1315">			}</span>
+<span class="nc bnc" id="L1320" title="All 2 branches missed.">		if (edges == null) {</span>
+<span class="nc bnc" id="L1321" title="All 2 branches missed.">			for (E e : g.edges()) {</span>
+<span class="nc" id="L1322">				V u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="nc bnc" id="L1323" title="All 4 branches missed.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
+<span class="nc" id="L1324">					gb.addEdge(u, v, e);</span>
+<span class="nc" id="L1325">			}</span>
 		} else {
-<span class="nc bnc" id="L1317" title="All 2 branches missed.">			for (E e : edges)</span>
-<span class="nc" id="L1318">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
+<span class="nc bnc" id="L1327" title="All 2 branches missed.">			for (E e : edges)</span>
+<span class="nc" id="L1328">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
 		}
 
-<span class="nc bnc" id="L1321" title="All 2 branches missed.">		if (copyVerticesWeights) {</span>
-<span class="nc bnc" id="L1322" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="nc" id="L1323">				IWeights wSrc = g.getVerticesWeights(key);</span>
-<span class="nc" id="L1324">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="nc" id="L1325">				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="nc" id="L1326">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
-<span class="nc" id="L1327">			}</span>
+<span class="nc bnc" id="L1331" title="All 2 branches missed.">		if (copyVerticesWeights) {</span>
+<span class="nc bnc" id="L1332" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys()) {</span>
+<span class="nc" id="L1333">				IWeights wSrc = g.getVerticesWeights(key);</span>
+<span class="nc" id="L1334">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="nc" id="L1335">				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="nc" id="L1336">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
+<span class="nc" id="L1337">			}</span>
 		}
-<span class="nc bnc" id="L1329" title="All 2 branches missed.">		if (copyEdgesWeights) {</span>
-<span class="nc bnc" id="L1330" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="nc" id="L1331">				IWeights wSrc = g.getEdgesWeights(key);</span>
-<span class="nc" id="L1332">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="nc" id="L1333">				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="nc" id="L1334">				copyWeights(wSrc, wDst, type, gb.edges());</span>
-<span class="nc" id="L1335">			}</span>
+<span class="nc bnc" id="L1339" title="All 2 branches missed.">		if (copyEdgesWeights) {</span>
+<span class="nc bnc" id="L1340" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys()) {</span>
+<span class="nc" id="L1341">				IWeights wSrc = g.getEdgesWeights(key);</span>
+<span class="nc" id="L1342">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="nc" id="L1343">				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="nc" id="L1344">				copyWeights(wSrc, wDst, type, gb.edges());</span>
+<span class="nc" id="L1345">			}</span>
 		}
 
-<span class="nc" id="L1338">		return gb.build();</span>
+<span class="nc" id="L1348">		return gb.build();</span>
 	}
 
+	/**
+	 * Create a new graph that is a subgraph of the given int graph, with option to copy weights.
+	 *
+	 * &lt;p&gt;
+	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
+	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\).
+	 *
+	 * &lt;p&gt;
+	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
+	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
+	 * &lt;p&gt;
+	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
+	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
+	 * &lt;p&gt;
+	 * An additional parameter options for copying the weights of the vertices and edges of the given graph to the new
+	 * sub graph are provided. If {@code copyVerticesWeights} is {@code true}, then all the vertices weights of the
+	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
+	 * weights of the given graph will be copied to the new sub graph.
+	 *
+	 * @param  g                    the graph to create a sub graph from
+	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
+	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
+	 *                                  are either a source or a target of an edge in {@code edges}
+	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
+	 *                                  {@code null} and the sub graph will be an induced subgraph of the given graph
+	 * @param  copyVerticesWeights  if {@code true} then all the vertices weights of the given graph will be copied to
+	 *                                  the new sub graph
+	 * @param  copyEdgesWeights     if {@code true} then all the edges weights of the given graph will be copied to the
+	 *                                  new sub graph
+	 * @return                      a new graph that is a subgraph of the given graph
+	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot;, &quot;cast&quot; })
 	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="pc bpc" id="L1344" title="2 of 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
-<span class="nc" id="L1345">			throw new NullPointerException();</span>
-<span class="pc bpc" id="L1346" title="1 of 2 branches missed.">		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="pc bpc" id="L1389" title="2 of 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
+<span class="nc" id="L1390">			throw new NullPointerException();</span>
+<span class="pc bpc" id="L1391" title="1 of 2 branches missed.">		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
 
-<span class="pc bpc" id="L1348" title="1 of 2 branches missed.">		if (vertices == null) {</span>
-<span class="fc" id="L1349">			vertices = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L1350" title="All 2 branches covered.">			for (int e : edges) {</span>
-<span class="fc" id="L1351">				vertices.add(g.edgeSource(e));</span>
-<span class="fc" id="L1352">				vertices.add(g.edgeTarget(e));</span>
-<span class="fc" id="L1353">			}</span>
+<span class="pc bpc" id="L1393" title="1 of 2 branches missed.">		if (vertices == null) {</span>
+<span class="fc" id="L1394">			vertices = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L1395" title="All 2 branches covered.">			for (int e : edges) {</span>
+<span class="fc" id="L1396">				vertices.add(g.edgeSource(e));</span>
+<span class="fc" id="L1397">				vertices.add(g.edgeTarget(e));</span>
+<span class="fc" id="L1398">			}</span>
 		}
-<span class="fc" id="L1355">		gb.expectedVerticesNum(vertices.size());</span>
-<span class="fc bfc" id="L1356" title="All 2 branches covered.">		for (int v : vertices)</span>
-<span class="fc" id="L1357">			gb.addVertex(v);</span>
+<span class="fc" id="L1400">		gb.expectedVerticesNum(vertices.size());</span>
+<span class="fc bfc" id="L1401" title="All 2 branches covered.">		for (int v : vertices)</span>
+<span class="fc" id="L1402">			gb.addVertex(v);</span>
 
-<span class="pc bpc" id="L1359" title="1 of 2 branches missed.">		if (edges == null) {</span>
-<span class="nc bnc" id="L1360" title="All 2 branches missed.">			for (int e : g.edges()) {</span>
-<span class="nc" id="L1361">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="nc bnc" id="L1362" title="All 4 branches missed.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
-<span class="nc" id="L1363">					gb.addEdge(u, v, e);</span>
-<span class="nc" id="L1364">			}</span>
+<span class="pc bpc" id="L1404" title="1 of 2 branches missed.">		if (edges == null) {</span>
+<span class="nc bnc" id="L1405" title="All 2 branches missed.">			for (int e : g.edges()) {</span>
+<span class="nc" id="L1406">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="nc bnc" id="L1407" title="All 4 branches missed.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
+<span class="nc" id="L1408">					gb.addEdge(u, v, e);</span>
+<span class="nc" id="L1409">			}</span>
 		} else {
-<span class="fc bfc" id="L1366" title="All 2 branches covered.">			for (int e : edges)</span>
-<span class="fc" id="L1367">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
+<span class="fc bfc" id="L1411" title="All 2 branches covered.">			for (int e : edges)</span>
+<span class="fc" id="L1412">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
 		}
 
-<span class="pc bpc" id="L1370" title="1 of 2 branches missed.">		if (copyVerticesWeights) {</span>
-<span class="nc bnc" id="L1371" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="nc" id="L1372">				IWeights wSrc = g.getVerticesWeights(key);</span>
-<span class="nc" id="L1373">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="nc" id="L1374">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="nc" id="L1375">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
-<span class="nc" id="L1376">			}</span>
+<span class="pc bpc" id="L1415" title="1 of 2 branches missed.">		if (copyVerticesWeights) {</span>
+<span class="nc bnc" id="L1416" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys()) {</span>
+<span class="nc" id="L1417">				IWeights wSrc = g.getVerticesWeights(key);</span>
+<span class="nc" id="L1418">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="nc" id="L1419">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="nc" id="L1420">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
+<span class="nc" id="L1421">			}</span>
 		}
-<span class="pc bpc" id="L1378" title="1 of 2 branches missed.">		if (copyEdgesWeights) {</span>
-<span class="nc bnc" id="L1379" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="nc" id="L1380">				IWeights wSrc = g.getEdgesWeights(key);</span>
-<span class="nc" id="L1381">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="nc" id="L1382">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="nc" id="L1383">				copyWeights(wSrc, wDst, type, gb.edges());</span>
-<span class="nc" id="L1384">			}</span>
+<span class="pc bpc" id="L1423" title="1 of 2 branches missed.">		if (copyEdgesWeights) {</span>
+<span class="nc bnc" id="L1424" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys()) {</span>
+<span class="nc" id="L1425">				IWeights wSrc = g.getEdgesWeights(key);</span>
+<span class="nc" id="L1426">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="nc" id="L1427">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="nc" id="L1428">				copyWeights(wSrc, wDst, type, gb.edges());</span>
+<span class="nc" id="L1429">			}</span>
 		}
 
-<span class="fc" id="L1387">		return gb.build();</span>
+<span class="fc" id="L1432">		return gb.build();</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K&gt; void copyWeights(Weights&lt;K, ?&gt; src, Weights&lt;K, ?&gt; dst, Class&lt;?&gt; type, Collection&lt;K&gt; elements) {
-<span class="nc bnc" id="L1392" title="All 2 branches missed.">		if (type == byte.class) {</span>
-<span class="nc" id="L1393">			WeightsByte&lt;K&gt; src0 = (WeightsByte&lt;K&gt;) src;</span>
-<span class="nc" id="L1394">			WeightsByte&lt;K&gt; dst0 = (WeightsByte&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1395" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1396">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1397" title="All 2 branches missed.">		} else if (type == short.class) {</span>
-<span class="nc" id="L1398">			WeightsShort&lt;K&gt; src0 = (WeightsShort&lt;K&gt;) src;</span>
-<span class="nc" id="L1399">			WeightsShort&lt;K&gt; dst0 = (WeightsShort&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1400" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1401">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1402" title="All 2 branches missed.">		} else if (type == int.class) {</span>
-<span class="nc" id="L1403">			WeightsInt&lt;K&gt; src0 = (WeightsInt&lt;K&gt;) src;</span>
-<span class="nc" id="L1404">			WeightsInt&lt;K&gt; dst0 = (WeightsInt&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1405" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1406">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1407" title="All 2 branches missed.">		} else if (type == long.class) {</span>
-<span class="nc" id="L1408">			WeightsLong&lt;K&gt; src0 = (WeightsLong&lt;K&gt;) src;</span>
-<span class="nc" id="L1409">			WeightsLong&lt;K&gt; dst0 = (WeightsLong&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1410" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1411">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1412" title="All 2 branches missed.">		} else if (type == float.class) {</span>
-<span class="nc" id="L1413">			WeightsFloat&lt;K&gt; src0 = (WeightsFloat&lt;K&gt;) src;</span>
-<span class="nc" id="L1414">			WeightsFloat&lt;K&gt; dst0 = (WeightsFloat&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1415" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1416">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1417" title="All 2 branches missed.">		} else if (type == double.class) {</span>
-<span class="nc" id="L1418">			WeightsDouble&lt;K&gt; src0 = (WeightsDouble&lt;K&gt;) src;</span>
-<span class="nc" id="L1419">			WeightsDouble&lt;K&gt; dst0 = (WeightsDouble&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1420" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1421">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1422" title="All 2 branches missed.">		} else if (type == boolean.class) {</span>
-<span class="nc" id="L1423">			WeightsBool&lt;K&gt; src0 = (WeightsBool&lt;K&gt;) src;</span>
-<span class="nc" id="L1424">			WeightsBool&lt;K&gt; dst0 = (WeightsBool&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1425" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1426">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1427" title="All 2 branches missed.">		} else if (type == char.class) {</span>
-<span class="nc" id="L1428">			WeightsChar&lt;K&gt; src0 = (WeightsChar&lt;K&gt;) src;</span>
-<span class="nc" id="L1429">			WeightsChar&lt;K&gt; dst0 = (WeightsChar&lt;K&gt;) dst;</span>
-<span class="nc bnc" id="L1430" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1431">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1432" title="All 2 branches missed.">		} else if (type == Object.class) {</span>
-<span class="nc" id="L1433">			WeightsObj&lt;K, Object&gt; src0 = (WeightsObj&lt;K, Object&gt;) src;</span>
-<span class="nc" id="L1434">			WeightsObj&lt;K, Object&gt; dst0 = (WeightsObj&lt;K, Object&gt;) dst;</span>
-<span class="nc bnc" id="L1435" title="All 2 branches missed.">			for (K elm : elements)</span>
-<span class="nc" id="L1436">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc" id="L1437">		} else {</span>
-<span class="nc" id="L1438">			throw new AssertionError();</span>
+<span class="nc bnc" id="L1437" title="All 2 branches missed.">		if (type == byte.class) {</span>
+<span class="nc" id="L1438">			WeightsByte&lt;K&gt; src0 = (WeightsByte&lt;K&gt;) src;</span>
+<span class="nc" id="L1439">			WeightsByte&lt;K&gt; dst0 = (WeightsByte&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1440" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1441">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1442" title="All 2 branches missed.">		} else if (type == short.class) {</span>
+<span class="nc" id="L1443">			WeightsShort&lt;K&gt; src0 = (WeightsShort&lt;K&gt;) src;</span>
+<span class="nc" id="L1444">			WeightsShort&lt;K&gt; dst0 = (WeightsShort&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1445" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1446">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1447" title="All 2 branches missed.">		} else if (type == int.class) {</span>
+<span class="nc" id="L1448">			WeightsInt&lt;K&gt; src0 = (WeightsInt&lt;K&gt;) src;</span>
+<span class="nc" id="L1449">			WeightsInt&lt;K&gt; dst0 = (WeightsInt&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1450" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1451">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1452" title="All 2 branches missed.">		} else if (type == long.class) {</span>
+<span class="nc" id="L1453">			WeightsLong&lt;K&gt; src0 = (WeightsLong&lt;K&gt;) src;</span>
+<span class="nc" id="L1454">			WeightsLong&lt;K&gt; dst0 = (WeightsLong&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1455" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1456">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1457" title="All 2 branches missed.">		} else if (type == float.class) {</span>
+<span class="nc" id="L1458">			WeightsFloat&lt;K&gt; src0 = (WeightsFloat&lt;K&gt;) src;</span>
+<span class="nc" id="L1459">			WeightsFloat&lt;K&gt; dst0 = (WeightsFloat&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1460" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1461">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1462" title="All 2 branches missed.">		} else if (type == double.class) {</span>
+<span class="nc" id="L1463">			WeightsDouble&lt;K&gt; src0 = (WeightsDouble&lt;K&gt;) src;</span>
+<span class="nc" id="L1464">			WeightsDouble&lt;K&gt; dst0 = (WeightsDouble&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1465" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1466">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1467" title="All 2 branches missed.">		} else if (type == boolean.class) {</span>
+<span class="nc" id="L1468">			WeightsBool&lt;K&gt; src0 = (WeightsBool&lt;K&gt;) src;</span>
+<span class="nc" id="L1469">			WeightsBool&lt;K&gt; dst0 = (WeightsBool&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1470" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1471">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1472" title="All 2 branches missed.">		} else if (type == char.class) {</span>
+<span class="nc" id="L1473">			WeightsChar&lt;K&gt; src0 = (WeightsChar&lt;K&gt;) src;</span>
+<span class="nc" id="L1474">			WeightsChar&lt;K&gt; dst0 = (WeightsChar&lt;K&gt;) dst;</span>
+<span class="nc bnc" id="L1475" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1476">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1477" title="All 2 branches missed.">		} else if (type == Object.class) {</span>
+<span class="nc" id="L1478">			WeightsObj&lt;K, Object&gt; src0 = (WeightsObj&lt;K, Object&gt;) src;</span>
+<span class="nc" id="L1479">			WeightsObj&lt;K, Object&gt; dst0 = (WeightsObj&lt;K, Object&gt;) dst;</span>
+<span class="nc bnc" id="L1480" title="All 2 branches missed.">			for (K elm : elements)</span>
+<span class="nc" id="L1481">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc" id="L1482">		} else {</span>
+<span class="nc" id="L1483">			throw new AssertionError();</span>
 		}
-<span class="nc" id="L1440">	}</span>
+<span class="nc" id="L1485">	}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private static void copyWeights(IWeights&lt;?&gt; src, IWeights&lt;?&gt; dst, Class&lt;?&gt; type, IntCollection elements) {
-<span class="nc bnc" id="L1444" title="All 2 branches missed.">		if (type == byte.class) {</span>
-<span class="nc" id="L1445">			IWeightsByte src0 = (IWeightsByte) src;</span>
-<span class="nc" id="L1446">			IWeightsByte dst0 = (IWeightsByte) dst;</span>
-<span class="nc bnc" id="L1447" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1448">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1449" title="All 2 branches missed.">		} else if (type == short.class) {</span>
-<span class="nc" id="L1450">			IWeightsShort src0 = (IWeightsShort) src;</span>
-<span class="nc" id="L1451">			IWeightsShort dst0 = (IWeightsShort) dst;</span>
-<span class="nc bnc" id="L1452" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1453">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1454" title="All 2 branches missed.">		} else if (type == int.class) {</span>
-<span class="nc" id="L1455">			IWeightsInt src0 = (IWeightsInt) src;</span>
-<span class="nc" id="L1456">			IWeightsInt dst0 = (IWeightsInt) dst;</span>
-<span class="nc bnc" id="L1457" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1458">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1459" title="All 2 branches missed.">		} else if (type == long.class) {</span>
-<span class="nc" id="L1460">			IWeightsLong src0 = (IWeightsLong) src;</span>
-<span class="nc" id="L1461">			IWeightsLong dst0 = (IWeightsLong) dst;</span>
-<span class="nc bnc" id="L1462" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1463">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1464" title="All 2 branches missed.">		} else if (type == float.class) {</span>
-<span class="nc" id="L1465">			IWeightsFloat src0 = (IWeightsFloat) src;</span>
-<span class="nc" id="L1466">			IWeightsFloat dst0 = (IWeightsFloat) dst;</span>
-<span class="nc bnc" id="L1467" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1468">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1469" title="All 2 branches missed.">		} else if (type == double.class) {</span>
-<span class="nc" id="L1470">			IWeightsDouble src0 = (IWeightsDouble) src;</span>
-<span class="nc" id="L1471">			IWeightsDouble dst0 = (IWeightsDouble) dst;</span>
-<span class="nc bnc" id="L1472" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1473">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1474" title="All 2 branches missed.">		} else if (type == boolean.class) {</span>
-<span class="nc" id="L1475">			IWeightsBool src0 = (IWeightsBool) src;</span>
-<span class="nc" id="L1476">			IWeightsBool dst0 = (IWeightsBool) dst;</span>
-<span class="nc bnc" id="L1477" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1478">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1479" title="All 2 branches missed.">		} else if (type == char.class) {</span>
-<span class="nc" id="L1480">			IWeightsChar src0 = (IWeightsChar) src;</span>
-<span class="nc" id="L1481">			IWeightsChar dst0 = (IWeightsChar) dst;</span>
-<span class="nc bnc" id="L1482" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1483">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc bnc" id="L1484" title="All 2 branches missed.">		} else if (type == Object.class) {</span>
-<span class="nc" id="L1485">			IWeightsObj src0 = (IWeightsObj) src;</span>
-<span class="nc" id="L1486">			IWeightsObj dst0 = (IWeightsObj) dst;</span>
-<span class="nc bnc" id="L1487" title="All 2 branches missed.">			for (int elm : elements)</span>
-<span class="nc" id="L1488">				dst0.set(elm, src0.get(elm));</span>
-<span class="nc" id="L1489">		} else {</span>
-<span class="nc" id="L1490">			throw new AssertionError();</span>
+<span class="nc bnc" id="L1489" title="All 2 branches missed.">		if (type == byte.class) {</span>
+<span class="nc" id="L1490">			IWeightsByte src0 = (IWeightsByte) src;</span>
+<span class="nc" id="L1491">			IWeightsByte dst0 = (IWeightsByte) dst;</span>
+<span class="nc bnc" id="L1492" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1493">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1494" title="All 2 branches missed.">		} else if (type == short.class) {</span>
+<span class="nc" id="L1495">			IWeightsShort src0 = (IWeightsShort) src;</span>
+<span class="nc" id="L1496">			IWeightsShort dst0 = (IWeightsShort) dst;</span>
+<span class="nc bnc" id="L1497" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1498">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1499" title="All 2 branches missed.">		} else if (type == int.class) {</span>
+<span class="nc" id="L1500">			IWeightsInt src0 = (IWeightsInt) src;</span>
+<span class="nc" id="L1501">			IWeightsInt dst0 = (IWeightsInt) dst;</span>
+<span class="nc bnc" id="L1502" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1503">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1504" title="All 2 branches missed.">		} else if (type == long.class) {</span>
+<span class="nc" id="L1505">			IWeightsLong src0 = (IWeightsLong) src;</span>
+<span class="nc" id="L1506">			IWeightsLong dst0 = (IWeightsLong) dst;</span>
+<span class="nc bnc" id="L1507" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1508">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1509" title="All 2 branches missed.">		} else if (type == float.class) {</span>
+<span class="nc" id="L1510">			IWeightsFloat src0 = (IWeightsFloat) src;</span>
+<span class="nc" id="L1511">			IWeightsFloat dst0 = (IWeightsFloat) dst;</span>
+<span class="nc bnc" id="L1512" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1513">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1514" title="All 2 branches missed.">		} else if (type == double.class) {</span>
+<span class="nc" id="L1515">			IWeightsDouble src0 = (IWeightsDouble) src;</span>
+<span class="nc" id="L1516">			IWeightsDouble dst0 = (IWeightsDouble) dst;</span>
+<span class="nc bnc" id="L1517" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1518">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1519" title="All 2 branches missed.">		} else if (type == boolean.class) {</span>
+<span class="nc" id="L1520">			IWeightsBool src0 = (IWeightsBool) src;</span>
+<span class="nc" id="L1521">			IWeightsBool dst0 = (IWeightsBool) dst;</span>
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1523">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1524" title="All 2 branches missed.">		} else if (type == char.class) {</span>
+<span class="nc" id="L1525">			IWeightsChar src0 = (IWeightsChar) src;</span>
+<span class="nc" id="L1526">			IWeightsChar dst0 = (IWeightsChar) dst;</span>
+<span class="nc bnc" id="L1527" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1528">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc bnc" id="L1529" title="All 2 branches missed.">		} else if (type == Object.class) {</span>
+<span class="nc" id="L1530">			IWeightsObj src0 = (IWeightsObj) src;</span>
+<span class="nc" id="L1531">			IWeightsObj dst0 = (IWeightsObj) dst;</span>
+<span class="nc bnc" id="L1532" title="All 2 branches missed.">			for (int elm : elements)</span>
+<span class="nc" id="L1533">				dst0.set(elm, src0.get(elm));</span>
+<span class="nc" id="L1534">		} else {</span>
+<span class="nc" id="L1535">			throw new AssertionError();</span>
 		}
-<span class="nc" id="L1492">	}</span>
+<span class="nc" id="L1537">	}</span>
 
 	private static Class&lt;?&gt; getWeightsType(Weights&lt;?, ?&gt; w) {
-<span class="nc bnc" id="L1495" title="All 2 branches missed.">		if (w instanceof WeightsByte)</span>
-<span class="nc" id="L1496">			return byte.class;</span>
-<span class="nc bnc" id="L1497" title="All 2 branches missed.">		if (w instanceof WeightsShort)</span>
-<span class="nc" id="L1498">			return short.class;</span>
-<span class="nc bnc" id="L1499" title="All 2 branches missed.">		if (w instanceof WeightsInt)</span>
-<span class="nc" id="L1500">			return int.class;</span>
-<span class="nc bnc" id="L1501" title="All 2 branches missed.">		if (w instanceof WeightsLong)</span>
-<span class="nc" id="L1502">			return long.class;</span>
-<span class="nc bnc" id="L1503" title="All 2 branches missed.">		if (w instanceof WeightsFloat)</span>
-<span class="nc" id="L1504">			return float.class;</span>
-<span class="nc bnc" id="L1505" title="All 2 branches missed.">		if (w instanceof WeightsDouble)</span>
-<span class="nc" id="L1506">			return double.class;</span>
-<span class="nc bnc" id="L1507" title="All 2 branches missed.">		if (w instanceof WeightsBool)</span>
-<span class="nc" id="L1508">			return boolean.class;</span>
-<span class="nc bnc" id="L1509" title="All 2 branches missed.">		if (w instanceof WeightsChar)</span>
-<span class="nc" id="L1510">			return char.class;</span>
-<span class="nc bnc" id="L1511" title="All 2 branches missed.">		if (w instanceof WeightsObj)</span>
-<span class="nc" id="L1512">			return Object.class;</span>
-<span class="nc" id="L1513">		throw new AssertionError();</span>
+<span class="nc bnc" id="L1540" title="All 2 branches missed.">		if (w instanceof WeightsByte)</span>
+<span class="nc" id="L1541">			return byte.class;</span>
+<span class="nc bnc" id="L1542" title="All 2 branches missed.">		if (w instanceof WeightsShort)</span>
+<span class="nc" id="L1543">			return short.class;</span>
+<span class="nc bnc" id="L1544" title="All 2 branches missed.">		if (w instanceof WeightsInt)</span>
+<span class="nc" id="L1545">			return int.class;</span>
+<span class="nc bnc" id="L1546" title="All 2 branches missed.">		if (w instanceof WeightsLong)</span>
+<span class="nc" id="L1547">			return long.class;</span>
+<span class="nc bnc" id="L1548" title="All 2 branches missed.">		if (w instanceof WeightsFloat)</span>
+<span class="nc" id="L1549">			return float.class;</span>
+<span class="nc bnc" id="L1550" title="All 2 branches missed.">		if (w instanceof WeightsDouble)</span>
+<span class="nc" id="L1551">			return double.class;</span>
+<span class="nc bnc" id="L1552" title="All 2 branches missed.">		if (w instanceof WeightsBool)</span>
+<span class="nc" id="L1553">			return boolean.class;</span>
+<span class="nc bnc" id="L1554" title="All 2 branches missed.">		if (w instanceof WeightsChar)</span>
+<span class="nc" id="L1555">			return char.class;</span>
+<span class="nc bnc" id="L1556" title="All 2 branches missed.">		if (w instanceof WeightsObj)</span>
+<span class="nc" id="L1557">			return Object.class;</span>
+<span class="nc" id="L1558">		throw new AssertionError();</span>
+	}
+
+	/**
+	 * Get a random vertex from the given graph.
+	 *
+	 * @param  &lt;V&gt;  the vertices type
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random vertex from the given graph
+	 */
+	public static &lt;V&gt; V randVertex(Graph&lt;V, ?&gt; g, Random rand) {
+<span class="fc" id="L1570">		return g.indexGraphVerticesMap().indexToId(rand.nextInt(g.vertices().size()));</span>
+	}
+
+	/**
+	 * Get a random vertex from the given int graph.
+	 *
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random vertex from the given graph
+	 */
+	public static int randVertex(IntGraph g, Random rand) {
+<span class="fc" id="L1581">		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(g.vertices().size()));</span>
+	}
+
+	/**
+	 * Get a random edge from the given graph.
+	 *
+	 * @param  &lt;E&gt;  the edges type
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random edge from the given graph
+	 */
+	public static &lt;E&gt; E randEdge(Graph&lt;?, E&gt; g, Random rand) {
+<span class="fc" id="L1593">		return g.indexGraphEdgesMap().indexToId(rand.nextInt(g.edges().size()));</span>
+	}
+
+	/**
+	 * Get a random edge from the given int graph.
+	 *
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random edge from the given graph
+	 */
+	public static int randEdge(IntGraph g, Random rand) {
+<span class="fc" id="L1604">		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));</span>
 	}
 
 }

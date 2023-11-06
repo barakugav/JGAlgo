@@ -711,7 +711,7 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static abstract class IdToIndexWeights&lt;K, T&gt; implements IWeights&lt;T&gt; {
+	private abstract static class IdToIndexWeights&lt;K, T&gt; implements IWeights&lt;T&gt; {
 
 		private final Weights&lt;K, T&gt; idxWeights;
 		private final IndexIdMap&lt;K&gt; map;
@@ -974,7 +974,7 @@ public class IndexIdMaps {
 
 	}
 
-	private static abstract class IntIdToIndexWeights&lt;T&gt; implements IWeights&lt;T&gt; {
+	private abstract static class IntIdToIndexWeights&lt;T&gt; implements IWeights&lt;T&gt; {
 
 		private final IWeights&lt;T&gt; idxWeights;
 		private final IndexIntIdMap map;
@@ -1287,6 +1287,7 @@ public class IndexIdMaps {
 	/**
 	 * Create a weights view that is accessed by the elements indices, given a weights container that is accessed by the
 	 * element IDs.
+	 *
 	 * &lt;p&gt;
 	 * The returned weights container is a view, namely modifying the original container change the new one, and vice
 	 * versa.
@@ -1303,30 +1304,30 @@ public class IndexIdMaps {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K, T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT idToIndexWeights(Weights&lt;K, T&gt; weights,
 			IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1306">		boolean immutableView = false;</span>
-<span class="pc bpc" id="L1307" title="1 of 2 branches missed.">		while (weights instanceof WeightsImpl.ImmutableView) {</span>
-<span class="nc" id="L1308">			weights = ((WeightsImpl.ImmutableView&lt;K, T&gt;) weights).weights();</span>
-<span class="nc" id="L1309">			immutableView = true;</span>
+<span class="fc" id="L1307">		boolean immutableView = false;</span>
+<span class="pc bpc" id="L1308" title="1 of 2 branches missed.">		while (weights instanceof WeightsImpl.ImmutableView) {</span>
+<span class="nc" id="L1309">			weights = ((WeightsImpl.ImmutableView&lt;K, T&gt;) weights).weights();</span>
+<span class="nc" id="L1310">			immutableView = true;</span>
 		}
 
 		IWeights&lt;T&gt; idxWeights;
-<span class="fc bfc" id="L1313" title="All 2 branches covered.">		if (weights instanceof WeightsImpl.IntMapped) {</span>
-<span class="pc bpc" id="L1314" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.IntMapped&lt;?&gt;) weights).indexMap)</span>
-<span class="nc" id="L1315">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
-<span class="fc" id="L1316">			idxWeights = ((WeightsImpl.IntMapped&lt;T&gt;) weights).weights;</span>
+<span class="fc bfc" id="L1314" title="All 2 branches covered.">		if (weights instanceof WeightsImpl.IntMapped) {</span>
+<span class="pc bpc" id="L1315" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.IntMapped&lt;?&gt;) weights).indexMap)</span>
+<span class="nc" id="L1316">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
+<span class="fc" id="L1317">			idxWeights = ((WeightsImpl.IntMapped&lt;T&gt;) weights).weights;</span>
 
-<span class="pc bpc" id="L1318" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsImpl.ObjMapped) {</span>
-<span class="pc bpc" id="L1319" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.ObjMapped&lt;?, ?&gt;) weights).indexMap)</span>
-<span class="nc" id="L1320">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
-<span class="fc" id="L1321">			idxWeights = ((WeightsImpl.ObjMapped&lt;K, T&gt;) weights).weights;</span>
+<span class="pc bpc" id="L1319" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsImpl.ObjMapped) {</span>
+<span class="pc bpc" id="L1320" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.ObjMapped&lt;?, ?&gt;) weights).indexMap)</span>
+<span class="nc" id="L1321">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
+<span class="fc" id="L1322">			idxWeights = ((WeightsImpl.ObjMapped&lt;K, T&gt;) weights).weights;</span>
 
 		} else {
-<span class="nc" id="L1324">			idxWeights = idToIndexWeightsWrapper(weights, map);</span>
+<span class="nc" id="L1325">			idxWeights = idToIndexWeightsWrapper(weights, map);</span>
 		}
 
-<span class="pc bpc" id="L1327" title="1 of 2 branches missed.">		if (immutableView)</span>
-<span class="nc" id="L1328">			idxWeights = WeightsImpl.IntImmutableView.newInstance(idxWeights);</span>
-<span class="fc" id="L1329">		return (WeightsT) idxWeights;</span>
+<span class="pc bpc" id="L1328" title="1 of 2 branches missed.">		if (immutableView)</span>
+<span class="nc" id="L1329">			idxWeights = WeightsImpl.IntImmutableView.newInstance(idxWeights);</span>
+<span class="fc" id="L1330">		return (WeightsT) idxWeights;</span>
 	}
 
 	/**
@@ -1339,38 +1340,38 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IWeightFunction idToIndexWeightFunc(WeightFunction&lt;K&gt; w, IndexIdMap&lt;K&gt; map) {
-<span class="pc bpc" id="L1342" title="2 of 6 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
+<span class="pc bpc" id="L1343" title="2 of 6 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
 				|| w == IWeightFunction.CardinalityWeightFunction) {
-<span class="fc" id="L1344">			return null;</span>
+<span class="fc" id="L1345">			return null;</span>
 
-<span class="fc bfc" id="L1346" title="All 2 branches covered.">		} else if (w instanceof Weights) {</span>
+<span class="fc bfc" id="L1347" title="All 2 branches covered.">		} else if (w instanceof Weights) {</span>
 			/* The weight function is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-<span class="fc" id="L1349">			return (IWeightFunction) idToIndexWeights((Weights&lt;K, ?&gt;) w, map);</span>
+<span class="fc" id="L1350">			return (IWeightFunction) idToIndexWeights((Weights&lt;K, ?&gt;) w, map);</span>
 
-<span class="pc bpc" id="L1351" title="3 of 4 branches missed.">		} else if (w instanceof IWeightFunctionInt &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="pc bpc" id="L1352" title="3 of 4 branches missed.">		} else if (w instanceof IWeightFunctionInt &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown int weight function, return a mapped wrapper */
-<span class="nc" id="L1353">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="nc" id="L1354">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="nc" id="L1355">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
-<span class="nc" id="L1356">			return wIntMapped;</span>
+<span class="nc" id="L1354">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="nc" id="L1355">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="nc" id="L1356">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
+<span class="nc" id="L1357">			return wIntMapped;</span>
 
-<span class="pc bpc" id="L1358" title="1 of 4 branches missed.">		} else if (w instanceof IWeightFunction &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="pc bpc" id="L1359" title="1 of 4 branches missed.">		} else if (w instanceof IWeightFunction &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown weight function, return a mapped wrapper */
-<span class="fc" id="L1360">			IWeightFunction wInt = (IWeightFunction) w;</span>
-<span class="fc" id="L1361">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="fc" id="L1362">			IWeightFunction wMapped = idx -&gt; wInt.weight(map0.indexToIdInt(idx));</span>
-<span class="fc" id="L1363">			return wMapped;</span>
+<span class="fc" id="L1361">			IWeightFunction wInt = (IWeightFunction) w;</span>
+<span class="fc" id="L1362">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="fc" id="L1363">			IWeightFunction wMapped = idx -&gt; wInt.weight(map0.indexToIdInt(idx));</span>
+<span class="fc" id="L1364">			return wMapped;</span>
 
-<span class="pc bpc" id="L1365" title="1 of 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
+<span class="pc bpc" id="L1366" title="1 of 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
 			/* Unknown int weight function, return a mapped wrapper */
-<span class="nc" id="L1367">			WeightFunctionInt&lt;K&gt; wInt = (WeightFunctionInt&lt;K&gt;) w;</span>
-<span class="nc" id="L1368">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
-<span class="nc" id="L1369">			return wIntMapped;</span>
+<span class="nc" id="L1368">			WeightFunctionInt&lt;K&gt; wInt = (WeightFunctionInt&lt;K&gt;) w;</span>
+<span class="nc" id="L1369">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
+<span class="nc" id="L1370">			return wIntMapped;</span>
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-<span class="fc" id="L1373">			return idx -&gt; w.weight(map.indexToId(idx));</span>
+<span class="fc" id="L1374">			return idx -&gt; w.weight(map.indexToId(idx));</span>
 		}
 	}
 
@@ -1383,7 +1384,7 @@ public class IndexIdMaps {
 	 * @return     an integer weight function that accept elements indices
 	 */
 	public static &lt;K&gt; IWeightFunctionInt idToIndexWeightFunc(WeightFunctionInt&lt;K&gt; w, IndexIdMap&lt;K&gt; map) {
-<span class="nc" id="L1386">		return (IWeightFunctionInt) idToIndexWeightFunc((WeightFunction&lt;K&gt;) w, map);</span>
+<span class="nc" id="L1387">		return (IWeightFunctionInt) idToIndexWeightFunc((WeightFunction&lt;K&gt;) w, map);</span>
 	}
 
 }

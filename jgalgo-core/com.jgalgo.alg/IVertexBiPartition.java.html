@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A partition of the vertices of an int graph into two blocks.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link VertexBiPartition} for {@link IntGraph}. See {@link VertexBiPartition}
  * for the complete documentation.
@@ -39,7 +40,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	@Deprecated
 	@Override
 	default boolean isLeft(Integer vertex) {
-<span class="nc" id="L42">		return isLeft(vertex.intValue());</span>
+<span class="nc" id="L43">		return isLeft(vertex.intValue());</span>
 	}
 
 	/**
@@ -49,43 +50,43 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
 	 */
 	default boolean isRight(int vertex) {
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		return !isLeft(vertex);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		return !isLeft(vertex);</span>
 	}
 
 	@Deprecated
 	@Override
 	default int vertexBlock(Integer vertex) {
-<span class="nc bnc" id="L58" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	@Override
 	default int vertexBlock(int vertex) {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	@Override
 	default IntSet leftVertices() {
-<span class="nc" id="L68">		return (IntSet) VertexBiPartition.super.leftVertices();</span>
+<span class="nc" id="L69">		return (IntSet) VertexBiPartition.super.leftVertices();</span>
 	}
 
 	@Override
 	default IntSet rightVertices() {
-<span class="nc" id="L73">		return (IntSet) VertexBiPartition.super.rightVertices();</span>
+<span class="nc" id="L74">		return (IntSet) VertexBiPartition.super.rightVertices();</span>
 	}
 
 	@Override
 	default IntSet leftEdges() {
-<span class="nc" id="L78">		return (IntSet) VertexBiPartition.super.leftEdges();</span>
+<span class="nc" id="L79">		return (IntSet) VertexBiPartition.super.leftEdges();</span>
 	}
 
 	@Override
 	default IntSet rightEdges() {
-<span class="nc" id="L83">		return (IntSet) VertexBiPartition.super.rightEdges();</span>
+<span class="nc" id="L84">		return (IntSet) VertexBiPartition.super.rightEdges();</span>
 	}
 
 	@Override
 	default IntSet crossEdges() {
-<span class="fc" id="L88">		return (IntSet) VertexBiPartition.super.crossEdges();</span>
+<span class="fc" id="L89">		return (IntSet) VertexBiPartition.super.crossEdges();</span>
 	}
 
 }

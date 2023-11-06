@@ -20,7 +20,7 @@ import com.jgalgo.graph.IndexGraph;
 
 <span class="nc" id="L21">class ConnectedComponentsUtils {</span>
 
-<span class="fc" id="L23">	static abstract class AbstractStronglyConnectedComponentsAlgo implements StronglyConnectedComponentsAlgo {</span>
+<span class="fc" id="L23">	abstract static class AbstractStronglyConnectedComponentsAlgo implements StronglyConnectedComponentsAlgo {</span>
 
 <span class="fc" id="L25">		private final WeaklyConnectedComponentsAlgo weaklyConnectedComponentsAlgo =</span>
 <span class="fc" id="L26">				WeaklyConnectedComponentsAlgo.newInstance();</span>
@@ -57,7 +57,7 @@ import com.jgalgo.graph.IndexGraph;
 
 	}
 
-<span class="fc" id="L60">	static abstract class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {</span>
+<span class="fc" id="L60">	abstract static class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override

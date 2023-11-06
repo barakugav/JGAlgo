@@ -56,74 +56,75 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 		/**
 		 * Create a new Tree Size extensions.
+		 *
 		 * &lt;p&gt;
 		 * Each instance of this extension should be used in a single dynamic tree object.
 		 */
-<span class="fc" id="L62">		TreeSize() {}</span>
+<span class="fc" id="L63">		TreeSize() {}</span>
 
 		@Override
 		public int getTreeSize(DynamicTree.Vertex node) {
-<span class="fc" id="L66">			SplayTree.BaseNode&lt;?, ?&gt; n = (SplayTree.BaseNode&lt;?, ?&gt;) node;</span>
-<span class="fc" id="L67">			splay(n);</span>
-<span class="fc" id="L68">			return getNodeData(n);</span>
+<span class="fc" id="L67">			SplayTree.BaseNode&lt;?, ?&gt; n = (SplayTree.BaseNode&lt;?, ?&gt;) node;</span>
+<span class="fc" id="L68">			splay(n);</span>
+<span class="fc" id="L69">			return getNodeData(n);</span>
 		}
 
 		@Override
 		void initNode(SplayTree.BaseNode&lt;?, ?&gt; n) {
-<span class="fc" id="L73">			setNodeData(n, 1);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L74">			setNodeData(n, 1);</span>
+<span class="fc" id="L75">		}</span>
 
 		@Override
 		void beforeCut(SplayTree.BaseNode&lt;?, ?&gt; n) {
-<span class="fc" id="L78">			setNodeData(n, getNodeData(n) - getNodeData(n.right));</span>
-<span class="fc" id="L79">		}</span>
+<span class="fc" id="L79">			setNodeData(n, getNodeData(n) - getNodeData(n.right));</span>
+<span class="fc" id="L80">		}</span>
 
 		@Override
 		void afterLink(SplayTree.BaseNode&lt;?, ?&gt; n) {
-<span class="fc" id="L83">			SplayTree.BaseNode&lt;?, ?&gt; parent = (SplayTree.BaseNode&lt;?, ?&gt;) ((DynamicTree.Vertex) n).getParent();</span>
-<span class="fc" id="L84">			setNodeData(parent, getNodeData(parent) + getNodeData(n));</span>
-<span class="fc" id="L85">		}</span>
+<span class="fc" id="L84">			SplayTree.BaseNode&lt;?, ?&gt; parent = (SplayTree.BaseNode&lt;?, ?&gt;) ((DynamicTree.Vertex) n).getParent();</span>
+<span class="fc" id="L85">			setNodeData(parent, getNodeData(parent) + getNodeData(n));</span>
+<span class="fc" id="L86">		}</span>
 
 		@Override
 		void beforeRotate(SplayTree.BaseNode&lt;?, ?&gt; n) {
-<span class="fc" id="L89">			SplayTree.BaseNode&lt;?, ?&gt; parent = n.parent;</span>
-<span class="fc" id="L90">			int nSize = getNodeData(n);</span>
-<span class="fc" id="L91">			int parentOldSize = getNodeData(parent);</span>
+<span class="fc" id="L90">			SplayTree.BaseNode&lt;?, ?&gt; parent = n.parent;</span>
+<span class="fc" id="L91">			int nSize = getNodeData(n);</span>
+<span class="fc" id="L92">			int parentOldSize = getNodeData(parent);</span>
 
 			int parentNewSize;
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasRightChild() ? getNodeData(n.right) : 0);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasRightChild() ? getNodeData(n.right) : 0);</span>
 			} else {
-<span class="pc bnc" id="L97" title="All 2 branches missed.">				assert n.isRightChild();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasLeftChild() ? getNodeData(n.left) : 0);</span>
+<span class="pc bnc" id="L98" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasLeftChild() ? getNodeData(n.left) : 0);</span>
 			}
-<span class="fc" id="L100">			setNodeData(parent, parentNewSize);</span>
+<span class="fc" id="L101">			setNodeData(parent, parentNewSize);</span>
 
-<span class="fc" id="L102">			setNodeData(n, parentOldSize);</span>
-<span class="fc" id="L103">		}</span>
+<span class="fc" id="L103">			setNodeData(n, parentOldSize);</span>
+<span class="fc" id="L104">		}</span>
 
 	}
 
-	private static abstract class Int extends DynamicTreeSplayExtension {
+	private abstract static class Int extends DynamicTreeSplayExtension {
 
 		Int() {
-<span class="fc" id="L110">			super(new ExtensionData.Int());</span>
-<span class="fc" id="L111">		}</span>
+<span class="fc" id="L111">			super(new ExtensionData.Int());</span>
+<span class="fc" id="L112">		}</span>
 
 		private ExtensionData.Int data() {
-<span class="fc" id="L114">			return (ExtensionData.Int) data;</span>
+<span class="fc" id="L115">			return (ExtensionData.Int) data;</span>
 		}
 
 		int getNodeData(SplayTree.BaseNode&lt;?, ?&gt; n) {
-<span class="fc" id="L118">			return data().get(((SplayNodeExtended) n).idx());</span>
+<span class="fc" id="L119">			return data().get(((SplayNodeExtended) n).idx());</span>
 		}
 
 		void setNodeData(SplayTree.BaseNode&lt;?, ?&gt; n, int data) {
-<span class="fc" id="L122">			data().set(((SplayNodeExtended) n).idx(), data);</span>
-<span class="fc" id="L123">		}</span>
+<span class="fc" id="L123">			data().set(((SplayNodeExtended) n).idx(), data);</span>
+<span class="fc" id="L124">		}</span>
 	}
 
-<span class="fc" id="L126">	static abstract class ExtensionData {</span>
+<span class="fc" id="L127">	abstract static class ExtensionData {</span>
 		abstract void swap(int idx1, int idx2);
 
 		abstract void clear(int idx);
@@ -133,32 +134,32 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		static class Int extends ExtensionData {
 			private int[] data;
 
-<span class="fc" id="L136">			Int() {</span>
-<span class="fc" id="L137">				data = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L138">			}</span>
+<span class="fc" id="L137">			Int() {</span>
+<span class="fc" id="L138">				data = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L139">			}</span>
 
 			int get(int idx) {
-<span class="fc" id="L141">				return data[idx];</span>
+<span class="fc" id="L142">				return data[idx];</span>
 			}
 
 			void set(int idx, int d) {
-<span class="fc" id="L145">				data[idx] = d;</span>
-<span class="fc" id="L146">			}</span>
+<span class="fc" id="L146">				data[idx] = d;</span>
+<span class="fc" id="L147">			}</span>
 
 			@Override
 			void swap(int idx1, int idx2) {
-<span class="nc" id="L150">				IntArrays.swap(data, idx1, idx2);</span>
-<span class="nc" id="L151">			}</span>
+<span class="nc" id="L151">				IntArrays.swap(data, idx1, idx2);</span>
+<span class="nc" id="L152">			}</span>
 
 			@Override
 			void clear(int idx) {
-<span class="nc" id="L155">				data[idx] = 0;</span>
-<span class="nc" id="L156">			}</span>
+<span class="nc" id="L156">				data[idx] = 0;</span>
+<span class="nc" id="L157">			}</span>
 
 			@Override
 			void expand(int newCapacity) {
-<span class="fc" id="L160">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L161">			}</span>
+<span class="fc" id="L161">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L162">			}</span>
 		}
 	}
 

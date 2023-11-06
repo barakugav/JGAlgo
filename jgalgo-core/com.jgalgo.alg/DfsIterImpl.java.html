@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
@@ -26,6 +25,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L35">class DfsIterImpl implements Dfs.IntIter {</span>
 
 	private final IndexGraph g;
-	private final BitSet visited;
+	private final Bitmap visited;
 	private final Stack&lt;IEdgeIter&gt; edgeIters;
 	private final IntArrayList nextEdgePath;
 	private final IntArrayList edgePath;
@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L52">	public DfsIterImpl(IndexGraph g, int source) {</span>
 <span class="fc" id="L53">		int n = g.vertices().size();</span>
 <span class="fc" id="L54">		this.g = g;</span>
-<span class="fc" id="L55">		visited = new BitSet(n);</span>
+<span class="fc" id="L55">		visited = new Bitmap(n);</span>
 <span class="fc" id="L56">		edgeIters = new ObjectArrayList&lt;&gt;();</span>
 <span class="fc" id="L57">		nextEdgePath = new IntArrayList();</span>
 <span class="fc" id="L58">		edgePath = new IntArrayList();</span>
@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	public int nextInt() {
 <span class="fc" id="L73">		Assertions.Iters.hasNext(this);</span>
 
-<span class="fc" id="L75">		int ret = nextV;</span>
+<span class="fc" id="L75">		final int ret = nextV;</span>
 		/* sync edgePath to naxEdgePath */
 <span class="fc" id="L77">		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());</span>
 <span class="fc" id="L78">		edgePath.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,</span>
@@ -85,7 +85,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		} else {
 			advance: for (;;) {
 <span class="fc bfc" id="L87" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {</span>
-<span class="fc" id="L88">					int e = eit.nextInt();</span>
+<span class="fc" id="L88">					final int e = eit.nextInt();</span>
 <span class="fc" id="L89">					int v = eit.targetInt();</span>
 <span class="fc bfc" id="L90" title="All 2 branches covered.">					if (visited.get(v))</span>
 <span class="fc" id="L91">						continue;</span>

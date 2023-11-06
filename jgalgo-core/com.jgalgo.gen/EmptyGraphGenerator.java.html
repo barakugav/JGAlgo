@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A generator of empty graphs.
+ *
  * &lt;p&gt;
  * An empty graph is a graph with no edges, and it may contains some vertices.
  *
@@ -36,11 +37,11 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 
 	private final boolean intGraph;
 	private Collection&lt;V&gt; vertices;
-<span class="fc" id="L39">	private boolean directed = false;</span>
+<span class="fc" id="L40">	private boolean directed = false;</span>
 
-<span class="fc" id="L41">	private EmptyGraphGenerator(boolean intGraph) {</span>
-<span class="fc" id="L42">		this.intGraph = intGraph;</span>
-<span class="fc" id="L43">	}</span>
+<span class="fc" id="L42">	private EmptyGraphGenerator(boolean intGraph) {</span>
+<span class="fc" id="L43">		this.intGraph = intGraph;</span>
+<span class="fc" id="L44">	}</span>
 
 	/**
 	 * Creates a new empty graph generator.
@@ -50,7 +51,7 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return     a new empty graph generator
 	 */
 	public static &lt;V, E&gt; EmptyGraphGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L53">		return new EmptyGraphGenerator&lt;&gt;(false);</span>
+<span class="fc" id="L54">		return new EmptyGraphGenerator&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -59,11 +60,12 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return a new empty graph generator for {@link IntGraph}
 	 */
 	public static EmptyGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L62">		return new EmptyGraphGenerator&lt;&gt;(true);</span>
+<span class="fc" id="L63">		return new EmptyGraphGenerator&lt;&gt;(true);</span>
 	}
 
 	/**
 	 * Set the vertices of the generated graph(s).
+	 *
 	 * &lt;p&gt;
 	 * If this function is not called before generating a graph, no vertices will be added to the graph.
 	 *
@@ -71,44 +73,45 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (intGraph) {</span>
-<span class="nc" id="L75">			this.vertices =</span>
-<span class="nc" id="L76">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (intGraph) {</span>
+<span class="nc" id="L77">			this.vertices =</span>
+<span class="nc" id="L78">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
 		} else {
-<span class="fc" id="L78">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L80">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L82">	}</span>
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
+	 *
 	 * &lt;p&gt;
 	 * By default, the generated graph(s) is undirected.
 	 *
 	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
 	 */
 	public void setDirected(boolean directed) {
-<span class="fc" id="L90">		this.directed = directed;</span>
-<span class="fc" id="L91">	}</span>
+<span class="fc" id="L93">		this.directed = directed;</span>
+<span class="fc" id="L94">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">			if (vertices != null) {</span>
-<span class="nc" id="L99">				g.expectedVerticesNum(vertices.size());</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">				for (int v : IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices))</span>
-<span class="nc" id="L101">					g.addVertex(v);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">			if (vertices != null) {</span>
+<span class="nc" id="L102">				g.expectedVerticesNum(vertices.size());</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">				for (int v : IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices))</span>
+<span class="nc" id="L104">					g.addVertex(v);</span>
 			}
-<span class="fc" id="L103">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+<span class="fc" id="L106">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 		} else {
-<span class="fc bfc" id="L105" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (vertices != null) {</span>
-<span class="fc" id="L107">				g.expectedVerticesNum(vertices.size());</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">				for (V v : vertices)</span>
-<span class="fc" id="L109">					g.addVertex(v);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			if (vertices != null) {</span>
+<span class="fc" id="L110">				g.expectedVerticesNum(vertices.size());</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (V v : vertices)</span>
+<span class="fc" id="L112">					g.addVertex(v);</span>
 			}
-<span class="fc" id="L111">			return g;</span>
+<span class="fc" id="L114">			return g;</span>
 		}
 	}
 

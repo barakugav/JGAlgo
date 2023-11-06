@@ -30,7 +30,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class IndexAbstract&lt;T&gt; implements WeightsImpl.Index&lt;T&gt; {
+	abstract static class IndexAbstract&lt;T&gt; implements WeightsImpl.Index&lt;T&gt; {
 
 		final GraphElementSet elements;
 
@@ -278,7 +278,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class IntMapped&lt;T&gt; implements IWeights&lt;T&gt;, WeightsImpl {
+	abstract static class IntMapped&lt;T&gt; implements IWeights&lt;T&gt;, WeightsImpl {
 
 		final WeightsImpl.IndexAbstract&lt;T&gt; weights;
 		final IndexIntIdMap indexMap;
@@ -330,7 +330,7 @@ interface WeightsImpl {
 		}
 	}
 
-	static abstract class IntImmutableView&lt;T&gt; extends ImmutableView&lt;Integer, T&gt; implements IWeights&lt;T&gt; {
+	abstract static class IntImmutableView&lt;T&gt; extends ImmutableView&lt;Integer, T&gt; implements IWeights&lt;T&gt; {
 
 		IntImmutableView(IWeights&lt;T&gt; weights) {
 <span class="fc" id="L336">			super(weights);</span>
@@ -554,7 +554,7 @@ interface WeightsImpl {
 <span class="nc" id="L554">		return h;</span>
 	}
 
-	static abstract class ObjMapped&lt;K, T&gt; implements Weights&lt;K, T&gt;, WeightsImpl {
+	abstract static class ObjMapped&lt;K, T&gt; implements Weights&lt;K, T&gt;, WeightsImpl {
 
 		final WeightsImpl.IndexAbstract&lt;T&gt; weights;
 		final IndexIdMap&lt;K&gt; indexMap;
@@ -593,7 +593,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class ObjImmutableView&lt;K, T&gt; extends ImmutableView&lt;K, T&gt; implements Weights&lt;K, T&gt; {
+	abstract static class ObjImmutableView&lt;K, T&gt; extends ImmutableView&lt;K, T&gt; implements Weights&lt;K, T&gt; {
 
 		ObjImmutableView(Weights&lt;K, T&gt; weights) {
 <span class="nc" id="L599">			super(weights);</span>

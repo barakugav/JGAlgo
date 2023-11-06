@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -26,6 +25,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -36,7 +36,7 @@ class MinimumCutSTUtils {
 
 	private MinimumCutSTUtils() {}
 
-<span class="fc" id="L39">	static abstract class AbstractImpl implements MinimumCutST {</span>
+<span class="fc" id="L39">	abstract static class AbstractImpl implements MinimumCutST {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
@@ -111,7 +111,7 @@ class MinimumCutSTUtils {
 
 	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IFlowNetwork net) {
 <span class="fc" id="L113">		final int n = g.vertices().size();</span>
-<span class="fc" id="L114">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L114">		Bitmap visited = new Bitmap(n);</span>
 <span class="fc" id="L115">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
 		/* perform a BFS from source and use only non saturated edges */
@@ -169,7 +169,7 @@ class MinimumCutSTUtils {
 <span class="fc" id="L169">			}</span>
 		}
 
-<span class="fc" id="L172">		return new VertexBiPartitions.FromBitSet(g, visited);</span>
+<span class="fc" id="L172">		return new VertexBiPartitions.FromBitmap(g, visited);</span>
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {

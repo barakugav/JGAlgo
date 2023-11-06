@@ -105,15 +105,15 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 		public static void checkId(int idx, int length, boolean isEdge) {
 <span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)</span>
 <span class="nc" id="L107">				return;</span>
-<span class="pc bpc" id="L108" title="1 of 4 branches missed.">			if (idx &lt; 0 || idx &gt;= length)</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">				throw new IndexOutOfBoundsException(&quot;No such &quot; + (isEdge ? &quot;edge&quot; : &quot;vertex&quot;) + &quot; index: &quot; + idx);</span>
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">			if (idx &lt; 0 || idx &gt;= length)</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">				throw new IndexOutOfBoundsException(&quot;No such &quot; + (isEdge ? &quot;edge&quot; : &quot;vertex&quot;) + &quot; index: &quot; + idx);</span>
 <span class="fc" id="L110">		}</span>
 
 		public static void checkVertex(int vertex, int n) {
 <span class="pc bpc" id="L113" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)</span>
 <span class="nc" id="L114">				return;</span>
-<span class="pc bpc" id="L115" title="1 of 4 branches missed.">			if (vertex &lt; 0 || vertex &gt;= n)</span>
-<span class="fc" id="L116">				throw new IndexOutOfBoundsException(&quot;No such vertex index: &quot; + vertex);</span>
+<span class="pc bpc" id="L115" title="2 of 4 branches missed.">			if (vertex &lt; 0 || vertex &gt;= n)</span>
+<span class="nc" id="L116">				throw new IndexOutOfBoundsException(&quot;No such vertex index: &quot; + vertex);</span>
 <span class="fc" id="L117">		}</span>
 
 		public static void checkEdge(int edge, int m) {

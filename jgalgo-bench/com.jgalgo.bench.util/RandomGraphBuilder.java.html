@@ -19,11 +19,12 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -49,228 +50,228 @@ public class RandomGraphBuilder {
 	private boolean selfEdges;
 	private boolean cycles;
 	private boolean connected;
-<span class="fc" id="L52">	private Boolean2ObjectFunction&lt;IntGraph&gt; impl = GraphsTestUtils.defaultGraphImpl();</span>
+<span class="fc" id="L53">	private Boolean2ObjectFunction&lt;IntGraph&gt; impl = GraphsTestUtils.defaultGraphImpl();</span>
 
-<span class="fc" id="L54">	public RandomGraphBuilder(long seed) {</span>
-<span class="fc" id="L55">		seedGen = new SeedGenerator(seed);</span>
-<span class="fc" id="L56">		n = sn = tn = m = 0;</span>
-<span class="fc" id="L57">		bipartite = false;</span>
-<span class="fc" id="L58">		parallelEdges = false;</span>
-<span class="fc" id="L59">		selfEdges = false;</span>
-<span class="fc" id="L60">		cycles = false;</span>
-<span class="fc" id="L61">		connected = false;</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc" id="L55">	public RandomGraphBuilder(long seed) {</span>
+<span class="fc" id="L56">		seedGen = new SeedGenerator(seed);</span>
+<span class="fc" id="L57">		n = sn = tn = m = 0;</span>
+<span class="fc" id="L58">		bipartite = false;</span>
+<span class="fc" id="L59">		parallelEdges = false;</span>
+<span class="fc" id="L60">		selfEdges = false;</span>
+<span class="fc" id="L61">		cycles = false;</span>
+<span class="fc" id="L62">		connected = false;</span>
+<span class="fc" id="L63">	}</span>
 
 	public RandomGraphBuilder n(int n) {
-<span class="fc" id="L65">		this.n = n;</span>
-<span class="fc" id="L66">		return this;</span>
+<span class="fc" id="L66">		this.n = n;</span>
+<span class="fc" id="L67">		return this;</span>
 	}
 
 	public RandomGraphBuilder sn(int sn) {
-<span class="fc" id="L70">		this.sn = sn;</span>
-<span class="fc" id="L71">		return this;</span>
+<span class="fc" id="L71">		this.sn = sn;</span>
+<span class="fc" id="L72">		return this;</span>
 	}
 
 	public RandomGraphBuilder tn(int tn) {
-<span class="fc" id="L75">		this.tn = tn;</span>
-<span class="fc" id="L76">		return this;</span>
+<span class="fc" id="L76">		this.tn = tn;</span>
+<span class="fc" id="L77">		return this;</span>
 	}
 
 	public RandomGraphBuilder m(int m) {
-<span class="fc" id="L80">		this.m = m;</span>
-<span class="fc" id="L81">		return this;</span>
+<span class="fc" id="L81">		this.m = m;</span>
+<span class="fc" id="L82">		return this;</span>
 	}
 
 	public RandomGraphBuilder bipartite(boolean bipartite) {
-<span class="fc" id="L85">		this.bipartite = bipartite;</span>
-<span class="fc" id="L86">		return this;</span>
+<span class="fc" id="L86">		this.bipartite = bipartite;</span>
+<span class="fc" id="L87">		return this;</span>
 	}
 
 	public RandomGraphBuilder directed(boolean directed) {
-<span class="fc" id="L90">		this.directed = directed;</span>
-<span class="fc" id="L91">		return this;</span>
+<span class="fc" id="L91">		this.directed = directed;</span>
+<span class="fc" id="L92">		return this;</span>
 	}
 
 	public RandomGraphBuilder parallelEdges(boolean parallelEdges) {
-<span class="fc" id="L95">		this.parallelEdges = parallelEdges;</span>
-<span class="fc" id="L96">		return this;</span>
+<span class="fc" id="L96">		this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L97">		return this;</span>
 	}
 
 	public RandomGraphBuilder selfEdges(boolean selfEdges) {
-<span class="fc" id="L100">		this.selfEdges = selfEdges;</span>
-<span class="fc" id="L101">		return this;</span>
+<span class="fc" id="L101">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L102">		return this;</span>
 	}
 
 	public RandomGraphBuilder cycles(boolean cycles) {
-<span class="fc" id="L105">		this.cycles = cycles;</span>
-<span class="fc" id="L106">		return this;</span>
+<span class="fc" id="L106">		this.cycles = cycles;</span>
+<span class="fc" id="L107">		return this;</span>
 	}
 
 	public RandomGraphBuilder connected(boolean connected) {
-<span class="fc" id="L110">		this.connected = connected;</span>
-<span class="fc" id="L111">		return this;</span>
+<span class="fc" id="L111">		this.connected = connected;</span>
+<span class="fc" id="L112">		return this;</span>
 	}
 
 	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction&lt;IntGraph&gt; impl) {
-<span class="nc" id="L115">		this.impl = impl;</span>
-<span class="nc" id="L116">		return this;</span>
+<span class="nc" id="L116">		this.impl = impl;</span>
+<span class="nc" id="L117">		return this;</span>
 	}
 
 	public IntGraph build() {
-<span class="fc" id="L120">		IntList vertices = new IntArrayList();</span>
+<span class="fc" id="L121">		IntList vertices = new IntArrayList();</span>
 		final IntGraph g;
-<span class="fc" id="L122">		IWeightsBool partition = null;</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (!bipartite) {</span>
-<span class="pc bpc" id="L124" title="2 of 4 branches missed.">			if (n &lt; 0 || m &lt; 0)</span>
-<span class="nc" id="L125">				throw new IllegalStateException();</span>
-<span class="fc" id="L126">			g = impl.get(directed);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L128">				vertices.add(g.addVertex());</span>
+<span class="fc" id="L123">		IWeightsBool partition = null;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (!bipartite) {</span>
+<span class="pc bpc" id="L125" title="2 of 4 branches missed.">			if (n &lt; 0 || m &lt; 0)</span>
+<span class="nc" id="L126">				throw new IllegalStateException();</span>
+<span class="fc" id="L127">			g = impl.get(directed);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L129">				vertices.add(g.addVertex());</span>
 		} else {
-<span class="pc bpc" id="L130" title="2 of 4 branches missed.">			if (sn &lt; 0 || tn &lt; 0)</span>
-<span class="nc" id="L131">				throw new IllegalStateException();</span>
-<span class="pc bpc" id="L132" title="4 of 6 branches missed.">			if ((sn == 0 || tn == 0) &amp;&amp; m != 0)</span>
-<span class="nc" id="L133">				throw new IllegalStateException();</span>
-<span class="fc" id="L134">			n = sn + tn;</span>
-<span class="fc" id="L135">			g = impl.get(directed);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L137">				vertices.add(g.addVertex());</span>
-<span class="fc" id="L138">			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="pc bpc" id="L131" title="2 of 4 branches missed.">			if (sn &lt; 0 || tn &lt; 0)</span>
+<span class="nc" id="L132">				throw new IllegalStateException();</span>
+<span class="pc bpc" id="L133" title="4 of 6 branches missed.">			if ((sn == 0 || tn == 0) &amp;&amp; m != 0)</span>
+<span class="nc" id="L134">				throw new IllegalStateException();</span>
+<span class="fc" id="L135">			n = sn + tn;</span>
+<span class="fc" id="L136">			g = impl.get(directed);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L138">				vertices.add(g.addVertex());</span>
+<span class="fc" id="L139">			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
 
-<span class="fc" id="L140">			IntIterator vit = vertices.iterator();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (int u = 0; u &lt; sn; u++)</span>
-<span class="fc" id="L142">				partition.set(vit.nextInt(), true);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			for (int u = 0; u &lt; tn; u++)</span>
-<span class="fc" id="L144">				partition.set(vit.nextInt(), false);</span>
+<span class="fc" id="L141">			IntIterator vit = vertices.iterator();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (int u = 0; u &lt; sn; u++)</span>
+<span class="fc" id="L143">				partition.set(vit.nextInt(), true);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (int u = 0; u &lt; tn; u++)</span>
+<span class="fc" id="L145">				partition.set(vit.nextInt(), false);</span>
 		}
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L147">			return g;</span>
-<span class="pc bpc" id="L148" title="1 of 6 branches missed.">		if (!directed &amp;&amp; !cycles &amp;&amp; m &gt;= n)</span>
-<span class="nc" id="L149">			throw new IllegalArgumentException();</span>
-<span class="pc bpc" id="L150" title="1 of 4 branches missed.">		if (!cycles &amp;&amp; selfEdges)</span>
-<span class="nc" id="L151">			throw new IllegalArgumentException();</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">		if (!parallelEdges) {</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L148">			return g;</span>
+<span class="pc bpc" id="L149" title="1 of 6 branches missed.">		if (!directed &amp;&amp; !cycles &amp;&amp; m &gt;= n)</span>
+<span class="nc" id="L150">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L151" title="1 of 4 branches missed.">		if (!cycles &amp;&amp; selfEdges)</span>
+<span class="nc" id="L152">			throw new IllegalArgumentException();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (!parallelEdges) {</span>
 			long limit;
-<span class="fc bfc" id="L154" title="All 2 branches covered.">			if (bipartite)</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">				limit = n &lt;= 16 ? sn * tn : ((long) sn) * tn * 2 / 3;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (bipartite)</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">				limit = n &lt;= 16 ? sn * tn : ((long) sn) * tn * 2 / 3;</span>
 			else
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">				limit = n &lt;= 16 ? (n - 1) * n / 2 : ((long) n) * n / 3;</span>
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">			if (m &gt; limit)</span>
-<span class="nc" id="L159">				throw new IllegalArgumentException(&quot;too much edges for random sampling (limit=&quot; + limit + &quot;)&quot;);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">				limit = n &lt;= 16 ? (n - 1) * n / 2 : ((long) n) * n / 3;</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">			if (m &gt; limit)</span>
+<span class="nc" id="L160">				throw new IllegalArgumentException(&quot;too much edges for random sampling (limit=&quot; + limit + &quot;)&quot;);</span>
 		}
 
-<span class="fc" id="L162">		Set&lt;IntList&gt; existingEdges = new ObjectOpenHashSet&lt;&gt;();</span>
-<span class="fc" id="L163">		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();</span>
-<span class="fc" id="L164">		IWeightsInt vertexToUf = IWeights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">		for (int v : g.vertices()) {</span>
-<span class="fc" id="L166">			int ufIdx = uf.make();</span>
-<span class="fc" id="L167">			vertexToUf.set(v, ufIdx);</span>
-<span class="fc" id="L168">		}</span>
-<span class="fc" id="L169">		int componentsNum = n;</span>
-<span class="fc" id="L170">		Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L171">		IWeightsBool reachableFromRoot = IWeights.createExternalVerticesWeights(g, boolean.class);</span>
-<span class="fc" id="L172">		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);</span>
-<span class="fc" id="L173">		int reachableFromRootCount = 1;</span>
-<span class="fc" id="L174">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L163">		Set&lt;IntList&gt; existingEdges = new ObjectOpenHashSet&lt;&gt;();</span>
+<span class="fc" id="L164">		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();</span>
+<span class="fc" id="L165">		IWeightsInt vertexToUf = IWeights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int v : g.vertices()) {</span>
+<span class="fc" id="L167">			int ufIdx = uf.make();</span>
+<span class="fc" id="L168">			vertexToUf.set(v, ufIdx);</span>
+<span class="fc" id="L169">		}</span>
+<span class="fc" id="L170">		int componentsNum = n;</span>
+<span class="fc" id="L171">		Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L172">		IWeightsBool reachableFromRoot = IWeights.createExternalVerticesWeights(g, boolean.class);</span>
+<span class="fc" id="L173">		reachableFromRoot.set(g.vertices().iterator().nextInt(), true);</span>
+<span class="fc" id="L174">		int reachableFromRootCount = 1;</span>
+<span class="fc" id="L175">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
-<span class="fc" id="L176">		int dagRoot = g.vertices().iterator().nextInt();</span>
-<span class="fc" id="L177">		IntList dagOrder = new IntArrayList(g.vertices());</span>
-<span class="fc" id="L178">		dagOrder.rem(dagRoot);</span>
-<span class="fc" id="L179">		IntLists.shuffle(dagOrder, rand);</span>
-<span class="fc" id="L180">		dagOrder.add(0, dagRoot);</span>
-<span class="fc" id="L181">		Int2IntMap vToDagIdx = new Int2IntOpenHashMap(n);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L183">			vToDagIdx.put(dagOrder.getInt(i), i);</span>
+<span class="fc" id="L177">		int dagRoot = g.vertices().iterator().nextInt();</span>
+<span class="fc" id="L178">		IntList dagOrder = new IntArrayList(g.vertices());</span>
+<span class="fc" id="L179">		dagOrder.rem(dagRoot);</span>
+<span class="fc" id="L180">		IntLists.shuffle(dagOrder, rand);</span>
+<span class="fc" id="L181">		dagOrder.add(0, dagRoot);</span>
+<span class="fc" id="L182">		Int2IntMap vToDagIdx = new Int2IntOpenHashMap(n);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L184">			vToDagIdx.put(dagOrder.getInt(i), i);</span>
 
 		while (true) {
-<span class="fc" id="L186">			boolean done = true;</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (g.edges().size() &lt; m)</span>
-<span class="fc" id="L188">				done = false;</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">			if (connected) {</span>
-<span class="pc bpc" id="L190" title="1 of 4 branches missed.">				if (!directed &amp;&amp; componentsNum &gt; 1)</span>
-<span class="fc" id="L191">					done = false;</span>
-<span class="pc bpc" id="L192" title="3 of 4 branches missed.">				else if (directed &amp;&amp; reachableFromRootCount &lt; n)</span>
-<span class="nc" id="L193">					done = false;</span>
+<span class="fc" id="L187">			boolean done = true;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (g.edges().size() &lt; m)</span>
+<span class="fc" id="L189">				done = false;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (connected) {</span>
+<span class="pc bpc" id="L191" title="1 of 4 branches missed.">				if (!directed &amp;&amp; componentsNum &gt; 1)</span>
+<span class="fc" id="L192">					done = false;</span>
+<span class="pc bpc" id="L193" title="3 of 4 branches missed.">				else if (directed &amp;&amp; reachableFromRootCount &lt; n)</span>
+<span class="nc" id="L194">					done = false;</span>
 			}
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			if (done)</span>
-<span class="fc" id="L196">				break;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (done)</span>
+<span class="fc" id="L197">				break;</span>
 
 			int u, v;
 
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (!bipartite) {</span>
-<span class="fc" id="L201">				u = vertices.getInt(rand.nextInt(n));</span>
-<span class="fc" id="L202">				v = vertices.getInt(rand.nextInt(n));</span>
-<span class="pc bpc" id="L203" title="1 of 4 branches missed.">				if (directed &amp;&amp; !cycles) {</span>
-<span class="nc" id="L204">					int uDagIdx = vToDagIdx.get(u);</span>
-<span class="nc" id="L205">					int vDagIdx = vToDagIdx.get(v);</span>
-<span class="nc bnc" id="L206" title="All 2 branches missed.">					if (uDagIdx &gt; vDagIdx) {</span>
-<span class="nc" id="L207">						int temp = u;</span>
-<span class="nc" id="L208">						u = v;</span>
-<span class="nc" id="L209">						v = temp;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (!bipartite) {</span>
+<span class="fc" id="L202">				u = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L203">				v = Graphs.randVertex(g, rand);</span>
+<span class="pc bpc" id="L204" title="1 of 4 branches missed.">				if (directed &amp;&amp; !cycles) {</span>
+<span class="nc" id="L205">					int uDagIdx = vToDagIdx.get(u);</span>
+<span class="nc" id="L206">					int vDagIdx = vToDagIdx.get(v);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">					if (uDagIdx &gt; vDagIdx) {</span>
+<span class="nc" id="L208">						int temp = u;</span>
+<span class="nc" id="L209">						u = v;</span>
+<span class="nc" id="L210">						v = temp;</span>
 					}
-<span class="nc" id="L211">				}</span>
+<span class="nc" id="L212">				}</span>
 			} else {
 				do {
-<span class="fc" id="L214">					u = vertices.getInt(rand.nextInt(n));</span>
-<span class="fc" id="L215">					v = vertices.getInt(rand.nextInt(n));</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">				} while (partition.get(u) == partition.get(v));</span>
+<span class="fc" id="L215">					u = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L216">					v = Graphs.randVertex(g, rand);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">				} while (partition.get(u) == partition.get(v));</span>
 			}
 
 			// avoid self edges
-<span class="fc bfc" id="L220" title="All 4 branches covered.">			if (!selfEdges &amp;&amp; u == v)</span>
-<span class="fc" id="L221">				continue;</span>
+<span class="fc bfc" id="L221" title="All 4 branches covered.">			if (!selfEdges &amp;&amp; u == v)</span>
+<span class="fc" id="L222">				continue;</span>
 
 			// avoid double edges
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (!parallelEdges) {</span>
-<span class="fc" id="L225">				int ut = u, vt = v;</span>
-<span class="fc bfc" id="L226" title="All 4 branches covered.">				if (!directed &amp;&amp; ut &gt; vt) {</span>
-<span class="fc" id="L227">					int temp = ut;</span>
-<span class="fc" id="L228">					ut = vt;</span>
-<span class="fc" id="L229">					vt = temp;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">			if (!parallelEdges) {</span>
+<span class="fc" id="L226">				int ut = u, vt = v;</span>
+<span class="fc bfc" id="L227" title="All 4 branches covered.">				if (!directed &amp;&amp; ut &gt; vt) {</span>
+<span class="fc" id="L228">					int temp = ut;</span>
+<span class="fc" id="L229">					ut = vt;</span>
+<span class="fc" id="L230">					vt = temp;</span>
 				}
-<span class="fc bfc" id="L231" title="All 2 branches covered.">				if (!existingEdges.add(IntList.of(ut, vt)))</span>
-<span class="fc" id="L232">					continue;</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				if (!existingEdges.add(IntList.of(ut, vt)))</span>
+<span class="fc" id="L233">					continue;</span>
 			}
 
 			// keep track of number of connectivity components
-<span class="pc bpc" id="L236" title="1 of 4 branches missed.">			if (!cycles || connected) {</span>
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">				if (!directed) {</span>
-<span class="fc" id="L238">					int uComp = uf.find(vertexToUf.get(u));</span>
-<span class="fc" id="L239">					int vComp = uf.find(vertexToUf.get(v));</span>
+<span class="pc bpc" id="L237" title="1 of 4 branches missed.">			if (!cycles || connected) {</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">				if (!directed) {</span>
+<span class="fc" id="L239">					int uComp = uf.find(vertexToUf.get(u));</span>
+<span class="fc" id="L240">					int vComp = uf.find(vertexToUf.get(v));</span>
 
 					// avoid cycles
-<span class="pc bpc" id="L242" title="1 of 4 branches missed.">					if (!cycles &amp;&amp; uComp == vComp)</span>
-<span class="fc" id="L243">						continue;</span>
+<span class="pc bpc" id="L243" title="1 of 4 branches missed.">					if (!cycles &amp;&amp; uComp == vComp)</span>
+<span class="fc" id="L244">						continue;</span>
 
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">					if (uComp != vComp)</span>
-<span class="fc" id="L246">						componentsNum--;</span>
-<span class="fc" id="L247">					uf.union(uComp, vComp);</span>
-<span class="pc bnc" id="L248" title="All 2 branches missed.">				} else if (connected) {</span>
-<span class="nc bnc" id="L249" title="All 4 branches missed.">					if (reachableFromRoot.get(u) &amp;&amp; !reachableFromRoot.get(v)) {</span>
-<span class="nc" id="L250">						reachableFromRoot.set(v, true);</span>
-<span class="nc" id="L251">						reachableFromRootCount++;</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">					if (uComp != vComp)</span>
+<span class="fc" id="L247">						componentsNum--;</span>
+<span class="fc" id="L248">					uf.union(uComp, vComp);</span>
+<span class="pc bnc" id="L249" title="All 2 branches missed.">				} else if (connected) {</span>
+<span class="nc bnc" id="L250" title="All 4 branches missed.">					if (reachableFromRoot.get(u) &amp;&amp; !reachableFromRoot.get(v)) {</span>
+<span class="nc" id="L251">						reachableFromRoot.set(v, true);</span>
+<span class="nc" id="L252">						reachableFromRootCount++;</span>
 
-<span class="nc" id="L253">						queue.enqueue(v);</span>
-<span class="nc bnc" id="L254" title="All 2 branches missed.">						while (!queue.isEmpty()) {</span>
-<span class="nc" id="L255">							int p = queue.dequeueInt();</span>
+<span class="nc" id="L254">						queue.enqueue(v);</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">						while (!queue.isEmpty()) {</span>
+<span class="nc" id="L256">							int p = queue.dequeueInt();</span>
 
-<span class="nc bnc" id="L257" title="All 2 branches missed.">							for (IEdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L258">								eit.nextInt();</span>
-<span class="nc" id="L259">								int pv = eit.targetInt();</span>
-<span class="nc bnc" id="L260" title="All 2 branches missed.">								if (reachableFromRoot.get(pv))</span>
-<span class="nc" id="L261">									continue;</span>
-<span class="nc" id="L262">								reachableFromRoot.set(pv, true);</span>
-<span class="nc" id="L263">								reachableFromRootCount++;</span>
-<span class="nc" id="L264">								queue.enqueue(pv);</span>
-<span class="nc" id="L265">							}</span>
-<span class="nc" id="L266">						}</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">							for (IEdgeIter eit = g.outEdges(p).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L259">								eit.nextInt();</span>
+<span class="nc" id="L260">								int pv = eit.targetInt();</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">								if (reachableFromRoot.get(pv))</span>
+<span class="nc" id="L262">									continue;</span>
+<span class="nc" id="L263">								reachableFromRoot.set(pv, true);</span>
+<span class="nc" id="L264">								reachableFromRootCount++;</span>
+<span class="nc" id="L265">								queue.enqueue(pv);</span>
+<span class="nc" id="L266">							}</span>
+<span class="nc" id="L267">						}</span>
 
 					}
 				}
 			}
-<span class="fc" id="L271">			g.addEdge(u, v);</span>
-<span class="fc" id="L272">		}</span>
-<span class="fc" id="L273">		return g;</span>
+<span class="fc" id="L272">			g.addEdge(u, v);</span>
+<span class="fc" id="L273">		}</span>
+<span class="fc" id="L274">		return g;</span>
 	}
 
 }

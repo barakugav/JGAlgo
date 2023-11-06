@@ -28,11 +28,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * All pairs cardinality shortest path algorithm.
+ *
  * &lt;p&gt;
  * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
  * some other vertex is the path with the minimum number of edges. This algorithm compute the cardinality shortest path
  * between each pair of vertices in a graph. The algorithm simple perform {@link ShortestPathSingleSourceCardinality}
  * \(n\) times.
+ *
  * &lt;p&gt;
  * This algorithm runs in \(O(n(n+m))\).
  *
@@ -41,62 +43,62 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
 
-<span class="fc" id="L44">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
+<span class="fc" id="L46">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-<span class="fc" id="L50">	ShortestPathAllPairsCardinality() {}</span>
+<span class="fc" id="L52">	ShortestPathAllPairsCardinality() {}</span>
 
 	@Override
 	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L54">		Assertions.Graphs.onlyCardinality(w);</span>
-<span class="fc" id="L55">		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);</span>
+<span class="fc" id="L56">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L57">		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);</span>
 	}
 
 	@Override
 	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
-<span class="nc" id="L61">		Assertions.Graphs.onlyCardinality(w);</span>
-<span class="nc" id="L62">		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);</span>
+<span class="nc" id="L63">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="nc" id="L64">		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);</span>
 	}
 
 	ShortestPathAllPairs.IResult computeSubsetCardinalityShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			boolean allVertices) {
-<span class="fc" id="L67">		final int verticesSubsetSize = verticesSubset.size();</span>
-<span class="fc" id="L68">		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];</span>
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);</span>
+<span class="fc" id="L69">		final int verticesSubsetSize = verticesSubset.size();</span>
+<span class="fc" id="L70">		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);</span>
 
-<span class="fc" id="L71">		ForkJoinPool pool = JGAlgoUtils.getPool();</span>
-<span class="pc bpc" id="L72" title="2 of 6 branches missed.">		if (verticesSubsetSize &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
+<span class="fc" id="L73">		ForkJoinPool pool = JGAlgoUtils.getPool();</span>
+<span class="pc bpc" id="L74" title="2 of 6 branches missed.">		if (verticesSubsetSize &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
 			/* sequential */
-<span class="fc" id="L74">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (int source : verticesSubset)</span>
-<span class="fc" id="L76">				ssspResults[vToResIdx[source]] =</span>
-<span class="fc" id="L77">						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, null, Integer.valueOf(source));</span>
+<span class="fc" id="L76">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newBuilder().setCardinality(true).build();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int source : verticesSubset)</span>
+<span class="fc" id="L78">				ssspResults[vToResIdx[source]] =</span>
+<span class="fc" id="L79">						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, null, Integer.valueOf(source));</span>
 
-<span class="fc" id="L79">		} else {</span>
+<span class="fc" id="L81">		} else {</span>
 			/* parallel */
-<span class="fc" id="L81">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
-<span class="fc" id="L82">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="fc" id="L83">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().setCardinality(true).build());</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
-<span class="fc" id="L85">				final int source0 = source;</span>
-<span class="fc" id="L86">				tasks.add(JGAlgoUtils</span>
-<span class="fc" id="L87">						.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
-<span class="fc" id="L88">								.get().computeShortestPaths(g, null, Integer.valueOf(source0))));</span>
-<span class="fc" id="L89">			}</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L91">				pool.execute(task);</span>
+<span class="fc" id="L83">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
+<span class="fc" id="L84">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="fc" id="L85">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newBuilder().setCardinality(true).build());</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
+<span class="fc" id="L87">				final int source0 = source;</span>
+<span class="fc" id="L88">				tasks.add(JGAlgoUtils</span>
+<span class="fc" id="L89">						.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
+<span class="fc" id="L90">								.get().computeShortestPaths(g, null, Integer.valueOf(source0))));</span>
+<span class="fc" id="L91">			}</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L93">				task.join();</span>
+<span class="fc" id="L93">				pool.execute(task);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
+<span class="fc" id="L95">				task.join();</span>
 		}
 
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">		if (allVertices) {</span>
-<span class="fc" id="L97">			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		if (allVertices) {</span>
+<span class="fc" id="L99">			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);</span>
 		} else {
-<span class="nc" id="L99">			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
+<span class="nc" id="L101">			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
 		}
 	}
 

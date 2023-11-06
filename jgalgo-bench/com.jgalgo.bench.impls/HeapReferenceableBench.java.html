@@ -42,6 +42,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -53,30 +54,29 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L56">public class HeapReferenceableBench {</span>
+<span class="fc" id="L57">public class HeapReferenceableBench {</span>
 
 	@Param({ &quot;|V|=64 |E|=256&quot;, &quot;|V|=512 |E|=4096&quot;, &quot;|V|=4096 |E|=16384&quot; })
 	public String args;
 
 	private List&lt;GraphArgs&gt; graphs;
-<span class="fc" id="L62">	private final int graphsNum = 31;</span>
-<span class="fc" id="L63">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L63">	private final int graphsNum = 31;</span>
+<span class="fc" id="L64">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Iteration)
 	public void setup() {
-<span class="fc" id="L67">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L68">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L69">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L68">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L69">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L70">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L71">		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);</span>
-<span class="fc" id="L72">		Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L73">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L75">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)</span>
-<span class="fc" id="L76">					.selfEdges(true).cycles(true).connected(false).build();</span>
-<span class="fc" id="L77">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
-<span class="fc" id="L78">			int[] vs = g.vertices().toIntArray();</span>
-<span class="fc" id="L79">			int source = vs[rand.nextInt(vs.length)];</span>
+<span class="fc" id="L72">		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);</span>
+<span class="fc" id="L73">		Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L74">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L76">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)</span>
+<span class="fc" id="L77">					.selfEdges(true).cycles(true).connected(false).build();</span>
+<span class="fc" id="L78">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L79">			int source = Graphs.randVertex(g, rand);</span>
 <span class="fc" id="L80">			graphs.add(new GraphArgs(g, w, source));</span>
 		}
 <span class="fc" id="L82">	}</span>
@@ -87,8 +87,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		/* SSSP */
 		ShortestPathSingleSource ssspAlgo =
 <span class="fc" id="L89">				ShortestPathSingleSource.newBuilder().setOption(&quot;heap-builder&quot;, heapBuilder).build();</span>
-<span class="fc" id="L90">		ShortestPathSingleSource.IResult ssspRes =</span>
-<span class="fc" id="L91">				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
+<span class="fc" id="L90">		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo</span>
+<span class="fc" id="L91">				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
 <span class="fc" id="L92">		blackhole.consume(ssspRes);</span>
 
 		/* Prim MST */

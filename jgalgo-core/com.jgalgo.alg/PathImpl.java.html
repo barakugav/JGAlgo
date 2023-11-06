@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +28,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -126,7 +126,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L126">				isSimple = false; /* path with length greater than the vertices num */</span>
 
 <span class="fc bfc" id="L128" title="All 2 branches covered.">			} else if (vs.size() * 4 &gt; n / 8) {</span>
-<span class="fc" id="L129">				BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L129">				Bitmap visited = new Bitmap(n);</span>
 <span class="fc" id="L130">				isSimple = true;</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int v : vs) {</span>
 <span class="pc bpc" id="L132" title="1 of 2 branches missed.">					if (visited.get(v)) {</span>

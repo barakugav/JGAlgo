@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Subtree Merge Find Min data structure.
+ *
  * &lt;p&gt;
  * Subtree Merge Find min is a data structure used in maximum weighted matching in general graphs. At any moment, a tree
  * is maintain, divided into sub trees of continues nodes. AddLeaf operation is supported to add leaves to the tree.
@@ -28,6 +29,7 @@ import java.util.NoSuchElementException;
  * only the subtrees groups in it. The last two supported operations are addNonTreeEdge(u,v,weight) and
  * findMinNonTreeEdge(), which add a edge with some weight without affecting the tree structure, and the findMin
  * operation query for the non tree edge with minimum weight that connects two different subtrees.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -64,6 +66,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 
 	/**
 	 * Merge two adjacent sub tree.
+	 *
 	 * &lt;p&gt;
 	 * If the two nodes are already in the same sub tree, this operation has no effect.
 	 *
@@ -156,6 +159,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 
 		/**
 		 * Get the user data of this node.
+		 *
 		 * &lt;p&gt;
 		 * Note that the conversion of the data stored in the implementation to the user type is unsafe.
 		 *
@@ -175,6 +179,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 
 	/**
 	 * Create a new SMF algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
 	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
@@ -182,11 +187,12 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance() {
-<span class="nc" id="L185">		return newBuilder().build();</span>
+<span class="nc" id="L190">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new SMF algorithm object with custom comparator.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
 	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
@@ -194,18 +200,19 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="fc" id="L197">		return newBuilder().build(cmp);</span>
+<span class="fc" id="L203">		return newBuilder().build(cmp);</span>
 	}
 
 	/**
 	 * Create a new subtree-merge-findMin algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SubtreeMergeFindMin} objects
 	 */
 	static SubtreeMergeFindMin.Builder newBuilder() {
-<span class="fc" id="L208">		return SubtreeMergeFindMinImpl::new;</span>
+<span class="fc" id="L215">		return SubtreeMergeFindMinImpl::new;</span>
 	}
 
 	/**
@@ -231,15 +238,17 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 		 * @return     the newly constructed subtree-merge-findMin data structure
 		 */
 		default &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; build() {
-<span class="nc" id="L234">			return build(null);</span>
+<span class="nc" id="L241">			return build(null);</span>
 		}
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -248,7 +257,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 		 * @return       this builder
 		 */
 		default SubtreeMergeFindMin.Builder setOption(String key, Object value) {
-<span class="nc" id="L251">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L260">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

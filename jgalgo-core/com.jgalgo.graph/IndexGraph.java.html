@@ -19,21 +19,25 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A graph whose vertices and edges identifiers are indices.
+ *
  * &lt;p&gt;
  * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using some hashable
  * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
  * graph lifetime. On the other hand, an &lt;i&gt;Index&lt;/i&gt; graph is a {@link IntGraph} object in which the vertices and edges
  * identifiers of the graph are &lt;b&gt;always&lt;/b&gt; {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
+ *
  * &lt;p&gt;
  * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
  * a value/weight/flag with each vertex/edge. But it does come with a cost: to maintain the invariants, implementations
  * may need to rename existing vertices or edges during the graph lifetime. These renames can be subscribed-to using
  * {@link #addVertexSwapListener(IndexSwapListener)} and {@link #addEdgeSwapListener(IndexSwapListener)}.
+ *
  * &lt;p&gt;
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
  * created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is required, and
  * there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a regular
  * {@link IntGraph}, as it will expose an identical functionality while providing better performance.
+ *
  * &lt;p&gt;
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
  * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
@@ -41,6 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * back to the regular graph IDs. The mapping from a regular graph IDs to indices and vice versa is exposed using
  * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
  * {@link Graph#indexGraphEdgesMap()}.
+ *
  * &lt;p&gt;
  * To create a new empty index graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will
  * use the default implementation. For more control over the graph details, see {@link IndexGraphFactory}. To construct
@@ -53,6 +58,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}.
 	 */
@@ -61,6 +67,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}.
 	 */
@@ -69,6 +76,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
 	 * &lt;p&gt;
 	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
 	 *
@@ -77,11 +85,12 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default void addVertex(int vertex) {
-<span class="fc" id="L80">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+<span class="fc" id="L88">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * After removing a vertex, the graph implementation may swap and rename vertices to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addVertexSwapListener(IndexSwapListener)}.
@@ -91,6 +100,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
 	 * &lt;p&gt;
 	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
 	 *
@@ -99,11 +109,12 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default void addEdge(int source, int target, int edge) {
-<span class="fc" id="L102">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+<span class="fc" id="L112">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
@@ -113,39 +124,43 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L122">		IntGraph.super.removeEdgesOf(vertex);</span>
-<span class="fc" id="L123">	}</span>
+<span class="fc" id="L134">		IntGraph.super.removeEdgesOf(vertex);</span>
+<span class="fc" id="L135">	}</span>
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeOutEdgesOf(int source) {
-<span class="fc" id="L133">		IntGraph.super.removeOutEdgesOf(source);</span>
-<span class="fc" id="L134">	}</span>
+<span class="fc" id="L146">		IntGraph.super.removeOutEdgesOf(source);</span>
+<span class="fc" id="L147">	}</span>
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
 	 */
 	@Override
 	default void removeInEdgesOf(int target) {
-<span class="fc" id="L144">		IntGraph.super.removeInEdgesOf(target);</span>
-<span class="fc" id="L145">	}</span>
+<span class="fc" id="L158">		IntGraph.super.removeInEdgesOf(target);</span>
+<span class="fc" id="L159">	}</span>
 
 	/**
 	 * Adds a listener that will be called each time a vertex swap is performed.
+	 *
 	 * &lt;p&gt;
 	 * An {@link IndexGraph} may rename vertices during its lifetime to maintain the invariant that all vertices are
 	 * identified by {@code 0,1,2,...,verticesNum-1}. This method can be used to track these changes, by registering a
@@ -157,6 +172,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Removes a vertex swap listener.
+	 *
 	 * &lt;p&gt;
 	 * After a listener was added using {@link #addVertexSwapListener(IndexSwapListener)}, this method removes may
 	 * remove it.
@@ -167,6 +183,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Adds a listener that will be called each time a edge swap is performed.
+	 *
 	 * &lt;p&gt;
 	 * An {@link IndexGraph} may rename edges during its lifetime to maintain the invariant that all edges are
 	 * identified by {@code 0,1,2,...,edgesNum-1}. This method can be used to track these changes, by registering a
@@ -178,6 +195,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Removes an edge swap listener.
+	 *
 	 * &lt;p&gt;
 	 * After a listener was added using {@link #addEdgeSwapListener(IndexSwapListener)}, this method removes may remove
 	 * it.
@@ -195,7 +213,7 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexGraph indexGraph() {
-<span class="fc" id="L198">		return this;</span>
+<span class="fc" id="L216">		return this;</span>
 	}
 
 	/**
@@ -206,7 +224,7 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexIntIdMap indexGraphVerticesMap() {
-<span class="nc" id="L209">		return Graphs.IndexIdMapIdentify;</span>
+<span class="fc" id="L227">		return Graphs.IndexIdMapIdentify;</span>
 	}
 
 	/**
@@ -217,45 +235,46 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexIntIdMap indexGraphEdgesMap() {
-<span class="fc" id="L220">		return Graphs.IndexIdMapIdentify;</span>
+<span class="fc" id="L238">		return Graphs.IndexIdMapIdentify;</span>
 	}
 
 	@Override
 	default IndexGraph copy() {
-<span class="fc" id="L225">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
+<span class="fc" id="L243">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
 	}
 
 	@Override
 	default IndexGraph copy(boolean copyWeights) {
-<span class="nc" id="L230">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="nc" id="L248">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L235">		return immutableCopy(false);</span>
+<span class="fc" id="L253">		return immutableCopy(false);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyWeights) {
-<span class="fc bfc" id="L240" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L241">			return new GraphCSRDirected(this, copyWeights);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L259">			return new GraphCSRDirected(this, copyWeights);</span>
 		} else {
-<span class="fc" id="L243">			return new GraphCSRUndirected(this, copyWeights);</span>
+<span class="fc" id="L261">			return new GraphCSRUndirected(this, copyWeights);</span>
 		}
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L249">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L267">		return Graphs.immutableView(this);</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="nc" id="L254">		return Graphs.reverseView(this);</span>
+<span class="nc" id="L272">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
 	 * Create a new undirected empty index graph.
+	 *
 	 * &lt;p&gt;
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IndexGraphFactory}.
@@ -263,11 +282,12 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L266">		return IndexGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L285">		return IndexGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
 	 * Create a new directed empty index graph.
+	 *
 	 * &lt;p&gt;
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IndexGraphFactory}.
@@ -275,7 +295,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L278">		return IndexGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L298">		return IndexGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

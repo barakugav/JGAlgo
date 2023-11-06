@@ -28,14 +28,17 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Kruskal's minimum spanning tree algorithm.
+ *
  * &lt;p&gt;
  * The algorithm first sort all the edges of the graph by their weight, and then examine them in increasing weight
  * order. For each examined edge, if it connects two connected components that were not connected beforehand, the edge
  * is added to the forest. The algorithm terminate after all edges were examined.
+ *
  * &lt;p&gt;
  * The running time of the algorithm is \(O(m \log n)\) and it uses linear time. This algorithm perform good in practice
  * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time
  * bounds in theory. Note that only undirected graphs are supported.
+ *
  * &lt;p&gt;
  * Based on &quot;On the shortest spanning subtree of a graph and the traveling salesman problem&quot; by Kruskal, J. B. (1956) in
  * the book &quot;Proceedings of the American Mathematical Society&quot;.
@@ -45,13 +48,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-<span class="fc" id="L48">	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();</span>
-<span class="fc" id="L49">	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;</span>
+<span class="fc" id="L51">	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();</span>
+<span class="fc" id="L52">	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-<span class="fc" id="L54">	MinimumSpanningTreeKruskal() {}</span>
+<span class="fc" id="L57">	MinimumSpanningTreeKruskal() {}</span>
 
 	/**
 	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
@@ -60,8 +63,8 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 	 *                    {@code 0,1,2,...,n-1}.
 	 */
 	void setUnionFindBuilder(UnionFind.Builder builder) {
-<span class="nc" id="L63">		unionFindBuilder = Objects.requireNonNull(builder);</span>
-<span class="nc" id="L64">	}</span>
+<span class="nc" id="L66">		unionFindBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L67">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -70,34 +73,34 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 	 */
 	@Override
 	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L73">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L74">		final int n = g.vertices().size();</span>
-<span class="fc" id="L75">		final int m = g.edges().size();</span>
-<span class="pc bpc" id="L76" title="2 of 4 branches missed.">		if (n == 0 || m == 0)</span>
-<span class="nc" id="L77">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
+<span class="fc" id="L76">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L77">		final int n = g.vertices().size();</span>
+<span class="fc" id="L78">		final int m = g.edges().size();</span>
+<span class="pc bpc" id="L79" title="2 of 4 branches missed.">		if (n == 0 || m == 0)</span>
+<span class="nc" id="L80">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
 
 		/* sort edges */
-<span class="fc" id="L80">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L81">		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);</span>
+<span class="fc" id="L83">		int[] edges = g.edges().toIntArray();</span>
+<span class="fc" id="L84">		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L84">		UnionFind uf = unionFindBuilder.expectedSize(n).build();</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L86">			uf.make();</span>
+<span class="fc" id="L87">		UnionFind uf = unionFindBuilder.expectedSize(n).build();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L89">			uf.make();</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L89">		IntCollection mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L91">			int U = uf.find(g.edgeSource(e));</span>
-<span class="fc" id="L92">			int V = uf.find(g.edgeTarget(e));</span>
+<span class="fc" id="L92">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L94">			int U = uf.find(g.edgeSource(e));</span>
+<span class="fc" id="L95">			int V = uf.find(g.edgeTarget(e));</span>
 
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (U != V) {</span>
-<span class="fc" id="L95">				uf.union(U, V);</span>
-<span class="fc" id="L96">				mst.add(e);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (U != V) {</span>
+<span class="fc" id="L98">				uf.union(U, V);</span>
+<span class="fc" id="L99">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L99">		uf.clear();</span>
-<span class="fc" id="L100">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
+<span class="fc" id="L102">		uf.clear();</span>
+<span class="fc" id="L103">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
 }

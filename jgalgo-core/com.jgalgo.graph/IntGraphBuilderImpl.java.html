@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="fc" id="L34">				: new IntGraphBuilderImpl.Undirected(g, copyWeights);</span>
 	}
 
-<span class="fc" id="L37">	private static abstract class Abstract implements IntGraphBuilder {</span>
+<span class="fc" id="L37">	private abstract static class Abstract implements IntGraphBuilder {</span>
 
 		final IndexGraphBuilder ibuilder;
 		private final Int2IntOpenHashMap vIdToIndex;
@@ -124,8 +124,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public int addVertex() {
 <span class="nc bnc" id="L126" title="All 2 branches missed.">			if (!canAddVertexWithoutId())</span>
-<span class="nc" id="L127">				throw new IllegalArgumentException(</span>
-						&quot;Can't mix addVertex() and addVertex(id), if IDs are provided for some of the vertices, they must be provided for all&quot;);
+<span class="nc" id="L127">				throw new IllegalArgumentException(&quot;Can't mix addVertex() and addVertex(id), &quot;</span>
+						+ &quot;if IDs are provided for some of the vertices, they must be provided for all&quot;);
 <span class="nc" id="L129">			int vIndex = ibuilder.addVertex();</span>
 <span class="nc" id="L130">			int vId = vIndex + 1; // +1 because we want to avoid 0 in fastutil open hash maps</span>
 <span class="nc bnc" id="L131" title="All 2 branches missed.">			assert vIndex == vIndexToId.size();</span>
@@ -138,8 +138,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public void addVertex(int vertex) {
 <span class="pc bpc" id="L140" title="1 of 2 branches missed.">			if (!canAddVertexWithId())</span>
-<span class="nc" id="L141">				throw new IllegalArgumentException(</span>
-						&quot;Can't mix addVertex() and addVertex(id), if IDs are provided for some of the vertices, they must be provided for all&quot;);
+<span class="nc" id="L141">				throw new IllegalArgumentException(&quot;Can't mix addVertex() and addVertex(id), &quot;</span>
+						+ &quot;if IDs are provided for some of the vertices, they must be provided for all&quot;);
 <span class="fc" id="L143">			int vIndex = ibuilder.addVertex();</span>
 <span class="fc" id="L144">			int vId = vertex;</span>
 <span class="pc bnc" id="L145" title="All 2 branches missed.">			assert vIndex == vIndexToId.size();</span>
@@ -153,8 +153,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public int addEdge(int source, int target) {
 <span class="pc bpc" id="L155" title="1 of 2 branches missed.">			if (!canAddEdgeWithoutId())</span>
-<span class="nc" id="L156">				throw new IllegalArgumentException(</span>
-						&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
+<span class="nc" id="L156">				throw new IllegalArgumentException(&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), &quot;</span>
+						+ &quot;if IDs are provided for some of the edges, they must be provided for all&quot;);
 <span class="fc" id="L158">			int sourceIdx = vIdToIndex.get(source);</span>
 <span class="fc" id="L159">			int targetIdx = vIdToIndex.get(target);</span>
 <span class="pc bpc" id="L160" title="1 of 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
@@ -174,8 +174,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public void addEdge(int source, int target, int edge) {
 <span class="pc bpc" id="L176" title="1 of 2 branches missed.">			if (!canAddEdgeWithId())</span>
-<span class="nc" id="L177">				throw new IllegalArgumentException(</span>
-						&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all&quot;);
+<span class="nc" id="L177">				throw new IllegalArgumentException(&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), &quot;</span>
+						+ &quot;if IDs are provided for some of the edges, they must be provided for all&quot;);
 <span class="fc" id="L179">			int sourceIdx = vIdToIndex.get(source);</span>
 <span class="fc" id="L180">			int targetIdx = vIdToIndex.get(target);</span>
 <span class="pc bpc" id="L181" title="1 of 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>

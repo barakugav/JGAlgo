@@ -16,7 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.BitSet;
+import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.bytes.Byte2IntMap;
 import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 <span class="fc" id="L94">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
 				}
 <span class="fc" id="L96">				final int innerBlockNum = tables.size();</span>
-<span class="fc" id="L97">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="fc" id="L97">				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);</span>
 <span class="fc" id="L98">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
 <span class="fc" id="L100">					byte key = (byte) blockToInnerIdx[b];</span>
@@ -116,7 +116,7 @@ import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 <span class="fc" id="L116">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
 				}
 <span class="fc" id="L118">				final int innerBlockNum = tables.size();</span>
-<span class="fc" id="L119">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="fc" id="L119">				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);</span>
 <span class="fc" id="L120">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
 <span class="fc bfc" id="L121" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
 <span class="fc" id="L122">					short key = (short) blockToInnerIdx[b];</span>
@@ -138,7 +138,7 @@ import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 <span class="nc" id="L138">					tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
 				}
 <span class="nc" id="L140">				final int innerBlockNum = tables.size();</span>
-<span class="nc" id="L141">				BitSet builtInnerBlocks = new BitSet(innerBlockNum);</span>
+<span class="nc" id="L141">				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);</span>
 <span class="nc" id="L142">				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
 <span class="nc bnc" id="L143" title="All 2 branches missed.">				for (int b = 0; b &lt; blockNum; b++) {</span>
 <span class="nc" id="L144">					int key = blockToInnerIdx[b];</span>

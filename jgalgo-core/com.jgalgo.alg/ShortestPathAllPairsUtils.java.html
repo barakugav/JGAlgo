@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 <span class="pc" id="L38">class ShortestPathAllPairsUtils {</span>
 
-<span class="fc" id="L40">	static abstract class AbstractImpl implements ShortestPathAllPairs {</span>
+<span class="fc" id="L40">	abstract static class AbstractImpl implements ShortestPathAllPairs {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
@@ -98,7 +98,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L98">		return vToResIdx;</span>
 	}
 
-	static abstract class ResultImpl implements ShortestPathAllPairs.IResult {
+	abstract static class ResultImpl implements ShortestPathAllPairs.IResult {
 
 		private ResultImpl() {}
 
@@ -108,7 +108,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		abstract void setEdgeTo(int source, int target, int edge);
 
-		static abstract class AllVertices extends ResultImpl {
+		abstract static class AllVertices extends ResultImpl {
 
 			final IndexGraph g;
 			private final int[][] edges;
@@ -247,7 +247,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	}
 
-	static abstract class ResFromSSSP implements ShortestPathAllPairs.IResult {
+	abstract static class ResFromSSSP implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 

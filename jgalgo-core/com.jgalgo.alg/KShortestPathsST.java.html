@@ -23,11 +23,13 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for computing the K shortest paths between two vertices in a graph.
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one might ask what are the K shortest paths
  * from a &lt;i&gt;source&lt;/i&gt; vertex to a &lt;i&gt;target&lt;/i&gt; vertex, where the 'shortest' is defined by comparing the sum of edges
  * weights of each path. This interface computes such paths. It differ from {@link ShortestPathST}, as it computes
  * multiple paths, and not just one.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -40,6 +42,7 @@ public interface KShortestPathsST {
 
 	/**
 	 * Compute the K shortest paths from a source vertex to a target vertex.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned object is a list of {@link IPath}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
@@ -58,6 +61,7 @@ public interface KShortestPathsST {
 
 	/**
 	 * Create a new K shortest paths algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object. The
 	 * {@link KShortestPathsST.Builder} might support different options to obtain different implementations.
@@ -65,18 +69,19 @@ public interface KShortestPathsST {
 	 * @return a default implementation of {@link KShortestPathsST}
 	 */
 	static KShortestPathsST newInstance() {
-<span class="nc" id="L68">		return newBuilder().build();</span>
+<span class="nc" id="L72">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new K shortest paths algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link KShortestPathsST} objects
 	 */
 	static KShortestPathsST.Builder newBuilder() {
-<span class="nc" id="L79">		return KShortestPathsSTYen::new;</span>
+<span class="nc" id="L84">		return KShortestPathsSTYen::new;</span>
 	}
 
 	/**
@@ -96,10 +101,12 @@ public interface KShortestPathsST {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -108,7 +115,7 @@ public interface KShortestPathsST {
 		 * @return       this builder
 		 */
 		default KShortestPathsST.Builder setOption(String key, Object value) {
-<span class="nc" id="L111">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L118">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

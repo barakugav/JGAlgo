@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="nc" id="L33">				: new GraphBuilderImpl.Undirected&lt;&gt;(g, copyWeights);</span>
 	}
 
-<span class="fc" id="L36">	private static abstract class Abstract&lt;V, E&gt; implements GraphBuilder&lt;V, E&gt; {</span>
+<span class="fc" id="L36">	private abstract static class Abstract&lt;V, E&gt; implements GraphBuilder&lt;V, E&gt; {</span>
 
 		final IndexGraphBuilder ibuilder;
 		private final Object2IntOpenHashMap&lt;V&gt; vIdToIndex;

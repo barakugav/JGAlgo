@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -23,20 +22,24 @@ import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * Static class for bipartite graphs.
+ *
  * &lt;p&gt;
  * A bipartite graph is a graph in which the vertices can be partitioned into two sets V1,V2 and there are no edges
  * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an input,
  * and the partition V1,V2 is expected to be a vertex boolean weight keyed by
  * {@link BipartiteGraphs#VertexBiPartitionWeightKey}. See the static field documentation for more details.
+ *
  * &lt;p&gt;
  * This class provides functions to check whether a graph is bipartite, and to find a bipartite partition of a graph.
  * These functions can add the bipartite partition as a vertex boolean weight as an option, but the default is to treat
  * the graph as immutable.
+ *
  * &lt;p&gt;
  * Note that algorithms might test for the existent of a bipartite partition as vertex weights, and if it does exists,
  * to assume the graph is bipartite and use it. If the graph is modified after the bipartite partition was computed and
@@ -50,6 +53,7 @@ public class BipartiteGraphs {
 
 	/**
 	 * Check whether the given graph is bipartite or not.
+	 *
 	 * &lt;p&gt;
 	 * If the computed partition is needed, use {@link #findPartition(Graph)}. This function does not have any side
 	 * effects on the graph object itself, namely it does not add the partition (if one exist) as vertex weights.
@@ -60,14 +64,16 @@ public class BipartiteGraphs {
 	 * @return     {@code true} if the graph is bipartite, {@code false} otherwise
 	 */
 	public static &lt;V, E&gt; boolean isBipartite(Graph&lt;V, E&gt; g) {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">		return findBipartitePartition0(g.indexGraph()) != null;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">		return findBipartitePartition0(g.indexGraph()) != null;</span>
 	}
 
 	/**
 	 * Find a bipartite partition of the given graph (if one exists).
+	 *
 	 * &lt;p&gt;
 	 * This function does not have any side effects on the graph object itself, namely it does not add the partition (if
 	 * one exist) as vertex weights. To add the partition as vertex weights, use {@link #findPartition(Graph, boolean)}.
+	 *
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
 	 * exist).
@@ -78,12 +84,13 @@ public class BipartiteGraphs {
 	 * @return     the bipartite partition of the graph if one exists
 	 */
 	public static &lt;V, E&gt; Optional&lt;VertexBiPartition&lt;V, E&gt;&gt; findPartition(Graph&lt;V, E&gt; g) {
-<span class="nc" id="L81">		return findPartition(g, false);</span>
+<span class="nc" id="L87">		return findPartition(g, false);</span>
 	}
 
 	/**
 	 * Find a bipartite partition of the given graph (if one exists), and optionally add the partition as vertex
 	 * weights.
+	 *
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
 	 * exist).
@@ -101,94 +108,97 @@ public class BipartiteGraphs {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; Optional&lt;VertexBiPartition&lt;V, E&gt;&gt; findPartition(Graph&lt;V, E&gt; g, boolean addPartitionWeight) {
-<span class="nc bnc" id="L104" title="All 2 branches missed.">		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();</span>
 
-<span class="nc" id="L106">		BitSet partition0 = findBipartitePartition0(ig);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">		if (partition0 == null)</span>
-<span class="nc" id="L108">			return Optional.empty();</span>
+<span class="nc" id="L113">		Bitmap partition0 = findBipartitePartition0(ig);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">		if (partition0 == null)</span>
+<span class="nc" id="L115">			return Optional.empty();</span>
 
-<span class="nc" id="L110">		IWeightsBool partition = getOrCreateBoolWeights(ig, addPartitionWeight);</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">		for (int n = ig.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L112">			partition.set(v, partition0.get(v));</span>
+<span class="nc" id="L117">		IWeightsBool partition = getOrCreateBoolWeights(ig, addPartitionWeight);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">		for (int n = ig.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="nc" id="L119">			partition.set(v, partition0.get(v));</span>
 
-<span class="nc" id="L114">		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);</span>
+<span class="nc" id="L121">		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);</span>
 		VertexBiPartition&lt;V, E&gt; resultPartition;
-<span class="nc bnc" id="L116" title="All 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L117">			resultPartition = (VertexBiPartition&lt;V, E&gt;) indexPartition;</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L124">			resultPartition = (VertexBiPartition&lt;V, E&gt;) indexPartition;</span>
 		} else {
-<span class="nc" id="L119">			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);</span>
+<span class="nc" id="L126">			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);</span>
 		}
-<span class="nc" id="L121">		return Optional.of(resultPartition);</span>
+<span class="nc" id="L128">		return Optional.of(resultPartition);</span>
 	}
 
-	private static BitSet findBipartitePartition0(IndexGraph g) {
-<span class="nc" id="L125">		final int n = g.vertices().size();</span>
-<span class="nc" id="L126">		BitSet partition = new BitSet(n);</span>
-<span class="nc bnc" id="L127" title="All 2 branches missed.">		if (n &gt; 0) {</span>
-<span class="nc" id="L128">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="nc" id="L129">			BitSet visited = new BitSet(n);</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">			for (int start = 0; start &lt; n; start++) {</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">				if (visited.get(start))</span>
-<span class="nc" id="L132">					continue;</span>
-<span class="nc" id="L133">				visited.set(start);</span>
-<span class="nc" id="L134">				queue.enqueue(start);</span>
-<span class="nc" id="L135">				partition.set(start, true);</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">				while (!queue.isEmpty()) {</span>
-<span class="nc" id="L137">					final int u = queue.dequeueInt();</span>
-<span class="nc" id="L138">					final boolean uSide = partition.get(u);</span>
-<span class="nc bnc" id="L139" title="All 2 branches missed.">					for (IEdgeIter eit = g.outEdges(start).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L140">						eit.nextInt();</span>
-<span class="nc" id="L141">						int v = eit.targetInt();</span>
-<span class="nc bnc" id="L142" title="All 2 branches missed.">						if (visited.get(v)) {</span>
-<span class="nc bnc" id="L143" title="All 2 branches missed.">							if (partition.get(v) == uSide)</span>
-<span class="nc" id="L144">								return null;</span>
+	private static Bitmap findBipartitePartition0(IndexGraph g) {
+<span class="nc" id="L132">		final int n = g.vertices().size();</span>
+<span class="nc" id="L133">		Bitmap partition = new Bitmap(n);</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">		if (n &gt; 0) {</span>
+<span class="nc" id="L135">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="nc" id="L136">			Bitmap visited = new Bitmap(n);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">			for (int start = 0; start &lt; n; start++) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">				if (visited.get(start))</span>
+<span class="nc" id="L139">					continue;</span>
+<span class="nc" id="L140">				visited.set(start);</span>
+<span class="nc" id="L141">				queue.enqueue(start);</span>
+<span class="nc" id="L142">				partition.set(start, true);</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">				while (!queue.isEmpty()) {</span>
+<span class="nc" id="L144">					final int u = queue.dequeueInt();</span>
+<span class="nc" id="L145">					final boolean uSide = partition.get(u);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">					for (IEdgeIter eit = g.outEdges(start).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L147">						eit.nextInt();</span>
+<span class="nc" id="L148">						int v = eit.targetInt();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">						if (visited.get(v)) {</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">							if (partition.get(v) == uSide)</span>
+<span class="nc" id="L151">								return null;</span>
 							continue;
 						}
-<span class="nc bnc" id="L147" title="All 2 branches missed.">						partition.set(v, !uSide);</span>
-<span class="nc" id="L148">						visited.set(v);</span>
-<span class="nc" id="L149">						queue.enqueue(v);</span>
-<span class="nc" id="L150">					}</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">					if (g.isDirected()) {</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">						for (IEdgeIter eit = g.inEdges(start).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L153">							eit.nextInt();</span>
-<span class="nc" id="L154">							int v = eit.sourceInt();</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">							if (visited.get(v)) {</span>
-<span class="nc bnc" id="L156" title="All 2 branches missed.">								if (partition.get(v) == uSide)</span>
-<span class="nc" id="L157">									return null;</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">						partition.set(v, !uSide);</span>
+<span class="nc" id="L155">						visited.set(v);</span>
+<span class="nc" id="L156">						queue.enqueue(v);</span>
+<span class="nc" id="L157">					}</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">					if (g.isDirected()) {</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">						for (IEdgeIter eit = g.inEdges(start).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L160">							eit.nextInt();</span>
+<span class="nc" id="L161">							int v = eit.sourceInt();</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">							if (visited.get(v)) {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">								if (partition.get(v) == uSide)</span>
+<span class="nc" id="L164">									return null;</span>
 								continue;
 							}
-<span class="nc bnc" id="L160" title="All 2 branches missed.">							partition.set(v, !uSide);</span>
-<span class="nc" id="L161">							visited.set(v);</span>
-<span class="nc" id="L162">							queue.enqueue(v);</span>
-<span class="nc" id="L163">						}</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">							partition.set(v, !uSide);</span>
+<span class="nc" id="L168">							visited.set(v);</span>
+<span class="nc" id="L169">							queue.enqueue(v);</span>
+<span class="nc" id="L170">						}</span>
 					}
-<span class="nc" id="L165">				}</span>
+<span class="nc" id="L172">				}</span>
 			}
 		}
-<span class="nc" id="L168">		return partition;</span>
+<span class="nc" id="L175">		return partition;</span>
 	}
 
 	private static IWeightsBool getOrCreateBoolWeights(IndexGraph g, boolean addPartitionWeight) {
-<span class="nc bnc" id="L172" title="All 2 branches missed.">		if (addPartitionWeight)</span>
-<span class="nc" id="L173">			return IWeights.createExternalEdgesWeights(g, boolean.class);</span>
-<span class="nc" id="L174">		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">		if (existingPartition == null)</span>
-<span class="nc" id="L176">			return g.addVerticesWeights(VertexBiPartitionWeightKey, boolean.class);</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">		if (!(existingPartition instanceof IWeightsBool))</span>
-<span class="nc" id="L178">			throw new IllegalArgumentException(&quot;found vertex weights with key '&quot; + VertexBiPartitionWeightKey</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">		if (addPartitionWeight)</span>
+<span class="nc" id="L180">			return IWeights.createExternalEdgesWeights(g, boolean.class);</span>
+<span class="nc" id="L181">		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">		if (existingPartition == null)</span>
+<span class="nc" id="L183">			return g.addVerticesWeights(VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">		if (!(existingPartition instanceof IWeightsBool))</span>
+<span class="nc" id="L185">			throw new IllegalArgumentException(&quot;found vertex weights with key '&quot; + VertexBiPartitionWeightKey</span>
 					+ &quot;' but it is not a boolean weights&quot;);
-<span class="nc" id="L180">		return (IWeightsBool) existingPartition;</span>
+<span class="nc" id="L187">		return (IWeightsBool) existingPartition;</span>
 	}
 
 	/**
 	 * Get the existing bipartite partition of the given graph (if one exists).
+	 *
 	 * &lt;p&gt;
 	 * If a bipartite partition was computed on the graph and boolean vertex weights were added to it, the partition
 	 * will be returned. Otherwise, an empty optional will be returned. This function does not compute a partition if it
 	 * doesn't find an existing one.
+	 *
 	 * &lt;p&gt;
 	 * Note that if the graph was modified after the bipartite partition was computed and added, it might be invalid and
 	 * no checks are performed in this function to verify that it is still valid.
+	 *
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as an argument, {@link IVertexBiPartition} will be returned (if a partition
 	 * exist).
@@ -202,33 +212,35 @@ public class BipartiteGraphs {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; Optional&lt;VertexBiPartition&lt;V, E&gt;&gt; getExistingPartition(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();</span>
-<span class="fc" id="L206">		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">		if (existingPartition == null)</span>
-<span class="fc" id="L208">			return Optional.empty();</span>
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		if (!(existingPartition instanceof IWeightsBool))</span>
-<span class="nc" id="L210">			throw new IllegalArgumentException(&quot;found vertex weights with key '&quot; + VertexBiPartitionWeightKey</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();</span>
+<span class="fc" id="L216">		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (existingPartition == null)</span>
+<span class="fc" id="L218">			return Optional.empty();</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">		if (!(existingPartition instanceof IWeightsBool))</span>
+<span class="nc" id="L220">			throw new IllegalArgumentException(&quot;found vertex weights with key '&quot; + VertexBiPartitionWeightKey</span>
 					+ &quot;' but it is not a boolean weights&quot;);
-<span class="fc" id="L212">		IWeightsBool partition = (IWeightsBool) existingPartition;</span>
+<span class="fc" id="L222">		IWeightsBool partition = (IWeightsBool) existingPartition;</span>
 
-<span class="fc" id="L214">		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);</span>
+<span class="fc" id="L224">		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);</span>
 		VertexBiPartition&lt;V, E&gt; resultPartition;
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L217">			resultPartition = (VertexBiPartition&lt;V, E&gt;) indexPartition;</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L227">			resultPartition = (VertexBiPartition&lt;V, E&gt;) indexPartition;</span>
 		} else {
-<span class="fc" id="L219">			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);</span>
+<span class="fc" id="L229">			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);</span>
 		}
-<span class="fc" id="L221">		return Optional.of(resultPartition);</span>
+<span class="fc" id="L231">		return Optional.of(resultPartition);</span>
 	}
 
 	/**
 	 * The vertices weight key of the bipartite property.
+	 *
 	 * &lt;p&gt;
 	 * The bipartite partition is usually represented as a vertex boolean weight keyed by this key. The weight of each
 	 * vertex indicates to which of the two partitions it belongs to. Functions such as
 	 * {@link #findPartition(Graph, boolean)} may attempt to find a valid bipartition of a graph, and if one is found,
 	 * to store it as vertex weights with this key. When an algorithm accept a graph to operate on, it may check for
 	 * such vertex weights, and if they exists it may assume the graph is bipartite and use them.
+	 *
 	 * &lt;p&gt;
 	 * If a graph contains vertex weights with this key, the partition can be retrieved by
 	 * {@link #getExistingPartition(Graph)}. But note that a bipartite partition may become invalid if the graph is

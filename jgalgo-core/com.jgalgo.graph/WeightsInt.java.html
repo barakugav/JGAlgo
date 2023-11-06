@@ -53,6 +53,7 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 
 	/**
 	 * Get the default weight of this weights container.
+     *
 	 * &lt;p&gt;
 	 * The default weight is the weight associated with all elements that were not explicitly set using
 	 * {@link #set(Object, int)}.
@@ -64,18 +65,19 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default Integer defaultWeightAsObj() {
-<span class="fc" id="L67">		return Integer.valueOf(defaultWeight());</span>
+<span class="fc" id="L68">		return Integer.valueOf(defaultWeight());</span>
 	}
 
 	
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="fc" id="L78">		return get(element);</span>
+<span class="fc" id="L80">		return get(element);</span>
 	}
 
 

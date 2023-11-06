@@ -53,6 +53,7 @@ public interface WeightsShort&lt;K &gt; extends Weights&lt;K, Short&gt; , Weight
 
 	/**
 	 * Get the default weight of this weights container.
+     *
 	 * &lt;p&gt;
 	 * The default weight is the weight associated with all elements that were not explicitly set using
 	 * {@link #set(Object, short)}.
@@ -64,18 +65,19 @@ public interface WeightsShort&lt;K &gt; extends Weights&lt;K, Short&gt; , Weight
 	@Deprecated
 	@Override
 	default Short defaultWeightAsObj() {
-<span class="fc" id="L67">		return Short.valueOf(defaultWeight());</span>
+<span class="fc" id="L68">		return Short.valueOf(defaultWeight());</span>
 	}
 
 	
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="nc" id="L78">		return get(element);</span>
+<span class="nc" id="L80">		return get(element);</span>
 	}
 
 

@@ -17,17 +17,21 @@ package com.jgalgo.graph;
 
 /**
  * A mapping between {@link IntGraph} IDs to {@link IndexGraph} indices.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link IndexIdMap} for {@link IntGraph}.
+ *
  * &lt;p&gt;
  * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An {@link IndexGraph}
  * view is provided by the {@link IntGraph#indexGraph()} method, which is a graph in which all methods are accessed with
  * &lt;b&gt;indices&lt;/b&gt; rather than fixed IDs. This interface maps between the indices and the fixed IDs of the graph vertices
  * or edges.
+ *
  * &lt;p&gt;
  * Note that the mapping may change during the graph lifetime, as vertices and edges are added and removed from the
  * graph, and a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}
  * and {@code (0,1,2, ...,edgesNum-1)}. The mapping object will be updated automatically in such cases.
+ *
  * &lt;p&gt;
  * The mapping interface is used for both vertices and edges, and we use a unify term &lt;i&gt;element&lt;/i&gt; in the
  * documentation to describe both of them. If the mapping was obtained by {@link IntGraph#indexGraphVerticesMap()} it
@@ -41,6 +45,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 
 	/**
 	 * Get the ID of an element by its index.
+	 *
 	 * &lt;p&gt;
 	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
 	 * {@link IntGraph#indexGraphVerticesMap()} or {@link IntGraph#indexGraphEdgesMap()}.
@@ -56,11 +61,12 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer indexToId(int index) {
-<span class="fc" id="L59">		return Integer.valueOf(indexToIdInt(index));</span>
+<span class="fc" id="L64">		return Integer.valueOf(indexToIdInt(index));</span>
 	}
 
 	/**
 	 * Get the index of an element by its ID.
+	 *
 	 * &lt;p&gt;
 	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
 	 * {@link IntGraph#indexGraphVerticesMap()} or {@link IntGraph#indexGraphEdgesMap()}.
@@ -75,7 +81,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default int idToIndex(Integer id) {
-<span class="fc" id="L78">		return idToIndex(id.intValue());</span>
+<span class="fc" id="L84">		return idToIndex(id.intValue());</span>
 	}
 
 }

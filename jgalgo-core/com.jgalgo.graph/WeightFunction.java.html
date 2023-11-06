@@ -25,11 +25,13 @@ import com.jgalgo.alg.VertexCover;
 
 /**
  * Weight function that maps graph edges or vertices to weights.
+ *
  * &lt;p&gt;
  * This interface is usually used as weight function of edges, for example in algorithms such as
  * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo}, in which the algorithm try to
  * find a set of edges satisfying some constraint while minimizing/maximizing some objective function based on the
  * weights of the edges. But it can represent weights assigned to vertices, in algorithms such as {@link VertexCover}.
+ *
  * &lt;p&gt;
  * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.
@@ -84,7 +86,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@Override
 	default int compare(K e1, K e2) {
-<span class="nc" id="L87">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="nc" id="L89">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
@@ -94,14 +96,15 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return          the sum of the weights of the elements
 	 */
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="fc" id="L97">		double sum = 0;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (K e : elements)</span>
-<span class="fc" id="L99">			sum += weight(e);</span>
-<span class="fc" id="L100">		return sum;</span>
+<span class="fc" id="L99">		double sum = 0;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L101">			sum += weight(e);</span>
+<span class="fc" id="L102">		return sum;</span>
 	}
 
 	/**
 	 * Get the sum of the weights of multiple elements.
+	 *
 	 * &lt;p&gt;
 	 * This method is equivalent to {@link #weightSum(Iterable)}, but it also support {@code null} weight function,
 	 * which is treated is cardinality weight function.
@@ -112,29 +115,30 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            the sum of the weights of the elements
 	 */
 	static &lt;K&gt; double weightSum(WeightFunction&lt;K&gt; weightFunc, Iterable&lt;K&gt; elements) {
-<span class="pc bpc" id="L115" title="2 of 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+<span class="pc bpc" id="L118" title="2 of 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="fc" id="L118">				return ((Collection&lt;?&gt;) elements).size();</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="fc" id="L121">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {
-<span class="nc" id="L120">				int s = 0;</span>
+<span class="nc" id="L123">				int s = 0;</span>
 				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L122" title="All 2 branches missed.">				K elm : elements)</span>
-<span class="nc" id="L123">					s++;</span>
-<span class="nc" id="L124">				return s;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">				K elm : elements)</span>
+<span class="nc" id="L126">					s++;</span>
+<span class="nc" id="L127">				return s;</span>
 			}
 		} else {
-<span class="fc" id="L127">			return weightFunc.weightSum(elements);</span>
+<span class="fc" id="L130">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="pc" id="L134">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="pc" id="L137">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
 
 	/**
 	 * Get the cardinality weight function.
+	 *
 	 * &lt;p&gt;
 	 * The cardinality weight function assign a weight of {@code 1} to any element. The function always return the same
 	 * object, which can be accessed directed via {@link #CardinalityWeightFunction}. This is method is exposed only to
@@ -145,7 +149,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; cardinalityWeightFunction() {
-<span class="nc" id="L148">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+<span class="nc" id="L152">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
 	}
 
 }

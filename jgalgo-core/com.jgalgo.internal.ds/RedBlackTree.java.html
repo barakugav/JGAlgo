@@ -22,6 +22,7 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * A red black balanced binary search tree.
+ *
  * &lt;p&gt;
  * A red black tree is a balanced binary search tree that its height is always \(O(\log n)\). All operations are
  * performed in \(O(\log n)\) time.
@@ -31,7 +32,7 @@ import com.jgalgo.internal.util.Assertions;
  * @see        &lt;a href= &quot;https://en.wikipedia.org/wiki/Red%E2%80%93black_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author     Barak Ugav
  */
-<span class="fc" id="L34">class RedBlackTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
+<span class="fc" id="L35">class RedBlackTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
 
 	private int size;
 	private Node&lt;K, V&gt; root;
@@ -41,6 +42,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	/**
 	 * Constructs a new, empty red black tree, ordered according to the natural ordering of its keys.
+	 *
 	 * &lt;p&gt;
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -49,11 +51,12 @@ import com.jgalgo.internal.util.Assertions;
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	RedBlackTree() {
-<span class="nc" id="L52">		this(null);</span>
-<span class="nc" id="L53">	}</span>
+<span class="nc" id="L54">		this(null);</span>
+<span class="nc" id="L55">	}</span>
 
 	/**
 	 * Constructs a new, empty red black tree, with keys ordered according to the specified comparator.
+	 *
 	 * &lt;p&gt;
 	 * All keys inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -64,85 +67,85 @@ import com.jgalgo.internal.util.Assertions;
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
 	RedBlackTree(Comparator&lt;? super K&gt; comparator) {
-<span class="fc" id="L67">		super(comparator);</span>
-<span class="fc" id="L68">		root = null;</span>
-<span class="fc" id="L69">		size = 0;</span>
-<span class="fc" id="L70">	}</span>
+<span class="fc" id="L70">		super(comparator);</span>
+<span class="fc" id="L71">		root = null;</span>
+<span class="fc" id="L72">		size = 0;</span>
+<span class="fc" id="L73">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L74">		return size;</span>
+<span class="fc" id="L77">		return size;</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; insert(K key) {
-<span class="fc" id="L79">		Node&lt;K, V&gt; node = newNode(key);</span>
-<span class="fc" id="L80">		insertNode(node);</span>
-<span class="fc" id="L81">		return node;</span>
+<span class="fc" id="L82">		Node&lt;K, V&gt; node = newNode(key);</span>
+<span class="fc" id="L83">		insertNode(node);</span>
+<span class="fc" id="L84">		return node;</span>
 	}
 
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;HeapReference&lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L87">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L90">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (root == null)</span>
-<span class="fc" id="L93">			return;</span>
-<span class="fc" id="L94">		BinarySearchTrees.clear(root);</span>
-<span class="fc" id="L95">		root = null;</span>
-<span class="fc" id="L96">		size = 0;</span>
-<span class="fc" id="L97">	}</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L96">			return;</span>
+<span class="fc" id="L97">		BinarySearchTrees.clear(root);</span>
+<span class="fc" id="L98">		root = null;</span>
+<span class="fc" id="L99">		size = 0;</span>
+<span class="fc" id="L100">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L102">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L103">		Assertions.Heaps.meldWithSameImpl(RedBlackTree.class, heap);</span>
-<span class="fc" id="L104">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
-<span class="fc" id="L105">		RedBlackTree&lt;K, V&gt; h = (RedBlackTree&lt;K, V&gt;) heap;</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		if (h.isEmpty())</span>
-<span class="nc" id="L107">			return;</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (isEmpty()) {</span>
-<span class="nc" id="L109">			root = h.root;</span>
-<span class="nc" id="L110">			size = h.size;</span>
+<span class="fc" id="L105">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L106">		Assertions.Heaps.meldWithSameImpl(RedBlackTree.class, heap);</span>
+<span class="fc" id="L107">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
+<span class="fc" id="L108">		RedBlackTree&lt;K, V&gt; h = (RedBlackTree&lt;K, V&gt;) heap;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (h.isEmpty())</span>
+<span class="nc" id="L110">			return;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (isEmpty()) {</span>
+<span class="nc" id="L112">			root = h.root;</span>
+<span class="nc" id="L113">			size = h.size;</span>
 		} else {
 			/* there is nothing smarter to do than 'addAll' */
 			/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-<span class="fc" id="L114">			for (Node&lt;K, V&gt; node = h.root;;) {</span>
+<span class="fc" id="L117">			for (Node&lt;K, V&gt; node = h.root;;) {</span>
 				for (;;) {
-<span class="fc bfc" id="L116" title="All 2 branches covered.">					while (node.hasLeftChild())</span>
-<span class="fc" id="L117">						node = node.left;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">					if (!node.hasRightChild())</span>
-<span class="fc" id="L119">						break;</span>
-<span class="fc" id="L120">					node = node.right;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">					while (node.hasLeftChild())</span>
+<span class="fc" id="L120">						node = node.left;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (!node.hasRightChild())</span>
+<span class="fc" id="L122">						break;</span>
+<span class="fc" id="L123">					node = node.right;</span>
 				}
-<span class="fc" id="L122">				Node&lt;K, V&gt; parent = node.parent;</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (parent == null) {</span>
-<span class="fc" id="L124">					beforeNodeReuse(node);</span>
-<span class="fc" id="L125">					insertNode(node);</span>
-<span class="fc" id="L126">					break;</span>
+<span class="fc" id="L125">				Node&lt;K, V&gt; parent = node.parent;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				if (parent == null) {</span>
+<span class="fc" id="L127">					beforeNodeReuse(node);</span>
+<span class="fc" id="L128">					insertNode(node);</span>
+<span class="fc" id="L129">					break;</span>
 				} else {
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					if (parent.right == node) {</span>
-<span class="fc" id="L129">						parent.right = null;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">					if (parent.right == node) {</span>
+<span class="fc" id="L132">						parent.right = null;</span>
 					} else {
-<span class="pc bnc" id="L131" title="All 2 branches missed.">						assert parent.left == node;</span>
-<span class="fc" id="L132">						parent.left = null;</span>
+<span class="pc bnc" id="L134" title="All 2 branches missed.">						assert parent.left == node;</span>
+<span class="fc" id="L135">						parent.left = null;</span>
 					}
-<span class="fc" id="L134">					node.parent = null;</span>
-<span class="fc" id="L135">					beforeNodeReuse(node);</span>
-<span class="fc" id="L136">					insertNode(node);</span>
-<span class="fc" id="L137">					node = parent;</span>
+<span class="fc" id="L137">					node.parent = null;</span>
+<span class="fc" id="L138">					beforeNodeReuse(node);</span>
+<span class="fc" id="L139">					insertNode(node);</span>
+<span class="fc" id="L140">					node = parent;</span>
 				}
-<span class="fc" id="L139">			}</span>
+<span class="fc" id="L142">			}</span>
 		}
-<span class="fc" id="L141">		h.root = null;</span>
-<span class="fc" id="L142">		h.size = 0;</span>
-<span class="fc" id="L143">	}</span>
+<span class="fc" id="L144">		h.root = null;</span>
+<span class="fc" id="L145">		h.size = 0;</span>
+<span class="fc" id="L146">	}</span>
 
-<span class="fc" id="L145">	void beforeNodeReuse(Node&lt;K, V&gt; node) {}</span>
+<span class="fc" id="L148">	void beforeNodeReuse(Node&lt;K, V&gt; node) {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -154,7 +157,7 @@ import com.jgalgo.internal.util.Assertions;
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
-<span class="nc" id="L157">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L160">		throw new UnsupportedOperationException();</span>
 	}
 
 	/**
@@ -167,7 +170,7 @@ import com.jgalgo.internal.util.Assertions;
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
-<span class="nc" id="L170">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L173">		throw new UnsupportedOperationException();</span>
 	}
 
 	/**
@@ -180,342 +183,342 @@ import com.jgalgo.internal.util.Assertions;
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
-<span class="nc" id="L183">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L186">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; find(K key) {
-<span class="fc" id="L188">		return BinarySearchTrees.find(root, c, key);</span>
+<span class="fc" id="L191">		return BinarySearchTrees.find(root, c, key);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMin() {
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L194">			throw new IllegalStateException();</span>
-<span class="fc" id="L195">		return BinarySearchTrees.findMin(root);</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L197">			throw new IllegalStateException();</span>
+<span class="fc" id="L198">		return BinarySearchTrees.findMin(root);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMax() {
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L201">			throw new IllegalStateException();</span>
-<span class="fc" id="L202">		return BinarySearchTrees.findMax(root);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L204">			throw new IllegalStateException();</span>
+<span class="fc" id="L205">		return BinarySearchTrees.findMax(root);</span>
 	}
 
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
-<span class="fc" id="L207">		Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L208">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
-<span class="fc" id="L209">		remove(n);</span>
-<span class="fc" id="L210">		n.key = newKey;</span>
-<span class="fc" id="L211">		insertNode(n);</span>
-<span class="fc" id="L212">	}</span>
+<span class="fc" id="L210">		Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L211">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L212">		remove(n);</span>
+<span class="fc" id="L213">		n.key = newKey;</span>
+<span class="fc" id="L214">		insertNode(n);</span>
+<span class="fc" id="L215">	}</span>
 
 	private void insertNode(Node&lt;K, V&gt; n) {
-<span class="pc bnc" id="L215" title="All 2 branches missed.">		assert n.parent == null;</span>
-<span class="pc bnc" id="L216" title="All 2 branches missed.">		assert n.left == null;</span>
-<span class="pc bnc" id="L217" title="All 2 branches missed.">		assert n.right == null;</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">		if (root == null) {</span>
-<span class="fc" id="L219">			n.color = Black;</span>
-<span class="fc" id="L220">			root = n;</span>
-<span class="fc" id="L221">			afterInsert(n);</span>
-		} else {
-<span class="fc" id="L223">			BinarySearchTrees.insert(root, c, n);</span>
+<span class="pc bnc" id="L218" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L219" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L220" title="All 2 branches missed.">		assert n.right == null;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (root == null) {</span>
+<span class="fc" id="L222">			n.color = Black;</span>
+<span class="fc" id="L223">			root = n;</span>
 <span class="fc" id="L224">			afterInsert(n);</span>
-<span class="fc" id="L225">			fixAfterInsert(n);</span>
+		} else {
+<span class="fc" id="L226">			BinarySearchTrees.insert(root, c, n);</span>
+<span class="fc" id="L227">			afterInsert(n);</span>
+<span class="fc" id="L228">			fixAfterInsert(n);</span>
 		}
-<span class="fc" id="L227">		size++;</span>
-<span class="fc" id="L228">	}</span>
+<span class="fc" id="L230">		size++;</span>
+<span class="fc" id="L231">	}</span>
 
 	private void fixAfterInsert(Node&lt;K, V&gt; n) {
-<span class="fc" id="L231">		Node&lt;K, V&gt; parent = n.parent;</span>
-<span class="fc" id="L232">		n.color = Red;</span>
+<span class="fc" id="L234">		Node&lt;K, V&gt; parent = n.parent;</span>
+<span class="fc" id="L235">		n.color = Red;</span>
 
 		do {
 			/* Case 1: parent is black, all the requirements are satisfied */
-<span class="fc bfc" id="L236" title="All 2 branches covered.">			if (parent.color == Black)</span>
-<span class="fc" id="L237">				return;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">			if (parent.color == Black)</span>
+<span class="fc" id="L240">				return;</span>
 
 			/* Case 4: parent is Red and root */
-<span class="fc bfc" id="L240" title="All 2 branches covered.">			if (parent == root) {</span>
-<span class="fc" id="L241">				parent.color = Black;</span>
-<span class="fc" id="L242">				return;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">			if (parent == root) {</span>
+<span class="fc" id="L244">				parent.color = Black;</span>
+<span class="fc" id="L245">				return;</span>
 			}
 
-<span class="fc" id="L245">			Node&lt;K, V&gt; grandparent = parent.parent;</span>
-<span class="fc bfc" id="L246" title="All 2 branches covered.">			Node&lt;K, V&gt; uncle = parent == grandparent.left ? grandparent.right : grandparent.left;</span>
+<span class="fc" id="L248">			Node&lt;K, V&gt; grandparent = parent.parent;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			Node&lt;K, V&gt; uncle = parent == grandparent.left ? grandparent.right : grandparent.left;</span>
 
 			/* Case 5,6: parent is Red, uncle is Black */
-<span class="fc bfc" id="L249" title="All 4 branches covered.">			if (uncle == null || uncle.color == Black) {</span>
+<span class="fc bfc" id="L252" title="All 4 branches covered.">			if (uncle == null || uncle.color == Black) {</span>
 
 				/* Case 5: n is an inner grandchild of grandparent */
-<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (n == parent.left) {</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">					if (parent == grandparent.right) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">				if (n == parent.left) {</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					if (parent == grandparent.right) {</span>
 						/* Case 5a: left inner grandchild */
-<span class="fc" id="L255">						rotateRight(parent);</span>
-<span class="fc" id="L256">						n = parent;</span>
-<span class="fc" id="L257">						parent = grandparent.right;</span>
+<span class="fc" id="L258">						rotateRight(parent);</span>
+<span class="fc" id="L259">						n = parent;</span>
+<span class="fc" id="L260">						parent = grandparent.right;</span>
 					}
 				} else {
-<span class="fc bfc" id="L260" title="All 2 branches covered.">					if (parent == grandparent.left) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">					if (parent == grandparent.left) {</span>
 						/* Case 5b: right inner grandchild */
-<span class="fc" id="L262">						rotateLeft(parent);</span>
-<span class="fc" id="L263">						n = parent;</span>
-<span class="fc" id="L264">						parent = grandparent.left;</span>
+<span class="fc" id="L265">						rotateLeft(parent);</span>
+<span class="fc" id="L266">						n = parent;</span>
+<span class="fc" id="L267">						parent = grandparent.left;</span>
 					}
 				}
 
-<span class="pc bnc" id="L268" title="All 8 branches missed.">				assert (n == parent.left &amp;&amp; parent == grandparent.left)</span>
+<span class="pc bnc" id="L271" title="All 8 branches missed.">				assert (n == parent.left &amp;&amp; parent == grandparent.left)</span>
 						|| (n == parent.right &amp;&amp; parent == grandparent.right);
 				/* Case 6: n is an outer grandchild of grandparent */
-<span class="fc bfc" id="L271" title="All 2 branches covered.">				if (parent == grandparent.left)</span>
-<span class="fc" id="L272">					rotateRight(grandparent);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (parent == grandparent.left)</span>
+<span class="fc" id="L275">					rotateRight(grandparent);</span>
 				else
-<span class="fc" id="L274">					rotateLeft(grandparent);</span>
-<span class="fc" id="L275">				parent.color = Black;</span>
-<span class="fc" id="L276">				grandparent.color = Red;</span>
-<span class="fc" id="L277">				return;</span>
+<span class="fc" id="L277">					rotateLeft(grandparent);</span>
+<span class="fc" id="L278">				parent.color = Black;</span>
+<span class="fc" id="L279">				grandparent.color = Red;</span>
+<span class="fc" id="L280">				return;</span>
 			}
 
 			/* Case 2: parent is Red, uncle is Red */
-<span class="pc bnc" id="L281" title="All 2 branches missed.">			assert grandparent.color == Black;</span>
-<span class="fc" id="L282">			parent.color = uncle.color = Black;</span>
-<span class="fc" id="L283">			grandparent.color = Red;</span>
+<span class="pc bnc" id="L284" title="All 2 branches missed.">			assert grandparent.color == Black;</span>
+<span class="fc" id="L285">			parent.color = uncle.color = Black;</span>
+<span class="fc" id="L286">			grandparent.color = Red;</span>
 
-<span class="fc" id="L285">			n = grandparent;</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">		} while ((parent = n.parent) != null);</span>
+<span class="fc" id="L288">			n = grandparent;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		} while ((parent = n.parent) != null);</span>
 
 		/* Case 3: we exited the loop through the main condition, n is now a Red root */
-<span class="fc" id="L289">	}</span>
+<span class="fc" id="L292">	}</span>
 
 	private void removeNode(Node&lt;K, V&gt; n, Node&lt;K, V&gt; replace) {
-<span class="fc" id="L292">		beforeRemove(n);</span>
-<span class="fc" id="L293">		Node&lt;K, V&gt; parent = n.parent;</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">		if (parent != null) {</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">			if (n == parent.left) {</span>
-<span class="fc" id="L296">				parent.left = replace;</span>
+<span class="fc" id="L295">		beforeRemove(n);</span>
+<span class="fc" id="L296">		Node&lt;K, V&gt; parent = n.parent;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L299">				parent.left = replace;</span>
 			} else {
-<span class="pc bnc" id="L298" title="All 2 branches missed.">				assert n == parent.right;</span>
-<span class="fc" id="L299">				parent.right = replace;</span>
+<span class="pc bnc" id="L301" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L302">				parent.right = replace;</span>
 			}
 		} else {
-<span class="fc" id="L302">			root = replace;</span>
+<span class="fc" id="L305">			root = replace;</span>
 		}
-<span class="fc bfc" id="L304" title="All 2 branches covered.">		if (replace != null)</span>
-<span class="fc" id="L305">			replace.parent = parent;</span>
-<span class="fc" id="L306">		n.clearWithoutUserData();</span>
-<span class="fc" id="L307">		size--;</span>
-<span class="fc" id="L308">	}</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">		if (replace != null)</span>
+<span class="fc" id="L308">			replace.parent = parent;</span>
+<span class="fc" id="L309">		n.clearWithoutUserData();</span>
+<span class="fc" id="L310">		size--;</span>
+<span class="fc" id="L311">	}</span>
 
 	void removeNode(Node&lt;K, V&gt; n) {
 		/* root with no children, just remove */
-<span class="fc bfc" id="L312" title="All 6 branches covered.">		if (n == root &amp;&amp; n.left == null &amp;&amp; n.right == null) {</span>
-<span class="fc" id="L313">			removeNode(n, null);</span>
-<span class="fc" id="L314">			return;</span>
+<span class="fc bfc" id="L315" title="All 6 branches covered.">		if (n == root &amp;&amp; n.left == null &amp;&amp; n.right == null) {</span>
+<span class="fc" id="L316">			removeNode(n, null);</span>
+<span class="fc" id="L317">			return;</span>
 		}
 
 		/* 2 children, switch place with a single child node */
-<span class="fc bfc" id="L318" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
-<span class="fc" id="L319">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
-<span class="pc bnc" id="L320" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
-<span class="fc" id="L321">		Node&lt;K, V&gt; parent = n.parent;</span>
+<span class="fc bfc" id="L321" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
+<span class="fc" id="L322">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
+<span class="pc bnc" id="L323" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
+<span class="fc" id="L324">		Node&lt;K, V&gt; parent = n.parent;</span>
 
 		/* Red node, just remove */
-<span class="fc bfc" id="L324" title="All 2 branches covered.">		if (n.color == Red) {</span>
-<span class="pc bnc" id="L325" title="All 4 branches missed.">			assert n.left == null &amp;&amp; n.right == null;</span>
-<span class="fc" id="L326">			removeNode(n, null);</span>
-<span class="fc" id="L327">			return;</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (n.color == Red) {</span>
+<span class="pc bnc" id="L328" title="All 4 branches missed.">			assert n.left == null &amp;&amp; n.right == null;</span>
+<span class="fc" id="L329">			removeNode(n, null);</span>
+<span class="fc" id="L330">			return;</span>
 		}
 
 		/* Black node, single red child. Remove and make child black */
-<span class="fc bfc" id="L331" title="All 4 branches covered.">		if (n.left != null || n.right != null) {</span>
-<span class="pc bnc" id="L332" title="All 6 branches missed.">			assert n.left != null ^ n.right != null;</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">			Node&lt;K, V&gt; child = n.left != null ? n.left : n.right;</span>
-<span class="pc bnc" id="L334" title="All 2 branches missed.">			assert child.color = Red;</span>
-<span class="pc bnc" id="L335" title="All 4 branches missed.">			assert child.left == null &amp;&amp; child.right == null;</span>
-<span class="fc" id="L336">			child.color = Black;</span>
-<span class="fc" id="L337">			removeNode(n, child);</span>
-<span class="fc" id="L338">			return;</span>
+<span class="fc bfc" id="L334" title="All 4 branches covered.">		if (n.left != null || n.right != null) {</span>
+<span class="pc bnc" id="L335" title="All 6 branches missed.">			assert n.left != null ^ n.right != null;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">			Node&lt;K, V&gt; child = n.left != null ? n.left : n.right;</span>
+<span class="pc bnc" id="L337" title="All 2 branches missed.">			assert child.color = Red;</span>
+<span class="pc bnc" id="L338" title="All 4 branches missed.">			assert child.left == null &amp;&amp; child.right == null;</span>
+<span class="fc" id="L339">			child.color = Black;</span>
+<span class="fc" id="L340">			removeNode(n, child);</span>
+<span class="fc" id="L341">			return;</span>
 		}
 
 		/* black node, no children. Remove node and fix short parent subtree in loop */
-<span class="fc bfc" id="L342" title="All 2 branches covered.">		boolean leftIsShortSide = n == parent.left;</span>
-<span class="fc" id="L343">		removeNode(n, null);</span>
-<span class="fc" id="L344">		fixAfterRemove(parent, leftIsShortSide);</span>
-<span class="fc" id="L345">	}</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">		boolean leftIsShortSide = n == parent.left;</span>
+<span class="fc" id="L346">		removeNode(n, null);</span>
+<span class="fc" id="L347">		fixAfterRemove(parent, leftIsShortSide);</span>
+<span class="fc" id="L348">	}</span>
 
 	@Override
 	public void remove(HeapReference&lt;K, V&gt; ref) {
-<span class="pc bpc" id="L349" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L350">			throw new IllegalArgumentException(&quot;ref is not valid&quot;);</span>
-<span class="fc" id="L351">		removeNode((Node&lt;K, V&gt;) ref);</span>
-<span class="fc" id="L352">	}</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L353">			throw new IllegalArgumentException(&quot;ref is not valid&quot;);</span>
+<span class="fc" id="L354">		removeNode((Node&lt;K, V&gt;) ref);</span>
+<span class="fc" id="L355">	}</span>
 
 	private void fixAfterRemove(Node&lt;K, V&gt; parent, boolean leftIsShortSide) {
 		for (;;) {
 			Node&lt;K, V&gt; sibling, d, c;
-<span class="fc bfc" id="L357" title="All 2 branches covered.">			if (leftIsShortSide) {</span>
-<span class="fc" id="L358">				sibling = parent.right;</span>
-<span class="fc" id="L359">				d = sibling.right;</span>
-<span class="fc" id="L360">				c = sibling.left;</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">			if (leftIsShortSide) {</span>
+<span class="fc" id="L361">				sibling = parent.right;</span>
+<span class="fc" id="L362">				d = sibling.right;</span>
+<span class="fc" id="L363">				c = sibling.left;</span>
 			} else {
-<span class="fc" id="L362">				sibling = parent.left;</span>
-<span class="fc" id="L363">				d = sibling.left;</span>
-<span class="fc" id="L364">				c = sibling.right;</span>
+<span class="fc" id="L365">				sibling = parent.left;</span>
+<span class="fc" id="L366">				d = sibling.left;</span>
+<span class="fc" id="L367">				c = sibling.right;</span>
 			}
 
 			/* Case 3: sibling is Red */
-<span class="fc bfc" id="L368" title="All 2 branches covered.">			if (sibling.color == Red) {</span>
-<span class="fc" id="L369">				rotate(parent, leftIsShortSide);</span>
-<span class="pc bnc" id="L370" title="All 2 branches missed.">				assert parent.color == Black;</span>
-<span class="fc" id="L371">				parent.color = Red;</span>
-<span class="fc" id="L372">				sibling.color = Black;</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">			if (sibling.color == Red) {</span>
+<span class="fc" id="L372">				rotate(parent, leftIsShortSide);</span>
+<span class="pc bnc" id="L373" title="All 2 branches missed.">				assert parent.color == Black;</span>
+<span class="fc" id="L374">				parent.color = Red;</span>
+<span class="fc" id="L375">				sibling.color = Black;</span>
 
-<span class="fc" id="L374">				sibling = c;</span>
-<span class="fc bfc" id="L375" title="All 2 branches covered.">				if (leftIsShortSide) {</span>
-<span class="fc" id="L376">					d = sibling.right;</span>
-<span class="fc" id="L377">					c = sibling.left;</span>
+<span class="fc" id="L377">				sibling = c;</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">				if (leftIsShortSide) {</span>
+<span class="fc" id="L379">					d = sibling.right;</span>
+<span class="fc" id="L380">					c = sibling.left;</span>
 				} else {
-<span class="fc" id="L379">					d = sibling.left;</span>
-<span class="fc" id="L380">					c = sibling.right;</span>
+<span class="fc" id="L382">					d = sibling.left;</span>
+<span class="fc" id="L383">					c = sibling.right;</span>
 				}
 			}
 
 			/* Case 6: sibling is Black, d (distant nephew) is red */
-<span class="fc bfc" id="L385" title="All 4 branches covered.">			if (d != null &amp;&amp; d.color == Red) {</span>
-<span class="fc" id="L386">				rotate(parent, leftIsShortSide);</span>
-<span class="fc" id="L387">				sibling.color = parent.color;</span>
-<span class="fc" id="L388">				parent.color = Black;</span>
-<span class="fc" id="L389">				d.color = Black;</span>
-<span class="fc" id="L390">				return;</span>
+<span class="fc bfc" id="L388" title="All 4 branches covered.">			if (d != null &amp;&amp; d.color == Red) {</span>
+<span class="fc" id="L389">				rotate(parent, leftIsShortSide);</span>
+<span class="fc" id="L390">				sibling.color = parent.color;</span>
+<span class="fc" id="L391">				parent.color = Black;</span>
+<span class="fc" id="L392">				d.color = Black;</span>
+<span class="fc" id="L393">				return;</span>
 			}
 
 			/* Case 5: sibling is Black, c (close nephew) is red */
-<span class="fc bfc" id="L394" title="All 4 branches covered.">			if (c != null &amp;&amp; c.color == Red) {</span>
-<span class="fc bfc" id="L395" title="All 2 branches covered.">				rotate(sibling, !leftIsShortSide);</span>
-<span class="fc" id="L396">				sibling.color = Red;</span>
-<span class="fc" id="L397">				c.color = Black;</span>
-<span class="fc" id="L398">				rotate(parent, leftIsShortSide);</span>
-<span class="fc" id="L399">				c.color = parent.color;</span>
-<span class="fc" id="L400">				parent.color = Black;</span>
-<span class="fc" id="L401">				sibling.color = Black;</span>
-<span class="fc" id="L402">				return;</span>
+<span class="fc bfc" id="L397" title="All 4 branches covered.">			if (c != null &amp;&amp; c.color == Red) {</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">				rotate(sibling, !leftIsShortSide);</span>
+<span class="fc" id="L399">				sibling.color = Red;</span>
+<span class="fc" id="L400">				c.color = Black;</span>
+<span class="fc" id="L401">				rotate(parent, leftIsShortSide);</span>
+<span class="fc" id="L402">				c.color = parent.color;</span>
+<span class="fc" id="L403">				parent.color = Black;</span>
+<span class="fc" id="L404">				sibling.color = Black;</span>
+<span class="fc" id="L405">				return;</span>
 			}
 
 			/* Case 4: sibling, c, d Black, parent is Red */
-<span class="fc bfc" id="L406" title="All 2 branches covered.">			if (parent.color == Red) {</span>
-<span class="fc" id="L407">				sibling.color = Red;</span>
-<span class="fc" id="L408">				parent.color = Black;</span>
-<span class="fc" id="L409">				return;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">			if (parent.color == Red) {</span>
+<span class="fc" id="L410">				sibling.color = Red;</span>
+<span class="fc" id="L411">				parent.color = Black;</span>
+<span class="fc" id="L412">				return;</span>
 			}
 
 			/* Case 1: sibling, c, d, parent are Black */
-<span class="fc" id="L413">			sibling.color = Red;</span>
+<span class="fc" id="L416">			sibling.color = Red;</span>
 
-<span class="fc" id="L415">			Node&lt;K, V&gt; grandparent = parent.parent;</span>
+<span class="fc" id="L418">			Node&lt;K, V&gt; grandparent = parent.parent;</span>
 			/* Case 2: reached tree root, decrease the total black height by 1, done */
-<span class="fc bfc" id="L417" title="All 2 branches covered.">			if (grandparent == null)</span>
-<span class="fc" id="L418">				return;</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">			if (grandparent == null)</span>
+<span class="fc" id="L421">				return;</span>
 
-<span class="fc bfc" id="L420" title="All 2 branches covered.">			leftIsShortSide = parent == grandparent.left;</span>
-<span class="fc" id="L421">			parent = grandparent;</span>
-<span class="fc" id="L422">		}</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">			leftIsShortSide = parent == grandparent.left;</span>
+<span class="fc" id="L424">			parent = grandparent;</span>
+<span class="fc" id="L425">		}</span>
 	}
 
 	private void rotate(Node&lt;K, V&gt; n, boolean left) {
-<span class="fc bfc" id="L426" title="All 2 branches covered.">		if (left)</span>
-<span class="fc" id="L427">			rotateLeft(n);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">		if (left)</span>
+<span class="fc" id="L430">			rotateLeft(n);</span>
 		else
-<span class="fc" id="L429">			rotateRight(n);</span>
-<span class="fc" id="L430">	}</span>
+<span class="fc" id="L432">			rotateRight(n);</span>
+<span class="fc" id="L433">	}</span>
 
 	private void rotateLeft(Node&lt;K, V&gt; n) {
-<span class="fc" id="L433">		beforeRotateLeft(n);</span>
-<span class="fc" id="L434">		Node&lt;K, V&gt; parent = n.parent, child = n.right, grandchild = child.left;</span>
+<span class="fc" id="L436">		beforeRotateLeft(n);</span>
+<span class="fc" id="L437">		Node&lt;K, V&gt; parent = n.parent, child = n.right, grandchild = child.left;</span>
 
-<span class="fc" id="L436">		n.right = grandchild;</span>
-<span class="fc bfc" id="L437" title="All 2 branches covered.">		if (grandchild != null)</span>
-<span class="fc" id="L438">			grandchild.parent = n;</span>
+<span class="fc" id="L439">		n.right = grandchild;</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">		if (grandchild != null)</span>
+<span class="fc" id="L441">			grandchild.parent = n;</span>
 
-<span class="fc" id="L440">		child.left = n;</span>
-<span class="fc" id="L441">		n.parent = child;</span>
-<span class="fc" id="L442">		child.parent = parent;</span>
+<span class="fc" id="L443">		child.left = n;</span>
+<span class="fc" id="L444">		n.parent = child;</span>
+<span class="fc" id="L445">		child.parent = parent;</span>
 
-<span class="fc bfc" id="L444" title="All 2 branches covered.">		if (parent != null) {</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">			if (n == parent.left) {</span>
-<span class="fc" id="L446">				parent.left = child;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L449">				parent.left = child;</span>
 			} else {
-<span class="pc bnc" id="L448" title="All 2 branches missed.">				assert n == parent.right;</span>
-<span class="fc" id="L449">				parent.right = child;</span>
+<span class="pc bnc" id="L451" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L452">				parent.right = child;</span>
 			}
 		} else {
-<span class="fc" id="L452">			root = child;</span>
+<span class="fc" id="L455">			root = child;</span>
 		}
-<span class="fc" id="L454">	}</span>
+<span class="fc" id="L457">	}</span>
 
 	private void rotateRight(Node&lt;K, V&gt; n) {
-<span class="fc" id="L457">		beforeRotateRight(n);</span>
-<span class="fc" id="L458">		Node&lt;K, V&gt; parent = n.parent, child = n.left, grandchild = child.right;</span>
+<span class="fc" id="L460">		beforeRotateRight(n);</span>
+<span class="fc" id="L461">		Node&lt;K, V&gt; parent = n.parent, child = n.left, grandchild = child.right;</span>
 
-<span class="fc" id="L460">		n.left = grandchild;</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">		if (grandchild != null)</span>
-<span class="fc" id="L462">			grandchild.parent = n;</span>
+<span class="fc" id="L463">		n.left = grandchild;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">		if (grandchild != null)</span>
+<span class="fc" id="L465">			grandchild.parent = n;</span>
 
-<span class="fc" id="L464">		child.right = n;</span>
-<span class="fc" id="L465">		n.parent = child;</span>
-<span class="fc" id="L466">		child.parent = parent;</span>
+<span class="fc" id="L467">		child.right = n;</span>
+<span class="fc" id="L468">		n.parent = child;</span>
+<span class="fc" id="L469">		child.parent = parent;</span>
 
-<span class="fc bfc" id="L468" title="All 2 branches covered.">		if (parent != null) {</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">			if (n == parent.left) {</span>
-<span class="fc" id="L470">				parent.left = child;</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L473">				parent.left = child;</span>
 			} else {
-<span class="pc bnc" id="L472" title="All 2 branches missed.">				assert n == parent.right;</span>
-<span class="fc" id="L473">				parent.right = child;</span>
+<span class="pc bnc" id="L475" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L476">				parent.right = child;</span>
 			}
 		} else {
-<span class="fc" id="L476">			root = child;</span>
+<span class="fc" id="L479">			root = child;</span>
 		}
-<span class="fc" id="L478">	}</span>
+<span class="fc" id="L481">	}</span>
 
 	void swap(Node&lt;K, V&gt; n1, Node&lt;K, V&gt; n2) {
-<span class="fc" id="L481">		BinarySearchTrees.swap(n1, n2);</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">		if (n1 == root)</span>
-<span class="fc" id="L483">			root = n2;</span>
-<span class="pc bpc" id="L484" title="1 of 2 branches missed.">		else if (n2 == root)</span>
-<span class="nc" id="L485">			root = n1;</span>
-<span class="fc" id="L486">		boolean color = n1.color;</span>
-<span class="fc" id="L487">		n1.color = n2.color;</span>
-<span class="fc" id="L488">		n2.color = color;</span>
-<span class="fc" id="L489">	}</span>
+<span class="fc" id="L484">		BinarySearchTrees.swap(n1, n2);</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">		if (n1 == root)</span>
+<span class="fc" id="L486">			root = n2;</span>
+<span class="pc bpc" id="L487" title="1 of 2 branches missed.">		else if (n2 == root)</span>
+<span class="nc" id="L488">			root = n1;</span>
+<span class="fc" id="L489">		boolean color = n1.color;</span>
+<span class="fc" id="L490">		n1.color = n2.color;</span>
+<span class="fc" id="L491">		n2.color = color;</span>
+<span class="fc" id="L492">	}</span>
 
 	@Override
 	public HeapReference&lt;K, V&gt; findOrSmaller(K key) {
-<span class="fc" id="L493">		return BinarySearchTrees.findOrSmaller(root, c, key);</span>
+<span class="fc" id="L496">		return BinarySearchTrees.findOrSmaller(root, c, key);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findOrGreater(K key) {
-<span class="fc" id="L498">		return BinarySearchTrees.findOrGreater(root, c, key);</span>
+<span class="fc" id="L501">		return BinarySearchTrees.findOrGreater(root, c, key);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findSmaller(K key) {
-<span class="fc" id="L503">		return BinarySearchTrees.findSmaller(root, c, key);</span>
+<span class="fc" id="L506">		return BinarySearchTrees.findSmaller(root, c, key);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findGreater(K key) {
-<span class="fc" id="L508">		return BinarySearchTrees.findGreater(root, c, key);</span>
+<span class="fc" id="L511">		return BinarySearchTrees.findGreater(root, c, key);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; getPredecessor(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L513">		return BinarySearchTrees.getPredecessor((Node&lt;K, V&gt;) ref);</span>
+<span class="fc" id="L516">		return BinarySearchTrees.getPredecessor((Node&lt;K, V&gt;) ref);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; getSuccessor(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L518">		return BinarySearchTrees.getSuccessor((Node&lt;K, V&gt;) ref);</span>
+<span class="fc" id="L521">		return BinarySearchTrees.getSuccessor((Node&lt;K, V&gt;) ref);</span>
 	}
 
 	/**
@@ -526,54 +529,54 @@ import com.jgalgo.internal.util.Assertions;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	Iterator&lt;HeapReference&lt;K, V&gt;&gt; subTreeIterator(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L529">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node&lt;K, V&gt;) ref));</span>
+<span class="fc" id="L532">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node&lt;K, V&gt;) ref));</span>
 	}
 
-	static class Node&lt;K, V&gt; extends BinarySearchTrees.INode&lt;K, Node&lt;K, V&gt;&gt; implements HeapReference&lt;K, V&gt; {
+	static class Node&lt;K, V&gt; extends BinarySearchTrees.Node&lt;K, Node&lt;K, V&gt;&gt; implements HeapReference&lt;K, V&gt; {
 
 		private boolean color;
 		private V value;
 
 		Node(K key) {
-<span class="fc" id="L538">			super(key);</span>
-<span class="fc" id="L539">		}</span>
+<span class="fc" id="L541">			super(key);</span>
+<span class="fc" id="L542">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L543">			return key;</span>
+<span class="fc" id="L546">			return key;</span>
 		}
 
 		@Override
 		public String toString() {
 			// return &quot;{&quot; + (color == Red ? 'R' : 'B') + &quot;:&quot; + key + &quot;}&quot;;
-<span class="nc" id="L549">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="nc" id="L552">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="nc" id="L554">			return value;</span>
+<span class="nc" id="L557">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="nc" id="L559">			value = val;</span>
-<span class="nc" id="L560">		}</span>
+<span class="nc" id="L562">			value = val;</span>
+<span class="nc" id="L563">		}</span>
 
 	}
 
 	/* Hooks for extended red black tree sub class */
 
 	Node&lt;K, V&gt; newNode(K key) {
-<span class="fc" id="L567">		return new Node&lt;&gt;(key);</span>
+<span class="fc" id="L570">		return new Node&lt;&gt;(key);</span>
 	}
 
-<span class="fc" id="L570">	void afterInsert(Node&lt;K, V&gt; n) {}</span>
+<span class="fc" id="L573">	void afterInsert(Node&lt;K, V&gt; n) {}</span>
 
-<span class="fc" id="L572">	void beforeRemove(Node&lt;K, V&gt; n) {}</span>
+<span class="fc" id="L575">	void beforeRemove(Node&lt;K, V&gt; n) {}</span>
 
-<span class="fc" id="L574">	void beforeRotateLeft(Node&lt;K, V&gt; n) {}</span>
+<span class="fc" id="L577">	void beforeRotateLeft(Node&lt;K, V&gt; n) {}</span>
 
-<span class="fc" id="L576">	void beforeRotateRight(Node&lt;K, V&gt; n) {}</span>
+<span class="fc" id="L579">	void beforeRotateRight(Node&lt;K, V&gt; n) {}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

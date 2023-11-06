@@ -53,6 +53,7 @@ public interface WeightsDouble&lt;K &gt; extends Weights&lt;K, Double&gt; , Weig
 
 	/**
 	 * Get the default weight of this weights container.
+     *
 	 * &lt;p&gt;
 	 * The default weight is the weight associated with all elements that were not explicitly set using
 	 * {@link #set(Object, double)}.
@@ -64,18 +65,19 @@ public interface WeightsDouble&lt;K &gt; extends Weights&lt;K, Double&gt; , Weig
 	@Deprecated
 	@Override
 	default Double defaultWeightAsObj() {
-<span class="fc" id="L67">		return Double.valueOf(defaultWeight());</span>
+<span class="fc" id="L68">		return Double.valueOf(defaultWeight());</span>
 	}
 
 	
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link WeightFunction} interface by using the weights of the container.
 	 */
 	@Override
 	default double weight(K element) {
-<span class="fc" id="L78">		return get(element);</span>
+<span class="fc" id="L80">		return get(element);</span>
 	}
 
 

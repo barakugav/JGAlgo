@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a weight
  * function, the weight of a cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\) is in \(C\)
@@ -33,9 +34,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * {@code source (S)} and {@code sink (T)} and we need to find the minimum cut \((C,\bar{C})\) such that the
  * {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal vertices we need
  * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
+ *
  * &lt;p&gt;
  * Algorithms implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
  * {@code sink (T)}.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -47,9 +50,11 @@ public interface MinimumCutST {
 
 	/**
 	 * Compute the minimum cut in a graph between two terminal vertices.
+	 *
 	 * &lt;p&gt;
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -67,9 +72,11 @@ public interface MinimumCutST {
 
 	/**
 	 * Compute the minimum cut in a graph between two sets of vertices.
+	 *
 	 * &lt;p&gt;
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link IntCollection} as {@code sources} and
@@ -90,6 +97,7 @@ public interface MinimumCutST {
 
 	/**
 	 * Create a new minimum S-T cut algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link MinimumCutST} object. The {@link MinimumCutST.Builder}
 	 * might support different options to obtain different implementations.
@@ -97,22 +105,24 @@ public interface MinimumCutST {
 	 * @return a default implementation of {@link MinimumCutST}
 	 */
 	static MinimumCutST newInstance() {
-<span class="fc" id="L100">		return newBuilder().build();</span>
+<span class="fc" id="L108">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new minimum cut algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-<span class="fc" id="L111">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
+<span class="fc" id="L120">		return MaximumFlowPushRelabel::newInstanceHighestFirst;</span>
 	}
 
 	/**
 	 * Create a new minimum cut algorithm using a maximum flow algorithm.
+	 *
 	 * &lt;p&gt;
 	 * By first computing a maximum flow between the source and the sink, the minimum cut can be realized from the
 	 * maximum flow without increasing the asymptotical running time of the maximum flow algorithm running time.
@@ -121,7 +131,7 @@ public interface MinimumCutST {
 	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L124">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
+<span class="fc" id="L134">		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
 	}
 
 	/**
@@ -141,10 +151,12 @@ public interface MinimumCutST {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -153,7 +165,7 @@ public interface MinimumCutST {
 		 * @return       this builder
 		 */
 		default MinimumCutST.Builder setOption(String key, Object value) {
-<span class="nc" id="L156">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L168">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

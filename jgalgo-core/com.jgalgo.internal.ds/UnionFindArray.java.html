@@ -20,10 +20,12 @@ import java.util.Arrays;
 
 /**
  * Array implementation of the Union Find data structure.
+ *
  * &lt;p&gt;
  * The elements are represented in a continuos array, which is most efficient for storage, and performance as the rate
  * of cache miss is low. This implementation should be used as the default implementation for the {@link UnionFind}
  * interface.
+ *
  * &lt;p&gt;
  * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
  * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use
@@ -31,7 +33,7 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L34">class UnionFindArray implements UnionFind {</span>
+<span class="fc" id="L36">class UnionFindArray implements UnionFind {</span>
 
 	int[] parent;
 	int size;
@@ -40,106 +42,106 @@ import java.util.Arrays;
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	UnionFindArray() {
-<span class="fc" id="L43">		this(0);</span>
-<span class="fc" id="L44">	}</span>
+<span class="fc" id="L45">		this(0);</span>
+<span class="fc" id="L46">	}</span>
 
 	/**
 	 * Create a new empty Union Find data structure with expected number of elements.
 	 *
 	 * @param expectedSize the expended number of elements in the data structure
 	 */
-<span class="fc" id="L51">	UnionFindArray(int expectedSize) {</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
-<span class="nc" id="L53">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		int arrSize = expectedSize == 0 ? 2 : expectedSize;</span>
-<span class="fc" id="L55">		parent = new int[arrSize];</span>
-<span class="fc" id="L56">		Arrays.fill(parent, -1);</span>
-<span class="fc" id="L57">		size = 0;</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L53">	UnionFindArray(int expectedSize) {</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
+<span class="nc" id="L55">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		int arrSize = expectedSize == 0 ? 2 : expectedSize;</span>
+<span class="fc" id="L57">		parent = new int[arrSize];</span>
+<span class="fc" id="L58">		Arrays.fill(parent, -1);</span>
+<span class="fc" id="L59">		size = 0;</span>
+<span class="fc" id="L60">	}</span>
 
 	boolean hasParent(int x) {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		return parent[x] &gt;= 0;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		return parent[x] &gt;= 0;</span>
 	}
 
 	@Override
 	public int make() {
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
-<span class="fc" id="L67">			int oldLength = parent.length;</span>
-<span class="fc" id="L68">			parent = Arrays.copyOf(parent, size * 2);</span>
-<span class="fc" id="L69">			Arrays.fill(parent, oldLength, parent.length, -1);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
+<span class="fc" id="L69">			int oldLength = parent.length;</span>
+<span class="fc" id="L70">			parent = Arrays.copyOf(parent, size * 2);</span>
+<span class="fc" id="L71">			Arrays.fill(parent, oldLength, parent.length, -1);</span>
 		}
-<span class="fc" id="L71">		return size++;</span>
+<span class="fc" id="L73">		return size++;</span>
 	}
 
 	@Override
 	public int find(int x) {
-<span class="pc bpc" id="L76" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L77">			throw new IndexOutOfBoundsException(x);</span>
-<span class="fc" id="L78">		return find0(x);</span>
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L79">			throw new IndexOutOfBoundsException(x);</span>
+<span class="fc" id="L80">		return find0(x);</span>
 	}
 
 	int find0(int x) {
 		/* Find root */
 		int r;
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r]);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r]);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (; x != r;) {</span>
-<span class="fc" id="L88">			int next = parent[x];</span>
-<span class="fc" id="L89">			parent[x] = r;</span>
-<span class="fc" id="L90">			x = next;</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		while (x != r) {</span>
+<span class="fc" id="L90">			int next = parent[x];</span>
+<span class="fc" id="L91">			parent[x] = r;</span>
+<span class="fc" id="L92">			x = next;</span>
+<span class="fc" id="L93">		}</span>
 
-<span class="fc" id="L93">		return r;</span>
+<span class="fc" id="L95">		return r;</span>
 	}
 
 	@Override
 	public int union(int a, int b) {
-<span class="fc" id="L98">		a = find(a);</span>
-<span class="fc" id="L99">		b = find(b);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (a == b)</span>
-<span class="fc" id="L101">			return a;</span>
+<span class="fc" id="L100">		a = find(a);</span>
+<span class="fc" id="L101">		b = find(b);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L103">			return a;</span>
 
-<span class="fc" id="L103">		int aRank = getRank(a);</span>
-<span class="fc" id="L104">		int bRank = getRank(b);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (aRank &lt; bRank) {</span>
-<span class="fc" id="L106">			int temp = a;</span>
-<span class="fc" id="L107">			a = b;</span>
-<span class="fc" id="L108">			b = temp;</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		} else if (aRank == bRank) {</span>
-<span class="fc" id="L110">			aRank++;</span>
-<span class="fc" id="L111">			setRank(a, aRank);</span>
+<span class="fc" id="L105">		int aRank = getRank(a);</span>
+<span class="fc" id="L106">		int bRank = getRank(b);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (aRank &lt; bRank) {</span>
+<span class="fc" id="L108">			int temp = a;</span>
+<span class="fc" id="L109">			a = b;</span>
+<span class="fc" id="L110">			b = temp;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		} else if (aRank == bRank) {</span>
+<span class="fc" id="L112">			aRank++;</span>
+<span class="fc" id="L113">			setRank(a, aRank);</span>
 		}
 
-<span class="fc" id="L114">		unionSetParent(b, a);</span>
-<span class="fc" id="L115">		return a;</span>
+<span class="fc" id="L116">		unionSetParent(b, a);</span>
+<span class="fc" id="L117">		return a;</span>
 	}
 
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L119">		parent[c] = p;</span>
-<span class="fc" id="L120">	}</span>
+<span class="fc" id="L121">		parent[c] = p;</span>
+<span class="fc" id="L122">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L124">		return size;</span>
+<span class="fc" id="L126">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L129">		Arrays.fill(parent, 0, size, -1);</span>
-<span class="fc" id="L130">		size = 0;</span>
-<span class="fc" id="L131">	}</span>
+<span class="fc" id="L131">		Arrays.fill(parent, 0, size, -1);</span>
+<span class="fc" id="L132">		size = 0;</span>
+<span class="fc" id="L133">	}</span>
 
 	int getRank(int idx) {
-<span class="fc" id="L134">		int rank = parent[idx];</span>
-<span class="pc bnc" id="L135" title="All 2 branches missed.">		assert rank &lt; 0;</span>
-<span class="fc" id="L136">		return -rank;</span>
+<span class="fc" id="L136">		int rank = parent[idx];</span>
+<span class="pc bnc" id="L137" title="All 2 branches missed.">		assert rank &lt; 0;</span>
+<span class="fc" id="L138">		return -rank;</span>
 	}
 
 	void setRank(int idx, int rank) {
-<span class="pc bnc" id="L140" title="All 2 branches missed.">		assert rank &gt; 0;</span>
-<span class="fc" id="L141">		parent[idx] = -rank;</span>
-<span class="fc" id="L142">	}</span>
+<span class="pc bnc" id="L142" title="All 2 branches missed.">		assert rank &gt; 0;</span>
+<span class="fc" id="L143">		parent[idx] = -rank;</span>
+<span class="fc" id="L144">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

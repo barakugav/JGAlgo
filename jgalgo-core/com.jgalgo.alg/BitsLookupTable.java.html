@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 /**
  * Lookup tables for bit operations.
+ *
  * &lt;p&gt;
  * Some algorithms which use the &lt;a href=&quot;https://en.wikipedia.org/wiki/Random-access_machine&quot;&gt;RAM model&lt;/a&gt; perform
  * some bit operations such as popcount ({@link Integer#bitCount(int)}) or ctz
@@ -26,6 +27,7 @@ package com.jgalgo.alg;
  * \(O(1)\), rather its implemented in \(O(\textit{wordsize})\) or \(O(\log \textit{wordsize})\). its possible to
  * implemented these operations in true \(O(1)\) time by constructing tables of size \(2^\textit{wordsize}\), which is
  * usually linear in the input size, and this is what this class purpose is.
+ *
  * &lt;p&gt;
  * The use of this class should be used with benchmarks, as its expected to use non negligible amount of memory and gain
  * little if any performance increase.
@@ -38,6 +40,7 @@ class BitsLookupTable {
 
 	/**
 	 * Lookup table for bitCount (popcount) operation.
+	 *
 	 * &lt;p&gt;
 	 * Lookup table that implement bitCount operation in \(O(1)\) time for any wordsize (maximum number of bits needed
 	 * to represent an integer) using space \(O(2^\textit{wordsize})\) which is usually linear in the input size.
@@ -68,23 +71,24 @@ class BitsLookupTable {
 		 *
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 */
-<span class="fc" id="L71">		Count(int wordsize) {</span>
-<span class="pc bpc" id="L72" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
-<span class="nc" id="L73">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
-<span class="fc" id="L74">			this.wordsize = wordsize;</span>
-<span class="fc" id="L75">			bitCountTable = new byte[1 &lt;&lt; wordsize];</span>
+<span class="fc" id="L74">		Count(int wordsize) {</span>
+<span class="pc bpc" id="L75" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
+<span class="nc" id="L76">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
+<span class="fc" id="L77">			this.wordsize = wordsize;</span>
+<span class="fc" id="L78">			bitCountTable = new byte[1 &lt;&lt; wordsize];</span>
 
 			/* init table */
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int highBit = 0; highBit &lt; wordsize; highBit++) {</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
-<span class="fc" id="L80">					int x = prevx | (1 &lt;&lt; highBit);</span>
-<span class="fc" id="L81">					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int highBit = 0; highBit &lt; wordsize; highBit++) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
+<span class="fc" id="L83">					int x = prevx | (1 &lt;&lt; highBit);</span>
+<span class="fc" id="L84">					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);</span>
 				}
 			}
-<span class="fc" id="L84">		}</span>
+<span class="fc" id="L87">		}</span>
 
 		/**
 		 * Get the number of 1 bits in an integer.
+		 *
 		 * &lt;p&gt;
 		 * This function is equivalent to {@link Integer#bitCount(int)}, but its implemented in 'true' \(O(1)\) and
 		 * therefore faster (in theory!).
@@ -93,19 +97,21 @@ class BitsLookupTable {
 		 * @return   the number of 1 bits in the given integer
 		 */
 		int bitCount(int x) {
-<span class="fc" id="L96">			return bitCountTable[x];</span>
+<span class="fc" id="L100">			return bitCountTable[x];</span>
 		}
 
 	}
 
 	/**
 	 * Lookup table for getting the i-th bit in an integer.
+	 *
 	 * &lt;p&gt;
 	 * Define a list \(S(x)\) as ordered list containing all indices of 1 bits of an integer number \(x\), namely given
 	 * an integer \(x = 0b \; b_{31} b_{30} ... b_0\) where \(b_i\) is the \(i\)-th bit of \(x\), define \(S(x)\) as the
 	 * ordered list \(S = (i \mid b_i = 1)\), for example \(x = 9 = 0b \; 1001, S(x) = (0, 3)\). The \(i\)-th bit of a
 	 * number \(x\) is \(S(x)[i]\). This function does not have a standard implementation in the {@link Integer} class,
 	 * but could implemented easily in \(O(\textit{wordsize})\) time.
+	 *
 	 * &lt;p&gt;
 	 * This class construct a lookup table to answer an i-th bit query in \(O(1)\) time using a table of size
 	 * \(O(2^\textit{wordsize})\) space which is usually linear in the input size.
@@ -140,30 +146,31 @@ class BitsLookupTable {
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 * @param count    a lookup table for the bitCount (popcount) operation
 		 */
-<span class="fc" id="L143">		Ith(int wordsize, BitsLookupTable.Count count) {</span>
-<span class="pc bpc" id="L144" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
-<span class="nc" id="L145">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
-<span class="nc" id="L147">				throw new IllegalArgumentException(&quot;bitCount table can't handle the requested word size&quot;);</span>
-<span class="fc" id="L148">			this.count = count;</span>
-<span class="fc" id="L149">			this.wordsize = wordsize;</span>
-<span class="fc" id="L150">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
-<span class="fc" id="L151">			ithBitTable = new byte[1 &lt;&lt; halfwordsize][halfwordsize];</span>
+<span class="fc" id="L149">		Ith(int wordsize, BitsLookupTable.Count count) {</span>
+<span class="pc bpc" id="L150" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
+<span class="nc" id="L151">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
+<span class="nc" id="L153">				throw new IllegalArgumentException(&quot;bitCount table can't handle the requested word size&quot;);</span>
+<span class="fc" id="L154">			this.count = count;</span>
+<span class="fc" id="L155">			this.wordsize = wordsize;</span>
+<span class="fc" id="L156">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
+<span class="fc" id="L157">			ithBitTable = new byte[1 &lt;&lt; halfwordsize][halfwordsize];</span>
 
 			/* init table */
-<span class="fc bfc" id="L154" title="All 2 branches covered.">			for (int highBit = 0; highBit &lt; halfwordsize; highBit++) {</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
-<span class="fc" id="L156">					int x = prevx | (1 &lt;&lt; highBit);</span>
-<span class="fc" id="L157">					int xBitCount = count.bitCount(x);</span>
-<span class="fc" id="L158">					ithBitTable[x][xBitCount - 1] = (byte) (highBit);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (int i = xBitCount - 2; i &gt;= 0; i--)</span>
-<span class="fc" id="L160">						ithBitTable[x][i] = ithBitTable[prevx][i];</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			for (int highBit = 0; highBit &lt; halfwordsize; highBit++) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
+<span class="fc" id="L162">					int x = prevx | (1 &lt;&lt; highBit);</span>
+<span class="fc" id="L163">					int xBitCount = count.bitCount(x);</span>
+<span class="fc" id="L164">					ithBitTable[x][xBitCount - 1] = (byte) (highBit);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">					for (int i = xBitCount - 2; i &gt;= 0; i--)</span>
+<span class="fc" id="L166">						ithBitTable[x][i] = ithBitTable[prevx][i];</span>
 				}
 			}
-<span class="fc" id="L163">		}</span>
+<span class="fc" id="L169">		}</span>
 
 		/**
 		 * Get the index of i-th one bit of an integer.
+		 *
 		 * &lt;p&gt;
 		 * Define a list \(S(x)\) as ordered list containing all indices of 1 bits, for example \(x = 9 = 0b1001, S(x) =
 		 * (0 ,3)\). The \(i\)-th bit of \(x\) is defined as \(S(x)[i]\).
@@ -180,19 +187,19 @@ class BitsLookupTable {
 			 * the easy [2^wordsize][wordsize] will results in \(O(n \log n)\) time and size.
 			 */
 
-<span class="pc bpc" id="L183" title="2 of 4 branches missed.">			if (i &lt; 0 || i &gt;= count.bitCount(x))</span>
-<span class="nc" id="L184">				throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
-<span class="fc" id="L185">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (x &lt; 1 &lt;&lt; halfwordsize)</span>
-<span class="fc" id="L187">				return ithBitTable[x][i];</span>
+<span class="pc bpc" id="L190" title="2 of 4 branches missed.">			if (i &lt; 0 || i &gt;= count.bitCount(x))</span>
+<span class="nc" id="L191">				throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
+<span class="fc" id="L192">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">			if (x &lt; 1 &lt;&lt; halfwordsize)</span>
+<span class="fc" id="L194">				return ithBitTable[x][i];</span>
 
-<span class="fc" id="L189">			int xlow = x &amp; ((1 &lt;&lt; halfwordsize) - 1);</span>
-<span class="fc" id="L190">			int xlowcount = count.bitCount(xlow);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">			if (i &lt; xlowcount)</span>
-<span class="fc" id="L192">				return ithBitTable[xlow][i];</span>
+<span class="fc" id="L196">			int xlow = x &amp; ((1 &lt;&lt; halfwordsize) - 1);</span>
+<span class="fc" id="L197">			int xlowcount = count.bitCount(xlow);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			if (i &lt; xlowcount)</span>
+<span class="fc" id="L199">				return ithBitTable[xlow][i];</span>
 
-<span class="fc" id="L194">			int xhigh = x &gt;&gt; halfwordsize;</span>
-<span class="fc" id="L195">			return halfwordsize + ithBitTable[xhigh][i - xlowcount];</span>
+<span class="fc" id="L201">			int xhigh = x &gt;&gt; halfwordsize;</span>
+<span class="fc" id="L202">			return halfwordsize + ithBitTable[xhigh][i - xlowcount];</span>
 		}
 
 		/**
@@ -203,7 +210,7 @@ class BitsLookupTable {
 		 * @see      Integer#numberOfTrailingZeros(int)
 		 */
 		int numberOfTrailingZeros(int x) {
-<span class="pc bpc" id="L206" title="1 of 2 branches missed.">			return x == 0 ? Integer.SIZE : ithBit(x, 0);</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">			return x == 0 ? Integer.SIZE : ithBit(x, 0);</span>
 		}
 
 	}

@@ -78,29 +78,31 @@ public interface IWeightsDouble  extends IWeights&lt;Double&gt;, WeightsDouble&l
 	
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
 	 */
 	@Override
 	default double weight(int element) {
-<span class="fc" id="L86">		return get(element);</span>
+<span class="fc" id="L87">		return get(element);</span>
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
-<span class="fc" id="L97">		return get(element.intValue());</span>
+<span class="fc" id="L99">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L103">		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());</span>
+<span class="nc" id="L105">		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());</span>
 	}
 
 

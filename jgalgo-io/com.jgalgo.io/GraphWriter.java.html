@@ -68,6 +68,7 @@ public interface GraphWriter {
 
 	/**
 	 * Get new {@link GraphWriter} instance by a format name.
+	 *
 	 * &lt;p&gt;
 	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
 	 * 'leda']
@@ -76,7 +77,7 @@ public interface GraphWriter {
 	 * @return        a writer that can write graphs with the given format
 	 */
 	static GraphWriter newInstance(String format) {
-<span class="fc" id="L79">		return GraphFormat.getInstanceByName(format).newWriter();</span>
+<span class="fc" id="L80">		return GraphFormat.getInstanceByName(format).newWriter();</span>
 	}
 
 }

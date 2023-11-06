@@ -20,56 +20,64 @@ import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="pc" id="L23">public class EdgeIterationExample {</span>
+/**
+ * This example demonstrates how to iterate over the edges of a graph.
+ *
+ * @author Barak Ugav
+ */
+<span class="pc" id="L28">public class EdgeIterationExample {</span>
 
+	/**
+	 * This example demonstrates how to iterate over the edges of a graph.
+	 */
 	public static void edgeIterationExample() {
-<span class="fc" id="L26">		IntGraph g = IntGraph.newUndirected();</span>
-<span class="fc" id="L27">		int v1 = g.addVertex();</span>
-<span class="fc" id="L28">		int v2 = g.addVertex();</span>
-<span class="fc" id="L29">		int v3 = g.addVertex();</span>
-<span class="fc" id="L30">		int v4 = g.addVertex();</span>
-<span class="fc" id="L31">		int v5 = g.addVertex();</span>
-<span class="fc" id="L32">		int v6 = g.addVertex();</span>
-<span class="fc" id="L33">		int v7 = g.addVertex();</span>
+<span class="fc" id="L34">		IntGraph g = IntGraph.newUndirected();</span>
+<span class="fc" id="L35">		int v1 = g.addVertex();</span>
+<span class="fc" id="L36">		int v2 = g.addVertex();</span>
+<span class="fc" id="L37">		int v3 = g.addVertex();</span>
+<span class="fc" id="L38">		int v4 = g.addVertex();</span>
+<span class="fc" id="L39">		int v5 = g.addVertex();</span>
+<span class="fc" id="L40">		int v6 = g.addVertex();</span>
+<span class="fc" id="L41">		int v7 = g.addVertex();</span>
 
-<span class="fc" id="L35">		int e1 = g.addEdge(v1, v2);</span>
-<span class="fc" id="L36">		int e2 = g.addEdge(v2, v3);</span>
-<span class="fc" id="L37">		int e3 = g.addEdge(v1, v3);</span>
-<span class="fc" id="L38">		int e4 = g.addEdge(v7, v5);</span>
-<span class="fc" id="L39">		int e5 = g.addEdge(v6, v1);</span>
-<span class="fc" id="L40">		int e6 = g.addEdge(v3, v4);</span>
-<span class="fc" id="L41">		int e7 = g.addEdge(v5, v4);</span>
+<span class="fc" id="L43">		int e1 = g.addEdge(v1, v2);</span>
+<span class="fc" id="L44">		int e2 = g.addEdge(v2, v3);</span>
+<span class="fc" id="L45">		int e3 = g.addEdge(v1, v3);</span>
+<span class="fc" id="L46">		int e4 = g.addEdge(v7, v5);</span>
+<span class="fc" id="L47">		int e5 = g.addEdge(v6, v1);</span>
+<span class="fc" id="L48">		int e6 = g.addEdge(v3, v4);</span>
+<span class="fc" id="L49">		int e7 = g.addEdge(v5, v4);</span>
 
 		/* Query the edges of some vertices */
 		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
-<span class="fc" id="L45">		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));</span>
-<span class="pc bnc" id="L46" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(e1, e3, e5));</span>
+<span class="fc" id="L53">		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));</span>
+<span class="pc bnc" id="L54" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(e1, e3, e5));</span>
 
-<span class="fc" id="L48">		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));</span>
-<span class="pc bnc" id="L49" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(e1, e2));</span>
+<span class="fc" id="L56">		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(e1, e2));</span>
 
-<span class="fc" id="L51">		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));</span>
-<span class="pc bnc" id="L52" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(e2, e3, e6));</span>
+<span class="fc" id="L59">		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));</span>
+<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(e2, e3, e6));</span>
 
 		/* Print the out-edges of v5 */
-<span class="fc" id="L55">		System.out.println(&quot;The edges of v5:&quot;);</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (IEdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L57">			int e = eit.nextInt();</span>
+<span class="fc" id="L63">		System.out.println(&quot;The edges of v5:&quot;);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (IEdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L65">			int e = eit.nextInt();</span>
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
-<span class="fc" id="L59">			int u = eit.sourceInt();</span>
-<span class="fc" id="L60">			int v = eit.targetInt();</span>
+<span class="fc" id="L67">			int u = eit.sourceInt();</span>
+<span class="fc" id="L68">			int v = eit.targetInt();</span>
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
-<span class="pc bnc" id="L64" title="All 2 branches missed.">			assert u == v5;</span>
-<span class="pc bnc" id="L65" title="All 2 branches missed.">			assert IntSet.of(e4, e7).contains(e);</span>
-<span class="fc" id="L66">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
-<span class="fc" id="L67">		}</span>
-<span class="fc" id="L68">	}</span>
+<span class="pc bnc" id="L72" title="All 2 branches missed.">			assert u == v5;</span>
+<span class="pc bnc" id="L73" title="All 2 branches missed.">			assert IntSet.of(e4, e7).contains(e);</span>
+<span class="fc" id="L74">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
+<span class="fc" id="L75">		}</span>
+<span class="fc" id="L76">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L71">		edgeIterationExample();</span>
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L79">		edgeIterationExample();</span>
+<span class="fc" id="L80">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

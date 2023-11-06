@@ -26,10 +26,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Finds all maximal cliques in a graph.
+ *
  * &lt;p&gt;
  * A clique is a subset of vertices of an undirected graph such that every two distinct vertices in the clique are
  * adjacent (connected by an edge). A maximal clique is a clique that cannot be extended by including one more adjacent
  * vertex.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -51,10 +53,12 @@ public interface MaximalCliques {
 
 	/**
 	 * Finds all the maximal cliques in a graph.
+	 *
 	 * &lt;p&gt;
 	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
 	 * consider using the {@link #iterateMaximalCliques(Graph)} method instead, which may iterate the cliques one at a
 	 * time without storing all them at the same time in memory.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned object will be a collection of {@link IntSet}.
 	 *
@@ -64,17 +68,19 @@ public interface MaximalCliques {
 	 * @return     a collection containing all maximal cliques in the graph
 	 */
 	default &lt;V, E&gt; Collection&lt;Set&lt;V&gt;&gt; findAllMaximalCliques(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L67">		List&lt;Set&lt;V&gt;&gt; cliques = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (Iterator&lt;Set&lt;V&gt;&gt; it = iterateMaximalCliques(g); it.hasNext();)</span>
-<span class="fc" id="L69">			cliques.add(it.next());</span>
-<span class="fc" id="L70">		return cliques;</span>
+<span class="fc" id="L71">		List&lt;Set&lt;V&gt;&gt; cliques = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (Iterator&lt;Set&lt;V&gt;&gt; it = iterateMaximalCliques(g); it.hasNext();)</span>
+<span class="fc" id="L73">			cliques.add(it.next());</span>
+<span class="fc" id="L74">		return cliques;</span>
 	}
 
 	/**
 	 * Iterate over all maximal cliques in a graph.
+	 *
 	 * &lt;p&gt;
 	 * In contrast to {@link #findAllMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can
 	 * be used to avoid storing all the cliques in memory at the the time.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
 	 *
@@ -87,6 +93,7 @@ public interface MaximalCliques {
 
 	/**
 	 * Create a new maximal cliques algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link MaximalCliques} object. The
 	 * {@link MaximalCliques.Builder} might support different options to obtain different implementations.
@@ -94,45 +101,46 @@ public interface MaximalCliques {
 	 * @return a default implementation of {@link MaximalCliques}
 	 */
 	static MaximalCliques newInstance() {
-<span class="nc" id="L97">		return newBuilder().build();</span>
+<span class="nc" id="L104">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new builder for maximal cliques algorithms.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder for maximal cliques algorithms
 	 */
 	static MaximalCliques.Builder newBuilder() {
-<span class="nc" id="L108">		return new MaximalCliques.Builder() {</span>
+<span class="nc" id="L116">		return new MaximalCliques.Builder() {</span>
 			String impl;
 
 			@Override
 			public MaximalCliques build() {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L114" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L122" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;bron-kerbosch&quot;:
-<span class="nc" id="L116">							return new MaximalCliquesBronKerbosch();</span>
+<span class="nc" id="L124">							return new MaximalCliquesBronKerbosch();</span>
 						case &quot;bron-kerbosch-pivot&quot;:
-<span class="nc" id="L118">							return new MaximalCliquesBronKerboschPivot();</span>
+<span class="nc" id="L126">							return new MaximalCliquesBronKerboschPivot();</span>
 						default:
-<span class="nc" id="L120">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L128">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L123">				return new MaximalCliquesBronKerbosch();</span>
+<span class="nc" id="L131">				return new MaximalCliquesBronKerbosch();</span>
 			}
 
 			@Override
 			public MaximalCliques.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L128" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L130">						impl = (String) value;</span>
-<span class="nc" id="L131">						break;</span>
+<span class="nc" id="L138">						impl = (String) value;</span>
+<span class="nc" id="L139">						break;</span>
 					default:
-<span class="nc" id="L133">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L141">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L135">				return this;</span>
+<span class="nc" id="L143">				return this;</span>
 			}
 		};
 	}
@@ -154,10 +162,12 @@ public interface MaximalCliques {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -166,7 +176,7 @@ public interface MaximalCliques {
 		 * @return       this builder
 		 */
 		default MaximalCliques.Builder setOption(String key, Object value) {
-<span class="nc" id="L169">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L179">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

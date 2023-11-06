@@ -18,10 +18,12 @@ package com.jgalgo.internal.ds;
 
 /**
  * Dynamic trees with integer edges weights implementation using splay trees.
+ *
  * &lt;p&gt;
  * Each tree is represented as a set of paths where each path is a sequence of descending nodes in the tree. When an
  * element is accessed, the paths are split and merged so the path from the element to the root will be a single path in
  * the underlying representation. This implementation achieve amortized \(O(\log n)\) time for each operation.
+ *
  * &lt;p&gt;
  * Based on 'A Data Structure for Dynamic Trees' by Sleator, D. D.; Tarjan, R. E (1983), although the original paper did
  * not use splay trees for the implementation.
@@ -29,7 +31,7 @@ package com.jgalgo.internal.ds;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Link/cut_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L32">class DynamicTreeSplayInt implements DynamicTree {</span>
+<span class="fc" id="L34">class DynamicTreeSplayInt implements DynamicTree {</span>
 
 	private final int rootWeight;
 	private final SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl;
@@ -42,234 +44,234 @@ package com.jgalgo.internal.ds;
 	 *                        {@link #addWeight(com.jgalgo.internal.ds.DynamicTree.Vertex, double)}.
 	 */
 	DynamicTreeSplayInt(int weightLimit) {
-<span class="fc" id="L45">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
-<span class="fc" id="L46">	}</span>
+<span class="fc" id="L47">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
+<span class="fc" id="L48">	}</span>
 
-<span class="fc" id="L48">	DynamicTreeSplayInt(SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl, int weightLimit) {</span>
-<span class="fc" id="L49">		this.rootWeight = weightLimit;</span>
-<span class="fc" id="L50">		this.impl = impl;</span>
-<span class="fc" id="L51">	}</span>
+<span class="fc" id="L50">	DynamicTreeSplayInt(SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl, int weightLimit) {</span>
+<span class="fc" id="L51">		this.rootWeight = weightLimit;</span>
+<span class="fc" id="L52">		this.impl = impl;</span>
+<span class="fc" id="L53">	}</span>
 
 	@Override
 	public SplayNode makeTree() {
-<span class="fc" id="L55">		SplayNode node = newNode();</span>
-<span class="fc" id="L56">		node.weightDiff = rootWeight;</span>
-<span class="fc" id="L57">		return node;</span>
+<span class="fc" id="L57">		SplayNode node = newNode();</span>
+<span class="fc" id="L58">		node.weightDiff = rootWeight;</span>
+<span class="fc" id="L59">		return node;</span>
 	}
 
 	@Override
 	public DynamicTree.Vertex findRoot(DynamicTree.Vertex v) {
-<span class="fc" id="L62">		SplayNode n = (SplayNode) v;</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (!n.isLinked())</span>
-<span class="fc" id="L64">			return n;</span>
-<span class="fc" id="L65">		splay(n);</span>
-<span class="fc" id="L66">		return splay(BinarySearchTrees.findMax(n));</span>
+<span class="fc" id="L64">		SplayNode n = (SplayNode) v;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L66">			return n;</span>
+<span class="fc" id="L67">		splay(n);</span>
+<span class="fc" id="L68">		return splay(BinarySearchTrees.findMax(n));</span>
 	}
 
 	@Override
 	public MinEdge findMinEdge(DynamicTree.Vertex v) {
-<span class="fc" id="L71">		SplayNode n = (SplayNode) v;</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (!n.isLinked())</span>
-<span class="fc" id="L73">			return null;</span>
-<span class="fc" id="L74">		splay(n);</span>
-<span class="fc" id="L75">		int w = n.getWeight();</span>
-<span class="pc bpc" id="L76" title="1 of 4 branches missed.">		if (!n.hasRightChild() || w &lt; n.right.getMinWeight(w))</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">			return n.isLinked() ? new MinEdgeRes(n, w) : null;</span>
+<span class="fc" id="L73">		SplayNode n = (SplayNode) v;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L75">			return null;</span>
+<span class="fc" id="L76">		splay(n);</span>
+<span class="fc" id="L77">		int w = n.getWeight();</span>
+<span class="pc bpc" id="L78" title="1 of 4 branches missed.">		if (!n.hasRightChild() || w &lt; n.right.getMinWeight(w))</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">			return n.isLinked() ? new MinEdgeRes(n, w) : null;</span>
 
-<span class="fc" id="L79">		for (SplayNode p = n.right;;) {</span>
-<span class="fc" id="L80">			int w1 = p.getWeight(w);</span>
-<span class="fc bfc" id="L81" title="All 4 branches covered.">			if (p.hasRightChild() &amp;&amp; p.getMinWeight(w) &gt;= p.right.getMinWeight(w1)) {</span>
-<span class="fc" id="L82">				p = p.right;</span>
-<span class="fc" id="L83">				w = w1;</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			} else if (Math.abs(w1 - p.getMinWeight(w)) &lt;= 0) {</span>
-<span class="fc" id="L85">				impl.splay(p); /* perform splay to pay */</span>
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">				if (!p.isLinked())</span>
-<span class="nc" id="L87">					throw new IllegalArgumentException(&quot;weightLimit was too small&quot;);</span>
-<span class="fc" id="L88">				return new MinEdgeRes(p, w1);</span>
+<span class="fc" id="L81">		for (SplayNode p = n.right;;) {</span>
+<span class="fc" id="L82">			int w1 = p.getWeight(w);</span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">			if (p.hasRightChild() &amp;&amp; p.getMinWeight(w) &gt;= p.right.getMinWeight(w1)) {</span>
+<span class="fc" id="L84">				p = p.right;</span>
+<span class="fc" id="L85">				w = w1;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			} else if (Math.abs(w1 - p.getMinWeight(w)) &lt;= 0) {</span>
+<span class="fc" id="L87">				impl.splay(p); /* perform splay to pay */</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (!p.isLinked())</span>
+<span class="nc" id="L89">					throw new IllegalArgumentException(&quot;weightLimit was too small&quot;);</span>
+<span class="fc" id="L90">				return new MinEdgeRes(p, w1);</span>
 			} else {
-<span class="pc bnc" id="L90" title="All 2 branches missed.">				assert p.hasLeftChild();</span>
-<span class="fc" id="L91">				p = p.left;</span>
-<span class="fc" id="L92">				w = w1;</span>
+<span class="pc bnc" id="L92" title="All 2 branches missed.">				assert p.hasLeftChild();</span>
+<span class="fc" id="L93">				p = p.left;</span>
+<span class="fc" id="L94">				w = w1;</span>
 			}
-<span class="fc" id="L94">		}</span>
+<span class="fc" id="L96">		}</span>
 	}
 
 	@Override
 	public void addWeight(DynamicTree.Vertex v, double w) {
-<span class="fc" id="L99">		int wInt = (int) w;</span>
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if (w != wInt)</span>
-<span class="nc" id="L101">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
+<span class="fc" id="L101">		int wInt = (int) w;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		if (w != wInt)</span>
+<span class="nc" id="L103">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
 
-<span class="fc" id="L103">		SplayNode n = (SplayNode) v;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (!n.isLinked())</span>
-<span class="fc" id="L105">			return;</span>
-<span class="fc" id="L106">		splay(n);</span>
-<span class="pc bnc" id="L107" title="All 2 branches missed.">		assert n.isRoot();</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
-<span class="nc" id="L109">			return;</span>
+<span class="fc" id="L105">		SplayNode n = (SplayNode) v;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L107">			return;</span>
+<span class="fc" id="L108">		splay(n);</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
+<span class="nc" id="L111">			return;</span>
 
-<span class="fc" id="L111">		n.weightDiff += wInt;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
-<span class="fc" id="L113">			n.left.weightDiff -= wInt;</span>
+<span class="fc" id="L113">		n.weightDiff += wInt;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
+<span class="fc" id="L115">			n.left.weightDiff -= wInt;</span>
 
-<span class="fc" id="L115">			int nW = n.getWeight();</span>
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			int minW = n.hasRightChild() ? Math.min(nW, n.right.getMinWeight(nW)) : nW;</span>
-<span class="fc" id="L117">			int minWl = n.left.getMinWeight(nW);</span>
-<span class="fc" id="L118">			n.minWeightDiff = nW - Math.min(minW, minWl);</span>
+<span class="fc" id="L117">			int nW = n.getWeight();</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			int minW = n.hasRightChild() ? Math.min(nW, n.right.getMinWeight(nW)) : nW;</span>
+<span class="fc" id="L119">			int minWl = n.left.getMinWeight(nW);</span>
+<span class="fc" id="L120">			n.minWeightDiff = nW - Math.min(minW, minWl);</span>
 		}
 
-<span class="fc" id="L121">	}</span>
+<span class="fc" id="L123">	}</span>
 
 	@Override
 	public void link(DynamicTree.Vertex child, DynamicTree.Vertex parent, double w) {
-<span class="fc" id="L125">		int wInt = (int) w;</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		if (w != wInt)</span>
-<span class="nc" id="L127">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (child != findRoot(child))</span>
-<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;child vertex must be a root&quot;);</span>
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (child == findRoot(parent))</span>
-<span class="nc" id="L131">			throw new IllegalArgumentException(&quot;Both vertices are in the same tree&quot;);</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (wInt &gt;= rootWeight / 2)</span>
-<span class="nc" id="L133">			throw new IllegalArgumentException(&quot;Weight is over the limit&quot;);</span>
-<span class="fc" id="L134">		SplayNode t1 = splay((SplayNode) child);</span>
-<span class="fc" id="L135">		SplayNode t2 = splay((SplayNode) parent);</span>
+<span class="fc" id="L127">		int wInt = (int) w;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (w != wInt)</span>
+<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;weight is not an integer&quot;);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (child != findRoot(child))</span>
+<span class="nc" id="L131">			throw new IllegalArgumentException(&quot;child vertex must be a root&quot;);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (child == findRoot(parent))</span>
+<span class="nc" id="L133">			throw new IllegalArgumentException(&quot;Both vertices are in the same tree&quot;);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (wInt &gt;= rootWeight / 2)</span>
+<span class="nc" id="L135">			throw new IllegalArgumentException(&quot;Weight is over the limit&quot;);</span>
+<span class="fc" id="L136">		SplayNode t1 = splay((SplayNode) child);</span>
+<span class="fc" id="L137">		SplayNode t2 = splay((SplayNode) parent);</span>
 
-<span class="pc bnc" id="L137" title="All 4 branches missed.">		assert !t1.isLinked() &amp;&amp; !t1.hasRightChild();</span>
+<span class="pc bnc" id="L139" title="All 4 branches missed.">		assert !t1.isLinked() &amp;&amp; !t1.hasRightChild();</span>
 
-<span class="fc" id="L139">		int oldWeight = t1.getWeight();</span>
-<span class="fc" id="L140">		t1.weightDiff = wInt;</span>
-<span class="fc" id="L141">		t1.minWeightDiff = 0;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (t1.hasLeftChild()) {</span>
-<span class="fc" id="L143">			t1.left.weightDiff += oldWeight - t1.getWeight();</span>
-<span class="fc" id="L144">			t1.minWeightDiff = t1.getWeight() - Math.min(t1.getMinWeight(), t1.left.getMinWeight(t1.getWeight()));</span>
+<span class="fc" id="L141">		int oldWeight = t1.getWeight();</span>
+<span class="fc" id="L142">		t1.weightDiff = wInt;</span>
+<span class="fc" id="L143">		t1.minWeightDiff = 0;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (t1.hasLeftChild()) {</span>
+<span class="fc" id="L145">			t1.left.weightDiff += oldWeight - t1.getWeight();</span>
+<span class="fc" id="L146">			t1.minWeightDiff = t1.getWeight() - Math.min(t1.getMinWeight(), t1.left.getMinWeight(t1.getWeight()));</span>
 		}
 
-<span class="fc" id="L147">		t1.tparent = t2;</span>
-<span class="fc" id="L148">		t1.link(t2);</span>
-<span class="fc" id="L149">		afterLink(t1);</span>
-<span class="fc" id="L150">	}</span>
+<span class="fc" id="L149">		t1.tparent = t2;</span>
+<span class="fc" id="L150">		t1.link(t2);</span>
+<span class="fc" id="L151">		afterLink(t1);</span>
+<span class="fc" id="L152">	}</span>
 
 	@Override
 	public void cut(DynamicTree.Vertex v) {
-<span class="fc" id="L154">		SplayNode n = splay((SplayNode) v);</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
-<span class="nc" id="L156">			return;</span>
-<span class="fc" id="L157">		beforeCut(n);</span>
+<span class="fc" id="L156">		SplayNode n = splay((SplayNode) v);</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
+<span class="nc" id="L158">			return;</span>
+<span class="fc" id="L159">		beforeCut(n);</span>
 
-<span class="fc" id="L159">		int origW = n.getWeight();</span>
-<span class="fc" id="L160">		n.right.weightDiff += origW;</span>
-<span class="fc" id="L161">		n.weightDiff = rootWeight;</span>
-<span class="fc" id="L162">		n.minWeightDiff = 0;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
-<span class="fc" id="L164">			n.left.weightDiff += origW - n.getWeight();</span>
-<span class="fc" id="L165">			n.minWeightDiff = n.getWeight() - Math.min(n.getMinWeight(), n.left.getMinWeight(n.getWeight()));</span>
+<span class="fc" id="L161">		int origW = n.getWeight();</span>
+<span class="fc" id="L162">		n.right.weightDiff += origW;</span>
+<span class="fc" id="L163">		n.weightDiff = rootWeight;</span>
+<span class="fc" id="L164">		n.minWeightDiff = 0;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
+<span class="fc" id="L166">			n.left.weightDiff += origW - n.getWeight();</span>
+<span class="fc" id="L167">			n.minWeightDiff = n.getWeight() - Math.min(n.getMinWeight(), n.left.getMinWeight(n.getWeight()));</span>
 		}
 
-<span class="fc" id="L168">		n.right.parent = null;</span>
-<span class="fc" id="L169">		n.right = null;</span>
-<span class="fc" id="L170">		n.unlink();</span>
-<span class="fc" id="L171">	}</span>
+<span class="fc" id="L170">		n.right.parent = null;</span>
+<span class="fc" id="L171">		n.right = null;</span>
+<span class="fc" id="L172">		n.unlink();</span>
+<span class="fc" id="L173">	}</span>
 
 	@Override
-<span class="nc" id="L174">	public void clear() {}</span>
+<span class="nc" id="L176">	public void clear() {}</span>
 
 	SplayNode splay(SplayNode n) {
 		/* Splice all ancestors of in */
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (SplayNode p = n; p != null;)</span>
-<span class="fc" id="L179">			p = splice(p);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		for (SplayNode p = n; p != null;)</span>
+<span class="fc" id="L181">			p = splice(p);</span>
 
-<span class="fc" id="L181">		impl.splay(n);</span>
-<span class="pc bnc" id="L182" title="All 2 branches missed.">		assert n.isRoot();</span>
-<span class="pc bnc" id="L183" title="All 2 branches missed.">		assert n.tparent == null;</span>
-<span class="fc" id="L184">		return n;</span>
+<span class="fc" id="L183">		impl.splay(n);</span>
+<span class="pc bnc" id="L184" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bnc" id="L185" title="All 2 branches missed.">		assert n.tparent == null;</span>
+<span class="fc" id="L186">		return n;</span>
 	}
 
 	SplayNode splice(SplayNode n) {
-<span class="fc" id="L188">		impl.splay(n);</span>
-<span class="pc bnc" id="L189" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="fc" id="L190">		impl.splay(n);</span>
+<span class="pc bnc" id="L191" title="All 2 branches missed.">		assert n.isRoot();</span>
 
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (n.tparent == null)</span>
-<span class="fc" id="L192">			return null;</span>
-<span class="fc" id="L193">		SplayNode parent = n.tparent;</span>
-<span class="fc" id="L194">		impl.splay(parent);</span>
-<span class="pc bnc" id="L195" title="All 2 branches missed.">		assert parent.isRoot();</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		if (n.tparent == null)</span>
+<span class="fc" id="L194">			return null;</span>
+<span class="fc" id="L195">		SplayNode parent = n.tparent;</span>
+<span class="fc" id="L196">		impl.splay(parent);</span>
+<span class="pc bnc" id="L197" title="All 2 branches missed.">		assert parent.isRoot();</span>
 
-<span class="fc" id="L197">		n.parent = parent;</span>
-<span class="fc" id="L198">		n.tparent = null;</span>
-<span class="fc" id="L199">		n.weightDiff -= parent.getWeight();</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (parent.hasLeftChild()) {</span>
-<span class="fc" id="L201">			parent.left.parent = null;</span>
-<span class="fc" id="L202">			parent.left.tparent = parent;</span>
-<span class="fc" id="L203">			parent.left.weightDiff += parent.getWeight();</span>
+<span class="fc" id="L199">		n.parent = parent;</span>
+<span class="fc" id="L200">		n.tparent = null;</span>
+<span class="fc" id="L201">		n.weightDiff -= parent.getWeight();</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		if (parent.hasLeftChild()) {</span>
+<span class="fc" id="L203">			parent.left.parent = null;</span>
+<span class="fc" id="L204">			parent.left.tparent = parent;</span>
+<span class="fc" id="L205">			parent.left.weightDiff += parent.getWeight();</span>
 		}
-<span class="fc" id="L205">		parent.left = n;</span>
+<span class="fc" id="L207">		parent.left = n;</span>
 
-<span class="fc" id="L207">		int minp = Math.max(0, parent.getWeight() - n.getMinWeight(parent.getWeight()));</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">		if (parent.hasRightChild())</span>
-<span class="fc" id="L209">			minp = Math.max(minp, parent.getWeight() - parent.right.getMinWeight(parent.getWeight()));</span>
-<span class="fc" id="L210">		parent.minWeightDiff = minp;</span>
+<span class="fc" id="L209">		int minp = Math.max(0, parent.getWeight() - n.getMinWeight(parent.getWeight()));</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		if (parent.hasRightChild())</span>
+<span class="fc" id="L211">			minp = Math.max(minp, parent.getWeight() - parent.right.getMinWeight(parent.getWeight()));</span>
+<span class="fc" id="L212">		parent.minWeightDiff = minp;</span>
 
-<span class="fc" id="L212">		return parent;</span>
+<span class="fc" id="L214">		return parent;</span>
 	}
 
 	SplayNode newNode() {
-<span class="fc" id="L216">		return new SplayNode();</span>
+<span class="fc" id="L218">		return new SplayNode();</span>
 	}
 
-<span class="fc" id="L219">	void beforeCut(SplayNode n) {}</span>
+<span class="fc" id="L221">	void beforeCut(SplayNode n) {}</span>
 
-<span class="fc" id="L221">	void afterLink(SplayNode n) {}</span>
+<span class="fc" id="L223">	void afterLink(SplayNode n) {}</span>
 
-<span class="fc" id="L223">	static class SplayImplWithRelativeWeights extends SplayTree.SplayImpl&lt;Object, SplayNode&gt; {</span>
+<span class="fc" id="L225">	static class SplayImplWithRelativeWeights extends SplayTree.SplayImpl&lt;Object, SplayNode&gt; {</span>
 
 		@Override
 		void beforeRotate(SplayNode n) {
-<span class="fc" id="L227">			super.beforeRotate(n);</span>
+<span class="fc" id="L229">			super.beforeRotate(n);</span>
 
-<span class="fc" id="L229">			SplayNode parent = n.parent;</span>
+<span class="fc" id="L231">			SplayNode parent = n.parent;</span>
 
-<span class="fc" id="L231">			int origN = n.weightDiff, origP = parent.weightDiff;</span>
-<span class="fc" id="L232">			n.weightDiff = origN + origP;</span>
-<span class="fc" id="L233">			parent.weightDiff = -origN;</span>
+<span class="fc" id="L233">			int origN = n.weightDiff, origP = parent.weightDiff;</span>
+<span class="fc" id="L234">			n.weightDiff = origN + origP;</span>
+<span class="fc" id="L235">			parent.weightDiff = -origN;</span>
 
-<span class="fc" id="L235">			int minn = 0, minp = 0;</span>
+<span class="fc" id="L237">			int minn = 0, minp = 0;</span>
 
-<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">				if (n.hasRightChild())</span>
-<span class="fc" id="L239">					n.right.weightDiff += origN;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L241">					n.right.weightDiff += origN;</span>
 
-<span class="fc bfc" id="L241" title="All 2 branches covered.">				if (n.hasRightChild())</span>
-<span class="fc" id="L242">					minp = Math.max(minp, n.right.minWeightDiff - n.right.weightDiff);</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
-<span class="fc" id="L244">					minp = Math.max(minp, parent.right.minWeightDiff - parent.right.weightDiff);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L244">					minp = Math.max(minp, n.right.minWeightDiff - n.right.weightDiff);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
+<span class="fc" id="L246">					minp = Math.max(minp, parent.right.minWeightDiff - parent.right.weightDiff);</span>
 
-<span class="fc bfc" id="L246" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
-<span class="fc" id="L247">					minn = Math.max(minn, n.left.minWeightDiff - n.left.weightDiff);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L249">					minn = Math.max(minn, n.left.minWeightDiff - n.left.weightDiff);</span>
 			} else {
-<span class="pc bnc" id="L249" title="All 2 branches missed.">				assert n.isRightChild();</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
-<span class="fc" id="L251">					n.left.weightDiff += origN;</span>
+<span class="pc bnc" id="L251" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L253">					n.left.weightDiff += origN;</span>
 
-<span class="fc bfc" id="L253" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
-<span class="fc" id="L254">					minp = Math.max(minp, n.left.minWeightDiff - n.left.weightDiff);</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
-<span class="fc" id="L256">					minp = Math.max(minp, parent.left.minWeightDiff - parent.left.weightDiff);</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L256">					minp = Math.max(minp, n.left.minWeightDiff - n.left.weightDiff);</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
+<span class="fc" id="L258">					minp = Math.max(minp, parent.left.minWeightDiff - parent.left.weightDiff);</span>
 
-<span class="fc bfc" id="L258" title="All 2 branches covered.">				if (n.hasRightChild())</span>
-<span class="fc" id="L259">					minn = Math.max(minn, n.right.minWeightDiff - n.right.weightDiff);</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L261">					minn = Math.max(minn, n.right.minWeightDiff - n.right.weightDiff);</span>
 			}
 
-<span class="fc" id="L262">			parent.minWeightDiff = minp;</span>
-<span class="fc" id="L263">			minn = Math.max(minn, parent.minWeightDiff - parent.weightDiff);</span>
-<span class="fc" id="L264">			n.minWeightDiff = minn;</span>
+<span class="fc" id="L264">			parent.minWeightDiff = minp;</span>
+<span class="fc" id="L265">			minn = Math.max(minn, parent.minWeightDiff - parent.weightDiff);</span>
+<span class="fc" id="L266">			n.minWeightDiff = minn;</span>
 
-<span class="fc" id="L266">			n.tparent = parent.tparent;</span>
-<span class="fc" id="L267">			parent.tparent = null;</span>
-<span class="fc" id="L268">		}</span>
+<span class="fc" id="L268">			n.tparent = parent.tparent;</span>
+<span class="fc" id="L269">			parent.tparent = null;</span>
+<span class="fc" id="L270">		}</span>
 
 	}
 
-<span class="fc" id="L272">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
+<span class="fc" id="L274">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
 
 		SplayNode userParent;
 
@@ -281,54 +283,54 @@ package com.jgalgo.internal.ds;
 		int minWeightDiff;
 
 		SplayNode() {
-<span class="fc" id="L284">			super(null);</span>
-<span class="fc" id="L285">			userParent = null;</span>
-<span class="fc" id="L286">		}</span>
+<span class="fc" id="L286">			super(null);</span>
+<span class="fc" id="L287">			userParent = null;</span>
+<span class="fc" id="L288">		}</span>
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;V&gt; V getData() {
-<span class="fc" id="L291">			return (V) key;</span>
+<span class="fc" id="L293">			return (V) key;</span>
 		}
 
 		@Override
 		public void setData(Object data) {
-<span class="fc" id="L296">			this.key = data;</span>
-<span class="fc" id="L297">		}</span>
+<span class="fc" id="L298">			this.key = data;</span>
+<span class="fc" id="L299">		}</span>
 
 		@Override
 		public DynamicTree.Vertex getParent() {
-<span class="fc" id="L301">			return userParent;</span>
+<span class="fc" id="L303">			return userParent;</span>
 		}
 
 		boolean isLinked() {
-<span class="fc bfc" id="L305" title="All 2 branches covered.">			return userParent != null;</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">			return userParent != null;</span>
 		}
 
 		void link(SplayNode p) {
-<span class="fc" id="L309">			userParent = p;</span>
-<span class="fc" id="L310">		}</span>
+<span class="fc" id="L311">			userParent = p;</span>
+<span class="fc" id="L312">		}</span>
 
 		void unlink() {
-<span class="fc" id="L313">			userParent = null;</span>
-<span class="fc" id="L314">		}</span>
+<span class="fc" id="L315">			userParent = null;</span>
+<span class="fc" id="L316">		}</span>
 
 		int getWeight() {
-<span class="pc bnc" id="L317" title="All 2 branches missed.">			assert isRoot();</span>
-<span class="fc" id="L318">			return getWeight(0);</span>
+<span class="pc bnc" id="L319" title="All 2 branches missed.">			assert isRoot();</span>
+<span class="fc" id="L320">			return getWeight(0);</span>
 		}
 
 		int getWeight(int parentWeight) {
-<span class="fc" id="L322">			return parentWeight + weightDiff;</span>
+<span class="fc" id="L324">			return parentWeight + weightDiff;</span>
 		}
 
 		int getMinWeight() {
-<span class="pc bnc" id="L326" title="All 2 branches missed.">			assert isRoot();</span>
-<span class="fc" id="L327">			return getMinWeight(0);</span>
+<span class="pc bnc" id="L328" title="All 2 branches missed.">			assert isRoot();</span>
+<span class="fc" id="L329">			return getMinWeight(0);</span>
 		}
 
 		int getMinWeight(int parentWeight) {
-<span class="fc" id="L331">			return getWeight(parentWeight) - minWeightDiff;</span>
+<span class="fc" id="L333">			return getWeight(parentWeight) - minWeightDiff;</span>
 		}
 
 	}
@@ -338,26 +340,26 @@ package com.jgalgo.internal.ds;
 		final SplayNode u;
 		final int w;
 
-<span class="fc" id="L341">		MinEdgeRes(SplayNode u, int w) {</span>
-<span class="fc" id="L342">			this.u = u;</span>
-<span class="fc" id="L343">			this.w = w;</span>
-<span class="fc" id="L344">		}</span>
+<span class="fc" id="L343">		MinEdgeRes(SplayNode u, int w) {</span>
+<span class="fc" id="L344">			this.u = u;</span>
+<span class="fc" id="L345">			this.w = w;</span>
+<span class="fc" id="L346">		}</span>
 
 		@Override
 		public SplayNode source() {
-<span class="fc" id="L348">			return u;</span>
+<span class="fc" id="L350">			return u;</span>
 		}
 
 		@Override
 		public double weight() {
-<span class="fc" id="L353">			return w;</span>
+<span class="fc" id="L355">			return w;</span>
 		}
 
 	}
 
 	@Override
-	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType) {
-<span class="nc" id="L360">		return null;</span>
+	public &lt;ExtT extends DynamicTreeExtension&gt; ExtT getExtension(Class&lt;ExtT&gt; extensionType) {
+<span class="nc" id="L362">		return null;</span>
 	}
 
 }

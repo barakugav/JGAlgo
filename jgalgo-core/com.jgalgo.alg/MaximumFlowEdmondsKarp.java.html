@@ -16,19 +16,21 @@
 
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * The Edmonds-Karp algorithm for maximum flow.
+ *
  * &lt;p&gt;
  * The most known implementation that solve the maximum flow problem. It does so by finding augmenting paths from the
  * source to the sink in the residual network, and saturating at least one edge in each path. This is a specification
  * Ford–Fulkerson method, which chooses the shortest augmenting path in each iteration. It runs in \(O(m^2 n)\) time and
  * linear space.
+ *
  * &lt;p&gt;
  * Based on the paper 'Theoretical improvements in algorithmic efficiency for network flow problems' by Jack Edmonds and
  * Richard M Karp.
@@ -41,118 +43,118 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L44">	MaximumFlowEdmondsKarp() {}</span>
+<span class="fc" id="L46">	MaximumFlowEdmondsKarp() {}</span>
 
 	@Override
 	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (net instanceof IFlowNetworkInt) {</span>
-<span class="fc" id="L49">			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink).computeMaxFlow();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (net instanceof IFlowNetworkInt) {</span>
+<span class="fc" id="L51">			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink).computeMaxFlow();</span>
 		} else {
-<span class="fc" id="L51">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
+<span class="fc" id="L53">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
 		}
 	}
 
-<span class="fc" id="L55">	private abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {</span>
+<span class="fc" id="L57">	private abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {</span>
 
-<span class="fc" id="L57">		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L58">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L59">		}</span>
+<span class="fc" id="L59">		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L60">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L61">		}</span>
 
 		void computeMaxFlow0() {
-<span class="fc" id="L62">			final int n = g.vertices().size();</span>
-<span class="fc" id="L63">			int[] backtrack = new int[n];</span>
-<span class="fc" id="L64">			BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L65">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L64">			final int n = g.vertices().size();</span>
+<span class="fc" id="L65">			int[] backtrack = new int[n];</span>
+<span class="fc" id="L66">			Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L67">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
 			// perform BFS and find a path of non saturated edges from source to sink
-<span class="fc" id="L68">			queue.enqueue(source);</span>
-<span class="fc" id="L69">			visited.set(source);</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc" id="L70">			queue.enqueue(source);</span>
+<span class="fc" id="L71">			visited.set(source);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (directed) {</span>
 				bfs: for (;;) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">					if (queue.isEmpty())</span>
-<span class="fc" id="L73">						return; /* no path to sink, we are done */</span>
-<span class="fc" id="L74">					int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L76">						int e = eit.nextInt();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">						if (!isResidual(e))</span>
-<span class="fc" id="L78">							continue;</span>
-<span class="fc" id="L79">						int v = eit.targetInt();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">						if (visited.get(v))</span>
-<span class="fc" id="L81">							continue;</span>
-<span class="fc" id="L82">						backtrack[v] = e;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">						if (v == sink) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					if (queue.isEmpty())</span>
+<span class="fc" id="L75">						return; /* no path to sink, we are done */</span>
+<span class="fc" id="L76">					int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L78">						int e = eit.nextInt();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">						if (!isResidual(e))</span>
+<span class="fc" id="L80">							continue;</span>
+<span class="fc" id="L81">						int v = eit.targetInt();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">						if (visited.get(v))</span>
+<span class="fc" id="L83">							continue;</span>
+<span class="fc" id="L84">						backtrack[v] = e;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">						if (v == sink) {</span>
 							/* found an augmenting path, push flow on it */
-<span class="fc" id="L85">							pushAlongPathDirected(backtrack);</span>
+<span class="fc" id="L87">							pushAlongPathDirected(backtrack);</span>
 
 							/* reset BFS */
-<span class="fc" id="L88">							queue.clear();</span>
-<span class="fc" id="L89">							visited.clear();</span>
-<span class="fc" id="L90">							visited.set(source);</span>
-<span class="fc" id="L91">							queue.enqueue(source);</span>
-<span class="fc" id="L92">							continue bfs;</span>
+<span class="fc" id="L90">							queue.clear();</span>
+<span class="fc" id="L91">							visited.clear();</span>
+<span class="fc" id="L92">							visited.set(source);</span>
+<span class="fc" id="L93">							queue.enqueue(source);</span>
+<span class="fc" id="L94">							continue bfs;</span>
 						}
-<span class="fc" id="L94">						visited.set(v);</span>
-<span class="fc" id="L95">						queue.enqueue(v);</span>
-<span class="fc" id="L96">					}</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L98">						int e = eit.nextInt();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">						if (!hasFlow(e))</span>
-<span class="fc" id="L100">							continue;</span>
-<span class="fc" id="L101">						int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">						if (visited.get(v))</span>
-<span class="fc" id="L103">							continue;</span>
-<span class="fc" id="L104">						backtrack[v] = e;</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">						if (v == sink) {</span>
+<span class="fc" id="L96">						visited.set(v);</span>
+<span class="fc" id="L97">						queue.enqueue(v);</span>
+<span class="fc" id="L98">					}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L100">						int e = eit.nextInt();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">						if (!hasFlow(e))</span>
+<span class="fc" id="L102">							continue;</span>
+<span class="fc" id="L103">						int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">						if (visited.get(v))</span>
+<span class="fc" id="L105">							continue;</span>
+<span class="fc" id="L106">						backtrack[v] = e;</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">						if (v == sink) {</span>
 							/* found an augmenting path, push flow on it */
-<span class="nc" id="L107">							pushAlongPathDirected(backtrack);</span>
+<span class="nc" id="L109">							pushAlongPathDirected(backtrack);</span>
 
 							/* reset BFS */
-<span class="nc" id="L110">							queue.clear();</span>
-<span class="nc" id="L111">							visited.clear();</span>
-<span class="nc" id="L112">							visited.set(source);</span>
-<span class="nc" id="L113">							queue.enqueue(source);</span>
-<span class="nc" id="L114">							continue bfs;</span>
+<span class="nc" id="L112">							queue.clear();</span>
+<span class="nc" id="L113">							visited.clear();</span>
+<span class="nc" id="L114">							visited.set(source);</span>
+<span class="nc" id="L115">							queue.enqueue(source);</span>
+<span class="nc" id="L116">							continue bfs;</span>
 						}
-<span class="fc" id="L116">						visited.set(v);</span>
-<span class="fc" id="L117">						queue.enqueue(v);</span>
-<span class="fc" id="L118">					}</span>
-<span class="fc" id="L119">				}</span>
+<span class="fc" id="L118">						visited.set(v);</span>
+<span class="fc" id="L119">						queue.enqueue(v);</span>
+<span class="fc" id="L120">					}</span>
+<span class="fc" id="L121">				}</span>
 			} else {
 				bfs: for (;;) {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">					if (queue.isEmpty())</span>
-<span class="fc" id="L123">						return; /* no path to sink, we are done */</span>
-<span class="fc" id="L124">					int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L126">						int e = eit.nextInt();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (queue.isEmpty())</span>
+<span class="fc" id="L125">						return; /* no path to sink, we are done */</span>
+<span class="fc" id="L126">					int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L128">						int e = eit.nextInt();</span>
 						int v;
-<span class="fc bfc" id="L128" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">							if (!isResidual(e))</span>
-<span class="fc" id="L130">								continue;</span>
-<span class="fc" id="L131">							v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">							if (!isResidual(e))</span>
+<span class="fc" id="L132">								continue;</span>
+<span class="fc" id="L133">							v = g.edgeTarget(e);</span>
 						} else {
-<span class="pc bnc" id="L133" title="All 2 branches missed.">							assert u == g.edgeTarget(e);</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">							if (!isTwinResidualUndirected(e))</span>
-<span class="fc" id="L135">								continue;</span>
-<span class="fc" id="L136">							v = g.edgeSource(e);</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">							if (!isTwinResidualUndirected(e))</span>
+<span class="fc" id="L137">								continue;</span>
+<span class="fc" id="L138">							v = g.edgeSource(e);</span>
 						}
-<span class="fc bfc" id="L138" title="All 2 branches covered.">						if (visited.get(v))</span>
-<span class="fc" id="L139">							continue;</span>
-<span class="fc" id="L140">						backtrack[v] = e;</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">						if (v == sink) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">						if (visited.get(v))</span>
+<span class="fc" id="L141">							continue;</span>
+<span class="fc" id="L142">						backtrack[v] = e;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">						if (v == sink) {</span>
 							/* found an augmenting path, push flow on it */
-<span class="fc" id="L143">							pushAlongPathUndirected(backtrack);</span>
+<span class="fc" id="L145">							pushAlongPathUndirected(backtrack);</span>
 
 							/* reset BFS */
-<span class="fc" id="L146">							queue.clear();</span>
-<span class="fc" id="L147">							visited.clear();</span>
-<span class="fc" id="L148">							visited.set(source);</span>
-<span class="fc" id="L149">							queue.enqueue(source);</span>
-<span class="fc" id="L150">							continue bfs;</span>
+<span class="fc" id="L148">							queue.clear();</span>
+<span class="fc" id="L149">							visited.clear();</span>
+<span class="fc" id="L150">							visited.set(source);</span>
+<span class="fc" id="L151">							queue.enqueue(source);</span>
+<span class="fc" id="L152">							continue bfs;</span>
 						}
-<span class="fc" id="L152">						visited.set(v);</span>
-<span class="fc" id="L153">						queue.enqueue(v);</span>
-<span class="fc" id="L154">					}</span>
-<span class="fc" id="L155">				}</span>
+<span class="fc" id="L154">						visited.set(v);</span>
+<span class="fc" id="L155">						queue.enqueue(v);</span>
+<span class="fc" id="L156">					}</span>
+<span class="fc" id="L157">				}</span>
 			}
 		}
 
@@ -170,257 +172,257 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	}
 
-<span class="fc" id="L173">	private class WorkerDouble extends Worker {</span>
+<span class="fc" id="L175">	private class WorkerDouble extends Worker {</span>
 
 		final double[] capacity;
 		final double[] residualCapacity;
 
 		private static final double EPS = 0.0001;
 
-<span class="fc" id="L180">		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L181">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L182">			capacity = new double[g.edges().size()];</span>
-<span class="fc" id="L183">			initCapacities(capacity);</span>
-<span class="fc" id="L184">			residualCapacity = capacity.clone();</span>
-<span class="fc" id="L185">		}</span>
+<span class="fc" id="L182">		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L183">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L184">			capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L185">			initCapacities(capacity);</span>
+<span class="fc" id="L186">			residualCapacity = capacity.clone();</span>
+<span class="fc" id="L187">		}</span>
 
 		double computeMaxFlow() {
-<span class="fc" id="L188">			computeMaxFlow0();</span>
-<span class="fc" id="L189">			return constructResult(capacity, residualCapacity);</span>
+<span class="fc" id="L190">			computeMaxFlow0();</span>
+<span class="fc" id="L191">			return constructResult(capacity, residualCapacity);</span>
 		}
 
 		@Override
 		void pushAlongPathDirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
-<span class="fc" id="L195">			double f = Double.MAX_VALUE;</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L197">				int e = backtrack[p];</span>
+<span class="fc" id="L197">			double f = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L199">				int e = backtrack[p];</span>
 				double ec;
 				int nextP;
-<span class="fc bfc" id="L200" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L201">					ec = getResidualCapacity(e);</span>
-<span class="fc" id="L202">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L203">					ec = getResidualCapacity(e);</span>
+<span class="fc" id="L204">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L204" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L205">					ec = flow(e);</span>
-<span class="fc" id="L206">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L206" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L207">					ec = flow(e);</span>
+<span class="fc" id="L208">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L208" title="All 2 branches missed.">				assert ec &gt;= EPS;</span>
-<span class="fc" id="L209">				f = Math.min(f, ec);</span>
-<span class="fc" id="L210">				p = nextP;</span>
-<span class="fc" id="L211">			}</span>
-<span class="pc bnc" id="L212" title="All 2 branches missed.">			assert f &gt;= EPS;</span>
+<span class="pc bnc" id="L210" title="All 2 branches missed.">				assert ec &gt;= EPS;</span>
+<span class="fc" id="L211">				f = Math.min(f, ec);</span>
+<span class="fc" id="L212">				p = nextP;</span>
+<span class="fc" id="L213">			}</span>
+<span class="pc bnc" id="L214" title="All 2 branches missed.">			assert f &gt;= EPS;</span>
 
 			// update flow of all edges on path
-<span class="fc bfc" id="L215" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L216">				int e = backtrack[p];</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L218">				int e = backtrack[p];</span>
 				int nextP;
-<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L219">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L220">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L221">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L222">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L222" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L223">					residualCapacity[e] += f;</span>
-<span class="fc" id="L224">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L224" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L225">					residualCapacity[e] += f;</span>
+<span class="fc" id="L226">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="fc" id="L226">				p = nextP;</span>
-<span class="fc" id="L227">			}</span>
-<span class="fc" id="L228">		}</span>
+<span class="fc" id="L228">				p = nextP;</span>
+<span class="fc" id="L229">			}</span>
+<span class="fc" id="L230">		}</span>
 
 		@Override
 		void pushAlongPathUndirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
-<span class="fc" id="L233">			double f = Double.MAX_VALUE;</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L235">				int e = backtrack[p];</span>
+<span class="fc" id="L235">			double f = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L237">				int e = backtrack[p];</span>
 				double ec;
 				int nextP;
-<span class="fc bfc" id="L238" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L239">					ec = getResidualCapacity(e);</span>
-<span class="fc" id="L240">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L241">					ec = getResidualCapacity(e);</span>
+<span class="fc" id="L242">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L242" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L243">					ec = getTwinResidualCapacity(e);</span>
-<span class="fc" id="L244">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L244" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L245">					ec = getTwinResidualCapacity(e);</span>
+<span class="fc" id="L246">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L246" title="All 2 branches missed.">				assert ec &gt;= EPS;</span>
-<span class="fc" id="L247">				f = Math.min(f, ec);</span>
-<span class="fc" id="L248">				p = nextP;</span>
-<span class="fc" id="L249">			}</span>
-<span class="pc bnc" id="L250" title="All 2 branches missed.">			assert f &gt;= EPS;</span>
+<span class="pc bnc" id="L248" title="All 2 branches missed.">				assert ec &gt;= EPS;</span>
+<span class="fc" id="L249">				f = Math.min(f, ec);</span>
+<span class="fc" id="L250">				p = nextP;</span>
+<span class="fc" id="L251">			}</span>
+<span class="pc bnc" id="L252" title="All 2 branches missed.">			assert f &gt;= EPS;</span>
 
 			// update flow of all edges on path
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L254">				int e = backtrack[p];</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L256">				int e = backtrack[p];</span>
 				int nextP;
-<span class="fc bfc" id="L256" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L257">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L258">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L259">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L260">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L260" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L261">					residualCapacity[e] += f;</span>
-<span class="fc" id="L262">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L262" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L263">					residualCapacity[e] += f;</span>
+<span class="fc" id="L264">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="fc" id="L264">				p = nextP;</span>
-<span class="fc" id="L265">			}</span>
-<span class="fc" id="L266">		}</span>
+<span class="fc" id="L266">				p = nextP;</span>
+<span class="fc" id="L267">			}</span>
+<span class="fc" id="L268">		}</span>
 
 		double flow(int e) {
-<span class="fc" id="L269">			return capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L271">			return capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean hasFlow(int e) {
-<span class="fc bfc" id="L274" title="All 2 branches covered.">			return flow(e) &gt; EPS;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">			return flow(e) &gt; EPS;</span>
 		}
 
 		double getResidualCapacity(int e) {
-<span class="fc" id="L278">			return residualCapacity[e];</span>
+<span class="fc" id="L280">			return residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean isSaturated(int e) {
-<span class="nc bnc" id="L283" title="All 2 branches missed.">			return getResidualCapacity(e) &lt;= EPS;</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">			return getResidualCapacity(e) &lt;= EPS;</span>
 		}
 
 		@Override
 		boolean isResidual(int e) {
-<span class="fc bfc" id="L288" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; EPS;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; EPS;</span>
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-<span class="fc bfc" id="L293" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; EPS;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; EPS;</span>
 		}
 
 		double getTwinResidualCapacity(int e) {
-<span class="pc bnc" id="L297" title="All 2 branches missed.">			assert !directed;</span>
-<span class="fc" id="L298">			return 2 * capacity[e] - residualCapacity[e];</span>
+<span class="pc bnc" id="L299" title="All 2 branches missed.">			assert !directed;</span>
+<span class="fc" id="L300">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 	}
 
-<span class="fc" id="L302">	private class WorkerInt extends Worker {</span>
+<span class="fc" id="L304">	private class WorkerInt extends Worker {</span>
 
 		final int[] capacity;
 		final int[] residualCapacity;
 
-<span class="fc" id="L307">		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink) {</span>
-<span class="fc" id="L308">			super(gOrig, net, source, sink);</span>
-<span class="fc" id="L309">			capacity = new int[g.edges().size()];</span>
-<span class="fc" id="L310">			initCapacities(capacity);</span>
-<span class="fc" id="L311">			residualCapacity = capacity.clone();</span>
-<span class="fc" id="L312">		}</span>
+<span class="fc" id="L309">		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink) {</span>
+<span class="fc" id="L310">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L311">			capacity = new int[g.edges().size()];</span>
+<span class="fc" id="L312">			initCapacities(capacity);</span>
+<span class="fc" id="L313">			residualCapacity = capacity.clone();</span>
+<span class="fc" id="L314">		}</span>
 
 		int computeMaxFlow() {
-<span class="fc" id="L315">			computeMaxFlow0();</span>
-<span class="fc" id="L316">			return constructResult(capacity, residualCapacity);</span>
+<span class="fc" id="L317">			computeMaxFlow0();</span>
+<span class="fc" id="L318">			return constructResult(capacity, residualCapacity);</span>
 		}
 
 		@Override
 		void pushAlongPathDirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
-<span class="fc" id="L322">			int f = Integer.MAX_VALUE;</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L324">				int e = backtrack[p];</span>
+<span class="fc" id="L324">			int f = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L326">				int e = backtrack[p];</span>
 				int ec, nextP;
-<span class="fc bfc" id="L326" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L327">					ec = getResidualCapacity(e);</span>
-<span class="fc" id="L328">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L329">					ec = getResidualCapacity(e);</span>
+<span class="fc" id="L330">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L330" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L331">					ec = flow(e);</span>
-<span class="fc" id="L332">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L332" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L333">					ec = flow(e);</span>
+<span class="fc" id="L334">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L334" title="All 2 branches missed.">				assert ec &gt; 0;</span>
-<span class="fc" id="L335">				f = Math.min(f, ec);</span>
-<span class="fc" id="L336">				p = nextP;</span>
-<span class="fc" id="L337">			}</span>
-<span class="pc bnc" id="L338" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L336" title="All 2 branches missed.">				assert ec &gt; 0;</span>
+<span class="fc" id="L337">				f = Math.min(f, ec);</span>
+<span class="fc" id="L338">				p = nextP;</span>
+<span class="fc" id="L339">			}</span>
+<span class="pc bnc" id="L340" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// update flow of all edges on path
-<span class="fc bfc" id="L341" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L342">				int e = backtrack[p];</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L344">				int e = backtrack[p];</span>
 				int nextP;
-<span class="fc bfc" id="L344" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L345">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L346">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L347">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L348">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L348" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L349">					residualCapacity[e] += f;</span>
-<span class="fc" id="L350">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L350" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L351">					residualCapacity[e] += f;</span>
+<span class="fc" id="L352">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="fc" id="L352">				p = nextP;</span>
-<span class="fc" id="L353">			}</span>
-<span class="fc" id="L354">		}</span>
+<span class="fc" id="L354">				p = nextP;</span>
+<span class="fc" id="L355">			}</span>
+<span class="fc" id="L356">		}</span>
 
 		@Override
 		void pushAlongPathUndirected(int[] backtrack) {
 			// find out what is the maximum flow we can pass
-<span class="fc" id="L359">			int f = Integer.MAX_VALUE;</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L361">				int e = backtrack[p];</span>
+<span class="fc" id="L361">			int f = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L363">				int e = backtrack[p];</span>
 				int ec, nextP;
-<span class="fc bfc" id="L363" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L364">					ec = getResidualCapacity(e);</span>
-<span class="fc" id="L365">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L366">					ec = getResidualCapacity(e);</span>
+<span class="fc" id="L367">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L367" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L368">					ec = getTwinResidualCapacity(e);</span>
-<span class="fc" id="L369">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L369" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L370">					ec = getTwinResidualCapacity(e);</span>
+<span class="fc" id="L371">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L371" title="All 2 branches missed.">				assert ec &gt; 0;</span>
-<span class="fc" id="L372">				f = Math.min(f, ec);</span>
-<span class="fc" id="L373">				p = nextP;</span>
-<span class="fc" id="L374">			}</span>
-<span class="pc bnc" id="L375" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bnc" id="L373" title="All 2 branches missed.">				assert ec &gt; 0;</span>
+<span class="fc" id="L374">				f = Math.min(f, ec);</span>
+<span class="fc" id="L375">				p = nextP;</span>
+<span class="fc" id="L376">			}</span>
+<span class="pc bnc" id="L377" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			// update flow of all edges on path
-<span class="fc bfc" id="L378" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
-<span class="fc" id="L379">				int e = backtrack[p];</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
+<span class="fc" id="L381">				int e = backtrack[p];</span>
 				int nextP;
-<span class="fc bfc" id="L381" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
-<span class="fc" id="L382">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L383">					nextP = g.edgeSource(e);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">				if (g.edgeTarget(e) == p) {</span>
+<span class="fc" id="L384">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L385">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L385" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
-<span class="fc" id="L386">					residualCapacity[e] += f;</span>
-<span class="fc" id="L387">					nextP = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L387" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="fc" id="L388">					residualCapacity[e] += f;</span>
+<span class="fc" id="L389">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="fc" id="L389">				p = nextP;</span>
-<span class="fc" id="L390">			}</span>
-<span class="fc" id="L391">		}</span>
+<span class="fc" id="L391">				p = nextP;</span>
+<span class="fc" id="L392">			}</span>
+<span class="fc" id="L393">		}</span>
 
 		int flow(int e) {
-<span class="fc" id="L394">			return capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L396">			return capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean hasFlow(int e) {
-<span class="fc bfc" id="L399" title="All 2 branches covered.">			return flow(e) &gt; 0;</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">			return flow(e) &gt; 0;</span>
 		}
 
 		int getResidualCapacity(int e) {
-<span class="fc" id="L403">			return residualCapacity[e];</span>
+<span class="fc" id="L405">			return residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean isSaturated(int e) {
-<span class="nc bnc" id="L408" title="All 2 branches missed.">			return getResidualCapacity(e) &lt;= 0;</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">			return getResidualCapacity(e) &lt;= 0;</span>
 		}
 
 		@Override
 		boolean isResidual(int e) {
-<span class="fc bfc" id="L413" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; 0;</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; 0;</span>
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-<span class="fc bfc" id="L418" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; 0;</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; 0;</span>
 		}
 
 		int getTwinResidualCapacity(int e) {
-<span class="pc bnc" id="L422" title="All 2 branches missed.">			assert !directed;</span>
-<span class="fc" id="L423">			return 2 * capacity[e] - residualCapacity[e];</span>
+<span class="pc bnc" id="L424" title="All 2 branches missed.">			assert !directed;</span>
+<span class="fc" id="L425">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 	}
 

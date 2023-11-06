@@ -26,16 +26,19 @@ public class WeightFunctions {
 
 	/**
 	 * Get a 'local' version of a given weight function.
+	 *
 	 * &lt;p&gt;
 	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result &lt;i&gt;locally&lt;/i&gt;, to
 	 * ensure the potentially heavy computations occur few as possible.
+	 *
 	 * &lt;p&gt;
 	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
 	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
 	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
 	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 *
 	 * &lt;p&gt;
 	 * This function is used only for performance boost, it does not change any functionally over using the original
 	 * weight function.
@@ -45,36 +48,39 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
-<span class="fc bfc" id="L48" title="All 4 branches covered.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
-<span class="fc" id="L49">			return w;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="fc" id="L51">			return w;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
-<span class="fc" id="L53">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L54">			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L56">				wLocal.set(e, wInt.weightInt(e));</span>
-<span class="fc" id="L57">			return wLocal;</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
+<span class="fc" id="L52">			return w;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L54">			return w;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L56">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L57">			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L59">				wLocal.set(e, wInt.weightInt(e));</span>
+<span class="fc" id="L60">			return wLocal;</span>
 		} else {
-<span class="fc" id="L59">			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L61">				wLocal.set(e, w.weight(e));</span>
-<span class="fc" id="L62">			return wLocal;</span>
+<span class="fc" id="L62">			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L64">				wLocal.set(e, w.weight(e));</span>
+<span class="fc" id="L65">			return wLocal;</span>
 		}
 	}
 
 	/**
 	 * Get a 'local' version of a given weight function.
+	 *
 	 * &lt;p&gt;
 	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result &lt;i&gt;locally&lt;/i&gt;, to
 	 * ensure the potentially heavy computations occur few as possible.
+	 *
 	 * &lt;p&gt;
 	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
 	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
 	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
 	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 *
 	 * &lt;p&gt;
 	 * This function is used only for performance boost, it does not change any functionally over using the original
 	 * weight function.
@@ -84,14 +90,14 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunctionInt localEdgeWeightFunction(IndexGraph g, IWeightFunctionInt w) {
-<span class="pc bpc" id="L87" title="2 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
-<span class="nc" id="L88">			return w;</span>
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="fc" id="L90">			return w;</span>
-<span class="nc" id="L91">		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L93">			wLocal.set(e, w.weightInt(e));</span>
-<span class="nc" id="L94">		return wLocal;</span>
+<span class="pc bpc" id="L93" title="2 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction)</span>
+<span class="nc" id="L94">			return w;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L96">			return w;</span>
+<span class="nc" id="L97">		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L99">			wLocal.set(e, w.weightInt(e));</span>
+<span class="nc" id="L100">		return wLocal;</span>
 	}
 
 	/**
@@ -101,17 +107,17 @@ public class WeightFunctions {
 	 * @return   a weight function on a graph with integer vertices
 	 */
 	public static IWeightFunction asIntGraphWeightFunc(WeightFunction&lt;Integer&gt; w) {
-<span class="pc bpc" id="L104" title="1 of 6 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
+<span class="pc bpc" id="L110" title="1 of 6 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
 				|| w == IWeightFunction.CardinalityWeightFunction)
-<span class="fc" id="L106">			return null;</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		if (w instanceof IWeightFunction) {</span>
-<span class="fc" id="L108">			return (IWeightFunction) w;</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
-<span class="nc" id="L110">			WeightFunctionInt&lt;Integer&gt; wInt = (WeightFunctionInt&lt;Integer&gt;) w;</span>
-<span class="nc" id="L111">			IWeightFunctionInt ret = elm -&gt; wInt.weightInt(Integer.valueOf(elm));</span>
-<span class="nc" id="L112">			return ret;</span>
+<span class="fc" id="L112">			return null;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (w instanceof IWeightFunction) {</span>
+<span class="fc" id="L114">			return (IWeightFunction) w;</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L116">			WeightFunctionInt&lt;Integer&gt; wInt = (WeightFunctionInt&lt;Integer&gt;) w;</span>
+<span class="nc" id="L117">			IWeightFunctionInt ret = elm -&gt; wInt.weightInt(Integer.valueOf(elm));</span>
+<span class="nc" id="L118">			return ret;</span>
 		} else {
-<span class="nc" id="L114">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
+<span class="nc" id="L120">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
 		}
 	}
 

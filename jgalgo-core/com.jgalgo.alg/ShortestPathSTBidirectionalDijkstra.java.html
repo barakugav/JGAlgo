@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L55">		infoT.put(target, new Info());</span>
 <span class="fc" id="L56">		heapS.insert(.0, source);</span>
 <span class="fc" id="L57">		heapT.insert(.0, target);</span>
-<span class="fc bfc" id="L58" title="All 4 branches covered.">		for (; !heapS.isEmpty() &amp;&amp; !heapT.isEmpty();) {</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">		while (!heapS.isEmpty() &amp;&amp; !heapT.isEmpty()) {</span>
 
 <span class="fc" id="L60">			HeapReference&lt;Double, Integer&gt; min = heapS.extractMin();</span>
 <span class="fc" id="L61">			double uDistanceS = min.key();</span>

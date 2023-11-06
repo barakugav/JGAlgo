@@ -84,6 +84,7 @@ public interface GraphReader {
 
 	/**
 	 * Get new {@link GraphReader} instance by a format name.
+	 *
 	 * &lt;p&gt;
 	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
 	 * 'leda']
@@ -92,7 +93,7 @@ public interface GraphReader {
 	 * @return        a reader that can read graphs of the given format
 	 */
 	static GraphReader newInstance(String format) {
-<span class="fc" id="L95">		return GraphFormat.getInstanceByName(format).newReader();</span>
+<span class="fc" id="L96">		return GraphFormat.getInstanceByName(format).newReader();</span>
 	}
 
 }

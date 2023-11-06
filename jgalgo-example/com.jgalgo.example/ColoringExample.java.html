@@ -20,53 +20,61 @@ import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IntGraph;
 
-<span class="pc" id="L23">public class ColoringExample {</span>
+/**
+ * This example demonstrates how to use the coloring algorithm.
+ *
+ * @author Barak Ugav
+ */
+<span class="pc" id="L28">public class ColoringExample {</span>
 
+	/**
+	 * This example demonstrates how to use the coloring algorithm.
+	 */
 	public static void coloringExample() {
 		/* Create a graph with few vertices and edges */
-<span class="fc" id="L27">		IntGraph g = createGraph();</span>
+<span class="fc" id="L35">		IntGraph g = createGraph();</span>
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
-<span class="fc" id="L30">		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();</span>
-<span class="fc" id="L31">		IVertexPartition colors = (IVertexPartition) coloringAlgo.computeColoring(g);</span>
+<span class="fc" id="L38">		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();</span>
+<span class="fc" id="L39">		IVertexPartition colors = (IVertexPartition) coloringAlgo.computeColoring(g);</span>
 
-<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
-<span class="fc" id="L34">			int uColor = colors.vertexBlock(u);</span>
-<span class="fc" id="L35">			System.out.println(&quot;The color of &quot; + u + &quot; is &quot; + uColor);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int u : g.vertices()) {</span>
+<span class="fc" id="L42">			int uColor = colors.vertexBlock(u);</span>
+<span class="fc" id="L43">			System.out.println(&quot;The color of &quot; + u + &quot; is &quot; + uColor);</span>
 
 			/* For each edge (u,v), the endpoints u and v have different colors */
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L39">				eit.nextInt();</span>
-<span class="fc" id="L40">				int v = eit.targetInt();</span>
-<span class="fc" id="L41">				int vColor = colors.vertexBlock(v);</span>
-<span class="pc bnc" id="L42" title="All 2 branches missed.">				assert uColor != vColor;</span>
-<span class="fc" id="L43">			}</span>
-<span class="fc" id="L44">		}</span>
-<span class="fc" id="L45">	}</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L47">				eit.nextInt();</span>
+<span class="fc" id="L48">				int v = eit.targetInt();</span>
+<span class="fc" id="L49">				int vColor = colors.vertexBlock(v);</span>
+<span class="pc bnc" id="L50" title="All 2 branches missed.">				assert uColor != vColor;</span>
+<span class="fc" id="L51">			}</span>
+<span class="fc" id="L52">		}</span>
+<span class="fc" id="L53">	}</span>
 
-	public static IntGraph createGraph() {
-<span class="fc" id="L48">		IntGraph g = IntGraph.newUndirected();</span>
-<span class="fc" id="L49">		int v1 = g.addVertex();</span>
-<span class="fc" id="L50">		int v2 = g.addVertex();</span>
-<span class="fc" id="L51">		int v3 = g.addVertex();</span>
-<span class="fc" id="L52">		int v4 = g.addVertex();</span>
-<span class="fc" id="L53">		int v5 = g.addVertex();</span>
-<span class="fc" id="L54">		int v6 = g.addVertex();</span>
-<span class="fc" id="L55">		int v7 = g.addVertex();</span>
+	private static IntGraph createGraph() {
+<span class="fc" id="L56">		IntGraph g = IntGraph.newUndirected();</span>
+<span class="fc" id="L57">		int v1 = g.addVertex();</span>
+<span class="fc" id="L58">		int v2 = g.addVertex();</span>
+<span class="fc" id="L59">		int v3 = g.addVertex();</span>
+<span class="fc" id="L60">		int v4 = g.addVertex();</span>
+<span class="fc" id="L61">		int v5 = g.addVertex();</span>
+<span class="fc" id="L62">		int v6 = g.addVertex();</span>
+<span class="fc" id="L63">		int v7 = g.addVertex();</span>
 
-<span class="fc" id="L57">		g.addEdge(v1, v2);</span>
-<span class="fc" id="L58">		g.addEdge(v2, v3);</span>
-<span class="fc" id="L59">		g.addEdge(v1, v3);</span>
-<span class="fc" id="L60">		g.addEdge(v7, v5);</span>
-<span class="fc" id="L61">		g.addEdge(v6, v1);</span>
-<span class="fc" id="L62">		g.addEdge(v3, v4);</span>
+<span class="fc" id="L65">		g.addEdge(v1, v2);</span>
+<span class="fc" id="L66">		g.addEdge(v2, v3);</span>
+<span class="fc" id="L67">		g.addEdge(v1, v3);</span>
+<span class="fc" id="L68">		g.addEdge(v7, v5);</span>
+<span class="fc" id="L69">		g.addEdge(v6, v1);</span>
+<span class="fc" id="L70">		g.addEdge(v3, v4);</span>
 
-<span class="fc" id="L64">		return g;</span>
+<span class="fc" id="L72">		return g;</span>
 	}
 
 	public static void main(String[] args) {
-<span class="fc" id="L68">		coloringExample();</span>
-<span class="fc" id="L69">	}</span>
+<span class="fc" id="L76">		coloringExample();</span>
+<span class="fc" id="L77">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

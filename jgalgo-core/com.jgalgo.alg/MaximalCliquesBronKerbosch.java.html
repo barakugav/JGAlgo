@@ -15,10 +15,10 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -28,119 +28,120 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * The Bron-Kerbosch algorithm for Maximal cliques.
+ *
  * &lt;p&gt;
  * Based on 'Algorithm 457: finding all cliques of an undirected graph' by Coen Bron and Joep Kerbosch.
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L36">class MaximalCliquesBronKerbosch extends MaximalCliquesUtils.AbstractImpl {</span>
+<span class="fc" id="L37">class MaximalCliquesBronKerbosch extends MaximalCliquesUtils.AbstractImpl {</span>
 
 	@Override
 	Iterator&lt;IntSet&gt; iterateMaximalCliques(IndexGraph g) {
-<span class="fc" id="L40">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L41">		Assertions.Graphs.onlyUndirected(g);</span>
 
-<span class="fc" id="L42">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L43">		return new Iterator&lt;&gt;() {</span>
 
-<span class="fc" id="L44">			final int n = g.vertices().size();</span>
-			final BitSet edges;
+<span class="fc" id="L45">			final int n = g.vertices().size();</span>
+			final Bitmap edges;
 
-<span class="fc" id="L47">			final IntList currentClique = new IntArrayList();</span>
-<span class="fc" id="L48">			final Stack&lt;IntList&gt; potentialStack = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L49">			final Stack&lt;IntList&gt; excludedStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L48">			final IntList currentClique = new IntArrayList();</span>
+<span class="fc" id="L49">			final Stack&lt;IntList&gt; potentialStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">			final Stack&lt;IntList&gt; excludedStack = new ObjectArrayList&lt;&gt;();</span>
 			boolean hasNextClique;
 
 			{
-<span class="fc" id="L53">				edges = new BitSet(n * n);</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L55">					int u = g.edgeSource(e);</span>
-<span class="fc" id="L56">					int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">					if (u == v)</span>
-<span class="fc" id="L58">						continue;</span>
-<span class="fc" id="L59">					edges.set(u * n + v);</span>
-<span class="fc" id="L60">					edges.set(v * n + u);</span>
+<span class="fc" id="L54">				edges = new Bitmap(n * n);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L56">					int u = g.edgeSource(e);</span>
+<span class="fc" id="L57">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">					if (u == v)</span>
+<span class="fc" id="L59">						continue;</span>
+<span class="fc" id="L60">					edges.set(u * n + v);</span>
+<span class="fc" id="L61">					edges.set(v * n + u);</span>
 				}
-<span class="fc" id="L62">				potentialStack.push(new IntArrayList(g.vertices()));</span>
-<span class="fc" id="L63">				excludedStack.push(new IntArrayList());</span>
+<span class="fc" id="L63">				potentialStack.push(new IntArrayList(g.vertices()));</span>
+<span class="fc" id="L64">				excludedStack.push(new IntArrayList());</span>
 
-<span class="fc" id="L65">				findNextClique();</span>
-<span class="fc" id="L66">			}</span>
+<span class="fc" id="L66">				findNextClique();</span>
+<span class="fc" id="L67">			}</span>
 
 			private boolean containsEdge(int u, int v) {
-<span class="fc" id="L69">				return edges.get(u * n + v);</span>
+<span class="fc" id="L70">				return edges.get(u * n + v);</span>
 			}
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L74">				return hasNextClique;</span>
+<span class="fc" id="L75">				return hasNextClique;</span>
 			}
 
 			@Override
 			public IntSet next() {
-<span class="fc" id="L79">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L80">				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());</span>
-<span class="fc" id="L81">				removeLastInsertedVertex(potentialStack.top(), excludedStack.top());</span>
-<span class="fc" id="L82">				findNextClique();</span>
-<span class="fc" id="L83">				return ret;</span>
+<span class="fc" id="L80">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L81">				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());</span>
+<span class="fc" id="L82">				removeLastInsertedVertex(potentialStack.top(), excludedStack.top());</span>
+<span class="fc" id="L83">				findNextClique();</span>
+<span class="fc" id="L84">				return ret;</span>
 			}
 
 			private void findNextClique() {
-<span class="fc" id="L87">				IntList potential = potentialStack.top();</span>
-<span class="fc" id="L88">				IntList excluded = excludedStack.top();</span>
+<span class="fc" id="L88">				IntList potential = potentialStack.top();</span>
+<span class="fc" id="L89">				IntList excluded = excludedStack.top();</span>
 
 				recursionLoop: for (;;) {
-<span class="pc bnc" id="L91" title="All 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
+<span class="pc bnc" id="L92" title="All 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
 
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					while (!potential.isEmpty()) {</span>
-<span class="fc" id="L94">						int v = potential.getInt(potential.size() - 1);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					while (!potential.isEmpty()) {</span>
+<span class="fc" id="L95">						int v = potential.getInt(potential.size() - 1);</span>
 
-<span class="fc" id="L96">						currentClique.add(v);</span>
-<span class="fc" id="L97">						IntList nextPotential = new IntArrayList();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">						for (int u : potential)</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
-<span class="fc" id="L100">								nextPotential.add(u);</span>
-<span class="fc" id="L101">						IntList nextExcluded = new IntArrayList();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">						for (int u : excluded)</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
-<span class="fc" id="L104">								nextExcluded.add(u);</span>
-<span class="fc bfc" id="L105" title="All 4 branches covered.">						if (nextPotential.isEmpty() &amp;&amp; nextExcluded.isEmpty()) {</span>
-<span class="fc" id="L106">							hasNextClique = true;</span>
-<span class="fc" id="L107">							return;</span>
+<span class="fc" id="L97">						currentClique.add(v);</span>
+<span class="fc" id="L98">						IntList nextPotential = new IntArrayList();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">						for (int u : potential)</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
+<span class="fc" id="L101">								nextPotential.add(u);</span>
+<span class="fc" id="L102">						IntList nextExcluded = new IntArrayList();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">						for (int u : excluded)</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
+<span class="fc" id="L105">								nextExcluded.add(u);</span>
+<span class="fc bfc" id="L106" title="All 4 branches covered.">						if (nextPotential.isEmpty() &amp;&amp; nextExcluded.isEmpty()) {</span>
+<span class="fc" id="L107">							hasNextClique = true;</span>
+<span class="fc" id="L108">							return;</span>
 						}
 
-<span class="fc" id="L110">						boolean skip = false;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">						excludedLoop: for (int w : excluded) {</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">							for (int u : potential)</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">								if (!containsEdge(u, w))</span>
-<span class="fc" id="L114">									continue excludedLoop;</span>
-<span class="fc" id="L115">							skip = true;</span>
-<span class="fc" id="L116">							break;</span>
+<span class="fc" id="L111">						boolean skip = false;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">						excludedLoop: for (int w : excluded) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">							for (int u : potential)</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">								if (!containsEdge(u, w))</span>
+<span class="fc" id="L115">									continue excludedLoop;</span>
+<span class="fc" id="L116">							skip = true;</span>
+<span class="fc" id="L117">							break;</span>
 						}
-<span class="fc bfc" id="L118" title="All 2 branches covered.">						if (!skip) {</span>
-<span class="fc" id="L119">							potentialStack.push(potential = nextPotential);</span>
-<span class="fc" id="L120">							excludedStack.push(excluded = nextExcluded);</span>
-<span class="fc" id="L121">							continue recursionLoop;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">						if (!skip) {</span>
+<span class="fc" id="L120">							potentialStack.push(potential = nextPotential);</span>
+<span class="fc" id="L121">							excludedStack.push(excluded = nextExcluded);</span>
+<span class="fc" id="L122">							continue recursionLoop;</span>
 						}
-<span class="fc" id="L123">						removeLastInsertedVertex(potential, excluded);</span>
-<span class="fc" id="L124">					}</span>
+<span class="fc" id="L124">						removeLastInsertedVertex(potential, excluded);</span>
+<span class="fc" id="L125">					}</span>
 
-<span class="fc" id="L126">					potentialStack.pop();</span>
-<span class="fc" id="L127">					excludedStack.pop();</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					if (potentialStack.isEmpty()) {</span>
-<span class="fc" id="L129">						hasNextClique = false;</span>
-<span class="fc" id="L130">						return;</span>
+<span class="fc" id="L127">					potentialStack.pop();</span>
+<span class="fc" id="L128">					excludedStack.pop();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">					if (potentialStack.isEmpty()) {</span>
+<span class="fc" id="L130">						hasNextClique = false;</span>
+<span class="fc" id="L131">						return;</span>
 					}
-<span class="fc" id="L132">					potential = potentialStack.top();</span>
-<span class="fc" id="L133">					excluded = excludedStack.top();</span>
-<span class="fc" id="L134">					removeLastInsertedVertex(potential, excluded);</span>
+<span class="fc" id="L133">					potential = potentialStack.top();</span>
+<span class="fc" id="L134">					excluded = excludedStack.top();</span>
+<span class="fc" id="L135">					removeLastInsertedVertex(potential, excluded);</span>
 				}
 			}
 
 			private void removeLastInsertedVertex(IntList potential, IntList excluded) {
-<span class="fc" id="L139">				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */</span>
-<span class="fc" id="L140">				int lastPotential = potential.removeInt(potential.size() - 1); /* P.remove(v); */</span>
-<span class="pc bnc" id="L141" title="All 2 branches missed.">				assert lastPotential == v;</span>
-<span class="fc" id="L142">				excluded.add(v);</span>
-<span class="fc" id="L143">			}</span>
+<span class="fc" id="L140">				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */</span>
+<span class="fc" id="L141">				int lastPotential = potential.removeInt(potential.size() - 1); /* P.remove(v); */</span>
+<span class="pc bnc" id="L142" title="All 2 branches missed.">				assert lastPotential == v;</span>
+<span class="fc" id="L143">				excluded.add(v);</span>
+<span class="fc" id="L144">			}</span>
 
 		};
 	}

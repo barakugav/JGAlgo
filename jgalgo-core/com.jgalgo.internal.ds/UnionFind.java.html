@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 /**
  * Data structure of a finite set of elements supporting union and find operations.
+ *
  * &lt;p&gt;
  * The Union Find data structure stores a collection of disjoint sets. Each such set has some representative element,
  * which is an arbitrary element from the set. Three basic operations are supported:
@@ -27,6 +28,7 @@ package com.jgalgo.internal.ds;
  * element in the set).&lt;/li&gt;
  * &lt;li&gt;{@link #union(int, int)} - union the sets of two elements.&lt;/li&gt;
  * &lt;/ul&gt;
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -60,6 +62,7 @@ public interface UnionFind {
 
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
+	 *
 	 * &lt;p&gt;
 	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the same set.
 	 *
@@ -86,6 +89,7 @@ public interface UnionFind {
 
 	/**
 	 * Clear the data structure by removing all elements from all sets.
+	 *
 	 * &lt;p&gt;
 	 * This method can be used to reuse allocated memory of the data structure.
 	 */
@@ -93,6 +97,7 @@ public interface UnionFind {
 
 	/**
 	 * Create a new union find algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link UnionFind} object. The {@link UnionFind.Builder} might
 	 * support different options to obtain different implementations.
@@ -100,54 +105,55 @@ public interface UnionFind {
 	 * @return a default implementation of {@link UnionFind}
 	 */
 	static UnionFind newInstance() {
-<span class="fc" id="L103">		return newBuilder().build();</span>
+<span class="fc" id="L108">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new union-find data structure builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
 	static UnionFind.Builder newBuilder() {
-<span class="fc" id="L114">		return new UnionFind.Builder() {</span>
+<span class="fc" id="L120">		return new UnionFind.Builder() {</span>
 			int expectedSize;
 			String impl;
 
 			@Override
 			public UnionFind build() {
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L121" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L127" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;array&quot;:
-<span class="nc" id="L123">							return new UnionFindArray(expectedSize);</span>
+<span class="nc" id="L129">							return new UnionFindArray(expectedSize);</span>
 						case &quot;ptr&quot;:
-<span class="nc" id="L125">							return new UnionFindPtr(expectedSize);</span>
+<span class="nc" id="L131">							return new UnionFindPtr(expectedSize);</span>
 						default:
-<span class="nc" id="L127">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L133">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L130">				return new UnionFindArray(expectedSize);</span>
+<span class="fc" id="L136">				return new UnionFindArray(expectedSize);</span>
 			}
 
 			@Override
 			public UnionFind.Builder expectedSize(int expectedSize) {
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
-<span class="nc" id="L136">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc" id="L137">				this.expectedSize = expectedSize;</span>
-<span class="fc" id="L138">				return this;</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L142">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L143">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L144">				return this;</span>
 			}
 
 			@Override
 			public UnionFind.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L143" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L145">						impl = (String) value;</span>
-<span class="nc" id="L146">						break;</span>
+<span class="nc" id="L151">						impl = (String) value;</span>
+<span class="nc" id="L152">						break;</span>
 					default:
-<span class="nc" id="L148">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L154">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L150">				return this;</span>
+<span class="nc" id="L156">				return this;</span>
 			}
 		};
 	}
@@ -161,7 +167,7 @@ public interface UnionFind {
 	static interface Builder {
 
 		/**
-		 * Create a new empty union-find data structure
+		 * Create a new empty union-find data structure.
 		 *
 		 * @return a new empty union-find data structure
 		 */
@@ -177,10 +183,12 @@ public interface UnionFind {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -189,7 +197,7 @@ public interface UnionFind {
 		 * @return       this builder
 		 */
 		default UnionFind.Builder setOption(String key, Object value) {
-<span class="nc" id="L192">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L200">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

@@ -29,177 +29,178 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Wang's algorithm for computing the k-edge connected components of a graph.
+ *
  * &lt;p&gt;
  * Based on &quot;A Simple Algorithm for Finding All k-EdgeConnected Components&quot; by Tianhao Wang.
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L37">class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl {</span>
+<span class="fc" id="L38">class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl {</span>
 
 	private final Random rand;
-<span class="pc" id="L40">	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();</span>
-<span class="pc" id="L41">	private final MinimumCutST minCutAlgo = MinimumCutST.newInstance();</span>
+<span class="pc" id="L41">	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();</span>
+<span class="pc" id="L42">	private final MinimumCutST minCutAlgo = MinimumCutST.newInstance();</span>
 
 	/**
 	 * Create a new algorithm object with a random seed.
 	 */
-<span class="nc" id="L46">	KEdgeConnectedComponentsWang() {</span>
-<span class="nc" id="L47">		rand = new Random();</span>
-<span class="nc" id="L48">	}</span>
+<span class="nc" id="L47">	KEdgeConnectedComponentsWang() {</span>
+<span class="nc" id="L48">		rand = new Random();</span>
+<span class="nc" id="L49">	}</span>
 
 	/**
 	 * Create a new algorithm object with a given seed.
 	 *
 	 * @param seed a seed for the random number generator
 	 */
-<span class="fc" id="L55">	KEdgeConnectedComponentsWang(long seed) {</span>
-<span class="fc" id="L56">		rand = new Random(seed);</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L56">	KEdgeConnectedComponentsWang(long seed) {</span>
+<span class="fc" id="L57">		rand = new Random(seed);</span>
+<span class="fc" id="L58">	}</span>
 
 	@Override
 	IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
-<span class="fc" id="L61">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L63">			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
+<span class="fc" id="L62">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L64">			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
 
-<span class="fc" id="L65">		IndexGraphBuilder auxGraph = IndexGraphBuilder.newUndirected();</span>
-<span class="fc" id="L66">		auxGraph.expectedVerticesNum(n);</span>
-<span class="fc" id="L67">		auxGraph.expectedEdgesNum(n - 1);</span>
-<span class="fc" id="L68">		int[] auxWeights = new int[n - 1];</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L70">			auxGraph.addVertex();</span>
+<span class="fc" id="L66">		IndexGraphBuilder auxGraph = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L67">		auxGraph.expectedVerticesNum(n);</span>
+<span class="fc" id="L68">		auxGraph.expectedEdgesNum(n - 1);</span>
+<span class="fc" id="L69">		int[] auxWeights = new int[n - 1];</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L71">			auxGraph.addVertex();</span>
 
-<span class="fc" id="L72">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L73">		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);</span>
-<span class="fc" id="L74">		int[] vertices = new int[Range.of(wccs.numberOfBlocks()).intStream().map(b -&gt; wccs.blockVertices(b).size())</span>
-<span class="fc" id="L75">				.max().orElse(0)];</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int wccNum = wccs.numberOfBlocks(), wccIdx = 0; wccIdx &lt; wccNum; wccIdx++) {</span>
-<span class="fc" id="L77">			IntSet wccVertices = wccs.blockVertices(wccIdx);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (wccVertices.size() &lt;= 1)</span>
-<span class="fc" id="L79">				continue;</span>
-<span class="fc" id="L80">			Object newArray = wccVertices.toArray(vertices);</span>
-<span class="pc bnc" id="L81" title="All 2 branches missed.">			assert newArray == vertices;</span>
+<span class="fc" id="L73">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L74">		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);</span>
+<span class="fc" id="L75">		int[] vertices = new int[Range.of(wccs.numberOfBlocks()).intStream().map(b -&gt; wccs.blockVertices(b).size())</span>
+<span class="fc" id="L76">				.max().orElse(0)];</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (int wccNum = wccs.numberOfBlocks(), wccIdx = 0; wccIdx &lt; wccNum; wccIdx++) {</span>
+<span class="fc" id="L78">			IntSet wccVertices = wccs.blockVertices(wccIdx);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (wccVertices.size() &lt;= 1)</span>
+<span class="fc" id="L80">				continue;</span>
+<span class="fc" id="L81">			Object newArray = wccVertices.toArray(vertices);</span>
+<span class="pc bnc" id="L82" title="All 2 branches missed.">			assert newArray == vertices;</span>
 
-<span class="fc" id="L83">			int from = 0, to = wccVertices.size();</span>
-<span class="fc" id="L84">			int source = vertices[rand.nextInt(to)];</span>
-<span class="fc" id="L85">			stack.push(source);</span>
-<span class="fc" id="L86">			stack.push(from);</span>
-<span class="fc" id="L87">			stack.push(to);</span>
+<span class="fc" id="L84">			int from = 0, to = wccVertices.size();</span>
+<span class="fc" id="L85">			int source = vertices[rand.nextInt(to)];</span>
+<span class="fc" id="L86">			stack.push(source);</span>
+<span class="fc" id="L87">			stack.push(from);</span>
+<span class="fc" id="L88">			stack.push(to);</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L90">				to = stack.popInt();</span>
-<span class="fc" id="L91">				from = stack.popInt();</span>
-<span class="fc" id="L92">				source = stack.popInt();</span>
-<span class="pc bnc" id="L93" title="All 2 branches missed.">				assert to - from &gt; 1;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L91">				to = stack.popInt();</span>
+<span class="fc" id="L92">				from = stack.popInt();</span>
+<span class="fc" id="L93">				source = stack.popInt();</span>
+<span class="pc bnc" id="L94" title="All 2 branches missed.">				assert to - from &gt; 1;</span>
 
 				int sink;
 				do {
-<span class="fc" id="L97">					sink = vertices[from + rand.nextInt(to - from)];</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				} while (sink == source);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (rand.nextBoolean()) {</span>
-<span class="fc" id="L100">					int temp = source;</span>
-<span class="fc" id="L101">					source = sink;</span>
-<span class="fc" id="L102">					sink = temp;</span>
+<span class="fc" id="L98">					sink = vertices[from + rand.nextInt(to - from)];</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				} while (sink == source);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				if (rand.nextBoolean()) {</span>
+<span class="fc" id="L101">					int temp = source;</span>
+<span class="fc" id="L102">					source = sink;</span>
+<span class="fc" id="L103">					sink = temp;</span>
 				}
 
-<span class="fc" id="L105">				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,</span>
-<span class="fc" id="L106">						IWeightFunction.CardinalityWeightFunction, Integer.valueOf(source), Integer.valueOf(sink));</span>
-<span class="fc" id="L107">				int cutWeight = minCut.crossEdges().size();</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="fc" id="L109">					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,</span>
-<span class="fc" id="L110">							IWeightFunction.CardinalityWeightFunction, Integer.valueOf(sink), Integer.valueOf(source));</span>
-<span class="fc" id="L111">					int cutWeight2 = minCut2.crossEdges().size();</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">					if (cutWeight &gt; cutWeight2) {</span>
-<span class="fc" id="L113">						cutWeight = cutWeight2;</span>
-<span class="fc" id="L114">						minCut = minCut2;</span>
-<span class="fc" id="L115">						int temp = source;</span>
-<span class="fc" id="L116">						source = sink;</span>
-<span class="fc" id="L117">						sink = temp;</span>
+<span class="fc" id="L106">				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,</span>
+<span class="fc" id="L107">						IWeightFunction.CardinalityWeightFunction, Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L108">				int cutWeight = minCut.crossEdges().size();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="fc" id="L110">					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,</span>
+<span class="fc" id="L111">							IWeightFunction.CardinalityWeightFunction, Integer.valueOf(sink), Integer.valueOf(source));</span>
+<span class="fc" id="L112">					int cutWeight2 = minCut2.crossEdges().size();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">					if (cutWeight &gt; cutWeight2) {</span>
+<span class="fc" id="L114">						cutWeight = cutWeight2;</span>
+<span class="fc" id="L115">						minCut = minCut2;</span>
+<span class="fc" id="L116">						int temp = source;</span>
+<span class="fc" id="L117">						source = sink;</span>
+<span class="fc" id="L118">						sink = temp;</span>
 					}
 				}
 
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				if (cutWeight &gt; 0)</span>
-<span class="fc" id="L122">					auxWeights[auxGraph.addEdge(source, sink)] = cutWeight;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (cutWeight &gt; 0)</span>
+<span class="fc" id="L123">					auxWeights[auxGraph.addEdge(source, sink)] = cutWeight;</span>
 
 				int middle;
-<span class="fc" id="L125">				sortLoop: for (int f = from, t = to - 1;;) {</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">					while (minCut.isLeft(vertices[f])) {</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">						if (++f == t) {</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
-<span class="pc bnc" id="L129" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
+<span class="fc" id="L126">				sortLoop: for (int f = from, t = to - 1;;) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					while (minCut.isLeft(vertices[f])) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">						if (++f == t) {</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
+<span class="pc bnc" id="L130" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
 							break sortLoop;
 						}
 					}
-<span class="fc bfc" id="L133" title="All 2 branches covered.">					while (minCut.isRight(vertices[t])) {</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">						if (f == --t) {</span>
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
-<span class="pc bnc" id="L136" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					while (minCut.isRight(vertices[t])) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">						if (f == --t) {</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
+<span class="pc bnc" id="L137" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
 							break sortLoop;
 						}
 					}
-<span class="fc" id="L140">					int temp = vertices[f];</span>
-<span class="fc" id="L141">					vertices[f] = vertices[t];</span>
-<span class="fc" id="L142">					vertices[t] = temp;</span>
-<span class="fc" id="L143">				}</span>
+<span class="fc" id="L141">					int temp = vertices[f];</span>
+<span class="fc" id="L142">					vertices[f] = vertices[t];</span>
+<span class="fc" id="L143">					vertices[t] = temp;</span>
+<span class="fc" id="L144">				}</span>
 
-<span class="fc" id="L145">				int from1 = from, to1 = middle;</span>
-<span class="fc" id="L146">				int from2 = middle, to2 = to;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">				if (to1 - from1 &gt; 1) {</span>
-<span class="fc" id="L148">					stack.push(source);</span>
-<span class="fc" id="L149">					stack.push(from1);</span>
-<span class="fc" id="L150">					stack.push(to1);</span>
+<span class="fc" id="L146">				int from1 = from, to1 = middle;</span>
+<span class="fc" id="L147">				int from2 = middle, to2 = to;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">				if (to1 - from1 &gt; 1) {</span>
+<span class="fc" id="L149">					stack.push(source);</span>
+<span class="fc" id="L150">					stack.push(from1);</span>
+<span class="fc" id="L151">					stack.push(to1);</span>
 				} else {
-<span class="pc bnc" id="L152" title="All 2 branches missed.">					assert to1 - from1 == 1;</span>
-<span class="pc bnc" id="L153" title="All 2 branches missed.">					assert vertices[from1] == source;</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">					assert to1 - from1 == 1;</span>
+<span class="pc bnc" id="L154" title="All 2 branches missed.">					assert vertices[from1] == source;</span>
 				}
-<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (to2 - from2 &gt; 1) {</span>
-<span class="fc" id="L156">					stack.push(sink);</span>
-<span class="fc" id="L157">					stack.push(from2);</span>
-<span class="fc" id="L158">					stack.push(to2);</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">				if (to2 - from2 &gt; 1) {</span>
+<span class="fc" id="L157">					stack.push(sink);</span>
+<span class="fc" id="L158">					stack.push(from2);</span>
+<span class="fc" id="L159">					stack.push(to2);</span>
 				} else {
-<span class="pc bnc" id="L160" title="All 2 branches missed.">					assert to2 - from2 == 1;</span>
-<span class="pc bnc" id="L161" title="All 2 branches missed.">					assert vertices[from2] == sink;</span>
+<span class="pc bnc" id="L161" title="All 2 branches missed.">					assert to2 - from2 == 1;</span>
+<span class="pc bnc" id="L162" title="All 2 branches missed.">					assert vertices[from2] == sink;</span>
 				}
-<span class="fc" id="L163">			}</span>
+<span class="fc" id="L164">			}</span>
 		}
-<span class="fc" id="L165">		return computeKEdgeConnectedComponentsFromAuxGraph(g, auxGraph.build(), auxWeights, k);</span>
+<span class="fc" id="L166">		return computeKEdgeConnectedComponentsFromAuxGraph(g, auxGraph.build(), auxWeights, k);</span>
 	}
 
 	private static IVertexPartition computeKEdgeConnectedComponentsFromAuxGraph(IndexGraph origGraph,
 			IndexGraph auxGraph, int[] auxWeights, int k) {
-<span class="pc bnc" id="L170" title="All 2 branches missed.">		assert !auxGraph.isDirected();</span>
-<span class="fc" id="L171">		final int n = auxGraph.vertices().size();</span>
-<span class="pc bnc" id="L172" title="All 2 branches missed.">		assert n == origGraph.vertices().size();</span>
-<span class="fc" id="L173">		int[] comp = new int[n];</span>
-<span class="fc" id="L174">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L175">		int compNum = 0;</span>
+<span class="pc bnc" id="L171" title="All 2 branches missed.">		assert !auxGraph.isDirected();</span>
+<span class="fc" id="L172">		final int n = auxGraph.vertices().size();</span>
+<span class="pc bnc" id="L173" title="All 2 branches missed.">		assert n == origGraph.vertices().size();</span>
+<span class="fc" id="L174">		int[] comp = new int[n];</span>
+<span class="fc" id="L175">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L176">		int compNum = 0;</span>
 
-<span class="fc" id="L177">		IntStack stack = new IntArrayList();</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L180">				continue;</span>
-<span class="fc" id="L181">			final int compIdx = compNum++;</span>
-<span class="fc" id="L182">			stack.push(root);</span>
-<span class="fc" id="L183">			comp[root] = compIdx;</span>
+<span class="fc" id="L178">		IntStack stack = new IntArrayList();</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L181">				continue;</span>
+<span class="fc" id="L182">			final int compIdx = compNum++;</span>
+<span class="fc" id="L183">			stack.push(root);</span>
+<span class="fc" id="L184">			comp[root] = compIdx;</span>
 
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L186">				int u = stack.popInt();</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L187">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L188" title="All 2 branches covered.">				for (IEdgeIter eit = auxGraph.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L189">					int e = eit.nextInt();</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">					if (auxWeights[e] &lt; k)</span>
-<span class="fc" id="L191">						continue;</span>
-<span class="fc" id="L192">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
-<span class="pc bnc" id="L194" title="All 2 branches missed.">						assert comp[v] == compIdx;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				for (IEdgeIter eit = auxGraph.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L190">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">					if (auxWeights[e] &lt; k)</span>
+<span class="fc" id="L192">						continue;</span>
+<span class="fc" id="L193">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
+<span class="pc bnc" id="L195" title="All 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}
-<span class="fc" id="L197">					comp[v] = compIdx;</span>
-<span class="fc" id="L198">					stack.push(v);</span>
-<span class="fc" id="L199">				}</span>
-<span class="fc" id="L200">			}</span>
+<span class="fc" id="L198">					comp[v] = compIdx;</span>
+<span class="fc" id="L199">					stack.push(v);</span>
+<span class="fc" id="L200">				}</span>
+<span class="fc" id="L201">			}</span>
 		}
-<span class="fc" id="L202">		return new VertexPartitions.Impl(origGraph, compNum, comp);</span>
+<span class="fc" id="L203">		return new VertexPartitions.Impl(origGraph, compNum, comp);</span>
 	}
 
 }

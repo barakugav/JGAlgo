@@ -19,6 +19,7 @@ import java.util.Optional;
 
 /**
  * A builder for {@linkplain IndexGraph Index graphs}.
+ *
  * &lt;p&gt;
  * The builder is used to construct &lt;b&gt;non-empty&lt;/b&gt; index graphs. Differing from {@link IndexGraphFactory} which create
  * new empty graphs, the builder is used to add vertices and edges before actually creating the graph. This capability
@@ -35,6 +36,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * As the built graph is an Index graph, the vertices must be {@code 0,1,2,...,verticesNum-1} and user-chosen IDs
 	 * are not supported. A new vertex will be assigned ID of value {@code vertices().size()}.
@@ -50,15 +52,17 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
-<span class="nc" id="L53">		throw new UnsupportedOperationException(</span>
+<span class="nc" id="L55">		throw new UnsupportedOperationException(</span>
 				&quot;Index graph builder does not support adding vertices with user-chosen IDs&quot;);
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. A new edge will be assigned
 	 * ID of value {@code edges().size()}.
+	 *
 	 * &lt;p&gt;
 	 * It is possible to construct a graph by inserting the edges in a different order than their indices (IDs), by
 	 * using {@link #addEdge(int, int, int)} in which the ID of the inserted edge is specified along with the source and
@@ -70,6 +74,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. This constraint is
 	 * validated when the graph is actually created by the builder.
@@ -85,10 +90,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * Re-Index the vertices/edges and build a new immutable graph with the new indexing.
+	 *
 	 * &lt;p&gt;
 	 * &lt;i&gt;Re-indexing&lt;/i&gt; is the operation of assigning new indices to the vertices/edges. By re-indexing the
 	 * vertices/edges, the performance of accessing/iterating over the graph vertices/edges may increase, for example if
 	 * a more cache friendly indexing exists.
+	 *
 	 * &lt;p&gt;
 	 * Note that this method is not &lt;i&gt;required&lt;/i&gt; to re-index the vertices (edges) if {@code reIndexVertices}
 	 * ({@code reIndexEdges}) is {@code true}, it is simply allowed to. Whether or not a re-indexing was performed can
@@ -109,10 +116,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * Re-Index the vertices/edges and build a new mutable graph with the new indexing.
+	 *
 	 * &lt;p&gt;
 	 * &lt;i&gt;Re-indexing&lt;/i&gt; is the operation of assigning new indices to the vertices/edges. By re-indexing the
 	 * vertices/edges, the performance of accessing/iterating over the graph vertices/edges may increase, for example if
 	 * a more cache friendly indexing exists.
+	 *
 	 * &lt;p&gt;
 	 * Note that this method is not &lt;i&gt;required&lt;/i&gt; to re-index the vertices (edges) if {@code reIndexVertices}
 	 * ({@code reIndexEdges}) is {@code true}, it is simply allowed to. Whether or not a re-indexing was performed can
@@ -132,10 +141,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * A result object of re-indexing and building a graph operation.
+	 *
 	 * &lt;p&gt;
 	 * &lt;i&gt;Re-indexing&lt;/i&gt; is the operation of assigning new indices to the vertices/edges. By re-indexing the
 	 * vertices/edges, the performance of accessing/iterating over the graph vertices/edges may increase, for example if
 	 * a more cache friendly indexing exists.
+	 *
 	 * &lt;p&gt;
 	 * During the lifetime of a {@link IndexGraphBuilder}, vertices and edges are added to it, each one of them has a
 	 * unique {@code int} identifier which is also its index (see {@link IndexGraph}). The builder can re-index the
@@ -149,7 +160,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	static interface ReIndexedGraph {
 
 		/**
-		 * Get the newly created re-indexed graph
+		 * Get the newly created re-indexed graph.
 		 *
 		 * @return the actual re-indexed graph
 		 */
@@ -157,6 +168,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 		/**
 		 * Get the re-indexing map of the vertices.
+		 *
 		 * &lt;p&gt;
 		 * The returned object (if present) can map each original vertex index to its new index after re-indexing. If
 		 * the returned is not present, the vertices were no re-indexed.
@@ -167,6 +179,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 		/**
 		 * Get the re-indexing map of the edges.
+		 *
 		 * &lt;p&gt;
 		 * The returned object (if present) can map each original edge index to its new index after re-indexing. If the
 		 * returned is not present, the edges were no re-indexed.
@@ -178,15 +191,18 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 
 	/**
 	 * A map of indices, mapping an original index to a re-indexed index.
+	 *
 	 * &lt;p&gt;
 	 * &lt;i&gt;Re-indexing&lt;/i&gt; is the operation of assigning new indices to the vertices/edges. By re-indexing the
 	 * vertices/edges, the performance of accessing/iterating over the graph vertices/edges may increase, for example if
 	 * a more cache friendly indexing exists.
+	 *
 	 * &lt;p&gt;
 	 * A 're-indexed' index is the index assigned to vertex/edge after a re-indexing operation on a graph. This
 	 * interface is used to represent the mapping of both vertices and edges (a single instance map either vertices or
 	 * edges), and it should be understood from the context which one is it. In the documentation we use the term
 	 * &lt;i&gt;element&lt;/i&gt; to refer to either vertex or edge.
+	 *
 	 * &lt;p&gt;
 	 * Re-indexing of the vertices (or edges) is a mapping from {@code [0,1,2,...,verticesNum-1]} to
 	 * {@code [0,1,2,...,verticesNum-1]}, namely its bijection function.
@@ -221,7 +237,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-<span class="fc" id="L224">		return new IndexGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L240">		return new IndexGraphBuilderImpl.Undirected();</span>
 	}
 
 	/**
@@ -230,11 +246,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-<span class="fc" id="L233">		return new IndexGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L249">		return new IndexGraphBuilderImpl.Directed();</span>
 	}
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
+	 *
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -243,11 +260,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="nc" id="L246">		return newFrom(g, false);</span>
+<span class="nc" id="L263">		return newFrom(g, false);</span>
 	}
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 *
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -257,7 +275,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *                     graph vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L260">		return IndexGraphBuilderImpl.newFrom(g, copyWeights);</span>
+<span class="fc" id="L278">		return IndexGraphBuilderImpl.newFrom(g, copyWeights);</span>
 	}
 
 }

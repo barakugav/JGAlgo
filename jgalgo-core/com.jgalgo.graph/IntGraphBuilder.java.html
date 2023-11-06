@@ -19,11 +19,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A builder for {@linkplain IntGraph int graphs}.
+ *
  * &lt;p&gt;
  * The builder is used to construct &lt;b&gt;non-empty&lt;/b&gt; int graphs. Differing from {@link IntGraphFactory} which create new
  * empty graphs, the builder is used to add vertices and edges before actually creating the graph. This capability is
  * required to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost
  * compared to creating an empty graph and adding the same vertices and edges.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
@@ -43,6 +45,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 
 	/**
 	 * Add a new vertex to the graph.
+	 *
 	 * &lt;p&gt;
 	 * The builder will choose identifier not used for any existing vertex, and will return it. It is also possible to
 	 * add a new vertex and choose its identifier by using {@link #addVertex(int)}. Only one of {@link #addVertex()} and
@@ -54,6 +57,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 
 	/**
 	 * Add a new vertex to the graph, with user-chosen identifier.
+	 *
 	 * &lt;p&gt;
 	 * This function is similar to {@link #addVertex()}, but let the user to choose the the identifier of the new
 	 * vertex. Only one of {@link #addVertex()} and {@link #addVertex(int)} can be used during the construction of a
@@ -66,11 +70,12 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addVertex(Integer vertex) {
-<span class="nc" id="L69">		addVertex(vertex.intValue());</span>
-<span class="nc" id="L70">	}</span>
+<span class="nc" id="L73">		addVertex(vertex.intValue());</span>
+<span class="nc" id="L74">	}</span>
 
 	/**
 	 * Add a new edge to the graph.
+	 *
 	 * &lt;p&gt;
 	 * The builder will choose identifier not used for any existing edge, and will return it. It is also possible to add
 	 * a new edge and choose its identifier by using {@link #addEdge(int, int, int)}. Only one of
@@ -84,6 +89,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 
 	/**
 	 * Add a new edge to the graph, with user-chosen identifier.
+	 *
 	 * &lt;p&gt;
 	 * This function is similar to {@link #addEdge(int, int)}, but let the user to choose the identifier of the new
 	 * edge. Only one of {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the
@@ -98,11 +104,12 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
-<span class="nc" id="L101">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
-<span class="nc" id="L102">	}</span>
+<span class="nc" id="L107">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
+<span class="nc" id="L108">	}</span>
 
 	/**
 	 * Get the vertices weights of some key.
+	 *
 	 * &lt;p&gt;
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -116,11 +123,12 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L119">		return getVerticesIWeights(key);</span>
+<span class="fc" id="L126">		return getVerticesIWeights(key);</span>
 	}
 
 	/**
 	 * Get the edges weights of some key.
+	 *
 	 * &lt;p&gt;
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -134,7 +142,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L137">		return getEdgesIWeights(key);</span>
+<span class="fc" id="L145">		return getEdgesIWeights(key);</span>
 	}
 
 	@Override
@@ -149,7 +157,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder newUndirected() {
-<span class="fc" id="L152">		return new IntGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L160">		return new IntGraphBuilderImpl.Undirected();</span>
 	}
 
 	/**
@@ -158,11 +166,12 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder newDirected() {
-<span class="fc" id="L161">		return new IntGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L169">		return new IntGraphBuilderImpl.Directed();</span>
 	}
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
+	 *
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -171,11 +180,12 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *           vertices/edges weights.
 	 */
 	static IntGraphBuilder newFrom(IntGraph g) {
-<span class="fc" id="L174">		return newFrom(g, false);</span>
+<span class="fc" id="L183">		return newFrom(g, false);</span>
 	}
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 *
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -185,7 +195,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *                     graph vertices/edges weights.
 	 */
 	static IntGraphBuilder newFrom(IntGraph g, boolean copyWeights) {
-<span class="fc" id="L188">		return IntGraphBuilderImpl.newFrom(g, copyWeights);</span>
+<span class="fc" id="L198">		return IntGraphBuilderImpl.newFrom(g, copyWeights);</span>
 	}
 
 }

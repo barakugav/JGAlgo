@@ -21,8 +21,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Iterator used to iterate over int graph edges.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link EdgeIter} for {@link IntGraph}.
+ *
  * &lt;p&gt;
  * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
  * of the last iterated edge are available by {@link #sourceInt()} and {@link #targetInt()}.
@@ -46,6 +48,7 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 
 	/**
 	 * Peek at the next edge of the iterator without advancing it.
+	 *
 	 * &lt;p&gt;
 	 * Similar to {@link #nextInt()} but without advancing the iterator.
 	 *
@@ -57,11 +60,12 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	@Deprecated
 	@Override
 	default Integer peekNext() {
-<span class="fc" id="L60">		return Integer.valueOf(peekNextInt());</span>
+<span class="fc" id="L63">		return Integer.valueOf(peekNextInt());</span>
 	}
 
 	/**
 	 * Get the source vertex of the last returned edge.
+	 *
 	 * &lt;p&gt;
 	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *
@@ -72,11 +76,12 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	@Deprecated
 	@Override
 	default Integer source() {
-<span class="fc" id="L75">		return Integer.valueOf(sourceInt());</span>
+<span class="fc" id="L79">		return Integer.valueOf(sourceInt());</span>
 	}
 
 	/**
 	 * Get the target vertex of the last returned edge.
+	 *
 	 * &lt;p&gt;
 	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *
@@ -87,7 +92,7 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	@Deprecated
 	@Override
 	default Integer target() {
-<span class="fc" id="L90">		return Integer.valueOf(targetInt());</span>
+<span class="fc" id="L95">		return Integer.valueOf(targetInt());</span>
 	}
 
 }

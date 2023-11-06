@@ -30,15 +30,18 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Tree Path Maxima (TPM) algorithm.
+ *
  * &lt;p&gt;
  * Given a tree \(T\) and a sequence of vertices pairs \((u_1,v_1),(u_2,v_2),\ldots\) called &lt;i&gt;queries&lt;/i&gt;, the tree
  * path maxima problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path between \(u_i\) and \(v_i\)
  * in \(T\).
+ *
  * &lt;p&gt;
  * TPM can be used to validate if a spanning tree is minimum spanning tree (MST) or not, by checking for each edge
  * \((u,v)\) that is not in the tree that it is heavier than the heaviest edge in the path from \(u\) to \(v\) in the
  * tree. If a TPM on \(n\) vertices and \(m\) queries can be answer in \(O(n + m)\) time than an MST can be validated in
  * linear time.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -49,9 +52,11 @@ public interface TreePathMaxima {
 
 	/**
 	 * Compute the heaviest edge in multiple tree paths.
+	 *
 	 * &lt;p&gt;
 	 * The {@code queries} container contains pairs of vertices, each corresponding to a simple path in the given
 	 * {@code tree}. For each of these paths, the heaviest edge in the path will be computed.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link TreePathMaxima.IResult} object is returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link TreePathMaxima.IQueries} as {@code queries} to
@@ -70,6 +75,7 @@ public interface TreePathMaxima {
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
+	 *
 	 * &lt;p&gt;
 	 * Queries are added one by one to this container, and than the Queries object is passed to a {@link TreePathMaxima}
 	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}.
@@ -89,7 +95,7 @@ public interface TreePathMaxima {
 		 * @return     a new queries container
 		 */
 		static &lt;V, E&gt; TreePathMaxima.Queries&lt;V, E&gt; newInstance() {
-<span class="fc" id="L92">			return new TreePathMaximaUtils.ObjQueriesImpl&lt;&gt;();</span>
+<span class="fc" id="L98">			return new TreePathMaximaUtils.ObjQueriesImpl&lt;&gt;();</span>
 		}
 
 		/**
@@ -102,6 +108,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * &lt;p&gt;
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
@@ -114,6 +121,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * &lt;p&gt;
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
@@ -150,7 +158,7 @@ public interface TreePathMaxima {
 		 * @return a new queries container
 		 */
 		static TreePathMaxima.IQueries newInstance() {
-<span class="fc" id="L153">			return new TreePathMaximaUtils.IntQueriesImpl();</span>
+<span class="fc" id="L161">			return new TreePathMaximaUtils.IntQueriesImpl();</span>
 		}
 
 		/**
@@ -164,11 +172,12 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="fc" id="L167">			addQuery(u.intValue(), v.intValue());</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L175">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L176">		}</span>
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * &lt;p&gt;
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
@@ -182,11 +191,12 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="fc" id="L185">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L194">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * &lt;p&gt;
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
@@ -200,7 +210,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="fc" id="L203">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L213">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -216,6 +226,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the heaviest edge found for a single query.
+		 *
 		 * &lt;p&gt;
 		 * This result object was obtained by calling
 		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
@@ -231,6 +242,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the number queries results this result object hold.
+		 *
 		 * &lt;p&gt;
 		 * This number always much the size of the {@link TreePathMaxima.IQueries} container passed to the
 		 * {@link TreePathMaxima} algorithm.
@@ -249,6 +261,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the heaviest edge found for a single query.
+		 *
 		 * &lt;p&gt;
 		 * This result object was obtained by calling
 		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
@@ -265,12 +278,13 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getHeaviestEdge(int queryIdx) {
-<span class="fc" id="L268">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
+<span class="fc" id="L281">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
 		}
 	}
 
 	/**
 	 * Create a new tree path maxima algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object. The
 	 * {@link TreePathMaxima.Builder} might support different options to obtain different implementations.
@@ -278,38 +292,39 @@ public interface TreePathMaxima {
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="nc" id="L281">		return newBuilder().build();</span>
+<span class="nc" id="L295">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new tree path maxima algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder newBuilder() {
-<span class="nc" id="L292">		return new TreePathMaxima.Builder() {</span>
+<span class="nc" id="L307">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
 
 			@Override
 			public TreePathMaxima build() {
-<span class="nc" id="L298">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="nc" id="L299">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="nc" id="L300">				return tpm;</span>
+<span class="nc" id="L313">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
+<span class="nc" id="L314">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
+<span class="nc" id="L315">				return tpm;</span>
 			}
 
 			@Override
 			public TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L305" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;bits-lookup-tables-enable&quot;:
-<span class="nc" id="L307">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
-<span class="nc" id="L308">						break;</span>
+<span class="nc" id="L322">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
+<span class="nc" id="L323">						break;</span>
 					default:
-<span class="nc" id="L310">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L325">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L312">				return this;</span>
+<span class="nc" id="L327">				return this;</span>
 			}
 
 		};
@@ -332,10 +347,12 @@ public interface TreePathMaxima {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -344,16 +361,18 @@ public interface TreePathMaxima {
 		 * @return       this builder
 		 */
 		default TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc" id="L347">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L364">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 
 	/**
 	 * Verify that the given edges actually form an MST of a graph.
+	 *
 	 * &lt;p&gt;
 	 * The verification is done by computing for each original edge \((u, v)\) in the graph the heaviest edge on the
 	 * path from \(u\) to \(v\) in the given spanning tree. If all of the edges which are not in the MST have a greater
 	 * weight than the maximum one in the path of the MST, the MST is valid.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code w}, and
 	 * {@link IntCollection} as {@code edges} to avoid boxing/unboxing.
@@ -371,17 +390,17 @@ public interface TreePathMaxima {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; boolean verifyMST(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
 			TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L375">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L376">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
-<span class="nc" id="L377">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L394">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L395">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
+<span class="nc" id="L396">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
 
 		} else {
-<span class="fc" id="L380">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L381">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L382">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L383">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L384">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
+<span class="fc" id="L399">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L400">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L401">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L402">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L403">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
 		}
 	}
 

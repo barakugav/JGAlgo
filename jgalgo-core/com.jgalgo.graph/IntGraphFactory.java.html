@@ -17,14 +17,17 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@link IntGraph} objects.
+ *
  * &lt;p&gt;
  * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
  * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
  * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ *
  * &lt;p&gt;
  * Both the graph factory and {@link IntGraphBuilder} are used to create new graphs. The difference is that vertices and
  * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
  * to choose a graph implementation and create an empty graph.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link GraphFactory} for {@link IntGraph}.
  *
@@ -41,7 +44,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g) {
-<span class="fc" id="L44">		return (IntGraph) GraphFactory.super.newCopyOf(g);</span>
+<span class="fc" id="L47">		return (IntGraph) GraphFactory.super.newCopyOf(g);</span>
 	}
 
 	@Override
@@ -77,7 +80,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory newUndirected() {
-<span class="fc" id="L80">		return new IntGraphImpl.Factory(false);</span>
+<span class="fc" id="L83">		return new IntGraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -86,11 +89,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory newDirected() {
-<span class="fc" id="L89">		return new IntGraphImpl.Factory(true);</span>
+<span class="fc" id="L92">		return new IntGraphImpl.Factory(true);</span>
 	}
 
 	/**
 	 * Create a new graph factory based on a given implementation.
+	 *
 	 * &lt;p&gt;
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
@@ -100,12 +104,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static IntGraphFactory newFrom(IntGraph g) {
-<span class="fc" id="L103">		return new IntGraphImpl.Factory(g);</span>
+<span class="fc" id="L107">		return new IntGraphImpl.Factory(g);</span>
 	}
 
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L108">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L112">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

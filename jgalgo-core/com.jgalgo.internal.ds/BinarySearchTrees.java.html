@@ -26,15 +26,15 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 	private BinarySearchTrees() {}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node find(Node root, Comparator&lt;? super K&gt; c, K key) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT find(NodeT root, Comparator&lt;? super K&gt; c, K key) {
 <span class="fc" id="L30">		return findOrNeighbor(root, c, key, NeighborType.None);</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findOrSmaller(Node root, Comparator&lt;? super K&gt; c, K key) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findOrSmaller(NodeT root, Comparator&lt;? super K&gt; c, K key) {
 <span class="fc" id="L34">		return findOrNeighbor(root, c, key, NeighborType.Predecessor);</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findOrGreater(Node root, Comparator&lt;? super K&gt; c, K key) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findOrGreater(NodeT root, Comparator&lt;? super K&gt; c, K key) {
 <span class="fc" id="L38">		return findOrNeighbor(root, c, key, NeighborType.Successor);</span>
 	}
 
@@ -42,11 +42,11 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L42">		None, Predecessor, Successor,</span>
 	}
 
-	private static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findOrNeighbor(Node root, Comparator&lt;? super K&gt; c, K key,
+	private static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findOrNeighbor(NodeT root, Comparator&lt;? super K&gt; c, K key,
 			NeighborType neighborType) {
 <span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L48">			return null;</span>
-<span class="fc" id="L49">		BiFunction&lt;NeighborType, Node, Node&gt; onLeftChildMissing = (nType, p) -&gt; {</span>
+<span class="fc" id="L49">		BiFunction&lt;NeighborType, NodeT, NodeT&gt; onLeftChildMissing = (nType, p) -&gt; {</span>
 <span class="pc bpc" id="L50" title="2 of 4 branches missed.">			switch (nType) {</span>
 				case None:
 <span class="nc" id="L52">					return null;</span>
@@ -58,7 +58,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="nc" id="L58">					throw new IllegalArgumentException(&quot;Unexpected value: &quot; + neighborType);</span>
 			}
 		};
-<span class="fc" id="L61">		BiFunction&lt;NeighborType, Node, Node&gt; onRightChildMissing = (nType, p) -&gt; {</span>
+<span class="fc" id="L61">		BiFunction&lt;NeighborType, NodeT, NodeT&gt; onRightChildMissing = (nType, p) -&gt; {</span>
 <span class="pc bpc" id="L62" title="2 of 4 branches missed.">			switch (nType) {</span>
 				case None:
 <span class="nc" id="L64">					return null;</span>
@@ -71,7 +71,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 			}
 		};
 <span class="fc bfc" id="L73" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc" id="L74">			for (Node p = root;;) {</span>
+<span class="fc" id="L74">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L75">				int cmp = JGAlgoUtils.cmpDefault(key, p.key);</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">				if (cmp &lt; 0) {</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
@@ -86,7 +86,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 				}
 <span class="fc" id="L87">			}</span>
 		} else {
-<span class="fc" id="L89">			for (Node p = root;;) {</span>
+<span class="fc" id="L89">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L90">				int cmp = c.compare(key, p.key);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">				if (cmp &lt; 0) {</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
@@ -103,11 +103,11 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findSmaller(Node root, Comparator&lt;? super K&gt; c, K key) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findSmaller(NodeT root, Comparator&lt;? super K&gt; c, K key) {
 <span class="pc bpc" id="L107" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L108">			return null;</span>
 <span class="fc bfc" id="L109" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc" id="L110">			for (Node p = root;;) {</span>
+<span class="fc" id="L110">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L111">				int cmp = JGAlgoUtils.cmpDefault(key, p.key);</span>
 <span class="fc bfc" id="L112" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
@@ -120,7 +120,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 				}
 <span class="fc" id="L121">			}</span>
 		} else {
-<span class="fc" id="L123">			for (Node p = root;;) {</span>
+<span class="fc" id="L123">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L124">				int cmp = c.compare(key, p.key);</span>
 <span class="fc bfc" id="L125" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
@@ -135,11 +135,11 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findGreater(Node root, Comparator&lt;? super K&gt; c, K key) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findGreater(NodeT root, Comparator&lt;? super K&gt; c, K key) {
 <span class="pc bpc" id="L139" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L140">			return null;</span>
 <span class="fc bfc" id="L141" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc" id="L142">			for (Node p = root;;) {</span>
+<span class="fc" id="L142">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L143">				int cmp = JGAlgoUtils.cmpDefault(key, p.key);</span>
 <span class="fc bfc" id="L144" title="All 2 branches covered.">				if (cmp &gt;= 0) {</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">					if (!p.hasRightChild())</span>
@@ -152,7 +152,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 				}
 <span class="fc" id="L153">			}</span>
 		} else {
-<span class="fc" id="L155">			for (Node p = root;;) {</span>
+<span class="fc" id="L155">			for (NodeT p = root;;) {</span>
 <span class="fc" id="L156">				int cmp = c.compare(key, p.key);</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">				if (cmp &gt;= 0) {</span>
 <span class="fc bfc" id="L158" title="All 2 branches covered.">					if (!p.hasRightChild())</span>
@@ -167,59 +167,59 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findMin(Node root) {
-<span class="fc" id="L171">		for (Node p = root;; p = p.left)</span>
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findMin(NodeT root) {
+<span class="fc" id="L171">		for (NodeT p = root;; p = p.left)</span>
 <span class="fc bfc" id="L172" title="All 2 branches covered.">			if (!p.hasLeftChild())</span>
 <span class="fc" id="L173">				return p;</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node findMax(Node root) {
-<span class="fc" id="L177">		for (Node p = root;; p = p.right)</span>
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT findMax(NodeT root) {
+<span class="fc" id="L177">		for (NodeT p = root;; p = p.right)</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">			if (!p.hasRightChild())</span>
 <span class="fc" id="L179">				return p;</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node getPredecessor(Node n) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT getPredecessor(NodeT n) {
 <span class="fc" id="L183">		return getPredecessorInSubtree(n, null);</span>
 	}
 
-	private static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node getPredecessorInSubtree(Node n, Node subtreeRoot) {
+	private static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT getPredecessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* predecessor in left sub tree */
 <span class="fc bfc" id="L188" title="All 2 branches covered.">		if (n.hasLeftChild())</span>
-<span class="fc" id="L189">			for (Node p = n.left;; p = p.right)</span>
+<span class="fc" id="L189">			for (NodeT p = n.left;; p = p.right)</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">				if (!p.hasRightChild())</span>
 <span class="fc" id="L191">					return p;</span>
 
 		/* predecessor is some ancestor */
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">		Node subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (Node p = n; p.parent != subtreeParent; p = p.parent)</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (NodeT p = n; p.parent != subtreeParent; p = p.parent)</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">			if (p.isRightChild())</span>
 <span class="fc" id="L197">				return p.parent;</span>
 <span class="fc" id="L198">		return null;</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node getSuccessor(Node n) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT getSuccessor(NodeT n) {
 <span class="fc" id="L202">		return getSuccessorInSubtree(n, null);</span>
 	}
 
-	private static &lt;K, Node extends INode&lt;K, Node&gt;&gt; Node getSuccessorInSubtree(Node n, Node subtreeRoot) {
+	private static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; NodeT getSuccessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* successor in right sub tree */
 <span class="fc bfc" id="L207" title="All 2 branches covered.">		if (n.hasRightChild())</span>
-<span class="fc" id="L208">			for (Node p = n.right;; p = p.left)</span>
+<span class="fc" id="L208">			for (NodeT p = n.right;; p = p.left)</span>
 <span class="fc bfc" id="L209" title="All 2 branches covered.">				if (!p.hasLeftChild())</span>
 <span class="fc" id="L210">					return p;</span>
 
 		/* successor is some ancestor */
-<span class="fc bfc" id="L213" title="All 2 branches covered.">		Node subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (Node p = n; p.parent != subtreeParent; p = p.parent)</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (NodeT p = n; p.parent != subtreeParent; p = p.parent)</span>
 <span class="fc bfc" id="L215" title="All 2 branches covered.">			if (p.isLeftChild())</span>
 <span class="fc" id="L216">				return p.parent;</span>
 <span class="fc" id="L217">		return null;</span>
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; void insert(Node root, Comparator&lt;? super K&gt; c, Node n) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; void insert(NodeT root, Comparator&lt;? super K&gt; c, NodeT n) {
 <span class="fc bfc" id="L221" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc" id="L222">			for (Node parent = root;;) {</span>
+<span class="fc" id="L222">			for (NodeT parent = root;;) {</span>
 <span class="fc" id="L223">				int cmp = JGAlgoUtils.cmpDefault(n.key, parent.key);</span>
 <span class="fc bfc" id="L224" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">					if (!parent.hasLeftChild()) {</span>
@@ -238,7 +238,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 				}
 <span class="fc" id="L239">			}</span>
 		} else {
-<span class="fc" id="L241">			for (Node parent = root;;) {</span>
+<span class="fc" id="L241">			for (NodeT parent = root;;) {</span>
 <span class="fc" id="L242">				int cmp = c.compare(n.key, parent.key);</span>
 <span class="fc bfc" id="L243" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
 <span class="fc bfc" id="L244" title="All 2 branches covered.">					if (!parent.hasLeftChild()) {</span>
@@ -259,8 +259,8 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 	}
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; void clear(Node root) {
-<span class="fc bfc" id="L263" title="All 2 branches covered.">		for (Node p = root; p != null;) {</span>
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; void clear(NodeT root) {
+<span class="fc bfc" id="L263" title="All 2 branches covered.">		for (NodeT p = root; p != null;) {</span>
 			for (;;) {
 <span class="fc bfc" id="L265" title="All 2 branches covered.">				if (p.hasLeftChild()) {</span>
 <span class="fc" id="L266">					p = p.left;</span>
@@ -272,15 +272,15 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 				}
 				break;
 			}
-<span class="fc" id="L275">			Node parent = p.parent;</span>
+<span class="fc" id="L275">			NodeT parent = p.parent;</span>
 <span class="fc" id="L276">			p.clear();</span>
 <span class="fc" id="L277">			p = parent;</span>
 <span class="fc" id="L278">		}</span>
 <span class="fc" id="L279">	}</span>
 
-	static &lt;K, Node extends INode&lt;K, Node&gt;&gt; void swap(Node n1, Node n2) {
+	static &lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; void swap(NodeT n1, NodeT n2) {
 <span class="pc bpc" id="L282" title="1 of 2 branches missed.">		if (n2 == n1.parent) {</span>
-<span class="nc" id="L283">			Node temp = n1;</span>
+<span class="nc" id="L283">			NodeT temp = n1;</span>
 <span class="nc" id="L284">			n1 = n2;</span>
 <span class="nc" id="L285">			n2 = temp;</span>
 		}
@@ -291,7 +291,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L291">				n1.parent.right = n2;</span>
 			}
 <span class="pc bpc" id="L293" title="1 of 2 branches missed.">			if (n1.left == n2) {</span>
-<span class="nc" id="L294">				Node right = n1.right;</span>
+<span class="nc" id="L294">				NodeT right = n1.right;</span>
 <span class="nc bnc" id="L295" title="All 2 branches missed.">				if ((n1.left = n2.left) != null)</span>
 <span class="nc" id="L296">					n1.left.parent = n1;</span>
 <span class="nc bnc" id="L297" title="All 2 branches missed.">				if ((n1.right = n2.right) != null)</span>
@@ -301,7 +301,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="nc" id="L301">					n2.right.parent = n2;</span>
 <span class="nc" id="L302">			} else {</span>
 <span class="pc bnc" id="L303" title="All 2 branches missed.">				assert n1.right == n2;</span>
-<span class="fc" id="L304">				Node left = n1.left;</span>
+<span class="fc" id="L304">				NodeT left = n1.left;</span>
 <span class="pc bpc" id="L305" title="1 of 2 branches missed.">				if ((n1.left = n2.left) != null)</span>
 <span class="nc" id="L306">					n1.left.parent = n1;</span>
 <span class="fc bfc" id="L307" title="All 2 branches covered.">				if ((n1.right = n2.right) != null)</span>
@@ -325,9 +325,9 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="nc" id="L325">				n2.parent.right = n1;</span>
 			}
 
-<span class="fc" id="L328">			Node parent = n1.parent;</span>
-<span class="fc" id="L329">			Node left = n1.left;</span>
-<span class="fc" id="L330">			Node right = n1.right;</span>
+<span class="fc" id="L328">			NodeT parent = n1.parent;</span>
+<span class="fc" id="L329">			NodeT left = n1.left;</span>
+<span class="fc" id="L330">			NodeT right = n1.right;</span>
 <span class="fc" id="L331">			n1.parent = n2.parent;</span>
 <span class="pc bpc" id="L332" title="1 of 2 branches missed.">			if ((n1.left = n2.left) != null)</span>
 <span class="nc" id="L333">				n1.left.parent = n1;</span>
@@ -341,13 +341,13 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 <span class="fc" id="L342">	}</span>
 
-	static class INode&lt;K, Node extends INode&lt;K, Node&gt;&gt; {
+	static class Node&lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; {
 		K key;
-		Node parent;
-		Node right;
-		Node left;
+		NodeT parent;
+		NodeT right;
+		NodeT left;
 
-<span class="fc" id="L350">		INode(K key) {</span>
+<span class="fc" id="L350">		Node(K key) {</span>
 <span class="fc" id="L351">			this.key = key;</span>
 <span class="fc" id="L352">			parent = right = left = null;</span>
 <span class="fc" id="L353">		}</span>
@@ -387,12 +387,12 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 	}
 
-	static class BSTIterator&lt;K, Node extends INode&lt;K, Node&gt;&gt; implements Iterator&lt;Node&gt; {
+	static class BSTIterator&lt;K, NodeT extends Node&lt;K, NodeT&gt;&gt; implements Iterator&lt;NodeT&gt; {
 
-		private final Node subtreeRoot;
-		private Node n;
+		private final NodeT subtreeRoot;
+		private NodeT n;
 
-<span class="fc" id="L395">		BSTIterator(Node subtreeRoot) {</span>
+<span class="fc" id="L395">		BSTIterator(NodeT subtreeRoot) {</span>
 <span class="fc" id="L396">			this.subtreeRoot = subtreeRoot;</span>
 <span class="fc bfc" id="L397" title="All 2 branches covered.">			n = subtreeRoot == null ? null : findMin(subtreeRoot);</span>
 <span class="fc" id="L398">		}</span>
@@ -403,9 +403,9 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 <span class="fc" id="L407">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L408">			Node ret = n;</span>
+<span class="fc" id="L408">			NodeT ret = n;</span>
 <span class="fc" id="L409">			n = getSuccessorInSubtree(n, subtreeRoot);</span>
 <span class="fc" id="L410">			return ret;</span>
 		}

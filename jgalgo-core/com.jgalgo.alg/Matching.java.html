@@ -15,13 +15,13 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A matching in a graph.
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
  * adjacent edge in \(M\). Its a common problem to compute the maximum (cardinality) matching, namely the matching with
@@ -43,6 +44,7 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Check whether a vertex is matched by the matching.
+	 *
 	 * &lt;p&gt;
 	 * A vertex \(v\) is said to be &lt;i&gt;matched&lt;/i&gt; if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -63,6 +65,7 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Get all the vertices matched by the matching.
+	 *
 	 * &lt;p&gt;
 	 * A vertex \(v\) is said to be &lt;i&gt;matched&lt;/i&gt; if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -73,6 +76,7 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Get all the vertices that are not matched by the matching.
+	 *
 	 * &lt;p&gt;
 	 * A vertex \(v\) is said to be &lt;i&gt;matched&lt;/i&gt; if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -83,6 +87,7 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Check whether an edge is part of the matching.
+	 *
 	 * &lt;p&gt;
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
 	 * \(M\).
@@ -101,6 +106,7 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Check whether this matching is perfect.
+	 *
 	 * &lt;p&gt;
 	 * A perfect matching is a matching in which all the vertices are matched.
 	 *
@@ -110,9 +116,11 @@ public interface Matching&lt;V, E&gt; {
 
 	/**
 	 * Check whether the given collection of edges form a valid matching in the graph.
+	 *
 	 * &lt;p&gt;
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
 	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code edges} to avoid
 	 * boxing/unboxing.
@@ -127,44 +135,44 @@ public interface Matching&lt;V, E&gt; {
 	static &lt;V, E&gt; boolean isMatching(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
 		IndexGraph ig;
 		IntCollection edges0;
-<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L131">			ig = (IndexGraph) g;</span>
-<span class="fc" id="L132">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L139">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L140">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 		} else {
-<span class="fc" id="L134">			ig = g.indexGraph();</span>
-<span class="fc" id="L135">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L142">			ig = g.indexGraph();</span>
+<span class="fc" id="L143">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
 		}
-<span class="fc" id="L137">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L145">		final int n = ig.vertices().size();</span>
 
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">		if (edges0.size() &gt; n / 2)</span>
-<span class="nc" id="L140">			return false;</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">		if (edges0.size() &gt; n / 2)</span>
+<span class="nc" id="L148">			return false;</span>
 
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (edges0.size() * 4 &gt; n / 8) {</span>
-			/* matching is big, use BitSet */
-<span class="fc" id="L144">			BitSet matched = new BitSet(n);</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int e : edges0) {</span>
-<span class="fc" id="L146">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">				if (matched.get(u))</span>
-<span class="nc" id="L148">					return false;</span>
-<span class="fc" id="L149">				matched.set(u);</span>
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">				if (matched.get(v))</span>
-<span class="nc" id="L151">					return false;</span>
-<span class="fc" id="L152">				matched.set(v);</span>
-<span class="fc" id="L153">			}</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		if (edges0.size() * 4 &gt; n / 8) {</span>
+			/* matching is big, use Bitmap */
+<span class="fc" id="L152">			Bitmap matched = new Bitmap(n);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			for (int e : edges0) {</span>
+<span class="fc" id="L154">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">				if (matched.get(u))</span>
+<span class="nc" id="L156">					return false;</span>
+<span class="fc" id="L157">				matched.set(u);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">				if (matched.get(v))</span>
+<span class="nc" id="L159">					return false;</span>
+<span class="fc" id="L160">				matched.set(v);</span>
+<span class="fc" id="L161">			}</span>
 
-<span class="fc" id="L155">		} else {</span>
+<span class="fc" id="L163">		} else {</span>
 			/* matching is small, use hashtable */
-<span class="nc" id="L157">			IntSet matched = new IntOpenHashSet(edges0.size() * 2);</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">			for (int e : edges0) {</span>
-<span class="nc" id="L159">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
-<span class="nc bnc" id="L160" title="All 2 branches missed.">				if (!matched.add(u))</span>
-<span class="nc" id="L161">					return false;</span>
-<span class="nc bnc" id="L162" title="All 2 branches missed.">				if (!matched.add(v))</span>
-<span class="nc" id="L163">					return false;</span>
-<span class="nc" id="L164">			}</span>
+<span class="nc" id="L165">			IntSet matched = new IntOpenHashSet(edges0.size() * 2);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			for (int e : edges0) {</span>
+<span class="nc" id="L167">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">				if (!matched.add(u))</span>
+<span class="nc" id="L169">					return false;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">				if (!matched.add(v))</span>
+<span class="nc" id="L171">					return false;</span>
+<span class="nc" id="L172">			}</span>
 
 		}
-<span class="fc" id="L167">		return true;</span>
+<span class="fc" id="L175">		return true;</span>
 	}
 
 }

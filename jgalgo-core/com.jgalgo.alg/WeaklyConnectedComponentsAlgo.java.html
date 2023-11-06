@@ -21,12 +21,14 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * Weakly Connected components algorithm.
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\), two vertices \(u,v \in V\) are weakly connected if there is an &lt;i&gt;undirected&lt;/i&gt; path from
  * \(u\) to \(v\). A weakly connected component is a maximal set of vertices that each pair in the set is weakly
  * connected. This definition hold for both directed and undirected graphs. For undirected graphs, the strongly and
  * weakly connected components are identical. The set of vertices \(V\) can be partitioned into disjoint weakly
  * connected components.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,9 +40,11 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Compute all weakly connected components in a graph.
+	 *
 	 * &lt;p&gt;
 	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strongly)
 	 * connected components in the result undirected graph.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
@@ -53,9 +57,11 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Check whether a graph is weakly connected.
+	 *
 	 * &lt;p&gt;
 	 * A graph is weakly connected if there is an &lt;i&gt;undirected&lt;/i&gt; path from any vertex to any other vertex. Namely if
 	 * the the whole graph is a single weakly connected component.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
@@ -68,6 +74,7 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Create a new weakly connected components algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link WeaklyConnectedComponentsAlgo} object. The
 	 * {@link WeaklyConnectedComponentsAlgo.Builder} might support different options to obtain different
@@ -76,18 +83,19 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @return a default implementation of {@link WeaklyConnectedComponentsAlgo}
 	 */
 	static WeaklyConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L79">		return newBuilder().build();</span>
+<span class="fc" id="L86">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new weakly connected algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link WeaklyConnectedComponentsAlgo} objects
 	 */
 	static WeaklyConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L90">		return WeaklyConnectedComponentsAlgoImpl::new;</span>
+<span class="fc" id="L98">		return WeaklyConnectedComponentsAlgoImpl::new;</span>
 	}
 
 	/**
@@ -107,10 +115,12 @@ public interface WeaklyConnectedComponentsAlgo {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -119,7 +129,7 @@ public interface WeaklyConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default WeaklyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L122">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L132">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

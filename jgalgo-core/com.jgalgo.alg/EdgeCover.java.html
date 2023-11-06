@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -24,18 +23,21 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Minimum edge vertex cover algorithm.
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\) an &lt;i&gt;edge cover&lt;/i&gt; is a set \(S \subseteq E\) for which for any vertex \(v \in V\) at
  * least one of the edges adjacent to \(v\) is in \(S\). Given an edge weight function \(w:E \rightarrow R\), the weight
  * of an edge cover is the weight sum of the edges in the cover. The minimum edge cover is the edge cover with the
  * minimum weight. In contrast to the {@link VertexCover} problem which is NP-hard, the edge cover problem can be solved
  * in polynomial time.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -47,6 +49,7 @@ public interface EdgeCover {
 
 	/**
 	 * Compute a minimum edge cover of a graph with respect to an edge weight function.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
@@ -61,6 +64,7 @@ public interface EdgeCover {
 
 	/**
 	 * A result object of {@link EdgeCover} computation.
+	 *
 	 * &lt;p&gt;
 	 * The result object is basically the set of edges that form the cover.
 	 *
@@ -108,12 +112,13 @@ public interface EdgeCover {
 		@Deprecated
 		@Override
 		default boolean isInCover(Integer edge) {
-<span class="fc" id="L111">			return isInCover(edge.intValue());</span>
+<span class="fc" id="L115">			return isInCover(edge.intValue());</span>
 		}
 	}
 
 	/**
 	 * Check whether a set of edges is a edge cover of a graph.
+	 *
 	 * &lt;p&gt;
 	 * A set of edges is an edge cover of a graph if for every vertex has at least one adjacent edge which is in the
 	 * set. In addition, the collection of the edges must not contain duplicates.
@@ -128,47 +133,48 @@ public interface EdgeCover {
 	static &lt;V, E&gt; boolean isCover(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
 		IndexGraph ig;
 		IntCollection edges0;
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L132">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L133">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L137">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L138">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 		} else {
-<span class="fc" id="L135">			ig = g.indexGraph();</span>
-<span class="fc" id="L136">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L140">			ig = g.indexGraph();</span>
+<span class="fc" id="L141">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
 		}
-<span class="fc" id="L138">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L139">		final int m = ig.edges().size();</span>
-<span class="fc" id="L140">		BitSet coverEdges = new BitSet(m);</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		for (int e : edges0) {</span>
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
-<span class="nc" id="L143">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">			if (coverEdges.get(e))</span>
-<span class="nc" id="L145">				throw new IllegalArgumentException(&quot;edge with index &quot; + e + &quot; is included more than once in the cover&quot;);</span>
-<span class="fc" id="L146">			coverEdges.set(e);</span>
-<span class="fc" id="L147">		}</span>
+<span class="fc" id="L143">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L144">		final int m = ig.edges().size();</span>
+<span class="fc" id="L145">		Bitmap coverEdges = new Bitmap(m);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L148">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			if (coverEdges.get(e))</span>
+<span class="nc" id="L150">				throw new IllegalArgumentException(&quot;edge with index &quot; + e + &quot; is included more than once in the cover&quot;);</span>
+<span class="fc" id="L151">			coverEdges.set(e);</span>
+<span class="fc" id="L152">		}</span>
 
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">		if (ig.isDirected()) {</span>
-<span class="nc bnc" id="L150" title="All 2 branches missed.">			vertexLoop: for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">				for (int e : ig.outEdges(v))</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">					if (coverEdges.get(e))</span>
-<span class="nc" id="L153">						continue vertexLoop;</span>
-<span class="nc bnc" id="L154" title="All 2 branches missed.">				for (int e : ig.inEdges(v))</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">					if (coverEdges.get(e))</span>
-<span class="nc" id="L156">						continue vertexLoop;</span>
-<span class="nc" id="L157">				return false;</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">		if (ig.isDirected()) {</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">			vertexLoop: for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">				for (int e : ig.outEdges(v))</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">					if (coverEdges.get(e))</span>
+<span class="nc" id="L158">						continue vertexLoop;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">				for (int e : ig.inEdges(v))</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">					if (coverEdges.get(e))</span>
+<span class="nc" id="L161">						continue vertexLoop;</span>
+<span class="nc" id="L162">				return false;</span>
 			}
 		} else {
-<span class="fc bfc" id="L160" title="All 2 branches covered.">			vertexLoop: for (int v = 0; v &lt; n; v++) {</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				for (int e : ig.outEdges(v))</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">					if (coverEdges.get(e))</span>
-<span class="fc" id="L163">						continue vertexLoop;</span>
-<span class="nc" id="L164">				return false;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			vertexLoop: for (int v = 0; v &lt; n; v++) {</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">				for (int e : ig.outEdges(v))</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">					if (coverEdges.get(e))</span>
+<span class="fc" id="L168">						continue vertexLoop;</span>
+<span class="nc" id="L169">				return false;</span>
 			}
 		}
-<span class="fc" id="L167">		return true;</span>
+<span class="fc" id="L172">		return true;</span>
 	}
 
 	/**
 	 * Create a new edge cover algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link EdgeCover} object. The {@link EdgeCover.Builder} might
 	 * support different options to obtain different implementations.
@@ -176,28 +182,29 @@ public interface EdgeCover {
 	 * @return a default implementation of {@link EdgeCover}
 	 */
 	static EdgeCover newInstance() {
-<span class="nc" id="L179">		return newBuilder().build();</span>
+<span class="nc" id="L185">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new edge cover algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link EdgeCover} objects
 	 */
 	static EdgeCover.Builder newBuilder() {
-<span class="nc" id="L190">		return () -&gt; {</span>
-<span class="nc" id="L191">			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();</span>
-<span class="nc" id="L192">			EdgeCover weightedAlgo = new EdgeCoverWeighted();</span>
-<span class="nc" id="L193">			return new EdgeCover() {</span>
+<span class="nc" id="L197">		return () -&gt; {</span>
+<span class="nc" id="L198">			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();</span>
+<span class="nc" id="L199">			EdgeCover weightedAlgo = new EdgeCoverWeighted();</span>
+<span class="nc" id="L200">			return new EdgeCover() {</span>
 				@Override
 				public &lt;V, E&gt; Result&lt;V, E&gt; computeMinimumEdgeCover(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="nc bnc" id="L196" title="All 4 branches missed.">					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">					if (isCardinality) {</span>
-<span class="nc" id="L198">						return cardinalityAlgo.computeMinimumEdgeCover(g, null);</span>
+<span class="nc bnc" id="L203" title="All 4 branches missed.">					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">					if (isCardinality) {</span>
+<span class="nc" id="L205">						return cardinalityAlgo.computeMinimumEdgeCover(g, null);</span>
 					} else {
-<span class="nc" id="L200">						return weightedAlgo.computeMinimumEdgeCover(g, w);</span>
+<span class="nc" id="L207">						return weightedAlgo.computeMinimumEdgeCover(g, w);</span>
 					}
 				}
 			};
@@ -221,10 +228,12 @@ public interface EdgeCover {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -233,7 +242,7 @@ public interface EdgeCover {
 		 * @return       this builder
 		 */
 		default EdgeCover.Builder setOption(String key, Object value) {
-<span class="nc" id="L236">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L245">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

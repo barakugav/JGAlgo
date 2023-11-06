@@ -23,83 +23,83 @@ class Trees {
 
 	private Trees() {}
 
-	interface TreeNode&lt;Node extends TreeNode&lt;Node&gt;&gt; {
+	interface TreeNode&lt;NodeT extends TreeNode&lt;NodeT&gt;&gt; {
 
-		Node parent();
+		NodeT parent();
 
-		Node next();
+		NodeT next();
 
-		Node prev();
+		NodeT prev();
 
-		Node child();
+		NodeT child();
 
-		void setParent(Node x);
+		void setParent(NodeT x);
 
-		void setNext(Node x);
+		void setNext(NodeT x);
 
-		void setPrev(Node x);
+		void setPrev(NodeT x);
 
-		void setChild(Node x);
+		void setChild(NodeT x);
 
 	}
 
-<span class="fc" id="L46">	static class TreeNodeImpl&lt;Node extends TreeNodeImpl&lt;Node&gt;&gt; implements TreeNode&lt;Node&gt; {</span>
+<span class="fc" id="L46">	static class TreeNodeImpl&lt;NodeT extends TreeNodeImpl&lt;NodeT&gt;&gt; implements TreeNode&lt;NodeT&gt; {</span>
 
-		Node parent;
-		Node next;
-		Node prev;
-		Node child;
+		NodeT parent;
+		NodeT next;
+		NodeT prev;
+		NodeT child;
 
 		@Override
-		public Node parent() {
+		public NodeT parent() {
 <span class="fc" id="L55">			return parent;</span>
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 <span class="fc" id="L60">			return next;</span>
 		}
 
 		@Override
-		public Node prev() {
+		public NodeT prev() {
 <span class="fc" id="L65">			return prev;</span>
 		}
 
 		@Override
-		public Node child() {
+		public NodeT child() {
 <span class="fc" id="L70">			return child;</span>
 		}
 
 		@Override
-		public void setParent(Node x) {
+		public void setParent(NodeT x) {
 <span class="fc" id="L75">			parent = x;</span>
 <span class="fc" id="L76">		}</span>
 
 		@Override
-		public void setNext(Node x) {
+		public void setNext(NodeT x) {
 <span class="fc" id="L80">			next = x;</span>
 <span class="fc" id="L81">		}</span>
 
 		@Override
-		public void setPrev(Node x) {
+		public void setPrev(NodeT x) {
 <span class="fc" id="L85">			prev = x;</span>
 <span class="fc" id="L86">		}</span>
 
 		@Override
-		public void setChild(Node x) {
+		public void setChild(NodeT x) {
 <span class="fc" id="L90">			child = x;</span>
 <span class="fc" id="L91">		}</span>
 	}
 
-	static &lt;Node extends TreeNode&lt;Node&gt;&gt; void clear(Node root, Consumer&lt;? super Node&gt; finalizer) {
-<span class="fc" id="L95">		for (Node p = root;;) {</span>
+	static &lt;NodeT extends TreeNode&lt;NodeT&gt;&gt; void clear(NodeT root, Consumer&lt;? super NodeT&gt; finalizer) {
+<span class="fc" id="L95">		for (NodeT p = root;;) {</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			while (p.child() != null) {</span>
 <span class="fc" id="L97">				p = p.child();</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">				while (p.next() != null)</span>
 <span class="fc" id="L99">					p = p.next();</span>
 			}
 
-			Node prev;
+			NodeT prev;
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			if (p.prev() != null) {</span>
 <span class="fc" id="L104">				prev = p.prev();</span>
 <span class="fc" id="L105">				prev.setNext(null);</span>
@@ -119,15 +119,15 @@ class Trees {
 <span class="fc" id="L119">		}</span>
 <span class="fc" id="L120">	}</span>
 
-	static class PreOrderIter&lt;Node extends TreeNode&lt;Node&gt;&gt; implements Iterator&lt;Node&gt; {
+	static class PreOrderIter&lt;NodeT extends TreeNode&lt;NodeT&gt;&gt; implements Iterator&lt;NodeT&gt; {
 
-		private Node p;
+		private NodeT p;
 
-<span class="fc" id="L126">		PreOrderIter(Node p) {</span>
+<span class="fc" id="L126">		PreOrderIter(NodeT p) {</span>
 <span class="fc" id="L127">			reset(p);</span>
 <span class="fc" id="L128">		}</span>
 
-		void reset(Node p) {
+		void reset(NodeT p) {
 <span class="fc" id="L131">			this.p = p;</span>
 <span class="fc" id="L132">		}</span>
 
@@ -137,12 +137,12 @@ class Trees {
 		}
 
 		boolean advance() {
-			Node next;
+			NodeT next;
 <span class="fc bfc" id="L141" title="All 2 branches covered.">			if ((next = p.child()) != null) {</span>
 <span class="fc" id="L142">				p = next;</span>
 <span class="fc" id="L143">				return true;</span>
 			} else {
-<span class="fc" id="L145">				Node p0 = p;</span>
+<span class="fc" id="L145">				NodeT p0 = p;</span>
 				do {
 <span class="fc bfc" id="L147" title="All 2 branches covered.">					if ((next = p0.next()) != null) {</span>
 <span class="fc" id="L148">						p = next;</span>
@@ -155,9 +155,9 @@ class Trees {
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 <span class="fc" id="L159">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L160">			Node ret = p;</span>
+<span class="fc" id="L160">			NodeT ret = p;</span>
 <span class="fc" id="L161">			advance();</span>
 <span class="fc" id="L162">			return ret;</span>
 		}

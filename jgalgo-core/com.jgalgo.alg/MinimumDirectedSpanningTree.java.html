@@ -23,9 +23,11 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Minimum spanning tree algorithm for directed graphs.
+ *
  * &lt;p&gt;
  * A spanning tree in directed graph is defined similarly to a spanning tree in undirected graph, but the 'spanning
  * tree' does not yield a strongly connected graph, but a weakly connected tree rooted at some vertex.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -36,6 +38,7 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
 	 * its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -53,6 +56,7 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Create a new directed-MST algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link MinimumDirectedSpanningTree} object. The
 	 * {@link MinimumDirectedSpanningTree.Builder} might support different options to obtain different implementations.
@@ -60,18 +64,19 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a default implementation of {@link MinimumDirectedSpanningTree}
 	 */
 	static MinimumDirectedSpanningTree newInstance() {
-<span class="fc" id="L63">		return newBuilder().build();</span>
+<span class="fc" id="L67">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new minimum directed spanning tree algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
 	 */
 	static MinimumDirectedSpanningTree.Builder newBuilder() {
-<span class="fc" id="L74">		return MinimumDirectedSpanningTreeTarjan::new;</span>
+<span class="fc" id="L79">		return MinimumDirectedSpanningTreeTarjan::new;</span>
 	}
 
 	/**
@@ -91,10 +96,12 @@ public interface MinimumDirectedSpanningTree {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -103,7 +110,7 @@ public interface MinimumDirectedSpanningTree {
 		 * @return       this builder
 		 */
 		default MinimumDirectedSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc" id="L106">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

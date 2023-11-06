@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 <span class="nc" id="L41">class MinimumCostFlows {</span>
 
-	private static abstract class AbstractImplBase implements MinimumCostFlow {
+	private abstract static class AbstractImplBase implements MinimumCostFlow {
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
@@ -195,7 +195,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	}
 
-<span class="fc" id="L198">	static abstract class AbstractImpl extends AbstractImplBase {</span>
+<span class="fc" id="L198">	abstract static class AbstractImpl extends AbstractImplBase {</span>
 
 		@Override
 		void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
@@ -359,7 +359,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	}
 
-<span class="fc" id="L362">	static abstract class AbstractImplBasedSourceSink extends AbstractImpl {</span>
+<span class="fc" id="L362">	abstract static class AbstractImplBasedSourceSink extends AbstractImpl {</span>
 
 		@Override
 		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
@@ -892,7 +892,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	}
 
-<span class="fc" id="L895">	static abstract class AbstractImplBasedSupply extends AbstractImpl {</span>
+<span class="fc" id="L895">	abstract static class AbstractImplBasedSupply extends AbstractImpl {</span>
 
 		@Override
 		abstract void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply);

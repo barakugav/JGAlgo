@@ -78,29 +78,31 @@ public interface IWeightsInt  extends IWeights&lt;Integer&gt;, WeightsInt&lt;Int
 	
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Override
 	default int weightInt(int element) {
-<span class="fc" id="L86">		return get(element);</span>
+<span class="fc" id="L87">		return get(element);</span>
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * &lt;p&gt;
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
 	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
-<span class="fc" id="L97">		return get(element.intValue());</span>
+<span class="fc" id="L99">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L103">		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());</span>
+<span class="nc" id="L105">		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());</span>
 	}
 
 

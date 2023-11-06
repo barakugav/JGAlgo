@@ -41,37 +41,39 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L51">public class ShortestPathSTBench {</span>
+<span class="fc" id="L52">public class ShortestPathSTBench {</span>
 
 	List&lt;GraphArgs&gt; graphs;
-<span class="fc" id="L54">	final int graphsNum = 31;</span>
-<span class="fc" id="L55">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L55">	final int graphsNum = 31;</span>
+<span class="fc" id="L56">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	void benchStShortestPath(Object algo, Blackhole blackhole) {
-<span class="fc" id="L58">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L59">		IntGraph g = args.g;</span>
-<span class="fc" id="L60">		IWeightFunction w = args.w;</span>
-<span class="fc" id="L61">		int source = args.source;</span>
-<span class="fc" id="L62">		int target = args.target;</span>
-<span class="fc" id="L63">		IntToDoubleFunction heuristic = args.heuristic;</span>
+<span class="fc" id="L59">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L60">		IntGraph g = args.g;</span>
+<span class="fc" id="L61">		IWeightFunction w = args.w;</span>
+<span class="fc" id="L62">		int source = args.source;</span>
+<span class="fc" id="L63">		int target = args.target;</span>
+<span class="fc" id="L64">		IntToDoubleFunction heuristic = args.heuristic;</span>
 
 		Object result;
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (algo instanceof ShortestPathHeuristicST) {</span>
-<span class="fc" id="L67">			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		} else if (algo instanceof ShortestPathST) {</span>
-<span class="fc" id="L69">			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (algo instanceof ShortestPathHeuristicST) {</span>
+<span class="fc" id="L68">			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		} else if (algo instanceof ShortestPathST) {</span>
+<span class="fc" id="L70">			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source),</span>
+<span class="fc" id="L71">					Integer.valueOf(target));</span>
 		} else {
-<span class="nc" id="L71">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L73">			throw new IllegalArgumentException();</span>
 		}
-<span class="fc" id="L73">		blackhole.consume(result);</span>
-<span class="fc" id="L74">	}</span>
+<span class="fc" id="L75">		blackhole.consume(result);</span>
+<span class="fc" id="L76">	}</span>
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -79,7 +81,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L82">	public static class Gnp extends ShortestPathSTBench {</span>
+<span class="fc" id="L84">	public static class Gnp extends ShortestPathSTBench {</span>
 
 		@Param({ &quot;|V|=64 MaxWeight=64&quot;, &quot;|V|=512 MaxWeight=50&quot;, &quot;|V|=512 MaxWeight=600&quot;, &quot;|V|=4096 MaxWeight=200&quot;,
 				&quot;|V|=4096 MaxWeight=6000&quot; })
@@ -87,33 +89,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L90">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L91">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L92">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
+<span class="fc" id="L92">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L93">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L94">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
 
-<span class="fc" id="L94">			final SeedGenerator seedGen = new SeedGenerator(0x42eee7954114ebcaL);</span>
-<span class="fc" id="L95">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L96">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L98">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
-<span class="fc" id="L99">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L100">				int[] vs = g.vertices().toIntArray();</span>
-<span class="fc" id="L101">				int source = vs[rand.nextInt(vs.length)];</span>
-<span class="fc" id="L102">				int target = vs[rand.nextInt(vs.length)];</span>
-<span class="fc" id="L103">				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());</span>
-<span class="fc" id="L104">				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));</span>
+<span class="fc" id="L96">			final SeedGenerator seedGen = new SeedGenerator(0x42eee7954114ebcaL);</span>
+<span class="fc" id="L97">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L98">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L100">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
+<span class="fc" id="L101">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L102">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L103">				int target = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L104">				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());</span>
+<span class="fc" id="L105">				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));</span>
 			}
-<span class="fc" id="L106">		}</span>
+<span class="fc" id="L107">		}</span>
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-<span class="fc" id="L110">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
-<span class="fc" id="L111">		}</span>
+<span class="fc" id="L111">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
+<span class="fc" id="L112">		}</span>
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-<span class="fc" id="L115">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
-<span class="fc" id="L116">		}</span>
+<span class="fc" id="L116">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
+<span class="fc" id="L117">		}</span>
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
@@ -122,7 +123,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L125">	public static class BarabasiAlbert extends ShortestPathSTBench {</span>
+<span class="fc" id="L126">	public static class BarabasiAlbert extends ShortestPathSTBench {</span>
 
 		@Param({ &quot;|V|=64 MaxWeight=64&quot;, &quot;|V|=512 MaxWeight=50&quot;, &quot;|V|=512 MaxWeight=600&quot;, &quot;|V|=4096 MaxWeight=200&quot;,
 				&quot;|V|=4096 MaxWeight=6000&quot; })
@@ -130,19 +131,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L133">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L134">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L135">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
+<span class="fc" id="L134">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L135">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L136">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
 
-<span class="fc" id="L137">			final SeedGenerator seedGen = new SeedGenerator(0x462e686a3a46d469L);</span>
-<span class="fc" id="L138">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L139">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L141">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
-<span class="fc" id="L142">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L143">				int[] vs = g.vertices().toIntArray();</span>
-<span class="fc" id="L144">				int source = vs[rand.nextInt(vs.length)];</span>
-<span class="fc" id="L145">				int target = vs[rand.nextInt(vs.length)];</span>
+<span class="fc" id="L138">			final SeedGenerator seedGen = new SeedGenerator(0x462e686a3a46d469L);</span>
+<span class="fc" id="L139">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L140">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L142">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());</span>
+<span class="fc" id="L143">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L144">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L145">				int target = Graphs.randVertex(g, rand);</span>
 <span class="fc" id="L146">				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());</span>
 <span class="fc" id="L147">				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));</span>
 			}
@@ -184,23 +184,22 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L184" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
 <span class="fc" id="L185">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
 <span class="fc" id="L186">				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L187">				int[] vs = g.vertices().toIntArray();</span>
-<span class="fc" id="L188">				int source = vs[rand.nextInt(vs.length)];</span>
-<span class="fc" id="L189">				int target = vs[rand.nextInt(vs.length)];</span>
-<span class="fc" id="L190">				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());</span>
-<span class="fc" id="L191">				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));</span>
+<span class="fc" id="L187">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L188">				int target = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L189">				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());</span>
+<span class="fc" id="L190">				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));</span>
 			}
-<span class="fc" id="L193">		}</span>
+<span class="fc" id="L192">		}</span>
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-<span class="fc" id="L197">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
-<span class="fc" id="L198">		}</span>
+<span class="fc" id="L196">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
+<span class="fc" id="L197">		}</span>
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-<span class="fc" id="L202">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
-<span class="fc" id="L203">		}</span>
+<span class="fc" id="L201">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
+<span class="fc" id="L202">		}</span>
 	}
 
 	private static class GraphArgs {
@@ -210,27 +209,27 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final int target;
 		final IntToDoubleFunction heuristic;
 
-<span class="fc" id="L213">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
-<span class="fc" id="L214">			this.g = g;</span>
-<span class="fc" id="L215">			this.w = w;</span>
-<span class="fc" id="L216">			this.source = source;</span>
-<span class="fc" id="L217">			this.target = target;</span>
-<span class="fc" id="L218">			this.heuristic = heuristic;</span>
-<span class="fc" id="L219">		}</span>
+<span class="fc" id="L212">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
+<span class="fc" id="L213">			this.g = g;</span>
+<span class="fc" id="L214">			this.w = w;</span>
+<span class="fc" id="L215">			this.source = source;</span>
+<span class="fc" id="L216">			this.target = target;</span>
+<span class="fc" id="L217">			this.heuristic = heuristic;</span>
+<span class="fc" id="L218">		}</span>
 	}
 
 	private static IntToDoubleFunction randAdmissibleHeuristic(IntGraph g, IWeightFunction w, int target, long seed) {
-<span class="fc" id="L223">		Random rand = new Random(seed);</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">		if (g.isDirected())</span>
-<span class="fc" id="L225">			g = g.reverseView();</span>
+<span class="fc" id="L222">		Random rand = new Random(seed);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L224">			g = g.reverseView();</span>
 
-<span class="fc" id="L227">		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L229">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
+<span class="fc" id="L226">		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L228">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
 
 		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
-<span class="fc" id="L232">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
-<span class="fc" id="L233">		return ssspRes::distance;</span>
+<span class="fc" id="L231">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
+<span class="fc" id="L232">		return ssspRes::distance;</span>
 	}
 
 }

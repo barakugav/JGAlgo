@@ -159,7 +159,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	}
 
-<span class="fc" id="L162">	static abstract class AbstractMatchingImpl implements MatchingAlgo {</span>
+<span class="fc" id="L162">	abstract static class AbstractMatchingImpl implements MatchingAlgo {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
@@ -235,7 +235,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	}
 
-<span class="fc" id="L238">	static abstract class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {</span>
+<span class="fc" id="L238">	abstract static class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {</span>
 
 		abstract IMatching computeMaximumCardinalityMatching(IndexGraph g);
 
@@ -271,7 +271,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L271">		return e -&gt; -w0.weight(e);</span>
 	}
 
-<span class="fc" id="L274">	static abstract class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {</span>
+<span class="fc" id="L274">	abstract static class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {</span>
 
 		@Override
 		IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
@@ -284,7 +284,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		}
 	}
 
-<span class="fc" id="L287">	static abstract class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {</span>
+<span class="fc" id="L287">	abstract static class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {</span>
 
 		@Override
 		IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {

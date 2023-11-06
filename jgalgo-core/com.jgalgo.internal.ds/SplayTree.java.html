@@ -22,12 +22,15 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * Splay binary search tree.
+ *
  * &lt;p&gt;
  * The splay tree is a binary search tree which is not strictly balanced, in contrast to {@link RedBlackTree}. The splay
  * tree has a property that recent accessed elements are closer to the root, and therefore faster to access. All
  * operations have a time complexity of \(O(\log n)\) amortized time.
+ *
  * &lt;p&gt;
  * The splay tree is specifically efficient for splits and joins operations.
+ *
  * &lt;p&gt;
  * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
  *
@@ -36,13 +39,14 @@ import com.jgalgo.internal.util.Assertions;
  * @see        &lt;a href=&quot;https://en.wikipedia.org/wiki/Splay_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author     Barak Ugav
  */
-<span class="fc" id="L39">class SplayTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
+<span class="fc" id="L42">class SplayTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
 
 	private SplayBSTNode&lt;K, V&gt; root;
-<span class="fc" id="L42">	private final SplayImplWithSize&lt;K, V&gt; impl = new SplayImplWithSize&lt;&gt;();</span>
+<span class="fc" id="L45">	private final SplayImplWithSize&lt;K, V&gt; impl = new SplayImplWithSize&lt;&gt;();</span>
 
 	/**
 	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
+	 *
 	 * &lt;p&gt;
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -51,11 +55,12 @@ import com.jgalgo.internal.util.Assertions;
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	SplayTree() {
-<span class="nc" id="L54">		this(null);</span>
-<span class="nc" id="L55">	}</span>
+<span class="nc" id="L58">		this(null);</span>
+<span class="nc" id="L59">	}</span>
 
 	/**
 	 * Constructs a new, empty splay tree, with keys ordered according to the specified comparator.
+	 *
 	 * &lt;p&gt;
 	 * All keys inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -66,372 +71,372 @@ import com.jgalgo.internal.util.Assertions;
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
 	SplayTree(Comparator&lt;? super K&gt; comparator) {
-<span class="fc" id="L69">		super(comparator);</span>
-<span class="fc" id="L70">		root = null;</span>
-<span class="fc" id="L71">	}</span>
+<span class="fc" id="L74">		super(comparator);</span>
+<span class="fc" id="L75">		root = null;</span>
+<span class="fc" id="L76">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		return root != null ? root.size : 0;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		return root != null ? root.size : 0;</span>
 	}
 
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;HeapReference&lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L81">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L86">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; insert(K key) {
-<span class="fc" id="L86">		return insertNode(new SplayBSTNode&lt;&gt;(key));</span>
+<span class="fc" id="L91">		return insertNode(new SplayBSTNode&lt;&gt;(key));</span>
 	}
 
 	private SplayBSTNode&lt;K, V&gt; insertNode(SplayBSTNode&lt;K, V&gt; n) {
-<span class="pc bnc" id="L90" title="All 2 branches missed.">		assert n.parent == null;</span>
-<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert n.left == null;</span>
-<span class="pc bnc" id="L92" title="All 2 branches missed.">		assert n.right == null;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (root == null)</span>
-<span class="fc" id="L94">			return root = n;</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L96" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L97" title="All 2 branches missed.">		assert n.right == null;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L99">			return root = n;</span>
 
-<span class="fc" id="L96">		BinarySearchTrees.insert(root, c, n);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (SplayBSTNode&lt;K, V&gt; p = n.parent; p != null; p = p.parent)</span>
-<span class="fc" id="L98">			p.size++;</span>
-<span class="fc" id="L99">		return root = impl.splay(n);</span>
+<span class="fc" id="L101">		BinarySearchTrees.insert(root, c, n);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (SplayBSTNode&lt;K, V&gt; p = n.parent; p != null; p = p.parent)</span>
+<span class="fc" id="L103">			p.size++;</span>
+<span class="fc" id="L104">		return root = impl.splay(n);</span>
 	}
 
 	@Override
 	public void remove(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L104">		SplayBSTNode&lt;K, V&gt; n = (SplayBSTNode&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L109">		SplayBSTNode&lt;K, V&gt; n = (SplayBSTNode&lt;K, V&gt;) ref;</span>
 
 		/* If the node has two children, swap with successor */
-<span class="fc bfc" id="L107" title="All 4 branches covered.">		if (n.hasLeftChild() &amp;&amp; n.hasRightChild())</span>
-<span class="fc" id="L108">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
+<span class="fc bfc" id="L112" title="All 4 branches covered.">		if (n.hasLeftChild() &amp;&amp; n.hasRightChild())</span>
+<span class="fc" id="L113">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
 
 		SplayBSTNode&lt;K, V&gt; child;
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
-<span class="fc" id="L112">			replace(n, child = n.right);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
+<span class="fc" id="L117">			replace(n, child = n.right);</span>
 		} else {
-<span class="pc bnc" id="L114" title="All 2 branches missed.">			assert !n.hasRightChild();</span>
-<span class="fc" id="L115">			replace(n, child = n.left);</span>
+<span class="pc bnc" id="L119" title="All 2 branches missed.">			assert !n.hasRightChild();</span>
+<span class="fc" id="L120">			replace(n, child = n.left);</span>
 		}
 
 		/* Decrease ancestors size by 1 */
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		for (SplayBSTNode&lt;K, V&gt; p = n.parent; p != null; p = p.parent)</span>
-<span class="fc" id="L120">			p.size--;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (SplayBSTNode&lt;K, V&gt; p = n.parent; p != null; p = p.parent)</span>
+<span class="fc" id="L125">			p.size--;</span>
 
-<span class="fc" id="L122">		SplayBSTNode&lt;K, V&gt; parent = n.parent;</span>
-<span class="fc" id="L123">		n.clearWithoutUserData();</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">		root = impl.splay(child != null ? child : parent);</span>
-<span class="fc" id="L125">	}</span>
+<span class="fc" id="L127">		SplayBSTNode&lt;K, V&gt; parent = n.parent;</span>
+<span class="fc" id="L128">		n.clearWithoutUserData();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		root = impl.splay(child != null ? child : parent);</span>
+<span class="fc" id="L130">	}</span>
 
 	private void replace(SplayBSTNode&lt;K, V&gt; u, SplayBSTNode&lt;K, V&gt; v) {
 		/* replaces u with v */
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (u.parent != null) {</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (u.isLeftChild()) {</span>
-<span class="fc" id="L131">				u.parent.left = v;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (u.parent != null) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (u.isLeftChild()) {</span>
+<span class="fc" id="L136">				u.parent.left = v;</span>
 			} else {
-<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert u.isRightChild();</span>
-<span class="fc" id="L134">				u.parent.right = v;</span>
+<span class="pc bnc" id="L138" title="All 2 branches missed.">				assert u.isRightChild();</span>
+<span class="fc" id="L139">				u.parent.right = v;</span>
 			}
 		}
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (v != null)</span>
-<span class="fc" id="L138">			v.parent = u.parent;</span>
-<span class="fc" id="L139">	}</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (v != null)</span>
+<span class="fc" id="L143">			v.parent = u.parent;</span>
+<span class="fc" id="L144">	}</span>
 
 	private void swap(SplayBSTNode&lt;K, V&gt; n1, SplayBSTNode&lt;K, V&gt; n2) {
-<span class="fc" id="L142">		BinarySearchTrees.swap(n1, n2);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (n1 == root)</span>
-<span class="fc" id="L144">			root = n2;</span>
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		else if (n2 == root)</span>
-<span class="nc" id="L146">			root = n1;</span>
-<span class="fc" id="L147">		int size = n1.size;</span>
-<span class="fc" id="L148">		n1.size = n2.size;</span>
-<span class="fc" id="L149">		n2.size = size;</span>
-<span class="fc" id="L150">	}</span>
+<span class="fc" id="L147">		BinarySearchTrees.swap(n1, n2);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (n1 == root)</span>
+<span class="fc" id="L149">			root = n2;</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		else if (n2 == root)</span>
+<span class="nc" id="L151">			root = n1;</span>
+<span class="fc" id="L152">		int size = n1.size;</span>
+<span class="fc" id="L153">		n1.size = n2.size;</span>
+<span class="fc" id="L154">		n2.size = size;</span>
+<span class="fc" id="L155">	}</span>
 
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
-<span class="fc" id="L154">		SplayBSTNode&lt;K, V&gt; n = (SplayBSTNode&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L155">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
-<span class="fc" id="L156">		remove(n);</span>
-<span class="fc" id="L157">		n.key = newKey;</span>
-<span class="fc" id="L158">		insertNode(n);</span>
-<span class="fc" id="L159">	}</span>
+<span class="fc" id="L159">		SplayBSTNode&lt;K, V&gt; n = (SplayBSTNode&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L160">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L161">		remove(n);</span>
+<span class="fc" id="L162">		n.key = newKey;</span>
+<span class="fc" id="L163">		insertNode(n);</span>
+<span class="fc" id="L164">	}</span>
 
 	@Override
 	public HeapReference&lt;K, V&gt; find(K key) {
-<span class="fc" id="L163">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.find(root, c, key);</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L168">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.find(root, c, key);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMin() {
-<span class="fc" id="L169">		checkTreeNotEmpty();</span>
-<span class="fc" id="L170">		return root = impl.splay(BinarySearchTrees.findMin(root));</span>
+<span class="fc" id="L174">		checkTreeNotEmpty();</span>
+<span class="fc" id="L175">		return root = impl.splay(BinarySearchTrees.findMin(root));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMax() {
-<span class="fc" id="L175">		checkTreeNotEmpty();</span>
-<span class="fc" id="L176">		return root = impl.splay(BinarySearchTrees.findMax(root));</span>
+<span class="fc" id="L180">		checkTreeNotEmpty();</span>
+<span class="fc" id="L181">		return root = impl.splay(BinarySearchTrees.findMax(root));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findOrSmaller(K key) {
-<span class="fc" id="L181">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findOrSmaller(root, c, key);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L186">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findOrSmaller(root, c, key);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findOrGreater(K key) {
-<span class="fc" id="L187">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findOrGreater(root, c, key);</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L192">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findOrGreater(root, c, key);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findSmaller(K key) {
-<span class="fc" id="L193">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findSmaller(root, c, key);</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L198">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findSmaller(root, c, key);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; findGreater(K key) {
-<span class="fc" id="L199">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findGreater(root, c, key);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L204">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.findGreater(root, c, key);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; getPredecessor(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L205">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.getPredecessor((SplayBSTNode&lt;K, V&gt;) ref);</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L210">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.getPredecessor((SplayBSTNode&lt;K, V&gt;) ref);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; getSuccessor(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L211">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.getSuccessor((SplayBSTNode&lt;K, V&gt;) ref);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+<span class="fc" id="L216">		SplayBSTNode&lt;K, V&gt; n = BinarySearchTrees.getSuccessor((SplayBSTNode&lt;K, V&gt;) ref);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L218">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L219">		Assertions.Heaps.meldWithSameImpl(SplayTree.class, heap);</span>
-<span class="fc" id="L220">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
-<span class="fc" id="L221">		SplayTree&lt;K, V&gt; h = (SplayTree&lt;K, V&gt;) heap;</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (h.isEmpty())</span>
-<span class="fc" id="L223">			return;</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">		if (isEmpty()) {</span>
-<span class="fc" id="L225">			root = h.root;</span>
-<span class="fc" id="L226">			h.root = null;</span>
-<span class="fc" id="L227">			return;</span>
+<span class="fc" id="L223">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L224">		Assertions.Heaps.meldWithSameImpl(SplayTree.class, heap);</span>
+<span class="fc" id="L225">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
+<span class="fc" id="L226">		SplayTree&lt;K, V&gt; h = (SplayTree&lt;K, V&gt;) heap;</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (h.isEmpty())</span>
+<span class="fc" id="L228">			return;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		if (isEmpty()) {</span>
+<span class="fc" id="L230">			root = h.root;</span>
+<span class="fc" id="L231">			h.root = null;</span>
+<span class="fc" id="L232">			return;</span>
 		}
 
 		K min1, max1, min2, max2;
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (compare(max1 = findMax().key(), min2 = h.findMin().key()) &lt;= 0) {</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (compare(max1 = findMax().key(), min2 = h.findMin().key()) &lt;= 0) {</span>
 			/* all elements in this tree are &lt;= than all elements in other tree */
-<span class="fc" id="L233">			root = meld(this, h);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">		} else if (compare(min1 = findMin().key(), max2 = h.findMax().key()) &gt;= 0) {</span>
+<span class="fc" id="L238">			root = meld(this, h);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		} else if (compare(min1 = findMin().key(), max2 = h.findMax().key()) &gt;= 0) {</span>
 			/* all elements in this tree are &gt;= than all elements in other tree */
-<span class="fc" id="L236">			root = meld(h, this);</span>
+<span class="fc" id="L241">			root = meld(h, this);</span>
 		} else {
-<span class="fc" id="L238">			int minCmp = compare(min1, min2);</span>
-<span class="fc" id="L239">			int maxCmp = compare(max1, max2);</span>
-<span class="fc" id="L240">			SplayTree&lt;K, V&gt; hLow = null, hHigh = null;</span>
+<span class="fc" id="L243">			int minCmp = compare(min1, min2);</span>
+<span class="fc" id="L244">			int maxCmp = compare(max1, max2);</span>
+<span class="fc" id="L245">			SplayTree&lt;K, V&gt; hLow = null, hHigh = null;</span>
 
-<span class="fc bfc" id="L242" title="All 2 branches covered.">			if (minCmp &lt; 0) {</span>
-<span class="fc" id="L243">				hLow = this.splitSmaller(min2);</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">			} else if (minCmp &gt; 0) {</span>
-<span class="fc" id="L245">				hLow = h.splitSmaller(min1);</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (minCmp &lt; 0) {</span>
+<span class="fc" id="L248">				hLow = this.splitSmaller(min2);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			} else if (minCmp &gt; 0) {</span>
+<span class="fc" id="L250">				hLow = h.splitSmaller(min1);</span>
 			}
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (maxCmp &lt; 0) {</span>
-<span class="fc" id="L248">				hHigh = h.splitGreater(max1);</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">			} else if (maxCmp &gt; 0) {</span>
-<span class="fc" id="L250">				hHigh = this.splitGreater(max2);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">			if (maxCmp &lt; 0) {</span>
+<span class="fc" id="L253">				hHigh = h.splitGreater(max1);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			} else if (maxCmp &gt; 0) {</span>
+<span class="fc" id="L255">				hHigh = this.splitGreater(max2);</span>
 			}
 
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			if (h.root != null) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			if (h.root != null) {</span>
 				/* there is nothing smarter to do than 'addAll' for the shared range */
 				/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-<span class="fc" id="L256">				for (SplayBSTNode&lt;K, V&gt; node = h.root;;) {</span>
+<span class="fc" id="L261">				for (SplayBSTNode&lt;K, V&gt; node = h.root;;) {</span>
 					for (;;) {
-<span class="fc bfc" id="L258" title="All 2 branches covered.">						while (node.hasLeftChild())</span>
-<span class="fc" id="L259">							node = node.left;</span>
-<span class="fc bfc" id="L260" title="All 2 branches covered.">						if (!node.hasRightChild())</span>
-<span class="fc" id="L261">							break;</span>
-<span class="fc" id="L262">						node = node.right;</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">						while (node.hasLeftChild())</span>
+<span class="fc" id="L264">							node = node.left;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">						if (!node.hasRightChild())</span>
+<span class="fc" id="L266">							break;</span>
+<span class="fc" id="L267">						node = node.right;</span>
 					}
-<span class="fc" id="L264">					node.size = 1;</span>
-<span class="fc" id="L265">					SplayBSTNode&lt;K, V&gt; parent = node.parent;</span>
-<span class="fc bfc" id="L266" title="All 2 branches covered.">					if (parent == null) {</span>
-<span class="fc" id="L267">						insertNode(node);</span>
-<span class="fc" id="L268">						break;</span>
+<span class="fc" id="L269">					node.size = 1;</span>
+<span class="fc" id="L270">					SplayBSTNode&lt;K, V&gt; parent = node.parent;</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">					if (parent == null) {</span>
+<span class="fc" id="L272">						insertNode(node);</span>
+<span class="fc" id="L273">						break;</span>
 					} else {
-<span class="fc bfc" id="L270" title="All 2 branches covered.">						if (parent.right == node) {</span>
-<span class="fc" id="L271">							parent.right = null;</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">						if (parent.right == node) {</span>
+<span class="fc" id="L276">							parent.right = null;</span>
 						} else {
-<span class="pc bnc" id="L273" title="All 2 branches missed.">							assert parent.left == node;</span>
-<span class="fc" id="L274">							parent.left = null;</span>
+<span class="pc bnc" id="L278" title="All 2 branches missed.">							assert parent.left == node;</span>
+<span class="fc" id="L279">							parent.left = null;</span>
 						}
-<span class="fc" id="L276">						node.parent = null;</span>
-<span class="fc" id="L277">						insertNode(node);</span>
-<span class="fc" id="L278">						node = parent;</span>
+<span class="fc" id="L281">						node.parent = null;</span>
+<span class="fc" id="L282">						insertNode(node);</span>
+<span class="fc" id="L283">						node = parent;</span>
 					}
-<span class="fc" id="L280">				}</span>
+<span class="fc" id="L285">				}</span>
 			}
 
-<span class="fc bfc" id="L283" title="All 2 branches covered.">			if (hLow != null) {</span>
-<span class="pc bnc" id="L284" title="All 2 branches missed.">				assert compare(hLow.findMax().key(), findMin().key()) &lt; 0;</span>
-<span class="fc" id="L285">				root = meld(hLow, this);</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">			if (hLow != null) {</span>
+<span class="pc bnc" id="L289" title="All 2 branches missed.">				assert compare(hLow.findMax().key(), findMin().key()) &lt; 0;</span>
+<span class="fc" id="L290">				root = meld(hLow, this);</span>
 			}
-<span class="fc bfc" id="L287" title="All 2 branches covered.">			if (hHigh != null) {</span>
-<span class="pc bnc" id="L288" title="All 2 branches missed.">				assert compare(hHigh.findMin().key(), findMax().key()) &gt; 0;</span>
-<span class="fc" id="L289">				root = meld(this, hHigh);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">			if (hHigh != null) {</span>
+<span class="pc bnc" id="L293" title="All 2 branches missed.">				assert compare(hHigh.findMin().key(), findMax().key()) &gt; 0;</span>
+<span class="fc" id="L294">				root = meld(this, hHigh);</span>
 			}
 		}
-<span class="fc" id="L292">		h.root = null;</span>
-<span class="fc" id="L293">	}</span>
+<span class="fc" id="L297">		h.root = null;</span>
+<span class="fc" id="L298">	}</span>
 
 	private static &lt;K, V&gt; SplayBSTNode&lt;K, V&gt; meld(SplayTree&lt;K, V&gt; t1, SplayTree&lt;K, V&gt; t2) {
 		/* Assume all nodes in t1 are smaller than all nodes in t2 */
 
 		/* Splay t1 max and t2 min */
-<span class="fc" id="L299">		SplayBSTNode&lt;K, V&gt; n1 = (SplayBSTNode&lt;K, V&gt;) t1.findMax();</span>
-<span class="pc bnc" id="L300" title="All 2 branches missed.">		assert n1.isRoot();</span>
-<span class="pc bnc" id="L301" title="All 2 branches missed.">		assert !n1.hasRightChild();</span>
+<span class="fc" id="L304">		SplayBSTNode&lt;K, V&gt; n1 = (SplayBSTNode&lt;K, V&gt;) t1.findMax();</span>
+<span class="pc bnc" id="L305" title="All 2 branches missed.">		assert n1.isRoot();</span>
+<span class="pc bnc" id="L306" title="All 2 branches missed.">		assert !n1.hasRightChild();</span>
 
-<span class="fc" id="L303">		n1.right = t2.root;</span>
-<span class="fc" id="L304">		t2.root.parent = n1;</span>
-<span class="fc" id="L305">		n1.size += t2.root.size;</span>
-<span class="fc" id="L306">		return n1;</span>
+<span class="fc" id="L308">		n1.right = t2.root;</span>
+<span class="fc" id="L309">		t2.root.parent = n1;</span>
+<span class="fc" id="L310">		n1.size += t2.root.size;</span>
+<span class="fc" id="L311">		return n1;</span>
 	}
 
 	@Override
 	public SplayTree&lt;K, V&gt; splitSmaller(K key) {
-<span class="fc" id="L311">		SplayTree&lt;K, V&gt; newTree = new SplayTree&lt;&gt;(c);</span>
-<span class="fc" id="L312">		SplayBSTNode&lt;K, V&gt; pred = (SplayBSTNode&lt;K, V&gt;) findSmaller(key);</span>
-<span class="pc bpc" id="L313" title="1 of 2 branches missed.">		if (pred == null)</span>
-<span class="nc" id="L314">			return newTree;</span>
-<span class="pc bnc" id="L315" title="All 2 branches missed.">		assert pred.isRoot();</span>
+<span class="fc" id="L316">		SplayTree&lt;K, V&gt; newTree = new SplayTree&lt;&gt;(c);</span>
+<span class="fc" id="L317">		SplayBSTNode&lt;K, V&gt; pred = (SplayBSTNode&lt;K, V&gt;) findSmaller(key);</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">		if (pred == null)</span>
+<span class="nc" id="L319">			return newTree;</span>
+<span class="pc bnc" id="L320" title="All 2 branches missed.">		assert pred.isRoot();</span>
 
-<span class="pc bpc" id="L317" title="1 of 2 branches missed.">		if ((root = pred.right) != null) {</span>
-<span class="fc" id="L318">			pred.size -= pred.right.size;</span>
-<span class="fc" id="L319">			pred.right.parent = null;</span>
-<span class="fc" id="L320">			pred.right = null;</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">		if ((root = pred.right) != null) {</span>
+<span class="fc" id="L323">			pred.size -= pred.right.size;</span>
+<span class="fc" id="L324">			pred.right.parent = null;</span>
+<span class="fc" id="L325">			pred.right = null;</span>
 		}
 
-<span class="fc" id="L323">		newTree.root = pred;</span>
-<span class="fc" id="L324">		return newTree;</span>
+<span class="fc" id="L328">		newTree.root = pred;</span>
+<span class="fc" id="L329">		return newTree;</span>
 	}
 
 	@Override
 	public SplayTree&lt;K, V&gt; splitGreater(K key) {
-<span class="fc" id="L329">		SplayBSTNode&lt;K, V&gt; succ = (SplayBSTNode&lt;K, V&gt;) findGreater(key);</span>
-<span class="pc bpc" id="L330" title="1 of 2 branches missed.">		if (succ == null)</span>
-<span class="nc" id="L331">			return new SplayTree&lt;&gt;(c);</span>
-<span class="fc" id="L332">		return split(succ);</span>
+<span class="fc" id="L334">		SplayBSTNode&lt;K, V&gt; succ = (SplayBSTNode&lt;K, V&gt;) findGreater(key);</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">		if (succ == null)</span>
+<span class="nc" id="L336">			return new SplayTree&lt;&gt;(c);</span>
+<span class="fc" id="L337">		return split(succ);</span>
 	}
 
 	@Override
 	public SplayTree&lt;K, V&gt; split(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L337">		SplayTree&lt;K, V&gt; newTree = new SplayTree&lt;&gt;(c);</span>
+<span class="fc" id="L342">		SplayTree&lt;K, V&gt; newTree = new SplayTree&lt;&gt;(c);</span>
 
-<span class="fc" id="L339">		SplayBSTNode&lt;K, V&gt; n = impl.splay((SplayBSTNode&lt;K, V&gt;) ref);</span>
-<span class="pc bnc" id="L340" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="fc" id="L344">		SplayBSTNode&lt;K, V&gt; n = impl.splay((SplayBSTNode&lt;K, V&gt;) ref);</span>
+<span class="pc bnc" id="L345" title="All 2 branches missed.">		assert n.isRoot();</span>
 
-<span class="fc bfc" id="L342" title="All 2 branches covered.">		if ((root = n.left) != null) {</span>
-<span class="fc" id="L343">			n.size -= n.left.size;</span>
-<span class="fc" id="L344">			n.left.parent = null;</span>
-<span class="fc" id="L345">			n.left = null;</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">		if ((root = n.left) != null) {</span>
+<span class="fc" id="L348">			n.size -= n.left.size;</span>
+<span class="fc" id="L349">			n.left.parent = null;</span>
+<span class="fc" id="L350">			n.left = null;</span>
 		}
 
-<span class="fc" id="L348">		newTree.root = n;</span>
-<span class="fc" id="L349">		return newTree;</span>
+<span class="fc" id="L353">		newTree.root = n;</span>
+<span class="fc" id="L354">		return newTree;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc bfc" id="L354" title="All 2 branches covered.">		if (root == null)</span>
-<span class="fc" id="L355">			return;</span>
-<span class="fc" id="L356">		BinarySearchTrees.clear(root);</span>
-<span class="fc" id="L357">		root = null;</span>
-<span class="fc" id="L358">	}</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L360">			return;</span>
+<span class="fc" id="L361">		BinarySearchTrees.clear(root);</span>
+<span class="fc" id="L362">		root = null;</span>
+<span class="fc" id="L363">	}</span>
 
-	static class BaseNode&lt;K, N extends BaseNode&lt;K, N&gt;&gt; extends BinarySearchTrees.INode&lt;K, N&gt; {
+	static class BaseNode&lt;K, N extends BaseNode&lt;K, N&gt;&gt; extends BinarySearchTrees.Node&lt;K, N&gt; {
 
 		BaseNode(K key) {
-<span class="fc" id="L363">			super(key);</span>
-<span class="fc" id="L364">		}</span>
+<span class="fc" id="L368">			super(key);</span>
+<span class="fc" id="L369">		}</span>
 
 		public K key() {
-<span class="nc" id="L367">			return key;</span>
+<span class="nc" id="L372">			return key;</span>
 		}
 
 	}
 
-<span class="fc" id="L372">	static abstract class SplayImpl&lt;K, N extends BaseNode&lt;K, N&gt;&gt; {</span>
+<span class="fc" id="L377">	abstract static class SplayImpl&lt;K, N extends BaseNode&lt;K, N&gt;&gt; {</span>
 
-<span class="fc" id="L374">		SplayImpl() {}</span>
+<span class="fc" id="L379">		SplayImpl() {}</span>
 
 		N splay(N n) {
-<span class="fc bfc" id="L377" title="All 4 branches covered.">			if (n == null || n.isRoot())</span>
-<span class="fc" id="L378">				return n;</span>
+<span class="fc bfc" id="L382" title="All 4 branches covered.">			if (n == null || n.isRoot())</span>
+<span class="fc" id="L383">				return n;</span>
 			for (;;) {
-<span class="fc" id="L380">				N parent = n.parent;</span>
+<span class="fc" id="L385">				N parent = n.parent;</span>
 
-<span class="fc bfc" id="L382" title="All 2 branches covered.">				if (parent.isRoot()) {</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">				if (parent.isRoot()) {</span>
 					/* zig */
-<span class="fc" id="L384">					rotate(n);</span>
-<span class="fc" id="L385">					return n;</span>
+<span class="fc" id="L389">					rotate(n);</span>
+<span class="fc" id="L390">					return n;</span>
 				}
 
-<span class="fc bfc" id="L388" title="All 2 branches covered.">				if (n.isLeftChild() == parent.isLeftChild()) {</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">				if (n.isLeftChild() == parent.isLeftChild()) {</span>
 					/* zig-zig */
-<span class="fc" id="L390">					rotate(parent);</span>
-<span class="fc" id="L391">					rotate(n);</span>
+<span class="fc" id="L395">					rotate(parent);</span>
+<span class="fc" id="L396">					rotate(n);</span>
 				} else {
 					/* zig-zag */
-<span class="fc" id="L394">					rotate(n);</span>
-<span class="fc" id="L395">					rotate(n);</span>
+<span class="fc" id="L399">					rotate(n);</span>
+<span class="fc" id="L400">					rotate(n);</span>
 				}
 
-<span class="fc bfc" id="L398" title="All 2 branches covered.">				if (n.isRoot())</span>
-<span class="fc" id="L399">					return n;</span>
-<span class="fc" id="L400">			}</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">				if (n.isRoot())</span>
+<span class="fc" id="L404">					return n;</span>
+<span class="fc" id="L405">			}</span>
 		}
 
 		private void rotate(N n) {
-<span class="fc" id="L404">			N parent = n.parent, grandparent = parent.parent;</span>
+<span class="fc" id="L409">			N parent = n.parent, grandparent = parent.parent;</span>
 
-<span class="fc" id="L406">			beforeRotate(n);</span>
+<span class="fc" id="L411">			beforeRotate(n);</span>
 
-<span class="fc bfc" id="L408" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
 
-<span class="fc" id="L410">				parent.left = n.right;</span>
-<span class="fc bfc" id="L411" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
-<span class="fc" id="L412">					parent.left.parent = parent;</span>
-<span class="fc" id="L413">				n.right = parent;</span>
+<span class="fc" id="L415">				parent.left = n.right;</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
+<span class="fc" id="L417">					parent.left.parent = parent;</span>
+<span class="fc" id="L418">				n.right = parent;</span>
 
 			} else {
-<span class="pc bnc" id="L416" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bnc" id="L421" title="All 2 branches missed.">				assert n.isRightChild();</span>
 
-<span class="fc" id="L418">				parent.right = n.left;</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
-<span class="fc" id="L420">					parent.right.parent = parent;</span>
-<span class="fc" id="L421">				n.left = parent;</span>
+<span class="fc" id="L423">				parent.right = n.left;</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
+<span class="fc" id="L425">					parent.right.parent = parent;</span>
+<span class="fc" id="L426">				n.left = parent;</span>
 			}
 
-<span class="fc" id="L424">			n.parent = grandparent;</span>
-<span class="fc" id="L425">			parent.parent = n;</span>
-<span class="fc bfc" id="L426" title="All 2 branches covered.">			if (grandparent != null) {</span>
-<span class="fc bfc" id="L427" title="All 2 branches covered.">				if (grandparent.left == parent)</span>
-<span class="fc" id="L428">					grandparent.left = n;</span>
+<span class="fc" id="L429">			n.parent = grandparent;</span>
+<span class="fc" id="L430">			parent.parent = n;</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">			if (grandparent != null) {</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">				if (grandparent.left == parent)</span>
+<span class="fc" id="L433">					grandparent.left = n;</span>
 				else
-<span class="fc" id="L430">					grandparent.right = n;</span>
+<span class="fc" id="L435">					grandparent.right = n;</span>
 			}
-<span class="fc" id="L432">		}</span>
+<span class="fc" id="L437">		}</span>
 
-<span class="fc" id="L434">		void beforeRotate(N n) {}</span>
+<span class="fc" id="L439">		void beforeRotate(N n) {}</span>
 
 	}
 
@@ -442,58 +447,58 @@ import com.jgalgo.internal.util.Assertions;
 		private V value;
 
 		SplayBSTNode(K key) {
-<span class="fc" id="L445">			super(key);</span>
-<span class="fc" id="L446">			size = 1;</span>
-<span class="fc" id="L447">		}</span>
+<span class="fc" id="L450">			super(key);</span>
+<span class="fc" id="L451">			size = 1;</span>
+<span class="fc" id="L452">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L451">			return key;</span>
+<span class="fc" id="L456">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="nc" id="L456">			return value;</span>
+<span class="nc" id="L461">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="nc" id="L461">			value = val;</span>
-<span class="nc" id="L462">		}</span>
+<span class="nc" id="L466">			value = val;</span>
+<span class="nc" id="L467">		}</span>
 
 		@Override
 		void clearWithoutUserData() {
-<span class="fc" id="L466">			super.clearWithoutUserData();</span>
-<span class="fc" id="L467">			size = 1;</span>
-<span class="fc" id="L468">		}</span>
+<span class="fc" id="L471">			super.clearWithoutUserData();</span>
+<span class="fc" id="L472">			size = 1;</span>
+<span class="fc" id="L473">		}</span>
 
 	}
 
-<span class="fc" id="L472">	private static class SplayImplWithSize&lt;K, V&gt; extends SplayImpl&lt;K, SplayBSTNode&lt;K, V&gt;&gt; {</span>
+<span class="fc" id="L477">	private static class SplayImplWithSize&lt;K, V&gt; extends SplayImpl&lt;K, SplayBSTNode&lt;K, V&gt;&gt; {</span>
 
 		@Override
 		void beforeRotate(SplayBSTNode&lt;K, V&gt; n) {
-<span class="fc" id="L476">			super.beforeRotate(n);</span>
+<span class="fc" id="L481">			super.beforeRotate(n);</span>
 
-<span class="fc" id="L478">			SplayBSTNode&lt;K, V&gt; parent = n.parent;</span>
-<span class="fc" id="L479">			int parentOldSize = parent.size;</span>
+<span class="fc" id="L483">			SplayBSTNode&lt;K, V&gt; parent = n.parent;</span>
+<span class="fc" id="L484">			int parentOldSize = parent.size;</span>
 
-<span class="fc bfc" id="L481" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
 			} else {
-<span class="pc bnc" id="L484" title="All 2 branches missed.">				assert n.isRightChild();</span>
-<span class="fc bfc" id="L485" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
+<span class="pc bnc" id="L489" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
 			}
 
-<span class="fc" id="L488">			n.size = parentOldSize;</span>
-<span class="fc" id="L489">		}</span>
+<span class="fc" id="L493">			n.size = parentOldSize;</span>
+<span class="fc" id="L494">		}</span>
 
 	}
 
 	private void checkTreeNotEmpty() {
-<span class="pc bpc" id="L494" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L495">			throw new IllegalStateException(&quot;Tree is empty&quot;);</span>
-<span class="fc" id="L496">	}</span>
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L500">			throw new IllegalStateException(&quot;Tree is empty&quot;);</span>
+<span class="fc" id="L501">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -21,7 +21,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 <span class="nc" id="L22">public class Heaps {</span>
 
-	static abstract class AbstractHeapReferenceable&lt;K, V&gt; extends AbstractCollection&lt;HeapReference&lt;K, V&gt;&gt;
+	abstract static class AbstractHeapReferenceable&lt;K, V&gt; extends AbstractCollection&lt;HeapReference&lt;K, V&gt;&gt;
 			implements HeapReferenceable&lt;K, V&gt; {
 
 		final Comparator&lt;? super K&gt; c;

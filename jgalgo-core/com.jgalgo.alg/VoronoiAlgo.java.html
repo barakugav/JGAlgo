@@ -24,16 +24,20 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Voronoi cells algorithm.
+ *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\) and a set of sites \(S \subseteq V\), the Voronoi cells of \(S\) are the sets of vertices
  * that are closer to a site than to any other site. The Voronoi cells are a partition of the graph vertices, namely
  * each vertex is assigned to exactly one site.
+ *
  * &lt;p&gt;
  * The distances and paths are directed from the sites to the vertices. If the other direction is needed, consider
  * passing a reversed view of the original graph by using {@link IntGraph#reverseView()}.
+ *
  * &lt;p&gt;
  * If there are some vertices that are unreachable from any sites, the partition will contain an addition block with
  * index {@code siteNumber+1} that contains all these vertices.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -46,6 +50,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * Compute the Voronoi cells of a graph with respect to a set of sites and an edge weight function.
+	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link VoronoiAlgo.IResult} object will be returned. In that case, its
 	 * better to pass a {@link IntCollection} as {@code sites} and {@link IWeightFunction} as {@code w} to avoid
@@ -62,11 +67,13 @@ public interface VoronoiAlgo {
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation.
+	 *
 	 * &lt;p&gt;
 	 * The result object is firstly a valid {@link IVertexPartition} of the graph. The partition is defined by the
 	 * sites. Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If
 	 * some vertices are unreachable from any sites, the partition will contain an addition block with index
 	 * {@code siteNumber+1} that contains all these vertices.
+	 *
 	 * &lt;p&gt;
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
 	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
@@ -82,6 +89,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the distance of a vertex from its site.
+		 *
 		 * &lt;p&gt;
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -94,6 +102,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the shortest path of a vertex from its site.
+		 *
 		 * &lt;p&gt;
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -106,10 +115,12 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a block.
+		 *
 		 * &lt;p&gt;
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of one of the blocks
 		 * {@code [0, numberOfBlocks())}.
+		 *
 		 * &lt;p&gt;
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
 		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code null} for this block.
@@ -121,6 +132,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a vertex.
+		 *
 		 * &lt;p&gt;
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of the block that contains the
@@ -135,6 +147,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation for {@link IntGraph}.
+	 *
 	 * &lt;p&gt;
 	 * See {@link VoronoiAlgo.Result} for the result object documentation.
 	 *
@@ -144,6 +157,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the distance of a vertex from its site.
+		 *
 		 * &lt;p&gt;
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -157,11 +171,12 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default double distance(Integer vertex) {
-<span class="fc" id="L160">			return distance(vertex.intValue());</span>
+<span class="fc" id="L174">			return distance(vertex.intValue());</span>
 		}
 
 		/**
 		 * Get the shortest path of a vertex from its site.
+		 *
 		 * &lt;p&gt;
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -175,15 +190,17 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L178">			return getPath(target.intValue());</span>
+<span class="fc" id="L193">			return getPath(target.intValue());</span>
 		}
 
 		/**
 		 * Get the site vertex of a block.
+		 *
 		 * &lt;p&gt;
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of one of the blocks
 		 * {@code [0, numberOfBlocks())}.
+		 *
 		 * &lt;p&gt;
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
 		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code -1} for this block.
@@ -196,12 +213,13 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer blockSite(int block) {
-<span class="fc" id="L199">			int site = blockSiteInt(block);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
+<span class="fc" id="L216">			int site = blockSiteInt(block);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 
 		/**
 		 * Get the site vertex of a vertex.
+		 *
 		 * &lt;p&gt;
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of the block that contains the
@@ -215,13 +233,14 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {
-<span class="fc" id="L218">			int site = vertexSite(vertex.intValue());</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
+<span class="fc" id="L236">			int site = vertexSite(vertex.intValue());</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 	}
 
 	/**
 	 * Create a new Voronoi cells algorithm object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link VoronoiAlgo} object. The {@link VoronoiAlgo.Builder}
 	 * might support different options to obtain different implementations.
@@ -229,18 +248,19 @@ public interface VoronoiAlgo {
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-<span class="fc" id="L232">		return newBuilder().build();</span>
+<span class="fc" id="L251">		return newBuilder().build();</span>
 	}
 
 	/**
 	 * Create a new Voronoi cells algorithm builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link VoronoiAlgo} objects
 	 */
 	static VoronoiAlgo.Builder newBuilder() {
-<span class="fc" id="L243">		return VoronoiAlgoDijkstra::new;</span>
+<span class="fc" id="L263">		return VoronoiAlgoDijkstra::new;</span>
 	}
 
 	/**
@@ -260,10 +280,12 @@ public interface VoronoiAlgo {
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
+		 *
 		 * &lt;p&gt;
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * &lt;p&gt;
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -272,7 +294,7 @@ public interface VoronoiAlgo {
 		 * @return       this builder
 		 */
 		default VoronoiAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L275">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L297">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

@@ -19,10 +19,12 @@ import java.util.Set;
 
 /**
  * A partition of the vertices of a graph into two blocks.
+ *
  * &lt;p&gt;
  * This interface is a specific case of {@link VertexPartition} where the number of blocks is 2. It can be used to
  * represent a &lt;a href= &quot;https://en.wikipedia.org/wiki/Cut_(graph_theory)&quot;&gt;cut&lt;/a&gt;, or a
  * &lt;a href= &quot;https://en.wikipedia.org/wiki/Bipartite_graph&quot;&gt;bipartite&lt;/a&gt; partition of a graph.
+ *
  * &lt;p&gt;
  * The two blocks (or sets) are called left and right. The left block is the block with index 0, and the right block is
  * the block with index 1, and few methods with 'left/right' names are provided for convenience.
@@ -35,7 +37,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 
 	@Override
 	default int numberOfBlocks() {
-<span class="nc" id="L38">		return 2;</span>
+<span class="nc" id="L40">		return 2;</span>
 	}
 
 	/**
@@ -53,38 +55,41 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
 	 */
 	default boolean isRight(V vertex) {
-<span class="nc bnc" id="L56" title="All 2 branches missed.">		return !isLeft(vertex);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		return !isLeft(vertex);</span>
 	}
 
 	@Override
 	default int vertexBlock(V vertex) {
-<span class="nc bnc" id="L61" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	/**
 	 * Get the vertices in the 'left' block.
+	 *
 	 * &lt;p&gt;
 	 * The left block is the block with index 0.
 	 *
 	 * @return the vertices in the left block
 	 */
 	default Set&lt;V&gt; leftVertices() {
-<span class="nc" id="L72">		return blockVertices(0);</span>
+<span class="nc" id="L75">		return blockVertices(0);</span>
 	}
 
 	/**
 	 * Get the vertices in the 'right' block.
+	 *
 	 * &lt;p&gt;
 	 * The right block is the block with index 1.
 	 *
 	 * @return the vertices in the right block
 	 */
 	default Set&lt;V&gt; rightVertices() {
-<span class="nc" id="L83">		return blockVertices(1);</span>
+<span class="nc" id="L87">		return blockVertices(1);</span>
 	}
 
 	/**
 	 * Get the edges that are contained in the left block.
+	 *
 	 * &lt;p&gt;
 	 * The left block is the block with index 0, and edges contained in it are edges with both endpoints in the left
 	 * block.
@@ -92,11 +97,12 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that are contained in the left block
 	 */
 	default Set&lt;E&gt; leftEdges() {
-<span class="nc" id="L95">		return blockEdges(0);</span>
+<span class="nc" id="L100">		return blockEdges(0);</span>
 	}
 
 	/**
 	 * Get the edges that are contained in the right block.
+	 *
 	 * &lt;p&gt;
 	 * The right block is the block with index 1, and edges contained in it are edges with both endpoints in the right
 	 * block.
@@ -104,11 +110,12 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that are contained in the right block
 	 */
 	default Set&lt;E&gt; rightEdges() {
-<span class="nc" id="L107">		return blockEdges(1);</span>
+<span class="nc" id="L113">		return blockEdges(1);</span>
 	}
 
 	/**
 	 * Get the edges that cross between the left and right blocks.
+	 *
 	 * &lt;p&gt;
 	 * An edge \((u,v)\) is said to cross between two blocks \(b_1\) and \(b_2\) if \(u\) is contained in \(b_1\) and
 	 * \(v\) is contained in \(b_2\). Note that if the graph is directed, the cross edges of \((b_1,b_2)\) are different
@@ -119,7 +126,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that cross between the left and right blocks
 	 */
 	default Set&lt;E&gt; crossEdges() {
-<span class="fc" id="L122">		return crossEdges(0, 1);</span>
+<span class="fc" id="L129">		return crossEdges(0, 1);</span>
 	}
 
 }

@@ -19,8 +19,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Set of int graph edges.
+ *
  * &lt;p&gt;
  * This interface is a specific version of {@link EdgeSet} for {@link IntGraph}.
+ *
  * &lt;p&gt;
  * A set of integers, each represent an edge ID in a graph
  *
@@ -52,7 +54,7 @@ public interface IEdgeSet extends EdgeSet&lt;Integer, Integer&gt;, IntSet {
 	 */
 	@Override
 	default IEdgeIter intIterator() {
-<span class="nc" id="L55">		return iterator();</span>
+<span class="nc" id="L57">		return iterator();</span>
 	}
 
 }

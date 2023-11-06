@@ -31,12 +31,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * A path of edges in a graph.
+ *
  * &lt;p&gt;
  * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge \(e_i\) is the source vertex of the
  * next edge \(e_{i+1}\). If the graph is undirected the definition of a 'source' and 'target' are interchangeable, and
  * each pair of consecutive edges simply share an endpoint.
+ *
  * &lt;p&gt;
  * A Path object might be used to represent a cycle as well, if the source and target of the path are the same vertex.
+ *
  * &lt;p&gt;
  * If the underlying graph was modified after the Path object was created, the Path object should not be used.
  *
@@ -62,6 +65,7 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Get the source vertex of the path.
+	 *
 	 * &lt;p&gt;
 	 * If the returned vertex is the same as {@link #target()}, the represented path is actually a cycle.
 	 *
@@ -71,6 +75,7 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Get the target vertex of the path.
+	 *
 	 * &lt;p&gt;
 	 * If the returned vertex is the same as {@link #source()}, the represented path is actually a cycle.
 	 *
@@ -80,17 +85,19 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Check whether this path form a cycle.
+	 *
 	 * &lt;p&gt;
 	 * A cycle is a path which start and ends at the same vertex.
 	 *
 	 * @return {@code true} if this path form a cycle, else {@code false}
 	 */
 	default boolean isCycle() {
-<span class="nc" id="L89">		return source().equals(target());</span>
+<span class="nc" id="L95">		return source().equals(target());</span>
 	}
 
 	/**
 	 * Check whether this path is simple.
+	 *
 	 * &lt;p&gt;
 	 * A path is &lt;a href= &quot;https://en.wikipedia.org/wiki/Path_(graph_theory)#simple_path&quot;&gt;simple&lt;/a&gt; if the path does
 	 * not visit the same vertex twice. Specifically, a cycle is not simple.
@@ -108,6 +115,7 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Get the edges forming this path.
+	 *
 	 * &lt;p&gt;
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\).
@@ -118,6 +126,7 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Get the vertices forming this path.
+	 *
 	 * &lt;p&gt;
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\). The list of &lt;b&gt;vertices&lt;/b&gt; of this path is the vertices visited by
@@ -130,9 +139,11 @@ public interface Path&lt;V, E&gt; {
 
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
+	 *
 	 * &lt;p&gt;
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
 	 * for validity, use {@link #isPath(Graph, Object, Object, List)}.
+	 *
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
 	 *
@@ -146,26 +157,27 @@ public interface Path&lt;V, E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Path&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source, V target, List&lt;E&gt; edges) {
-<span class="nc bnc" id="L149" title="All 2 branches missed.">		if (g instanceof IntGraph) {</span>
-<span class="nc" id="L150">			int iSource = ((Integer) source).intValue();</span>
-<span class="nc" id="L151">			int iTarget = ((Integer) target).intValue();</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">			IntList iEdges = edges instanceof IntList ? (IntList) edges : new IntArrayList((List&lt;Integer&gt;) edges);</span>
-<span class="nc" id="L153">			return (Path&lt;V, E&gt;) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="nc" id="L161">			int iSource = ((Integer) source).intValue();</span>
+<span class="nc" id="L162">			int iTarget = ((Integer) target).intValue();</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">			IntList iEdges = edges instanceof IntList ? (IntList) edges : new IntArrayList((List&lt;Integer&gt;) edges);</span>
+<span class="nc" id="L164">			return (Path&lt;V, E&gt;) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);</span>
 		}
 
-<span class="nc" id="L156">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L157">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L158">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L159">		int iSource = viMap.idToIndex(source);</span>
-<span class="nc" id="L160">		int iTarget = viMap.idToIndex(target);</span>
-<span class="nc" id="L161">		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
+<span class="nc" id="L167">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L168">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L169">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L170">		int iSource = viMap.idToIndex(source);</span>
+<span class="nc" id="L171">		int iTarget = viMap.idToIndex(target);</span>
+<span class="nc" id="L172">		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
 
-<span class="nc" id="L163">		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);</span>
-<span class="nc" id="L164">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="nc" id="L174">		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);</span>
+<span class="nc" id="L175">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
 	}
 
 	/**
 	 * Check whether the given edge list is a valid path in the given graph.
+	 *
 	 * &lt;p&gt;
 	 * A list of edges is a valid path in the graph if it is a list of edges \(e_1,e_2,\ldots\) where each target vertex
 	 * of an edge \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is undirected the definition
@@ -186,27 +198,29 @@ public interface Path&lt;V, E&gt; {
 		IndexGraph ig;
 		int source0, target0;
 		IntIterator eit;
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L190">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L191">			source0 = ((Integer) source).intValue();</span>
-<span class="nc" id="L192">			target0 = ((Integer) target).intValue();</span>
-<span class="nc" id="L193">			eit = IntAdapters.asIntIterator(((List&lt;Integer&gt;) edges).iterator());</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L202">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L203">			source0 = ((Integer) source).intValue();</span>
+<span class="nc" id="L204">			target0 = ((Integer) target).intValue();</span>
+<span class="nc" id="L205">			eit = IntAdapters.asIntIterator(((List&lt;Integer&gt;) edges).iterator());</span>
 		} else {
-<span class="fc" id="L195">			ig = g.indexGraph();</span>
-<span class="fc" id="L196">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L197">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L198">			source0 = viMap.idToIndex(source);</span>
-<span class="fc" id="L199">			target0 = viMap.idToIndex(target);</span>
-<span class="fc" id="L200">			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);</span>
+<span class="fc" id="L207">			ig = g.indexGraph();</span>
+<span class="fc" id="L208">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L209">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L210">			source0 = viMap.idToIndex(source);</span>
+<span class="fc" id="L211">			target0 = viMap.idToIndex(target);</span>
+<span class="fc" id="L212">			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);</span>
 		}
 
-<span class="fc" id="L203">		return PathImpl.isPath(ig, source0, target0, eit);</span>
+<span class="fc" id="L215">		return PathImpl.isPath(ig, source0, target0, eit);</span>
 	}
 
 	/**
 	 * Find a valid path from \(u\) to \(v\).
+	 *
 	 * &lt;p&gt;
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
+	 *
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
 	 *
@@ -219,17 +233,17 @@ public interface Path&lt;V, E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Path&lt;V, E&gt; findPath(Graph&lt;V, E&gt; g, V source, V target) {
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L223">			return (Path&lt;V, E&gt;) IPath.findPath((IntGraph) g, ((Integer) source).intValue(),</span>
-<span class="fc" id="L224">					((Integer) target).intValue());</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L237">			return (Path&lt;V, E&gt;) IPath.findPath((IntGraph) g, ((Integer) source).intValue(),</span>
+<span class="fc" id="L238">					((Integer) target).intValue());</span>
 
-<span class="fc" id="L226">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L227">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L228">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L229">		int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L240">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L241">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L242">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L243">		int iTarget = viMap.idToIndex(target);</span>
 
-<span class="fc" id="L231">		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L232">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L245">		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L246">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
 	}
 
 }

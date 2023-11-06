@@ -24,6 +24,7 @@ import com.jgalgo.graph.WeightsInt;
 
 /**
  * Flow on graph edges, with integer capacities and flows values.
+ *
  * &lt;p&gt;
  * Similar to the regular {@link FlowNetwork} interface, but with integer capacities and flows. Some algorithms that
  * work on flow networks are specifically for integers networks, or may performed faster if the capacities and flows are
@@ -47,7 +48,7 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	@Deprecated
 	@Override
 	default double getCapacity(E edge) {
-<span class="fc" id="L50">		return getCapacityInt(edge);</span>
+<span class="fc" id="L51">		return getCapacityInt(edge);</span>
 	}
 
 	/**
@@ -63,14 +64,16 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	@Deprecated
 	@Override
 	default void setCapacity(E edge, double capacity) {
-<span class="nc" id="L66">		setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L67">	}</span>
+<span class="nc" id="L67">		setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L68">	}</span>
 
 	/**
 	 * Get the integer amount of flow units going along an edge.
+	 *
 	 * &lt;p&gt;
 	 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
 	 * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+	 *
 	 * &lt;p&gt;
 	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
 	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
@@ -86,7 +89,7 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	@Deprecated
 	@Override
 	default double getFlow(E edge) {
-<span class="fc" id="L89">		return getFlowInt(edge);</span>
+<span class="fc" id="L92">		return getFlowInt(edge);</span>
 	}
 
 	/**
@@ -101,54 +104,56 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	@Deprecated
 	@Override
 	default void setFlow(E edge, double flow) {
-<span class="nc" id="L104">		setFlow(edge, (int) flow);</span>
-<span class="nc" id="L105">	}</span>
+<span class="nc" id="L107">		setFlow(edge, (int) flow);</span>
+<span class="nc" id="L108">	}</span>
 
 	@Override
 	default double getFlowSum(Graph&lt;V, E&gt; g, Iterable&lt;V&gt; sources) {
-<span class="fc" id="L109">		long sum = 0;</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (V source : sources) {</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">				for (E e : g.outEdges(source))</span>
-<span class="fc" id="L113">					sum += getFlowInt(e);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (E e : g.inEdges(source))</span>
-<span class="fc" id="L115">					sum -= getFlowInt(e);</span>
-<span class="fc" id="L116">			}</span>
+<span class="fc" id="L112">		long sum = 0;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			for (V source : sources) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (E e : g.outEdges(source))</span>
+<span class="fc" id="L116">					sum += getFlowInt(e);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				for (E e : g.inEdges(source))</span>
+<span class="fc" id="L118">					sum -= getFlowInt(e);</span>
+<span class="fc" id="L119">			}</span>
 		} else {
-<span class="nc bnc" id="L118" title="All 2 branches missed.">			for (V source : sources) {</span>
-<span class="nc bnc" id="L119" title="All 2 branches missed.">				for (E e : g.outEdges(source)) {</span>
-<span class="nc bnc" id="L120" title="All 2 branches missed.">					if (!source.equals(g.edgeTarget(e))) {</span>
-<span class="nc" id="L121">						sum += getFlowInt(e);</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">					} else if (!source.equals(g.edgeSource(e))) {</span>
-<span class="nc" id="L123">						sum -= getFlowInt(e);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">			for (V source : sources) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">				for (E e : g.outEdges(source)) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">					if (!source.equals(g.edgeTarget(e))) {</span>
+<span class="nc" id="L124">						sum += getFlowInt(e);</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">					} else if (!source.equals(g.edgeSource(e))) {</span>
+<span class="nc" id="L126">						sum -= getFlowInt(e);</span>
 					}
-<span class="nc" id="L125">				}</span>
-<span class="nc" id="L126">			}</span>
+<span class="nc" id="L128">				}</span>
+<span class="nc" id="L129">			}</span>
 		}
-<span class="fc" id="L128">		return sum;</span>
+<span class="fc" id="L131">		return sum;</span>
 	}
 
 	@Override
 	default double getCostSum(Iterable&lt;E&gt; edges, WeightFunction&lt;E&gt; cost) {
-<span class="nc bnc" id="L133" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
-<span class="nc" id="L134">			WeightFunctionInt&lt;E&gt; costInt = (WeightFunctionInt&lt;E&gt;) cost;</span>
-<span class="nc" id="L135">			long sum = 0;</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">			for (E e : edges)</span>
-<span class="nc" id="L137">				sum += getFlowInt(e) * costInt.weightInt(e);</span>
-<span class="nc" id="L138">			return sum;</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">		if (cost instanceof WeightFunctionInt) {</span>
+<span class="nc" id="L137">			WeightFunctionInt&lt;E&gt; costInt = (WeightFunctionInt&lt;E&gt;) cost;</span>
+<span class="nc" id="L138">			long sum = 0;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">			for (E e : edges)</span>
+<span class="nc" id="L140">				sum += getFlowInt(e) * costInt.weightInt(e);</span>
+<span class="nc" id="L141">			return sum;</span>
 		} else {
-<span class="nc" id="L140">			double sum = 0;</span>
-<span class="nc bnc" id="L141" title="All 2 branches missed.">			for (E e : edges)</span>
-<span class="nc" id="L142">				sum += getFlowInt(e) * cost.weight(e);</span>
-<span class="nc" id="L143">			return sum;</span>
+<span class="nc" id="L143">			double sum = 0;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">			for (E e : edges)</span>
+<span class="nc" id="L145">				sum += getFlowInt(e) * cost.weight(e);</span>
+<span class="nc" id="L146">			return sum;</span>
 		}
 	}
 
 	/**
 	 * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+	 *
 	 * &lt;p&gt;
 	 * Unless {@link #setCapacity(Object, int)} or {@link #setFlow(Object, int)} are used, the capacity and flow of each
 	 * edge will be zero.
+	 *
 	 * &lt;p&gt;
 	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
 	 * graph is modified, as they are added to the graph. This is a key difference between this function and
@@ -162,13 +167,14 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	 * @return     a flow network implemented as edge weights containers added to the graph
 	 */
 	static &lt;V, E&gt; FlowNetworkInt&lt;V, E&gt; createFromEdgeWeights(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L165">		WeightsInt&lt;E&gt; capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
-<span class="fc" id="L166">		WeightsInt&lt;E&gt; flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
-<span class="fc" id="L167">		return createFromEdgeWeights(capacities, flows);</span>
+<span class="fc" id="L170">		WeightsInt&lt;E&gt; capacities = g.addEdgesWeights(&quot;_capacity&quot;, int.class);</span>
+<span class="fc" id="L171">		WeightsInt&lt;E&gt; flows = g.addEdgesWeights(&quot;_flow&quot;, int.class);</span>
+<span class="fc" id="L172">		return createFromEdgeWeights(capacities, flows);</span>
 	}
 
 	/**
 	 * Create a flow network by using existing edge weights.
+	 *
 	 * &lt;p&gt;
 	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
 	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify
@@ -182,11 +188,11 @@ public interface FlowNetworkInt&lt;V, E&gt; extends FlowNetwork&lt;V, E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; FlowNetworkInt&lt;V, E&gt; createFromEdgeWeights(WeightsInt&lt;E&gt; capacities, WeightsInt&lt;E&gt; flows) {
-<span class="pc bpc" id="L185" title="1 of 4 branches missed.">		if (capacities instanceof IWeightsInt &amp;&amp; flows instanceof IWeightsInt) {</span>
-<span class="fc" id="L186">			return (FlowNetworkInt&lt;V, E&gt;) new FlowNetworks.NetImplEdgeIWeightsInt((IWeightsInt) capacities,</span>
+<span class="pc bpc" id="L191" title="1 of 4 branches missed.">		if (capacities instanceof IWeightsInt &amp;&amp; flows instanceof IWeightsInt) {</span>
+<span class="fc" id="L192">			return (FlowNetworkInt&lt;V, E&gt;) new FlowNetworks.NetImplEdgeIWeightsInt((IWeightsInt) capacities,</span>
 					(IWeightsInt) flows);
 		} else {
-<span class="fc" id="L189">			return new FlowNetworks.NetImplEdgeWeightsInt&lt;&gt;(capacities, flows);</span>
+<span class="fc" id="L195">			return new FlowNetworks.NetImplEdgeWeightsInt&lt;&gt;(capacities, flows);</span>
 		}
 	}
 

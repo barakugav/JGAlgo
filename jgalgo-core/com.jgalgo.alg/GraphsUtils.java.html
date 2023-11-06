@@ -42,6 +42,7 @@ public class GraphsUtils {
 
 	/**
 	 * Check whether a graph contain self edges.
+	 *
 	 * &lt;p&gt;
 	 * A self edge is an edge whose source and target is the same vertex.
 	 *
@@ -51,21 +52,22 @@ public class GraphsUtils {
 	 * @return     {@code true} if the graph contain at least one self edge, else {@code false}
 	 */
 	public static &lt;V, E&gt; boolean containsSelfEdges(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!g.isAllowSelfEdges())</span>
-<span class="nc" id="L55">			return false;</span>
-<span class="fc" id="L56">		IndexGraph ig = g.indexGraph();</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int n = ig.vertices().size(), u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L59">				eit.nextInt();</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (u == eit.targetInt())</span>
-<span class="fc" id="L61">					return true;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!g.isAllowSelfEdges())</span>
+<span class="nc" id="L56">			return false;</span>
+<span class="fc" id="L57">		IndexGraph ig = g.indexGraph();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int n = ig.vertices().size(), u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L60">				eit.nextInt();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (u == eit.targetInt())</span>
+<span class="fc" id="L62">					return true;</span>
 			}
 		}
-<span class="fc" id="L64">		return false;</span>
+<span class="fc" id="L65">		return false;</span>
 	}
 
 	/**
 	 * Check whether a graph contain parallel edges.
+	 *
 	 * &lt;p&gt;
 	 * Two parallel edges are edges that have the same source and target vertices.
 	 *
@@ -75,22 +77,22 @@ public class GraphsUtils {
 	 * @return     {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
 	 */
 	public static &lt;V, E&gt; boolean containsParallelEdges(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (!g.isAllowParallelEdges())</span>
-<span class="fc" id="L79">			return false;</span>
-<span class="fc" id="L80">		IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L81">		int n = ig.vertices().size();</span>
-<span class="fc" id="L82">		int[] lastVisit = new int[n];</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L84">			final int visitIdx = u + 1;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L86">				eit.nextInt();</span>
-<span class="fc" id="L87">				int v = eit.targetInt();</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
-<span class="nc" id="L89">					return true;</span>
-<span class="fc" id="L90">				lastVisit[v] = visitIdx;</span>
-<span class="fc" id="L91">			}</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (!g.isAllowParallelEdges())</span>
+<span class="fc" id="L81">			return false;</span>
+<span class="fc" id="L82">		IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L83">		int n = ig.vertices().size();</span>
+<span class="fc" id="L84">		int[] lastVisit = new int[n];</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L86">			final int visitIdx = u + 1;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L88">				eit.nextInt();</span>
+<span class="fc" id="L89">				int v = eit.targetInt();</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
+<span class="nc" id="L91">					return true;</span>
+<span class="fc" id="L92">				lastVisit[v] = visitIdx;</span>
+<span class="fc" id="L93">			}</span>
 		}
-<span class="fc" id="L93">		return false;</span>
+<span class="fc" id="L95">		return false;</span>
 	}
 
 }

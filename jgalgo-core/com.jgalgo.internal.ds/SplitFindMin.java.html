@@ -22,11 +22,13 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
+ *
  * &lt;p&gt;
  * As the {@link SplitFind}, a data structure implementing this interface maintain a collection disjoint sets and
  * support {@link #find(int)} and {@link #split(int)} operations. In addition, each element have a key, which is
  * comparable to any other key by a provided comparator, and the minimum key in each set can be queried using
  * {@link #findMin(int)}.
+ *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -48,8 +50,8 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 
 	@Override
 	default void init(int size) {
-<span class="fc" id="L51">		init(JGAlgoUtils.nullList(size), (k1, k2) -&gt; 0);</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L53">		init(JGAlgoUtils.nullList(size), (k1, k2) -&gt; 0);</span>
+<span class="fc" id="L54">	}</span>
 
 	/**
 	 * Get the key associated with an element.
@@ -60,7 +62,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	K getKey(int x);
 
 	/**
-	 * Find the element with the minimum key in the sequence of {@code x}
+	 * Find the element with the minimum key in the sequence of {@code x}.
 	 *
 	 * @param  x an element in the data structure
 	 * @return   the element with the minimum key in the sequence of {@code x}
@@ -78,6 +80,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 
 	/**
 	 * Create a new split-find-min object.
+	 *
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SplitFindMin} object. The {@link SplitFindMin.Builder}
 	 * might support different options to obtain different implementations.
@@ -85,18 +88,19 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	 * @return a default implementation of {@link SplitFindMin}
 	 */
 	static &lt;K&gt; SplitFindMin&lt;K&gt; newInstance() {
-<span class="fc" id="L88">		return newBuilder().buildWithFindMin();</span>
+<span class="fc" id="L91">		return newBuilder().buildWithFindMin();</span>
 	}
 
 	/**
 	 * Create a new split-find-min data structure builder.
+	 *
 	 * &lt;p&gt;
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
 	 * @return a new builder that can build {@link SplitFindMin} objects
 	 */
 	static SplitFindMin.Builder newBuilder() {
-<span class="fc" id="L99">		return SplitFindMinArray::new;</span>
+<span class="fc" id="L103">		return SplitFindMinArray::new;</span>
 	}
 
 	/**
@@ -108,7 +112,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	static interface Builder extends SplitFind.Builder {
 
 		/**
-		 * Create a new split-find-min data structure
+		 * Create a new split-find-min data structure.
 		 *
 		 * @return     a new split-find-min data structure
 		 * @param  &lt;K&gt; the keys type
@@ -118,13 +122,13 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 		@SuppressWarnings(&quot;rawtypes&quot;)
 		@Override
 		default SplitFindMin build() {
-<span class="nc" id="L121">			return buildWithFindMin();</span>
+<span class="nc" id="L125">			return buildWithFindMin();</span>
 		}
 
 		@Override
 		default SplitFindMin.Builder setOption(String key, Object value) {
-<span class="nc" id="L126">			SplitFind.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L127">			return this;</span>
+<span class="nc" id="L130">			SplitFind.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L131">			return this;</span>
 		}
 	}
 
