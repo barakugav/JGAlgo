@@ -299,6 +299,8 @@ class VertexPartitions {
 			gb.addVertex(b);
 		final int m = g.edges().size();
 		if (parallelEdges) {
+			if (selfEdges)
+				gb.expectedEdgesNum(m);
 			for (int e = 0; e < m; e++) {
 				int b1 = partition.vertexBlock(g.edgeSource(e));
 				int b2 = partition.vertexBlock(g.edgeTarget(e));
