@@ -222,7 +222,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			heapT.insert(.0, target);
 			toClearS.add(source);
 			toClearT.add(target);
-			for (; !heapS.isEmpty() && !heapT.isEmpty();) {
+			while (!heapS.isEmpty() && !heapT.isEmpty()) {
 
 				HeapReference<Double, Integer> min = heapS.extractMin();
 				double uDistanceS = min.key();

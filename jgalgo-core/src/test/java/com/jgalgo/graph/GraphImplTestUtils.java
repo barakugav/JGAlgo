@@ -425,12 +425,11 @@ class GraphImplTestUtils extends TestUtils {
 						expectedN++;
 					} else {
 						Integer u, v;
-						List<Integer> vs = new ArrayList<>(g.vertices());
 						for (int retry = 20;;) {
 							if (retry-- > 0)
 								continue opsLoop;
-							u = vs.get(rand.nextInt(vs.size()));
-							v = vs.get(rand.nextInt(vs.size()));
+							u = Graphs.randVertex(g, rand);
+							v = Graphs.randVertex(g, rand);
 							if (u == v)
 								continue;
 							if (!parallelEdges && g.getEdge(u, v) != null)
@@ -474,12 +473,11 @@ class GraphImplTestUtils extends TestUtils {
 						expectedN++;
 					} else {
 						Integer u, v;
-						List<Integer> vs = new ArrayList<>(g.vertices());
 						for (int retry = 20;;) {
 							if (retry-- > 0)
 								continue opsLoop;
-							u = vs.get(rand.nextInt(vs.size()));
-							v = vs.get(rand.nextInt(vs.size()));
+							u = Graphs.randVertex(g, rand);
+							v = Graphs.randVertex(g, rand);
 							if (u == v)
 								continue;
 							if (!parallelEdges && g.getEdge(u, v) != null)
@@ -616,30 +614,26 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Reassign some weights to both g and copy, and assert they are updated independently */
-			List<Integer> vs = new ArrayList<>(g.vertices());
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
-				Integer u = vs.get(rand.nextInt(vs.size()));
+				Integer u = Graphs.randVertex(g, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
 				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
-			List<Integer> copyVs = new ArrayList<>(copy.vertices());
 			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
-				Integer u = copyVs.get(rand.nextInt(vs.size()));
+				Integer u = Graphs.randVertex(copy, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
 				copy.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				copyVDataMap.put(u, data);
 			}
-			List<Integer> gEdges = new ArrayList<>(g.edges());
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
-				Integer e = gEdges.get(rand.nextInt(g.edges().size()));
+				Integer e = Graphs.randEdge(g, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
 				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
-			List<Integer> copyEdges = new ArrayList<>(copy.edges());
 			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
-				Integer e = copyEdges.get(rand.nextInt(copy.edges().size()));
+				Integer e = Graphs.randEdge(copy, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
 				copy.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				copyEDataMap.put(e, data);
@@ -765,16 +759,14 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Reassign some weights to g, and assert they are updated independently */
-			List<Integer> vs = new ArrayList<>(g.vertices());
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
-				Integer u = vs.get(rand.nextInt(vs.size()));
+				Integer u = Graphs.randVertex(g, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
 				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
-			List<Integer> gEdges = new ArrayList<>(g.edges());
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
-				Integer e = gEdges.get(rand.nextInt(g.edges().size()));
+				Integer e = Graphs.randEdge(g, rand);
 				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
 				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
@@ -926,7 +918,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		Vertex getRandVertex(Random rand) {
-			return verticesArr.get(rand.nextInt(verticesArr.size()));
+			return randElement(verticesArr, rand);
 		}
 
 		void addEdge(Vertex u, Vertex v, int data) {
@@ -998,7 +990,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		Edge getRandEdge(Random rand) {
-			return edges.get(rand.nextInt(edges.size()));
+			return randElement(edges, rand);
 		}
 
 		@SuppressWarnings("unused")
@@ -1199,7 +1191,7 @@ class GraphImplTestUtils extends TestUtils {
 			return e;
 		};
 
-		opLoop: for (; opsNum > 0;) {
+		opLoop: while (opsNum > 0) {
 			final GraphOp op = opRand.get(rand);
 			switch (op) {
 				case AddEdge: {

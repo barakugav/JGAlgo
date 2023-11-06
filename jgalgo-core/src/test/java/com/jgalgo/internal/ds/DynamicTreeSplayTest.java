@@ -111,7 +111,7 @@ public class DynamicTreeSplayTest extends TestBase {
 		};
 
 		for (int i = 0; i < m;) {
-			Op op = ops.get(rand.nextInt(ops.size()));
+			Op op = randElement(ops, rand);
 			switch (op) {
 				case MakeTree: {
 					TrackerNode node = new TrackerNode(nodes.size());
@@ -125,7 +125,7 @@ public class DynamicTreeSplayTest extends TestBase {
 				case FindRoot: {
 					if (nodes.isEmpty())
 						continue;
-					TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
+					TrackerNode node = randElement(nodes, rand);
 					debug.println(op, "(", node, ")");
 
 					TrackerNode root = findRoot.apply(node);
@@ -137,7 +137,7 @@ public class DynamicTreeSplayTest extends TestBase {
 				case FindMinEdge: {
 					if (nodes.isEmpty())
 						continue;
-					TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
+					TrackerNode node = randElement(nodes, rand);
 					debug.println(op, "(", node, ")");
 
 					TrackerNode min = null;
@@ -158,7 +158,7 @@ public class DynamicTreeSplayTest extends TestBase {
 				case AddWeight: {
 					if (nodes.isEmpty())
 						continue;
-					TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
+					TrackerNode node = randElement(nodes, rand);
 					int weight = rand.nextInt(MAX_WEIGHT_ADD * 2 + 1) - MAX_WEIGHT_ADD;
 					debug.println(op, "(", node, ", ", weight, ")");
 
@@ -176,8 +176,8 @@ public class DynamicTreeSplayTest extends TestBase {
 					TrackerNode a = null, b = null;
 					boolean found = false;
 					for (int r = 0; r < RETRY_MAX; r++) {
-						a = roots.get(rand.nextInt(roots.size()));
-						b = nodes.get(rand.nextInt(nodes.size()));
+						a = randElement(roots, rand);
+						b = randElement(nodes, rand);
 						if (findRoot.apply(b) != a) {
 							found = true;
 							break;
@@ -205,7 +205,7 @@ public class DynamicTreeSplayTest extends TestBase {
 					TrackerNode node = null;
 					boolean found = false;
 					for (int r = 0; r < RETRY_MAX; r++) {
-						node = nodes.get(rand.nextInt(nodes.size()));
+						node = randElement(nodes, rand);
 						if (node.parent != null) {
 							found = true;
 							break;
@@ -226,7 +226,7 @@ public class DynamicTreeSplayTest extends TestBase {
 				case Size: {
 					if (nodes.isEmpty())
 						continue;
-					TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
+					TrackerNode node = randElement(nodes, rand);
 
 					int expected = 0;
 					List<TrackerNode> stack = new ObjectArrayList<>();

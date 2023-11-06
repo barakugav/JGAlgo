@@ -18,16 +18,15 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -214,10 +213,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	static <V, E> Pair<V, V> chooseSourceSink(Graph<V, E> g, Random rand) {
-		List<V> vs = new ArrayList<>(g.vertices());
 		for (int retry = 0;; retry++) {
-			V source = vs.get(rand.nextInt(vs.size()));
-			V sink = vs.get(rand.nextInt(vs.size()));
+			V source = Graphs.randVertex(g, rand);
+			V sink = Graphs.randVertex(g, rand);
 			if (!source.equals(sink) && Path.findPath(g, source, sink) != null)
 				return Pair.of(source, sink);
 			if (retry > 1000) {
@@ -253,21 +251,14 @@ public class MaximumFlowTestUtils extends TestUtils {
 			int sinksNum, Random rand) {
 		Collection<V> sources = new ObjectOpenHashSet<>(sourcesNum);
 		Collection<V> sinks = new ObjectOpenHashSet<>(sinksNum);
-
-		for (List<V> vs = new ArrayList<>(g.vertices());;) {
-			if (sources.size() < sourcesNum) {
-				V source = vs.get(rand.nextInt(vs.size()));
-				if (!sinks.contains(source))
-					sources.add(source);
-
-			} else if (sinks.size() < sinksNum) {
-				V sink = vs.get(rand.nextInt(vs.size()));
-				if (!sources.contains(sink))
-					sinks.add(sink);
-			} else {
-				return Pair.of(sources, sinks);
-			}
+		while (sources.size() < sourcesNum)
+			sources.add(Graphs.randVertex(g, rand));
+		while (sinks.size() < sinksNum) {
+			V sink = Graphs.randVertex(g, rand);
+			if (!sources.contains(sink))
+				sinks.add(sink);
 		}
+		return Pair.of(sources, sinks);
 	}
 
 	private static <V, E> void testNetwork(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink, MaximumFlow algo) {

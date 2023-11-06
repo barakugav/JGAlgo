@@ -54,7 +54,7 @@ class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
 
 		int mu = Integer.MAX_VALUE;
 		int middle = -1;
-		for (; !queueS.isEmpty() && !queueT.isEmpty();) {
+		while (!queueS.isEmpty() && !queueT.isEmpty()) {
 
 			int uS = queueS.dequeueInt();
 			int uT = queueT.dequeueInt();

@@ -293,7 +293,7 @@ class HeapTestUtils extends TestUtils {
 		debug.println("\t testHeap begin");
 
 		for (int opIdx = 0; opIdx < m;) {
-			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
+			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : randElement(ops, rand);
 
 			int x, expected, actual;
 			switch (op) {

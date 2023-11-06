@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
@@ -61,10 +62,9 @@ public class SteinerTreeMehlhornTest extends TestBase {
 			};
 
 			/* choose random terminals */
-			List<Integer> vs = new ArrayList<>(g.vertices());
 			Set<Integer> terminals = new IntOpenHashSet();
 			while (terminals.size() < k)
-				terminals.add(vs.get(rand.nextInt(vs.size())));
+				terminals.add(Graphs.randVertex(g, rand));
 
 			/* make sure the terminals are connected */
 			connectLoop: for (WeaklyConnectedComponentsAlgo ccAlgo = WeaklyConnectedComponentsAlgo.newInstance();;) {
@@ -77,8 +77,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 					if (cc.vertexBlock(t1) != cc.vertexBlock(t2)) {
 						List<Integer> t1Vs = new ArrayList<>(cc.blockVertices(cc.vertexBlock(t1)));
 						List<Integer> t2Vs = new ArrayList<>(cc.blockVertices(cc.vertexBlock(t2)));
-						g.addEdge(t1Vs.get(rand.nextInt(t1Vs.size())), t2Vs.get(rand.nextInt(t2Vs.size())),
-								edgeSupplier.get());
+						g.addEdge(randElement(t1Vs, rand), randElement(t2Vs, rand), edgeSupplier.get());
 						continue connectLoop;
 					}
 				}

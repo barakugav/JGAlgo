@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -62,10 +62,9 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
 
-			List<Integer> vs = new ArrayList<>(g.vertices());
 			Set<Integer> sites = new ObjectOpenHashSet<>();
 			while (sites.size() < k)
-				sites.add(vs.get(rand.nextInt(vs.size())));
+				sites.add(Graphs.randVertex(g, rand));
 
 			testAlgo(g, w, sites, algo);
 		});

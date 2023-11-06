@@ -19,12 +19,11 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
@@ -86,8 +85,8 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			return g.vertices();
 		Random rand = new Random(seed);
 		Set<V> subset = new ObjectOpenHashSet<>();
-		for (List<V> vs = new ArrayList<>(g.vertices()); subset.size() < n / 2;)
-			subset.add(vs.get(rand.nextInt(n)));
+		while (subset.size() < n / 2)
+			subset.add(Graphs.randVertex(g, rand));
 		return subset;
 	}
 

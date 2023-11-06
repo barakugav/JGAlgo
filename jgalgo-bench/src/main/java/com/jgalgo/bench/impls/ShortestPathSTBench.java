@@ -41,11 +41,12 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class ShortestPathSTBench {
@@ -66,7 +67,8 @@ public class ShortestPathSTBench {
 		if (algo instanceof ShortestPathHeuristicST) {
 			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);
 		} else if (algo instanceof ShortestPathST) {
-			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));
+			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source),
+					Integer.valueOf(target));
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -97,9 +99,8 @@ public class ShortestPathSTBench {
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
-				int target = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
+				int target = Graphs.randVertex(g, rand);
 				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());
 				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));
 			}
@@ -140,9 +141,8 @@ public class ShortestPathSTBench {
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, false, seedGen.nextSeed());
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
-				int target = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
+				int target = Graphs.randVertex(g, rand);
 				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());
 				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));
 			}
@@ -184,9 +184,8 @@ public class ShortestPathSTBench {
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
-				int target = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
+				int target = Graphs.randVertex(g, rand);
 				IntToDoubleFunction randAdmissibleHeuristic = randAdmissibleHeuristic(g, w, target, seedGen.nextSeed());
 				graphs.add(new GraphArgs(g, w, source, target, randAdmissibleHeuristic));
 			}

@@ -39,6 +39,7 @@ import com.jgalgo.alg.MaximalCliques;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -183,19 +184,12 @@ public class MaximalCliquesBench {
 
 		IntCollection sources = new IntOpenHashSet(sourcesNum);
 		IntCollection sinks = new IntOpenHashSet(sinksNum);
-		for (int[] vs = g.vertices().toIntArray();;) {
-			if (sources.size() < sourcesNum) {
-				int source = vs[rand.nextInt(vs.length)];
-				if (!sinks.contains(source))
-					sources.add(source);
-
-			} else if (sinks.size() < sinksNum) {
-				int sink = vs[rand.nextInt(vs.length)];
-				if (!sources.contains(sink))
-					sinks.add(sink);
-			} else {
-				break;
-			}
+		while (sources.size() < sourcesNum)
+			sources.add(Graphs.randVertex(g, rand));
+		while (sinks.size() < sinksNum) {
+			int sink = Graphs.randVertex(g, rand);
+			if (!sources.contains(sink))
+				sinks.add(sink);
 		}
 		return Pair.of(sources, sinks);
 	}

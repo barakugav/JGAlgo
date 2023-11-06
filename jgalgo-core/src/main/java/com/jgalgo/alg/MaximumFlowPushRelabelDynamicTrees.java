@@ -407,7 +407,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
-			for (; W.dtVertex.getParent() != null;) {
+			while (W.dtVertex.getParent() != null) {
 				minEdge = dt.findMinEdge(W.dtVertex);
 				if (minEdge.weight() > EPS)
 					break;
@@ -536,7 +536,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
-			for (; W.dtVertex.getParent() != null;) {
+			while (W.dtVertex.getParent() != null) {
 				minEdge = dt.findMinEdge(W.dtVertex);
 				if (minEdge.weight() > 0)
 					break;

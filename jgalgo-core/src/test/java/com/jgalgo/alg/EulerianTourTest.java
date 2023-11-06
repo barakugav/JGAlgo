@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -150,10 +151,9 @@ public class EulerianTourTest extends TestBase {
 			/* Add another edge resulting in two vertices with odd degree */
 			if (g.vertices().size() <= 1)
 				throw new IllegalArgumentException();
-			List<V> vs = new ArrayList<>(g.vertices());
 			for (;;) {
-				V u = vs.get(rand.nextInt(vs.size()));
-				V v = vs.get(rand.nextInt(vs.size()));
+				V u = Graphs.randVertex(g, rand);
+				V v = Graphs.randVertex(g, rand);
 				if (u.equals(v))
 					continue;
 				g.addEdge(u, v, edgeSupplier.get());
@@ -244,10 +244,9 @@ public class EulerianTourTest extends TestBase {
 			 */
 			if (g.vertices().size() <= 1)
 				throw new IllegalArgumentException();
-			List<V> vs = new ArrayList<>(g.vertices());
 			for (;;) {
-				V u = vs.get(rand.nextInt(vs.size()));
-				V v = vs.get(rand.nextInt(vs.size()));
+				V u = Graphs.randVertex(g, rand);
+				V v = Graphs.randVertex(g, rand);
 				if (u.equals(v))
 					continue;
 				g.addEdge(u, v, edgeSupplier.get());

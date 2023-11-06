@@ -38,8 +38,9 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SSSPNegativeWeightsBench {
@@ -51,8 +52,8 @@ public class SSSPNegativeWeightsBench {
 	void benchSSSP(ShortestPathSingleSource.Builder builder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathSingleSource algo = builder.build();
-		ShortestPathSingleSource.IResult result =
-				(ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
+		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g,
+				args.w, Integer.valueOf(args.source));
 		blackhole.consume(result);
 	}
 
@@ -81,8 +82,7 @@ public class SSSPNegativeWeightsBench {
 				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());
 				IWeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
 				graphs.add(new GraphArgs(g, w, source));
 			}
 		}
@@ -123,8 +123,7 @@ public class SSSPNegativeWeightsBench {
 				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, true, seedGen.nextSeed());
 				IWeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
 				graphs.add(new GraphArgs(g, w, source));
 			}
 		}
@@ -166,8 +165,7 @@ public class SSSPNegativeWeightsBench {
 				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());
 				IWeightFunctionInt w =
 						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());
-				int[] vs = g.vertices().toIntArray();
-				int source = vs[rand.nextInt(vs.length)];
+				int source = Graphs.randVertex(g, rand);
 				graphs.add(new GraphArgs(g, w, source));
 			}
 		}

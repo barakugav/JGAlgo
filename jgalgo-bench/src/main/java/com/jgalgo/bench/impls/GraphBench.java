@@ -36,6 +36,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
@@ -72,7 +73,7 @@ public class GraphBench {
 				g.addVertex();
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
 			for (int e = 0; e < m;) {
-				int u = rand.nextInt(n), v = rand.nextInt(n);
+				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!allowSelfEdges && u == v)
 					continue;
 				if (!allowParallelEdges) {
@@ -102,7 +103,7 @@ public class GraphBench {
 					u = queryUVertices[q * 2 + 0];
 					v = queryUVertices[q * 2 + 1];
 				} else {
-					int e = rand.nextInt(m);
+					int e = Graphs.randEdge(g, rand);
 					u = g.edgeSource(e);
 					v = g.edgeTarget(e);
 					if (!directed && rand.nextBoolean()) {
@@ -1193,7 +1194,7 @@ public class GraphBench {
 				g.addVertex();
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
 			for (int e = 0; e < m;) {
-				int u = rand.nextInt(n), v = rand.nextInt(n);
+				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!allowSelfEdges && u == v)
 					continue;
 				if (!allowParallelEdges) {
@@ -1233,7 +1234,7 @@ public class GraphBench {
 			while (g.vertices().size() < n)
 				g.addVertex();
 			while (g.edges().size() < m) {
-				int u = rand.nextInt(n), v = rand.nextInt(n);
+				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!allowSelfEdges && u == v)
 					continue;
 				if (!allowParallelEdges && g.getEdge(u, v) != -1)

@@ -35,6 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigNonFrozen;
 import it.unimi.dsi.fastutil.HashCommon;
@@ -57,9 +58,8 @@ public class GraphIdsBench {
 			g = IntGraph.newDirected();
 			for (int i = 0; i < n; i++)
 				g.addVertex();
-			int[] vertices = g.vertices().toIntArray();
 			for (int i = 0; i < m; i++)
-				g.addEdge(vertices[rand.nextInt(n)], vertices[rand.nextInt(n)]);
+				g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));
 			System.out.println(g.indexGraphVerticesMap().getClass());
 			System.out.println(g.indexGraphVerticesMap().getClass());
 			System.out.println(g.indexGraphVerticesMap().getClass());
@@ -73,9 +73,8 @@ public class GraphIdsBench {
 		private final int[] queries = new int[OperationsPerInvocation];
 
 		void setupCreateQueries() {
-			int[] edges = g.edges().toIntArray();
 			for (int q = 0; q < OperationsPerInvocation; q++)
-				queries[q] = edges[rand.nextInt(edges.length)];
+				queries[q] = Graphs.randEdge(g, rand);
 		}
 
 		void bench(Blackhole blackhole) {

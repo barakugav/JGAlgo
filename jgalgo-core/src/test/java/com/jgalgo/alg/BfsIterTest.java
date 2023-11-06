@@ -18,12 +18,11 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -49,8 +48,7 @@ public class BfsIterTest extends TestBase {
 	private static <V, E> void testBfsConnected(Graph<V, E> g, long seed) {
 		Random rand = new Random(seed);
 		final int n = g.vertices().size();
-		List<V> vs = new ArrayList<>(g.vertices());
-		V source = vs.get(rand.nextInt(n));
+		V source = Graphs.randVertex(g, rand);
 
 		Set<V> visited = new ObjectOpenHashSet<>(n);
 		for (Bfs.Iter<V, E> it = Bfs.newInstance(g, source); it.hasNext();) {

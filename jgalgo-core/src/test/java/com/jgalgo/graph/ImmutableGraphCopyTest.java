@@ -24,9 +24,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -41,19 +39,15 @@ public class ImmutableGraphCopyTest extends TestBase {
 		final int n = 47, m = 1345;
 		IntGraph g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
 
-		IntList vertices = new IntArrayList(n);
 		IWeightsInt vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int i = 0; i < n; i++) {
 			int v = g.addVertex();
-			vertices.add(v);
 			vWeights.set(v, rand.nextInt(10000));
 		}
 
 		IWeightsInt eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
 		for (int i = 0; i < m; i++) {
-			int u = vertices.getInt(rand.nextInt(vertices.size()));
-			int v = vertices.getInt(rand.nextInt(vertices.size()));
-			int e = g.addEdge(u, v);
+			int e = g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));
 			eWeights.set(e, rand.nextInt(10000));
 		}
 		return g;

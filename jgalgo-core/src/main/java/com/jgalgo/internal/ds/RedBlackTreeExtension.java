@@ -127,14 +127,14 @@ class RedBlackTreeExtension<K, V> {
 		@Override
 		void afterInsert(RedBlackTreeExtended.Node<K, V> n) {
 			/* for each ancestor, increase sub tree size by 1 */
-			for (; (n = n.parent()) != null;)
+			while ((n = n.parent()) != null)
 				setNodeData(n, getNodeData(n) + 1);
 		}
 
 		@Override
 		void beforeRemove(RedBlackTreeExtended.Node<K, V> n) {
 			/* for each ancestor, decrease sub tree size by 1 */
-			for (; (n = n.parent()) != null;)
+			while ((n = n.parent()) != null)
 				setNodeData(n, getNodeData(n) - 1);
 		}
 

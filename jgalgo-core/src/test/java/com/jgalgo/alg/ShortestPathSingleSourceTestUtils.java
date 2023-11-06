@@ -19,10 +19,9 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
@@ -58,8 +57,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer source = vs.get(rand.nextInt(vs.size()));
+			Integer source = Graphs.randVertex(g, rand);
 
 			ShortestPathSingleSource validationAlgo =
 					algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial()
@@ -80,8 +78,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer source = vs.get(rand.nextInt(vs.size()));
+			Integer source = Graphs.randVertex(g, rand);
 
 			ShortestPathSingleSource validationAlgo = new ShortestPathSingleSourceDijkstra();
 			testAlgo(g, w, source, algo, validationAlgo);
@@ -99,8 +96,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer source = vs.get(rand.nextInt(vs.size()));
+			Integer source = Graphs.randVertex(g, rand);
 
 			ShortestPathSingleSource validationAlgo =
 					algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial()

@@ -21,9 +21,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class FormatLedaTest {
@@ -120,9 +121,9 @@ public class FormatLedaTest {
 				for (int v = 1; v <= n; v++)
 					g.addVertex(v);
 
-				for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
-					int source = vs[rand.nextInt(n)];
-					int target = vs[rand.nextInt(n)];
+				while (g.edges().size() < m) {
+					int source = Graphs.randVertex(g, rand);
+					int target = Graphs.randVertex(g, rand);
 					/* LEDA format support edges with labels 1..m only */
 					int e = g.edges().size() + 1;
 					g.addEdge(source, target, e);
@@ -155,9 +156,9 @@ public class FormatLedaTest {
 				for (int v = 1; v <= n; v++)
 					g.addVertex(v);
 
-				for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
-					int source = vs[rand.nextInt(n)];
-					int target = vs[rand.nextInt(n)];
+				while (g.edges().size() < m) {
+					int source = Graphs.randVertex(g, rand);
+					int target = Graphs.randVertex(g, rand);
 					/* LEDA format support edges with labels 1..m only */
 					int e = g.edges().size() + 1;
 					g.addEdge(source, target, e);

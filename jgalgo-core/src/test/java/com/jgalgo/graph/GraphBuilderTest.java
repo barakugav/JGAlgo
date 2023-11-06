@@ -17,8 +17,6 @@ package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,11 +48,11 @@ public class GraphBuilderTest extends TestBase {
 					int vB = b.addVertex();
 					assertEquals(vG, vB);
 				}
-				for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
+				while (g.edges().size() < m) {
 					int e = rand.nextInt(2 * m);
 					if (g.edges().contains(e))
 						continue;
-					int u = vs[rand.nextInt(vs.length)], v = vs[rand.nextInt(vs.length)];
+					int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 					g.addEdge(u, v);
 				}
 				for (int e : IntArrays.shuffle(g.edges().toIntArray(), rand)) {
@@ -132,11 +130,11 @@ public class GraphBuilderTest extends TestBase {
 					g.addVertex(v);
 					b.addVertex(v);
 				}
-				for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
+				while (g.edges().size() < m) {
 					int e = rand.nextInt(2 * m);
 					if (g.edges().contains(e))
 						continue;
-					int u = vs[rand.nextInt(vs.length)], v = vs[rand.nextInt(vs.length)];
+					int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 					g.addEdge(u, v, e);
 					b.addEdge(u, v, e);
 				}
@@ -189,20 +187,18 @@ public class GraphBuilderTest extends TestBase {
 							gActual.getEdgesWeights(key).defaultWeightAsObj());
 
 				if (!buildMut) {
-					int[] vs = gActual.vertices().toIntArray();
-					int[] es = gActual.edges().toIntArray();
 					for (String key : gActual.getVerticesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getVerticesWeights(key);
-						int v = vs[rand.nextInt(vs.length)];
-						Object data = w.getAsObj(Integer.valueOf(vs[rand.nextInt(vs.length)]));
+						int v = Graphs.randVertex(gActual, rand);
+						Object data = w.getAsObj(Integer.valueOf(Graphs.randVertex(gActual, rand)));
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(Integer.valueOf(v), data));
 					}
 					for (String key : gActual.getEdgesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getEdgesWeights(key);
-						int e = es[rand.nextInt(es.length)];
-						Object data = w.getAsObj(Integer.valueOf(es[rand.nextInt(es.length)]));
+						int e = Graphs.randEdge(gActual, rand);
+						Object data = w.getAsObj(Integer.valueOf(Graphs.randEdge(gActual, rand)));
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(Integer.valueOf(e), data));
 					}
 				}
@@ -230,11 +226,11 @@ public class GraphBuilderTest extends TestBase {
 					g.addVertex(v);
 					b.addVertex(v);
 				}
-				for (List<Integer> vs = new ArrayList<>(g.vertices()); g.edges().size() < m;) {
+				while (g.edges().size() < m) {
 					Integer e = Integer.valueOf(rand.nextInt(2 * m));
 					if (g.edges().contains(e))
 						continue;
-					Integer u = vs.get(rand.nextInt(vs.size())), v = vs.get(rand.nextInt(vs.size()));
+					Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 					g.addEdge(u, v, e);
 					b.addEdge(u, v, e);
 				}
@@ -287,20 +283,18 @@ public class GraphBuilderTest extends TestBase {
 							gActual.getEdgesWeights(key).defaultWeightAsObj());
 
 				if (!buildMut) {
-					List<Integer> vs = new ArrayList<>(gActual.vertices());
-					List<Integer> es = new ArrayList<>(gActual.edges());
 					for (String key : gActual.getVerticesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getVerticesWeights(key);
-						Integer v = vs.get(rand.nextInt(vs.size()));
-						Object data = w.getAsObj(vs.get(rand.nextInt(vs.size())));
+						Integer v = Graphs.randVertex(gActual, rand);
+						Object data = w.getAsObj(Graphs.randVertex(gActual, rand));
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(v, data));
 					}
 					for (String key : gActual.getEdgesWeightsKeys()) {
 						@SuppressWarnings("rawtypes")
 						Weights w = gActual.getEdgesWeights(key);
-						Integer e = es.get(rand.nextInt(es.size()));
-						Object data = w.getAsObj(es.get(rand.nextInt(es.size())));
+						Integer e = Graphs.randEdge(gActual, rand);
+						Object data = w.getAsObj(Graphs.randEdge(gActual, rand));
 						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(e, data));
 					}
 				}

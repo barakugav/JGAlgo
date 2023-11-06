@@ -41,6 +41,7 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsInt;
 import it.unimi.dsi.fastutil.Pair;
@@ -64,7 +65,8 @@ public class MaximumFlowBench {
 	void benchMaxFlow(MaximumFlow.Builder builder, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		MaximumFlow algo = builder.build();
-		double flow = algo.computeMaximumFlow(graph.g, graph.flow, Integer.valueOf(graph.source), Integer.valueOf(graph.sink));
+		double flow = algo.computeMaximumFlow(graph.g, graph.flow, Integer.valueOf(graph.source),
+				Integer.valueOf(graph.sink));
 		blackhole.consume(flow);
 	}
 
@@ -350,10 +352,9 @@ public class MaximumFlowBench {
 	}
 
 	private static IntIntPair chooseSourceSink(IntGraph g, Random rand) {
-		int source, sink;
-		for (int[] vs = g.vertices().toIntArray();;) {
-			source = vs[rand.nextInt(vs.length)];
-			sink = vs[rand.nextInt(vs.length)];
+		for (;;) {
+			int source = Graphs.randVertex(g, rand);
+			int sink = Graphs.randVertex(g, rand);
 			if (source != sink && IPath.findPath(g, source, sink) != null)
 				return IntIntPair.of(source, sink);
 		}
@@ -376,19 +377,12 @@ public class MaximumFlowBench {
 
 		IntCollection sources = new IntOpenHashSet(sourcesNum);
 		IntCollection sinks = new IntOpenHashSet(sinksNum);
-		for (int[] vs = g.vertices().toIntArray();;) {
-			if (sources.size() < sourcesNum) {
-				int source = vs[rand.nextInt(vs.length)];
-				if (!sinks.contains(source))
-					sources.add(source);
-
-			} else if (sinks.size() < sinksNum) {
-				int sink = vs[rand.nextInt(vs.length)];
-				if (!sources.contains(sink))
-					sinks.add(sink);
-			} else {
-				break;
-			}
+		while (sources.size() < sourcesNum)
+			sources.add(Graphs.randVertex(g, rand));
+		while (sinks.size() < sinksNum) {
+			int sink = Graphs.randVertex(g, rand);
+			if (!sources.contains(sink))
+				sinks.add(sink);
 		}
 		return Pair.of(sources, sinks);
 	}

@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -167,13 +168,12 @@ public class VertexPartitionTest extends TestBase {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					List<Integer> vs = new ArrayList<>(g.vertices());
 
 					Object2IntMap<Integer> partition1 = randPartitionMap(g, k, seedGen.nextSeed());
 					assertTrue(VertexPartition.isPartition(g, partition1::getInt));
 
 					Object2IntMap<Integer> partition2 = new Object2IntOpenHashMap<>(partition1);
-					partition2.put(vs.get(rand.nextInt(n)), -1 - rand.nextInt(5));
+					partition2.put(Graphs.randVertex(g, rand), -1 - rand.nextInt(5));
 					assertFalse(VertexPartition.isPartition(g, partition2::getInt));
 
 					Object2IntMap<Integer> partition3 = new Object2IntOpenHashMap<>(partition1);

@@ -19,11 +19,12 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -198,8 +199,8 @@ public class RandomGraphBuilder {
 			int u, v;
 
 			if (!bipartite) {
-				u = vertices.getInt(rand.nextInt(n));
-				v = vertices.getInt(rand.nextInt(n));
+				u = Graphs.randVertex(g, rand);
+				v = Graphs.randVertex(g, rand);
 				if (directed && !cycles) {
 					int uDagIdx = vToDagIdx.get(u);
 					int vDagIdx = vToDagIdx.get(v);
@@ -211,8 +212,8 @@ public class RandomGraphBuilder {
 				}
 			} else {
 				do {
-					u = vertices.getInt(rand.nextInt(n));
-					v = vertices.getInt(rand.nextInt(n));
+					u = Graphs.randVertex(g, rand);
+					v = Graphs.randVertex(g, rand);
 				} while (partition.get(u) == partition.get(v));
 			}
 

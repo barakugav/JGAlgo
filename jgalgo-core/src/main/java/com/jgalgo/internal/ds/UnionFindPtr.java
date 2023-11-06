@@ -79,7 +79,7 @@ class UnionFindPtr implements UnionFind {
 		for (r = e; r.parent != null; r = r.parent);
 
 		/* path compression */
-		for (; e != r;) {
+		while (e != r) {
 			Elm next = e.parent;
 			e.parent = r;
 			e = next;

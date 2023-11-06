@@ -17,12 +17,11 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -66,10 +65,9 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 			}
 		}
 
-		List<V> vs = new ArrayList<>(g.vertices());
 		for (int query = 0; query < queriesNum; query++) {
-			V u = vs.get(rand.nextInt(vs.size()));
-			V v = vs.get(rand.nextInt(vs.size()));
+			V u = Graphs.randVertex(g, rand);
+			V v = Graphs.randVertex(g, rand);
 
 			int uDepth = depth.getInt(u), vDepth = depth.getInt(v);
 			/* assume v is deeper */

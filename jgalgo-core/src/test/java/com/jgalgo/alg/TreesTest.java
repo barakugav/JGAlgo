@@ -18,11 +18,10 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
@@ -58,8 +57,7 @@ public class TreesTest extends TestBase {
 			int m = n - 1;
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-			List<Integer> edges = new ArrayList<>(g.edges());
-			Integer e = edges.get(rand.nextInt(edges.size()));
+			Integer e = Graphs.randEdge(g, rand);
 			g.removeEdge(e);
 
 			assertFalse(Trees.isTree(g));
@@ -81,10 +79,9 @@ public class TreesTest extends TestBase {
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 
 			Integer u, v, e;
-			List<Integer> vs = new ArrayList<>(g.vertices());
 			do {
-				u = vs.get(rand.nextInt(n));
-				v = vs.get(rand.nextInt(n));
+				u = Graphs.randVertex(g, rand);
+				v = Graphs.randVertex(g, rand);
 				e = Integer.valueOf(rand.nextInt());
 			} while (u.equals(v) || e.intValue() <= 0 || g.edges().contains(e));
 			g.addEdge(u, v, e);
@@ -106,8 +103,7 @@ public class TreesTest extends TestBase {
 			int m = n - 1;
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer root = vs.get(rand.nextInt(n));
+			Integer root = Graphs.randVertex(g, rand);
 
 			assertTrue(Trees.isTree(g, root));
 		});
@@ -126,10 +122,8 @@ public class TreesTest extends TestBase {
 			int m = n - 1;
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer root = vs.get(rand.nextInt(n));
-			List<Integer> edges = new ArrayList<>(g.edges());
-			Integer e = edges.get(rand.nextInt(edges.size()));
+			Integer root = Graphs.randVertex(g, rand);
+			Integer e = Graphs.randEdge(g, rand);
 			g.removeEdge(e);
 
 			assertFalse(Trees.isTree(g, root));
@@ -149,13 +143,12 @@ public class TreesTest extends TestBase {
 			int m = n - 1;
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer root = vs.get(rand.nextInt(n));
+			Integer root = Graphs.randVertex(g, rand);
 
 			Integer u, v, e;
 			do {
-				u = vs.get(rand.nextInt(n));
-				v = vs.get(rand.nextInt(n));
+				u = Graphs.randVertex(g, rand);
+				v = Graphs.randVertex(g, rand);
 				e = Integer.valueOf(rand.nextInt());
 			} while (u.equals(v) || e.intValue() <= 0 || g.edges().contains(e));
 			g.addEdge(u, v, e);
@@ -178,11 +171,8 @@ public class TreesTest extends TestBase {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
-			for (int i = 0; i < m / 10; i++) {
-				List<Integer> edges = new ArrayList<>(g.edges());
-				Integer e = edges.get(rand.nextInt(edges.size()));
-				g.removeEdge(e);
-			}
+			for (int i = 0; i < m / 10; i++)
+				g.removeEdge(Graphs.randEdge(g, rand));
 			assertTrue(Trees.isForest(g));
 		});
 	}
@@ -201,15 +191,12 @@ public class TreesTest extends TestBase {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			// remove a few edges
-			for (int i = 0; i < m / 10; i++) {
-				List<Integer> edges = new ArrayList<>(g.edges());
-				Integer e = edges.get(rand.nextInt(edges.size()));
-				g.removeEdge(e);
-			}
+			for (int i = 0; i < m / 10; i++)
+				g.removeEdge(Graphs.randEdge(g, rand));
 			// close a random cycle
-			for (List<Integer> vs = new ArrayList<>(g.vertices());;) {
-				Integer u = vs.get(rand.nextInt(n));
-				Integer v = vs.get(rand.nextInt(n));
+			for (;;) {
+				Integer u = Graphs.randVertex(g, rand);
+				Integer v = Graphs.randVertex(g, rand);
 				if (!u.equals(v) && Path.findPath(g, u, v) != null) {
 					int e;
 					do {

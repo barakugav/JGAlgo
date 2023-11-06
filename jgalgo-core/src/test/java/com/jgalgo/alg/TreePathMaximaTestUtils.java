@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
@@ -82,14 +83,13 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		} else {
 			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
 		}
-		List<V> vs = new ArrayList<>(tree.vertices());
 		for (int q = 0; q < m; q++) {
-			int i, j;
+			V i, j;
 			do {
-				i = rand.nextInt(vs.size());
-				j = rand.nextInt(vs.size());
-			} while (i == j);
-			queries.addQuery(vs.get(i), vs.get(j));
+				i = Graphs.randVertex(tree, rand);
+				j = Graphs.randVertex(tree, rand);
+			} while (i.equals(j));
+			queries.addQuery(i, j);
 		}
 		return queries;
 	}
@@ -176,8 +176,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 				mst.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 
 			Random rand = new Random(seedGen.nextSeed());
-			for (List<Integer> edges = new ArrayList<>(g.edges());;) {
-				Integer badEdge = edges.get(rand.nextInt(edges.size()));
+			for (;;) {
+				Integer badEdge = Graphs.randEdge(g, rand);
 				if (mstEdges.contains(badEdge))
 					continue;
 				Integer badEdgeSource = g.edgeSource(badEdge);
@@ -186,7 +186,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 					continue;
 
 				Path<Integer, Integer> mstPath = Path.findPath(mst, badEdgeSource, badEdgeTarget);
-				Integer goodEdge = mstPath.edges().get(rand.nextInt(mstPath.edges().size()));
+				Integer goodEdge = randElement(mstPath.edges(), rand);
 
 				if (w.weightInt(goodEdge) < w.weightInt(badEdge)) {
 					mstEdges.remove(goodEdge);

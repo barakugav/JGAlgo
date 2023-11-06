@@ -84,7 +84,7 @@ class UnionFindArray implements UnionFind {
 		for (r = x; hasParent(r); r = parent[r]);
 
 		/* path compression */
-		for (; x != r;) {
+		while (x != r) {
 			int next = parent[x];
 			parent[x] = r;
 			x = next;

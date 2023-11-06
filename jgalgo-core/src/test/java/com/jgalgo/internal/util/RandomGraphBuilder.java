@@ -21,6 +21,7 @@ import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.Weights;
@@ -210,8 +211,8 @@ public class RandomGraphBuilder {
 			int u, v;
 
 			if (!bipartite) {
-				u = vertices.getInt(rand.nextInt(n));
-				v = vertices.getInt(rand.nextInt(n));
+				u = Graphs.randVertex(g, rand).intValue();
+				v = Graphs.randVertex(g, rand).intValue();
 				if (directed && !cycles) {
 					int uDagIdx = vToDagIdx.get(u);
 					int vDagIdx = vToDagIdx.get(v);
@@ -223,8 +224,8 @@ public class RandomGraphBuilder {
 				}
 			} else {
 				do {
-					u = vertices.getInt(rand.nextInt(n));
-					v = vertices.getInt(rand.nextInt(n));
+					u = Graphs.randVertex(g, rand).intValue();
+					v = Graphs.randVertex(g, rand).intValue();
 				} while (partition.get(u) == partition.get(v));
 			}
 
@@ -266,7 +267,8 @@ public class RandomGraphBuilder {
 						while (!queue.isEmpty()) {
 							int p = queue.dequeueInt();
 
-							for (EdgeIter<Integer, Integer> eit = g.outEdges(Integer.valueOf(p)).iterator(); eit.hasNext();) {
+							for (EdgeIter<Integer, Integer> eit = g.outEdges(Integer.valueOf(p)).iterator(); eit
+									.hasNext();) {
 								eit.next();
 								Integer pv = eit.target();
 								if (reachableFromRoot.get(pv))

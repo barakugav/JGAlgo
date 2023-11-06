@@ -1038,7 +1038,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 							f = Math.min(worker().excess[u], worker().flow(e));
 							assert f >= 0;
 							worker().residualCapacity[e] += f;
-							assert worker().residualCapacity[e] <= worker().capacity[e];
+							assert worker().residualCapacity[e] <= worker().capacity[e] + WorkerDouble.EPS;
 
 							if (firstNonResidual == -1 && !worker.hasFlow(e))
 								firstNonResidual = i;

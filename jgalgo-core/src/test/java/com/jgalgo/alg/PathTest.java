@@ -21,11 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -52,9 +51,8 @@ public class PathTest extends TestBase {
 	}
 
 	private static <V, E> void testFindPath(Graph<V, E> g, ShortestPathSingleSource validationAlgo, Random rand) {
-		List<V> vs = new ArrayList<>(g.vertices());
-		V source = vs.get(rand.nextInt(vs.size()));
-		V target = vs.get(rand.nextInt(vs.size()));
+		V source = Graphs.randVertex(g, rand);
+		V target = Graphs.randVertex(g, rand);
 
 		Path<V, E> actual = Path.findPath(g, source, target);
 		Path<V, E> expected = validationAlgo.computeShortestPaths(g, null, source).getPath(target);

@@ -96,7 +96,7 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	// deltaSum shouldn't include the delta of the root
 	private void pathCompression(int x, int r, double deltaSum) {
-		for (; x != r;) {
+		while (x != r) {
 			double delta = deltas[x];
 			deltas[x] = deltaSum;
 			deltaSum -= delta;

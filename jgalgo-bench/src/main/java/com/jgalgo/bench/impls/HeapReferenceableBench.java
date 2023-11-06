@@ -42,6 +42,7 @@ import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -75,8 +76,7 @@ public class HeapReferenceableBench {
 			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int[] vs = g.vertices().toIntArray();
-			int source = vs[rand.nextInt(vs.length)];
+			int source = Graphs.randVertex(g, rand);
 			graphs.add(new GraphArgs(g, w, source));
 		}
 	}
@@ -87,8 +87,8 @@ public class HeapReferenceableBench {
 		/* SSSP */
 		ShortestPathSingleSource ssspAlgo =
 				ShortestPathSingleSource.newBuilder().setOption("heap-builder", heapBuilder).build();
-		ShortestPathSingleSource.IResult ssspRes =
-				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
+		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo
+				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
 		blackhole.consume(ssspRes);
 
 		/* Prim MST */

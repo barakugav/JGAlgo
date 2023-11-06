@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +25,7 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
@@ -49,9 +49,8 @@ class KShortestPathsSTTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			List<Integer> vs = new ArrayList<>(g.vertices());
-			Integer source = vs.get(rand.nextInt(vs.size()));
-			Integer target = vs.get(rand.nextInt(vs.size()));
+			Integer source = Graphs.randVertex(g, rand);
+			Integer target = Graphs.randVertex(g, rand);
 
 			validateKShortestPath(g, w, source, target, k, algo);
 		});

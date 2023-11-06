@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestUtils {
 
@@ -162,6 +162,14 @@ public class TestUtils {
 		public long nextSeed() {
 			return rand.nextLong() ^ 0x1df73569991aee99L;
 		}
+	}
+
+	public static <T> T randElement(List<T> list, Random rand) {
+		return list.get(rand.nextInt(list.size()));
+	}
+
+	public static int randElement(IntList list, Random rand) {
+		return list.getInt(rand.nextInt(list.size()));
 	}
 
 }

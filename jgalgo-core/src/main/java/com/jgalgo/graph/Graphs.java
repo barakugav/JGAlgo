@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -1501,6 +1502,52 @@ public class Graphs {
 		if (w instanceof WeightsObj)
 			return Object.class;
 		throw new AssertionError();
+	}
+
+	/**
+	 * Get a random vertex from the given graph.
+	 *
+	 * @param  <V>  the vertices type
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random vertex from the given graph
+	 */
+	public static <V> V randVertex(Graph<V, ?> g, Random rand) {
+		return g.indexGraphVerticesMap().indexToId(rand.nextInt(g.vertices().size()));
+	}
+
+	/**
+	 * Get a random vertex from the given int graph.
+	 *
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random vertex from the given graph
+	 */
+	public static int randVertex(IntGraph g, Random rand) {
+		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(g.vertices().size()));
+	}
+
+	/**
+	 * Get a random edge from the given graph.
+	 *
+	 * @param  <E>  the edges type
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random edge from the given graph
+	 */
+	public static <E> E randEdge(Graph<?, E> g, Random rand) {
+		return g.indexGraphEdgesMap().indexToId(rand.nextInt(g.edges().size()));
+	}
+
+	/**
+	 * Get a random edge from the given int graph.
+	 *
+	 * @param  g    the graph
+	 * @param  rand the random number generator
+	 * @return      a random edge from the given graph
+	 */
+	public static int randEdge(IntGraph g, Random rand) {
+		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));
 	}
 
 }

@@ -261,14 +261,14 @@ public class HeapReferenceableTestUtils extends TestUtils {
 			for (Map.Entry<Integer, List<HeapReference<Integer, Void>>> e : elms.entrySet())
 				for (int i = 0; i < e.getValue().size(); i++)
 					elms0.add(e.getKey().intValue());
-			return elms0.getInt(rand.nextInt(elms0.size()));
+			return TestUtils.randElement(elms0, rand);
 		}
 
 		HeapReference<Integer, Void> randRef() {
 			List<HeapReference<Integer, Void>> elms0 = new ObjectArrayList<>();
 			for (Map.Entry<Integer, List<HeapReference<Integer, Void>>> e : elms.entrySet())
 				elms0.addAll(e.getValue());
-			return elms0.get(rand.nextInt(elms0.size()));
+			return TestUtils.randElement(elms0, rand);
 		}
 
 		@Override
@@ -345,7 +345,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		debug.println("\t testHeap begin");
 
 		opLoop: for (int opIdx = 0; opIdx < m;) {
-			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
+			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : randElement(ops, rand);
 
 			debug.println("\t size=" + tracker.heap.size());
 			int expected, actual;

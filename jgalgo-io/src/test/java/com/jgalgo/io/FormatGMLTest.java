@@ -22,11 +22,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 
 public class FormatGMLTest {
 
@@ -81,9 +82,9 @@ public class FormatGMLTest {
 					g.addVertex(v);
 			}
 
-			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
-				int source = vs[rand.nextInt(n)];
-				int target = vs[rand.nextInt(n)];
+			while (g.edges().size() < m) {
+				int source = Graphs.randVertex(g, rand);
+				int target = Graphs.randVertex(g, rand);
 				int e = rand.nextInt(m * 3);
 				if (!g.edges().contains(e))
 					g.addEdge(source, target, e);
@@ -116,9 +117,9 @@ public class FormatGMLTest {
 					g.addVertex(v);
 			}
 
-			for (int[] vs = g.vertices().toIntArray(); g.edges().size() < m;) {
-				int source = vs[rand.nextInt(n)];
-				int target = vs[rand.nextInt(n)];
+			while (g.edges().size() < m) {
+				int source = Graphs.randVertex(g, rand);
+				int target = Graphs.randVertex(g, rand);
 				int e = rand.nextInt(m * 3);
 				if (!g.edges().contains(e))
 					g.addEdge(source, target, e);

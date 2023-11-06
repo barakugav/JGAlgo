@@ -103,7 +103,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 		for (Op op : ops) {
 			switch (op) {
 				case AddLeaf: {
-					SubtreeMergeFindMin.Node p = nodes.get(rand.nextInt(nodes.size()));
+					SubtreeMergeFindMin.Node p = randElement(nodes, rand);
 					SubtreeMergeFindMin.Node node = algo.addLeaf(p);
 					node.setNodeData(new TrackerNode(uf.make(), p.<TrackerNode>getNodeData().depth + 1));
 					nodes.add(node);
@@ -111,8 +111,8 @@ public class SubtreeMergeFindminTest extends TestBase {
 					break;
 				}
 				case AddNonTreeEdge: {
-					SubtreeMergeFindMin.Node u = nodes.get(rand.nextInt(nodes.size()));
-					SubtreeMergeFindMin.Node v = nodes.get(rand.nextInt(nodes.size()));
+					SubtreeMergeFindMin.Node u = randElement(nodes, rand);
+					SubtreeMergeFindMin.Node v = randElement(nodes, rand);
 					int weight = edgeInsertWeights[edgeInsertWeightsIdx++];
 					algo.addNonTreeEdge(u, v, weight);
 					subtreeEdges[uf.find(getNodeId(u))].add(new int[] { getNodeId(u), getNodeId(v), weight });
@@ -122,8 +122,8 @@ public class SubtreeMergeFindminTest extends TestBase {
 				case Merge: {
 					SubtreeMergeFindMin.Node u, v;
 					for (;;) {
-						u = nodes.get(rand.nextInt(nodes.size()));
-						v = nodes.get(rand.nextInt(nodes.size()));
+						u = randElement(nodes, rand);
+						v = randElement(nodes, rand);
 						/* assume u0 is upper */
 						SubtreeMergeFindMin.Node u0 =
 								u.<TrackerNode>getNodeData().depth <= v.<TrackerNode>getNodeData().depth ? u : v;
