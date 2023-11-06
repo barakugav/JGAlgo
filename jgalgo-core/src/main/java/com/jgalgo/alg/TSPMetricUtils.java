@@ -27,6 +27,7 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 class TSPMetricUtils {
 
@@ -40,8 +41,9 @@ class TSPMetricUtils {
 
 		/* Calculate Eulerian tour in the new graph */
 		IPath tour = (IPath) EulerianTourAlgo.newInstance().computeEulerianTour(g1);
-		assert isValidCycle(g1, tour);
-		assert isPathVisitEvery(g1, tour);
+		assert tour.sourceInt() == tour.targetInt();
+		assert IPath.isPath(g1, tour.sourceInt(), tour.targetInt(), tour.edges());
+		assert g1.vertices().equals(new IntOpenHashSet(tour.vertices()));
 
 		/* Use shortcuts to convert to a Hamiltonian cycle */
 		IntList cycle = new IntArrayList(n);
@@ -63,38 +65,10 @@ class TSPMetricUtils {
 		}
 
 		assert firstVertex == lastVertex;
+		assert IPath.isPath(g, firstVertex, lastVertex, cycle);
 		IPath cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);
-		assert isValidCycle(g, cycle0);
-		assert isPathVisitEvery(g, cycle0);
+		assert g.vertices().equals(new IntOpenHashSet(cycle0.vertices()));
 		return cycle0;
-	}
-
-	private static boolean isValidCycle(IndexGraph g, IPath path) {
-		IEdgeIter it = path.edgeIter();
-		it.nextInt();
-		final int begin = it.sourceInt();
-		for (;;) {
-			if (!it.hasNext())
-				return it.targetInt() == begin;
-			int lastV = it.targetInt();
-			it.nextInt();
-			if (lastV != it.sourceInt())
-				return false;
-		}
-	}
-
-	private static boolean isPathVisitEvery(IndexGraph g, IPath path) {
-		final int n = g.vertices().size();
-		Bitmap visited = new Bitmap(n);
-		for (int e : path.edges()) {
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			visited.set(u);
-			visited.set(v);
-		}
-		for (int u = 0; u < n; u++)
-			if (!visited.get(u))
-				return false;
-		return true;
 	}
 
 	abstract static class AbstractImpl implements TSPMetric {
