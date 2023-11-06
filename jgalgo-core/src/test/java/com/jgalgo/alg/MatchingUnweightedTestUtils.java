@@ -17,16 +17,21 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -60,13 +65,39 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	static <V, E> void validateMatching(Graph<V, E> g, Matching<V, E> matching) {
-		Set<V> matched = new ObjectOpenHashSet<>();
+		Map<V, E> matched = new Object2ObjectOpenHashMap<>();
 		for (E e : matching.edges()) {
-			for (V v : List.of(g.edgeSource(e), g.edgeTarget(e))) {
-				if (!matched.add(v))
+			Objects.requireNonNull(e);
+			for (V v : List.of(g.edgeSource(e), g.edgeTarget(e)))
+				if (matched.put(v, e) != null)
 					fail("Invalid matching, clash: " + v + " " + e);
+		}
+
+		for (V v : g.vertices()) {
+			E matchedEdge = matched.get(v);
+			assertEquals(matchedEdge, matching.getMatchedEdge(v));
+			if (matchedEdge != null) {
+				assertTrue(matching.isVertexMatched(v));
+			} else {
+				assertFalse(matching.isVertexMatched(v));
 			}
 		}
+
+		assertEquals(matched.keySet(), matching.matchedVertices());
+		assertEquals(g.vertices().stream().filter(v -> !matched.containsKey(v)).collect(Collectors.toSet()),
+				matching.unmatchedVertices());
+
+		for (E e : matching.edges())
+			assertTrue(matching.containsEdge(e));
+		Set<E> unmatchedEdgesExpected = new ObjectOpenHashSet<>(g.edges());
+		for (E e : matching.edges())
+			unmatchedEdgesExpected.remove(e);
+		for (E e : unmatchedEdgesExpected)
+			assertFalse(matching.containsEdge(e));
+
+		boolean isPerfect = g.vertices().stream().allMatch(matched::containsKey);
+		assertEquals(isPerfect, matching.isPerfect());
+
 		assertTrue(Matching.isMatching(g, matching.edges()));
 	}
 
