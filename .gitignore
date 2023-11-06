@@ -9,3 +9,4 @@ bin/
 /.apt_generated_tests/
 /.vscode/
 **/__pycache__/
+.metadata/

@@ -1,10 +1,61 @@
 import os
+import sys
+import shutil
+import subprocess
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
 SOURCE_DIR = os.path.join(TOP_DIR, "src", "main", "java")
 PACKAGE_DIR = os.path.join(SOURCE_DIR, "com", "jgalgo")
 TYPE_ALL = ["Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"]
+
+
+def find_eclipse():
+    path = shutil.which("eclipse")
+    if path is not None:
+        return path
+    path = shutil.which("Eclipse")
+    if path is not None:
+        return path
+
+    if sys.platform == "linux" or sys.platform == "linux2":
+        path = os.path.join(os.sep, "usr", "bin", "eclipse")
+        if os.path.exists(path):
+            return path
+
+    elif sys.platform == "win32":
+        path = os.path.join("C:", "Program Files", "Eclipse", "eclipse.exe")
+        if os.path.exists(path):
+            return path
+
+    return None
+
+
+def format_sourcefiles(filenames):
+    print("Formatting generated files...")
+    ECLIPSE_PATH = find_eclipse()
+    if ECLIPSE_PATH is None:
+        print("Failed to find eclipse.")
+        return
+    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.abspath(
+        os.path.join(TOP_DIR, "..", "ect", "eclipse-java-style.xml")
+    )
+    subprocess.check_call(
+        [
+            ECLIPSE_PATH,
+            "-data",
+            TOP_DIR,
+            "-nosplash",
+            "-application",
+            "org.eclipse.jdt.core.JavaCodeFormatter",
+            "-verbose",
+            "-config",
+            os.path.join(ECLIPSE_FORMATTER_CONFIG_FILE, "org.eclipse.jdt.core.prefs"),
+            *filenames,
+        ],
+        cwd=TOP_DIR,
+        shell=True,
+    )
 
 
 def generate_sourcefile(input_filename, output_filename, constants, functions):
@@ -347,6 +398,17 @@ def generate_weights_impl(type):
     )
 
 
+def all_generated_filenames():
+    generated_filenames = []
+    for type in TYPE_ALL:
+        generated_filenames.append(weights_filename(type))
+    for type in TYPE_ALL:
+        generated_filenames.append(iweights_filename(type))
+    for type in TYPE_ALL:
+        generated_filenames.append(weights_impl_filename(type))
+    return generated_filenames
+
+
 def generate_all():
     for type in TYPE_ALL:
         generate_weights(type)
@@ -354,20 +416,14 @@ def generate_all():
         generate_iweights(type)
     for type in TYPE_ALL:
         generate_weights_impl(type)
+    format_sourcefiles(all_generated_filenames())
 
 
 def clean():
-    def remove_if_exists(filename):
+    for filename in all_generated_filenames():
         if os.path.exists(filename):
             # print("Removing " + filename)
             os.remove(filename)
-
-    for type in TYPE_ALL:
-        remove_if_exists(weights_filename(type))
-    for type in TYPE_ALL:
-        remove_if_exists(iweights_filename(type))
-    for type in TYPE_ALL:
-        remove_if_exists(weights_impl_filename(type))
 
 
 def main():

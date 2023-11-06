@@ -4,12 +4,12 @@ import argparse
 
 
 SCRIPTS_DIR = os.path.dirname(os.path.realpath(__file__))
-TOP_DOR = os.path.abspath(os.path.join(SCRIPTS_DIR, ".."))
+TOP_DIR = os.path.abspath(os.path.join(SCRIPTS_DIR, ".."))
 
 
 def main(args):
     def run_cmd(cmd):
-        subprocess.check_call(cmd, cwd=TOP_DOR, shell=True)
+        subprocess.check_call(cmd, cwd=TOP_DIR, shell=True)
 
     print("\n\n ============ Clean and Build ============\n")
     if not args.skip_rebuild:
