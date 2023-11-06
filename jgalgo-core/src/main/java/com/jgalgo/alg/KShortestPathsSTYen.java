@@ -26,6 +26,7 @@ import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -178,37 +179,12 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			final ObjectDoublePair<IPath> res = computeShortestPath0(source);
 			heapS.clear();
 			heapT.clear();
-			final int n = g.vertices().size();
-			if (toClearS.size() < n / 64) {
-				for (int v : toClearS) {
-					visitedS.clear(v);
-					heapPtrsS[v] = null;
-				}
-			} else if (toClearS.size() < 8) {
-				visitedS.clear();
-				for (int v : toClearS)
-					heapPtrsS[v] = null;
-			} else {
-				visitedS.clear();
-				Arrays.fill(heapPtrsS, null);
-			}
-			if (toClearT.size() < n / 64) {
-				for (int v : toClearT) {
-					visitedT.clear(v);
-					heapPtrsT[v] = null;
-				}
-			} else if (toClearT.size() < 8) {
-				visitedT.clear();
-				for (int v : toClearT)
-					heapPtrsT[v] = null;
-			} else {
-				visitedT.clear();
-				Arrays.fill(heapPtrsT, null);
-			}
-			assert visitedS.isEmpty();
-			assert visitedT.isEmpty();
-			assert Arrays.stream(heapPtrsS).allMatch(Objects::isNull);
-			assert Arrays.stream(heapPtrsT).allMatch(Objects::isNull);
+			JGAlgoUtils.clearAllUnsafe(heapPtrsS, toClearS);
+			JGAlgoUtils.clearAllUnsafe(heapPtrsT, toClearT);
+			visitedS.clearAllUnsafe(toClearS);
+			visitedT.clearAllUnsafe(toClearT);
+			toClearS.clear();
+			toClearT.clear();
 			return res;
 		}
 
@@ -217,6 +193,13 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			assert source != target;
 			assert !verticesMask.get(source);
 			assert !verticesMask.get(target);
+
+			assert visitedS.isEmpty();
+			assert visitedT.isEmpty();
+			assert toClearS.isEmpty();
+			assert toClearT.isEmpty();
+			assert Arrays.stream(heapPtrsS).allMatch(Objects::isNull);
+			assert Arrays.stream(heapPtrsT).allMatch(Objects::isNull);
 
 			int middle = -1;
 			double mu = Double.POSITIVE_INFINITY;

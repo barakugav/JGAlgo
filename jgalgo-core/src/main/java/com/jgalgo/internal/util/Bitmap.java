@@ -16,6 +16,7 @@
 package com.jgalgo.internal.util;
 
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -120,6 +121,26 @@ public class Bitmap implements IntIterable {
 	public void clear(int idx) {
 		checkIdx(idx);
 		words[word(idx)] &= ~bit(idx);
+	}
+
+	/**
+	 * Set all bits to {@code false}, given a collection of {@code true} bits in this bitmap.
+	 * <p>
+	 * This method is unsafe, and should be used only when the user is certain that the given collection contains only
+	 * {@code true} bits in this bitmap.
+	 *
+	 * @param setBits the collection of {@code true} bits in this bitmap
+	 */
+	public void clearAllUnsafe(IntCollection setBits) {
+		/* TODO: need to benchmark when its better to clear each bit independently */
+		boolean perBitClear = setBits.size() < size / WordSize;
+		if (perBitClear) {
+			for (int idx : setBits)
+				clear(idx);
+			assert isEmpty();
+		} else {
+			clear();
+		}
 	}
 
 	/**

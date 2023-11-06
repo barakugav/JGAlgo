@@ -18,6 +18,7 @@ package com.jgalgo.internal.util;
 
 import java.io.Serializable;
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -733,6 +734,17 @@ public class JGAlgoUtils {
 
 	public static int long2high(long val) {
 		return (int) ((val >> 32) & 0xffffffffL);
+	}
+
+	public static <T> void clearAllUnsafe(T[] arr, IntCollection nonNullIndices) {
+		/* TODO: need to benchmark when its better to clear each entry independently */
+		if (nonNullIndices.size() < arr.length / 8) {
+			for (int v : nonNullIndices)
+				arr[v] = null;
+			assert Arrays.stream(arr).allMatch(Objects::isNull);
+		} else {
+			Arrays.fill(arr, null);
+		}
 	}
 
 }
