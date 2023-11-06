@@ -28,7 +28,7 @@ import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.TestBase;
 
-public class TSPMetricTest extends TestBase {
+public class Tsp2MetricTest extends TestBase {
 
 	@Test
 	public void testMstAppxAndMatchingAppxRandGraphs() {
@@ -76,8 +76,8 @@ public class TSPMetricTest extends TestBase {
 			return Math.sqrt(xd * xd + yd * yd);
 		};
 
-		IPath appxMst = new TSPMetricMSTAppx().computeShortestTour(g, distances);
-		IPath appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
+		IPath appxMst = new Tsp2MetricMSTAppx().computeShortestTour(g, distances);
+		IPath appxMatch = new Tsp2MetricMatchingAppx().computeShortestTour(g, distances);
 
 		Predicate<IPath> isPathVisitAllVertices = path -> {
 			Bitmap visited = new Bitmap(n);

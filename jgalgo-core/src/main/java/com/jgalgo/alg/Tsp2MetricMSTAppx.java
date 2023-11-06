@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
+public class Tsp2MetricMSTAppx extends Tsp2MetricUtils.AbstractImpl {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 	// /*
@@ -48,7 +48,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-	public TSPMetricMSTAppx() {}
+	public Tsp2MetricMSTAppx() {}
 
 	@Override
 	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
@@ -81,7 +81,7 @@ public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 		}
 		IndexGraph g1 = g1Builder.build();
 
-		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
+		IPath cycle = Tsp2MetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.edges().size() == n;
 		assert cycle.isCycle();
 

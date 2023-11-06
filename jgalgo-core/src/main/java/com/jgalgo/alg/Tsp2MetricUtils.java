@@ -29,9 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
-class TSPMetricUtils {
+class Tsp2MetricUtils {
 
-	private TSPMetricUtils() {}
+	private Tsp2MetricUtils() {}
 
 	static IPath calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, int[] edgeRef) {
 		int n = g.vertices().size();
@@ -71,7 +71,7 @@ class TSPMetricUtils {
 		return cycle0;
 	}
 
-	abstract static class AbstractImpl implements TSPMetric {
+	abstract static class AbstractImpl implements Tsp2Metric {
 
 		@SuppressWarnings("unchecked")
 		@Override
