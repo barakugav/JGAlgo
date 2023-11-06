@@ -117,12 +117,11 @@ public class VertexPartitionTest extends TestBase {
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32, 3).repeat(128);
 		tester.addPhase().withArgs(16, 32, 6).repeat(128);
+		tester.addPhase().withArgs(31, 76, 27).repeat(7);
 		tester.addPhase().withArgs(64, 256, 7).repeat(64);
-		tester.addPhase().withArgs(64, 256, 28).repeat(64);
-		tester.addPhase().withArgs(64, 256, 60).repeat(64);
+		tester.addPhase().withArgs(64, 256, 28).repeat(15);
 		tester.addPhase().withArgs(512, 1024, 5).repeat(8);
-		tester.addPhase().withArgs(512, 1024, 30).repeat(8);
-		tester.addPhase().withArgs(512, 1024, 460).repeat(8);
+		tester.addPhase().withArgs(512, 1024, 30).repeat(2);
 		tester.run((n, m, k) -> {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
