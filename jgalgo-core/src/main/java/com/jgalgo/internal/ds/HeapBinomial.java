@@ -26,12 +26,14 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A binomial heap implementation.
+ *
  * <p>
  * Pointer based data structure that support user references to the internal nodes, allowing efficient \(O(\log n)\)
  * implementation of the {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} operations. The
  * regular operations like {@link #insert(Object)}, {@link #extractMin()} and {@link #findMin()} are also implemented in
  * \(O(\log n)\) time. Another advantage of the binomial heap is its ability to merge with another binomial heap in
  * \(O(\log n)\) time, which is much faster than the required \(O(n)\) time of binary heaps.
+ *
  * <p>
  * Although it has great complexities bounds, {@link #decreaseKey(HeapReference, Object)} can be implemented faster
  * using {@link HeapPairing} or {@link HeapFibonacci}.
@@ -52,6 +54,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	/**
 	 * Constructs a new, empty binomial heap, ordered according to the natural ordering of its keys.
+	 *
 	 * <p>
 	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -65,6 +68,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	/**
 	 * Constructs a new, empty binomial heap, with keys ordered according to the specified comparator.
+	 *
 	 * <p>
 	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -83,7 +87,8 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	private void swapParentChild(Node<K, V> parent, Node<K, V> child) {
-		Node<K, V> t, pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
+		final Node<K, V> pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
+		Node<K, V> t;
 
 		parent.next = (t = child.next);
 		if (t != null)

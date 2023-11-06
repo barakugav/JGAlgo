@@ -17,14 +17,17 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@linkplain IndexGraph Index graphs}.
+ *
  * <p>
  * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
  * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
  * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ *
  * <p>
  * Both the graph factory and {@link IndexGraphBuilder} are used to create new graphs. The difference is that vertices
  * and edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only
  * used to choose a graph implementation and create an empty graph.
+ *
  * <p>
  * This interface is a specific version of {@link IntGraphFactory} for {@link IndexGraph}.
  *
@@ -91,6 +94,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 
 	/**
 	 * Create a new index graph factory based on a given implementation.
+	 *
 	 * <p>
 	 * The new factory will build graphs with the same capabilities as the given graph, possibly choosing to use a
 	 * similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for such

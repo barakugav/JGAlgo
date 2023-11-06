@@ -22,6 +22,7 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * A red black balanced binary search tree.
+ *
  * <p>
  * A red black tree is a balanced binary search tree that its height is always \(O(\log n)\). All operations are
  * performed in \(O(\log n)\) time.
@@ -41,6 +42,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	/**
 	 * Constructs a new, empty red black tree, ordered according to the natural ordering of its keys.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -54,6 +56,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	/**
 	 * Constructs a new, empty red black tree, with keys ordered according to the specified comparator.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -529,7 +532,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node<K, V>) ref));
 	}
 
-	static class Node<K, V> extends BinarySearchTrees.INode<K, Node<K, V>> implements HeapReference<K, V> {
+	static class Node<K, V> extends BinarySearchTrees.Node<K, Node<K, V>> implements HeapReference<K, V> {
 
 		private boolean color;
 		private V value;

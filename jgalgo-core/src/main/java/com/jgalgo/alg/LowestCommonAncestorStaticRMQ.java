@@ -25,12 +25,15 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * Static LCA implementation using RMQ.
+ *
  * <p>
  * By traversing the tree once and assigning for each vertex a number corresponding to its depth, the LCA query is
  * equivalent to a range minimum query. This RMQ problem is a special case of RMQ, as the different between any pair of
  * consecutive elements is always +1/-1, and {@link RMQStaticPlusMinusOne} can be used.
+ *
  * <p>
  * The algorithm require preprocessing of \(O(n)\) time and space and answer queries in \(O(1)\) time.
+ *
  * <p>
  * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel, R. Tarjan (1984).
  *

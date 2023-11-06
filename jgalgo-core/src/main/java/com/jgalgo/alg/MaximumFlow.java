@@ -21,12 +21,14 @@ import com.jgalgo.graph.Graph;
 
 /**
  * Calculate the maximum flow in a flow network.
+ *
  * <p>
  * A maximum flow is firstly a valid flow, namely for each vertex except the source and sink the sum of flow units going
  * along {@link Graph#inEdges(Object)} must be equal to the sum of flow units going along
  * {@link Graph#outEdges(Object)}. In addition, a maximum flow maximize the number of flow units originated at the
  * source and reaching the sink, which is equivalent to the sum of flows going out(in) of the source(sink) subtracted by
  * the sum of flows going in(out) to the source(sink).
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -58,6 +60,7 @@ public interface MaximumFlow {
 
 	/**
 	 * Calculate the maximum flow in a network between a source and a sink.
+	 *
 	 * <p>
 	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
 	 *
@@ -74,6 +77,7 @@ public interface MaximumFlow {
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
+	 *
 	 * <p>
 	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
 	 *
@@ -91,6 +95,7 @@ public interface MaximumFlow {
 
 	/**
 	 * Create a new maximum flow algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MaximumFlow} object. The {@link MaximumFlow.Builder}
 	 * might support different options to obtain different implementations.
@@ -103,6 +108,7 @@ public interface MaximumFlow {
 
 	/**
 	 * Create a new maximum flow algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -172,10 +178,12 @@ public interface MaximumFlow {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

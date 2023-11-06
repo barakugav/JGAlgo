@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Generates a complete graph.
+ *
  * <p>
  * A complete graph is a graph in which each pair of graph vertices is connected by an edge. If the graph is directed,
  * then there are two edges between two pair of vertices, one in each direction. Self loops are optional, but are
@@ -75,6 +76,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Set the vertices of the generated graph(s).
+	 *
 	 * <p>
 	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
 	 *
@@ -92,6 +94,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Set the vertices set of the generated graph(s) from a supplier.
+	 *
 	 * <p>
 	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
 	 * for multiple graphs if {@link #generate()} is called multiple times.
@@ -117,6 +120,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Set the edge supplier of the generated graph(s).
+	 *
 	 * <p>
 	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -131,6 +135,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Set the edge builder function of the generated graph(s).
+	 *
 	 * <p>
 	 * The function will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -144,6 +149,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
+	 *
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
@@ -155,6 +161,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Determine if the generated graph(s) will contain self-loops.
+	 *
 	 * <p>
 	 * By default, the generated graph(s) will not contain self-loops. If this option is turn on, each vertex in a
 	 * generated will have exactly one self edge connected to itself.

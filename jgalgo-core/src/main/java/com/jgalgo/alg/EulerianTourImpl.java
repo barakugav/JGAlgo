@@ -28,6 +28,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * The running time and space of this function is \(O(n + m)\).
 	 */

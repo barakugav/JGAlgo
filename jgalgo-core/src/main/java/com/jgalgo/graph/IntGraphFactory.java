@@ -17,14 +17,17 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@link IntGraph} objects.
+ *
  * <p>
  * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
  * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
  * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ *
  * <p>
  * Both the graph factory and {@link IntGraphBuilder} are used to create new graphs. The difference is that vertices and
  * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
  * to choose a graph implementation and create an empty graph.
+ *
  * <p>
  * This interface is a specific version of {@link GraphFactory} for {@link IntGraph}.
  *
@@ -91,6 +94,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 
 	/**
 	 * Create a new graph factory based on a given implementation.
+	 *
 	 * <p>
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for

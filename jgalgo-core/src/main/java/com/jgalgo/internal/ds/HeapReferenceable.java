@@ -23,16 +23,19 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
  * references to the underling elements.
+ *
  * <p>
  * In addition to the regular {@link Heap} operations, the user can obtain a {@linkplain HeapReference reference} to
  * each inserted element via the return value of the {@link #insert(Object)} function. The reference will be valid as
  * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
  * {@link #decreaseKey(HeapReference, Object)} or {@link #remove(HeapReference)} the heap implementation can perform the
  * operations efficiently as is does not need to search for the element.
+ *
  * <p>
  * Another difference from the regular {@link Heap}, is the existent of both keys and values, rather than just
  * 'elements'. A key may be changed using {@link #decreaseKey} while the <b>value</b> is the same. This matches the
  * common use case of these heaps.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -63,6 +66,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Insert a new element to the heap with {@code null} value.
+	 *
 	 * <p>
 	 * Only a key is passed to this method, and a {@code null} value will be used. To insert a new element with both a
 	 * key and a value use {@link #insert(Object, Object)}.
@@ -95,6 +99,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Extract the element with the minimal key in the heap.
+	 *
 	 * <p>
 	 * This method find and <b>remove</b> the element with the minimal key.
 	 *
@@ -105,11 +110,14 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Meld with another heap.
+	 *
 	 * <p>
 	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
 	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 *
 	 * <p>
 	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 *
 	 * <p>
 	 * After the melding, the references of both ({@code this} and the given {@code heap}) remain valid and its possible
 	 * to use them only in this heap (they are no longer valid with respect to the given heap, which will be cleared).
@@ -130,6 +138,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Find an element by its key in the heap and get a reference to it.
+	 *
 	 * <p>
 	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
 	 * {@link Object#equals}.
@@ -155,6 +164,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Decrease the key of an element in the heap.
+	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -167,6 +177,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Remove an element from the heap by its reference.
+	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -177,10 +188,12 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Create a {@link Heap} view on this referenceable heap.
+	 *
 	 * <p>
 	 * A referenceable heap has both keys and values, regular heaps contain only keys (called plain 'elements'). A
 	 * {@link Heap} can be built on this referenceable heap by using only {@code null} values and treating the keys as a
 	 * regular heap elements.
+	 *
 	 * <p>
 	 * Note that the return heap object will alter {@code this} referenceable heap.
 	 *
@@ -192,6 +205,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Create a new referenceable heap.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link HeapReferenceable} object. The
 	 * {@link HeapReferenceable.Builder} might support different options to obtain different implementations.
@@ -204,6 +218,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Create a new referenceable heap with custom comparator.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link HeapReferenceable} object. The
 	 * {@link HeapReferenceable.Builder} might support different options to obtain different implementations.
@@ -216,6 +231,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 	/**
 	 * Create a new referenceable heaps builder.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link HeapReferenceable} object.
 	 *
@@ -306,6 +322,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 		/**
 		 * Build a new heap with the given comparator.
+		 *
 		 * <p>
 		 * If primitive keys are in used, namely {@link #keysTypePrimitive(Class)}, its recommended to use a primitive
 		 * {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
@@ -327,45 +344,48 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 		/**
 		 * Set the keys type to an object type.
 		 *
-		 * @param  <Keys> the keys type
-		 * @return        this builder
+		 * @param  <KeysT> the keys type
+		 * @return         this builder
 		 */
-		<Keys> HeapReferenceable.Builder<Keys, V> keysTypeObj();
+		<KeysT> HeapReferenceable.Builder<KeysT, V> keysTypeObj();
 
 		/**
 		 * Set the keys type to a primitive type.
+		 *
 		 * <p>
 		 * Specific implementations may exists for some primitive keys types, which are more efficient.
 		 *
-		 * @param  <Keys>                   the keys type
+		 * @param  <KeysT>                  the keys type
 		 * @param  primitiveType            the primitive class, for example {@code int.class}
 		 * @return                          this builder
 		 * @throws IllegalArgumentException if the provided class is not primitive
 		 */
-		<Keys> HeapReferenceable.Builder<Keys, V> keysTypePrimitive(Class<? extends Keys> primitiveType);
+		<KeysT> HeapReferenceable.Builder<KeysT, V> keysTypePrimitive(Class<? extends KeysT> primitiveType);
 
 		/**
 		 * Set the values type to an object type.
 		 *
-		 * @param  <Values> the values type
-		 * @return          this builder
+		 * @param  <ValuesT> the values type
+		 * @return           this builder
 		 */
-		<Values> HeapReferenceable.Builder<K, Values> valuesTypeObj();
+		<ValuesT> HeapReferenceable.Builder<K, ValuesT> valuesTypeObj();
 
 		/**
 		 * Set the values type to a primitive type.
+		 *
 		 * <p>
 		 * Specific implementations may exists for some primitive keys types, which are more efficient.
 		 *
-		 * @param  <Values>                 the values type
+		 * @param  <ValuesT>                the values type
 		 * @param  primitiveType            the primitive class, for example {@code int.class}
 		 * @return                          this builder
 		 * @throws IllegalArgumentException if the provided class is not primitive
 		 */
-		<Values> HeapReferenceable.Builder<K, Values> valuesTypePrimitive(Class<? extends Values> primitiveType);
+		<ValuesT> HeapReferenceable.Builder<K, ValuesT> valuesTypePrimitive(Class<? extends ValuesT> primitiveType);
 
 		/**
 		 * Set the values type to {@code void}.
+		 *
 		 * <p>
 		 * Specific implementations without values fields may exists, which are more efficient.
 		 *
@@ -375,10 +395,12 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

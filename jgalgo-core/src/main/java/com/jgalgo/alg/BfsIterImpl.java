@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 class BfsIterImpl {
 
-	private static abstract class Abstract implements Bfs.IntIter {
+	private abstract static class Abstract implements Bfs.IntIter {
 
 		final IndexGraph g;
 		final Bitmap visited;

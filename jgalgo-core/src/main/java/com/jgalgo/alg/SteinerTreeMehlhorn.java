@@ -33,12 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * Mehlhorn algorithm for Steiner tree approximation.
+ *
  * <p>
  * The Steiner tree problem is NP-hard, and this algorithm provides a \(2(1-1/l)\)-approximation where \(l\) is the
  * minimum number of leaves in any Steiner tree for the given graph. Note that \(l\) is always smaller or equal to the
  * number of terminals vertices.
+ *
  * <p>
  * The algorithm runs in \(O(m+n \log n)\) time and use linear space.
+ *
  * <p>
  * Based on 'A faster approximation algorithm for the Steiner problem in graphs' by Kurt Mehlhorn.
  *

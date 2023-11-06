@@ -711,7 +711,7 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static abstract class IdToIndexWeights<K, T> implements IWeights<T> {
+	private abstract static class IdToIndexWeights<K, T> implements IWeights<T> {
 
 		private final Weights<K, T> idxWeights;
 		private final IndexIdMap<K> map;
@@ -974,7 +974,7 @@ public class IndexIdMaps {
 
 	}
 
-	private static abstract class IntIdToIndexWeights<T> implements IWeights<T> {
+	private abstract static class IntIdToIndexWeights<T> implements IWeights<T> {
 
 		private final IWeights<T> idxWeights;
 		private final IndexIntIdMap map;
@@ -1287,6 +1287,7 @@ public class IndexIdMaps {
 	/**
 	 * Create a weights view that is accessed by the elements indices, given a weights container that is accessed by the
 	 * element IDs.
+	 *
 	 * <p>
 	 * The returned weights container is a view, namely modifying the original container change the new one, and vice
 	 * versa.

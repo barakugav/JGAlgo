@@ -30,15 +30,18 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Tree Path Maxima (TPM) algorithm.
+ *
  * <p>
  * Given a tree \(T\) and a sequence of vertices pairs \((u_1,v_1),(u_2,v_2),\ldots\) called <i>queries</i>, the tree
  * path maxima problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path between \(u_i\) and \(v_i\)
  * in \(T\).
+ *
  * <p>
  * TPM can be used to validate if a spanning tree is minimum spanning tree (MST) or not, by checking for each edge
  * \((u,v)\) that is not in the tree that it is heavier than the heaviest edge in the path from \(u\) to \(v\) in the
  * tree. If a TPM on \(n\) vertices and \(m\) queries can be answer in \(O(n + m)\) time than an MST can be validated in
  * linear time.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -49,9 +52,11 @@ public interface TreePathMaxima {
 
 	/**
 	 * Compute the heaviest edge in multiple tree paths.
+	 *
 	 * <p>
 	 * The {@code queries} container contains pairs of vertices, each corresponding to a simple path in the given
 	 * {@code tree}. For each of these paths, the heaviest edge in the path will be computed.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link TreePathMaxima.IResult} object is returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link TreePathMaxima.IQueries} as {@code queries} to
@@ -70,6 +75,7 @@ public interface TreePathMaxima {
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
+	 *
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a {@link TreePathMaxima}
 	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}.
@@ -102,6 +108,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
@@ -114,6 +121,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
@@ -169,6 +177,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
@@ -187,6 +196,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
@@ -216,6 +226,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the heaviest edge found for a single query.
+		 *
 		 * <p>
 		 * This result object was obtained by calling
 		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
@@ -231,6 +242,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the number queries results this result object hold.
+		 *
 		 * <p>
 		 * This number always much the size of the {@link TreePathMaxima.IQueries} container passed to the
 		 * {@link TreePathMaxima} algorithm.
@@ -249,6 +261,7 @@ public interface TreePathMaxima {
 
 		/**
 		 * Get the heaviest edge found for a single query.
+		 *
 		 * <p>
 		 * This result object was obtained by calling
 		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
@@ -271,6 +284,7 @@ public interface TreePathMaxima {
 
 	/**
 	 * Create a new tree path maxima algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object. The
 	 * {@link TreePathMaxima.Builder} might support different options to obtain different implementations.
@@ -283,6 +297,7 @@ public interface TreePathMaxima {
 
 	/**
 	 * Create a new tree path maxima algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -332,10 +347,12 @@ public interface TreePathMaxima {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *
@@ -350,10 +367,12 @@ public interface TreePathMaxima {
 
 	/**
 	 * Verify that the given edges actually form an MST of a graph.
+	 *
 	 * <p>
 	 * The verification is done by computing for each original edge \((u, v)\) in the graph the heaviest edge on the
 	 * path from \(u\) to \(v\) in the given spanning tree. If all of the edges which are not in the MST have a greater
 	 * weight than the maximum one in the path of the MST, the MST is valid.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code w}, and
 	 * {@link IntCollection} as {@code edges} to avoid boxing/unboxing.

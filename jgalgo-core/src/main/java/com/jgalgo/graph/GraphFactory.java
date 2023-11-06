@@ -17,10 +17,12 @@ package com.jgalgo.graph;
 
 /**
  * A factory for {@link Graph} objects.
+ *
  * <p>
  * The factory can be used to create new empty graphs, with different options and capabilities. Few methods are
  * available to optimize the graph implementation choice. The factory can also be used to create a copy of an existing
  * graphs, with the same vertices and edges, with/without copying the vertices/edges weights.
+ *
  * <p>
  * Both the graph factory and {@link GraphBuilder} are used to create new graphs. The difference is that vertices and
  * edges can be added to the builder, which is then used to construct non empty graphs, while the factory is only used
@@ -45,9 +47,11 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 *
 	 * <p>
 	 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
@@ -65,9 +69,11 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Create a copy of a given graph, with the same vertices and edges, with/without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 *
 	 * <p>
 	 * Differing from {@link Graph#copy(boolean)}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
@@ -84,6 +90,7 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Create a new graph builder with the factory parameters.
+	 *
 	 * <p>
 	 * The created builder can be used to add vertices and edges, and then build a (mutable or immutable) non empty
 	 * graph, differing from the factory which only builds empty graphs. The capabilities such as un/directed, support
@@ -136,6 +143,7 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Add a hint to this factory.
+	 *
 	 * <p>
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
@@ -146,6 +154,7 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Remove a hint from this factory.
+	 *
 	 * <p>
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
@@ -156,20 +165,24 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Hints for a graph factory.
+	 *
 	 * <p>
 	 * Hints do not change the behavior of the graphs built by this factory, by may affect performance.
 	 *
 	 * @author Barak Ugav
 	 */
 	static enum Hint {
-		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)} */
+
+		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
 		FastEdgeRemoval,
+
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
-		 * {@link Graph#getEdges(Object, Object)}
+		 * {@link Graph#getEdges(Object, Object)}.
 		 */
 		FastEdgeLookup,
-		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\) */
+
+		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
 		DenseGraph,
 	}
 
@@ -197,6 +210,7 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * Create a new graph factory based on a given implementation.
+	 *
 	 * <p>
 	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
 	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
@@ -213,10 +227,12 @@ public interface GraphFactory<V, E> {
 
 	/**
 	 * <b>[TL;DR Don't call me!]</b> Set an option.
+	 *
 	 * <p>
 	 * The builder might support different options to customize its implementation. These options never change the
 	 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 	 * because they are not part of the API and may change in the future.
+	 *
 	 * <p>
 	 * These options are mainly for debug and benchmark purposes.
 	 *

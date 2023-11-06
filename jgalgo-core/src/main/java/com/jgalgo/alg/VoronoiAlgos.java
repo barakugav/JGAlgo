@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 class VoronoiAlgos {
 
-	static abstract class AbstractImpl implements VoronoiAlgo {
+	abstract static class AbstractImpl implements VoronoiAlgo {
 
 		@SuppressWarnings("unchecked")
 		@Override

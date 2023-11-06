@@ -22,12 +22,15 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * Splay binary search tree.
+ *
  * <p>
  * The splay tree is a binary search tree which is not strictly balanced, in contrast to {@link RedBlackTree}. The splay
  * tree has a property that recent accessed elements are closer to the root, and therefore faster to access. All
  * operations have a time complexity of \(O(\log n)\) amortized time.
+ *
  * <p>
  * The splay tree is specifically efficient for splits and joins operations.
+ *
  * <p>
  * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
  *
@@ -43,6 +46,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	/**
 	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -56,6 +60,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	/**
 	 * Constructs a new, empty splay tree, with keys ordered according to the specified comparator.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -357,7 +362,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		root = null;
 	}
 
-	static class BaseNode<K, N extends BaseNode<K, N>> extends BinarySearchTrees.INode<K, N> {
+	static class BaseNode<K, N extends BaseNode<K, N>> extends BinarySearchTrees.Node<K, N> {
 
 		BaseNode(K key) {
 			super(key);
@@ -369,7 +374,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	}
 
-	static abstract class SplayImpl<K, N extends BaseNode<K, N>> {
+	abstract static class SplayImpl<K, N extends BaseNode<K, N>> {
 
 		SplayImpl() {}
 

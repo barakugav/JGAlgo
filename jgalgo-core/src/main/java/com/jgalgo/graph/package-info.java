@@ -16,12 +16,14 @@
 
 /**
  * Graphs object are the fundamental building blocks of the JGAlgo library.
+ *
  * <p>
  * A graph is a collection of vertices (nodes) and edges (links) between them. The edges may be directed or undirected.
  * The {@link com.jgalgo.graph.Graph} object represent a graph, in which vertices and edges are hashable identifiers.
  * Vertices can be added or removed to/from a graph, and edges can be added or removed between vertices. The
  * {@link com.jgalgo.graph.Graph} object also provides methods to query the graph, such as the number of vertices and
  * edges, and whether a vertex is connected to another vertex, the out-edges or in-edges of a vertex, etc.
+ *
  * <p>
  * Weights can be associated with the vertices or edges of a graph, and the {@link com.jgalgo.graph.Graph} object
  * provides methods to add or remove weights to it. When a weight is added to the vertices, it is added to <i>all</i>
@@ -33,6 +35,7 @@
  * is primitive, a specific subclass of {@link com.jgalgo.graph.Weights} such as {@link com.jgalgo.graph.WeightsInt},
  * {@link com.jgalgo.graph.WeightsDouble}, etc. is returned. These specific primitive weights containers avoid the
  * overhead of boxing and unboxing primitive values.
+ *
  * <p>
  * Each {@link com.jgalgo.graph.Graph} object expose an {@link com.jgalgo.graph.IndexGraph} via the
  * {@link com.jgalgo.graph.Graph#indexGraph()} method. An index graph is a graph in which the identifiers of the

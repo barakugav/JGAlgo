@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexCoverUtils {
 
-	static abstract class AbstractImpl implements VertexCover {
+	abstract static class AbstractImpl implements VertexCover {
 
 		@SuppressWarnings("unchecked")
 		@Override

@@ -36,7 +36,7 @@ class MinimumCutSTUtils {
 
 	private MinimumCutSTUtils() {}
 
-	static abstract class AbstractImpl implements MinimumCutST {
+	abstract static class AbstractImpl implements MinimumCutST {
 
 		@SuppressWarnings("unchecked")
 		@Override

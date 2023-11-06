@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 class LowestCommonAncestorOfflineUtils {
 
-	static abstract class AbstractImpl implements LowestCommonAncestorOffline {
+	abstract static class AbstractImpl implements LowestCommonAncestorOffline {
 
 		@SuppressWarnings("unchecked")
 		@Override

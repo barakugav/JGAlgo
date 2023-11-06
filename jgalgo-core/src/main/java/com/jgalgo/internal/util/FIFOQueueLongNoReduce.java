@@ -37,7 +37,7 @@ public class FIFOQueueLongNoReduce implements LongPriorityQueue, Serializable, L
 	/** The standard initial capacity of a queue. */
 	static final int INITIAL_CAPACITY = 4;
 	/** The backing array. */
-	transient long array[];
+	transient long[] array;
 	/** The current (cached) length of {@link #array}. */
 	transient int length;
 	/**

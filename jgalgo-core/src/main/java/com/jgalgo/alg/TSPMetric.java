@@ -23,10 +23,12 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Metric Traveling Salesman Problem (TSP) algorithm.
+ *
  * <p>
  * Given a list of points, the traveling salesman problem asking what is the shortest tour to visit all points. The
  * metric version of TSP is a special case in which the distances satisfy the triangle inequality and the distances are
  * symmetric.
+ *
  * <p>
  * The problem itself is NP-hard, but various approximation algorithms exists.
  *
@@ -37,6 +39,7 @@ public interface TSPMetric {
 
 	/**
 	 * Compute the shortest tour that visit all vertices.
+	 *
 	 * <p>
 	 * Note that this problem is NP-hard and therefore the result is only the best approximation the implementation
 	 * could find. If {@code g} is an {@link IntGraph}, a {@link IPath} object is returned. In that case, its better to

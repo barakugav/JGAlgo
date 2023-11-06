@@ -22,15 +22,18 @@ import java.util.Objects;
 /**
  * Gabow implementation for dynamic LCA data structure with \(O(\log^2 n)\) amortized time for {@code addLeaf()}
  * operation.
+ *
  * <p>
  * The running time of this algorithm for \(m\) operations over \(n\) vertices is \(O(m + n \log^2 n)\) and it uses
  * linear space. More specifically, the {@link #addLeaf(LowestCommonAncestorDynamic.Vertex)} operation is perform in
  * \(O(\log^2 n)\) amortized time and
  * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
  * in constant time.
+ *
  * <p>
  * This implementation is used by the better linear LCA algorithm {@link LowestCommonAncestorDynamicGabowInts} and
  * {@link LowestCommonAncestorDynamicGabowLongs} and rarely should be used directly.
+ *
  * <p>
  * Based on the simpler data structure presented in 'Data Structures for Weighted Matching and Nearest Common Ancestors
  * with Linking' by Harold N. Gabow (1990).

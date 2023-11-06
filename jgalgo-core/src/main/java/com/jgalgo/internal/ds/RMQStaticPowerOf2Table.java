@@ -21,6 +21,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in \(O(1)\) time.
+ *
  * <p>
  * An array of size {@code [log n][n]} is created, and at each entry {@code [k][i]} the index of the minimum element in
  * range {@code [i, i+k)} is stored. A query can be answered by two access to the array, giving a total query time of

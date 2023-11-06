@@ -30,7 +30,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class IndexAbstract<T> implements WeightsImpl.Index<T> {
+	abstract static class IndexAbstract<T> implements WeightsImpl.Index<T> {
 
 		final GraphElementSet elements;
 
@@ -278,7 +278,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class IntMapped<T> implements IWeights<T>, WeightsImpl {
+	abstract static class IntMapped<T> implements IWeights<T>, WeightsImpl {
 
 		final WeightsImpl.IndexAbstract<T> weights;
 		final IndexIntIdMap indexMap;
@@ -330,7 +330,7 @@ interface WeightsImpl {
 		}
 	}
 
-	static abstract class IntImmutableView<T> extends ImmutableView<Integer, T> implements IWeights<T> {
+	abstract static class IntImmutableView<T> extends ImmutableView<Integer, T> implements IWeights<T> {
 
 		IntImmutableView(IWeights<T> weights) {
 			super(weights);
@@ -554,7 +554,7 @@ interface WeightsImpl {
 		return h;
 	}
 
-	static abstract class ObjMapped<K, T> implements Weights<K, T>, WeightsImpl {
+	abstract static class ObjMapped<K, T> implements Weights<K, T>, WeightsImpl {
 
 		final WeightsImpl.IndexAbstract<T> weights;
 		final IndexIdMap<K> indexMap;
@@ -593,7 +593,7 @@ interface WeightsImpl {
 
 	}
 
-	static abstract class ObjImmutableView<K, T> extends ImmutableView<K, T> implements Weights<K, T> {
+	abstract static class ObjImmutableView<K, T> extends ImmutableView<K, T> implements Weights<K, T> {
 
 		ObjImmutableView(Weights<K, T> weights) {
 			super(weights);

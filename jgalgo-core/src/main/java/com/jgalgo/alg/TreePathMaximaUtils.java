@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 class TreePathMaximaUtils {
 
-	static abstract class AbstractImpl implements TreePathMaxima {
+	abstract static class AbstractImpl implements TreePathMaxima {
 
 		@SuppressWarnings("unchecked")
 		@Override

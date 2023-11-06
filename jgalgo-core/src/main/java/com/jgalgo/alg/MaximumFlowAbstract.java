@@ -82,7 +82,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
 	}
 
-	static abstract class WithoutResidualGraph extends MaximumFlowAbstract {
+	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {
 
 		static class Worker {
 			final IndexGraph g;
@@ -327,7 +327,7 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 	}
 
-	static abstract class WithResidualGraph extends MaximumFlowAbstract {
+	abstract static class WithResidualGraph extends MaximumFlowAbstract {
 
 		static class Worker {
 			final IndexGraph gOrig;

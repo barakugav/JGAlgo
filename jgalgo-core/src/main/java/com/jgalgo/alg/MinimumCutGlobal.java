@@ -22,6 +22,7 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Global Minimum Cut algorithm without terminal vertices.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a weight
  * function, the weight of a cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\) is in \(C\)
@@ -30,8 +31,10 @@ import com.jgalgo.graph.WeightFunction;
  * {@code source (S)} and {@code sink (T)} and we need to find the minimum cut \((C,\bar{C})\) such that the
  * {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal vertices we need
  * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
+ *
  * <p>
  * Algorithms implementing this interface compute the global minimum cut without terminal vertices.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -43,9 +46,11 @@ public interface MinimumCutGlobal {
 
 	/**
 	 * Compute the global minimum cut in a graph.
+	 *
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexBiPartition} object will be returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -61,6 +66,7 @@ public interface MinimumCutGlobal {
 
 	/**
 	 * Create a new minimum global cut algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object. The
 	 * {@link MinimumCutGlobal.Builder} might support different options to obtain different implementations.
@@ -73,6 +79,7 @@ public interface MinimumCutGlobal {
 
 	/**
 	 * Create a new global minimum cut algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -99,10 +106,12 @@ public interface MinimumCutGlobal {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

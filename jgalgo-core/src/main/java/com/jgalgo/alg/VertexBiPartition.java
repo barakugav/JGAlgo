@@ -19,10 +19,12 @@ import java.util.Set;
 
 /**
  * A partition of the vertices of a graph into two blocks.
+ *
  * <p>
  * This interface is a specific case of {@link VertexPartition} where the number of blocks is 2. It can be used to
  * represent a <a href= "https://en.wikipedia.org/wiki/Cut_(graph_theory)">cut</a>, or a
  * <a href= "https://en.wikipedia.org/wiki/Bipartite_graph">bipartite</a> partition of a graph.
+ *
  * <p>
  * The two blocks (or sets) are called left and right. The left block is the block with index 0, and the right block is
  * the block with index 1, and few methods with 'left/right' names are provided for convenience.
@@ -63,6 +65,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	/**
 	 * Get the vertices in the 'left' block.
+	 *
 	 * <p>
 	 * The left block is the block with index 0.
 	 *
@@ -74,6 +77,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	/**
 	 * Get the vertices in the 'right' block.
+	 *
 	 * <p>
 	 * The right block is the block with index 1.
 	 *
@@ -85,6 +89,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	/**
 	 * Get the edges that are contained in the left block.
+	 *
 	 * <p>
 	 * The left block is the block with index 0, and edges contained in it are edges with both endpoints in the left
 	 * block.
@@ -97,6 +102,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	/**
 	 * Get the edges that are contained in the right block.
+	 *
 	 * <p>
 	 * The right block is the block with index 1, and edges contained in it are edges with both endpoints in the right
 	 * block.
@@ -109,6 +115,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 
 	/**
 	 * Get the edges that cross between the left and right blocks.
+	 *
 	 * <p>
 	 * An edge \((u,v)\) is said to cross between two blocks \(b_1\) and \(b_2\) if \(u\) is contained in \(b_1\) and
 	 * \(v\) is contained in \(b_2\). Note that if the graph is directed, the cross edges of \((b_1,b_2)\) are different

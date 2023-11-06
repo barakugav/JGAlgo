@@ -19,6 +19,7 @@ import com.jgalgo.internal.JGAlgoConfigNonFrozen;
 
 /**
  * A global configuration class.
+ *
  * <p>
  * The class allow to configure multiple general options for the JGAlgo library, such as
  * {@link #setParallelByDefault(boolean)} for example. Upon the first algorithm that reads one of these options, the
@@ -33,6 +34,7 @@ public class JGAlgoConfig {
 
 	/**
 	 * Enable/disable default parallel computations in all algorithms.
+	 *
 	 * <p>
 	 * The default value is {@code true}.
 	 *

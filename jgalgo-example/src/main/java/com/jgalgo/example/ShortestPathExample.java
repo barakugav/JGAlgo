@@ -21,8 +21,16 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * This example demonstrates how to use the single-source shortest path algorithm.
+ *
+ * @author Barak Ugav
+ */
 public class ShortestPathExample {
 
+	/**
+	 * This example demonstrates how to use the single-source shortest path algorithm.
+	 */
 	public static void shortestPathExample() {
 		/* Create a directed graph with three vertices and edges between them */
 		IntGraph g = IntGraph.newDirected();

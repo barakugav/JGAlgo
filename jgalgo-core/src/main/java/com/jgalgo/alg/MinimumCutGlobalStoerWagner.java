@@ -26,8 +26,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Stoer-Wagner Algorithm for global minimum cut.
+ *
  * <p>
  * The algorithm runs in \(O(mn + n^2 \log n)\).
+ *
  * <p>
  * Based on 'A Simple Min-Cut Algorithm' by Mechthild Stoer and Frank Wagner (1997).
  *

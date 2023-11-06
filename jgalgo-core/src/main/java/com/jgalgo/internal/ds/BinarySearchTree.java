@@ -20,11 +20,13 @@ import java.util.Comparator;
 
 /**
  * Binary search tree data structure.
+ *
  * <p>
  * In addition to all {@link HeapReferenceable} operations, a binary search tree (BST) allow for an efficient search of
  * an element, not just {@link Heap#findMin()}. Every element could be found in \(O(\log n)\) time, notably
  * {@link #findMax()} in addition to {@link Heap#findMin()}. Also, given an element, the nearest (smaller or larger)
  * element in the tree can be found efficiently.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -45,6 +47,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Extract the element with the maximal key in the tree.
+	 *
 	 * <p>
 	 * This method find and <b>remove</b> the element with the maximal key.
 	 *
@@ -91,9 +94,11 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Get the predecessor of a node in the tree.
+	 *
 	 * <p>
 	 * The predecessor node depends on the tree structure. If there are no duplicate keys, the predecessor is the
 	 * greatest value strictly smaller than the given element. If there are duplicate keys, it may be smaller or equal.
+	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -106,9 +111,11 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Finds the successor of an element in the tree.
+	 *
 	 * <p>
 	 * The successor node depends on the tree structure. If there are no duplicate keys, the successor is the smallest
 	 * value strictly greater than the given element. If there are duplicate keys, it may be greater or equal.
+	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -121,6 +128,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Split the current BST into two different BSTs with keys strictly smaller and greater or equal than a key.
+	 *
 	 * <p>
 	 * After this operation, all elements in this tree will have keys greater or equal than the given key, and the
 	 * returned new tree will contain elements with keys strictly smaller than the given key.
@@ -132,6 +140,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Split the current BST into two different BSTs with keys smaller or equal and strictly greater than a key.
+	 *
 	 * <p>
 	 * After this operation, all elements in this tree will have keys be smaller or equal than the given key, and the
 	 * returned new tree will contain elements with keys strictly greater than the given key.
@@ -143,12 +152,14 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and greater than an element's key.
+	 *
 	 * <p>
 	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
 	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
 	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
 	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller(Object)} or
 	 * {@link #splitGreater(Object)}.
+	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -161,6 +172,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Create a new BST.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
 	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
@@ -173,6 +185,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Create a new BST with custom comparator.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
 	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
@@ -185,6 +198,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Create a new binary search tree algorithm builder.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object.
 	 *
@@ -305,16 +319,16 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 		BinarySearchTree.Builder<K, V> setMelds(boolean enable);
 
 		@Override
-		<Keys> BinarySearchTree.Builder<Keys, V> keysTypeObj();
+		<KeysT> BinarySearchTree.Builder<KeysT, V> keysTypeObj();
 
 		@Override
-		<Keys> BinarySearchTree.Builder<Keys, V> keysTypePrimitive(Class<? extends Keys> primitiveType);
+		<KeysT> BinarySearchTree.Builder<KeysT, V> keysTypePrimitive(Class<? extends KeysT> primitiveType);
 
 		@Override
-		<Values> BinarySearchTree.Builder<K, Values> valuesTypeObj();
+		<ValuesT> BinarySearchTree.Builder<K, ValuesT> valuesTypeObj();
 
 		@Override
-		<Values> BinarySearchTree.Builder<K, Values> valuesTypePrimitive(Class<? extends Values> primitiveType);
+		<ValuesT> BinarySearchTree.Builder<K, ValuesT> valuesTypePrimitive(Class<? extends ValuesT> primitiveType);
 
 		@Override
 		BinarySearchTree.Builder<K, Void> valuesTypeVoid();

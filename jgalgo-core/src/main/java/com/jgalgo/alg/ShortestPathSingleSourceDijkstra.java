@@ -27,14 +27,17 @@ import com.jgalgo.internal.util.Assertions;
 
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
+ *
  * <p>
  * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using a heap with
  * \(O(1)\) time for {@code decreaseKey()} operations.
+ *
  * <p>
  * Only positive edge weights are supported. This implementation should be the first choice for
  * {@link ShortestPathSingleSource} with positive weights. For negative weights use
  * {@link ShortestPathSingleSourceBellmanFord} for floating points or {@link ShortestPathSingleSourceGoldberg} for
  * integers.
+ *
  * <p>
  * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra (1959). A 'note'??!! this guy changed
  * the world, and he publish it as a 'note'.

@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MaximalCliquesUtils {
 
-	static abstract class AbstractImpl implements MaximalCliques {
+	abstract static class AbstractImpl implements MaximalCliques {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override

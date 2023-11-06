@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Wang's algorithm for computing the k-edge connected components of a graph.
+ *
  * <p>
  * Based on "A Simple Algorithm for Finding All k-EdgeConnected Components" by Tianhao Wang.
  *

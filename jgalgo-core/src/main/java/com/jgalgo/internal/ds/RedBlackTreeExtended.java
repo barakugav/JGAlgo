@@ -23,10 +23,12 @@ import java.util.Objects;
 
 /**
  * A red black tree that support extensions such as subtree size/min/max.
+ *
  * <p>
  * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
  * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
  * black tree without increasing the asymptotical running time.
+ *
  * <p>
  * This red black tree implementation support arbitrary number of extensions, for example a size and max extensions are
  * used in this snippet:
@@ -64,12 +66,14 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	/**
 	 * Constructs a new, empty red black tree, with the given extensions, ordered according to the natural ordering of
 	 * its keys.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
 	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
 	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+	 *
 	 * <p>
 	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
 	 * be passed to a new one for reuse.
@@ -84,11 +88,13 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	/**
 	 * Constructs a new, empty red black tree, with the given extensions, with keys ordered according to the specified
 	 * comparator.
+	 *
 	 * <p>
 	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
 	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+	 *
 	 * <p>
 	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
 	 * be passed to a new one for reuse.

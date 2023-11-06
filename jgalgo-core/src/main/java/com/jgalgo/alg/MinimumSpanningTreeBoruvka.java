@@ -27,14 +27,17 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Boruvka minimum spanning tree algorithm.
+ *
  * <p>
  * The algorithm run in iterations. In each iteration it finds the minimum edge incident for each vertex, and adds all
  * of these edges to the forest. Each connected component in the forest become a 'super vertex' in the next iteration.
  * The algorithm terminate when there is a single super vertex in the case the original graph was connected, or when
  * there are no incident edges to the remaining super vertices.
+ *
  * <p>
  * The running time of the algorithm is \(O(m \log n)\) and it uses linear space. Note that only undirected graphs are
  * supported.
+ *
  * <p>
  * Based on "O jistém problému minimálním" [About a certain minimal problem] by Borůvka, Otakar (1926).
  *

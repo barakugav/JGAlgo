@@ -21,12 +21,14 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * Strongly Connected components algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), two vertices \(u,v \in V\) are strongly connected if there is a path from \(u\) to \(v\)
  * and from \(v\) to \(u\). A strongly connected component is a maximal set of vertices that each pair in the set is
  * strongly connected. This definition hold for both directed and undirected graphs. For undirected graphs, the strongly
  * and weakly connected components are identical. The set of vertices \(V\) can be partitioned into disjoint strongly
  * connected components.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,9 +40,11 @@ public interface StronglyConnectedComponentsAlgo {
 
 	/**
 	 * Find all strongly connected components in a graph.
+	 *
 	 * <p>
 	 * A strongly connected component is a maximal set of vertices for which for any pair of vertices \(u, v\) in the
 	 * set there exist a path from \(u\) to \(v\) and from \(v\) to \(u\).
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
@@ -53,6 +57,7 @@ public interface StronglyConnectedComponentsAlgo {
 
 	/**
 	 * Check whether a graph is strongly connected.
+	 *
 	 * <p>
 	 * A graph is strongly connected if there is a path from any vertex to any other vertex. Namely if the the whole
 	 * graph is a single strongly connected component.
@@ -66,6 +71,7 @@ public interface StronglyConnectedComponentsAlgo {
 
 	/**
 	 * Create a new strongly connected components algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link StronglyConnectedComponentsAlgo} object. The
 	 * {@link StronglyConnectedComponentsAlgo.Builder} might support different options to obtain different
@@ -79,6 +85,7 @@ public interface StronglyConnectedComponentsAlgo {
 
 	/**
 	 * Create a new strongly connected algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -105,10 +112,12 @@ public interface StronglyConnectedComponentsAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

@@ -37,10 +37,12 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Get the K'th element in the array if it was sorted
+	 * Get the K'th element in the array if it was sorted.
 	 *
+	 * <p>
 	 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
 	 *
+	 * <p>
 	 * \(O(n)\)
 	 *
 	 * @param  <E>     the array element type
@@ -68,10 +70,12 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Get the K'th element in the array if it was sorted
+	 * Get the K'th element in the array if it was sorted.
 	 *
+	 * <p>
 	 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
 	 *
+	 * <p>
 	 * \(O(n)\)
 	 *
 	 * @param  a       an array
@@ -136,12 +140,13 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Partition an array by a given pivot
+	 * Partition an array by a given pivot.
 	 *
-	 * At the end of this function, and array will be in the form:
+	 * <p>
+	 * At the end of this function, and array will be in the form: [smaller than pivot, equal to pivot, greater than
+	 * pivot]
 	 *
-	 * [smaller than pivot, equal to pivot, greater than pivot]
-	 *
+	 * <p>
 	 * \(O(n)\)
 	 *
 	 * @param  <E>   the array element type
@@ -168,12 +173,13 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Partition an array by a given pivot
+	 * Partition an array by a given pivot.
 	 *
-	 * At the end of this function, and array will be in the form:
+	 * <p>
+	 * At the end of this function, and array will be in the form: [smaller than pivot, equal to pivot, greater than
+	 * pivot]
 	 *
-	 * [smaller than pivot, equal to pivot, greater than pivot]
-	 *
+	 * <p>
 	 * \(O(n)\)
 	 *
 	 * @param  a     an array
@@ -278,6 +284,7 @@ class ArraysUtils {
 
 	/**
 	 * Partition an array to buckets where each element in bucket i is smaller than all elements in bucket i+1.
+	 *
 	 * <p>
 	 * \(O(n \log k)\) where k is the number of buckets of the output.
 	 *
@@ -298,6 +305,7 @@ class ArraysUtils {
 
 	/**
 	 * Partition an array to buckets where each element in bucket i is smaller than all elements in bucket i+1.
+	 *
 	 * <p>
 	 * \(O(n \log k)\) where k is the number of buckets of the output.
 	 *

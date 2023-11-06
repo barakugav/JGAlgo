@@ -97,7 +97,7 @@ class TSPMetricUtils {
 		return true;
 	}
 
-	static abstract class AbstractImpl implements TSPMetric {
+	abstract static class AbstractImpl implements TSPMetric {
 
 		@SuppressWarnings("unchecked")
 		@Override

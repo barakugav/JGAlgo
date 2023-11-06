@@ -20,8 +20,16 @@ import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * This example demonstrates how to iterate over the edges of a graph.
+ *
+ * @author Barak Ugav
+ */
 public class EdgeIterationExample {
 
+	/**
+	 * This example demonstrates how to iterate over the edges of a graph.
+	 */
 	public static void edgeIterationExample() {
 		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();

@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 /**
  * Weight function that maps graph edges or vertices to integer weights.
+ *
  * <p>
  * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is the
  * API for these algorithms for the edges (or vertices) integer weights.

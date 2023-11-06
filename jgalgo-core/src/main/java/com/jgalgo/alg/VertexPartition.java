@@ -28,10 +28,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
 /**
  * A partition of the vertices of a graph.
+ *
  * <p>
  * A partition of a set is a division of the set into a number of disjoint subsets, such that their union is the
  * original set. The sets may also be called 'components' or 'blocks'. We use the term 'block' instead of 'set' to avoid
  * confusion with the get/set convention.
+ *
  * <p>
  * The partition represent a mapping from the vertices of a graph to \(B\) blocks, each block is assigned a number in
  * range \([0,B)\). To check to which block a vertex is assigned use {@link #vertexBlock(Object)}.
@@ -68,6 +70,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Get all the edges that are contained in a block.
+	 *
 	 * <p>
 	 * An edge \((u,v)\) is contained in a block if both \(u\) and \(v\) are contained in the block.
 	 *
@@ -79,6 +82,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Get all the edges that cross between two different blocks.
+	 *
 	 * <p>
 	 * An edge \((u,v)\) is said to cross between two blocks \(b_1\) and \(b_2\) if \(u\) is contained in \(b_1\) and
 	 * \(v\) is contained in \(b_2\). Note that if the graph is directed, the cross edges of \((b_1,b_2)\) are different
@@ -99,9 +103,11 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Create a new graph that contains only the vertices and edges that are contained in a block.
+	 *
 	 * <p>
 	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
 	 * block and edges between them.
+	 *
 	 * <p>
 	 * The vertex and edge weights are not copied to the new sub graph. For more coping options see
 	 * {@link #blockSubGraph(int, boolean, boolean)}.
@@ -116,6 +122,7 @@ public interface VertexPartition<V, E> {
 	/**
 	 * Create a new graph that contains only the vertices and edges that are contained in a block with option to copy
 	 * weights.
+	 *
 	 * <p>
 	 * The returned graph is an induced subgraph of the original graph, namely it contains only the vertices of the
 	 * block and edges between them.
@@ -131,11 +138,13 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Create a new graph representing the edges between the blocks.
+	 *
 	 * <p>
 	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
 	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
 	 * \(0\) to \(B-1\), where \(B\) is the number of blocks in the partition. The edges of the new graph will have the
 	 * identifiers of the original edges.
+	 *
 	 * <p>
 	 * If there are multiple edges between two blocks, multiple parallel edges will be created in the new graph.
 	 * Original edges between vertices in the same block will be ignored, instead of copied as self edges in the new
@@ -150,6 +159,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Create a new graph representing the edges between the blocks.
+	 *
 	 * <p>
 	 * Each vertex in the new graph represents a block, and there is an edge between two blocks if there is an edge
 	 * between two original vertices, each in a different block. The vertices of the new graphs will be numbered from
@@ -169,6 +179,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex map.
+	 *
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
@@ -185,6 +196,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex mapping function.
+	 *
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
@@ -217,6 +229,7 @@ public interface VertexPartition<V, E> {
 
 	/**
 	 * Check if a mapping is a valid partition of the vertices of a graph.
+	 *
 	 * <p>
 	 * A valid vertex partition is a mapping from each vertex to an integer number in range [0, numberOfBlocks), in
 	 * which there are not 'empty blocks', namely at least one vertex is mapped to each block.

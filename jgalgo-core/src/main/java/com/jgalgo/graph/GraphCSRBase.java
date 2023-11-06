@@ -207,7 +207,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		return this;
 	}
 
-	static abstract class EdgeIterAbstract implements IEdgeIter {
+	abstract static class EdgeIterAbstract implements IEdgeIter {
 
 		private final int[] edges;
 		private int idx;

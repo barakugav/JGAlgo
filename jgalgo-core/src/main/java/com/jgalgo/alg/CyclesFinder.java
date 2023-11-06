@@ -22,6 +22,7 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm that finds all cycles in a graph.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -32,6 +33,7 @@ public interface CyclesFinder {
 
 	/**
 	 * Find all cycles in the given graph.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
 	 *
@@ -44,6 +46,7 @@ public interface CyclesFinder {
 
 	/**
 	 * Create a new algorithm for cycles finding.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link CyclesFinder} object. The {@link CyclesFinder.Builder}
 	 * might support different options to obtain different implementations.
@@ -56,6 +59,7 @@ public interface CyclesFinder {
 
 	/**
 	 * Create a new cycles finder algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -111,10 +115,12 @@ public interface CyclesFinder {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

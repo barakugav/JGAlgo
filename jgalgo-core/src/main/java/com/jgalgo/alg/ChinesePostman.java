@@ -22,11 +22,14 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for the chinese postman problem.
+ *
  * <p>
  * The chinese postman problem is to find a closed path that visits all edges in the graph at least once, with minimum
  * weight sum with respect to a given edge weight function.
+ *
  * <p>
  * The problem can be solved in polynomial time.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -37,6 +40,7 @@ public interface ChinesePostman {
 
 	/**
 	 * Compute the shortest circuit that visits all edges in the graph at least once.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}. If {@code g} is {@link IntGraph}, prefer
 	 * to pass {@link IWeightFunction} for best performance.
@@ -52,6 +56,7 @@ public interface ChinesePostman {
 
 	/**
 	 * Create a new algorithm object for chinese postman problem.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ChinesePostman} object. The
 	 * {@link ChinesePostman.Builder} might support different options to obtain different implementations.
@@ -64,6 +69,7 @@ public interface ChinesePostman {
 
 	/**
 	 * Create a new builder for chinese postman algorithms.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -90,10 +96,12 @@ public interface ChinesePostman {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

@@ -22,14 +22,17 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for computing the shortest path between two vertices in a graph.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one might ask what is the shortest path from
  * a <i>source</i> vertex to a <i>target</i> vertex, where the 'shortest' is defined by comparing the sum of edges
  * weights of each path. This interface computes such a path. It differ from the more known
  * {@link ShortestPathSingleSource}, as it does not compute the paths from a source to all vertices, only to a specific
  * target. This might be more efficient in some cases, as less than linear time and space can be used.
+ *
  * <p>
  * A variant with a heuristic distance function is also available, see {@link ShortestPathHeuristicST}.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -43,6 +46,7 @@ public interface ShortestPathST {
 
 	/**
 	 * Compute the shortest path from a source vertex to a target vertex.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
 	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -59,6 +63,7 @@ public interface ShortestPathST {
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ShortestPathST} object. The
 	 * {@link ShortestPathST.Builder} might support different options to obtain different implementations.
@@ -71,6 +76,7 @@ public interface ShortestPathST {
 
 	/**
 	 * Create a new S-T shortest path algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -84,7 +90,8 @@ public interface ShortestPathST {
 
 				@Override
 				public <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
-					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction || w == IWeightFunction.CardinalityWeightFunction;
+					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction
+							|| w == IWeightFunction.CardinalityWeightFunction;
 					if (cardinality) {
 						return cardinalityStSp.computeShortestPath(g, w, source, target);
 					} else {
@@ -112,10 +119,12 @@ public interface ShortestPathST {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

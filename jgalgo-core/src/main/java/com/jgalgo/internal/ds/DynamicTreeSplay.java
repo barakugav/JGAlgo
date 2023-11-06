@@ -18,10 +18,12 @@ package com.jgalgo.internal.ds;
 
 /**
  * Dynamic trees implementation using splay trees.
+ *
  * <p>
  * Each tree is represented as a set of paths where each path is a sequence of descending nodes in the tree. When an
  * element is accessed, the paths are split and merged so the path from the element to the root will be a single path in
  * the underlying representation. This implementation achieve amortized \(O(\log n)\) time for each operation.
+ *
  * <p>
  * Based on 'A Data Structure for Dynamic Trees' by Sleator, D. D.; Tarjan, R. E (1983), although the original paper did
  * not use splay trees for the implementation.
@@ -350,7 +352,7 @@ class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public <Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType) {
+	public <ExtT extends DynamicTreeExtension> ExtT getExtension(Class<ExtT> extensionType) {
 		return null;
 	}
 

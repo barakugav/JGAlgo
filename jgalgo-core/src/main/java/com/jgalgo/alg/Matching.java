@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A matching in a graph.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
  * adjacent edge in \(M\). Its a common problem to compute the maximum (cardinality) matching, namely the matching with
@@ -43,6 +44,7 @@ public interface Matching<V, E> {
 
 	/**
 	 * Check whether a vertex is matched by the matching.
+	 *
 	 * <p>
 	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -63,6 +65,7 @@ public interface Matching<V, E> {
 
 	/**
 	 * Get all the vertices matched by the matching.
+	 *
 	 * <p>
 	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -73,6 +76,7 @@ public interface Matching<V, E> {
 
 	/**
 	 * Get all the vertices that are not matched by the matching.
+	 *
 	 * <p>
 	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -83,6 +87,7 @@ public interface Matching<V, E> {
 
 	/**
 	 * Check whether an edge is part of the matching.
+	 *
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
 	 * \(M\).
@@ -101,6 +106,7 @@ public interface Matching<V, E> {
 
 	/**
 	 * Check whether this matching is perfect.
+	 *
 	 * <p>
 	 * A perfect matching is a matching in which all the vertices are matched.
 	 *
@@ -110,9 +116,11 @@ public interface Matching<V, E> {
 
 	/**
 	 * Check whether the given collection of edges form a valid matching in the graph.
+	 *
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
 	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code edges} to avoid
 	 * boxing/unboxing.

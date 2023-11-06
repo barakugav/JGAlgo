@@ -25,9 +25,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
+ *
  * <p>
  * The regular {@link ShortestPathSingleSource} can be used \(n\) times to achieve the same result, but it may be more
  * efficient to use a APSP algorithm in the first place.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,12 +40,15 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a graph.
+	 *
 	 * <p>
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight.
+	 *
 	 * <p>
 	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
 	 * {@code w}.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -58,9 +63,11 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Compute the shortest path between each pair of vertices in a given subset of the vertices of the graph.
+	 *
 	 * <p>
 	 * To compute the shortest cardinality (non weighted) paths, pass {@code null} instead of the weight function
 	 * {@code w}.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
@@ -111,6 +118,7 @@ public interface ShortestPathAllPairs {
 
 		/**
 		 * Check whether a negative cycle was found.
+		 *
 		 * <p>
 		 * If a negative cycle was found, there is no unique shortest paths, as the paths weight could be arbitrary
 		 * small by going through the cycle multiple times.
@@ -175,6 +183,7 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Create a new all-pairs-shortest-paths algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ShortestPathAllPairs} object. The
 	 * {@link ShortestPathAllPairs.Builder} might support different options to obtain different implementations.
@@ -187,6 +196,7 @@ public interface ShortestPathAllPairs {
 
 	/**
 	 * Create a new all pairs shortest paths algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -278,6 +288,7 @@ public interface ShortestPathAllPairs {
 
 		/**
 		 * Enable/disable the support for cardinality shortest paths only.
+		 *
 		 * <p>
 		 * More efficient algorithm may exists for cardinality shortest paths. Note that if this option is enabled, ONLY
 		 * cardinality shortest paths will be supported.
@@ -290,10 +301,12 @@ public interface ShortestPathAllPairs {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

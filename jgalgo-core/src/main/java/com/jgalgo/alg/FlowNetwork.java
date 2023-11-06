@@ -26,17 +26,20 @@ import com.jgalgo.graph.WeightsDouble;
 
 /**
  * Flow on graph edges, with capacities and flows values.
+ *
  * <p>
  * A flow network on graph edges is defined as two functions: the capacity function \(C:E \rightarrow R\) and flow
  * function \(F:E \rightarrow R\). The capacity function define how many units of flow an edge can transfer from its
  * source to its target. The flow function define the number of units of flow that are currently transferred along each
  * edge. The capacity of any edge must be non negative, and the edge's flow must be smaller or equal to its capacity.
+ *
  * <p>
  * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
  * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
  * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
  * going along {@link Graph#inEdges(Object)} must be equal to the sum of flow units going along
  * {@link Graph#outEdges(Object)}.
+ *
  * <p>
  * A flow is most intuitively defined on directed graphs, as the flow on an edge is transferred from one vertex to
  * another in some direction, but we can define and solve flow problem on undirected graphs as well. Technically, the
@@ -45,6 +48,7 @@ import com.jgalgo.graph.WeightsDouble;
  * means a flow directed from {@code edgeSource(e)} to {@code edgeTarget(e)} with \(f\) units of flow. A negative flow
  * \(-f\) value assigned to edge {@code e} means a flow directed from {@code edgeTarget(e)} to {@code edgeSource(e)}
  * (opposite direction) with \(|-f|\) units of flow (see {@link #getFlow(Object)}).
+ *
  * <p>
  * Some algorithm might be more efficient when the capacities and flows are integers. The interface
  * {@link FlowNetworkInt} represent a network in which the capacities and flows are integers. In addition, both
@@ -96,9 +100,11 @@ public interface FlowNetwork<V, E> {
 
 	/**
 	 * Get the amount of flow units going along an edge.
+	 *
 	 * <p>
 	 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
 	 * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+	 *
 	 * <p>
 	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
 	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
@@ -163,6 +169,7 @@ public interface FlowNetwork<V, E> {
 
 	/**
 	 * Get the cost of the flow along a set of edges.
+	 *
 	 * <p>
 	 * The cost function define the cost per unit of flow on each edge of the network. The cost of an edge in the
 	 * network is defined as the flow on the edge multiplied by the cost per unit of flow on the edge.
@@ -186,9 +193,11 @@ public interface FlowNetwork<V, E> {
 
 	/**
 	 * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+	 *
 	 * <p>
 	 * Unless {@link #setCapacity(Object, double)} or {@link #setFlow(Object, double)} are used, the capacity and flow
 	 * of each edge will be zero.
+	 *
 	 * <p>
 	 * By using {@link Graph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case the
 	 * graph is modified, as they are added to the graph. This is a key difference between this function and
@@ -209,6 +218,7 @@ public interface FlowNetwork<V, E> {
 
 	/**
 	 * Create a flow network by using existing edge weights.
+	 *
 	 * <p>
 	 * This method can be used together with {@link Weights#createExternalEdgesWeights}, creating a flow network for a
 	 * graph without adding any new weights containers to it. This is useful in scenarios in which we are not allowed to

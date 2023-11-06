@@ -24,8 +24,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * TSP \(3/2\)-approximation using maximum matching.
+ *
  * <p>
  * The running of this algorithm is \(O(n^3)\) and it achieve \(3/2\)-approximation to the optimal TSP solution.
+ *
  * <p>
  * Based on 'Worst-Case Analysis of a New Heuristic for the Travelling Salesman Problem' by Nicos Christofides (1976).
  *

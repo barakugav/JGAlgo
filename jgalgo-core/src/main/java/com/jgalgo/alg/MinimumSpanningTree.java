@@ -38,12 +38,15 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
  * Minimum spanning tree algorithm.
+ *
  * <p>
  * A spanning tree is an edge sub set of the graph edges which form a tree and connect (span) all the vertices of the
  * graph. A minimum spanning tree (MST) is a spanning tree with the minimum edge weights sum over all spanning trees.
+ *
  * <p>
  * If a <b>maximum</b> spanning tree is needed, the edge weights can be negated and the MST algorithm can be used to
  * compute the maximum spanning tree.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -56,6 +59,7 @@ public interface MinimumSpanningTree {
 
 	/**
 	 * Compute the minimum spanning tree (MST) of a given graph.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
 	 * its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -100,10 +104,12 @@ public interface MinimumSpanningTree {
 
 	/**
 	 * Check whether a given set of edges is a spanning tree of a given graph.
+	 *
 	 * <p>
 	 * A set of edges is spanning tree if it is a tree and connects all the vertices of the graph. Specifically, if the
 	 * graph is not empty, the number of edges must be \(n-1\) where \(n\) denote the number of vertices in the graph.
 	 * The edge set should not contain any duplicate edges.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code edges} to avoid
 	 * boxing/unboxing.
@@ -169,6 +175,7 @@ public interface MinimumSpanningTree {
 
 	/**
 	 * Check whether a given set of edges is a spanning forest of a given graph.
+	 *
 	 * <p>
 	 * A set of edges is spanning forest if it is a forest (do not contains cycles) which connected any pair of vertices
 	 * that are connected in the original graph, namely its connected components are identical to the connected
@@ -243,6 +250,7 @@ public interface MinimumSpanningTree {
 
 	/**
 	 * Create a new MST algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
 	 * {@link MinimumSpanningTree.Builder} might support different options to obtain different implementations.
@@ -255,6 +263,7 @@ public interface MinimumSpanningTree {
 
 	/**
 	 * Create a new minimum spanning tree algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -327,10 +336,12 @@ public interface MinimumSpanningTree {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

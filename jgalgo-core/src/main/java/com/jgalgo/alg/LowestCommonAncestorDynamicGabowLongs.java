@@ -22,20 +22,24 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 
 /**
  * Gabow linear dynamic LCA data structure.
+ *
  * <p>
  * The algorithm use {@link LowestCommonAncestorDynamicGabowSimple} as a base, but uses two layers of bit tricks to
  * remove the \(O(\log^2 n)\) factor of the simpler data structure. Each layer have less vertices than the previous one
  * by a factor of \(O(\log n)\), until the simpler data structure is used on \(O(n / \log^2 n)\) vertices. This
  * implementation is much faster in practice and always should be used over the simpler one.
+ *
  * <p>
  * The running time of this algorithm for \(m\) operations is \(O(n + m)\) and it uses linear space. More specifically,
  * the {@link #addLeaf(LowestCommonAncestorDynamic.Vertex)} operation is perform in \(O(1)\) amortized time and
  * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Vertex, LowestCommonAncestorDynamic.Vertex)} is perform
  * in constant time.
+ *
  * <p>
  * This class implements all the bit operations on {@code long} primitive. For a version that uses {@code int} see
  * {@link LowestCommonAncestorDynamicGabowInts}, which usually perform worse, but may perform better for (significantly)
  * smaller graphs.
+ *
  * <p>
  * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by Harold N. Gabow (1990).
  *

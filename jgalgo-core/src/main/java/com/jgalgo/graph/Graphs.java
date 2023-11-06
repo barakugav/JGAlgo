@@ -37,7 +37,7 @@ public class Graphs {
 	private Graphs() {}
 
 	/**
-	 * Tag interface for graphs that can not be muted/changed/altered
+	 * Tag interface for graphs that can not be muted/changed/altered.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -1185,14 +1185,19 @@ public class Graphs {
 
 	/**
 	 * Create a new graph that is an induced subgraph of the given graph.
+	 *
 	 * <p>
 	 * An induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The created graph will have the same type (directed/undirected) as
 	 * the given graph. The vertices and edges of the created graph will be a subset of the vertices and edges of the
 	 * given graph.
+	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
 	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  <V>      the vertices type
 	 * @param  <E>      the edges type
@@ -1206,20 +1211,27 @@ public class Graphs {
 
 	/**
 	 * Create a new graph that is a subgraph of the given graph.
+	 *
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
 	 * {@code vertices} must not be {@code null} in this case.
+	 *
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
 	 * <p>
 	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
 	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
 	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  <V>                  the vertices type
 	 * @param  <E>                  the edges type
@@ -1238,22 +1250,29 @@ public class Graphs {
 
 	/**
 	 * Create a new graph that is a subgraph of the given graph, with option to copy weights.
+	 *
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
 	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
 	 * {@code vertices} must not be {@code null} in this case.
+	 *
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
 	 * <p>
 	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
 	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
 	 * <p>
 	 * An additional parameter options for copying the weights of the vertices and edges of the given graph to the new
 	 * sub graph are provided. If {@code copyVerticesWeights} is {@code true}, then all the vertices weights of the
 	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
 	 * weights of the given graph will be copied to the new sub graph.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
 	 *
 	 * @param  <V>                  the vertices type
 	 * @param  <E>                  the edges type
@@ -1329,6 +1348,41 @@ public class Graphs {
 		return gb.build();
 	}
 
+	/**
+	 * Create a new graph that is a subgraph of the given int graph, with option to copy weights.
+	 *
+	 * <p>
+	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
+	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\).
+	 *
+	 * <p>
+	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
+	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
+	 * <p>
+	 * The created graph will have the same type (directed/undirected) as the given graph. The vertices and edges of the
+	 * created graph will be a subset of the vertices and edges of the given graph.
+	 *
+	 * <p>
+	 * An additional parameter options for copying the weights of the vertices and edges of the given graph to the new
+	 * sub graph are provided. If {@code copyVerticesWeights} is {@code true}, then all the vertices weights of the
+	 * given graph will be copied to the new sub graph. If {@code copyEdgesWeights} is {@code true}, then all the edges
+	 * weights of the given graph will be copied to the new sub graph.
+	 *
+	 * @param  g                    the graph to create a sub graph from
+	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
+	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
+	 *                                  are either a source or a target of an edge in {@code edges}
+	 * @param  edges                the edges of the sub graph, if {@code null} then {@code vertices} must not be
+	 *                                  {@code null} and the sub graph will be an induced subgraph of the given graph
+	 * @param  copyVerticesWeights  if {@code true} then all the vertices weights of the given graph will be copied to
+	 *                                  the new sub graph
+	 * @param  copyEdgesWeights     if {@code true} then all the edges weights of the given graph will be copied to the
+	 *                                  new sub graph
+	 * @return                      a new graph that is a subgraph of the given graph
+	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
 	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {

@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 /**
  * A reference to an element in a {@link HeapReferenceable}.
+ *
  * <p>
  * When a new element is inserted to a referenceable heap using {@link HeapReferenceable#insert(Object, Object)} a
  * reference to the element is returned. The reference object will be valid as long as element is still in the heap. The
@@ -35,6 +36,7 @@ public interface HeapReference<K, V> {
 
 	/**
 	 * Get the key of this element.
+	 *
 	 * <p>
 	 * There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
 	 * {@link HeapReferenceable#decreaseKey}.

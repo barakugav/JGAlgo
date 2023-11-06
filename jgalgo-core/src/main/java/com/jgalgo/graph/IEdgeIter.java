@@ -21,8 +21,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Iterator used to iterate over int graph edges.
+ *
  * <p>
  * This interface is a specific version of {@link EdgeIter} for {@link IntGraph}.
+ *
  * <p>
  * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
  * of the last iterated edge are available by {@link #sourceInt()} and {@link #targetInt()}.
@@ -46,6 +48,7 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 
 	/**
 	 * Peek at the next edge of the iterator without advancing it.
+	 *
 	 * <p>
 	 * Similar to {@link #nextInt()} but without advancing the iterator.
 	 *
@@ -62,6 +65,7 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 
 	/**
 	 * Get the source vertex of the last returned edge.
+	 *
 	 * <p>
 	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *
@@ -77,6 +81,7 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 
 	/**
 	 * Get the target vertex of the last returned edge.
+	 *
 	 * <p>
 	 * The behavior is undefined if {@link #nextInt()} was not called yet.
 	 *

@@ -24,11 +24,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * The Edmonds-Karp algorithm for maximum flow.
+ *
  * <p>
  * The most known implementation that solve the maximum flow problem. It does so by finding augmenting paths from the
  * source to the sink in the residual network, and saturating at least one edge in each path. This is a specification
  * Ford–Fulkerson method, which chooses the shortest augmenting path in each iteration. It runs in \(O(m^2 n)\) time and
  * linear space.
+ *
  * <p>
  * Based on the paper 'Theoretical improvements in algorithmic efficiency for network flow problems' by Jack Edmonds and
  * Richard M Karp.

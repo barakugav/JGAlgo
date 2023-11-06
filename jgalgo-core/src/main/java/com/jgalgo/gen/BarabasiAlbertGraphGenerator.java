@@ -33,17 +33,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Generates a Barabási–Albert graph.
+ *
  * <p>
  * A Barabási–Albert graph is a random graph with a power law degree distribution, which is a good model for many real
  * networks. The graph begins with an initial clique of size {@code initCliqueSize}, and then adds vertices one by one,
  * each with {@code k} edges that are attached to existing vertices. The probability that a new vertex is connected to
  * vertex \(v\) is proportional to the degree of \(v\) divided by the sum of degrees of all vertices in the graph.
+ *
  * <p>
  * By default the initial clique size is \(20\) and the number of edges added each time step (denoted {@code k}) is
  * \(10\). The generated graph(s) may be directed or undirected, and by default it is undirected. Self edges are never
  * created.
+ *
  * <p>
  * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ *
  * <p>
  * Based on 'Emergence of scaling in random networks' by Albert-László Barabási and Réka Albert.
  *
@@ -87,6 +91,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the vertices of the generated graph(s).
+	 *
 	 * <p>
 	 * If the generator is used to generate multiple graphs, the same vertices set is used for all of them.
 	 *
@@ -104,6 +109,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the vertices set of the generated graph(s) from a supplier.
+	 *
 	 * <p>
 	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
 	 * for multiple graphs if {@link #generate()} is called multiple times.
@@ -129,6 +135,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the edge supplier of the generated graph(s).
+	 *
 	 * <p>
 	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -143,6 +150,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the edge builder function of the generated graph(s).
+	 *
 	 * <p>
 	 * The function will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -156,11 +164,13 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the initial clique size of the generated graph(s).
+	 *
 	 * <p>
 	 * The initial clique is a complete graph of size {@code initCliqueSize}. After the initial clique is created, the
 	 * generator adds vertices one by one, each with {@code k} edges that are attached to existing vertices. The
 	 * probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\) divided by the
 	 * sum of degrees of all vertices in the graph.
+	 *
 	 * <p>
 	 * By default, the initial clique size is \(20\). The initial clique size must not be greater than the number of
 	 * vertices provided by {@link #setVertices}
@@ -175,11 +185,13 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the number of edges added each time step (k) when generated graph(s).
+	 *
 	 * <p>
 	 * The initial clique is a complete graph of size {@link #setInitialCliqueSize}. After the initial clique is
 	 * created, the generator adds vertices one by one, each with {@code k} edges that are attached to existing
 	 * vertices. The probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\)
 	 * divided by the sum of degrees of all vertices in the graph.
+	 *
 	 * <p>
 	 * By default, the number of edges added per time step is \(10\). The number of edges per time step must not be
 	 * greater than the initial clique size provided by {@link #setInitialCliqueSize}.
@@ -194,6 +206,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
+	 *
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
@@ -205,6 +218,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 	/**
 	 * Set the seed of the random number generator used to generate the graph(s).
+	 *
 	 * <p>
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *

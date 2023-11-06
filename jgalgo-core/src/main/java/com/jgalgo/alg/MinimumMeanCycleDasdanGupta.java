@@ -27,9 +27,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Dasdan and Gupta algorithm for minimum mean cycle.
+ *
  * <p>
  * The algorithm runs in \(O(n m)\) time and uses \(O(n^2)\) space. Although this algorithm have a strong polynomial
  * bound, {@link MinimumMeanCycleHoward} is usually faster.
+ *
  * <p>
  * Based on 'Faster Maximum and Minimum Mean Cycle Algorithms for System Performance Analysis' by Ali Dasdan, Rajesh K.
  * Gupta (1997).

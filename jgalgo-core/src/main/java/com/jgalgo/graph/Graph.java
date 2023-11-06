@@ -22,12 +22,14 @@ import java.util.Set;
 
 /**
  * A discrete graph with vertices and edges.
+ *
  * <p>
  * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some abstract entities, and edges are
  * connections between the vertices, for example vertices can be cities and edges could be the roads between them, or
  * vertices can be people the edges are the relation of "friends". Edges could be directed or undirected. Weights may be
  * assigned to vertices or edges, for example the length of a road might be a weight of an edge. Than, questions such as
  * "what is the shortest path between two cities?" might be answered using graph algorithms.
+ *
  * <p>
  * Each edge \(e=(u, v)\) in the graph has a <i>source</i> vertex, \(u\), and a <i>target</i> vertex, \(v\). In
  * undirected graphs the 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and
@@ -36,9 +38,11 @@ import java.util.Set;
  * efficient iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we
  * have both <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex,
  * respectively.
+ *
  * <p>
  * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
+ *
  * <p>
  * A directed graph and an undirected graph are both implemented by this interface. In a directed graph, the edges are
  * <i>directed</i>, namely an edge \(e=(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
@@ -47,10 +51,12 @@ import java.util.Set;
  * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(Object)}, {@link #removeInEdgesOf(Object)}
  * and {@link #removeOutEdgesOf(Object)} are equivalent for the same vertex in an undirected graph. To check if a graph
  * is directed or not, use the {@link #isDirected()} method.
+ *
  * <p>
  * Each vertex and edge in the graph is identified by a unique non null hashable object. The existing vertices and edges
  * of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be added by
  * {@link #addVertex(Object)} and {@link #addEdge(Object, Object, Object)}.
+ *
  * <p>
  * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as any primitive (for
  * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
@@ -60,6 +66,7 @@ import java.util.Set;
  * get or set a vertex/edge weight, and can be passed to algorithms as a {@link WeightFunction} for example. See
  * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link Weights} for the
  * full weights documentation.
+ *
  * <p>
  * Each graph expose an <i>Index</i> view on itself via the {@link #indexGraph()} method. The returned
  * {@link IndexGraph} is a graph in which the identifiers of the vertices are always {@code (0,1,2, ...,verticesNum-1)},
@@ -68,12 +75,15 @@ import java.util.Set;
  * friendly, but allow for high performance boost as no hash tables are needed, a simple array or bitmap can be used to
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
+ *
  * <p>
  * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
  * in degree of a vertex is exposed by {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ *
  * <p>
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
+ *
  * <p>
  * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
  * default implementation. For more control over the graph details, see {@link GraphFactory}. To construct an immutable
@@ -119,9 +129,11 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the set of all vertices of the graph.
+	 *
 	 * <p>
 	 * Each vertex in the graph is identified by a unique non null hashable object and the returned set is a set of all
 	 * these identifiers.
+	 *
 	 * <p>
 	 * The Graph object does not expose an explicit method to get the number of vertices, but it can accessed using this
 	 * method by {@code g.vertices().size()}.
@@ -132,9 +144,11 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the set of all edges of the graph.
+	 *
 	 * <p>
 	 * Each edge in the graph is identified by a unique non null hashable object, and the returned set is a set of all
 	 * these identifiers.
+	 *
 	 * <p>
 	 * The Graph object does not expose an explicit method to get the number of edges, but it can accessed using this
 	 * method by {@code g.edges().size()}.
@@ -145,6 +159,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Add a new vertex to the graph.
+	 *
 	 * <p>
 	 * A vertex can be any non null hashable object, namely it must implement {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. The set of graph vertices must not contain duplications, therefore the
@@ -164,8 +179,10 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the edges whose source is {@code source}.
+	 *
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code source} is one of their end points.
+	 *
 	 * <p>
 	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
@@ -178,8 +195,10 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the edges whose target is {@code target}.
+	 *
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
+	 *
 	 * <p>
 	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
@@ -192,9 +211,11 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
+	 *
 	 * <p>
 	 * If the graph is not directed, the return edge is an edge that its end-points are {@code source} and
 	 * {@code target}.
+	 *
 	 * <p>
 	 * In case there are multiple (parallel) edges between {@code source} and {@code target}, a single arbitrary one is
 	 * returned.
@@ -225,10 +246,12 @@ public interface Graph<V, E> {
 
 	/**
 	 * Add a new edge to the graph.
+	 *
 	 * <p>
 	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
 	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
 	 * {@code target} are the same vertex, an exception will be raised.
+	 *
 	 * <p>
 	 * The edge identifier must be unique and non null.
 	 *
@@ -285,6 +308,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Reverse an edge by switching its source and target.
+	 *
 	 * <p>
 	 * If the graph is undirected, this method does nothing.
 	 *
@@ -295,6 +319,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the source vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
 	 * than {@link #edgeTarget(Object)} returns.
@@ -307,6 +332,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the target vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
 	 * end-point than {@link #edgeSource(Object)} returns.
@@ -319,6 +345,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the other end-point of an edge.
+	 *
 	 * <p>
 	 * Given an edge \((u,v)\) and a vertex \(w\), assuming \(w\) is an endpoint of the edge, namely that \(w\) is
 	 * either \(u\) or \(v\), the method will return the <i>other</i> endpoint which is not \(w\). If \(w=u\) the method
@@ -345,8 +372,10 @@ public interface Graph<V, E> {
 
 	/**
 	 * Clear the graph completely by removing all vertices and edges.
+	 *
 	 * <p>
 	 * This function might be used to reuse an already allocated graph object.
+	 *
 	 * <p>
 	 * Note that this function also clears any weights associated with the vertices or edges.
 	 */
@@ -354,6 +383,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Remove all the edges from the graph.
+	 *
 	 * <p>
 	 * Note that this function also clears any weights associated with the edges.
 	 */
@@ -361,6 +391,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the vertices weights of some key.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -374,6 +405,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
+	 *
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated (when vertices
 	 * are added or removed). To create an external weights container, for example in cases the graph is a user input
@@ -392,16 +424,17 @@ public interface Graph<V, E> {
 	 * ages.set("Alice", 42);
 	 * ages.set("Bob", 35);
 	 * }</pre>
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	default <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
 		return addVerticesWeights(key, type, null);
@@ -409,6 +442,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph with default value.
+	 *
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
@@ -428,22 +462,24 @@ public interface Graph<V, E> {
 	 * assert "Jones".equals(names.get("Bob"))
 	 * assert "Unknown".equals(names.get("Charlie"))
 	 * }</pre>
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	<T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -453,6 +489,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the keys of all the associated vertices weights.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -462,19 +499,21 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the edges weights of some key.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        key of the weights
-	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 * @param  key        key of the weights
+	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 */
 	<T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
+	 *
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input you are not allowed to modify it, use
@@ -496,16 +535,17 @@ public interface Graph<V, E> {
 	 * roadLengths.set(9, 42);
 	 * roadLengths.set(13, 35);
 	 * }</pre>
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	default <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
 		return addEdgesWeights(key, type, null);
@@ -513,6 +553,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Add a new weights container associated with the edges of this graph with default value.
+	 *
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
 	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
@@ -535,22 +576,24 @@ public interface Graph<V, E> {
 	 * assert "Gravel".equals(names.get(13))
 	 * assert "Unknown".equals(names.get(14))
 	 * }</pre>
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	<T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -560,6 +603,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the keys of all the associated edges weights.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -576,6 +620,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Checks whether self edges are supported.
+	 *
 	 * <p>
 	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
 	 *
@@ -585,6 +630,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Checks whether parallel edges are supported.
+	 *
 	 * <p>
 	 * Parallel edges are multiple edges with identical source and target.
 	 *
@@ -594,6 +640,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get an Index graph view of this graph.
+	 *
 	 * <p>
 	 * The returned {@link IndexGraph} is a graph in which the identifiers of the vertices are always
 	 * {@code (0,1,2, ...,verticesNum-1)}, and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}.
@@ -601,10 +648,12 @@ public interface Graph<V, E> {
 	 * This rename behavior is less user friendly, but allow for high performance boost as no hash tables are needed, a
 	 * simple array or bitmap can be used to map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for
 	 * more information. The {@link IndexGraph} should not be used in scenarios where performance does not matter.
+	 *
 	 * <p>
 	 * The returned graph is a view, namely a graph that will contain the same vertices and edges (with different
 	 * {@code int} identifiers), and the same associated weights, that is automatically updated when the original graph
 	 * is updated and vice versa.
+	 *
 	 * <p>
 	 * If this graph is an Index graph, this method returns this graph.
 	 *
@@ -614,11 +663,13 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the index-id vertices mapping of this graph.
+	 *
 	 * <p>
 	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
 	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
 	 * are accessed with <b>indices</b> rather than fixed IDs. This method expose the mapping between the indices and
 	 * the fixed IDs of the graph vertices.
+	 *
 	 * <p>
 	 * Note that the mapping may change during the graph lifetime, as vertices are added and removed from the graph, and
 	 * a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}. The
@@ -630,11 +681,13 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get the index-id edges mapping of this graph.
+	 *
 	 * <p>
 	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
 	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
 	 * are accessed with <b>indices</b> rather than fixed IDs. This method expose the mapping between the indices and
 	 * the fixed IDs of the graph edges.
+	 *
 	 * <p>
 	 * Note that the mapping may change during the graph lifetime, as edges are added and removed from the graph, and a
 	 * regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,edgesNum-1)}. The returned
@@ -646,6 +699,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create a copy of this graph, with the same vertices and edges, without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
 	 * self edges and parallel edges support, without copying the vertices/edges weights. The returned graph will always
@@ -659,10 +713,12 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create a copy of this graph, with the same vertices and edges, with/without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
 	 * self edges and parallel edges support, with/without copying the vertices/edges weights. The returned graph will
 	 * always be modifiable, with no side affects on the original graph.
+	 *
 	 * <p>
 	 * Note that although {@code g.equals(g.copy())} is always {@code true} if {@code copyWeights} is {@code true},
 	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
@@ -678,14 +734,17 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create an immutable copy of this graph, with the same vertices and edges, without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices and edges, without copying the
 	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
 	 * removed from it.
+	 *
 	 * <p>
 	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
 	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
 	 * instead of using the original graph.
+	 *
 	 * <p>
 	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true}, there is no guarantee that
 	 * {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely, when the graph is copied, new indices may
@@ -699,14 +758,17 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create an immutable copy of this graph, with the same vertices and edges, with/without copying weights.
+	 *
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices and edges, with/without copying the
 	 * vertices/edges weights. The returned graph will be immutable, and no vertices/edges/weights can be added or
 	 * removed from it.
+	 *
 	 * <p>
 	 * A more compact and efficient representation may be used for the graph, if its known that it will not be changed
 	 * in the future. It may be more efficient to create an immutable copy of a graph and pass the copy to algorithms
 	 * instead of using the original graph.
+	 *
 	 * <p>
 	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true} if {@code copyWeights} is
 	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
@@ -736,6 +798,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get an immutable view of this graph.
+	 *
 	 * <p>
 	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
 	 * is automatically updated when the original graph is updated. The view is immutable, namely all operations that
@@ -749,10 +812,12 @@ public interface Graph<V, E> {
 
 	/**
 	 * Get a reversed view of this graph.
+	 *
 	 * <p>
 	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
 	 * is automatically updated when the original graph is updated and vice versa. The view is reversed, namely each
 	 * source and target vertices of each edge are swapped.
+	 *
 	 * <p>
 	 * Note that modifying the returned view will change the original graph.
 	 *
@@ -764,16 +829,20 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create a new graph that is a subgraph of this graph.
+	 *
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of this graph, namely an
 	 * induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' = \{\{u,v\}
 	 * \mid u,v \in V', \{u,v\} \in E\}\). {@code vertices} must not be {@code null} in this case.
+	 *
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
 	 * all the vertices which are either a source or a target of an edge in {@code edges}.
+	 *
 	 * <p>
 	 * The created graph will have the same type (directed/undirected) as this graph. The vertices and edges of the
 	 * created graph will be a subset of the vertices and edges of this graph.
+	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
 	 * creation, see {@link Graphs#subGraph(Graph, Collection, Collection, boolean, boolean)}.
@@ -792,6 +861,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create a new undirected empty graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link GraphFactory}.
@@ -806,6 +876,7 @@ public interface Graph<V, E> {
 
 	/**
 	 * Create a new directed empty graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link GraphFactory}.

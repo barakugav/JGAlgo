@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexBiPartitions {
 
-	static abstract class Impl implements IVertexBiPartition {
+	abstract static class Impl implements IVertexBiPartition {
 
 		private final IndexGraph g;
 		private IntSet leftVertices, rightVertices;

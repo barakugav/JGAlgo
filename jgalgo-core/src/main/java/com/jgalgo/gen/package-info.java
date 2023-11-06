@@ -16,6 +16,7 @@
 
 /**
  * Graph generators used to generate (possibly random) graphs with different distributions and structures.
+ *
  * <p>
  * Graph generators are essential for proper testing/benchmarking of algorithms. They can be used to generate with
  * different distributions and structures. A generator may be used to generate only trees, only bipartite graphs, dense

@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 /**
  * An undirected graph implementation using linked lists to store edge lists.
+ *
  * <p>
  * The edges of each vertex will be stored as a linked list. This implementation is efficient in use cases where
  * multiple vertices/edges removals are performed, but it should not be the default choice for an undirected graph.

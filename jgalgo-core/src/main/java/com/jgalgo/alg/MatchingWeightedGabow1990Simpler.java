@@ -27,11 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * Edmonds' Blossom algorithm for Maximum weighted matching with Gabow's implementation WITHOUT dynamic LCA data
  * structure.
+ *
  * <p>
  * This algorithm runs in \(O(m n \log n)\) time and uses linear space. The asymptotically running time is lower than
  * the regular {@link MatchingWeightedGabow1990} implementation, but it runs faster in practice. Instead of using
  * {@link SubtreeMergeFindMin} and {@link LowestCommonAncestorDynamic}, a simple heap is used to tracker 'blossom'
  * steps.
+ *
  * <p>
  * Based on the original paper 'Paths, Trees, and Flowers' by Jack Edmonds (1965), later improved by 'An Efficient
  * Implementation of Edmonds Algorithm for Maximum Matching on Graphs' by Harold N. Gabow (1976), and using the

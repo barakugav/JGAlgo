@@ -21,11 +21,14 @@ import java.util.Comparator;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value.
+ *
  * <p>
  * Most implementation support insertion of new elements and finding or extracting the minimum in logarithmic or
  * constant time.
+ *
  * <p>
  * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -65,6 +68,7 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Insert multiple elements.
+	 *
 	 * <p>
 	 * Implementations may be more efficient if multiple elements are added to the heap using this method, rather than
 	 * calling {@link #insert(Object)} repetitively.
@@ -83,6 +87,7 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Extract the minimum element in the heap.
+	 *
 	 * <p>
 	 * This method find and <b>remove</b> the minimum element.
 	 *
@@ -93,11 +98,14 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Meld with another heap.
+	 *
 	 * <p>
 	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
 	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 *
 	 * <p>
 	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 *
 	 * <p>
 	 * If the heap implementation expose references to its element (see {@link HeapReferenceable}), the references of
 	 * both ({@code this} and the given {@code heap}) remain valid and its possible to use them only in this heap (they
@@ -119,6 +127,7 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Create a new heap.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
@@ -131,6 +140,7 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Create a new heap with custom comparator.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
@@ -143,6 +153,7 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Create a new heaps builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -189,6 +200,7 @@ public interface Heap<E> extends Collection<E> {
 	static interface Builder<E> {
 		/**
 		 * Build a new heap with the given comparator.
+		 *
 		 * <p>
 		 * If primitive elements are in used, namely {@link #elementsTypePrimitive(Class)}, its recommended to use a
 		 * primitive {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
@@ -210,31 +222,34 @@ public interface Heap<E> extends Collection<E> {
 		/**
 		 * Change the elements type of the built heaps to a generic object type.
 		 *
-		 * @param  <Elements> object type
-		 * @return            this builder
+		 * @param  <ElementsT> object type
+		 * @return             this builder
 		 */
-		<Elements> Heap.Builder<Elements> elementsTypeObj();
+		<ElementsT> Heap.Builder<ElementsT> elementsTypeObj();
 
 		/**
 		 * Change the elements type of the built heaps to some primitive type.
+		 *
 		 * <p>
 		 * Some specific type implementation may exists that is more efficient than the boxed general object
 		 * implementation.
 		 *
-		 * @param  <Elements>               elements primitive boxed type
+		 * @param  <ElementsT>              elements primitive boxed type
 		 * @param  primitiveType            the class of the primitive type
 		 * @return                          this builder
 		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
 		 *                                      {@code int.class, double.class} ect.
 		 */
-		<Elements> Heap.Builder<Elements> elementsTypePrimitive(Class<? extends Elements> primitiveType);
+		<ElementsT> Heap.Builder<ElementsT> elementsTypePrimitive(Class<? extends ElementsT> primitiveType);
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

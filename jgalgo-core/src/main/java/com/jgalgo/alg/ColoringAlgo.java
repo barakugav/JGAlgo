@@ -30,13 +30,16 @@ import com.jgalgo.internal.util.IntAdapters;
 /**
  * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
  * vertices.
+ *
  * <p>
  * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\) for any vertex \(v\) in \(V\) where
  * each edge \((u,v)\) in \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the total number of different
  * colors. The problem is NP-hard, but various heuristics exists which give decent results for general graphs and
  * optimal results for special cases.
+ *
  * <p>
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -72,6 +75,7 @@ public interface ColoringAlgo {
 
 	/**
 	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
 	 *
@@ -85,6 +89,7 @@ public interface ColoringAlgo {
 
 	/**
 	 * Check whether a given mapping is a valid coloring of a graph.
+	 *
 	 * <p>
 	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
 	 * the color of \(u\) is different than the color of \(v\).
@@ -145,6 +150,7 @@ public interface ColoringAlgo {
 
 	/**
 	 * Create a new coloring algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object. The {@link ColoringAlgo.Builder}
 	 * might support different options to obtain different implementations.
@@ -157,6 +163,7 @@ public interface ColoringAlgo {
 
 	/**
 	 * Create a new coloring algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -218,10 +225,12 @@ public interface ColoringAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

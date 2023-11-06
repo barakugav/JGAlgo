@@ -22,10 +22,12 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A {@link SplitFindMin} implementation using arrays.
+ *
  * <p>
  * The data structure support the {@link #init(Collection, Comparator)} in \(O(n)\) time, the
  * {@link #decreaseKey(int, Object)} operation in \(O(1)\) time and the {@link #split(int)} operation in \(O(\log n)\)
  * time amortized. The data structure uses linear space.
+ *
  * <p>
  * This data structure is used in the maximum weighted matching for general graphs.
  *

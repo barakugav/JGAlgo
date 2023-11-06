@@ -18,14 +18,17 @@ package com.jgalgo.internal.ds;
 
 /**
  * Static Range Minimum Query (RMQ) algorithm.
+ *
  * <p>
  * Given a sequence of \(n\) comparable objects we would like to perform pre-processing and than be able to answer
  * queries of the type: "what is the minimum element in the range \([i, j]\)?" for any indices \(0 \leq i \leq j \leq
  * n\). Algorithm implementing this interface usually require linear or close to linear processing time and try to
  * achieve constant or logarithmic query time.
+ *
  * <p>
  * The sequence itself is never passed to the algorithm, rather a {@link RMQStaticComparator} which support comparing
  * two elements given their <i>indices</i> only.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -72,6 +75,7 @@ public interface RMQStatic {
 
 	/**
 	 * Create a new RMQ algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link RMQStatic} object. The {@link RMQStatic.Builder} might
 	 * support different options to obtain different implementations.
@@ -84,6 +88,7 @@ public interface RMQStatic {
 
 	/**
 	 * Create a new static range minimum queries algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -143,10 +148,12 @@ public interface RMQStatic {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

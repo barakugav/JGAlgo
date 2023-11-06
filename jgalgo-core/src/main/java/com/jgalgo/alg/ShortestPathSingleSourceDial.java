@@ -28,15 +28,18 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * Dial's algorithm for Single Source Shortest Path for positive integer weights.
+ *
  * <p>
  * The algorithm runs in \(O(n + m + D)\) where \(D\) is the maximum distance, or the sum of heaviest n-1 edges if the
  * maximum distance is not known. It takes advantage of the fact that a heap for integers can be implemented using
  * buckets, one for each weight. Such a heap require \(D\) buckets, and therefore the algorithm running time and space
  * depends on \(D\).
+ *
  * <p>
  * This algorithm should be used in case the maximal distance is known in advance, and its small. For example, its used
  * by {@link ShortestPathSingleSourceGoldberg} as a subroutine, where the maximum distance is bounded by the number of
  * layers.
+ *
  * <p>
  * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by Dial, Robert B. (1969).
  *

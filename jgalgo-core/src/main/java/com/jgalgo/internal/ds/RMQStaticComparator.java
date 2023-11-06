@@ -21,6 +21,7 @@ import java.util.Objects;
 
 /**
  * Comparator used to compare elements in a sequence by {@link RMQStatic} algorithms.
+ *
  * <p>
  * When an {@link RMQStatic} perform a preprocessing, the sequence itself of elements is not passed to it, rather a
  * comparator that can compare two elements by their indices. The comparator must remain valid as long as queries are

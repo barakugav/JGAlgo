@@ -20,7 +20,7 @@ import com.jgalgo.graph.IndexGraph;
 
 class ColoringUtils {
 
-	static abstract class AbstractImpl implements ColoringAlgo {
+	abstract static class AbstractImpl implements ColoringAlgo {
 
 		@SuppressWarnings("unchecked")
 		@Override

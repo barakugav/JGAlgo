@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A matching in a {@link IntGraph}.
+ *
  * <p>
  * This interface is a specific version of {@link Matching} for {@link IntGraph}. For the full documentation see
  * {@link Matching}.
@@ -37,6 +38,7 @@ public interface IMatching extends Matching<Integer, Integer> {
 
 	/**
 	 * Check whether a vertex is matched by the matching.
+	 *
 	 * <p>
 	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
@@ -75,6 +77,7 @@ public interface IMatching extends Matching<Integer, Integer> {
 
 	/**
 	 * Check whether an edge is part of the matching.
+	 *
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
 	 * \(M\).
@@ -95,6 +98,7 @@ public interface IMatching extends Matching<Integer, Integer> {
 
 	/**
 	 * Check whether the given collection of edges form a valid matching in the graph.
+	 *
 	 * <p>
 	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
 	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.

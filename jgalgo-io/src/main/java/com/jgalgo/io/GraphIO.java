@@ -55,6 +55,7 @@ class GraphIO {
 	}
 
 	private static final Map<String, GraphFormat> FileExtensionToFormat;
+
 	static {
 		List<GraphFormat> formats = new ObjectArrayList<>();
 		formats.add(FormatCSV.Instance);

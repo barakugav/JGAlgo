@@ -25,14 +25,17 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Compute the minimum-cost (max) flow in a flow network.
+ *
  * <p>
  * There are a few variations of the minimum-cost flow problem: (1) given source(s) and sink(s) terminal vertices, and
  * the objecting is to find the flow with the lowest cost out of all maximum flows. (2) given per-vertex finite supply,
  * and the objective is to find a minimum-cost flow satisfying the supply, namely that for each vertex the sum of flow
  * units going out of the vertex minus the sum of flow units going into it is equal to its supply.
+ *
  * <p>
  * In addition to these variants, a lower bound for each edge flow can be specified, similar to the capacities which can
  * be viewed as upper bounds.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -46,6 +49,7 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Compute the min-cost max-flow in a network between a source and a sink.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net} and
 	 * {@link IWeightFunction} as {@code cost} to avoid boxing/unboxing.
@@ -62,6 +66,7 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Compute the min-cost max-flow in a network between a source and a sink given a lower bound for the edges flows.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net},
 	 * {@link IWeightFunction} as {@code cost} and {@code lowerBound} to avoid boxing/unboxing.
@@ -80,6 +85,7 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Compute the min-cost max-flow in a network between a set of sources and a set of sinks.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net},
 	 * {@link IWeightFunction} as {@code cost}, and {@link IntCollection} as {@code sources} and {@code sinks} to avoid
@@ -99,6 +105,7 @@ public interface MinimumCostFlow {
 	/**
 	 * Compute the min-cost max-flow in a network between a set of sources and a set of sinks given a lower bound for
 	 * the edges flows.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net},
 	 * {@link IWeightFunction} as {@code cost} and {@code lowerBound}, and {@link IntCollection} as {@code sources} and
@@ -118,10 +125,12 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Compute the min-cost (not maximum!) flow in a network given a supply for each vertex.
+	 *
 	 * <p>
 	 * The supply is a scalar for each vertex, and the objective is to find a minimum-cost flow satisfying the supply,
 	 * namely that for each vertex the sum of flow units going out of the vertex minus the sum of flow units going into
 	 * it is equal to its supply.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net},
 	 * {@link IWeightFunction} as {@code cost} and {@code supply} to avoid boxing/unboxing.
@@ -139,10 +148,12 @@ public interface MinimumCostFlow {
 	/**
 	 * Compute the min-cost (not maximum!) flow in a network given a supply for each vertex and a lower bound for the
 	 * edges flows.
+	 *
 	 * <p>
 	 * The supply is a scalar for each vertex, and the objective is to find a minimum-cost flow satisfying the supply,
 	 * namely that for each vertex the sum of flow units going out of the vertex minus the sum of flow units going into
 	 * it is equal to its supply.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IFlowNetwork} as {@code net},
 	 * {@link IWeightFunction} as {@code cost}, {@code lowerBound} and {@code supply} to avoid boxing/unboxing.
@@ -160,6 +171,7 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Create a new min-cost-flow algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MinimumCostFlow} object. The
 	 * {@link MinimumCostFlow.Builder} might support different options to obtain different implementations.
@@ -172,6 +184,7 @@ public interface MinimumCostFlow {
 
 	/**
 	 * Create a new minimum cost flow algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -315,9 +328,11 @@ public interface MinimumCostFlow {
 
 		/**
 		 * Enable/disable integer network (capacities, flows, vertices supplies and edges flow lower bound).
+		 *
 		 * <p>
 		 * More efficient and accurate implementations may be supported if the network is known to be integral. If the
 		 * option is enabled, non-integer networks will not be supported by the built algorithms.
+		 *
 		 * <p>
 		 * The default value of this option is {@code false}.
 		 *
@@ -328,9 +343,11 @@ public interface MinimumCostFlow {
 
 		/**
 		 * Enable/disable integer costs.
+		 *
 		 * <p>
 		 * More efficient and accurate implementations may be supported if the cost function is known to be integral. If
 		 * the option is enabled, non-integer cost functions will not be supported by the built algorithms.
+		 *
 		 * <p>
 		 * The default value of this option is {@code false}.
 		 *
@@ -341,10 +358,12 @@ public interface MinimumCostFlow {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

@@ -42,6 +42,7 @@ public class GraphsUtils {
 
 	/**
 	 * Check whether a graph contain self edges.
+	 *
 	 * <p>
 	 * A self edge is an edge whose source and target is the same vertex.
 	 *
@@ -66,6 +67,7 @@ public class GraphsUtils {
 
 	/**
 	 * Check whether a graph contain parallel edges.
+	 *
 	 * <p>
 	 * Two parallel edges are edges that have the same source and target vertices.
 	 *

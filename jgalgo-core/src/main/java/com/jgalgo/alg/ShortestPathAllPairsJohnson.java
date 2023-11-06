@@ -35,9 +35,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Johnson's algorithm for all pairs shortest path.
+ *
  * <p>
  * Calculate the shortest path between each pair of vertices in a graph in \(O(n m + n^2 \log n)\) time using \(O(n^2)\)
  * space. Negative weights are supported.
+ *
  * <p>
  * The algorithm is faster than using {@link ShortestPathSingleSourceBellmanFord} \(n\) times, as it uses
  * {@link ShortestPathSingleSourceBellmanFord} once to compute a potential for each vertex, resulting in an equivalent
@@ -127,8 +129,9 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newInstance());
 			for (int source : verticesSubset) {
 				final int source0 = source;
-				tasks.add(JGAlgoUtils.recursiveAction(() -> ssspResults[vToResIdx[source0]] =
-						(ShortestPathSingleSource.IResult) sssp.get().computeShortestPaths(g, w, Integer.valueOf(source0))));
+				tasks.add(JGAlgoUtils
+						.recursiveAction(() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
+								.get().computeShortestPaths(g, w, Integer.valueOf(source0))));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
@@ -172,8 +175,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		} else {
 			refW = e -> e < fakeEdgesThreshold ? w.weight(e) : 0;
 		}
-		ShortestPathSingleSource.IResult res =
-				(ShortestPathSingleSource.IResult) negativeSssp.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));
+		ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) negativeSssp
+				.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -190,6 +193,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	/**
 	 * Set the algorithm used for negative weights graphs.
+	 *
 	 * <p>
 	 * The algorithm first calculate a potential for each vertex using an SSSP algorithm for negative weights, than
 	 * construct an equivalent positive weight function which is used by an SSSP algorithm for positive weights to
@@ -232,7 +236,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	}
 
-	private static abstract class SuccessRes implements ShortestPathAllPairs.IResult {
+	private abstract static class SuccessRes implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 		double[] potential;

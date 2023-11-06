@@ -20,6 +20,7 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm that compute the k-edge connected components of a graph.
+ *
  * <p>
  * Given a graph \(G = (V, E)\) and an integer \(k\), a k-edge connected component is a maximal subgraph \(G' = (V',
  * E')\) of \(G\) such that for every pair of vertices \(u, v \in V'\) there are at least \(k\) edge-disjoint paths
@@ -27,6 +28,7 @@ import com.jgalgo.graph.IntGraph;
  * pair of vertices remains connected even if we allow to remove \(k-1\) edges from the graph. For \(k=1\) the problem
  * is identical to finding the strongly connected components of the graph. Note that the k-edge disjoint paths may share
  * vertices.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,10 +40,12 @@ public interface KEdgeConnectedComponentsAlgo {
 
 	/**
 	 * Compute the k-edge connected components of a graph.
+	 *
 	 * <p>
 	 * The algorithm will return a {@link VertexPartition} object that represents the k-edge connected components of the
 	 * graph. The partition will contain exactly one block for each k-edge connected component. The vertices of each
 	 * block are the vertices of the component.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
@@ -56,6 +60,7 @@ public interface KEdgeConnectedComponentsAlgo {
 
 	/**
 	 * Create a new k-edge connected components algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link KEdgeConnectedComponentsAlgo} object. The
 	 * {@link KEdgeConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
@@ -68,6 +73,7 @@ public interface KEdgeConnectedComponentsAlgo {
 
 	/**
 	 * Create a new k-edge connected components algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -94,10 +100,12 @@ public interface KEdgeConnectedComponentsAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

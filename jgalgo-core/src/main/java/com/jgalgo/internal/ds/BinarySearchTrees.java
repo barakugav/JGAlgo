@@ -26,15 +26,15 @@ class BinarySearchTrees {
 
 	private BinarySearchTrees() {}
 
-	static <K, Node extends INode<K, Node>> Node find(Node root, Comparator<? super K> c, K key) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT find(NodeT root, Comparator<? super K> c, K key) {
 		return findOrNeighbor(root, c, key, NeighborType.None);
 	}
 
-	static <K, Node extends INode<K, Node>> Node findOrSmaller(Node root, Comparator<? super K> c, K key) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT findOrSmaller(NodeT root, Comparator<? super K> c, K key) {
 		return findOrNeighbor(root, c, key, NeighborType.Predecessor);
 	}
 
-	static <K, Node extends INode<K, Node>> Node findOrGreater(Node root, Comparator<? super K> c, K key) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT findOrGreater(NodeT root, Comparator<? super K> c, K key) {
 		return findOrNeighbor(root, c, key, NeighborType.Successor);
 	}
 
@@ -42,11 +42,11 @@ class BinarySearchTrees {
 		None, Predecessor, Successor,
 	}
 
-	private static <K, Node extends INode<K, Node>> Node findOrNeighbor(Node root, Comparator<? super K> c, K key,
+	private static <K, NodeT extends Node<K, NodeT>> NodeT findOrNeighbor(NodeT root, Comparator<? super K> c, K key,
 			NeighborType neighborType) {
 		if (root == null)
 			return null;
-		BiFunction<NeighborType, Node, Node> onLeftChildMissing = (nType, p) -> {
+		BiFunction<NeighborType, NodeT, NodeT> onLeftChildMissing = (nType, p) -> {
 			switch (nType) {
 				case None:
 					return null;
@@ -58,7 +58,7 @@ class BinarySearchTrees {
 					throw new IllegalArgumentException("Unexpected value: " + neighborType);
 			}
 		};
-		BiFunction<NeighborType, Node, Node> onRightChildMissing = (nType, p) -> {
+		BiFunction<NeighborType, NodeT, NodeT> onRightChildMissing = (nType, p) -> {
 			switch (nType) {
 				case None:
 					return null;
@@ -71,7 +71,7 @@ class BinarySearchTrees {
 			}
 		};
 		if (c == null) {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp < 0) {
 					if (!p.hasLeftChild())
@@ -86,7 +86,7 @@ class BinarySearchTrees {
 				}
 			}
 		} else {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = c.compare(key, p.key);
 				if (cmp < 0) {
 					if (!p.hasLeftChild())
@@ -103,11 +103,11 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, Node extends INode<K, Node>> Node findSmaller(Node root, Comparator<? super K> c, K key) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT findSmaller(NodeT root, Comparator<? super K> c, K key) {
 		if (root == null)
 			return null;
 		if (c == null) {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp <= 0) {
 					if (!p.hasLeftChild())
@@ -120,7 +120,7 @@ class BinarySearchTrees {
 				}
 			}
 		} else {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = c.compare(key, p.key);
 				if (cmp <= 0) {
 					if (!p.hasLeftChild())
@@ -135,11 +135,11 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, Node extends INode<K, Node>> Node findGreater(Node root, Comparator<? super K> c, K key) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT findGreater(NodeT root, Comparator<? super K> c, K key) {
 		if (root == null)
 			return null;
 		if (c == null) {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
 				if (cmp >= 0) {
 					if (!p.hasRightChild())
@@ -152,7 +152,7 @@ class BinarySearchTrees {
 				}
 			}
 		} else {
-			for (Node p = root;;) {
+			for (NodeT p = root;;) {
 				int cmp = c.compare(key, p.key);
 				if (cmp >= 0) {
 					if (!p.hasRightChild())
@@ -167,59 +167,59 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, Node extends INode<K, Node>> Node findMin(Node root) {
-		for (Node p = root;; p = p.left)
+	static <K, NodeT extends Node<K, NodeT>> NodeT findMin(NodeT root) {
+		for (NodeT p = root;; p = p.left)
 			if (!p.hasLeftChild())
 				return p;
 	}
 
-	static <K, Node extends INode<K, Node>> Node findMax(Node root) {
-		for (Node p = root;; p = p.right)
+	static <K, NodeT extends Node<K, NodeT>> NodeT findMax(NodeT root) {
+		for (NodeT p = root;; p = p.right)
 			if (!p.hasRightChild())
 				return p;
 	}
 
-	static <K, Node extends INode<K, Node>> Node getPredecessor(Node n) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT getPredecessor(NodeT n) {
 		return getPredecessorInSubtree(n, null);
 	}
 
-	private static <K, Node extends INode<K, Node>> Node getPredecessorInSubtree(Node n, Node subtreeRoot) {
+	private static <K, NodeT extends Node<K, NodeT>> NodeT getPredecessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* predecessor in left sub tree */
 		if (n.hasLeftChild())
-			for (Node p = n.left;; p = p.right)
+			for (NodeT p = n.left;; p = p.right)
 				if (!p.hasRightChild())
 					return p;
 
 		/* predecessor is some ancestor */
-		Node subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
-		for (Node p = n; p.parent != subtreeParent; p = p.parent)
+		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
+		for (NodeT p = n; p.parent != subtreeParent; p = p.parent)
 			if (p.isRightChild())
 				return p.parent;
 		return null;
 	}
 
-	static <K, Node extends INode<K, Node>> Node getSuccessor(Node n) {
+	static <K, NodeT extends Node<K, NodeT>> NodeT getSuccessor(NodeT n) {
 		return getSuccessorInSubtree(n, null);
 	}
 
-	private static <K, Node extends INode<K, Node>> Node getSuccessorInSubtree(Node n, Node subtreeRoot) {
+	private static <K, NodeT extends Node<K, NodeT>> NodeT getSuccessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* successor in right sub tree */
 		if (n.hasRightChild())
-			for (Node p = n.right;; p = p.left)
+			for (NodeT p = n.right;; p = p.left)
 				if (!p.hasLeftChild())
 					return p;
 
 		/* successor is some ancestor */
-		Node subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
-		for (Node p = n; p.parent != subtreeParent; p = p.parent)
+		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
+		for (NodeT p = n; p.parent != subtreeParent; p = p.parent)
 			if (p.isLeftChild())
 				return p.parent;
 		return null;
 	}
 
-	static <K, Node extends INode<K, Node>> void insert(Node root, Comparator<? super K> c, Node n) {
+	static <K, NodeT extends Node<K, NodeT>> void insert(NodeT root, Comparator<? super K> c, NodeT n) {
 		if (c == null) {
-			for (Node parent = root;;) {
+			for (NodeT parent = root;;) {
 				int cmp = JGAlgoUtils.cmpDefault(n.key, parent.key);
 				if (cmp <= 0) {
 					if (!parent.hasLeftChild()) {
@@ -238,7 +238,7 @@ class BinarySearchTrees {
 				}
 			}
 		} else {
-			for (Node parent = root;;) {
+			for (NodeT parent = root;;) {
 				int cmp = c.compare(n.key, parent.key);
 				if (cmp <= 0) {
 					if (!parent.hasLeftChild()) {
@@ -259,8 +259,8 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, Node extends INode<K, Node>> void clear(Node root) {
-		for (Node p = root; p != null;) {
+	static <K, NodeT extends Node<K, NodeT>> void clear(NodeT root) {
+		for (NodeT p = root; p != null;) {
 			for (;;) {
 				if (p.hasLeftChild()) {
 					p = p.left;
@@ -272,15 +272,15 @@ class BinarySearchTrees {
 				}
 				break;
 			}
-			Node parent = p.parent;
+			NodeT parent = p.parent;
 			p.clear();
 			p = parent;
 		}
 	}
 
-	static <K, Node extends INode<K, Node>> void swap(Node n1, Node n2) {
+	static <K, NodeT extends Node<K, NodeT>> void swap(NodeT n1, NodeT n2) {
 		if (n2 == n1.parent) {
-			Node temp = n1;
+			NodeT temp = n1;
 			n1 = n2;
 			n2 = temp;
 		}
@@ -291,7 +291,7 @@ class BinarySearchTrees {
 				n1.parent.right = n2;
 			}
 			if (n1.left == n2) {
-				Node right = n1.right;
+				NodeT right = n1.right;
 				if ((n1.left = n2.left) != null)
 					n1.left.parent = n1;
 				if ((n1.right = n2.right) != null)
@@ -301,7 +301,7 @@ class BinarySearchTrees {
 					n2.right.parent = n2;
 			} else {
 				assert n1.right == n2;
-				Node left = n1.left;
+				NodeT left = n1.left;
 				if ((n1.left = n2.left) != null)
 					n1.left.parent = n1;
 				if ((n1.right = n2.right) != null)
@@ -325,9 +325,9 @@ class BinarySearchTrees {
 				n2.parent.right = n1;
 			}
 
-			Node parent = n1.parent;
-			Node left = n1.left;
-			Node right = n1.right;
+			NodeT parent = n1.parent;
+			NodeT left = n1.left;
+			NodeT right = n1.right;
 			n1.parent = n2.parent;
 			if ((n1.left = n2.left) != null)
 				n1.left.parent = n1;
@@ -341,13 +341,13 @@ class BinarySearchTrees {
 		}
 	}
 
-	static class INode<K, Node extends INode<K, Node>> {
+	static class Node<K, NodeT extends Node<K, NodeT>> {
 		K key;
-		Node parent;
-		Node right;
-		Node left;
+		NodeT parent;
+		NodeT right;
+		NodeT left;
 
-		INode(K key) {
+		Node(K key) {
 			this.key = key;
 			parent = right = left = null;
 		}
@@ -387,12 +387,12 @@ class BinarySearchTrees {
 		}
 	}
 
-	static class BSTIterator<K, Node extends INode<K, Node>> implements Iterator<Node> {
+	static class BSTIterator<K, NodeT extends Node<K, NodeT>> implements Iterator<NodeT> {
 
-		private final Node subtreeRoot;
-		private Node n;
+		private final NodeT subtreeRoot;
+		private NodeT n;
 
-		BSTIterator(Node subtreeRoot) {
+		BSTIterator(NodeT subtreeRoot) {
 			this.subtreeRoot = subtreeRoot;
 			n = subtreeRoot == null ? null : findMin(subtreeRoot);
 		}
@@ -403,9 +403,9 @@ class BinarySearchTrees {
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 			Assertions.Iters.hasNext(this);
-			Node ret = n;
+			NodeT ret = n;
 			n = getSuccessorInSubtree(n, subtreeRoot);
 			return ret;
 		}

@@ -27,7 +27,7 @@ import com.jgalgo.graph.WeightFunctions;
 
 class KShortestPathsSTs {
 
-	static abstract class AbstractImpl implements KShortestPathsST {
+	abstract static class AbstractImpl implements KShortestPathsST {
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override

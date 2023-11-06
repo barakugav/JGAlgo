@@ -21,13 +21,10 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsFloat;
@@ -35,6 +32,8 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Range;
 
 class FormatLEDA implements GraphFormat {
@@ -72,71 +71,70 @@ class FormatLEDA implements GraphFormat {
 				throw new IllegalArgumentException("the LEDA format support graphs with edges 1..m only");
 
 			try {
-				String info_type_for_vertices; // can be void, string, int etc
-				IWeights<?> w_vertices; // weights for vertices
+				String verticesWeightsType; // can be void, string, int etc
+				IWeights<?> verticesWeights; // weights for vertices
 				if (graph.getVerticesWeightsKeys().isEmpty()) {
-					info_type_for_vertices = "void";
-					w_vertices = null;
+					verticesWeightsType = "void";
+					verticesWeights = null;
 				} else {
 					// for now, take the first weights collection
 					String key = graph.getVerticesWeightsKeys().iterator().next();
-					w_vertices = graph.getVerticesIWeights(key);
-					if (w_vertices instanceof IWeightsInt) {
-						info_type_for_vertices = "int";
-					} else if (w_vertices instanceof IWeightsShort) {
-						info_type_for_vertices = "short";
-					} else if (w_vertices instanceof IWeightsLong) {
-						info_type_for_vertices = "long";
-					} else if (w_vertices instanceof IWeightsFloat) {
-						info_type_for_vertices = "float";
-					} else if (w_vertices instanceof IWeightsDouble) {
-						info_type_for_vertices = "double";
+					verticesWeights = graph.getVerticesIWeights(key);
+					if (verticesWeights instanceof IWeightsInt) {
+						verticesWeightsType = "int";
+					} else if (verticesWeights instanceof IWeightsShort) {
+						verticesWeightsType = "short";
+					} else if (verticesWeights instanceof IWeightsLong) {
+						verticesWeightsType = "long";
+					} else if (verticesWeights instanceof IWeightsFloat) {
+						verticesWeightsType = "float";
+					} else if (verticesWeights instanceof IWeightsDouble) {
+						verticesWeightsType = "double";
 					} else {
-						info_type_for_vertices = "string";
+						verticesWeightsType = "string";
 					}
 				}
 
-				String info_type_for_edges; // can be void, string, int etc
-				IWeights<?> w_edges; // weights for edges
+				String edgesWeightsType; // can be void, string, int etc
+				IWeights<?> edgesWeights; // weights for edges
 				if (graph.getEdgesWeightsKeys().isEmpty()) {
-					info_type_for_edges = "void";
-					w_edges = null;
+					edgesWeightsType = "void";
+					edgesWeights = null;
 				} else {
 					// for now, take the first weights collection
 					String key = graph.getEdgesWeightsKeys().iterator().next();
-					w_edges = graph.getEdgesIWeights(key);
-					if (w_edges instanceof IWeightsInt) {
-						info_type_for_edges = "int";
-					} else if (w_edges instanceof IWeightsShort) {
-						info_type_for_edges = "short";
-					} else if (w_edges instanceof IWeightsLong) {
-						info_type_for_edges = "long";
-					} else if (w_edges instanceof IWeightsFloat) {
-						info_type_for_edges = "float";
-					} else if (w_edges instanceof IWeightsDouble) {
-						info_type_for_edges = "double";
+					edgesWeights = graph.getEdgesIWeights(key);
+					if (edgesWeights instanceof IWeightsInt) {
+						edgesWeightsType = "int";
+					} else if (edgesWeights instanceof IWeightsShort) {
+						edgesWeightsType = "short";
+					} else if (edgesWeights instanceof IWeightsLong) {
+						edgesWeightsType = "long";
+					} else if (edgesWeights instanceof IWeightsFloat) {
+						edgesWeightsType = "float";
+					} else if (edgesWeights instanceof IWeightsDouble) {
+						edgesWeightsType = "double";
 					} else {
-						info_type_for_edges = "string";
+						edgesWeightsType = "string";
 					}
 				}
 
 				writer.append("LEDA.GRAPH").append(System.lineSeparator());
-				writer.append(info_type_for_vertices).append(System.lineSeparator()); // void/string/int etc
-				writer.append(info_type_for_edges).append(System.lineSeparator()); // void/string/int etc
-				final boolean is_directed = graph.isDirected();
-				writer.append(is_directed ? "-1" : "-2").append(System.lineSeparator());
+				writer.append(verticesWeightsType).append(System.lineSeparator()); // void/string/int etc
+				writer.append(edgesWeightsType).append(System.lineSeparator()); // void/string/int etc
+				writer.append(graph.isDirected() ? "-1" : "-2").append(System.lineSeparator());
 
 				writer.append("# section nodes/vertices").append(System.lineSeparator());
 				writer.append(Integer.toString(numVertices)).append(System.lineSeparator());
 				// write all vertices info
-				// --> LEDA expects 1..num_vertices
-				// for (int ix = 1; ix <= num_vertices; ix++)
+				// --> LEDA expects 1..numVertices
+				// for (int ix = 1; ix <= numVertices; ix++)
 				// but just in case, we are consistent with our labels etc
-				if (w_vertices == null) {
+				if (verticesWeights == null) {
 					for (int vertex = 1; vertex <= numVertices; vertex++)
 						writer.append("|{}|").append(System.lineSeparator());
 				} else {
-					WeightsStringifier weightsStringer = WeightsStringifier.newInstance(w_vertices);
+					WeightsStringifier weightsStringer = WeightsStringifier.newInstance(verticesWeights);
 					for (int vertex = 1; vertex <= numVertices; vertex++) {
 						String weightStr = weightsStringer.getWeightAsString(vertex);
 						writer.append("|{").append(weightStr).append("}|").append(System.lineSeparator());
@@ -146,13 +144,11 @@ class FormatLEDA implements GraphFormat {
 				writer.append("# section edges").append(System.lineSeparator());
 				writer.append(Integer.toString(numEdges)).append(System.lineSeparator());
 				// write all edges info
-				WeightsStringifier weightsStringer = w_edges != null ? WeightsStringifier.newInstance(w_edges) : null;
+				WeightsStringifier weightsStringer =
+						edgesWeights != null ? WeightsStringifier.newInstance(edgesWeights) : null;
 				for (int edge = 1; edge <= numEdges; edge++) {
-					int source_vertex = graph.edgeSource(edge);
-					int target_vertex = graph.edgeTarget(edge);
-
-					writer.append(Integer.toString(source_vertex)).append(' ');
-					writer.append(Integer.toString(target_vertex)).append(' ');
+					writer.append(Integer.toString(graph.edgeSource(edge))).append(' ');
+					writer.append(Integer.toString(graph.edgeTarget(edge))).append(' ');
 					writer.append(/* twin edge */ '0').append(' ');
 					if (weightsStringer == null) {
 						writer.append("|{}|").append(System.lineSeparator());
@@ -174,35 +170,28 @@ class FormatLEDA implements GraphFormat {
 		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			IntGraphBuilder builder = null;
 
-			// list_nodes keep the label/name of each node/vertex
+			// nodes keep the label/name of each node/vertex
 			// we do not need it, but for future use
-			ArrayList<String> list_nodes = new ArrayList<>();
+			ArrayList<String> nodes = new ArrayList<>();
 
-			// Pattern pattern_edge to regexp the edge line
+			// Pattern edgePattern to regexp the edge line
 			// Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+\\{\\|(.*)\\|\\}\\s*$");
-			Pattern pattern_edge = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S\\S.*\\S\\S)\\s*$");
+			Pattern edgePattern = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S\\S.*\\S\\S)\\s*$");
 
 			try (BufferedReader br =
 					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
 				// these are the oly weights format we support
-				Set<String> hashSupportedTypes = new HashSet<>();
-				hashSupportedTypes.add("void");
-				hashSupportedTypes.add("int");
-				hashSupportedTypes.add("short");
-				hashSupportedTypes.add("long");
-				hashSupportedTypes.add("float");
-				hashSupportedTypes.add("double");
-				hashSupportedTypes.add("string");
-				int line_number = 0; // sequence of lines is important!
-				boolean in_section = false;
-				int num_secetion = 0; // 1 is nodes section, 2 is edges section
-				int section_num_elements = -1;
-				// section_ix_element will count from 1,2,3,4...,section_num_elements
-				int section_ix_element = -1;
-				String info_type_for_vertices = null; // can be void,string, int etc
-				String info_type_for_edges = null; // can be void,string, int etc
-				IWeights<?> w_info_type_for_vertices = null;
-				IWeights<?> w_info_type_for_edges = null;
+				Set<String> hashSupportedTypes = Set.of("void", "int", "short", "long", "float", "double", "string");
+				int lineNumber = 0; // sequence of lines is important!
+				boolean inSection = false;
+				int numberOfSections = 0; // 1 is nodes section, 2 is edges section
+				int sectionElementsNum = -1;
+				// elementIdxInSection will count from 1,2,3,4...,sectionElementsNum
+				int elementIdxInSection = -1;
+				String verticesWeightsType = null; // can be void,string, int etc
+				String edgesWeightsType = null; // can be void,string, int etc
+				IWeights<?> verticesWeights = null;
+				IWeights<?> edgesWeights = null;
 
 				// read all lines from file
 				for (String line; (line = br.readLine()) != null;) {
@@ -212,32 +201,32 @@ class FormatLEDA implements GraphFormat {
 					// # This is a comment line
 					if (line.toLowerCase().startsWith("#"))
 						continue; // skip comment lines
-					line_number++;
+					lineNumber++;
 
 					// LEDA.GRAPH
-					if (line_number == 1) {
+					if (lineNumber == 1) {
 						if (line.toUpperCase().startsWith("LEDA.GRAPH"))
 							continue; // skip LEDA.GRAPH
 						throw new IllegalArgumentException(
 								"Leda file format: first non-comment line must equals LEDA.GRAPH");
 					}
 
-					if (line_number == 2) {
-						info_type_for_vertices = line.toLowerCase();
-						if (!hashSupportedTypes.contains(info_type_for_vertices))
+					if (lineNumber == 2) {
+						verticesWeightsType = line.toLowerCase();
+						if (!hashSupportedTypes.contains(verticesWeightsType))
 							throw new IllegalArgumentException(
 									"Leda file format: unsupported info/weight to vertices/nodes");
 						continue; // skip 2nd - label string
 					}
 
-					if (line_number == 3) {
-						info_type_for_edges = line.toLowerCase();
-						if (!hashSupportedTypes.contains(info_type_for_edges))
+					if (lineNumber == 3) {
+						edgesWeightsType = line.toLowerCase();
+						if (!hashSupportedTypes.contains(edgesWeightsType))
 							throw new IllegalArgumentException("Leda file format: unsupported info/weight to edges");
 						continue; // skip 3nd - label string
 					}
 
-					if (line_number == 4) {
+					if (lineNumber == 4) {
 						// The fourth line specifies if the graph is
 						// either directed (-1)
 						// or undirected (-2).
@@ -250,92 +239,83 @@ class FormatLEDA implements GraphFormat {
 								break;
 							default:
 								throw new IllegalArgumentException(
-										"Leda file format: 4th non-comment line must equals -1 or -2. -1 is Directed graph. -2 is Undirected graph.");
+										"Leda file format: 4th non-comment line must equals -1 or -2. "
+												+ "-1 is Directed graph. -2 is Undirected graph.");
 						}
 
-						switch (info_type_for_vertices) {
+						switch (verticesWeightsType) {
 							case "int":
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", int.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", int.class);
 								break;
 							case "short":
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", short.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", short.class);
 								break;
 							case "long":
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", long.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", long.class);
 								break;
 							case "float":
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", float.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", float.class);
 								break;
 							case "double":
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", double.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", double.class);
 								break;
 							case "void":
 								break;
 							case "string":
 							default:
-								w_info_type_for_vertices =
-										(IWeights<?>) builder.addVerticesWeights("weightsKey", String.class);
+								verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", String.class);
 								break;
 						}
 
-						switch (info_type_for_edges) {
+						switch (edgesWeightsType) {
 							case "int":
-								w_info_type_for_edges = (IWeights<?>) builder.addEdgesWeights("weightsKey", int.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", int.class);
 								break;
 							case "short":
-								w_info_type_for_edges =
-										(IWeights<?>) builder.addEdgesWeights("weightsKey", short.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", short.class);
 								break;
 							case "long":
-								w_info_type_for_edges = (IWeights<?>) builder.addEdgesWeights("weightsKey", long.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", long.class);
 								break;
 							case "float":
-								w_info_type_for_edges =
-										(IWeights<?>) builder.addEdgesWeights("weightsKey", float.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", float.class);
 								break;
 							case "double":
-								w_info_type_for_edges =
-										(IWeights<?>) builder.addEdgesWeights("weightsKey", double.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", double.class);
 								break;
 							case "void":
 								break;
 							case "string":
 							default:
-								w_info_type_for_edges =
-										(IWeights<?>) builder.addEdgesWeights("weightsKey", String.class);
+								edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", String.class);
 								break;
 						}
 
 						continue;
 					}
 
-					if (!in_section) {
+					if (!inSection) {
 						// this line must be the number of elements in this section
-						in_section = true;
-						num_secetion++; // 1=nodes/vertices, 2=edges
-						section_ix_element = 0;
-						section_num_elements = -1;
+						inSection = true;
+						numberOfSections++; // 1=nodes/vertices, 2=edges
+						elementIdxInSection = 0;
+						sectionElementsNum = -1;
 						try {
-							section_num_elements = Integer.parseInt(line);
+							sectionElementsNum = Integer.parseInt(line);
 						} catch (Exception e) {
-							section_num_elements = -1;
+							sectionElementsNum = -1;
 						}
-						if (section_num_elements < 0)
+						if (sectionElementsNum < 0)
 							throw new IllegalArgumentException(
 									"Leda file format: number of elements must be non-negative integers.");
 						continue; // next
 					}
 
 					// we are inside a section
-					section_ix_element++;
+					elementIdxInSection++;
 
 					// is this the nodes section?
-					if (num_secetion == 1) {
+					if (numberOfSections == 1) {
 						// define node/vertex
 						// |{v1}| --> v1 is any label or name or identifier
 						// |{}| --> empty label or name or identifier
@@ -345,16 +325,16 @@ class FormatLEDA implements GraphFormat {
 						// get the label
 						String label = line.substring(2, line.length() - 2);
 						// debug
-						list_nodes.add(label);
+						nodes.add(label);
 						final int id = builder.vertices().size() + 1; // 1,2,3...
 						builder.addVertex(id);
 
 						// record label/weight
-						switch (info_type_for_vertices) {
+						switch (verticesWeightsType) {
 							case "int":
 								try {
 									int val = Integer.parseInt(label);
-									((IWeightsInt) w_info_type_for_vertices).set(id, val);
+									((IWeightsInt) verticesWeights).set(id, val);
 								} catch (Exception e) {
 									throw new IllegalArgumentException("Leda file format: vertex must have int info.");
 								}
@@ -362,7 +342,7 @@ class FormatLEDA implements GraphFormat {
 							case "short":
 								try {
 									short val = Short.parseShort(label);
-									((IWeightsShort) w_info_type_for_vertices).set(id, val);
+									((IWeightsShort) verticesWeights).set(id, val);
 								} catch (Exception e) {
 									throw new IllegalArgumentException(
 											"Leda file format: vertex must have short info.");
@@ -371,7 +351,7 @@ class FormatLEDA implements GraphFormat {
 							case "long":
 								try {
 									long val = Long.parseLong(label);
-									((IWeightsLong) w_info_type_for_vertices).set(id, val);
+									((IWeightsLong) verticesWeights).set(id, val);
 								} catch (Exception e) {
 									throw new IllegalArgumentException("Leda file format: vertex must have long info.");
 								}
@@ -379,7 +359,7 @@ class FormatLEDA implements GraphFormat {
 							case "float":
 								try {
 									float val = Float.parseFloat(label);
-									((IWeightsFloat) w_info_type_for_vertices).set(id, val);
+									((IWeightsFloat) verticesWeights).set(id, val);
 								} catch (Exception e) {
 									throw new IllegalArgumentException(
 											"Leda file format: vertex must have float info.");
@@ -388,7 +368,7 @@ class FormatLEDA implements GraphFormat {
 							case "double":
 								try {
 									double val = Double.parseDouble(label);
-									((IWeightsDouble) w_info_type_for_vertices).set(id, val);
+									((IWeightsDouble) verticesWeights).set(id, val);
 								} catch (Exception e) {
 									throw new IllegalArgumentException(
 											"Leda file format: vertex must have double info.");
@@ -399,25 +379,25 @@ class FormatLEDA implements GraphFormat {
 							case "string":
 							default:
 								@SuppressWarnings("unchecked")
-								IWeightsObj<String> temp = (IWeightsObj<String>) w_info_type_for_vertices;
+								IWeightsObj<String> temp = (IWeightsObj<String>) verticesWeights;
 								temp.set(id, label);
 								break;
 						}
 
-						if (section_ix_element == section_num_elements) {
+						if (elementIdxInSection == sectionElementsNum) {
 							// we ended the current section
-							in_section = false;
-							section_ix_element = -1;
-							section_num_elements = -1;
+							inSection = false;
+							elementIdxInSection = -1;
+							sectionElementsNum = -1;
 						}
 						continue;
 					}
 
-					if (num_secetion == 3)
+					if (numberOfSections == 3)
 						throw new IllegalArgumentException(
 								"Leda file format: too many parameers. 2nd section, the edges, is complete.");
 
-					// if (num_secetion == 2)
+					// if (numberOfSections == 2)
 					// define edges
 					// edge definition consists of four space-separated parts:
 					// ==> the number of the source node
@@ -426,19 +406,19 @@ class FormatLEDA implements GraphFormat {
 					// ==> the information associated with the edge (cf. nodes section)
 
 					// We use regexp to parse line
-					final Matcher edge_matcher = pattern_edge.matcher(line);
-					if (!edge_matcher.find())
+					final Matcher edgeMatcher = edgePattern.matcher(line);
+					if (!edgeMatcher.find())
 						throw new IllegalArgumentException("Leda file format: invalid edge. must have 4 parts.");
 
-					int from_vertex = Integer.parseInt(edge_matcher.group(1));
-					int to_vertex = Integer.parseInt(edge_matcher.group(2));
-					// int reversal_edge = Integer.parseInt(edge_matcher.group(3)); // not used right now
-					String label = edge_matcher.group(4);
+					int fromVertex = Integer.parseInt(edgeMatcher.group(1));
+					int toVertex = Integer.parseInt(edgeMatcher.group(2));
+					// int reverseEdge = Integer.parseInt(edgeMatcher.group(3)); // not used right now
+					String label = edgeMatcher.group(4);
 
-					if (from_vertex < 1 //
-							|| to_vertex < 1 //
-							|| from_vertex > list_nodes.size() //
-							|| to_vertex > list_nodes.size())
+					if (fromVertex < 1 //
+							|| toVertex < 1 //
+							|| fromVertex > nodes.size() //
+							|| toVertex > nodes.size())
 						throw new IllegalArgumentException(
 								"Leda file format: invalid edge. must be between 1 and num nodes/vertices.");
 
@@ -452,14 +432,14 @@ class FormatLEDA implements GraphFormat {
 
 					// add the edge
 					final int id = builder.edges().size() + 1; // 1,2,3...
-					builder.addEdge(from_vertex, to_vertex, id);
+					builder.addEdge(fromVertex, toVertex, id);
 
 					// record label/weight
-					switch (info_type_for_edges) {
+					switch (edgesWeightsType) {
 						case "int":
 							try {
 								int val = Integer.parseInt(label);
-								((IWeightsInt) w_info_type_for_edges).set(id, val);
+								((IWeightsInt) edgesWeights).set(id, val);
 							} catch (Exception e) {
 								throw new IllegalArgumentException("Leda file format: edge must have int info.");
 							}
@@ -467,7 +447,7 @@ class FormatLEDA implements GraphFormat {
 						case "short":
 							try {
 								short val = Short.parseShort(label);
-								((IWeightsShort) w_info_type_for_edges).set(id, val);
+								((IWeightsShort) edgesWeights).set(id, val);
 							} catch (Exception e) {
 								throw new IllegalArgumentException("Leda file format: edge must have short info.");
 							}
@@ -475,7 +455,7 @@ class FormatLEDA implements GraphFormat {
 						case "long":
 							try {
 								long val = Long.parseLong(label);
-								((IWeightsLong) w_info_type_for_edges).set(id, val);
+								((IWeightsLong) edgesWeights).set(id, val);
 							} catch (Exception e) {
 								throw new IllegalArgumentException("Leda file format: edge must have long info.");
 							}
@@ -483,7 +463,7 @@ class FormatLEDA implements GraphFormat {
 						case "float":
 							try {
 								float val = Float.parseFloat(label);
-								((IWeightsFloat) w_info_type_for_edges).set(id, val);
+								((IWeightsFloat) edgesWeights).set(id, val);
 							} catch (Exception e) {
 								throw new IllegalArgumentException("Leda file format: edge must have float info.");
 							}
@@ -491,7 +471,7 @@ class FormatLEDA implements GraphFormat {
 						case "double":
 							try {
 								double val = Double.parseDouble(label);
-								((IWeightsDouble) w_info_type_for_edges).set(id, val);
+								((IWeightsDouble) edgesWeights).set(id, val);
 							} catch (Exception e) {
 								throw new IllegalArgumentException("Leda file format: edge must have double info.");
 							}
@@ -501,16 +481,16 @@ class FormatLEDA implements GraphFormat {
 						case "string":
 						default:
 							@SuppressWarnings("unchecked")
-							IWeightsObj<String> temp = (IWeightsObj<String>) w_info_type_for_edges;
+							IWeightsObj<String> temp = (IWeightsObj<String>) edgesWeights;
 							temp.set(id, label);
 							break;
 					}
 
-					if (section_ix_element == section_num_elements) {
+					if (elementIdxInSection == sectionElementsNum) {
 						// we ended the current section
-						in_section = false;
-						section_ix_element = -1;
-						section_num_elements = -1;
+						inSection = false;
+						elementIdxInSection = -1;
+						sectionElementsNum = -1;
 					}
 				}
 			} catch (IOException e) {

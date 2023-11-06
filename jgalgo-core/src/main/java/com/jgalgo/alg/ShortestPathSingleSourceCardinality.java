@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 
 /**
  * Single Source Shortest Path for cardinality weight function.
+ *
  * <p>
  * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
  * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex

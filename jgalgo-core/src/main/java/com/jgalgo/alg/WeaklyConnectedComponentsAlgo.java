@@ -21,12 +21,14 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * Weakly Connected components algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), two vertices \(u,v \in V\) are weakly connected if there is an <i>undirected</i> path from
  * \(u\) to \(v\). A weakly connected component is a maximal set of vertices that each pair in the set is weakly
  * connected. This definition hold for both directed and undirected graphs. For undirected graphs, the strongly and
  * weakly connected components are identical. The set of vertices \(V\) can be partitioned into disjoint weakly
  * connected components.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,9 +40,11 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Compute all weakly connected components in a graph.
+	 *
 	 * <p>
 	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strongly)
 	 * connected components in the result undirected graph.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
@@ -53,9 +57,11 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Check whether a graph is weakly connected.
+	 *
 	 * <p>
 	 * A graph is weakly connected if there is an <i>undirected</i> path from any vertex to any other vertex. Namely if
 	 * the the whole graph is a single weakly connected component.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
 	 *
@@ -68,6 +74,7 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Create a new weakly connected components algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link WeaklyConnectedComponentsAlgo} object. The
 	 * {@link WeaklyConnectedComponentsAlgo.Builder} might support different options to obtain different
@@ -81,6 +88,7 @@ public interface WeaklyConnectedComponentsAlgo {
 
 	/**
 	 * Create a new weakly connected algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -107,10 +115,12 @@ public interface WeaklyConnectedComponentsAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

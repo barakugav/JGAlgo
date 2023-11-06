@@ -16,6 +16,7 @@
 
 /**
  * Algorithms for solving graph problems.
+ *
  * <p>
  * Most algorithms accept a {@link com.jgalgo.graph.Graph} object as input, and perform some computation on it.
  * Algorithms in this package follow a common pattern: an interface is defined for the functionality only (e.g.
@@ -27,6 +28,7 @@
  * specifically for graphs in which the vertices and edges are integer only, {@link com.jgalgo.graph.IntGraph} (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). For the most common use case, there is no need to use
  * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific to it.
+ *
  * <p>
  * Most algorithm implementations are not expose as public API.
  */

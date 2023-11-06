@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCostFlows {
 
-	private static abstract class AbstractImplBase implements MinimumCostFlow {
+	private abstract static class AbstractImplBase implements MinimumCostFlow {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -195,7 +195,7 @@ class MinimumCostFlows {
 
 	}
 
-	static abstract class AbstractImpl extends AbstractImplBase {
+	abstract static class AbstractImpl extends AbstractImplBase {
 
 		@Override
 		void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction lowerBound,
@@ -359,7 +359,7 @@ class MinimumCostFlows {
 
 	}
 
-	static abstract class AbstractImplBasedSourceSink extends AbstractImpl {
+	abstract static class AbstractImplBasedSourceSink extends AbstractImpl {
 
 		@Override
 		abstract void computeMinCostMaxFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, int source, int sink);
@@ -892,7 +892,7 @@ class MinimumCostFlows {
 
 	}
 
-	static abstract class AbstractImplBasedSupply extends AbstractImpl {
+	abstract static class AbstractImplBasedSupply extends AbstractImpl {
 
 		@Override
 		abstract void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply);

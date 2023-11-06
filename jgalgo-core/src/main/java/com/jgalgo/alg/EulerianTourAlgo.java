@@ -21,6 +21,7 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * Eulerian tour calculation algorithm.
+ *
  * <p>
  * An Eulerian tour is a tour that visits every edge exactly once (allowing for revisiting vertices). For a connected
  * undirected graph, if all vertices have an even degree, an Eulerian cycle will be found. If exactly two vertices have
@@ -29,6 +30,7 @@ import com.jgalgo.graph.IntGraph;
  * each vertex must be equal for an Eulerian cycle to exists. If exactly one vertex \(s\) has one more out-edge than
  * in-edges, and one vertex \(t\) has one more in-edge than out-edges, an Eulerian tour that start at \(s\) and ends at
  * \(t\) exists.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -40,9 +42,11 @@ public interface EulerianTourAlgo {
 
 	/**
 	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
+	 *
 	 * <p>
 	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will be found, depending on the vertices
 	 * degrees.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}.
 	 *
@@ -56,6 +60,7 @@ public interface EulerianTourAlgo {
 
 	/**
 	 * Create a new Eulerian tour computation algorithm.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object. The
 	 * {@link EulerianTourAlgo.Builder} might support different options to obtain different implementations.
@@ -68,6 +73,7 @@ public interface EulerianTourAlgo {
 
 	/**
 	 * Create a new Eulerian tour algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -94,10 +100,12 @@ public interface EulerianTourAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

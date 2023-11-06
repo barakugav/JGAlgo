@@ -21,7 +21,7 @@ import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 
 class WEIGHTS_IMPL {
 
-	static abstract class IndexImpl TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
+	abstract static class IndexImpl TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
 
 		PRIMITIVE_TYPE_REAL[] weights;
 		final PRIMITIVE_TYPE defaultWeight;
@@ -39,7 +39,8 @@ class WEIGHTS_IMPL {
 			weights = Arrays.copyOf(orig.weights, elements.size());
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements,
+				IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			this(elements, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(weights, elements.size());

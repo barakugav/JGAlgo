@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Iterator used to iterate over graph edges.
+ *
  * <p>
  * Each value returned by {@link #next()} is an edge iterated by the iterator. The source and target of the last
  * iterated edge are available by {@link #source()} and {@link #target()}.
@@ -46,6 +47,7 @@ public interface EdgeIter<V, E> extends Iterator<E> {
 
 	/**
 	 * Peek at the next edge of the iterator without advancing it.
+	 *
 	 * <p>
 	 * Similar to {@link #next()} but without advancing the iterator.
 	 *
@@ -56,6 +58,7 @@ public interface EdgeIter<V, E> extends Iterator<E> {
 
 	/**
 	 * Get the source vertex of the last returned edge.
+	 *
 	 * <p>
 	 * The behavior is undefined if {@link #next()} was not called yet.
 	 *
@@ -65,6 +68,7 @@ public interface EdgeIter<V, E> extends Iterator<E> {
 
 	/**
 	 * Get the target vertex of the last returned edge.
+	 *
 	 * <p>
 	 * The behavior is undefined if {@link #next()} was not called yet.
 	 *

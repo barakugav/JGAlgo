@@ -497,19 +497,19 @@ public class JGAlgoUtils {
 		return current == null ? ForkJoinPool.commonPool() : current;
 	}
 
-	public static <Exec extends Runnable & Serializable> RecursiveAction recursiveAction(Exec exec) {
+	public static <ExecT extends Runnable & Serializable> RecursiveAction recursiveAction(ExecT exec) {
 		return new RecursiveActionFromRunnable<>(exec);
 	}
 
-	public static <V, Exec extends Supplier<? extends V> & Serializable> RecursiveTask<V> recursiveTask(Exec exec) {
+	public static <V, ExecT extends Supplier<? extends V> & Serializable> RecursiveTask<V> recursiveTask(ExecT exec) {
 		return new RecursiveTaskFromSupplier<>(exec);
 	}
 
-	private static class RecursiveActionFromRunnable<Exec extends Runnable & Serializable> extends RecursiveAction {
-		private Exec exec;
+	private static class RecursiveActionFromRunnable<ExecT extends Runnable & Serializable> extends RecursiveAction {
+		private ExecT exec;
 		private static final long serialVersionUID = 1L;
 
-		RecursiveActionFromRunnable(Exec exec) {
+		RecursiveActionFromRunnable(ExecT exec) {
 			this.exec = exec;
 		}
 
@@ -519,12 +519,12 @@ public class JGAlgoUtils {
 		}
 	}
 
-	private static class RecursiveTaskFromSupplier<V, Exec extends Supplier<? extends V> & Serializable>
+	private static class RecursiveTaskFromSupplier<V, ExecT extends Supplier<? extends V> & Serializable>
 			extends RecursiveTask<V> {
-		private Exec exec;
+		private ExecT exec;
 		private static final long serialVersionUID = 1L;
 
-		RecursiveTaskFromSupplier(Exec exec) {
+		RecursiveTaskFromSupplier(ExecT exec) {
 			this.exec = exec;
 		}
 

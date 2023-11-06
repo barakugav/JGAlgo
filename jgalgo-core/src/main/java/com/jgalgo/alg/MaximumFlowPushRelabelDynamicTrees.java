@@ -33,15 +33,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * The push relabel algorithm for maximum flow using dynamic trees.
+ *
  * <p>
  * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
  * between neighboring vertexs using <i>push</i> operations under the guidance of an admissible network maintained by
  * <i>relabel</i> operations.
+ *
  * <p>
  * Conceptually, the dynamic trees are used to push flow along multiple edges simultaneously. The current flow of each
  * individual edges is not maintained explicitly, rather each path is stored as a dynamic tree, and the flow is stored
  * as a weight of the tree edges - to calculate the weight (flow) of an edge, one would have to traverse the tree from
  * the root to the edge and sum all weights on the path.
+ *
  * <p>
  * Using the dynamic trees reduce the running time of the push-relabel algorithm to \(O(m n \log (n^2 / m))\) and linear
  * space. This implementation uses FIFO to order the vertices to be examined. Note that this implementation is usually
@@ -72,7 +75,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
-	private static abstract class AbstractWorker extends MaximumFlowAbstract.WithResidualGraph.Worker {
+	private abstract static class AbstractWorker extends MaximumFlowAbstract.WithResidualGraph.Worker {
 
 		final DynamicTree dt;
 		final DynamicTreeExtension.TreeSize dtTreeSize;
@@ -295,7 +298,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			return (V) vertexData[v];
 		}
 
-		static abstract class Vertex {
+		abstract static class Vertex {
 			final int v;
 			boolean isActive;
 			int label;

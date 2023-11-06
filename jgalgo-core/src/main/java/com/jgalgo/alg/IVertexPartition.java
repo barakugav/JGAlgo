@@ -25,12 +25,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A partition of the vertices of an int graph.
+ *
  * <p>
  * This interface is a specific version of {@link VertexPartition} for {@link IntGraph}.
+ *
  * <p>
  * A partition of a set is a division of the set into a number of disjoint subsets, such that their union is the
  * original set. The sets may also be called 'components' or 'blocks'. We use the term 'block' instead of 'set' to avoid
  * confusion with the get/set convention.
+ *
  * <p>
  * The partition represent a mapping from the vertices of a graph to \(B\) blocks, each block is assigned a number in
  * range \([0,B)\). To check to which block a vertex is assigned use {@link #vertexBlock(int)}.
@@ -85,6 +88,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex map.
+	 *
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
@@ -99,6 +103,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 
 	/**
 	 * Create a new vertex partition from a vertex-blockIndex mapping function.
+	 *
 	 * <p>
 	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
 	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
@@ -131,6 +136,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 
 	/**
 	 * Check if a mapping is a valid partition of the vertices of a graph.
+	 *
 	 * <p>
 	 * A valid vertex partition is a mapping from each vertex to an integer number in range [0, numberOfBlocks), in
 	 * which there are not 'empty blocks', namely at least one vertex is mapped to each block.

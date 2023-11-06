@@ -36,12 +36,14 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
  * An algorithm for the Steiner tree problem.
+ *
  * <p>
  * The Steiner tree problem is a generalization of the minimum spanning tree problem. Given a graph \(G=(V,E)\) and a
  * set of terminals vertices \(T \subseteq V\), the Steiner tree problem is to find a minimum weight tree that spans all
  * the terminals. The tree may contain additional vertices that are not terminals, which are usually called Steiner
  * vertices. The Steiner tree problem is NP-hard, therefore algorithms implementing this interface are heuristics, and
  * do not guarantee to find the optimal solution, only a solution with bounded approximation factor.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -54,9 +56,11 @@ public interface SteinerTreeAlgo {
 
 	/**
 	 * Compute the minimum Steiner tree of a given graph.
+	 *
 	 * <p>
 	 * The algorithm with search for the minimum Steiner tree that spans all the terminals with respect to the given
 	 * edge weight function. The tree may contain additional vertices that are not terminals.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link SteinerTreeAlgo.IResult} object will be returned. In that case, its
 	 * better to pass a {@link IWeightFunction} as {@code w}, and {@link IntCollection} as {@code terminals} to avoid
@@ -102,9 +106,11 @@ public interface SteinerTreeAlgo {
 
 	/**
 	 * Check whether a given set of edges is a valid Steiner tree for a given graph and terminals.
+	 *
 	 * <p>
 	 * A set of edges is a valid Steiner tree if it spans all the terminals, does not contain any cycles, form a single
 	 * connected components, and there are no non-terminal leaves in the tree.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code terminals} and
 	 * {@code edges} to avoid boxing/unboxing.
@@ -199,6 +205,7 @@ public interface SteinerTreeAlgo {
 
 	/**
 	 * Create a new Steiner tree algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object. The
 	 * {@link SteinerTreeAlgo.Builder} might support different options to obtain different implementations.
@@ -211,6 +218,7 @@ public interface SteinerTreeAlgo {
 
 	/**
 	 * Create a new Steiner tree algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -237,10 +245,12 @@ public interface SteinerTreeAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

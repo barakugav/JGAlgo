@@ -17,15 +17,18 @@ package com.jgalgo.graph;
 
 /**
  * A mapping between {@link Graph} IDs to {@link IndexGraph} indices.
+ *
  * <p>
  * A regular graph contains vertices and edges which are identified by a fixed hashable identifiers. An
  * {@link IndexGraph} view is provided by the {@link Graph#indexGraph()} method, which is a graph in which all methods
  * are accessed with <b>indices</b> rather than fixed IDs. This interface maps between the indices and the fixed IDs of
  * the graph vertices or edges.
+ *
  * <p>
  * Note that the mapping may change during the graph lifetime, as vertices and edges are added and removed from the
  * graph, and a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}
  * and {@code (0,1,2, ...,edgesNum-1)}. The mapping object will be updated automatically in such cases.
+ *
  * <p>
  * The mapping interface is used for both vertices and edges, and we use a unify term <i>element</i> in the
  * documentation to describe both of them (vertex or edge). If the mapping was obtained by
@@ -40,6 +43,7 @@ public interface IndexIdMap<K> {
 
 	/**
 	 * Get the identifier of an element by its index.
+	 *
 	 * <p>
 	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
 	 * {@link Graph#indexGraphVerticesMap()} or {@link Graph#indexGraphEdgesMap()}.
@@ -54,6 +58,7 @@ public interface IndexIdMap<K> {
 
 	/**
 	 * Get the index of an element by its identifier.
+	 *
 	 * <p>
 	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
 	 * {@link Graph#indexGraphVerticesMap()} or {@link Graph#indexGraphEdgesMap()}.

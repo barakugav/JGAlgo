@@ -53,6 +53,7 @@ public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYP
 
 	/**
 	 * Get the default weight of this weights container.
+     *
 	 * <p>
 	 * The default weight is the weight associated with all elements that were not explicitly set using
 	 * {@link #set(Object, PRIMITIVE_TYPE_REAL)}.

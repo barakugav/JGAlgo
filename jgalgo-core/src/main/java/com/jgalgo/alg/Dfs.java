@@ -28,10 +28,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Depth first search (DFS) iterator.
+ *
  * <p>
  * The DFS iterator is used to iterate over the vertices of a graph is a depth first manner, namely it explore as far as
  * possible along each branch before backtracking. The iterator will visit every vertex \(v\) for which there is a path
  * from the source(s) to \(v\). Each such vertex will be visited exactly once.
+ *
  * <p>
  * The graph should not be modified during the DFS iteration.
  *
@@ -113,6 +115,7 @@ public interface Dfs {
 
 		/**
 		 * Get the path from the source to the last vertex returned by {@link #next()}.
+		 *
 		 * <p>
 		 * The behavior is undefined if {@link #next()} was not called yet.
 		 *

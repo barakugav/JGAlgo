@@ -19,8 +19,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Set of int graph edges.
+ *
  * <p>
  * This interface is a specific version of {@link EdgeSet} for {@link IntGraph}.
+ *
  * <p>
  * A set of integers, each represent an edge ID in a graph
  *

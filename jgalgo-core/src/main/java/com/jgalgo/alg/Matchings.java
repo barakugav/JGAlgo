@@ -159,7 +159,7 @@ class Matchings {
 
 	}
 
-	static abstract class AbstractMatchingImpl implements MatchingAlgo {
+	abstract static class AbstractMatchingImpl implements MatchingAlgo {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -235,7 +235,7 @@ class Matchings {
 
 	}
 
-	static abstract class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {
+	abstract static class AbstractCardinalityMatchingImpl extends AbstractMatchingImpl {
 
 		abstract IMatching computeMaximumCardinalityMatching(IndexGraph g);
 
@@ -271,7 +271,7 @@ class Matchings {
 		return e -> -w0.weight(e);
 	}
 
-	static abstract class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {
+	abstract static class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {
 
 		@Override
 		IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
@@ -284,7 +284,7 @@ class Matchings {
 		}
 	}
 
-	static abstract class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {
+	abstract static class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {
 
 		@Override
 		IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {

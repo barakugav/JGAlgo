@@ -28,9 +28,11 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * Bellman–Ford algorithm for Single Source Shortest Path (SSSP) with negative weights in directed graphs.
+ *
  * <p>
  * Compute the shortest paths from a single source to all other vertices with weight function of arbitrary values. The
  * algorithm runs in \(O(n m)\) time and uses linear space.
+ *
  * <p>
  * In case there are only positive weights, use {@link ShortestPathSingleSourceDijkstra}. In case the weights are
  * integers, use {@link ShortestPathSingleSourceGoldberg}.

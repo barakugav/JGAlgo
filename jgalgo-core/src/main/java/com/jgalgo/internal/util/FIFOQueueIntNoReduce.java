@@ -38,7 +38,7 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable, Int
 	/** The standard initial capacity of a queue. */
 	static final int INITIAL_CAPACITY = 4;
 	/** The backing array. */
-	transient int array[];
+	transient int[] array;
 	/** The current (cached) length of {@link #array}. */
 	transient int length;
 	/**

@@ -31,12 +31,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * A path of edges in a graph.
+ *
  * <p>
  * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge \(e_i\) is the source vertex of the
  * next edge \(e_{i+1}\). If the graph is undirected the definition of a 'source' and 'target' are interchangeable, and
  * each pair of consecutive edges simply share an endpoint.
+ *
  * <p>
  * A Path object might be used to represent a cycle as well, if the source and target of the path are the same vertex.
+ *
  * <p>
  * If the underlying graph was modified after the Path object was created, the Path object should not be used.
  *
@@ -62,6 +65,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Get the source vertex of the path.
+	 *
 	 * <p>
 	 * If the returned vertex is the same as {@link #target()}, the represented path is actually a cycle.
 	 *
@@ -71,6 +75,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Get the target vertex of the path.
+	 *
 	 * <p>
 	 * If the returned vertex is the same as {@link #source()}, the represented path is actually a cycle.
 	 *
@@ -80,6 +85,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Check whether this path form a cycle.
+	 *
 	 * <p>
 	 * A cycle is a path which start and ends at the same vertex.
 	 *
@@ -91,6 +97,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Check whether this path is simple.
+	 *
 	 * <p>
 	 * A path is <a href= "https://en.wikipedia.org/wiki/Path_(graph_theory)#simple_path">simple</a> if the path does
 	 * not visit the same vertex twice. Specifically, a cycle is not simple.
@@ -108,6 +115,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Get the edges forming this path.
+	 *
 	 * <p>
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\).
@@ -118,6 +126,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Get the vertices forming this path.
+	 *
 	 * <p>
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by
@@ -130,9 +139,11 @@ public interface Path<V, E> {
 
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
+	 *
 	 * <p>
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
 	 * for validity, use {@link #isPath(Graph, Object, Object, List)}.
+	 *
 	 * <p>
 	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
 	 *
@@ -166,6 +177,7 @@ public interface Path<V, E> {
 
 	/**
 	 * Check whether the given edge list is a valid path in the given graph.
+	 *
 	 * <p>
 	 * A list of edges is a valid path in the graph if it is a list of edges \(e_1,e_2,\ldots\) where each target vertex
 	 * of an edge \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is undirected the definition
@@ -205,8 +217,10 @@ public interface Path<V, E> {
 
 	/**
 	 * Find a valid path from \(u\) to \(v\).
+	 *
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
+	 *
 	 * <p>
 	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
 	 *

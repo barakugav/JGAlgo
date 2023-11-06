@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCovers {
 
-	static abstract class AbstractImpl implements EdgeCover {
+	abstract static class AbstractImpl implements EdgeCover {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -90,6 +90,7 @@ class EdgeCovers {
 			return edges().toString();
 		}
 	}
+
 	private static class IntResultFromIndexResult implements EdgeCover.IResult {
 
 		private final EdgeCover.IResult indexRes;
@@ -115,6 +116,7 @@ class EdgeCovers {
 			return edges().toString();
 		}
 	}
+
 	private static class ObjResultFromIndexResult<V, E> implements EdgeCover.Result<V, E> {
 
 		private final EdgeCover.IResult indexRes;

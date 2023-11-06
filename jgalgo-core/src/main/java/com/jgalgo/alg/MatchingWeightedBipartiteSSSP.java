@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Maximum weighted matching algorithm using {@link ShortestPathSingleSource} for bipartite graphs.
+ *
  * <p>
  * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different
  * {@link ShortestPathSingleSource} algorithm is provided using {@link #setSsspAlgo(ShortestPathSingleSource)} the
@@ -50,6 +51,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
+	 *
 	 * <p>
 	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
 	 * {@link ShortestPathSingleSourceDijkstra}.
@@ -148,7 +150,8 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 			potential[v] = sp.distance(v);
 
 		for (;;) {
-			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc, Integer.valueOf(s));
+			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc,
+					Integer.valueOf(s));
 			IPath augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)

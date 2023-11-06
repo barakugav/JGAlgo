@@ -26,16 +26,19 @@ public class WeightFunctions {
 
 	/**
 	 * Get a 'local' version of a given weight function.
+	 *
 	 * <p>
 	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result <i>locally</i>, to
 	 * ensure the potentially heavy computations occur few as possible.
+	 *
 	 * <p>
 	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
 	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
 	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
 	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 *
 	 * <p>
 	 * This function is used only for performance boost, it does not change any functionally over using the original
 	 * weight function.
@@ -65,16 +68,19 @@ public class WeightFunctions {
 
 	/**
 	 * Get a 'local' version of a given weight function.
+	 *
 	 * <p>
 	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
 	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
 	 * times, it may be more efficient to query the weights of each edge once and store the result <i>locally</i>, to
 	 * ensure the potentially heavy computations occur few as possible.
+	 *
 	 * <p>
 	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
 	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
 	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
 	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 *
 	 * <p>
 	 * This function is used only for performance boost, it does not change any functionally over using the original
 	 * weight function.

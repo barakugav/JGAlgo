@@ -35,10 +35,12 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
  * Yen's algorithm for computing the K shortest paths between two vertices in a graph.
+ *
  * <p>
  * This implementation contains Lawler's improvements to the original algorithm, which avoid checked for duplicate paths
  * in the heap by storing for each path the index in which it deviates from the previous path, and only considering
  * paths that deviate from a path after that index, which eliminate duplications entirely.
+ *
  * <p>
  * The algorithms runs in \(O(nk(m+n \log n))\) time.
  *
@@ -72,7 +74,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		while (!heap.isEmpty()) {
 			HeapReference<Double, ObjectIntPair<IPath>> min = heap.extractMin();
 			IPath kthPath = min.value().first();
-			int kthPathDeviationIdx = min.value().secondInt();
+			final int kthPathDeviationIdx = min.value().secondInt();
 			assert kthPath.isSimple();
 			paths.add(kthPath);
 			if (paths.size() == k)
@@ -173,7 +175,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		}
 
 		ObjectDoublePair<IPath> computeShortestPath(int source) {
-			ObjectDoublePair<IPath> res = computeShortestPath0(source);
+			final ObjectDoublePair<IPath> res = computeShortestPath0(source);
 			heapS.clear();
 			heapT.clear();
 			final int n = g.vertices().size();

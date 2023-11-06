@@ -68,6 +68,7 @@ public interface GraphWriter {
 
 	/**
 	 * Get new {@link GraphWriter} instance by a format name.
+	 *
 	 * <p>
 	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
 	 * 'leda']

@@ -34,6 +34,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Generates a random graph using the R-MAT model.
+ *
  * <p>
  * The R-MAT model generates a graph by recursively partitioning the adjacency matrix into four quadrants and assigning
  * edges to each quadrant with different probabilities \((a,b,c,d)\). The generator accept as an input how many edges to
@@ -42,12 +43,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * assigned the edge. The process is repeated until the required number of edges is generated. Except the vertices set
  * and the number of edges to generate, the model has four parameters: the probabilities \((a,b,c,d)\). The generated
  * graphs may be either directed or undirected, but parallel edges are never created.
+ *
  * <p>
  * The probabilities \((a,b,c,d)\) must be in \([0,1]\) and sum to \(1\). If the graph is undirected, the probabilities
  * \(b\) and \(c\) must be equal. By default, the values of \((a,b,c,d)\) are \((0.57,0.21,0.17,0.05)\) for directed
  * graphs and \((0.57,0.19,0.19,0.05)\) for undirected graphs. The generator will generate undirected graphs by default.
+ *
  * <p>
  * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ *
  * <p>
  * Based on 'R-MAT: A Recursive Model for Graph Mining' by Chakrabarti et al.
  *
@@ -92,6 +96,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the vertices of the generated graph(s).
+	 *
 	 * <p>
 	 * If the generator is used to generate multiple graphs, the same vertices set is used for all of them.
 	 *
@@ -109,6 +114,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the vertices set of the generated graph(s) from a supplier.
+	 *
 	 * <p>
 	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
 	 * for multiple graphs if {@link #generate()} is called multiple times.
@@ -134,6 +140,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the edge supplier of the generated graph(s).
+	 *
 	 * <p>
 	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -149,6 +156,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the edge builder function of the generated graph(s).
+	 *
 	 * <p>
 	 * The function will be called for any edge created, for any graph generated. This behavior is different from
 	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
@@ -166,6 +174,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
+	 *
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
@@ -177,11 +186,13 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the edge probabilities of the generated graph(s).
+	 *
 	 * <p>
 	 * The generator accept as an input how many edges to generate, and it generate them one by one: each edge is
 	 * assigned to a quadrant according to the probabilities \((a,b,c,d)\), and then the quadrant is recursively
 	 * partitioned until a single cell is reached. The cell is then assigned the edge. The process is repeated until the
 	 * required number of edges is generated.
+	 *
 	 * <p>
 	 * The probabilities \((a,b,c,d)\) are corresponding to the four quadrants of the adjacency matrix, and they must be
 	 * in \([0,1]\) and sum to \(1\). If the graph is undirected, the probabilities \(b\) and \(c\) must be equal. By
@@ -205,6 +216,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 	/**
 	 * Set the seed of the random number generator used to generate the graph(s).
+	 *
 	 * <p>
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
@@ -266,6 +278,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 			for (int s = depth; s > 0; s--) {
 				double p = rand.nextDouble();
 				if (p < p1) {
+					/* intentional */
 				} else if (p < p2) {
 					v += 1 << (s - 1);
 				} else if (p < p3) {

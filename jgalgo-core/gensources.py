@@ -268,6 +268,7 @@ def generate_weights(type):
         ] = """
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
@@ -283,6 +284,7 @@ def generate_weights(type):
         ] = """
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link WeightFunction} interface by using the weights of the container.
 	 */
@@ -315,6 +317,7 @@ def generate_iweights(type):
         ] = """
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
 	 */
@@ -325,6 +328,7 @@ def generate_iweights(type):
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */
@@ -347,6 +351,7 @@ def generate_iweights(type):
         ] = """
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
 	 */
@@ -357,6 +362,7 @@ def generate_iweights(type):
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
 	 */

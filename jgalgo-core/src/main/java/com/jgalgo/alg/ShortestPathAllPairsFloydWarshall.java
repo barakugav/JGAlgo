@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * The Floyd Warshall algorithm for all pairs shortest path.
+ *
  * <p>
  * Calculate the shortest path between each pair of vertices in a graph in \(O(n^3)\) time using \(O(n^2)\) space.
  * Negative weights are supported.

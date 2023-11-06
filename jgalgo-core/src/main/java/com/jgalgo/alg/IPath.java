@@ -27,6 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * A path of edges in an int graph.
+ *
  * <p>
  * This interface is a specific version of {@link Path} for {@link IntGraph}. For the full documentation see
  * {@link Path}.
@@ -37,6 +38,7 @@ public interface IPath extends Path<Integer, Integer> {
 
 	/**
 	 * Get the source vertex of the path.
+	 *
 	 * <p>
 	 * If the returned vertex is the same as {@link #targetInt()}, the represented path is actually a cycle.
 	 *
@@ -52,6 +54,7 @@ public interface IPath extends Path<Integer, Integer> {
 
 	/**
 	 * Get the target vertex of the path.
+	 *
 	 * <p>
 	 * If the returned vertex is the same as {@link #sourceInt()}, the represented path is actually a cycle.
 	 *
@@ -81,6 +84,7 @@ public interface IPath extends Path<Integer, Integer> {
 
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
+	 *
 	 * <p>
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
 	 * for validity, use {@link #isPath(IntGraph, int, int, IntList)}.
@@ -108,6 +112,7 @@ public interface IPath extends Path<Integer, Integer> {
 
 	/**
 	 * Check whether the given edge list is a valid path in the given graph.
+	 *
 	 * <p>
 	 * A list of edges is a valid path in the graph if it is a list of edges \(e_1,e_2,\ldots\) where each target vertex
 	 * of an edge \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is undirected the definition
@@ -140,6 +145,7 @@ public interface IPath extends Path<Integer, Integer> {
 
 	/**
 	 * Find a valid path from \(u\) to \(v\).
+	 *
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
 	 *

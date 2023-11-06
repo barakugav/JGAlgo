@@ -28,11 +28,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * All pairs cardinality shortest path algorithm.
+ *
  * <p>
  * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
  * some other vertex is the path with the minimum number of edges. This algorithm compute the cardinality shortest path
  * between each pair of vertices in a graph. The algorithm simple perform {@link ShortestPathSingleSourceCardinality}
  * \(n\) times.
+ *
  * <p>
  * This algorithm runs in \(O(n(n+m))\).
  *

@@ -19,9 +19,11 @@ interface AlgorithmWithDiagnostics {
 
 	/**
 	 * <b>[TL;DR Don't call me!]</b> Get a diagnostic value.
+	 *
 	 * <p>
 	 * The algorithm may collect diagnostic data on its running performance and expose these values. The collected
 	 * diagnostics types are not exposed as 'public' because they are not part of the API and may change in the future.
+	 *
 	 * <p>
 	 * These diagnostics are mainly for debug and benchmark purposes.
 	 *

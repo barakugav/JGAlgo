@@ -24,12 +24,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Algorithm that calculate a topological order of graph vertices.
+ *
  * <p>
  * A topological ordering of a directed graph is a linear ordering of its vertices such that for every directed edge
  * \((u,v)\), \(u\) comes before \(v\) in the ordering. A topological ordering exist if and only if the graph is
  * directed and acyclic (DAG).
+ *
  * <p>
  * This algorithm compute the topological ordering of a given DAG graph in linear time and space.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -41,6 +44,7 @@ public interface TopologicalOrderAlgo {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link TopologicalOrderAlgo.IResult}.
 	 *
@@ -119,6 +123,7 @@ public interface TopologicalOrderAlgo {
 
 	/**
 	 * Create a new topological order algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object. The
 	 * {@link TopologicalOrderAlgo.Builder} might support different options to obtain different implementations.
@@ -131,6 +136,7 @@ public interface TopologicalOrderAlgo {
 
 	/**
 	 * Create a new topological order algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -157,10 +163,12 @@ public interface TopologicalOrderAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

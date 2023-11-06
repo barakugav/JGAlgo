@@ -22,11 +22,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Cores computing algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), a subgraph \(H\) induced by a subset of vertices \(W\) is a \(k\)-core or a core of order
  * \(k\) if \(\forall v \in W : deg_H(v) \geq k\) and \(H\) is a maximum subgraph with this property. The core number of
  * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
  * in-degree + out-degree, determining different types of cores.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,8 +40,10 @@ public interface CoresAlgo {
 
 	/**
 	 * Compute the cores of the graph with respect to both in and out degree of the vertices.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 *
 	 * <p>
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
@@ -54,11 +58,14 @@ public interface CoresAlgo {
 
 	/**
 	 * Compute the cores of the graph with respect the given degree type.
+	 *
 	 * <p>
 	 * Cores are defined with respect to either the out edges, in edges, or both. For undirected graphs the degree type
 	 * is ignored.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link CoresAlgo.IResult}.
+	 *
 	 * <p>
 	 * For a detail description of the cores definition, see the interface documentation {@link CoresAlgo}.
 	 *
@@ -72,6 +79,7 @@ public interface CoresAlgo {
 
 	/**
 	 * The degree type the cores are defined with respect to.
+	 *
 	 * <p>
 	 * A \(k\)-core is a maximal set of vertices such that the graph induced by the set has minimum degree \(k\).
 	 * Different types of degrees can be considered, yielding different types of cores. For undirected graphs the degree
@@ -110,6 +118,7 @@ public interface CoresAlgo {
 
 		/**
 		 * The core number of the given vertex.
+		 *
 		 * <p>
 		 * The core number of a vertex is the highest order of a core that contains this vertex.
 		 *
@@ -127,6 +136,7 @@ public interface CoresAlgo {
 
 		/**
 		 * The vertices of the given core.
+		 *
 		 * <p>
 		 * A vertex is in the core if its core number is at least the given core number.
 		 *
@@ -137,6 +147,7 @@ public interface CoresAlgo {
 
 		/**
 		 * The vertices in the shell of the given core.
+		 *
 		 * <p>
 		 * A vertex is in the shell of the core if its core number is exactly the given core number. Namely it is in the
 		 * k core but not in the (k+1) core.
@@ -148,6 +159,7 @@ public interface CoresAlgo {
 
 		/**
 		 * The vertices in the crust of the given core.
+		 *
 		 * <p>
 		 * A vertex is in the crust of the core if its core number is less than the given core. The crust is the
 		 * complement of the core vertices set.
@@ -167,6 +179,7 @@ public interface CoresAlgo {
 
 		/**
 		 * The core number of the given vertex.
+		 *
 		 * <p>
 		 * The core number of a vertex is the highest order of a core that contains this vertex.
 		 *
@@ -193,6 +206,7 @@ public interface CoresAlgo {
 
 	/**
 	 * Create a new cores algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link CoresAlgo} object. The {@link CoresAlgo.Builder} might
 	 * support different options to obtain different implementations.
@@ -205,6 +219,7 @@ public interface CoresAlgo {
 
 	/**
 	 * Create a new builder for core algorithms.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -231,10 +246,12 @@ public interface CoresAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

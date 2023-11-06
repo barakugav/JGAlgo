@@ -22,10 +22,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 /**
  * An extension property to Red Black tree nodes such as subtree size/min/max.
+ *
  * <p>
  * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
  * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
  * black tree without increasing the asymptotical running time.
+ *
  * <p>
  * Each extension should be used in exactly one red black tree. If an extension was used in another tree, it should not
  * be passed to a new one for reuse.
@@ -76,6 +78,7 @@ class RedBlackTreeExtension<K, V> {
 
 	/**
 	 * A subtree size extension to a red black tree.
+	 *
 	 * <p>
 	 * The extension will keep track of the subtree size of each node in the red black tree. This is implemented without
 	 * increasing the asymptotical running time.
@@ -103,6 +106,7 @@ class RedBlackTreeExtension<K, V> {
 
 		/**
 		 * Create a new subtree size extension.
+		 *
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
@@ -167,6 +171,7 @@ class RedBlackTreeExtension<K, V> {
 
 	/**
 	 * A subtree minimum element extension to a red black tree.
+	 *
 	 * <p>
 	 * The extension will keep track of the element with the minimum key in the subtree of each node in the red black
 	 * tree. This is implemented without increasing the asymptotical running time.
@@ -196,6 +201,7 @@ class RedBlackTreeExtension<K, V> {
 
 		/**
 		 * Create a new subtree minimum extension.
+		 *
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
@@ -299,6 +305,7 @@ class RedBlackTreeExtension<K, V> {
 
 	/**
 	 * A subtree maximum element extension to a red black tree.
+	 *
 	 * <p>
 	 * The extension will keep track of the element with the maximum key in the subtree of each node in the red black
 	 * tree. This is implemented without increasing the asymptotical running time.
@@ -328,6 +335,7 @@ class RedBlackTreeExtension<K, V> {
 
 		/**
 		 * Create a new subtree maximum extension.
+		 *
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
@@ -429,7 +437,7 @@ class RedBlackTreeExtension<K, V> {
 
 	}
 
-	private static abstract class Obj<K, V, D> extends RedBlackTreeExtension<K, V> {
+	private abstract static class Obj<K, V, D> extends RedBlackTreeExtension<K, V> {
 
 		Obj() {
 			super(new ExtensionData.Obj<D>());
@@ -450,7 +458,7 @@ class RedBlackTreeExtension<K, V> {
 
 	}
 
-	private static abstract class Int<K, V> extends RedBlackTreeExtension<K, V> {
+	private abstract static class Int<K, V> extends RedBlackTreeExtension<K, V> {
 
 		Int() {
 			super(new ExtensionData.Int());
@@ -469,7 +477,7 @@ class RedBlackTreeExtension<K, V> {
 		}
 	}
 
-	static abstract class ExtensionData {
+	abstract static class ExtensionData {
 		abstract void swap(int idx1, int idx2);
 
 		abstract void clear(int idx);

@@ -25,12 +25,15 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A Fibonacci heap implementation.
+ *
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
  * {@link #remove(HeapReference)} which takes \(O(\log n)\) time amortized.
+ *
  * <p>
  * Using this heap, Dijkstra's shortest-path algorithm can be implemented in time \(O(m + n \log n)\) rather than \(O(m
  * \log n)\) as the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
+ *
  * <p>
  * In practice, the Fibonacci heaps are quire complex, and in some cases is better to use {@link HeapPairing}.
  *
@@ -54,6 +57,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	/**
 	 * Constructs a new, empty Fibonacci heap, ordered according to the natural ordering of its keys.
+	 *
 	 * <p>
 	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
 	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
@@ -67,6 +71,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	/**
 	 * Constructs a new, empty Fibonacci heap, with keys ordered according to the specified comparator.
+	 *
 	 * <p>
 	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
@@ -218,7 +223,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	public void remove(HeapReference<K, V> ref) {
 		Node<K, V> prev, n = (Node<K, V>) ref;
 
-		boolean isMinRoot = n == minRoot;
+		final boolean isMinRoot = n == minRoot;
 		if (n.parent != null) {
 			Node<K, V> parent = n.parent;
 			cut(n);

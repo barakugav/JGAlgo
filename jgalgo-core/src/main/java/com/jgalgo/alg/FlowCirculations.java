@@ -25,7 +25,7 @@ import com.jgalgo.graph.WeightFunctions;
 
 class FlowCirculations {
 
-	static abstract class AbstractImpl implements FlowCirculation {
+	abstract static class AbstractImpl implements FlowCirculation {
 
 		@SuppressWarnings("unchecked")
 		@Override

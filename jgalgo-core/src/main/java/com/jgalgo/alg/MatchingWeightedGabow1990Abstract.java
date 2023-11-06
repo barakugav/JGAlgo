@@ -369,7 +369,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 	}
 
-	static abstract class Worker {
+	abstract static class Worker {
 
 		/* The original graph */
 		final IndexGraph gOrig;
@@ -1037,7 +1037,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				assert slackBar >= 0;
 				addBlossomEvent(e, slackBar);
 			}
-		};
+		}
 
 		abstract void addBlossomEvent(int e, double slackBar);
 

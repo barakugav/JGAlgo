@@ -20,9 +20,17 @@ import com.jgalgo.alg.Bfs;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * This example demonstrates how to use the BFS and DFS algorithms.
+ *
+ * @author Barak Ugav
+ */
 public class BfsDfsExample {
 
-	public static void BFSExample() {
+	/**
+	 * This example demonstrates how to use the BFS algorithm.
+	 */
+	public static void bfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
 		IntGraph g = createGraph();
 		int source = g.vertices().iterator().nextInt();
@@ -40,7 +48,10 @@ public class BfsDfsExample {
 		}
 	}
 
-	public static void DFSExample() {
+	/**
+	 * This example demonstrates how to use the DFS algorithm.
+	 */
+	public static void dfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
 		IntGraph g = createGraph();
 		int source = g.vertices().iterator().nextInt();
@@ -55,7 +66,7 @@ public class BfsDfsExample {
 		}
 	}
 
-	public static IntGraph createGraph() {
+	private static IntGraph createGraph() {
 		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
@@ -76,8 +87,8 @@ public class BfsDfsExample {
 	}
 
 	public static void main(String[] args) {
-		BFSExample();
-		DFSExample();
+		bfsExample();
+		dfsExample();
 	}
 
 }

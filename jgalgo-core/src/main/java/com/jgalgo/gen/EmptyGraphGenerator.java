@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A generator of empty graphs.
+ *
  * <p>
  * An empty graph is a graph with no edges, and it may contains some vertices.
  *
@@ -64,6 +65,7 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Set the vertices of the generated graph(s).
+	 *
 	 * <p>
 	 * If this function is not called before generating a graph, no vertices will be added to the graph.
 	 *
@@ -81,6 +83,7 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
+	 *
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *

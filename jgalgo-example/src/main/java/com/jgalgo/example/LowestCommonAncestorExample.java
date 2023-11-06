@@ -19,8 +19,16 @@ import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
 import com.jgalgo.graph.IntGraph;
 
+/**
+ * This example demonstrates how to use the lowest common ancestor algorithm.
+ *
+ * @author Barak Ugav
+ */
 public class LowestCommonAncestorExample {
 
+	/**
+	 * This example demonstrates how to use the static lowest common ancestor algorithm.
+	 */
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
 		IntGraph tree = IntGraph.newUndirected();
@@ -51,6 +59,9 @@ public class LowestCommonAncestorExample {
 		assert lcaDs.findLca(v3, v6) == rt;
 	}
 
+	/**
+	 * This example demonstrates how to use the dynamic lowest common ancestor algorithm.
+	 */
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
 		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();

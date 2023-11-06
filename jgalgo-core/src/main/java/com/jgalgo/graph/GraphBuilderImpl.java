@@ -33,7 +33,7 @@ class GraphBuilderImpl {
 				: new GraphBuilderImpl.Undirected<>(g, copyWeights);
 	}
 
-	private static abstract class Abstract<V, E> implements GraphBuilder<V, E> {
+	private abstract static class Abstract<V, E> implements GraphBuilder<V, E> {
 
 		final IndexGraphBuilder ibuilder;
 		private final Object2IntOpenHashMap<V> vIdToIndex;

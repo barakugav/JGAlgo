@@ -34,6 +34,7 @@ public class Bitmap implements IntIterable {
 
 	/**
 	 * Creates a new bitmap of the specified size.
+	 *
 	 * <p>
 	 * The {@code size} is the number of bits this bitmap will manage, and it can not be changed during the lifetime of
 	 * the bitmap. All bits are initially {@code false}.

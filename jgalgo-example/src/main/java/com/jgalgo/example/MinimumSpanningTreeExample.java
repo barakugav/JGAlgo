@@ -21,9 +21,17 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * This example demonstrates how to use the minimum spanning tree algorithm.
+ *
+ * @author Barak Ugav
+ */
 public class MinimumSpanningTreeExample {
 
-	public static void MSTExample() {
+	/**
+	 * This example demonstrates how to use the minimum spanning tree algorithm.
+	 */
+	public static void mstExample() {
 		/* Create a graph with 7 vertices */
 		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
@@ -74,7 +82,7 @@ public class MinimumSpanningTreeExample {
 	}
 
 	public static void main(String[] args) {
-		MSTExample();
+		mstExample();
 	}
 
 }

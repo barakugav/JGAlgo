@@ -35,9 +35,11 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Karger, Klein and Tarjan randomized linear minimum spanning tree algorithm
+ *
  * <p>
  * The algorithm runs in \(O(n + m)\) expected time, and uses linear space in expectation. In practice, this algorithm
  * is out-performed by almost all simpler algorithms. Note that only undirected graphs are supported.
+ *
  * <p>
  * Based on "A randomized linear-time algorithm to find minimum spanning trees" by Karger, David R.; Klein, Philip N.;
  * Tarjan, Robert E. (1995).

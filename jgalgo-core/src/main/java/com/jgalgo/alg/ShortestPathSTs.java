@@ -25,7 +25,7 @@ import com.jgalgo.graph.WeightFunctions;
 
 class ShortestPathSTs {
 
-	static abstract class AbstractImpl implements ShortestPathST {
+	abstract static class AbstractImpl implements ShortestPathST {
 
 		@SuppressWarnings("unchecked")
 		@Override

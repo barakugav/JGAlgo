@@ -23,6 +23,7 @@ import com.jgalgo.internal.ds.DynamicTreeSplayExtension.SplayNodeExtended;
 
 /**
  * Dynamic trees with integer edges weights implementation using splay trees that support various extensions.
+ *
  * <p>
  * Some extensions such as {@link DynamicTreeSplayExtension.TreeSize} can be added to the tree without increasing the
  * asymptotical running time of any operation.
@@ -131,10 +132,10 @@ class DynamicTreeSplayIntExtended extends DynamicTreeSplayInt {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType) {
+	public <ExtT extends DynamicTreeExtension> ExtT getExtension(Class<ExtT> extensionType) {
 		for (DynamicTreeSplayExtension ext : extensions)
 			if (extensionType.isAssignableFrom(ext.getClass()))
-				return (Ext) ext;
+				return (ExtT) ext;
 		return null;
 	}
 

@@ -25,11 +25,13 @@ import com.jgalgo.alg.VertexCover;
 
 /**
  * Weight function that maps graph edges or vertices to weights.
+ *
  * <p>
  * This interface is usually used as weight function of edges, for example in algorithms such as
  * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MatchingAlgo}, in which the algorithm try to
  * find a set of edges satisfying some constraint while minimizing/maximizing some objective function based on the
  * weights of the edges. But it can represent weights assigned to vertices, in algorithms such as {@link VertexCover}.
+ *
  * <p>
  * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
  * represent weights for either edges or vertex, the documentation refer to these edges/vertices as <i>elements</i>.
@@ -102,6 +104,7 @@ public interface WeightFunction<K> extends Comparator<K> {
 
 	/**
 	 * Get the sum of the weights of multiple elements.
+	 *
 	 * <p>
 	 * This method is equivalent to {@link #weightSum(Iterable)}, but it also support {@code null} weight function,
 	 * which is treated is cardinality weight function.
@@ -135,6 +138,7 @@ public interface WeightFunction<K> extends Comparator<K> {
 
 	/**
 	 * Get the cardinality weight function.
+	 *
 	 * <p>
 	 * The cardinality weight function assign a weight of {@code 1} to any element. The function always return the same
 	 * object, which can be accessed directed via {@link #CardinalityWeightFunction}. This is method is exposed only to

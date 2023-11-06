@@ -23,83 +23,83 @@ class Trees {
 
 	private Trees() {}
 
-	interface TreeNode<Node extends TreeNode<Node>> {
+	interface TreeNode<NodeT extends TreeNode<NodeT>> {
 
-		Node parent();
+		NodeT parent();
 
-		Node next();
+		NodeT next();
 
-		Node prev();
+		NodeT prev();
 
-		Node child();
+		NodeT child();
 
-		void setParent(Node x);
+		void setParent(NodeT x);
 
-		void setNext(Node x);
+		void setNext(NodeT x);
 
-		void setPrev(Node x);
+		void setPrev(NodeT x);
 
-		void setChild(Node x);
+		void setChild(NodeT x);
 
 	}
 
-	static class TreeNodeImpl<Node extends TreeNodeImpl<Node>> implements TreeNode<Node> {
+	static class TreeNodeImpl<NodeT extends TreeNodeImpl<NodeT>> implements TreeNode<NodeT> {
 
-		Node parent;
-		Node next;
-		Node prev;
-		Node child;
+		NodeT parent;
+		NodeT next;
+		NodeT prev;
+		NodeT child;
 
 		@Override
-		public Node parent() {
+		public NodeT parent() {
 			return parent;
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 			return next;
 		}
 
 		@Override
-		public Node prev() {
+		public NodeT prev() {
 			return prev;
 		}
 
 		@Override
-		public Node child() {
+		public NodeT child() {
 			return child;
 		}
 
 		@Override
-		public void setParent(Node x) {
+		public void setParent(NodeT x) {
 			parent = x;
 		}
 
 		@Override
-		public void setNext(Node x) {
+		public void setNext(NodeT x) {
 			next = x;
 		}
 
 		@Override
-		public void setPrev(Node x) {
+		public void setPrev(NodeT x) {
 			prev = x;
 		}
 
 		@Override
-		public void setChild(Node x) {
+		public void setChild(NodeT x) {
 			child = x;
 		}
 	}
 
-	static <Node extends TreeNode<Node>> void clear(Node root, Consumer<? super Node> finalizer) {
-		for (Node p = root;;) {
+	static <NodeT extends TreeNode<NodeT>> void clear(NodeT root, Consumer<? super NodeT> finalizer) {
+		for (NodeT p = root;;) {
 			while (p.child() != null) {
 				p = p.child();
 				while (p.next() != null)
 					p = p.next();
 			}
 
-			Node prev;
+			NodeT prev;
 			if (p.prev() != null) {
 				prev = p.prev();
 				prev.setNext(null);
@@ -119,15 +119,15 @@ class Trees {
 		}
 	}
 
-	static class PreOrderIter<Node extends TreeNode<Node>> implements Iterator<Node> {
+	static class PreOrderIter<NodeT extends TreeNode<NodeT>> implements Iterator<NodeT> {
 
-		private Node p;
+		private NodeT p;
 
-		PreOrderIter(Node p) {
+		PreOrderIter(NodeT p) {
 			reset(p);
 		}
 
-		void reset(Node p) {
+		void reset(NodeT p) {
 			this.p = p;
 		}
 
@@ -137,12 +137,12 @@ class Trees {
 		}
 
 		boolean advance() {
-			Node next;
+			NodeT next;
 			if ((next = p.child()) != null) {
 				p = next;
 				return true;
 			} else {
-				Node p0 = p;
+				NodeT p0 = p;
 				do {
 					if ((next = p0.next()) != null) {
 						p = next;
@@ -155,9 +155,9 @@ class Trees {
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 			Assertions.Iters.hasNext(this);
-			Node ret = p;
+			NodeT ret = p;
 			advance();
 			return ret;
 		}

@@ -20,10 +20,12 @@ import java.util.Arrays;
 
 /**
  * Array implementation of the Union Find data structure.
+ *
  * <p>
  * The elements are represented in a continuos array, which is most efficient for storage, and performance as the rate
  * of cache miss is low. This implementation should be used as the default implementation for the {@link UnionFind}
  * interface.
+ *
  * <p>
  * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
  * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use

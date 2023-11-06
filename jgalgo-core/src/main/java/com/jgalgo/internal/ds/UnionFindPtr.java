@@ -20,9 +20,11 @@ import java.util.Arrays;
 
 /**
  * Pointer based implementation for the Union Find data structure.
+ *
  * <p>
  * Each element is represented as a Object allocated on the heap. This implementation is usually out-performed by the
  * {@link UnionFindArray} implementation.
+ *
  * <p>
  * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
  * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use

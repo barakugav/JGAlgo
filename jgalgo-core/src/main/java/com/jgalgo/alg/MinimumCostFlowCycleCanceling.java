@@ -24,13 +24,16 @@ import com.jgalgo.internal.util.Bitmap;
 
 /**
  * Compute the minimum-cost (max) flow in a flow network using cycle canceling.
+ *
  * <p>
  * Firstly, a maximum flow is computed using {@link MaximumFlow}. Then, the residual graph is constructed from the max
  * flow (containing only non-saturated edges), and negative cycles (with respect to the cost function) are eliminated
  * from it repeatedly until no negative cycles remain.
+ *
  * <p>
  * The algorithm runs in \(O(CC) \cdot O(mCU)\), where \(O(CC)\) is the running time of the algorithm used to find a
  * cycle in the residual graph, \(C\) is the maximum (absolute) edge cost and \(U\) is the maximum edge capacity.
+ *
  * <p>
  * Based on 'A Primal Method for Minimal Cost Flows with Applications to the Assignment and Transportation Problems' by
  * M Klein (1966).

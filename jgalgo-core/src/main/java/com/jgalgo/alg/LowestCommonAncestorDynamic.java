@@ -18,10 +18,12 @@ package com.jgalgo.alg;
 
 /**
  * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
+ *
  * <p>
  * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
  * (common ancestor), and its farthest from the root (lowest). Algorithm implementing this interface support modifying
  * the tree by adding leafs as children to existing parents vertices, while supporting LCA queries.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -99,6 +101,7 @@ public interface LowestCommonAncestorDynamic {
 
 		/**
 		 * Get the user data of this vertex.
+		 *
 		 * <p>
 		 * Note that the conversion of the data stored in the implementation to the user type is unsafe.
 		 *
@@ -118,6 +121,7 @@ public interface LowestCommonAncestorDynamic {
 
 	/**
 	 * Create a new algorithm for dynamic LCA queries.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object. The
 	 * {@link LowestCommonAncestorDynamic.Builder} might support different options to obtain different implementations.
@@ -130,6 +134,7 @@ public interface LowestCommonAncestorDynamic {
 
 	/**
 	 * Create a new dynamic LCA algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -187,10 +192,12 @@ public interface LowestCommonAncestorDynamic {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

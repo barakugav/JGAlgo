@@ -154,7 +154,7 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 			if (lastEdge == -1)
 				throw new IllegalStateException();
 			removeEdge(lastEdge);
-			/**
+			/*
 			 * The edge will be removed from entry idx-1 in edges[], go back and decrease the edges count.
 			 */
 			count--;

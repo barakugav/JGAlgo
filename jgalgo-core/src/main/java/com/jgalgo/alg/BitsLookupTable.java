@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 /**
  * Lookup tables for bit operations.
+ *
  * <p>
  * Some algorithms which use the <a href="https://en.wikipedia.org/wiki/Random-access_machine">RAM model</a> perform
  * some bit operations such as popcount ({@link Integer#bitCount(int)}) or ctz
@@ -26,6 +27,7 @@ package com.jgalgo.alg;
  * \(O(1)\), rather its implemented in \(O(\textit{wordsize})\) or \(O(\log \textit{wordsize})\). its possible to
  * implemented these operations in true \(O(1)\) time by constructing tables of size \(2^\textit{wordsize}\), which is
  * usually linear in the input size, and this is what this class purpose is.
+ *
  * <p>
  * The use of this class should be used with benchmarks, as its expected to use non negligible amount of memory and gain
  * little if any performance increase.
@@ -38,6 +40,7 @@ class BitsLookupTable {
 
 	/**
 	 * Lookup table for bitCount (popcount) operation.
+	 *
 	 * <p>
 	 * Lookup table that implement bitCount operation in \(O(1)\) time for any wordsize (maximum number of bits needed
 	 * to represent an integer) using space \(O(2^\textit{wordsize})\) which is usually linear in the input size.
@@ -85,6 +88,7 @@ class BitsLookupTable {
 
 		/**
 		 * Get the number of 1 bits in an integer.
+		 *
 		 * <p>
 		 * This function is equivalent to {@link Integer#bitCount(int)}, but its implemented in 'true' \(O(1)\) and
 		 * therefore faster (in theory!).
@@ -100,12 +104,14 @@ class BitsLookupTable {
 
 	/**
 	 * Lookup table for getting the i-th bit in an integer.
+	 *
 	 * <p>
 	 * Define a list \(S(x)\) as ordered list containing all indices of 1 bits of an integer number \(x\), namely given
 	 * an integer \(x = 0b \; b_{31} b_{30} ... b_0\) where \(b_i\) is the \(i\)-th bit of \(x\), define \(S(x)\) as the
 	 * ordered list \(S = (i \mid b_i = 1)\), for example \(x = 9 = 0b \; 1001, S(x) = (0, 3)\). The \(i\)-th bit of a
 	 * number \(x\) is \(S(x)[i]\). This function does not have a standard implementation in the {@link Integer} class,
 	 * but could implemented easily in \(O(\textit{wordsize})\) time.
+	 *
 	 * <p>
 	 * This class construct a lookup table to answer an i-th bit query in \(O(1)\) time using a table of size
 	 * \(O(2^\textit{wordsize})\) space which is usually linear in the input size.
@@ -164,6 +170,7 @@ class BitsLookupTable {
 
 		/**
 		 * Get the index of i-th one bit of an integer.
+		 *
 		 * <p>
 		 * Define a list \(S(x)\) as ordered list containing all indices of 1 bits, for example \(x = 9 = 0b1001, S(x) =
 		 * (0 ,3)\). The \(i\)-th bit of \(x\) is defined as \(S(x)[i]\).

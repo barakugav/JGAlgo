@@ -130,7 +130,7 @@ class ContractableGraph {
 			@Override
 			public int nextInt() {
 				Assertions.Iters.hasNext(this);
-				int e = nextEdge;
+				final int e = nextEdge;
 				sourceOrig = nextSourceOrig;
 				targetOrig = nextTargetOrig;
 				target = nextTarget;

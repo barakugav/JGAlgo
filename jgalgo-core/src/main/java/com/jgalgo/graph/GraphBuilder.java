@@ -19,6 +19,7 @@ import java.util.Set;
 
 /**
  * A builder for {@linkplain Graph graphs}.
+ *
  * <p>
  * The builder is used to construct <b>non-empty</b> graphs. Differing from {@link GraphFactory} which create new empty
  * graphs, the builder is used to add vertices and edges before actually creating the graph. This capability is required
@@ -66,6 +67,7 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Hint about the number of vertices expected to be added to the builder.
+	 *
 	 * <p>
 	 * This method does not affect the built graph, only the builder itself.
 	 *
@@ -75,6 +77,7 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Hint about the number of edges expected to be added to the builder.
+	 *
 	 * <p>
 	 * This method does not affect the built graph, only the builder itself.
 	 *
@@ -84,29 +87,31 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Get the vertices weights of some key.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        key of the weights
-	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 * @param  key        key of the weights
+	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 */
 	<T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of the built graph.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	default <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type) {
 		return addVerticesWeights(key, type, null);
@@ -114,22 +119,24 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Add a new weights container associated with the vertices of built graph with default value.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	<T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
+	 *
 	 * <p>
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -139,29 +146,31 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Get the edges weights of some key.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param  key        key of the weights
-	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 * @param  <T>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
+	 * @param  key        key of the weights
+	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 */
 	<T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	default <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type) {
 		return addEdgesWeights(key, type, null);
@@ -169,22 +178,24 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph with default value.
+	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param  <T>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
+	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 * @param  key                      key of the weights
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
-	 * @param  <T>                      The weight data type
-	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types such
-	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
 	<T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal);
 
 	/**
 	 * Get the keys of all the associated edges weights.
+	 *
 	 * <p>
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -235,6 +246,7 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
+	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -250,6 +262,7 @@ public interface GraphBuilder<V, E> {
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *

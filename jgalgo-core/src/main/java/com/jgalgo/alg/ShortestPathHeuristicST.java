@@ -24,16 +24,19 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Shortest path algorithm that uses a distance heuristic function.
+ *
  * <p>
  * Given a source and target vertices, and a heuristic function that maps each vertex to distance approximation of its
  * distance to the target, the algorithm attempt to find the shortest path from the source to target. An advantage of
  * such algorithm over other {@link ShortestPathSingleSource} algorithms, is that it can terminate much faster for the
  * specific source and target, especially if the heuristic is good.
+ *
  * <p>
  * Differing from the regular {@link ShortestPathSingleSource}, algorithms implementing this interface attempt to find
  * the shortest path between a single source and a single target, rather than a single source and all other vertices as
  * targets. Therefore, the algorithm can terminate after performing and using less than linear (in the graph size)
  * operations and space.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -45,6 +48,7 @@ public interface ShortestPathHeuristicST {
 
 	/**
 	 * Compute the shortest path between two vertices in a graph.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
 	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -77,6 +81,7 @@ public interface ShortestPathHeuristicST {
 
 	/**
 	 * Create a new shortest path algorithm with heuristic.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ShortestPathHeuristicST} object. The
 	 * {@link ShortestPathHeuristicST.Builder} might support different options to obtain different implementations.
@@ -89,6 +94,7 @@ public interface ShortestPathHeuristicST {
 
 	/**
 	 * Create a new heuristic shortest path algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -143,10 +149,12 @@ public interface ShortestPathHeuristicST {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

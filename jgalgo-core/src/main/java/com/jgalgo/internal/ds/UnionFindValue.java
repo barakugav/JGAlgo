@@ -18,9 +18,11 @@ package com.jgalgo.internal.ds;
 
 /**
  * Union Find with {@code double} values for the elements.
+ *
  * <p>
  * This interface is an extension to the {@link UnionFind} interface that support, along with regular operation, value
  * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -61,6 +63,7 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * The created element will be assigned a value of {@code 0}.
 	 */
@@ -87,6 +90,7 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Create a new union find algorithm with values.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link UnionFindValue} object. The
 	 * {@link UnionFindValue.Builder} might support different options to obtain different implementations.
@@ -99,6 +103,7 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Create a new union-find with values data structure builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *

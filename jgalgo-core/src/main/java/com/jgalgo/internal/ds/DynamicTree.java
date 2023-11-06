@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 /**
  * Dynamic tree data structure that support {@code link} and {@code cut} operations.
+ *
  * <p>
  * The dynamic tree data structure is a set of vertices forming a forest and support the following operations:
  * <ul>
@@ -29,6 +30,7 @@ package com.jgalgo.internal.ds;
  * <li>{@link #findMinEdge(Vertex)} - find the edge with minimum weight from on the path from a vertex to its tree
  * root.</li>
  * </ul>
+ *
  * <p>
  * Note: this API will change in the future
  *
@@ -87,7 +89,7 @@ public interface DynamicTree {
 	void cut(Vertex v);
 
 	/**
-	 * Clear the whole data structure
+	 * Clear the whole data structure.
 	 */
 	void clear();
 
@@ -120,7 +122,7 @@ public interface DynamicTree {
 		 */
 		Vertex getParent();
 
-	};
+	}
 
 	/**
 	 * A return type for {@link DynamicTree#findMinEdge(Vertex)} method representing the minimum edge from a vertex to
@@ -132,6 +134,7 @@ public interface DynamicTree {
 
 		/**
 		 * Get the source of this edge.
+		 *
 		 * <p>
 		 * The source was determined as the child vertex during the creation of the vertex via
 		 * {@link DynamicTree#link(Vertex, Vertex, double)} operation.
@@ -142,6 +145,7 @@ public interface DynamicTree {
 
 		/**
 		 * Get the weight of the edge.
+		 *
 		 * <p>
 		 * The weight of the edge is a sum over the initial weight assigned during the
 		 * {@link DynamicTree#link(Vertex, Vertex, double)} operation and all
@@ -155,6 +159,7 @@ public interface DynamicTree {
 
 	/**
 	 * Get an extension supported by this dynamic tree.
+	 *
 	 * <p>
 	 * Different extensions are supported in addition to the regular {@link DynamicTree} interface. The extensions do
 	 * not change the asymptotical running time of the implementation. Here is an example of a
@@ -173,16 +178,17 @@ public interface DynamicTree {
 	 * System.out.println("The number of vertices in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
 	 * }</pre>
 	 *
-	 * @param  <Ext>         the extension type
+	 * @param  <ExtT>        the extension type
 	 * @param  extensionType the extension type class
 	 * @return               the extension object or {@code null} if no matching extension was found
 	 * @see                  DynamicTreeExtension
 	 * @see                  DynamicTree.Builder#addExtension(Class)
 	 */
-	<Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType);
+	<ExtT extends DynamicTreeExtension> ExtT getExtension(Class<ExtT> extensionType);
 
 	/**
 	 * Create a new dynamic trees algorithm builder.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link DynamicTree} object.
 	 *
@@ -209,6 +215,7 @@ public interface DynamicTree {
 
 		/**
 		 * Set the maximum edge weight the dynamic trees should support.
+		 *
 		 * <p>
 		 * Some implementations required this value to be set before building {@link DynamicTree} instances.
 		 *
@@ -221,6 +228,7 @@ public interface DynamicTree {
 
 		/**
 		 * Enable/disable integer weights.
+		 *
 		 * <p>
 		 * More efficient and accurate implementations may be supported if the weights are known to be integers.
 		 *
@@ -231,6 +239,7 @@ public interface DynamicTree {
 
 		/**
 		 * Add an extension to all trees built by this builder.
+		 *
 		 * <p>
 		 * For example, this is the recommended way to create a dynamic tree data structure with tree size extension:
 		 *
@@ -263,10 +272,12 @@ public interface DynamicTree {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

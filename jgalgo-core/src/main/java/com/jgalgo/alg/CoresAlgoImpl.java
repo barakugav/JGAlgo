@@ -30,11 +30,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Linear cores computing algorithm.
+ *
  * <p>
  * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core ect. It does so
  * by removing all vertices with degree less than the current core number.
+ *
  * <p>
  * The algorithm runs in linear time.
+ *
  * <p>
  * Based on 'An O(m) Algorithm for Cores Decomposition of Networks' by Batagelj, V. and Zaversnik, M.
  *

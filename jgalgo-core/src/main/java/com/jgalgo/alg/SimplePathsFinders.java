@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexIdMap;
 
 class SimplePathsFinders {
 
-	static abstract class AbstractImpl implements SimplePathsFinder {
+	abstract static class AbstractImpl implements SimplePathsFinder {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override

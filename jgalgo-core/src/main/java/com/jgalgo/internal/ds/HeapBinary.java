@@ -26,12 +26,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 /**
  * A binary heap implementation using an array.
+ *
  * <p>
  * The binary heap is the most simple implementation of a heap. It does not use some complex pointer based data
  * structure, but rather a simple continue array, to store its elements. Its have very small memory footprint and should
  * be used as default implementation in use cases where only {@link #insert(Object)} and {@link #extractMin()}
  * operations are required, both implemented in \(O(\log n) time. If the minimum is only peeked without extraction using
  * {@link #findMin()}, constant number of operations are performed.
+ *
  * <p>
  * If fast {@code remove(...)} or {@code decreaseKey(...)} operations are required, consider using {@link HeapPairing}
  * or {@link HeapFibonacci}.
@@ -47,6 +49,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	/**
 	 * Constructs a new, empty binary heap, ordered according to the natural ordering of its elements.
+	 *
 	 * <p>
 	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
 	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
@@ -60,6 +63,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	/**
 	 * Constructs a new, empty binary heap, ordered according to the specified comparator.
+	 *
 	 * <p>
 	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and

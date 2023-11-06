@@ -30,12 +30,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Minimum edge vertex cover algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\) an <i>edge cover</i> is a set \(S \subseteq E\) for which for any vertex \(v \in V\) at
  * least one of the edges adjacent to \(v\) is in \(S\). Given an edge weight function \(w:E \rightarrow R\), the weight
  * of an edge cover is the weight sum of the edges in the cover. The minimum edge cover is the edge cover with the
  * minimum weight. In contrast to the {@link VertexCover} problem which is NP-hard, the edge cover problem can be solved
  * in polynomial time.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -47,6 +49,7 @@ public interface EdgeCover {
 
 	/**
 	 * Compute a minimum edge cover of a graph with respect to an edge weight function.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
@@ -61,6 +64,7 @@ public interface EdgeCover {
 
 	/**
 	 * A result object of {@link EdgeCover} computation.
+	 *
 	 * <p>
 	 * The result object is basically the set of edges that form the cover.
 	 *
@@ -114,6 +118,7 @@ public interface EdgeCover {
 
 	/**
 	 * Check whether a set of edges is a edge cover of a graph.
+	 *
 	 * <p>
 	 * A set of edges is an edge cover of a graph if for every vertex has at least one adjacent edge which is in the
 	 * set. In addition, the collection of the edges must not contain duplicates.
@@ -169,6 +174,7 @@ public interface EdgeCover {
 
 	/**
 	 * Create a new edge cover algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link EdgeCover} object. The {@link EdgeCover.Builder} might
 	 * support different options to obtain different implementations.
@@ -181,6 +187,7 @@ public interface EdgeCover {
 
 	/**
 	 * Create a new edge cover algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -221,10 +228,12 @@ public interface EdgeCover {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

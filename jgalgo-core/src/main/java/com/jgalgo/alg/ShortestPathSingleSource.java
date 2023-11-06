@@ -23,11 +23,13 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Single Source Shortest Path algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one might ask what is the shortest path from
  * a <i>source</i> vertex to all other vertices in \(V\), where the 'shortest' is defined by comparing the sum of edges
  * weights of each path. A Single Source Shortest Path (SSSP) is able to compute these shortest paths from a source to
  * any other vertex, along with the distances, which are the shortest paths lengths (weights).
+ *
  * <p>
  * The most basic single source shortest path (SSSP) algorithms work on graphs with non negative weights, and they are
  * the most efficient, such as Dijkstra algorithm. Negative weights are supported by some implementations of SSSP, and
@@ -37,12 +39,14 @@ import com.jgalgo.graph.WeightFunction;
  * {@link ShortestPathSingleSource.Result#getNegativeCycle()}. Note that if a negative cycle exists, but it is not
  * reachable from the source, the algorithm may or may not find it, depending on the implementation. To get an algorithm
  * instance that support negative weights, use {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
+ *
  * <p>
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
  * linear time for any weights types by calculating the topological order of the vertices (see
  * {@link ShortestPathSingleSource.Builder#setDag(boolean)}). Another special case arise when the weight function assign
  * \(1\) to any edges, and the shortest paths could be computed again in linear time using a BFS (see
  * {@link ShortestPathSingleSource.Builder#setCardinality(boolean)}).
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -84,10 +88,12 @@ public interface ShortestPathSingleSource {
 
 	/**
 	 * Compute the shortest paths from a source to any other vertex in a graph.
+	 *
 	 * <p>
 	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
 	 * from a source vertex to some other vertex is the path with the minimum weight. For cardinality (non weighted)
 	 * shortest path, pass {@code null} instead of the weight function {@code w}.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -135,6 +141,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Check whether a negative cycle was found.
+		 *
 		 * <p>
 		 * If a negative cycle was found, the 'shortest paths' are not well defined, as a path can loop in the cycle and
 		 * achieve arbitrary small 'length'.
@@ -200,6 +207,7 @@ public interface ShortestPathSingleSource {
 
 	/**
 	 * Create a new shortest path algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link ShortestPathSingleSource} object. The
 	 * {@link ShortestPathSingleSource.Builder} might support different options to obtain different implementations.
@@ -212,6 +220,7 @@ public interface ShortestPathSingleSource {
 
 	/**
 	 * Create a new single source shortest path algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -238,6 +247,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Enable/disable integer weights.
+		 *
 		 * <p>
 		 * More efficient and accurate implementations may be supported if the edge weights are known to be integer.
 		 *
@@ -249,6 +259,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Enable/disable the support for negative numbers.
+		 *
 		 * <p>
 		 * More efficient and accurate implementations may be supported if its known in advance that all edge weights
 		 * will be positive (which is the default).
@@ -262,6 +273,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Set the maximum distance that should be supported.
+		 *
 		 * <p>
 		 * This method may be used as a hint to choose an {@link ShortestPathSingleSource} implementation.
 		 *
@@ -272,6 +284,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Enable/disable the support for directed acyclic graphs (DAG) only.
+		 *
 		 * <p>
 		 * More efficient algorithm may exists if we know in advance all input graphs will be DAG. Note that if this
 		 * option is enabled, ONLY directed acyclic graphs will be supported.
@@ -284,6 +297,7 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * Enable/disable the support for cardinality shortest paths only.
+		 *
 		 * <p>
 		 * More efficient algorithm may exists for cardinality shortest paths. Note that if this option is enabled, ONLY
 		 * cardinality shortest paths will be supported.
@@ -296,10 +310,12 @@ public interface ShortestPathSingleSource {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

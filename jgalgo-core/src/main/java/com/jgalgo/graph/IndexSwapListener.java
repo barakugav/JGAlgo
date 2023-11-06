@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 /**
  * A listener that will be notified when a {@link IndexGraph} chooses to swap two IDs (vertices/edges).
+ *
  * <p>
  * The {@code int} identifiers an {@link IndexGraph} uses for its vertices are always {@code 0,1,2,...,verticesNum} (and
  * similarly for its edges). To maintain this invariant the graph implementations way swap and rename its vertices
@@ -24,6 +25,7 @@ package com.jgalgo.graph;
  * {@link IndexGraph#addVertexSwapListener(IndexSwapListener)} and
  * {@link IndexGraph#addEdgeSwapListener(IndexSwapListener)}, which ensure a callback listener will be notified when
  * such swaps occur.
+ *
  * <p>
  * The same swap listener interface is used for both vertices and edges (a specific instance is only used to one of
  * them, which can be determined by the context), and we use a unified term <i>element</i> in the documentation to refer
@@ -36,6 +38,7 @@ public interface IndexSwapListener {
 
 	/**
 	 * A callback that is called when {@code idx1} and {@code idx2} are swapped.
+	 *
 	 * <p>
 	 * The same swap listener interface is used for both vertices and edges (a specific instance is only used to one of
 	 * them, which can be determined by the context), and we use a unified term <i>element</i> in the documentation to

@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Flow on graph edges, with capacities and flows values.
+ *
  * <p>
  * This interface is a specific version of {@link FlowNetwork} for {@link IntGraph}. For the full documentation see
  * {@link FlowNetwork}.
@@ -72,9 +73,11 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 
 	/**
 	 * Get the amount of flow units going along an edge.
+	 *
 	 * <p>
 	 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
 	 * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+	 *
 	 * <p>
 	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
 	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
@@ -170,9 +173,11 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 
 	/**
 	 * Create a flow network by adding edge weights using {@link IntGraph#addEdgesWeights}.
+	 *
 	 * <p>
 	 * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
 	 * edge will be zero.
+	 *
 	 * <p>
 	 * By using {@link IntGraph#addEdgesWeights}, the weights containers (and the flow network) remains valid in case
 	 * the graph is modified, as they are added to the graph. This is a key difference between this function and
@@ -191,6 +196,7 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 
 	/**
 	 * Create a flow network by using existing edge weights.
+	 *
 	 * <p>
 	 * This method can be used together with {@link IWeights#createExternalEdgesWeights}, creating a flow network for a
 	 * graph without adding any new containers to it. This is useful in scenarios in which we are not allowed to modify

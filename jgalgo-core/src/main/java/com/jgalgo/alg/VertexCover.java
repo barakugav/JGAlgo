@@ -30,15 +30,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Minimum weighted vertex cover algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\) a <i>vertex cover</i> is a set \(S \subseteq V\) for which for any edge \((u,v) \in E\) at
  * least one of \(u\) or \(v\) are in \(S\). Given a vertex weight function \(w:V \rightarrow R\), the weight of a
  * vertex cover is the weight sum of the vertices in the cover. The minimum vertex cover is the vertex cover with the
  * minimum weight.
+ *
  * <p>
  * Note that finding the actual minimum vertex cover is an NP-hard problem, even for a weight function that assign \(1\)
  * to each vertex. Therefore, algorithms implementing this interface provide an approximation for the actual optimal
  * solution.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -51,9 +54,11 @@ public interface VertexCover {
 
 	/**
 	 * Compute a minimum vertex cover of a graph with respect to a vertex weight function.
+	 *
 	 * <p>
 	 * Note that finding the minimum vertex cover is an NP-hard problem, therefore the result of this function is an
 	 * approximation of the optimal solution.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link VertexCover.IResult}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -68,6 +73,7 @@ public interface VertexCover {
 
 	/**
 	 * A result object of {@link VertexCover} computation.
+	 *
 	 * <p>
 	 * The result object is basically the set of vertices that form the cover.
 	 *
@@ -121,6 +127,7 @@ public interface VertexCover {
 
 	/**
 	 * Check whether a set of vertices is a vertex cover of a graph.
+	 *
 	 * <p>
 	 * A set of vertices is a vertex cover of a graph if for every edge in the graph at least one of its vertices is in
 	 * the set. In addition, the collection of the vertices must not contain duplicates.
@@ -161,6 +168,7 @@ public interface VertexCover {
 
 	/**
 	 * Create a new vertex cover algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link VertexCover} object. The {@link VertexCover.Builder}
 	 * might support different options to obtain different implementations.
@@ -173,6 +181,7 @@ public interface VertexCover {
 
 	/**
 	 * Create a new vertex cover algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -199,10 +208,12 @@ public interface VertexCover {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

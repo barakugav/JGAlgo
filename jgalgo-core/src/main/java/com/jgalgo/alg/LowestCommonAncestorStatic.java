@@ -21,13 +21,16 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.
+ *
  * <p>
  * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
  * (common ancestor), and its farthest from the root (lowest). Given a tree \(G=(V,E)\), we would like to pre process it
  * and then answer queries of the type "what is the lower common ancestor of two vertices \(u\) and \(v\)?".
+ *
  * <p>
  * Most implementations of this interface achieve linear or near linear preprocessing time and constant or logarithmic
  * query time.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -63,6 +66,7 @@ public interface LowestCommonAncestorStatic {
 
 	/**
 	 * Perform a static pre processing of a tree for future LCA (Lowest common ancestor) queries.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link LowestCommonAncestorStatic.IDataStructure}.
 	 *
@@ -119,6 +123,7 @@ public interface LowestCommonAncestorStatic {
 
 	/**
 	 * Create a new algorithm for static LCA queries.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object. The
 	 * {@link LowestCommonAncestorStatic.Builder} might support different options to obtain different implementations.
@@ -131,6 +136,7 @@ public interface LowestCommonAncestorStatic {
 
 	/**
 	 * Create a new static LCA algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -157,10 +163,12 @@ public interface LowestCommonAncestorStatic {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

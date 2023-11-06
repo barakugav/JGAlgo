@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.List;
+import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.internal.util.Range;
 
 class FormatDIMACS implements GraphFormat {
@@ -100,8 +100,8 @@ class FormatDIMACS implements GraphFormat {
 		 * see https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format
 		 *
 		 * <pre>
-		 * p edge <NumVertices> <NumEdges>
-		 * e <VertexName1> <VertexName2>
+		 * p edge &lt;NumVertices&gt; &lt;NumEdges&gt;
+		 * e &lt;VertexName1&gt; &lt;VertexName2&gt;
 		 * Example:
 		 * c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}
 		 * p edge 5 5
@@ -112,6 +112,7 @@ class FormatDIMACS implements GraphFormat {
 		 * e 4 5
 		 * </pre>
 		 *
+		 * <p>
 		 * 2. Shortest path format (with weights)<br>
 		 * Two assumptions:<br>
 		 * (1) Undirected graph.<br>
@@ -132,8 +133,8 @@ class FormatDIMACS implements GraphFormat {
 					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
 				IntGraphBuilder gb = IntGraphBuilder.newUndirected();
 				IWeightsInt w = null;
-				int num_vertices = -1;
-				int num_edges = -1;
+				int verticesNum = -1;
+				int edgesNum = -1;
 				boolean hasWeights = false;
 				boolean problemLineSeen = false;
 
@@ -158,9 +159,10 @@ class FormatDIMACS implements GraphFormat {
 							String[] arr = line.split(" ");
 							if (arr.length != 4)
 								throw new IllegalArgumentException(
-										"p lines must have 4 parameters: p edge <NumVertices> <NumEdges> or p sp <NumVertices> <NumEdges>");
-							String graph_format = arr[1].toLowerCase();
-							switch (graph_format) {
+										"p lines must have 4 parameters: p edge <NumVertices> <NumEdges>"
+												+ " or p sp <NumVertices> <NumEdges>");
+							String graphFormat = arr[1].toLowerCase();
+							switch (graphFormat) {
 								case "edge":
 									hasWeights = false;
 									break;
@@ -168,28 +170,27 @@ class FormatDIMACS implements GraphFormat {
 									hasWeights = true;
 									break;
 								default:
-									throw new IllegalArgumentException(
-											"support only: p edge <NumVertices> <NumEdges> or p sp <NumVertices> <NumEdges>");
+									throw new IllegalArgumentException("support only: p edge <NumVertices> <NumEdges>"
+											+ " or p sp <NumVertices> <NumEdges>");
 							}
 
 							try {
-								num_vertices = Integer.parseInt(arr[2]);
-								num_edges = Integer.parseInt(arr[3]);
+								verticesNum = Integer.parseInt(arr[2]);
+								edgesNum = Integer.parseInt(arr[3]);
 							} catch (Exception e) {
-								throw new IllegalArgumentException(
-										"expect numbers: p edge <NumVertices> <NumEdges> or p sp <NumVertices> <NumEdges>",
-										e);
+								throw new IllegalArgumentException("expect numbers: p edge <NumVertices> <NumEdges>"
+										+ " or p sp <NumVertices> <NumEdges>", e);
 							}
 
-							if (num_vertices < 0 || num_edges < 0)
+							if (verticesNum < 0 || edgesNum < 0)
 								throw new IllegalArgumentException(
-										"negative vertices/edges num: " + num_vertices + " " + num_edges);
-							gb.expectedVerticesNum(num_vertices);
-							gb.expectedEdgesNum(num_edges);
+										"negative vertices/edges num: " + verticesNum + " " + edgesNum);
+							gb.expectedVerticesNum(verticesNum);
+							gb.expectedEdgesNum(edgesNum);
 
-							if (graph_format.equals("sp"))
+							if (graphFormat.equals("sp"))
 								w = gb.addEdgesWeights("weightsEdges", int.class);
-							for (int v = 1; v <= num_vertices; v++)
+							for (int v = 1; v <= verticesNum; v++)
 								gb.addVertex(v); // vertices are labeled as 1,2,3,4...
 							break;
 						}
@@ -218,8 +219,8 @@ class FormatDIMACS implements GraphFormat {
 							} catch (Exception e) {
 								throw new IllegalArgumentException("edge must have 2 vertices as numbers", e);
 							}
-							if (vertexSource < 1 || vertexSource > num_vertices || vertexTarget < 1
-									|| vertexTarget > num_vertices)
+							if (vertexSource < 1 || vertexSource > verticesNum || vertexTarget < 1
+									|| vertexTarget > verticesNum)
 								throw new IllegalArgumentException("vertex number must be between 1 and num_vertices");
 							final int e = gb.edges().size() + 1;
 							gb.addEdge(vertexSource, vertexTarget, e);

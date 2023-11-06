@@ -20,8 +20,16 @@ import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IntGraph;
 
+/**
+ * This example demonstrates how to use the coloring algorithm.
+ *
+ * @author Barak Ugav
+ */
 public class ColoringExample {
 
+	/**
+	 * This example demonstrates how to use the coloring algorithm.
+	 */
 	public static void coloringExample() {
 		/* Create a graph with few vertices and edges */
 		IntGraph g = createGraph();
@@ -44,7 +52,7 @@ public class ColoringExample {
 		}
 	}
 
-	public static IntGraph createGraph() {
+	private static IntGraph createGraph() {
 		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();

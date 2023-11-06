@@ -26,10 +26,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Finds all maximal cliques in a graph.
+ *
  * <p>
  * A clique is a subset of vertices of an undirected graph such that every two distinct vertices in the clique are
  * adjacent (connected by an edge). A maximal clique is a clique that cannot be extended by including one more adjacent
  * vertex.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -51,10 +53,12 @@ public interface MaximalCliques {
 
 	/**
 	 * Finds all the maximal cliques in a graph.
+	 *
 	 * <p>
 	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
 	 * consider using the {@link #iterateMaximalCliques(Graph)} method instead, which may iterate the cliques one at a
 	 * time without storing all them at the same time in memory.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object will be a collection of {@link IntSet}.
 	 *
@@ -72,9 +76,11 @@ public interface MaximalCliques {
 
 	/**
 	 * Iterate over all maximal cliques in a graph.
+	 *
 	 * <p>
 	 * In contrast to {@link #findAllMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can
 	 * be used to avoid storing all the cliques in memory at the the time.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
 	 *
@@ -87,6 +93,7 @@ public interface MaximalCliques {
 
 	/**
 	 * Create a new maximal cliques algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MaximalCliques} object. The
 	 * {@link MaximalCliques.Builder} might support different options to obtain different implementations.
@@ -99,6 +106,7 @@ public interface MaximalCliques {
 
 	/**
 	 * Create a new builder for maximal cliques algorithms.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -154,10 +162,12 @@ public interface MaximalCliques {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

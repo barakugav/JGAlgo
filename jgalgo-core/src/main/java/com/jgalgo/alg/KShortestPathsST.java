@@ -23,11 +23,13 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * An algorithm for computing the K shortest paths between two vertices in a graph.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one might ask what are the K shortest paths
  * from a <i>source</i> vertex to a <i>target</i> vertex, where the 'shortest' is defined by comparing the sum of edges
  * weights of each path. This interface computes such paths. It differ from {@link ShortestPathST}, as it computes
  * multiple paths, and not just one.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -40,6 +42,7 @@ public interface KShortestPathsST {
 
 	/**
 	 * Compute the K shortest paths from a source vertex to a target vertex.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is a list of {@link IPath}. If {@code g} is
 	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
@@ -58,6 +61,7 @@ public interface KShortestPathsST {
 
 	/**
 	 * Create a new K shortest paths algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object. The
 	 * {@link KShortestPathsST.Builder} might support different options to obtain different implementations.
@@ -70,6 +74,7 @@ public interface KShortestPathsST {
 
 	/**
 	 * Create a new K shortest paths algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -96,10 +101,12 @@ public interface KShortestPathsST {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

@@ -72,7 +72,7 @@ class DfsIterImpl implements Dfs.IntIter {
 	public int nextInt() {
 		Assertions.Iters.hasNext(this);
 
-		int ret = nextV;
+		final int ret = nextV;
 		/* sync edgePath to naxEdgePath */
 		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());
 		edgePath.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,
@@ -85,7 +85,7 @@ class DfsIterImpl implements Dfs.IntIter {
 		} else {
 			advance: for (;;) {
 				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {
-					int e = eit.nextInt();
+					final int e = eit.nextInt();
 					int v = eit.targetInt();
 					if (visited.get(v))
 						continue;

@@ -23,11 +23,13 @@ import com.jgalgo.graph.WeightFunction;
 
 /**
  * Algorithm that find the cycle with the minimum mean weight.
+ *
  * <p>
  * Given a graph \(G\), a cycle in \(G\) is a sequence of edges that form a path, and its first edge source is also its
  * last edge target. Given an edge weight function, we can define for each such cycle its mean weight, by summing its
  * edges weights and dividing by its length (the number of edges in the cycle). Algorithms implementing this interface
  * find the cycle with the minimum mean weight among all the cycles in the given graph.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,6 +40,7 @@ public interface MinimumMeanCycle {
 
 	/**
 	 * Compute the minimum mean cycle in a graph.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
 	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
@@ -52,6 +55,7 @@ public interface MinimumMeanCycle {
 
 	/**
 	 * Create a new min mean cycle algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object. The
 	 * {@link MinimumMeanCycle.Builder} might support different options to obtain different implementations.
@@ -64,6 +68,7 @@ public interface MinimumMeanCycle {
 
 	/**
 	 * Create a new minimum mean cycle algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -119,10 +124,12 @@ public interface MinimumMeanCycle {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

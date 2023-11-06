@@ -28,13 +28,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A Pairing heap implementation.
+ *
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
  * {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
  * amortized.
+ *
  * <p>
  * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
  * \(O(m \log n)\) as the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
+ *
  * <p>
  * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default
  * choice for the general use case.
@@ -42,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
  * @author Barak Ugav
  */
-abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, NodeImpl>>
+abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>>
 		extends AbstractHeapReferenceable<K, V> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -57,7 +60,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 	}
 
-	NodeImpl minRoot;
+	NodeT minRoot;
 	int size;
 
 	HeapPairing(Comparator<? super K> c) {
@@ -75,8 +78,8 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		return size;
 	}
 
-	private static <K, V, Node extends NodeBase<K, V, Node>> void cut(Node n) {
-		Node next = n.next;
+	private static <K, V, NodeT extends NodeBase<K, V, NodeT>> void cut(NodeT n) {
+		NodeT next = n.next;
 		if (next != null) {
 			next.prevOrParent = n.prevOrParent;
 			n.next = null;
@@ -89,10 +92,10 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		n.prevOrParent = null;
 	}
 
-	static <K, V, Node extends NodeBase<K, V, Node>> void addChild(Node parent, Node newChild) {
+	static <K, V, NodeT extends NodeBase<K, V, NodeT>> void addChild(NodeT parent, NodeT newChild) {
 		assert newChild.prevOrParent == null;
 		assert newChild.next == null;
-		Node oldChild = parent.child;
+		NodeT oldChild = parent.child;
 		if (oldChild != null) {
 			oldChild.prevOrParent = newChild;
 			newChild.next = oldChild;
@@ -101,7 +104,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		newChild.prevOrParent = parent;
 	}
 
-	void insertNode(NodeImpl n) {
+	void insertNode(NodeT n) {
 		if (minRoot == null) {
 			minRoot = n;
 			assert size == 0;
@@ -111,7 +114,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		size++;
 	}
 
-	void afterKeyDecrease(NodeImpl n) {
+	void afterKeyDecrease(NodeT n) {
 		if (n == minRoot)
 			return;
 		cut(n);
@@ -121,7 +124,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 	@Override
 	public void remove(HeapReference<K, V> ref) {
 		@SuppressWarnings("unchecked")
-		NodeImpl n = (NodeImpl) ref;
+		NodeT n = (NodeT) ref;
 		assert minRoot != null;
 		if (n != minRoot) {
 			cut(n);
@@ -140,7 +143,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		Assertions.Heaps.meldWithSameImpl(getClass(), heap);
 		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 		@SuppressWarnings("unchecked")
-		HeapPairing<K, V, NodeImpl> h = (HeapPairing<K, V, NodeImpl>) heap;
+		HeapPairing<K, V, NodeT> h = (HeapPairing<K, V, NodeT>) heap;
 
 		if (size == 0) {
 			assert minRoot == null;
@@ -154,13 +157,13 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		h.size = 0;
 	}
 
-	private NodeImpl meld(NodeImpl n1, NodeImpl n2) {
+	private NodeT meld(NodeT n1, NodeT n2) {
 		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);
 	}
 
-	abstract NodeImpl meldDefaultCmp(NodeImpl n1, NodeImpl n2);
+	abstract NodeT meldDefaultCmp(NodeT n1, NodeT n2);
 
-	abstract NodeImpl meldCustomCmp(NodeImpl n1, NodeImpl n2);
+	abstract NodeT meldCustomCmp(NodeT n1, NodeT n2);
 
 	@Override
 	public void clear() {
@@ -169,14 +172,14 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 			return;
 		}
 
-		for (NodeImpl p = minRoot;;) {
+		for (NodeT p = minRoot;;) {
 			while (p.child != null) {
 				p = p.child;
 				while (p.next != null)
 					p = p.next;
 			}
 			p.clearUserData();
-			NodeImpl prev = p.prevOrParent;
+			NodeT prev = p.prevOrParent;
 			if (prev == null)
 				break;
 			p.prevOrParent = null;
@@ -198,13 +201,13 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		return (Iterator) new PreOrderIter<>(minRoot);
 	}
 
-	abstract int compareNodesKeys(NodeImpl n1, NodeImpl n2);
+	abstract int compareNodesKeys(NodeT n1, NodeT n2);
 
-	static abstract class NodeBase<K, V, Node extends NodeBase<K, V, Node>> implements HeapReference<K, V> {
+	abstract static class NodeBase<K, V, NodeT extends NodeBase<K, V, NodeT>> implements HeapReference<K, V> {
 
-		Node prevOrParent;
-		Node next;
-		Node child;
+		NodeT prevOrParent;
+		NodeT next;
+		NodeT child;
 
 		@Override
 		public String toString() {
@@ -226,11 +229,11 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 	}
 
-	static class PreOrderIter<K, V, Node extends NodeBase<K, V, Node>> implements Iterator<Node> {
+	static class PreOrderIter<K, V, NodeT extends NodeBase<K, V, NodeT>> implements Iterator<NodeT> {
 
-		private final Stack<Node> path = new ObjectArrayList<>();
+		private final Stack<NodeT> path = new ObjectArrayList<>();
 
-		PreOrderIter(Node p) {
+		PreOrderIter(NodeT p) {
 			if (p != null)
 				path.push(p);
 		}
@@ -241,15 +244,15 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 			Assertions.Iters.hasNext(this);
-			final Node ret = path.top();
+			final NodeT ret = path.top();
 
-			Node next;
+			NodeT next;
 			if ((next = ret.child) != null) {
 				path.push(next);
 			} else {
-				Node p0;
+				NodeT p0;
 				do {
 					p0 = path.pop();
 					if ((next = p0.next) != null) {
@@ -264,7 +267,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 
 	}
 
-	private static abstract class ObjBase<K, V> extends HeapPairing<K, V, ObjBase.Node<K, V>> {
+	private abstract static class ObjBase<K, V> extends HeapPairing<K, V, ObjBase.Node<K, V>> {
 
 		ObjBase(Comparator<? super K> comparator) {
 			super(comparator);
@@ -432,7 +435,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 			return compare(n1.key, n2.key);
 		}
 
-		static abstract class Node<K, V> extends NodeBase<K, V, Node<K, V>> {
+		abstract static class Node<K, V> extends NodeBase<K, V, Node<K, V>> {
 			K key;
 
 			Node(K key) {
@@ -540,7 +543,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 	}
 
-	private static abstract class DoubleBase<V> extends HeapPairing<Double, V, DoubleBase.Node<V>> {
+	private abstract static class DoubleBase<V> extends HeapPairing<Double, V, DoubleBase.Node<V>> {
 
 		private final DoubleComparator doubleCmp;
 
@@ -714,7 +717,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 			return doubleCmp.compare(n1.key, n2.key);
 		}
 
-		static abstract class Node<V> extends NodeBase<Double, V, Node<V>> {
+		abstract static class Node<V> extends NodeBase<Double, V, Node<V>> {
 			double key;
 
 			Node(double key) {
@@ -820,7 +823,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 	}
 
-	private static abstract class IntBase<V> extends HeapPairing<Integer, V, IntBase.Node<V>> {
+	private abstract static class IntBase<V> extends HeapPairing<Integer, V, IntBase.Node<V>> {
 
 		private final IntComparator intCmp;
 
@@ -994,7 +997,7 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 			return intCmp.compare(n1.key, n2.key);
 		}
 
-		static abstract class Node<V> extends NodeBase<Integer, V, Node<V>> {
+		abstract static class Node<V> extends NodeBase<Integer, V, Node<V>> {
 			int key;
 
 			Node(int key) {
@@ -1100,24 +1103,24 @@ abstract class HeapPairing<K, V, NodeImpl extends HeapPairing.NodeBase<K, V, Nod
 		}
 	}
 
-	static <K, V, Node extends HeapPairing.NodeBase<K, V, Node>> void assertHeapConstraints(
-			HeapPairing<K, V, Node> heap) {
+	static <K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>> void assertHeapConstraints(
+			HeapPairing<K, V, NodeT> heap) {
 		if (heap.isEmpty())
 			return;
 
-		Stack<Node> path = new ObjectArrayList<>();
+		Stack<NodeT> path = new ObjectArrayList<>();
 		path.push(heap.minRoot);
 		for (;;) {
-			for (Node node = path.top(); node.child != null;)
+			for (NodeT node = path.top(); node.child != null;)
 				path.push(node = node.child);
 			for (;;) {
-				Node node = path.pop();
+				NodeT node = path.pop();
 				if (path.isEmpty()) {
 					if (node.next != null)
 						throw new IllegalArgumentException();
 					return;
 				}
-				Node parent = path.top();
+				NodeT parent = path.top();
 				if (heap.compareNodesKeys(node, parent) < 0)
 					throw new IllegalArgumentException();
 				if (node.next != null) {

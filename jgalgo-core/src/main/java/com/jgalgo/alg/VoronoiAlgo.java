@@ -24,16 +24,20 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Voronoi cells algorithm.
+ *
  * <p>
  * Given a graph \(G=(V,E)\) and a set of sites \(S \subseteq V\), the Voronoi cells of \(S\) are the sets of vertices
  * that are closer to a site than to any other site. The Voronoi cells are a partition of the graph vertices, namely
  * each vertex is assigned to exactly one site.
+ *
  * <p>
  * The distances and paths are directed from the sites to the vertices. If the other direction is needed, consider
  * passing a reversed view of the original graph by using {@link IntGraph#reverseView()}.
+ *
  * <p>
  * If there are some vertices that are unreachable from any sites, the partition will contain an addition block with
  * index {@code siteNumber+1} that contains all these vertices.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -46,6 +50,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * Compute the Voronoi cells of a graph with respect to a set of sites and an edge weight function.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link VoronoiAlgo.IResult} object will be returned. In that case, its
 	 * better to pass a {@link IntCollection} as {@code sites} and {@link IWeightFunction} as {@code w} to avoid
@@ -62,11 +67,13 @@ public interface VoronoiAlgo {
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation.
+	 *
 	 * <p>
 	 * The result object is firstly a valid {@link IVertexPartition} of the graph. The partition is defined by the
 	 * sites. Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If
 	 * some vertices are unreachable from any sites, the partition will contain an addition block with index
 	 * {@code siteNumber+1} that contains all these vertices.
+	 *
 	 * <p>
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
 	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
@@ -82,6 +89,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the distance of a vertex from its site.
+		 *
 		 * <p>
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -94,6 +102,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the shortest path of a vertex from its site.
+		 *
 		 * <p>
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -106,10 +115,12 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a block.
+		 *
 		 * <p>
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of one of the blocks
 		 * {@code [0, numberOfBlocks())}.
+		 *
 		 * <p>
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
 		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code null} for this block.
@@ -121,6 +132,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a vertex.
+		 *
 		 * <p>
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of the block that contains the
@@ -135,6 +147,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * A result object of {@link VoronoiAlgo} computation for {@link IntGraph}.
+	 *
 	 * <p>
 	 * See {@link VoronoiAlgo.Result} for the result object documentation.
 	 *
@@ -144,6 +157,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the distance of a vertex from its site.
+		 *
 		 * <p>
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -162,6 +176,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the shortest path of a vertex from its site.
+		 *
 		 * <p>
 		 * Note that the direction of the distances and paths (in case of a directed graph) is from the sites to the
 		 * vertices.
@@ -180,10 +195,12 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a block.
+		 *
 		 * <p>
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of one of the blocks
 		 * {@code [0, numberOfBlocks())}.
+		 *
 		 * <p>
 		 * In case some vertices are unreachable from any sites, the partition will contain an addition block with index
 		 * {@code siteNumber+1} that contains all these vertices. This method will return {@code -1} for this block.
@@ -202,6 +219,7 @@ public interface VoronoiAlgo {
 
 		/**
 		 * Get the site vertex of a vertex.
+		 *
 		 * <p>
 		 * The Voronoi cells are defined by the sites. Each 'block' contains all the vertices that are closer to the
 		 * site of the block than to any other site. This method return the site vertex of the block that contains the
@@ -222,6 +240,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * Create a new Voronoi cells algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link VoronoiAlgo} object. The {@link VoronoiAlgo.Builder}
 	 * might support different options to obtain different implementations.
@@ -234,6 +253,7 @@ public interface VoronoiAlgo {
 
 	/**
 	 * Create a new Voronoi cells algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -260,10 +280,12 @@ public interface VoronoiAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

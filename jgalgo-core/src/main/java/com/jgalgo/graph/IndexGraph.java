@@ -19,21 +19,25 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A graph whose vertices and edges identifiers are indices.
+ *
  * <p>
  * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using some hashable
  * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
  * graph lifetime. On the other hand, an <i>Index</i> graph is a {@link IntGraph} object in which the vertices and edges
  * identifiers of the graph are <b>always</b> {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
+ *
  * <p>
  * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
  * a value/weight/flag with each vertex/edge. But it does come with a cost: to maintain the invariants, implementations
  * may need to rename existing vertices or edges during the graph lifetime. These renames can be subscribed-to using
  * {@link #addVertexSwapListener(IndexSwapListener)} and {@link #addEdgeSwapListener(IndexSwapListener)}.
+ *
  * <p>
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
  * created on its own using {@link IndexGraphFactory}. In cases where no removal of vertices or edges is required, and
  * there is no need to use pre-defined IDs, there is no drawback of using the {@link IndexGraph} as a regular
  * {@link IntGraph}, as it will expose an identical functionality while providing better performance.
+ *
  * <p>
  * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
  * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
@@ -41,6 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * back to the regular graph IDs. The mapping from a regular graph IDs to indices and vice versa is exposed using
  * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
  * {@link Graph#indexGraphEdgesMap()}.
+ *
  * <p>
  * To create a new empty index graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will
  * use the default implementation. For more control over the graph details, see {@link IndexGraphFactory}. To construct
@@ -53,6 +58,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}.
 	 */
@@ -61,6 +67,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}.
 	 */
@@ -69,6 +76,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
 	 * <p>
 	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
 	 *
@@ -82,6 +90,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * After removing a vertex, the graph implementation may swap and rename vertices to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addVertexSwapListener(IndexSwapListener)}.
@@ -91,6 +100,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
 	 * <p>
 	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
 	 *
@@ -104,6 +114,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
@@ -113,6 +124,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
@@ -124,6 +136,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
@@ -135,6 +148,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeSwapListener(IndexSwapListener)}.
@@ -146,6 +160,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Adds a listener that will be called each time a vertex swap is performed.
+	 *
 	 * <p>
 	 * An {@link IndexGraph} may rename vertices during its lifetime to maintain the invariant that all vertices are
 	 * identified by {@code 0,1,2,...,verticesNum-1}. This method can be used to track these changes, by registering a
@@ -157,6 +172,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Removes a vertex swap listener.
+	 *
 	 * <p>
 	 * After a listener was added using {@link #addVertexSwapListener(IndexSwapListener)}, this method removes may
 	 * remove it.
@@ -167,6 +183,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Adds a listener that will be called each time a edge swap is performed.
+	 *
 	 * <p>
 	 * An {@link IndexGraph} may rename edges during its lifetime to maintain the invariant that all edges are
 	 * identified by {@code 0,1,2,...,edgesNum-1}. This method can be used to track these changes, by registering a
@@ -178,6 +195,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Removes an edge swap listener.
+	 *
 	 * <p>
 	 * After a listener was added using {@link #addEdgeSwapListener(IndexSwapListener)}, this method removes may remove
 	 * it.
@@ -256,6 +274,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Create a new undirected empty index graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IndexGraphFactory}.
@@ -268,6 +287,7 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Create a new directed empty index graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IndexGraphFactory}.

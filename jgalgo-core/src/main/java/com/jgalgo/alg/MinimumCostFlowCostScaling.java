@@ -32,8 +32,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Minimum-cost flow computation using the cost-scaling algorithm with partial-augmentations push-relabel variant.
+ *
  * <p>
  * The algorithm runs in \(O(n^2 m \log (n C))\) where \(C\) is the maximum (absolute) edge cost.
+ *
  * <p>
  * Based on 'Efficient implementations of minimum-cost flow algorithms' by Z. Kiraly, P. Kovacs (2012).
  *
@@ -173,7 +175,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 				for (int n = g.vertices().size(), u = 0; u < n; u++)
 					potential[u] -= maxPotential;
 
-			final int edgeRef[] = resGraph.edgeRef;
+			final int[] edgeRef = resGraph.edgeRef;
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (resGraph.isOriginalEdge(e)) {
 					int eRef = edgeRef[e];

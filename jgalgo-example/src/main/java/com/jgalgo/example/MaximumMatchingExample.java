@@ -21,8 +21,16 @@ import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * This example demonstrates how to use the maximum matching algorithm.
+ *
+ * @author Barak Ugav
+ */
 public class MaximumMatchingExample {
 
+	/**
+	 * This example demonstrates how to use the maximum matching algorithm.
+	 */
 	public static void maximumMatchingExample() {
 		/* Create a graph with few vertices and edges */
 		IntGraph g = createGraph();
@@ -46,7 +54,7 @@ public class MaximumMatchingExample {
 		System.out.println("The maximum matching is: " + matching.edges());
 	}
 
-	public static IntGraph createGraph() {
+	private static IntGraph createGraph() {
 		IntGraph g = IntGraph.newUndirected();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();

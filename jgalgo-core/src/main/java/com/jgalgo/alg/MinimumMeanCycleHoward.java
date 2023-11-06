@@ -30,12 +30,14 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * Howard's algorithm for minimum mean cycle detection.
+ *
  * <p>
  * The algorithm runs in \(O(m N)\) and uses linear space, where \(N\) is product of the out-degrees of all the vertices
  * in the graph. Although this bound is not polynomial, this algorithm perform well in practice. There are other bounds
  * on the time such as \(O(n m \alpha)\) where \(\alpha\) is the number of simple cycles in the graph, or \(O(n^2 m
  * (MaxW-MinW)/\epsilon)\) where \(MaxW,MinW\) are the maximum and minimum edge weight in the graph, and \(\epsilon\) is
  * the precision of the algorithm.
+ *
  * <p>
  * Based on 'Efficient Algorithms for Optimal Cycle Mean and Optimum Cost to Time Ratio Problems' by Ali Dasdan, Sandy
  * S. Irani, Rajesh K. Gupta (1999).
@@ -217,7 +219,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 				return new PathImpl(g, cycleVertex, cycleVertex, cycle);
 
 			if (cycle.size() > n) {
-				/**
+				/*
 				 * In case we have multiple cycles with the same minimum mean weight, the original
 				 * overallBestCycleVertex might point to tail that leads to minimum mean cycle. For example:
 				 * v1->v2,v2->v3,v3->v2, if start at v1 and search for a cycle ending at v1 we will never find it. If

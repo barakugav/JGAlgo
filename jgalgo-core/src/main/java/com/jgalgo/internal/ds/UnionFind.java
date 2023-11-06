@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 /**
  * Data structure of a finite set of elements supporting union and find operations.
+ *
  * <p>
  * The Union Find data structure stores a collection of disjoint sets. Each such set has some representative element,
  * which is an arbitrary element from the set. Three basic operations are supported:
@@ -27,6 +28,7 @@ package com.jgalgo.internal.ds;
  * element in the set).</li>
  * <li>{@link #union(int, int)} - union the sets of two elements.</li>
  * </ul>
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -60,6 +62,7 @@ public interface UnionFind {
 
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
+	 *
 	 * <p>
 	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the same set.
 	 *
@@ -86,6 +89,7 @@ public interface UnionFind {
 
 	/**
 	 * Clear the data structure by removing all elements from all sets.
+	 *
 	 * <p>
 	 * This method can be used to reuse allocated memory of the data structure.
 	 */
@@ -93,6 +97,7 @@ public interface UnionFind {
 
 	/**
 	 * Create a new union find algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link UnionFind} object. The {@link UnionFind.Builder} might
 	 * support different options to obtain different implementations.
@@ -105,6 +110,7 @@ public interface UnionFind {
 
 	/**
 	 * Create a new union-find data structure builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -161,7 +167,7 @@ public interface UnionFind {
 	static interface Builder {
 
 		/**
-		 * Create a new empty union-find data structure
+		 * Create a new empty union-find data structure.
 		 *
 		 * @return a new empty union-find data structure
 		 */
@@ -177,10 +183,12 @@ public interface UnionFind {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

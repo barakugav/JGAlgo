@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 /**
  * An extension to a dynamic trees implementation.
+ *
  * <p>
  * Extension such as {@link DynamicTreeExtension.TreeSize} can be added to a {@link DynamicTree} implementation without
  * increasing the asymptotical running time of any of the operations.
@@ -43,6 +44,7 @@ public interface DynamicTreeExtension {
 
 	/**
 	 * An extension to {@link DynamicTree} that keep track on the number of vertices in each tree.
+	 *
 	 * <p>
 	 * The extension add some fields to each vertex, and maintain them during operation on the forest. The asymptotical
 	 * running time of all the operations does not increase, and an addition operation that query the number of vertices

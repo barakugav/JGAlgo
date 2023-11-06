@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
  * Fredman and Tarjan’s minimum spanning tree algorithm.
+ *
  * <p>
  * The algorithm runs in iterations. In each iteration, multiple runs of the {@link MinimumSpanningTreePrim} algorithm
  * will be run (sequently) on the vertices: instead of growing the tree of Prim's algorithm until it connect all
@@ -35,9 +36,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * heap reached the limit, we start Prim's algorithm from another vertex until the new heap reaches the limit, and
  * repeat that until we have a spanning forest. Than, we <i>contract</i> each tree to a single super vertex, and we
  * advance to the next iteration.
+ *
  * <p>
  * The algorithm runs in \(O(m \log^* n)\) time and uses linear space. In practice, {@link MinimumSpanningTreePrim}
  * usually out-preform this algorithm. Note that only undirected graphs are supported.
+ *
  * <p>
  * Based on "Fibonacci Heaps and Their Uses in Improved Network Optimization Algorithms" by M.L. Fredman and R.E.
  * Tarjan.
@@ -88,7 +91,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 		int[] vListEnd = new int[n]; // (super vertex -> last vertex in the list) of the current iteration
 		int[] vListNext = new int[n]; // (vertex -> next vertex in the list)
 		int[] vListBeginNext = new int[n]; // vListBegin of the next iteration
-		int[] vListEndNext = new int[n];// vListEnd of the next iteration
+		int[] vListEndNext = new int[n]; // vListEnd of the next iteration
 
 		// init each vertex to be its own super vertex
 		for (int v = 0; v < n; v++) {

@@ -34,7 +34,7 @@ class IntGraphBuilderImpl {
 				: new IntGraphBuilderImpl.Undirected(g, copyWeights);
 	}
 
-	private static abstract class Abstract implements IntGraphBuilder {
+	private abstract static class Abstract implements IntGraphBuilder {
 
 		final IndexGraphBuilder ibuilder;
 		private final Int2IntOpenHashMap vIdToIndex;
@@ -124,8 +124,8 @@ class IntGraphBuilderImpl {
 		@Override
 		public int addVertex() {
 			if (!canAddVertexWithoutId())
-				throw new IllegalArgumentException(
-						"Can't mix addVertex() and addVertex(id), if IDs are provided for some of the vertices, they must be provided for all");
+				throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
+						+ "if IDs are provided for some of the vertices, they must be provided for all");
 			int vIndex = ibuilder.addVertex();
 			int vId = vIndex + 1; // +1 because we want to avoid 0 in fastutil open hash maps
 			assert vIndex == vIndexToId.size();
@@ -138,8 +138,8 @@ class IntGraphBuilderImpl {
 		@Override
 		public void addVertex(int vertex) {
 			if (!canAddVertexWithId())
-				throw new IllegalArgumentException(
-						"Can't mix addVertex() and addVertex(id), if IDs are provided for some of the vertices, they must be provided for all");
+				throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
+						+ "if IDs are provided for some of the vertices, they must be provided for all");
 			int vIndex = ibuilder.addVertex();
 			int vId = vertex;
 			assert vIndex == vIndexToId.size();
@@ -153,8 +153,8 @@ class IntGraphBuilderImpl {
 		@Override
 		public int addEdge(int source, int target) {
 			if (!canAddEdgeWithoutId())
-				throw new IllegalArgumentException(
-						"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
+				throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+						+ "if IDs are provided for some of the edges, they must be provided for all");
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
@@ -174,8 +174,8 @@ class IntGraphBuilderImpl {
 		@Override
 		public void addEdge(int source, int target, int edge) {
 			if (!canAddEdgeWithId())
-				throw new IllegalArgumentException(
-						"Can't mix addEdge(u,v) and addEdge(u,v,id), if IDs are provided for some of the edges, they must be provided for all");
+				throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+						+ "if IDs are provided for some of the edges, they must be provided for all");
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())

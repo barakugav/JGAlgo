@@ -34,6 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Goldberg's SSSP algorithm for integer (positive and negative) weights on directed graphs.
+ *
  * <p>
  * The algorithm operate on integer weights and uses the scaling approach. During the scaling iterations, a potential
  * function is maintained, which gives a equivalent weight function with values \(-1,0,1,2,3,\ldots\). The potential is
@@ -41,8 +42,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * shortest paths and distances are computed. Let \(N\) be the absolute value of the minimum negative number. The
  * algorithm perform \(O(\log N)\) iteration, and each iteration is performed in time \(O(m \sqrt{n})\) time. In total,
  * the running time is \(O(m \sqrt{n} \log N)\).
+ *
  * <p>
  * This algorithm is great in practice, and should be used for weights function with integer negative values.
+ *
  * <p>
  * Based on 'Scaling algorithms for the shortest paths problem' by Goldberg, A.V. (1995).
  *
@@ -65,6 +68,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 	/**
 	 * Set the algorithm used for positive weights graphs.
+	 *
 	 * <p>
 	 * The algorithm first calculate a potential for each vertex and construct an equivalent positive weight function
 	 * which is used by an SSSP algorithm for positive weights to compute the final shortest paths.
@@ -141,7 +145,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		IWeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
-		/**
+		/*
 		 * In sparse (random) graphs, the running time seems very slow, as the algorithm require a lot of iterations to
 		 * find the potential values, and most of the time is spent in the long-path flow. In these cases, we prefer the
 		 * big-layer flow.

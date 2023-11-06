@@ -84,6 +84,7 @@ public interface GraphReader {
 
 	/**
 	 * Get new {@link GraphReader} instance by a format name.
+	 *
 	 * <p>
 	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
 	 * 'leda']

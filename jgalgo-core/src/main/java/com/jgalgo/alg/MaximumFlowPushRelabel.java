@@ -32,10 +32,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * The push-relabel maximum flow algorithm with FIFO ordering.
+ *
  * <p>
  * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
  * between neighboring vertices using <i>push</i> operations under the guidance of an admissible network maintained by
  * <i>relabel</i> operations.
+ *
  * <p>
  * Different variants of the push relabel algorithm exists, mostly differing in the order the vertices with excess (more
  * in-going than out-going flow) are examined. The implementation support four different such ordering:
@@ -53,9 +55,11 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * In addition to the order of the active vertices, the algorithm can be implemented in by pushing from an active vertex
  * to one of its neighbor vertices, namely by pushing along a single edge, or by pushing from an active vertex along a
  * path of admissable edges.
+ *
  * <p>
  * Heuristics are crucial for the practical running time of push-relabel algorithm, and this implementation uses the
  * 'global relabeling', 'gap' and 'incremental restart' (optional) heuristics.
+ *
  * <p>
  * This algorithm can be implemented with better time theoretical bound using dynamic trees, but in practice it has
  * little to non advantages. See {@link MaximumFlowPushRelabelDynamicTrees}.
@@ -190,7 +194,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 	}
 
-	static abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
+	abstract static class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
 		final int[] label;
 		final IEdgeIter[] outEdgeIters;
@@ -469,7 +473,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			maxLayerInactive = emptyLayer - 1;
 		}
 
-		private static abstract class DischargePolicyImpl {
+		private abstract static class DischargePolicyImpl {
 
 			abstract void dischargeDirected(int u);
 
@@ -756,7 +760,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				}
 			}
 
-			private static abstract class PartialAugmentBase extends DischargePolicyImpl {
+			private abstract static class PartialAugmentBase extends DischargePolicyImpl {
 
 				static final int MAX_AUGMENT_PATH_LENGTH = 4;
 				final IntArrayList path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);
@@ -1274,7 +1278,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			}
 		}
 
-		private static abstract class ActiveOrderPolicyImpl {
+		private abstract static class ActiveOrderPolicyImpl {
 
 			abstract boolean hasMoreVerticesToDischarge();
 
@@ -1788,7 +1792,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
 			excess[v] += f;
-		};
+		}
 
 		@Override
 		void eliminateCycleDirected(int e) {

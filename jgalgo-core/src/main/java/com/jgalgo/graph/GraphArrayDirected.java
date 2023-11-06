@@ -22,9 +22,11 @@ import it.unimi.dsi.fastutil.ints.IntBigArrays;
 
 /**
  * A directed graph implementation using arrays to store edge lists.
+ *
  * <p>
  * The edges of each vertex will be stored as an array of ints. This implementation is the most efficient for most use
  * cases and should be used as the first choice for a directed graph implementation.
+ *
  * <p>
  * If the use case require multiple vertices/edges removals, {@link GraphLinkedDirected} could be more efficient.
  *

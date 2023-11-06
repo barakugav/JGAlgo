@@ -56,6 +56,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 		/**
 		 * Create a new Tree Size extensions.
+		 *
 		 * <p>
 		 * Each instance of this extension should be used in a single dynamic tree object.
 		 */
@@ -104,7 +105,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 	}
 
-	private static abstract class Int extends DynamicTreeSplayExtension {
+	private abstract static class Int extends DynamicTreeSplayExtension {
 
 		Int() {
 			super(new ExtensionData.Int());
@@ -123,7 +124,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		}
 	}
 
-	static abstract class ExtensionData {
+	abstract static class ExtensionData {
 		abstract void swap(int idx1, int idx2);
 
 		abstract void clear(int idx);

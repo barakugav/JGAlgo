@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class ShortestPathAllPairsUtils {
 
-	static abstract class AbstractImpl implements ShortestPathAllPairs {
+	abstract static class AbstractImpl implements ShortestPathAllPairs {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -98,7 +98,7 @@ class ShortestPathAllPairsUtils {
 		return vToResIdx;
 	}
 
-	static abstract class ResultImpl implements ShortestPathAllPairs.IResult {
+	abstract static class ResultImpl implements ShortestPathAllPairs.IResult {
 
 		private ResultImpl() {}
 
@@ -108,7 +108,7 @@ class ShortestPathAllPairsUtils {
 
 		abstract void setEdgeTo(int source, int target, int edge);
 
-		static abstract class AllVertices extends ResultImpl {
+		abstract static class AllVertices extends ResultImpl {
 
 			final IndexGraph g;
 			private final int[][] edges;
@@ -247,7 +247,7 @@ class ShortestPathAllPairsUtils {
 
 	}
 
-	static abstract class ResFromSSSP implements ShortestPathAllPairs.IResult {
+	abstract static class ResFromSSSP implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 

@@ -22,11 +22,13 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
+ *
  * <p>
  * As the {@link SplitFind}, a data structure implementing this interface maintain a collection disjoint sets and
  * support {@link #find(int)} and {@link #split(int)} operations. In addition, each element have a key, which is
  * comparable to any other key by a provided comparator, and the minimum key in each set can be queried using
  * {@link #findMin(int)}.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -60,7 +62,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	K getKey(int x);
 
 	/**
-	 * Find the element with the minimum key in the sequence of {@code x}
+	 * Find the element with the minimum key in the sequence of {@code x}.
 	 *
 	 * @param  x an element in the data structure
 	 * @return   the element with the minimum key in the sequence of {@code x}
@@ -78,6 +80,7 @@ public interface SplitFindMin<K> extends SplitFind {
 
 	/**
 	 * Create a new split-find-min object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SplitFindMin} object. The {@link SplitFindMin.Builder}
 	 * might support different options to obtain different implementations.
@@ -90,6 +93,7 @@ public interface SplitFindMin<K> extends SplitFind {
 
 	/**
 	 * Create a new split-find-min data structure builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -108,7 +112,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	static interface Builder extends SplitFind.Builder {
 
 		/**
-		 * Create a new split-find-min data structure
+		 * Create a new split-find-min data structure.
 		 *
 		 * @return     a new split-find-min data structure
 		 * @param  <K> the keys type

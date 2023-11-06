@@ -29,8 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
  * Tarjan's minimum directed spanning tree algorithm.
+ *
  * <p>
  * The algorithm run in \(O(m \log n)\) time and uses linear space.
+ *
  * <p>
  * Based on 'Finding optimum branchings' by R. E. Tarjan.
  *

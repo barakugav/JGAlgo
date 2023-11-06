@@ -35,12 +35,14 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 /**
  * Blossom V implementation for maximum weighted matching.
+ *
  * <p>
  * The implementation is based on 'Blossom V: A new implementation of a minimum cost perfect matching algorithm' by
  * Vladimir Kolmogorov. It is an implementation of Edmonds 'Blossom' algorithm, using priory queues
  * ({@link HeapReferenceable}, pairing heaps) to find the next tight edge each iteration. In contrast to
  * {@link MatchingWeightedGabow1990}, it achieve a worse \(O(n^3 m)\) running time in the worst case, but runs faster in
  * practice.
+ *
  * <p>
  * The implementation actually computes minimum perfect matching, and assume such perfect matching always exists.
  * Maximum or non-perfect matchings are computed by a reduction to a minimum perfect matching instance.
@@ -430,6 +432,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/**
+		 * Grow the forest by adding a 'grow edge' and its descending matched edge.
 		 *
 		 * @param  growEdge the edge from an even node to an out node
 		 * @return          {@code true} if augmentation was performed
@@ -509,6 +512,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/**
+		 * Grow the forest given the new even node grown.
 		 *
 		 * @param  w the new even node grown
 		 * @return   {@code true} if augmentation was performed
@@ -669,6 +673,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/**
+		 * Shrink an odd alternating path in the forest to a blossom.
 		 *
 		 * @param  bridge the edge connecting between the two branches of the new blossom
 		 * @return        {@code true} if augmentation was performed
@@ -1002,6 +1007,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		/**
+		 * Expand an existing blossom to its sub blossoms.
 		 *
 		 * @param  B the blossom to expand
 		 * @return   {@code true} if augmentation was performed
@@ -1071,7 +1077,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 					for (Blossom b = successor, prev = null;;) {
 						b = b.match.getOtherEndpoint(b);
 
-						Edge aa = b.blossomSibling;
+						final Edge aa = b.blossomSibling;
 						b.setEven();
 						b.tree = tree;
 						b.dual -= eps;
@@ -1837,6 +1843,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 	/**
 	 * A blossom is either a vertex of a graph, or odd number of blossoms connected by alternating matched/unmatched
 	 * edges.
+	 *
 	 * <p>
 	 * Edges of the blossoms (originated from the original vertices) are stored using two linked lists: out-edges and
 	 * in-edges. Whether an edge is out or in is arbitrary, but it helps to manage the undirected edges. When a blossom
@@ -1867,6 +1874,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		private static final byte IsTreeRootMask;
 		private static final byte IsTreeRoot_False;
 		private static final byte IsTreeRoot_True;
+
 		static {
 			BitmapBuilder b = new BitmapBuilder(byte.class);
 			BitmapBuilder.Field f;
@@ -2277,11 +2285,13 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	/**
 	 * A edge between two blossoms.
+	 *
 	 * <p>
 	 * During init, an Edge object is created for each edge in the original graph, connecting two singleton blossoms
 	 * corresponding to the original vertices endpoints of the edge. When a blossom is created from a set of blossoms,
 	 * edges are moved to the new super blossom. When a blossom is expanded, its edges are moved back to the
 	 * sub-blossom.
+	 *
 	 * <p>
 	 * Each edge is contained in out-edges linked list of its source and in-edges linked list of its target.
 	 *
@@ -2725,6 +2735,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	/**
 	 * An edge between two trees.
+	 *
 	 * <p>
 	 * The edge does not represent a real edge of the original graph, rather it is used to store information of all the
 	 * edges crossing between two edges. In particular, it contain three heaps with the edges crossing between the two

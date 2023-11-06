@@ -35,10 +35,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Hopcroft-Tarjan algorithm for bi-connected components.
+ *
  * <p>
  * The algorithm performs a DFS and look for edges from vertices with greater depth to vertices with lower depth,
  * indicating for to separates paths between them: one using the DFS tree, and the other using the edge. The algorithm
  * runs in linear time and space.
+ *
  * <p>
  * Based on 'Algorithm 447: efficient algorithms for graph manipulation' by Hopcroft, J. and Tarjan, R. 1973.
  *

@@ -26,8 +26,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Sedgewick's simple paths finder implementation.
+ *
  * <p>
  * The algorithm is a variant of DFS, that mark visited vertices, but unmark them when the DFS backtracks.
+ *
  * <p>
  * Based on 'Algorithms in c, part 5: graph algorithms' by Robert Sedgewick.
  *

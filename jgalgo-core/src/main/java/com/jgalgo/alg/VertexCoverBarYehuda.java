@@ -21,8 +21,10 @@ import com.jgalgo.internal.util.Bitmap;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
+ *
  * <p>
  * Runs in linear time.
+ *
  * <p>
  * Based on 'A linear-time approximation algorithm for the weighted vertex cover problem' by R Bar-Yehuda.
  *

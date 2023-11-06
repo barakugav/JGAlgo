@@ -22,12 +22,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A discrete graph with vertices and edges.
+ *
  * <p>
  * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some abstract entities, and edges are
  * connections between the vertices, for example vertices can be cities and edges could be the roads between them, or
  * vertices can be people the edges are the relation of "friends". Edges could be directed or undirected. Weights may be
  * assigned to vertices or edges, for example the length of a road might be a weight of an edge. Than, questions such as
  * "what is the shortest path between two cities?" might be answered using graph algorithms.
+ *
  * <p>
  * Each edge \(e=(u, v)\) in the graph has a <i>source</i> vertex, \(u\), and a <i>target</i> vertex, \(v\). In
  * undirected graphs the 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and
@@ -36,9 +38,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * efficient iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we
  * have both <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex,
  * respectively.
+ *
  * <p>
  * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
+ *
  * <p>
  * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
  * <i>directed</i>, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
@@ -47,12 +51,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
  * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
  * directed or not, use the {@link #isDirected()} method.
+ *
  * <p>
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
  * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
  * by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose the
  * {@code int} ID and will return it to the user. Alternatively, the methods {@link #addVertex(int)} and
  * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
+ *
  * <p>
  * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as any primitive (for
  * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
@@ -62,6 +68,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * or set a vertex/edge weight, and can be passed to algorithms as a {@link IWeightFunction} for example. See
  * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link IWeights} for the
  * full weights documentation.
+ *
  * <p>
  * Each graph expose an <i>Index</i> view on itself via the {@link #indexGraph()} method. The returned
  * {@link IndexGraph} is a graph in which the identifiers of the vertices are always {@code (0,1,2, ...,verticesNum-1)},
@@ -70,12 +77,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * friendly, but allow for high performance boost as no hash tables are needed, a simple array or bitmap can be used to
  * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
  * should not be used in scenarios where performance does not matter.
+ *
  * <p>
  * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
  * in degree of a vertex is exposed by {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
+ *
  * <p>
  * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
+ *
  * <p>
  * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
  * default implementation. For more control over the graph details, see {@link IntGraphFactory}. To construct an
@@ -128,6 +138,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Add a new vertex to the graph.
+	 *
 	 * <p>
 	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
 	 * edges, and will return it as the new vertex ID.
@@ -138,10 +149,12 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Add a new vertex to the graph with user chosen ID.
+	 *
 	 * <p>
 	 * In contrast to {@link #addVertex()}, in which the implementation chooses ,the new vertex identifier, the user can
 	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
 	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
+	 *
 	 * <p>
 	 * Note that vertices IDs must be non negative.
 	 *
@@ -173,8 +186,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the edges whose source is {@code source}.
+	 *
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code source} is one of their end points.
+	 *
 	 * <p>
 	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
@@ -193,8 +208,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the edges whose target is {@code target}.
+	 *
 	 * <p>
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
+	 *
 	 * <p>
 	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
@@ -213,9 +230,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
+	 *
 	 * <p>
 	 * If the graph is not directed, the return edge is an edge that its end-points are {@code source} and
 	 * {@code target}.
+	 *
 	 * <p>
 	 * In case there are multiple (parallel) edges between {@code source} and {@code target}, a single arbitrary one is
 	 * returned.
@@ -259,6 +278,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Add a new edge to the graph.
+	 *
 	 * <p>
 	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
 	 * edges, and will return it as the new edge ID.
@@ -272,6 +292,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Add a new edge to the graph with user chosen ID.
+	 *
 	 * <p>
 	 * In contrast to {@link #addEdge(int, int)}, in which the implementation chooses the new edge identifier, the user
 	 * can specified what {@code int} ID the new edge should be assigned. The set of graph edges must not contain
@@ -362,6 +383,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Reverse an edge by switching its source and target.
+	 *
 	 * <p>
 	 * If the graph is undirected, this method does nothing.
 	 *
@@ -378,6 +400,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the source vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
 	 * than {@link #edgeTarget(int)} returns.
@@ -396,6 +419,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the target vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
 	 * end-point than {@link #edgeSource(int)} returns.
@@ -414,6 +438,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Get the other end-point of an edge.
+	 *
 	 * <p>
 	 * Given an edge \((u,v)\) and a vertex \(w\), assuming \(w\) is an endpoint of the edge, namely that \(w\) is
 	 * either \(u\) or \(v\), the method will return the <i>other</i> endpoint which is not \(w\). If \(w=u\) the method
@@ -514,6 +539,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * <p>
 	 * Prefer to pass a IntCollection instead of Collection&lt;Integer&gt; as collections of vertices and edges.
 	 */
@@ -524,6 +550,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Create a new undirected empty int graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IntGraphFactory}.
@@ -536,6 +563,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	/**
 	 * Create a new directed empty int graph.
+	 *
 	 * <p>
 	 * The returned graph will be implemented using the default implementation. For more control over the graph details,
 	 * see {@link IntGraphFactory}.

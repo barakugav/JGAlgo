@@ -30,8 +30,10 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
  * Kuhn's Hungarian method for maximum weighted matching in bipartite graphs.
+ *
  * <p>
  * The running time of the algorithm is \(O(m n + n^2 \log n)\) and it uses linear space.
+ *
  * <p>
  * Based on 'The Hungarian method for the assignment problem' by Kuhn, H.W. (1955). The original paper stated a running
  * time of \(O(n^3)\), but by using heaps with {@code decreaseKey} operations in \(O(1)\) the running time can be

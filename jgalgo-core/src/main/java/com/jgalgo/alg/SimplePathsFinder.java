@@ -21,6 +21,7 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm that finds all simple paths between a source and a target.
+ *
  * <p>
  * Given a graph \(G=(V,E)\), a path is a sequence of edges \(e_1,e_2,\ldots,e_k\) such that \(e_i=(v_{i-1},v_i)\) and
  * \(v_i\neq v_j\) for \(i\neq j\). A simple path is a path that does not contain a cycle, namely the vertices visited
@@ -33,6 +34,7 @@ public interface SimplePathsFinder {
 
 	/**
 	 * Find all the simple paths between a source and a target vertices in the given graph.
+	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, an iterator of {@link IPath} objects will be returned.
 	 *
@@ -47,6 +49,7 @@ public interface SimplePathsFinder {
 
 	/**
 	 * Create a new algorithm for simple paths finding.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SimplePathsFinder} object. The
 	 * {@link SimplePathsFinder.Builder} might support different options to obtain different implementations.
@@ -59,6 +62,7 @@ public interface SimplePathsFinder {
 
 	/**
 	 * Create a new simple paths finder algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -85,10 +89,12 @@ public interface SimplePathsFinder {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

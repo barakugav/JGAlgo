@@ -16,6 +16,7 @@
 
 /**
  * Parent package for all modules of the JGAlgo library.
+ *
  * <p>
  * Contains global configurations.
  */

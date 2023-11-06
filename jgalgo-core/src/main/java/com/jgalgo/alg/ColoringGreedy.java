@@ -26,11 +26,14 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * A greedy coloring algorithm with random vertices order.
+ *
  * <p>
  * The algorithm examine the vertices in random order and assign for each vertex the minimum (integer) color which is
  * not used by its neighbors.
+ *
  * <p>
  * The algorithm runs in linear time, assuming the number of colors is constant.
+ *
  * <p>
  * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
  * problem.

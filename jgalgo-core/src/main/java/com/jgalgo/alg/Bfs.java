@@ -26,10 +26,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Bread first search (BFS) iterator.
+ *
  * <p>
  * The BFS iterator is used to iterate over the vertices of a graph in a bread first manner, namely by the cardinality
  * distance of the vertices from some source(s) vertex. The iterator will visit every vertex \(v\) for which there is a
  * path from the source(s) to \(v\). Each such vertex will be visited exactly once.
+ *
  * <p>
  * The graph should not be modified during the BFS iteration.
  *
@@ -52,6 +54,7 @@ public interface Bfs {
 
 	/**
 	 * Create a BFS iterator.
+	 *
 	 * <p>
 	 * If an {@link IntGraph} is passed as an argument {@link Bfs.IntIter} is returned.
 	 *
@@ -66,15 +69,32 @@ public interface Bfs {
 		if (g instanceof IntGraph)
 			return (Bfs.Iter<V, E>) newInstance((IntGraph) g, ((Integer) source).intValue());
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBFS);
+		Bfs.IntIter indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
+	}
+
+	/**
+	 * Create a BFS iterator in an int graph.
+	 *
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 */
+	public static Bfs.IntIter newInstance(IntGraph g, int source) {
+		if (g instanceof IndexGraph)
+			return new BfsIterImpl.Forward((IndexGraph) g, source);
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		Bfs.IntIter indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
 	}
 
 	/**
 	 * Create a backward BFS iterator.
+	 *
 	 * <p>
 	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
 	 * the in-edges to do so.
+	 *
 	 * <p>
 	 * If an {@link IntGraph} is passed as an argument {@link Bfs.IntIter} is returned.
 	 *
@@ -89,27 +109,13 @@ public interface Bfs {
 		if (g instanceof IntGraph)
 			return (Bfs.Iter<V, E>) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBFS);
-	}
-
-	/**
-	 * Create a BFS iterator in an int graph.
-	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph
-	 */
-	public static Bfs.IntIter newInstance(IntGraph g, int source) {
-		if (g instanceof IndexGraph)
-			return new BfsIterImpl.Forward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBFS = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);
+		Bfs.IntIter indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
 	}
 
 	/**
 	 * Create a backward BFS iterator in an int graph.
+	 *
 	 * <p>
 	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
 	 * the in-edges to do so.
@@ -122,8 +128,8 @@ public interface Bfs {
 		if (g instanceof IndexGraph)
 			return new BfsIterImpl.Backward((IndexGraph) g, source);
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBFS = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBFS);
+		Bfs.IntIter indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
 	}
 
 	/**
@@ -149,6 +155,7 @@ public interface Bfs {
 
 		/**
 		 * Get the edge that led to the last vertex returned by {@link #next()}.
+		 *
 		 * <p>
 		 * The behavior is undefined if {@link #next()} was not called yet.
 		 *
@@ -158,9 +165,11 @@ public interface Bfs {
 
 		/**
 		 * Get the layer of the last vertex returned by {@link #next()}.
+		 *
 		 * <p>
 		 * The layer of a vertex is the cardinality distance, the number of edges in the path, from the source(s) to the
 		 * vertex.
+		 *
 		 * <p>
 		 * The behavior is undefined if {@link #next()} was not called yet.
 		 *
@@ -195,6 +204,7 @@ public interface Bfs {
 
 		/**
 		 * Get the edge that led to the last vertex returned by {@link #nextInt()}.
+		 *
 		 * <p>
 		 * The behavior is undefined if {@link #nextInt()} was not called yet.
 		 *

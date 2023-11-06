@@ -19,11 +19,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A builder for {@linkplain IntGraph int graphs}.
+ *
  * <p>
  * The builder is used to construct <b>non-empty</b> int graphs. Differing from {@link IntGraphFactory} which create new
  * empty graphs, the builder is used to add vertices and edges before actually creating the graph. This capability is
  * required to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost
  * compared to creating an empty graph and adding the same vertices and edges.
+ *
  * <p>
  * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
@@ -43,6 +45,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Add a new vertex to the graph.
+	 *
 	 * <p>
 	 * The builder will choose identifier not used for any existing vertex, and will return it. It is also possible to
 	 * add a new vertex and choose its identifier by using {@link #addVertex(int)}. Only one of {@link #addVertex()} and
@@ -54,6 +57,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Add a new vertex to the graph, with user-chosen identifier.
+	 *
 	 * <p>
 	 * This function is similar to {@link #addVertex()}, but let the user to choose the the identifier of the new
 	 * vertex. Only one of {@link #addVertex()} and {@link #addVertex(int)} can be used during the construction of a
@@ -71,6 +75,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Add a new edge to the graph.
+	 *
 	 * <p>
 	 * The builder will choose identifier not used for any existing edge, and will return it. It is also possible to add
 	 * a new edge and choose its identifier by using {@link #addEdge(int, int, int)}. Only one of
@@ -84,6 +89,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Add a new edge to the graph, with user-chosen identifier.
+	 *
 	 * <p>
 	 * This function is similar to {@link #addEdge(int, int)}, but let the user to choose the identifier of the new
 	 * edge. Only one of {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the
@@ -103,6 +109,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Get the vertices weights of some key.
+	 *
 	 * <p>
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -121,6 +128,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Get the edges weights of some key.
+	 *
 	 * <p>
 	 * See {@link IWeights} for a complete documentation of the weights containers.
 	 *
@@ -163,6 +171,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
+	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
@@ -176,6 +185,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 
 	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, with/without copying the weights.
+	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *

@@ -20,12 +20,14 @@ import com.jgalgo.graph.IntGraph;
 
 /**
  * An algorithm for computing the lowest common ancestor (LCA) of two vertices in a tree, offline.
+ *
  * <p>
  * Given a rooted tree, the lowest common ancestor (LCA) of two vertices {@code u} and {@code v} is the lowest vertex
  * (farthest to root) that has both {@code u} and {@code v} as descendants. The offline version of this problem is given
  * a tree and a set of pairs of vertices, find the LCA of each pair. There are also the
  * {@linkplain LowestCommonAncestorStatic static} and {@linkplain LowestCommonAncestorDynamic online} versions of this
  * problem.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -38,6 +40,7 @@ public interface LowestCommonAncestorOffline {
 
 	/**
 	 * Find the lowest common ancestors of the given queries.
+	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link LowestCommonAncestorOffline.IResult}.
 	 *
@@ -53,6 +56,7 @@ public interface LowestCommonAncestorOffline {
 
 	/**
 	 * Queries container for {@link LowestCommonAncestorOffline} computations.
+	 *
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a
 	 * {@link LowestCommonAncestorOffline} algorithm using
@@ -86,6 +90,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the target vertex.
@@ -98,6 +103,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTarget(int)} to get the source vertex.
@@ -153,6 +159,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get a query source by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the source and the target. This method return the source vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the target vertex.
@@ -171,6 +178,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get a query target by index.
+		 *
 		 * <p>
 		 * A query is composed of two vertices, the target and the source. This method return the target vertex of a
 		 * query. Use {@link #getQueryTargetInt(int)} to get the source vertex.
@@ -200,6 +208,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get the lowest common ancestor of the given query.
+		 *
 		 * <p>
 		 * This result object was obtained by calling
 		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
@@ -213,6 +222,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get the number of queries in this result.
+		 *
 		 * <p>
 		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.IQueries} object
 		 * passed to {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}.
@@ -231,6 +241,7 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * Get the lowest common ancestor of the given query.
+		 *
 		 * <p>
 		 * This result object was obtained by calling
 		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
@@ -251,6 +262,7 @@ public interface LowestCommonAncestorOffline {
 
 	/**
 	 * Create a new tree path maxima algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorOffline} object. The
 	 * {@link LowestCommonAncestorOffline.Builder} might support different options to obtain different implementations.
@@ -263,6 +275,7 @@ public interface LowestCommonAncestorOffline {
 
 	/**
 	 * Create a new tree path maxima algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -289,10 +302,12 @@ public interface LowestCommonAncestorOffline {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *

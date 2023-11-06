@@ -20,6 +20,7 @@ import com.jgalgo.graph.GraphBuilder;
 
 /**
  * A generator of graphs.
+ *
  * <p>
  * The generator can be used to generate with different distributions and structures. A generator may be used to
  * generate only trees, only bipartite graphs, dense or sparse graphs, etc.
@@ -32,6 +33,7 @@ public interface GraphGenerator<V, E> {
 
 	/**
 	 * Generates an immutable graph.
+	 *
 	 * <p>
 	 * For mutable graphs use {@link #generateMutable()}.
 	 *
@@ -43,6 +45,7 @@ public interface GraphGenerator<V, E> {
 
 	/**
 	 * Generates a mutable graph.
+	 *
 	 * <p>
 	 * For immutable graphs use {@link #generate()}.
 	 *
@@ -54,6 +57,7 @@ public interface GraphGenerator<V, E> {
 
 	/**
 	 * Generates a graph into a builder.
+	 *
 	 * <p>
 	 * This is the a more flexible way to generate a graph. The builder can be used to generate a mutable or immutable
 	 * graph, or to add additional vertices or edges on top of the generated ones.

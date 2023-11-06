@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 class SteinerTrees {
 
-	static abstract class AbstractImpl implements SteinerTreeAlgo {
+	abstract static class AbstractImpl implements SteinerTreeAlgo {
 
 		@SuppressWarnings("unchecked")
 		@Override

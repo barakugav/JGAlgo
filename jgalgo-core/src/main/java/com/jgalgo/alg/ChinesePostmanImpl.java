@@ -61,9 +61,6 @@ class ChinesePostmanImpl implements ChinesePostman {
 		int[] oddVertices = oddVerticesList.toIntArray();
 		assert oddVertices.length % 2 == 0;
 
-		/* Find the shortest path between each pair of odd degree vertices */
-		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo
-				.computeSubsetShortestPaths(g, oddVerticesList, w);
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
 		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.newUndirected();
 		oddGraph0.expectedVerticesNum(oddVertices.length);
@@ -74,6 +71,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 			for (int u = v + 1; u < n; u++)
 				oddGraph0.addEdge(v, u);
 		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();
+		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo
+				.computeSubsetShortestPaths(g, oddVerticesList, w);
 		IWeightFunction oddW = e -> {
 			int u = oddVertices[oddGraph.edgeSource(e)];
 			int v = oddVertices[oddGraph.edgeTarget(e)];

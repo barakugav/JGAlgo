@@ -38,6 +38,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * The GML format.
+ *
  * <p>
  * According to 'GML: A portable Graph File Format'
  *

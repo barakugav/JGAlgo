@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * The Bron-Kerbosch algorithm for Maximal cliques with the pivot heuristic.
+ *
  * <p>
  * Based on 'Algorithm 457: finding all cliques of an undirected graph' by Coen Bron and Joep Kerbosch.
  *

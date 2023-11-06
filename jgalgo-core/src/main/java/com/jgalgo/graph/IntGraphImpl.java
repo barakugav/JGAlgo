@@ -444,6 +444,7 @@ abstract class IntGraphImpl extends IntGraphBase {
 		}
 
 		static final Strategy strategy;
+
 		static {
 			Function<Supplier<ToIntFunction<IntSet>>, Strategy> customStrategy = nextIdFunc -> new Strategy() {
 				@Override

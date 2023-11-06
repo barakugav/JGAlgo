@@ -22,6 +22,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * An algorithm that compute the bi-connected components of a graph.
+ *
  * <p>
  * Given a graph \(G=(V,E)\) a bi-connected component \(B \subseteq V\) is a maximal set of connected vertices that
  * remain connected even after removing any single vertex of \(B\). In particular, an isolated vertex is considered a
@@ -29,6 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * all the maximal bi-connected components of the graph. Note that the bi-connected components are not disjoint, namely
  * a single vertex can be included in multiple bi-connected components, differing from the regular connected components
  * of a graph.
+ *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
@@ -42,6 +44,7 @@ public interface BiConnectedComponentsAlgo {
 
 	/**
 	 * Compute all maximal bi-connected components of a graph.
+	 *
 	 * <p>
 	 * If an {@link IntGraph} is passed as an argument {@link BiConnectedComponentsAlgo.IResult} is returned.
 	 *
@@ -54,8 +57,10 @@ public interface BiConnectedComponentsAlgo {
 
 	/**
 	 * A result object of a {@link BiConnectedComponentsAlgo} computation.
+	 *
 	 * <p>
 	 * Each bi-connected components is labeled by an integer in range {@code [0, getNumberOfBiCcs())}.
+	 *
 	 * <p>
 	 * Note that the bi-connected components are not disjoint, namely a single vertex can be included in multiple
 	 * bi-connected components, differing from the regular connected components of a graph.
@@ -77,6 +82,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Get the number of bi-connected components computed in the graph.
+		 *
 		 * <p>
 		 * Each bi-connected component is labeled by an integer in range {@code [0, getNumberOfBiCcs())}.
 		 *
@@ -95,6 +101,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Get the edges contained in a single bi-connected component.
+		 *
 		 * <p>
 		 * An edge \((u,v)\) is said to bi contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
 		 * \(B\).
@@ -107,6 +114,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Check whether a vertex is a cut-vertex.
+		 *
 		 * <p>
 		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
 		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
@@ -119,6 +127,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Get all the cut vertices in the graph.
+		 *
 		 * <p>
 		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
 		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
@@ -130,6 +139,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Get the graph of the bi-connected components.
+		 *
 		 * <p>
 		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
 		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
@@ -170,6 +180,7 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * Check whether a vertex is a cut-vertex.
+		 *
 		 * <p>
 		 * A cut vertex is a vertex whose removal disconnects the graph. In the context of bi-connected components, a
 		 * cut vertex is also a vertex that belongs to more than one bi-connected component. These vertices are also
@@ -193,6 +204,7 @@ public interface BiConnectedComponentsAlgo {
 
 	/**
 	 * Create a new bi-connected components algorithm object.
+	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object. The
 	 * {@link BiConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
@@ -205,6 +217,7 @@ public interface BiConnectedComponentsAlgo {
 
 	/**
 	 * Create a new bi-connected components algorithm builder.
+	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
@@ -231,10 +244,12 @@ public interface BiConnectedComponentsAlgo {
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
+		 *
 		 * <p>
 		 * The builder might support different options to customize its implementation. These options never change the
 		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
 		 * because they are not part of the API and may change in the future.
+		 *
 		 * <p>
 		 * These options are mainly for debug and benchmark purposes.
 		 *
